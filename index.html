@@ -1,0 +1,420 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="shortcut icon" href="./favicon.png" type="image/png" />
+    <link rel="icon" href="./favicon.png" type="image/png" />
+    <title>JSPatcher</title>
+    <link rel="stylesheet" type="text/css" href="./dist/font_Lato.css">
+    <script type="text/javascript" src="./dist/index.js"></script>
+    <style type="text/css">
+        *:focus {
+            outline: none;
+        }
+
+        body {
+            margin: 0px;
+            background-color: black;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+
+        #left {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 100%;
+        }
+
+        #sidebar {
+            box-shadow: 0px 0px 5px #0008;
+            overflow-y: auto;
+            position: relative;
+            flex: 0 0 auto;
+            width: 300px;
+            z-index: 100;
+        }
+        
+        #sidebar .header{
+            width: 100%;
+            background-color: #222c;
+            position: absolute;
+        }
+
+        #sidebar .ui.bottom.menu{
+            width: 100%;
+            background-color: #222c;
+            height: 35px;
+            position: absolute;
+        }
+
+        #menu {
+            position: relative;
+            flex: 0 0 auto;
+            width: auto;
+            /*overload semantic 100% width*/
+        }
+
+        #menu .ui.dropdown .menu {
+            min-width: 220px;
+        }
+
+        #toolbar {
+            width: auto;
+            /*overload semantic 100% width*/
+            height: 35px;
+            position: relative;
+            flex: 0 0 auto;
+        }
+
+        #toolbar i.enabled, #menu i.enabled {
+            text-shadow: 0px 0px 5px;
+            color: deepskyblue;
+        }
+
+        .selection {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 0.1em;
+            border: 0.1em solid rgba(255, 255, 255, 0.4);
+            z-index: 80;
+            pointer-events: none;
+        }
+
+        #console {
+            overflow: auto;
+            height: 100%;
+            width: 100%;
+            background: #333;
+        }
+
+        #log {
+            display: table;
+            overflow-y: auto;
+            padding: 40px 0px 35px 0px;
+            margin: 0px;
+            font-size: .8em;
+            background: none;
+        }
+
+        #log tbody td:first-child {
+            vertical-align: top;
+        }
+
+        #log tbody td:last-child {
+            word-break: break-word;
+        }
+
+        #log tr td {
+            border-width: 0px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #patcher {
+            position: relative;
+            overflow: auto;
+            flex: 1 1 100%;
+        }
+
+        #patcher>div.boxes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        #patcher.unlocked.showgrid>div.grid-background {
+            visibility: visible;
+        }
+
+        #patcher>div.grid-background {
+            visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #patcher.locked div.boxes {
+            z-index: 20;
+        }
+
+        #patcher.unlocked div.boxes {
+            z-index: 10;
+        }
+
+        #patcher>div.lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        #patcher.locked div.lines {
+            z-index: 10;
+        }
+
+        #patcher.unlocked div.lines {
+            z-index: 20;
+        }
+
+        div.line {
+            position: absolute;
+            outline-width: 0;
+            pointer-events: none;
+        }
+
+        path.line-path {
+            stroke: rgb(158, 159, 159);
+            stroke-width: 2;
+            fill: transparent;
+        }
+
+        #patcher.unlocked path.line-path {
+            pointer-events: auto;
+        }
+
+        #patcher.locked path.line-path {
+            pointer-events: none;
+        }
+
+        svg.line-svg {
+            filter: drop-shadow(rgba(200, 200, 200, 0.5) 0px 0px 0.5px);
+        }
+
+        svg.line-svg:hover {
+            filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+            stroke-width: 3;
+        }
+
+        svg.line-svg:hover>path.line-path {
+            stroke-width: 3;
+        }
+
+        div.line.selected>svg.line-svg {
+            filter: drop-shadow(rgb(0, 0, 237) 0px 0px 2px);
+        }
+
+        div.line.selected>svg.line-svg>path.line-path {
+            stroke-width: 3;
+        }
+
+        div.line-handler {
+            position: absolute;
+            border-radius: 50%;
+            margin: -4px;
+            width: 6px;
+            height: 6px;
+            pointer-events: auto;
+            z-index: 50;
+            visibility: hidden;
+        }
+
+        div.line.selected div.line-handler {
+            visibility: visible;
+        }
+
+        div.line.selected.dragging div.line-handler {
+            visibility: hidden;
+        }
+
+        div.line-handler.line-handler-src {
+            background-color: rgba(144, 238, 144, 0.5);
+            border: 1px rgba(0, 255, 0, 0.5) solid;
+        }
+
+        div.line-handler.line-handler-src:hover {
+            background-color: rgba(144, 238, 144, 1);
+            border: 1px rgba(0, 255, 0, 1) solid;
+        }
+
+        div.line-handler.line-handler-dest {
+            background-color: rgba(255, 0, 0, 0.5);
+            border: 1px rgba(128, 0, 0, 0.5) solid;
+        }
+
+        div.line-handler.line-handler-dest:hover {
+            background-color: rgba(255, 0, 0, 1);
+            border: 1px rgba(128, 0, 0, 1) solid;
+        }
+
+        div.box {
+            display: block;
+            position: absolute;
+            pointer-events: auto;
+            min-width: 45px;
+            z-index: inherit;
+        }
+
+        div.box-ui {
+            height: 100%;
+            width: 100%;
+            overflow: auto;
+        }
+
+        #patcher.unlocked div.box-ui {
+            pointer-events: none;
+        }
+
+        #patcher.locked div.box-ui {
+            pointer-events: auto;
+        }
+
+        div.box.selected {
+            box-shadow: 0px 0px 2px 2px rgb(0, 162, 255);
+        }
+
+        /*ports*/
+
+        div.box-inlets {
+            position: absolute;
+            top: 0px;
+            left: 10px;
+            right: 10px;
+            height: 0px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        div.box-outlets {
+            position: absolute;
+            bottom: 0px;
+            left: 10px;
+            right: 10px;
+            height: 0px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        div.box-port {
+            position: relative;
+            width: 7px;
+            height: 3.5px;
+            background-color: rgb(192, 194, 196);
+            border-style: solid;
+            border-width: 0px;
+        }
+
+        #patcher.unlocked div.box-port {
+            z-index: 30;
+        }
+
+        #patcher.locked div.box-port {
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        div.box-inlet {
+            border-radius: 0px 0px 3.5px 3.5px;
+            margin: 0px -3.5px -3.5px -3.5px;
+        }
+
+        div.box-inlet-hot {
+            border-color: rgb(255, 141, 121);
+        }
+
+        div.box-inlet-cold {
+            border-color: rgb(85, 213, 236);
+        }
+
+        div.box-outlet {
+            border-radius: 3.5px 3.5px 0px 0px;
+            margin: -3.5px -3.5px 0px -3.5px;
+            border-color: rgb(211, 255, 0);
+        }
+
+        #patcher.unlocked div.box:hover div.box-port {
+            margin: -3.5px;
+            border-radius: 50%;
+            height: 7px;
+        }
+
+        #patcher.unlocked div.box:hover div.box-port-connected {
+            border-width: 1px;
+            height: 7px;
+        }
+
+        div.box-port:first {
+            float: left;
+        }
+
+        div.box-port:last {
+            float: right;
+        }
+
+        div.box-outlet.box-port-connected {
+            background-color: rgb(75, 80, 86);
+            border-width: 1px 1px 0px 1px;
+            margin: -3.5px -3.5px 0px -3.5px;
+            border-radius: 3.5px 3.5px 0px 0px;
+            height: 3.5px;
+            width: 7px;
+        }
+
+        div.box-outlet:hover,
+        div.box-outlet.box-port-highlight {
+            background-color: rgb(75, 80, 86);
+            border-width: 2px !important;
+            margin: -5.5px !important;
+            border-radius: 50%;
+            height: 11px !important;
+            width: 11px;
+        }
+
+        div.box-inlet.box-port-connected {
+            background-color: rgb(75, 80, 86);
+            border-width: 0px 1px 1px 1px;
+            margin: 0px -3.5px -3.5px -3.5px;
+            border-radius: 0px 0px 3.5px 3.5px;
+            height: 3.5px;
+            width: 7px;
+        }
+
+        div.box-inlet:hover,
+        div.box-inlet.box-port-highlight {
+            background-color: rgb(75, 80, 86);
+            border-width: 2px !important;
+            margin: -5.5px !important;
+            border-radius: 50%;
+            height: 11px !important;
+            width: 11px;
+        }
+        
+        div.box:not(.selected) .ui-resizable-handle {
+            display: none;
+        }
+
+        .ui-resizable-w {
+            left: 0px;
+            width: 4px
+        }
+
+        .ui-resizable-e {
+            right: 0px;
+            width: 4px
+        }
+    </style>
+</head>
+
+<body>
+</body>
+
+</html>

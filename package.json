@@ -1,0 +1,19 @@
+{
+  "name": "jspatcher",
+  "version": "0.0.1",
+  "description": "patcher js",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "keywords": [
+    "js",
+    "patcher"
+  ],
+  "author": "Fr0stbyteR",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3"
+  }
+}
