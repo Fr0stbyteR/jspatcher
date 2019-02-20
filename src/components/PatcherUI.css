@@ -1,0 +1,53 @@
+.patcher {
+    position: absolute;
+    overflow: auto;
+    min-height: 100%;
+    min-width: 100%;
+    display: block;
+}
+.patcher>div.boxes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.patcher.locked div.boxes {
+    z-index: 20;
+}
+.patcher.unlocked div.boxes {
+    z-index: 10;
+}
+.patcher>div.lines {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+.patcher.locked div.lines {
+    z-index: 10;
+}
+.patcher.unlocked div.lines {
+    z-index: 20;
+}
+.patcher.unlocked.show-grid>div.grid-background {
+    visibility: visible;
+}
+.patcher>div.grid-background {
+    visibility: hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}

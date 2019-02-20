@@ -2,9 +2,10 @@
   "name": "jspatcher",
   "version": "0.0.1",
   "description": "patcher js",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "node index.js"
+    "build": "webpack --mode development",
+    "dist": "webpack --mode production"
   },
   "keywords": [
     "js",
@@ -13,7 +14,32 @@
   "author": "Fr0stbyteR",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.3.3",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/events": "^3.0.0",
+    "@types/react": "^16.8.3",
+    "@types/react-dom": "^16.8.2",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.0",
+    "eslint": "^5.14.1",
+    "file-loader": "^3.0.1",
+    "lato-font": "^3.0.0",
+    "node-sass": "^4.11.0",
+    "react": "^16.8.2",
+    "react-dom": "^16.8.2",
+    "sass-loader": "^7.1.0",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.85.0",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.12.1",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^3.6.0",
+    "typescript": "^3.3.3",
+    "url-loader": "^1.1.2",
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3"
-  }
+  },
+  "dependencies": {}
 }

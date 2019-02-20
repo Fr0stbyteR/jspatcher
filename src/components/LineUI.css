@@ -1,0 +1,64 @@
+div.line {
+    position: absolute;
+    outline-width: 0;
+    pointer-events: none;
+}
+div.line>svg>path {
+    stroke: rgb(158, 159, 159);
+    stroke-width: 2;
+    fill: transparent;
+}
+.patcher.unlocked div.line>svg>path {
+    pointer-events: auto;
+}
+.patcher.locked div.line>svg>path {
+    pointer-events: none;
+}
+div.line>svg {
+    filter: drop-shadow(rgba(200, 200, 200, 0.5) 0px 0px 0.5px);
+}
+div.line>svg:hover {
+    filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+    stroke-width: 3;
+}
+div.line>svg:hover>path {
+    stroke-width: 3;
+}
+div.line.selected>svg {
+    filter: drop-shadow(rgb(0, 0, 237) 0px 0px 2px);
+}
+div.line.selected>svg>path {
+    stroke-width: 3;
+}
+div.line>div.line-handler {
+    position: absolute;
+    border-radius: 50%;
+    margin: -4px;
+    width: 6px;
+    height: 6px;
+    pointer-events: auto;
+    z-index: 50;
+    visibility: hidden;
+}
+div.line.selected>div.line-handler {
+    visibility: visible;
+}
+div.line.selected.dragging>div.line-handler {
+    visibility: hidden;
+}
+div.line>div.line-handler.line-handler-src {
+    background-color: rgba(144, 238, 144, 0.5);
+    border: 1px rgba(0, 255, 0, 0.5) solid;
+}
+div.line>div.line-handler.line-handler-src:hover {
+    background-color: rgba(144, 238, 144, 1);
+    border: 1px rgba(0, 255, 0, 1) solid;
+}
+div.line>div.line-handler.line-handler-dest {
+    background-color: rgba(255, 0, 0, 0.5);
+    border: 1px rgba(128, 0, 0, 0.5) solid;
+}
+div.line>div.line-handler.line-handler-dest:hover {
+    background-color: rgba(255, 0, 0, 1);
+    border: 1px rgba(128, 0, 0, 1) solid;
+}
