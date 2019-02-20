@@ -18,7 +18,7 @@ export class TopMenu extends React.Component {
 class FileMenu extends React.Component {
     props: { patcher: Patcher };
     refDownload = React.createRef() as React.RefObject<HTMLAnchorElement>;
-    refOpen = React.createRef() as  React.RefObject<HTMLInputElement>;
+    refOpen = React.createRef() as React.RefObject<HTMLInputElement>;
     state = { pAsString: "", pName: "patcher.json" };
     handleClickNew = (e: React.MouseEvent, data: DropdownItemProps) => {
         this.props.patcher.clear();

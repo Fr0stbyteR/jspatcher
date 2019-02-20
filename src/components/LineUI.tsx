@@ -5,7 +5,8 @@ import "./LineUI.css";
 
 export class LineUI extends React.Component {
     props: { patcher: Patcher, id: string };
-    state: { destPosition: { left: number, top: number }, srcPosition: { left: number, top: number } };
+    state: { selected: boolean, destPosition: { left: number, top: number }, srcPosition: { left: number, top: number } };
+    refPath = React.createRef() as React.RefObject<SVGPathElement>;
     handleChangeDestPos = (position: { left: number, top: number }) => this.setState({ destPosition: position });
     handleChangeSrcPos = (position: { left: number, top: number }) => this.setState({ srcPosition: position });
     handleResetPos = () => {
@@ -16,6 +17,7 @@ export class LineUI extends React.Component {
     }
     componentWillMount() {
         const line = this.handleResetPos();
+        this.setState({ selected: false });
         if (!line) return;
         line.on("changeDestPos", this.handleChangeDestPos);
         line.on("changeSrcPos", this.handleChangeSrcPos);
@@ -28,7 +30,18 @@ export class LineUI extends React.Component {
         line.off("changeDestPos", this.handleChangeDestPos);
         line.off("changeSrcPos", this.handleChangeSrcPos);
     }
+    handleClick = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        if (this.state.selected) return;
+        this.setState({ selected: true });
+        e.stopPropagation();
+    }
+    handleBlur = (e: React.FocusEvent) => {
+        this.setState({ selected: false });
+        e.stopPropagation();
+    }
     render() {
+        const className = "line" + (this.state.selected ? " selected" : "");
         const start = this.state.srcPosition;
         const end = this.state.destPosition;
         const divStyle = {
@@ -43,11 +56,21 @@ export class LineUI extends React.Component {
         const dBezier = [dStart[0], dStart[1] + (divStyle.height - 20) / 5];
         if (dBezier[1] > divStyle.height) dBezier[1] = divStyle.height;
         const d = ["M", dStart[0], dStart[1], "Q", dBezier[0], dBezier[1], ",", dMid[0], dMid[1], "T", dEnd[0], dEnd[1]];
+        let srcHandlerStyle = {}, destHandlerStyle = {};
+        if (this.refPath.current) {
+            const pathLength = this.refPath.current.getTotalLength();
+            const srcHandlerPoint = this.refPath.current.getPointAtLength(Math.min(10, pathLength * 0.1));
+            const destHandlerPoint = this.refPath.current.getPointAtLength(Math.max(pathLength - 10, pathLength * 0.9));
+            srcHandlerStyle = { left: srcHandlerPoint.x, top: srcHandlerPoint.y };
+            destHandlerStyle = { left: destHandlerPoint.x, top: destHandlerPoint.y };
+        }
         return (
-            <div className="line" id={this.props.id} tabIndex={0} style={divStyle}>
+            <div className={className} id={this.props.id} tabIndex={0} style={divStyle} onMouseDown={this.handleClick} onBlur={this.handleBlur}>
                 <svg width={divStyle.width} height={divStyle.height}>
-                    <path d={d.join(" ")} />
+                    <path d={d.join(" ")} ref={this.refPath} />
                 </svg>
+                <div className="line-handler line-handler-src" style={srcHandlerStyle || {}} />
+                <div className="line-handler line-handler-dest" style={destHandlerStyle || {}} />
             </div>
         );
     }

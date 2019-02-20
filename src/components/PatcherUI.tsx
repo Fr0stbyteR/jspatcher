@@ -66,16 +66,21 @@ class Lines extends React.Component {
 }
 
 class Boxes extends React.Component {
+    props: { patcher: Patcher };
+    handleClick = (e: React.MouseEvent) => {
+        if (e.ctrlKey) this.props.patcher.setLock(!this.props.patcher._state.locked);
+        e.stopPropagation;
+    }
     render() {
         return (
-            <div className="boxes" />
+            <div className="boxes" onClick={this.handleClick}/>
         );
     }
 }
 
 class Grid extends React.Component {
     props: { patcher: Patcher };
-    calculate = () => {
+    render() {
         const patcher = this.props.patcher;
         const grid = patcher.props.grid;
         const bgcolor = patcher.props.bgcolor;
@@ -87,11 +92,9 @@ class Grid extends React.Component {
         const pxy1 = (grid[1] - 1) + "px";
         const sBGImageX = "repeating-linear-gradient(" + ["0deg, transparent, transparent " + pxx1, gridColor + " " + pxx1, gridColor + " " + pxx].join(", ") + ")";
         const sBGImageY = "repeating-linear-gradient(" + ["-90deg, transparent, transparent " + pxy1, gridColor + " " + pxy1, gridColor + " " + pxy].join(", ") + ")";
-        return { backgroundImage: sBGImageX + ", " + sBGImageY, backgroundSize: pxx + " " + pxy } as React.CSSProperties;
-    }
-    render() {
+        const style = { backgroundImage: sBGImageX + ", " + sBGImageY, backgroundSize: pxx + " " + pxy };
         return (
-            <div className="grid-background" style={this.calculate()}/>
+            <div className="grid-background" style={style}/>
         );
     }
 }
