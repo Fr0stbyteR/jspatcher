@@ -1,0 +1,123 @@
+.patcher div.box-ui {
+    > div.package-base-message > .box-ui-text-container {
+        word-break: break-all;
+        text-align: left;
+        padding: 4px 5px !important;
+        width: 100%;
+        line-height: 14px !important;
+        font-weight: bold !important;
+        margin-right: 0px;
+        &:empty::before {
+            content: "\200b";
+        }
+    }
+    > div.package-base-button {
+        word-break: break-all;
+        padding: 4px 5px !important;
+        width: 100%;
+        line-height: 14px !important;
+        font-weight: bold !important;
+        margin-right: 0px !important;
+    }
+    > div.package-base-invalidobject > .box-ui-text-container {
+        background-color: rgb(128, 64, 64);
+    }
+    > div.box-ui-default {
+        background-color: rgb(73, 80, 77);
+        &.box-ui-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: auto;
+        }
+        > .box-ui-text-container {
+            display: inline-flex;
+            flex: 0 0 auto;
+            padding: 0px 5px;
+            width: 100%;
+            color: white;
+            font-family: Lato, Tahoma, sans-serif;
+            font-size: 12px;
+            margin: 0px;
+            overflow-wrap: break-word;
+            cursor: default;
+            user-select: none;
+            border: rgb(125, 126, 132) solid;
+            border-width: 0px;
+            &:first-child {
+                border-top-width: 4px;
+            }
+            &:last-child {
+                border-bottom-width: 4px;
+            }
+            span {
+                word-break: break-all;
+                width: 100%;
+                line-height: 14px;
+                font-weight: normal;
+                &.editing {
+                    pointer-events: auto;
+                    cursor: text;
+                    user-select: auto;
+                }
+                &:empty::before {
+                    content: "\200b";
+                }
+            }
+            i.icon {
+                line-height: 14px;
+            }
+        }
+        > .box-ui-dropdown-container {
+            flex: 1 1 100%;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            border: rgb(125, 126, 132) solid;
+            padding: 0px;
+            border-width: 0px 0px 4px 0px;
+            overflow: auto;
+        }
+        > .box-ui-toggle {
+            cursor: pointer;
+        }
+    }
+}
+
+.patcher.unlocked div.box-ui {
+    > div.package-base-message {
+        > .box-ui-text-container {
+            cursor: default;
+            margin-right: 0px;
+            &.editing {
+                cursor: text;
+            }
+        }
+    }
+}
+
+ul.ui-menu.ui-autocomplete {
+    display: table-row-group;
+    font-family: Lato, Tahoma, sans-serif;
+    width: auto;
+    max-height: 200px;
+    box-shadow: 0px 2px 5px #0008;
+    overflow: auto;
+    z-index: 120;
+    li {
+        display: table-row;
+        &:nth-child(2n) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        > * {
+            display: table-cell;
+            border-width: 0px;
+            padding: 0.4em 0.6em;
+            transition: background 0.1s ease 0s, color 0.1s ease 0s;
+            font-size: 12px;
+            &:last-child {
+                overflow: hidden;
+            }
+        }
+    }
+}

@@ -36,7 +36,7 @@ export class BoxUI extends React.Component {
     render() {
         const box = this.props.patcher.boxes[this.props.id];
         const rect = this.state.patching_rect;
-        const divStyle = { left: rect[0], top: rect[1], width: rect[2], height: rect[3] };
+        const divStyle = { left: rect[0], top: rect[1], width: rect[2]/*, height: rect[3]*/ };
         const innerUI = box.ui;
         return (
             <div className="box box-default" id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv}>

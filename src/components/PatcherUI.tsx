@@ -5,15 +5,32 @@ import { LineUI } from "./LineUI";
 import { BoxUI } from "./BoxUI";
 
 export class PatcherUI extends React.Component {
-    props: { patcher: Patcher };
+    props: { patcher: Patcher }; 
     state = {
         locked: this.props.patcher._state.locked,
         presentation: this.props.patcher._state.presentation,
         showGrid: this.props.patcher._state.showGrid
     };
+    refGrid = React.createRef() as React.RefObject<Grid>;
+    refBoxes = React.createRef() as React.RefObject<Boxes>;
+    refLines = React.createRef() as React.RefObject<Lines>;
+    size = { width: 0, height: 0 };
     handleLockedChange = (e: boolean) => this.setState({ locked: e });
     handlePresentationChange = (e: boolean) => this.setState({ presentation: e });
     handleShowGridChange = (e: boolean) => this.setState({ showGrid: e });
+    handleScroll = (e: React.UIEvent) => {
+        const grid = this.refGrid.current;
+        const boxes = this.refBoxes.current;
+        const lines = this.refLines.current;
+        const div = e.target as HTMLDivElement;
+        let needUpdate = false;
+        if (div.scrollWidth !== this.size.width || div.scrollHeight !== this.size.height) {
+            needUpdate = true;
+            this.size.width = div.scrollWidth;
+            this.size.height = div.scrollHeight;
+        }
+        if (needUpdate) [grid, boxes, lines].forEach(el => el.setState({ width: this.size.width + "px", height: this.size.height + "px" }));
+    }
     componentDidMount() {
         this.props.patcher.on("lockedChange", this.handleLockedChange);
         this.props.patcher.on("presentationChange", this.handlePresentationChange);
@@ -25,16 +42,16 @@ export class PatcherUI extends React.Component {
         this.props.patcher.off("showGridChange", this.handleShowGridChange);
     }
     render() {
-        let className = "patcher";
-        className += this.state.locked ? " locked" : " unlocked";
-        if (this.state.presentation) className += " presentation";
-        if (this.state.showGrid) className += " show-grid";
+        const classArray = ["patcher"];
+        classArray.push(this.state.locked ? "locked" : "unlocked");
+        if (this.state.presentation) classArray.push("presentation");
+        if (this.state.showGrid) classArray.push("show-grid");
         const bgcolor = this.state.locked ? this.props.patcher.props.bgcolor : this.props.patcher.props.editing_bgcolor;
         return (
-            <div className={className} style={{ backgroundColor: "rgba(" + bgcolor.join(",") + ")" }}>
-                <Grid {...this.props} />
-                <Boxes {...this.props} />
-                <Lines {...this.props} />
+            <div className={classArray.join(" ")} style={{ backgroundColor: "rgba(" + bgcolor.join(",") + ")" }} onScroll={this.handleScroll}>
+                <Grid {...this.props} ref={this.refGrid} />
+                <Boxes {...this.props} ref={this.refBoxes} />
+                <Lines {...this.props} ref={this.refLines} />
             </div>
         );
     }
@@ -42,6 +59,7 @@ export class PatcherUI extends React.Component {
 
 class Lines extends React.Component {
     props: { patcher: Patcher };
+    state = { width: "100%", height: "100%" };
     componentDidMount() {
         this.props.patcher.on("loaded", this.update);
         this.props.patcher.on("createLine", this.update);
@@ -59,7 +77,7 @@ class Lines extends React.Component {
             lines.push(<LineUI {...this.props} id={line.id} key={line.id} />);
         }
         return (
-            <div className="lines">
+            <div className="lines" style={this.state}>
                 {lines}
             </div>
         );
@@ -68,6 +86,7 @@ class Lines extends React.Component {
 
 class Boxes extends React.Component {
     props: { patcher: Patcher };
+    state = { width: "100%", height: "100%" };
     componentDidMount() {
         this.props.patcher.on("loaded", this.update);
         this.props.patcher.on("createBox", this.update);
@@ -89,7 +108,7 @@ class Boxes extends React.Component {
             boxes.push(<BoxUI {...this.props} id={box.id} key={box.id} />);
         }
         return (
-            <div className="boxes" onClick={this.handleClick}>
+            <div className="boxes" onClick={this.handleClick} style={this.state}>
                 {boxes}
             </div>
         );
@@ -98,6 +117,7 @@ class Boxes extends React.Component {
 
 class Grid extends React.Component {
     props: { patcher: Patcher };
+    state = { width: "100%", height: "100%" };
     render() {
         const patcher = this.props.patcher;
         const grid = patcher.props.grid;
@@ -110,7 +130,7 @@ class Grid extends React.Component {
         const pxy1 = (grid[1] - 1) + "px";
         const sBGImageX = "repeating-linear-gradient(" + ["0deg, transparent, transparent " + pxx1, gridColor + " " + pxx1, gridColor + " " + pxx].join(", ") + ")";
         const sBGImageY = "repeating-linear-gradient(" + ["-90deg, transparent, transparent " + pxy1, gridColor + " " + pxy1, gridColor + " " + pxy].join(", ") + ")";
-        const style = { backgroundImage: sBGImageX + ", " + sBGImageY, backgroundSize: pxx + " " + pxy };
+        const style = { backgroundImage: sBGImageX + ", " + sBGImageY, backgroundSize: pxx + " " + pxy, ...this.state };
         return (
             <div className="grid-background" style={style}/>
         );

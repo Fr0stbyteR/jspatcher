@@ -52,7 +52,7 @@ export class LineUI extends React.Component {
         const dStart = [start.left - divStyle.left, start.top - divStyle.top];
         const dMid = [divStyle.width / 2, divStyle.height / 2];
         const dEnd = [end.left - divStyle.left, end.top - divStyle.top];
-        const dBezier = [dStart[0], dStart[1] + (divStyle.height - 20) / 5];
+        const dBezier = [dStart[0], dStart[1] + Math.max(5, (divStyle.height - 20) / 5)];
         if (dBezier[1] > divStyle.height) dBezier[1] = divStyle.height;
         const d = ["M", dStart[0], dStart[1], "Q", dBezier[0], dBezier[1], ",", dMid[0], dMid[1], "T", dEnd[0], dEnd[1]];
         let srcHandlerStyle = {}, destHandlerStyle = {};

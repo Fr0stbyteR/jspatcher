@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import * as React from "react";
 import { Patcher } from "../Patcher";
 import { Box } from "../Box";
+import "./Base.scss";
 export type TInletsMeta = {
     isHot: boolean,
     type: "anything" | "signal" | "object" | "number" | "boolean" | string,
@@ -197,10 +198,19 @@ class InvalidObject extends BaseObject {
 export class DefaultUI extends React.Component {
     props: { object: BaseObject };
     render() {
-        const packageName = "package-" + this.props.object._meta.package.toLowerCase();
-        const className = packageName + "-" + this.props.object._meta.name.toLowerCase();
+        const object = this.props.object;
+        const packageName = "package-" + object._meta.package.toLowerCase();
+        const className = packageName + "-" + object._meta.name.toLowerCase();
+        const classArray = [packageName, className, "box-ui-container", "box-ui-default"];
         return (
-            <div className={className} />
+            <div className={classArray.join(" ")}>
+                <div className="box-ui-text-container">
+                    <i className={object._meta.icon ? ("small icon " + object._meta.icon) : ""} />
+                    <span className="editable">
+                        {object._box.text}
+                    </span>
+                </div>
+            </div>
         );
     }
 }
