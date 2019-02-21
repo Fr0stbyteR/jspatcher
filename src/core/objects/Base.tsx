@@ -69,8 +69,8 @@ export class BaseObject extends EventEmitter {
         // this.update(box._args, box._props);
     }
     // build new ui on page, return a React Component, override this
-    ui(): React.Component {
-        return new DefaultUI(this);
+    ui() {
+        return <DefaultUI object={this} />;
     }
     // when arguments and @properties are changed, can use this in constructor
     update(args: any[], props: { [key: string]: any }) {
@@ -195,10 +195,10 @@ class InvalidObject extends BaseObject {
     }
 }
 export class DefaultUI extends React.Component {
-    props: BaseObject;
+    props: { object: BaseObject };
     render() {
-        const packageName = "package-" + this.props._meta.package.toLowerCase();
-        const className = packageName + "-" + this.props._meta.name.toLowerCase();
+        const packageName = "package-" + this.props.object._meta.package.toLowerCase();
+        const className = packageName + "-" + this.props.object._meta.name.toLowerCase();
         return (
             <div className={className} />
         );

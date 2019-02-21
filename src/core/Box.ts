@@ -31,6 +31,12 @@ export class Box extends EventEmitter {
     fn(data: any, inlet: number) {
         return this;
     }
+    get ui() {
+        return this._object.ui();
+    }
+    get meta() {
+        return this._object._meta;
+    }
     get outletLines() {
         return this._patcher.getLinesBySrcID(this.id);
     }

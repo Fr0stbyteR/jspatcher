@@ -2,6 +2,7 @@ import * as React from "react";
 import { Patcher } from "../core/patcher";
 import "./PatcherUI.css";
 import { LineUI } from "./LineUI";
+import { BoxUI } from "./BoxUI";
 
 export class PatcherUI extends React.Component {
     props: { patcher: Patcher };
@@ -32,8 +33,8 @@ export class PatcherUI extends React.Component {
         return (
             <div className={className} style={{ backgroundColor: "rgba(" + bgcolor.join(",") + ")" }}>
                 <Grid {...this.props} />
-                <Lines {...this.props} />
                 <Boxes {...this.props} />
+                <Lines {...this.props} />
             </div>
         );
     }
@@ -67,13 +68,30 @@ class Lines extends React.Component {
 
 class Boxes extends React.Component {
     props: { patcher: Patcher };
+    componentDidMount() {
+        this.props.patcher.on("loaded", this.update);
+        this.props.patcher.on("createBox", this.update);
+        this.props.patcher.on("deleteBox", this.update);
+    }
+    componentWillUnmount() {
+        this.props.patcher.off("createBox", this.update);
+        this.props.patcher.off("deleteBox", this.update);
+    }
+    update = () => this.props.patcher._state.isLoading ? null : this.forceUpdate();
     handleClick = (e: React.MouseEvent) => {
         if (e.ctrlKey) this.props.patcher.setLock(!this.props.patcher._state.locked);
         e.stopPropagation;
     }
     render() {
+        const boxes = [];
+        for (const boxID in this.props.patcher.boxes) {
+            const box = this.props.patcher.boxes[boxID];
+            boxes.push(<BoxUI {...this.props} id={box.id} key={box.id} />);
+        }
         return (
-            <div className="boxes" onClick={this.handleClick}/>
+            <div className="boxes" onClick={this.handleClick}>
+                {boxes}
+            </div>
         );
     }
 }

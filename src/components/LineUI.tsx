@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Patcher } from "../core/patcher";
-import { Line } from "../core/Line";
 import "./LineUI.css";
 
 export class LineUI extends React.Component {
