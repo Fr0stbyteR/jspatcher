@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Patcher } from "../core/patcher";
-import "./PatcherUI.css";
+import "./PatcherUI.scss";
 import { LineUI } from "./LineUI";
 import { BoxUI } from "./BoxUI";
 

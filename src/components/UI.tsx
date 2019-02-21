@@ -2,7 +2,7 @@ import * as React from "react";
 import { Patcher } from "../core/Patcher";
 import { TopMenu } from "./TopMenu";
 import { PatcherUI } from "./PatcherUI";
-import "./UI.css";
+import "./UI.scss";
 export class UI extends React.Component {
     props: { patcher: Patcher };
     render() {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Menu, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import { Patcher } from "../core/patcher";
-import "./TopMenu.css";
+import "./TopMenu.scss";
 
 export class TopMenu extends React.Component {
     props: { patcher: Patcher };

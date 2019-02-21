@@ -195,6 +195,9 @@ export class Patcher extends EventEmitter {
     }
     getLinesBySrcID(srcID: string) {
         const result = [];
+        for (let i = 0; i < this.boxes[srcID].outlets; i++) { // Array.fill fills the array with same instance
+            result[i] = [];
+        }
         for (const id in this.lines) {
             const line = this.lines[id];
             if (line && line.srcID === srcID) {
@@ -207,6 +210,9 @@ export class Patcher extends EventEmitter {
     }
     getLinesByDestID(destID: string) {
         const result = [];
+        for (let i = 0; i < this.boxes[destID].inlets; i++) {
+            result[i] = [];
+        }
         for (const id in this.lines) {
             const line = this.lines[id];
             if (line && line.destID === destID) {

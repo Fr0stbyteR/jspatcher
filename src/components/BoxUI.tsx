@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Patcher } from "../core/patcher";
-import "./BoxUI.css";
+import "./BoxUI.scss";
 
 export class BoxUI extends React.Component {
     props: { patcher: Patcher, id: string };
@@ -40,8 +40,8 @@ export class BoxUI extends React.Component {
         const innerUI = box.ui;
         return (
             <div className="box box-default" id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv}>
-                <Inlets count={box.inlets} portProps={box.meta.inlets} />
-                <Outlets count={box.outlets} portProps={box.meta.outlets} />
+                <Inlets count={box.inlets} portProps={box.meta.inlets} lines={box.inletLines} />
+                <Outlets count={box.outlets} portProps={box.meta.outlets} lines={box.outletLines} />
                 <div className="box-ui">
                     {innerUI}
                 </div>
@@ -51,14 +51,15 @@ export class BoxUI extends React.Component {
 }
 type TInletProps = { isHot: boolean, type: "anything" | "signal" | "object" | "number" | "boolean" | string, description: string };
 class Inlets extends React.Component {
-    props: { count: number, portProps: TInletProps[] };
+    props: { count: number, portProps: TInletProps[], lines: string[][] };
     render() {
         const inlets = [];
         const props = this.props.portProps;
         for (let i = 0; i < this.props.count; i++) {
             let propsI = { isHot : false, type : "anything", description : "" };
             if (props) propsI = i >= props.length ? props[props.length - 1] : props[i];
-            inlets.push(<Inlet {...propsI} key={i} />);
+            const isConnected = this.props.lines[i].length > 0;
+            inlets.push(<Inlet {...propsI} key={i} isConnected={isConnected} />);
         }
         return (
             <div className="box-inlets">
@@ -69,14 +70,15 @@ class Inlets extends React.Component {
 }
 type TOutletProps = { type: "anything" | "signal" | "object" | "number" | "boolean" | string, description: string };
 class Outlets extends React.Component {
-    props: { count: number, portProps: TOutletProps[] };
+    props: { count: number, portProps: TOutletProps[], lines: string[][] };
     render() {
         const outlets = [];
         const props = this.props.portProps;
         for (let i = 0; i < this.props.count; i++) {
             let propsI = { type : "anything", description : "" };
             if (props) propsI = i >= props.length ? props[props.length - 1] : props[i];
-            outlets.push(<Outlet {...propsI} key={i} />);
+            const isConnected = this.props.lines[i].length > 0;
+            outlets.push(<Outlet {...propsI} key={i} isConnected={isConnected}/>);
         }
         return (
             <div className="box-outlets">
@@ -86,18 +88,18 @@ class Outlets extends React.Component {
     }
 }
 class Inlet extends React.Component {
-    props: { isHot: boolean, type: "anything" | "signal" | "object" | "number" | "boolean" | string, description: string };
+    props: { isHot: boolean, type: "anything" | "signal" | "object" | "number" | "boolean" | string, description: string, isConnected: boolean };
     render() {
         return (
-            <div className={"box-port box-inlet" + (this.props.isHot ? " box-inlet-hot" : " box-inlet-cold")} />
+            <div className={"box-port box-inlet" + (this.props.isHot ? " box-inlet-hot" : " box-inlet-cold") + (this.props.isConnected ? " box-port-connected" : "")} />
         );
     }
 }
 class Outlet extends React.Component {
-    props: { type: "anything" | "signal" | "object" | "number" | "boolean" | string, description: string };
+    props: { type: "anything" | "signal" | "object" | "number" | "boolean" | string, description: string, isConnected: boolean };
     render() {
         return (
-            <div className="box-port box-outlet"/>
+            <div className={"box-port box-outlet" + (this.props.isConnected ? " box-port-connected" : "")} />
         );
     }
 }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Patcher } from "../core/patcher";
-import "./LineUI.css";
+import "./LineUI.scss";
 
 export class LineUI extends React.Component {
     props: { patcher: Patcher, id: string };

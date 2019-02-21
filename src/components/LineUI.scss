@@ -1,0 +1,68 @@
+.patcher {
+    > div.lines > div.line {
+        position: absolute;
+        outline-width: 0;
+        pointer-events: none;
+        > svg {
+            filter: drop-shadow(rgba(200, 200, 200, 0.5) 0px 0px 0.5px);
+            > path {
+                stroke: rgb(158, 159, 159);
+                stroke-width: 2;
+                fill: transparent;
+            }
+            &:hover {
+                filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+                stroke-width: 3;
+                > path {
+                    stroke-width: 3;
+                }
+            }
+        }
+        > div.line-handler {
+            position: absolute;
+            border-radius: 50%;
+            margin: -3px;
+            width: 6px;
+            height: 6px;
+            pointer-events: auto;
+            z-index: 50;
+            visibility: hidden;
+            &.line-handler-src {
+                background-color: rgba(144, 238, 144, 0.5);
+                border: 1px rgba(0, 255, 0, 0.5) solid;
+                &:hover {
+                    background-color: rgba(144, 238, 144, 1);
+                    border: 1px rgba(0, 255, 0, 1) solid;
+                }
+            }
+            &.line-handler-dest {
+                background-color: rgba(255, 0, 0, 0.5);
+                border: 1px rgba(128, 0, 0, 0.5) solid;
+                &:hover {
+                    background-color: rgba(255, 0, 0, 1);
+                    border: 1px rgba(128, 0, 0, 1) solid;
+                }
+            }
+        }
+        &.selected {
+            > svg {
+                filter: drop-shadow(rgb(0, 0, 237) 0px 0px 2px);
+                > path {
+                    stroke-width: 3;
+                }
+            }
+            > div.line-handler {
+                visibility: visible;
+            }
+            &.dragging > div.line-handler {
+                visibility: hidden;
+            }
+        }
+    }
+    &.unlocked > div.lines > div.line > svg > path {
+        pointer-events: auto;
+    }
+    &.locked > div.lines > div.line > svg > path {
+        pointer-events: none;
+    }
+}
