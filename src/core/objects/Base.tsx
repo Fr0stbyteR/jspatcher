@@ -56,9 +56,9 @@ export class BaseObject extends EventEmitter {
     get _meta() {
         return (this.constructor as any)["_meta"];
     }
-    _patcher: Patcher;
-    _box: Box;
-    _mem: object;
+    private _patcher: Patcher;
+    private _box: Box;
+    private _mem: object;
     constructor(box: Box, patcher: Patcher) {
         super();
         // patcher object outside, use _ for pre`vent recursive stringify
@@ -72,7 +72,7 @@ export class BaseObject extends EventEmitter {
     }
     // build new ui on page, return a React Component, override this
     ui() {
-        return <DefaultUI object={this} />;
+        return DefaultUI as typeof BaseUI;
     }
     // when arguments and @properties are changed, can use this in constructor
     update(args: any[], props: { [key: string]: any }) {
@@ -126,6 +126,15 @@ export class BaseObject extends EventEmitter {
     warn(data: string) {
         this._patcher.newLog(-1, this._meta.name, data);
         return this;
+    }
+    get patcher() {
+        return this._patcher;
+    }
+    get mem() {
+        return this._mem;
+    }
+    get box() {
+        return this._box;
     }
     get inlets() {
         return this._box.inlets;
@@ -196,8 +205,58 @@ class InvalidObject extends BaseObject {
         });
     }
 }
-export class DefaultUI extends React.Component {
-    props: { object: BaseObject };
+export class BaseUI extends React.Component {
+    props: { object: BaseObject, children?: React.ReactNode };
+    editableOnUnlock = false;
+    toggleEdit = (bool?: boolean) => false;
+    render() {
+        const object = this.props.object;
+        const packageName = "package-" + object._meta.package.toLowerCase();
+        const className = packageName + "-" + object._meta.name.toLowerCase();
+        const classArray = [packageName, className, "box-ui-container"];
+        return (
+            <div className={classArray.join(" ")}>
+                {this.props.children}
+            </div>
+        );
+    }
+}
+export class DefaultUI extends BaseUI {
+    editableOnUnlock = true;
+    state = { editing: false };
+    refSpan = React.createRef() as React.RefObject<HTMLSpanElement>;
+    toggleEdit = (bool?: boolean) => {
+        if (bool === this.state.editing) return this.state.editing;
+        if (this.props.object.patcher._state.locked) return this.state.editing;
+        if (!this.refSpan.current) return this.state.editing;
+        const toggle = !this.state.editing;
+        const span = this.refSpan.current;
+        if (toggle) {
+            this.setState({ editing: true });
+            span.contentEditable = "true";
+            const range = document.createRange();
+            const selection = window.getSelection();
+            range.selectNodeContents(span);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } else {
+            this.setState({ editing: false });
+            span.contentEditable = "false";
+            window.getSelection().removeAllRanges();
+            this.props.object.patcher.changeBoxText(this.props.object.box.id, span.textContent);
+        }
+        return toggle;
+    }
+    handleBlur = (e: React.FocusEvent) => {}
+    handleClick = (e: React.MouseEvent) => e.stopPropagation();
+    handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") return; // propagate for parent for focus on boxUI
+        e.stopPropagation();
+    }
+    handlePaste = (e: React.ClipboardEvent) => {
+        e.preventDefault();
+        document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
+    }
     render() {
         const object = this.props.object;
         const packageName = "package-" + object._meta.package.toLowerCase();
@@ -207,16 +266,12 @@ export class DefaultUI extends React.Component {
             <div className={classArray.join(" ")}>
                 <div className="box-ui-text-container">
                     <i className={object._meta.icon ? ("small icon " + object._meta.icon) : ""} />
-                    <span className="editable">
-                        {object._box.text}
+                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onBlur={this.handleBlur} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
+                        {object.box.text}
                     </span>
                 </div>
             </div>
         );
     }
 }
-export default {
-    BaseObject,
-    EmptyObject,
-    InvalidObject
-};
+export default { BaseObject, EmptyObject, InvalidObject };

@@ -90,7 +90,7 @@ export class Patcher extends EventEmitter {
                     id,
                     inlets: maxBox.numinlets,
                     outlets: maxBox.numoutlets,
-                    patching_rect: maxBox.patching_rect,
+                    rect: maxBox.patching_rect,
                     text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
                 });
                 this.boxes[id] = box;
@@ -308,7 +308,7 @@ export class Patcher extends EventEmitter {
             } else {
                 idMap[box.id] = box.id;
             }
-            box.patching_rect = [box.patching_rect[0] + 20, box.patching_rect[1] + 20, box.patching_rect[2], box.patching_rect[3]];
+            box.rect = [box.rect[0] + 20, box.rect[1] + 20, box.rect[2], box.rect[3]];
             this.createBox(box);
             pasted.boxes.push(box);
         }

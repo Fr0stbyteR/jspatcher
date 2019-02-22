@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { Patcher } from "./Patcher";
 export type TLine = { id?: string, src: [string, number], dest: [string, number], disabled?: boolean};
-type TEvents = "passData" | "changeDestPos" | "changeSrcPos";
+type TEvents = "passData" | "destPosChanged" | "srcPosChanged";
 export class Line extends EventEmitter {
     on: (type: TEvents, listener: (...args: any[]) => void) => this;
     once: (type: TEvents, listener: (...args: any[]) => void) => this;
@@ -25,7 +25,7 @@ export class Line extends EventEmitter {
         this.disable();
         this.src = [srcID, srcOutlet];
         this.enable();
-        this.emit("changeSrcPos", this.srcPosition);
+        this.emit("srcPosChanged", this.srcPosition);
         return this;
     }
     setDest(dest: [string, number]) {
@@ -34,7 +34,7 @@ export class Line extends EventEmitter {
         this.disable();
         this.dest = [destID, destInlet];
         this.enable();
-        this.emit("changeDestPos", this.destPosition);
+        this.emit("destPosChanged", this.destPosition);
         return this;
     }
     disable(bool?: boolean): Line {
@@ -76,13 +76,13 @@ export class Line extends EventEmitter {
         return destPosition.left * 65536 + destPosition.top;
     }
     get srcPosition() {
-        const rect = this._patcher.boxes[this.src[0]].patching_rect;
+        const rect = this._patcher.boxes[this.src[0]].rect;
         const port = this.src[1];
         const portCount = this._patcher.boxes[this.src[0]].outlets;
         return { top: rect[1] + rect[3], left: ((rect[0] + 10) + (rect[2] - 20) * port / (portCount > 1 ? portCount - 1 : 1)) };
     }
     get destPosition() {
-        const rect = this._patcher.boxes[this.dest[0]].patching_rect;
+        const rect = this._patcher.boxes[this.dest[0]].rect;
         const port = this.dest[1];
         const portCount = this._patcher.boxes[this.dest[0]].inlets;
         return { top: rect[1], left: ((rect[0] + 10) + (rect[2] - 20) * port / (portCount > 1 ? portCount - 1 : 1)) };

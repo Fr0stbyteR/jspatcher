@@ -6,8 +6,12 @@ export class LineUI extends React.Component {
     props: { patcher: Patcher, id: string };
     state: { selected: boolean, destPosition: { left: number, top: number }, srcPosition: { left: number, top: number } };
     refPath = React.createRef() as React.RefObject<SVGPathElement>;
-    handleChangeDestPos = (position: { left: number, top: number }) => this.setState({ destPosition: position });
-    handleChangeSrcPos = (position: { left: number, top: number }) => this.setState({ srcPosition: position });
+    handleDestPosChanged = (position: { left: number, top: number }) => {
+        if (this.state.destPosition.left !== position.left || this.state.destPosition.top !== position.top) this.setState({ destPosition: position });
+    }
+    handleSrcPosChanged = (position: { left: number, top: number }) => {
+        if (this.state.srcPosition.left !== position.left || this.state.srcPosition.top !== position.top) this.setState({ srcPosition: position });
+    }
     handleResetPos = () => {
         const line = this.props.patcher.lines[this.props.id];
         if (!line) return null;
@@ -18,16 +22,16 @@ export class LineUI extends React.Component {
         const line = this.handleResetPos();
         this.setState({ selected: false });
         if (!line) return;
-        line.on("changeDestPos", this.handleChangeDestPos);
-        line.on("changeSrcPos", this.handleChangeSrcPos);
+        line.on("destPosChanged", this.handleDestPosChanged);
+        line.on("srcPosChanged", this.handleSrcPosChanged);
         this.props.patcher.on("loaded", this.handleResetPos);
     }
     componentWillUnmount() {
         this.props.patcher.off("loaded", this.handleResetPos);
         const line = this.props.patcher.lines[this.props.id];
         if (!line) return;
-        line.off("changeDestPos", this.handleChangeDestPos);
-        line.off("changeSrcPos", this.handleChangeSrcPos);
+        line.off("destPosChanged", this.handleDestPosChanged);
+        line.off("srcPosChanged", this.handleSrcPosChanged);
     }
     handleClick = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;

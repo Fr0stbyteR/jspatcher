@@ -21,7 +21,7 @@ class FileMenu extends React.Component {
     refOpen = React.createRef() as React.RefObject<HTMLInputElement>;
     state = { pAsString: "", pName: "patcher.json" };
     handleClickNew = (e: React.MouseEvent, data: DropdownItemProps) => {
-        this.props.patcher.clear();
+        this.props.patcher.load("js", {});
     };
     handleClickOpen = () => {
         this.refOpen.current.click();
@@ -54,6 +54,7 @@ class FileMenu extends React.Component {
             reader.onerror = (e) => {
                 console.log(reader.error);
             };
+            this.refOpen.current.value = "";
         }
     }
     handleKeyDown = (e: KeyboardEvent) => {

@@ -1,8 +1,8 @@
 import { EventEmitter } from "events";
 import { Patcher } from "./Patcher";
 import { BaseObject } from "./objects/Base";
-export type TBox = { id?: string, text: string, inlets: number, outlets: number, patching_rect: [number, number, number, number], data?: { [key: string]: any } };
-type TEvents = "changeRect";
+export type TBox = { id?: string, text: string, inlets: number, outlets: number, rect: [number, number, number, number], data?: { [key: string]: any } };
+type TEvents = "rectChanged" | "textChanged";
 export class Box extends EventEmitter {
     on: (type: TEvents, listener: (...args: any[]) => void) => this;
     once: (type: TEvents, listener: (...args: any[]) => void) => this;
@@ -13,9 +13,9 @@ export class Box extends EventEmitter {
     text = "";
     inlets = 0;
     outlets = 0;
-    patching_rect: [number, number, number, number];
+    rect: [number, number, number, number];
     data = {} as { [key: string]: any };
-    _parsed: { class: string, args: any[], props: { [key: string]: any } };
+    private _parsed: { class: string, args: any[], props: { [key: string]: any } };
     private _object: BaseObject;
     private _patcher: Patcher;
     constructor(patcherIn: Patcher, boxIn: TBox) {
@@ -42,6 +42,12 @@ export class Box extends EventEmitter {
     }
     get inletLines() {
         return this._patcher.getLinesByDestID(this.id);
+    }
+    get object() {
+        return this._object;
+    }
+    get parsed() {
+        return this._parsed;
     }
     get allLines() {
         const lines = [] as string[];
@@ -92,22 +98,24 @@ export class Box extends EventEmitter {
         if (this._parsed.class === parsed.class) {
             this._parsed = parsed;
             this._object.update(parsed.args, parsed.props);
-            return this;
+        } else {
+            // else new box
+            const lines = this.allLines;
+            lines.forEach(el => this._patcher.lines[el].disable());
+            this._parsed = parsed;
+            this._object = this._patcher.createObject(parsed, this);
+            lines.forEach(el => this._patcher.lines[el].enable());
         }
-        // else new box
-        const lines = this.allLines;
-        lines.forEach(el => this._patcher.lines[el].disable());
-        this._parsed = parsed;
-        this._object = this._patcher.createObject(parsed, this);
-        lines.forEach(el => this._patcher.lines[el].enable());
+        this.emit("textChanged", this);
         return this;
     }
-    changeRect() {
-        this.emit("changeRect", this.patching_rect);
+    setRect(rect: [number, number, number, number]) {
+        this.rect = rect;
+        this.emit("rectChanged", this);
         const lineAsDest = this._patcher.getLinesByDestID(this.id);
         const lineAsSrc = this._patcher.getLinesBySrcID(this.id);
-        lineAsDest.forEach(el => el.forEach(el => this._patcher.lines[el].emit("changeDestPos")));
-        lineAsSrc.forEach(el => el.forEach(el => this._patcher.lines[el].emit("changeSrcPos")));
+        lineAsDest.forEach(el => el.forEach(el => this._patcher.lines[el].emit("destPosChanged")));
+        lineAsSrc.forEach(el => el.forEach(el => this._patcher.lines[el].emit("srcPosChanged")));
         return this;
     }
     destroy() {

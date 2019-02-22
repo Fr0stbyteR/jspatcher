@@ -1,5 +1,6 @@
 .patcher div.box-ui > div.package-ui {
     &.package-ui-comment {
+        display: flex;
         word-break: break-all;
         text-align: left;
         padding: 4px 5px;
@@ -9,6 +10,7 @@
         user-select: none;
         cursor: default;
         span {
+            width: 100%;
             &.editing {
                 pointer-events: auto;
                 cursor: text;
