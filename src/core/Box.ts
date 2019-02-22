@@ -14,8 +14,8 @@ export class Box extends EventEmitter {
     inlets = 0;
     outlets = 0;
     patching_rect: [number, number, number, number];
-    data = {};
-    private _parsed: { class: string, args: any[], props: { [key: string]: any } };
+    data = {} as { [key: string]: any };
+    _parsed: { class: string, args: any[], props: { [key: string]: any } };
     private _object: BaseObject;
     private _patcher: Patcher;
     constructor(patcherIn: Patcher, boxIn: TBox) {

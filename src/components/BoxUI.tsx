@@ -4,13 +4,23 @@ import "./BoxUI.scss";
 
 export class BoxUI extends React.Component {
     props: { patcher: Patcher, id: string };
-    state: { selected: boolean, patching_rect: [number, number, number, number] };
+    state: { selected: boolean, patching_rect: [number, number, number, number], innerUI: JSX.Element };
     refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
     handleResetPos = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
         this.setState({ patching_rect: box.patching_rect });
         return box;
+    }
+    handleBlur = (e: React.FocusEvent) => {
+        const boxDiv = e.target as HTMLDivElement;
+        const related = e.relatedTarget as HTMLDivElement;
+        if (related && boxDiv.contains(related)) return; // is one of Children
+        this.setState({ selected: false });
+    }
+    handleMouseDown = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        if (!this.state.selected) this.setState({ selected: true });
     }
     updateBoxRect = () => {
         const box = this.props.patcher.boxes[this.props.id];
@@ -21,7 +31,7 @@ export class BoxUI extends React.Component {
     }
     componentWillMount() {
         const box = this.handleResetPos();
-        this.setState({ selected: false });
+        this.setState({ selected: false, innerUI: box.ui });
         if (!box) return;
         this.props.patcher.on("loaded", this.handleResetPos);
     }
@@ -37,13 +47,12 @@ export class BoxUI extends React.Component {
         const box = this.props.patcher.boxes[this.props.id];
         const rect = this.state.patching_rect;
         const divStyle = { left: rect[0], top: rect[1], width: rect[2]/*, height: rect[3]*/ };
-        const innerUI = box.ui;
         return (
-            <div className="box box-default" id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv}>
+            <div className={"box box-default" + (this.state.selected ? " selected" : "")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onBlur={this.handleBlur} onMouseDown={this.handleMouseDown}>
                 <Inlets count={box.inlets} portProps={box.meta.inlets} lines={box.inletLines} />
                 <Outlets count={box.outlets} portProps={box.meta.outlets} lines={box.outletLines} />
                 <div className="box-ui">
-                    {innerUI}
+                    {this.state.innerUI}
                 </div>
             </div>
         );
@@ -62,7 +71,7 @@ class Inlets extends React.Component {
             inlets.push(<Inlet {...propsI} key={i} isConnected={isConnected} />);
         }
         return (
-            <div className="box-inlets">
+            <div className="box-inlets box-ports">
                 {inlets}
             </div>
         );
@@ -81,7 +90,7 @@ class Outlets extends React.Component {
             outlets.push(<Outlet {...propsI} key={i} isConnected={isConnected}/>);
         }
         return (
-            <div className="box-outlets">
+            <div className="box-outlets box-ports">
                 {outlets}
             </div>
         );

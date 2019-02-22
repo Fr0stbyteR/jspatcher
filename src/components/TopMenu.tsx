@@ -28,12 +28,15 @@ class FileMenu extends React.Component {
     };
     handleClickSaveAs = () => {
         const p = this.props.patcher.toString();
-        this.state.pAsString = "data:application/json;charset=utf-8," + encodeURIComponent(p);
-        this.state.pName = "patcher.json";
+        this.setState({
+            pAsString: "data:application/json;charset=utf-8," + encodeURIComponent(p),
+            pName: "patcher.json"
+        });
         this.refDownload.current.click();
     };
     onInput = () => {
         const file = this.refOpen.current.files[0];
+        if (!file) return;
         const ext = file.name.split(".").pop();
         const extMap = { json: "js", maxpat: "max", gendsp: "gen" } as { [key: string]: "js" | "max" | "gen" };
         if (extMap[ext]) {
@@ -55,9 +58,11 @@ class FileMenu extends React.Component {
     }
     handleKeyDown = (e: KeyboardEvent) => {
         if (e.ctrlKey && e.key === "o") this.handleClickOpen();
-        if (e.ctrlKey && e.key === "s") this.handleClickSaveAs();
+        else if (e.ctrlKey && e.key === "s") this.handleClickSaveAs();
+        else return true;
         e.stopPropagation();
         e.preventDefault();
+        return false;
     }
     componentDidMount() {
         document.addEventListener("keydown", this.handleKeyDown);

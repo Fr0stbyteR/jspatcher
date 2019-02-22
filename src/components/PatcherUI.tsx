@@ -5,7 +5,7 @@ import { LineUI } from "./LineUI";
 import { BoxUI } from "./BoxUI";
 
 export class PatcherUI extends React.Component {
-    props: { patcher: Patcher }; 
+    props: { patcher: Patcher };
     state = {
         locked: this.props.patcher._state.locked,
         presentation: this.props.patcher._state.presentation,
@@ -70,7 +70,7 @@ class Lines extends React.Component {
         this.props.patcher.off("deleteLine", this.update);
     }
     update = () => this.props.patcher._state.isLoading ? null : this.forceUpdate();
-    render() {
+    render() { // TODO: NOT GOOD TO RECALCULATE EACH TIME
         const lines = [];
         for (const lineID in this.props.patcher.lines) {
             const line = this.props.patcher.lines[lineID];

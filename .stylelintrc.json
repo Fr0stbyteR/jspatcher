@@ -2,6 +2,7 @@
   "extends": "stylelint-config-recommended",
   "rules": {
     "selector-combinator-space-after": "always",
-    "selector-combinator-space-before": "always"
+    "selector-combinator-space-before": "always",
+    "no-descending-specificity": null
   }
 }

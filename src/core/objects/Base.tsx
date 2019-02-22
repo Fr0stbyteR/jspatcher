@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import * as React from "react";
 import { Patcher } from "../Patcher";
 import { Box } from "../Box";
+import "./Default.scss";
 import "./Base.scss";
 export type TInletsMeta = {
     isHot: boolean,

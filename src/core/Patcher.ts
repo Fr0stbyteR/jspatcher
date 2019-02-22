@@ -5,16 +5,20 @@ import { Box, TBox } from "./Box";
 export type TPatcherMode = "max" | "gen" | "js";
 export type TPatcher = { lines: { [key: string]: TLine }, boxes: { [key: string]: TBox }, props?: {}, [key: string]: any };
 export type TPatcherProps = { mode: TPatcherMode, bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], grid: [number, number], boxIndexCount: number, lineIndexCount: number };
-export type TPatcherState = { isLoading: boolean, locked: boolean, presentation: boolean, showGrid: boolean, log: TPatcherLog[], history: History, lib: { [key: string]: typeof Base.BaseObject } };
+export type TPatcherState = { isLoading: boolean, locked: boolean, presentation: boolean, showGrid: boolean, log: TPatcherLog[], history: History, lib: { [key: string]: typeof Base.BaseObject }, libJS: { [key: string]: typeof Base.BaseObject }, libMax: { [key: string]: typeof Base.BaseObject }, libGen: { [key: string]: typeof Base.BaseObject } };
 export type TPatcherLog = { errorLevel: -2 | -1 | 0 | 1, title: string, message: string };
 export type TMaxPatcher = { patcher: { lines: TMaxLine[], boxes: TMaxBox[], rect: number[], bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], gridsize: [number, number], [key: string]: any } };
 export type TMaxBox = { box: { id: string, maxclass: "newobj" | string, text?: string, numinlets: number, numoutlets: number, patching_rect: [number, number, number, number], presentation_rect: [number, number, number, number], presentation: number }};
 export type TMaxLine = { patchline: { destination: [string, number], source: [string, number], order: number, midpoints: number[] }};
 export type TPackage = { [key: string]: typeof Base.BaseObject | TPackage };
 type TEvents = "loaded" | "lockedChange" | "presentationChange" | "showGridChange" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect";
+
 import Base from "./objects/Base";
+import Max from "./objects/Max";
+import Gen from "./objects/Gen";
+import UI from "./objects/UI";
 const Packages = {
-    Base
+    Base, Max, Gen, UI
 } as TPackage;
 
 export class Patcher extends EventEmitter {
@@ -32,23 +36,25 @@ export class Patcher extends EventEmitter {
         this.setMaxListeners(4096);
         this.clear();
         this.observeHistory();
-        this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, log: [], history: new History(this), lib: {} };
-        this.packageRegister(Packages);
+        this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {} };
+        this._state.libJS = this.packageRegister(Packages, {});
+        this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
+        this._state.libGen = this.packageRegister((Packages.Gen as TPackage), {});
     }
-    packageRegister(pkg: TPackage, path?: string, count?: number) {
+    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof Base.BaseObject }, path?: string) {
         for (const key in pkg) {
             const el = pkg[key];
             if (typeof el === "object") {
                 const full = path ? path + "." + key : key;
-                this.packageRegister(el, full);
+                this.packageRegister(el, libOut, full);
             } else if (typeof el === "function" && el.prototype instanceof Base.BaseObject) {
                 const full = path ? path + "." + key : key;
-                if (!this._state.lib.hasOwnProperty(key)) this._state.lib[key] = el;
-                if (this._state.lib.hasOwnProperty(full)) this.newLog(1, "Patcher", "Path duplicated, cannot register " + full);
-                else this._state.lib[full] = el;
+                if (!libOut.hasOwnProperty(key)) libOut[key] = el;
+                if (libOut.hasOwnProperty(full)) this.newLog(1, "Patcher", "Path duplicated, cannot register " + full);
+                else libOut[full] = el;
             } else continue;
         }
-        return count;
+        return libOut;
     }
     clear() {
         this.lines = {};
@@ -69,6 +75,7 @@ export class Patcher extends EventEmitter {
                 if (typeof maxColor[3] === "number") cssColor[3] = maxColor[3];
                 return cssColor;
             };
+            this._state.lib = modeIn === "max" ? this._state.libMax : this._state.libGen;
             const patcher = (patcherIn as TMaxPatcher).patcher;
             this.props.bgcolor = rgbaMax2Css(patcher.bgcolor);
             this.props.editing_bgcolor = rgbaMax2Css(patcher.editing_bgcolor);
@@ -318,7 +325,7 @@ export class Patcher extends EventEmitter {
         return pasted;
     }
     toString() {
-        return JSON.stringify(this, (k, v) => k.charAt(0) === "_" ? null : v, 4);
+        return JSON.stringify(this, (k, v) => k.charAt(0) === "_" ? undefined : v, 4);
     }
 }
 

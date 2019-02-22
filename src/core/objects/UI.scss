@@ -1,0 +1,25 @@
+.patcher div.box-ui > div.package-ui {
+    &.package-ui-comment {
+        word-break: break-all;
+        text-align: left;
+        padding: 4px 5px;
+        width: 100%;
+        line-height: 14px;
+        font-weight: normal;
+        user-select: none;
+        cursor: default;
+        span {
+            &.editing {
+                pointer-events: auto;
+                cursor: text;
+                user-select: auto;
+            }
+            &:empty::before {
+                content: "\200b";
+            }
+        }
+    }
+}
+.patcher.unlocked div.box.selected > div.box-ui > div.package-ui > span {
+    pointer-events: auto;
+}
