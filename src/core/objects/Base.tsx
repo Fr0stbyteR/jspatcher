@@ -247,12 +247,9 @@ export class DefaultUI extends BaseUI {
         }
         return toggle;
     }
-    handleBlur = (e: React.FocusEvent) => {}
-    handleClick = (e: React.MouseEvent) => e.stopPropagation();
-    handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter") return; // propagate for parent for focus on boxUI
-        e.stopPropagation();
-    }
+    handleMouseDown = (e: React.MouseEvent) => this.state.editing ? e.stopPropagation() : null;
+    handleClick = (e: React.MouseEvent) => this.state.editing ? e.stopPropagation() : null;
+    handleKeyDown = (e: React.KeyboardEvent) => e.key === "Enter" ? null : this.state.editing ? e.stopPropagation() : null; // propagate for parent for focus on boxUI
     handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
@@ -266,7 +263,7 @@ export class DefaultUI extends BaseUI {
             <div className={classArray.join(" ")}>
                 <div className="box-ui-text-container">
                     <i className={object._meta.icon ? ("small icon " + object._meta.icon) : ""} />
-                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onBlur={this.handleBlur} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
+                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
                         {object.box.text}
                     </span>
                 </div>

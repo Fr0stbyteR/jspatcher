@@ -45,7 +45,7 @@ export class PatcherUI extends React.Component {
     }
     componentWillUnmount() {
         const patcher = this.props.patcher;
-        patcher.on("loaded", this.handleLoaded);
+        patcher.off("loaded", this.handleLoaded);
         patcher.off("lockedChange", this.handleLockedChange);
         patcher.off("presentationChange", this.handlePresentationChange);
         patcher.off("showGridChange", this.handleShowGridChange);
@@ -145,13 +145,17 @@ class Boxes extends React.Component {
         }
         this.forceUpdate();
     }
+    handleMouseDown = (e: React.MouseEvent) => {
+        if (!e.shiftKey) this.props.patcher.deselectAll();
+        e.stopPropagation();
+    }
     handleClick = (e: React.MouseEvent) => {
         if (e.ctrlKey) this.props.patcher.setLock(!this.props.patcher._state.locked);
-        e.stopPropagation;
+        e.stopPropagation();
     }
     render() {
         return (
-            <div className="boxes" onClick={this.handleClick} style={this.state}>
+            <div className="boxes" onMouseDown={this.handleMouseDown} onClick={this.handleClick} style={this.state}>
                 {Object.values(this.boxes)}
             </div>
         );

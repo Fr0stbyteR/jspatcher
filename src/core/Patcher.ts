@@ -5,13 +5,13 @@ import { Box, TBox } from "./Box";
 export type TPatcherMode = "max" | "gen" | "js";
 export type TPatcher = { lines: { [key: string]: TLine }, boxes: { [key: string]: TBox }, props?: {}, [key: string]: any };
 export type TPatcherProps = { mode: TPatcherMode, bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], grid: [number, number], boxIndexCount: number, lineIndexCount: number };
-export type TPatcherState = { isLoading: boolean, locked: boolean, presentation: boolean, showGrid: boolean, log: TPatcherLog[], history: History, lib: { [key: string]: typeof Base.BaseObject }, libJS: { [key: string]: typeof Base.BaseObject }, libMax: { [key: string]: typeof Base.BaseObject }, libGen: { [key: string]: typeof Base.BaseObject } };
+export type TPatcherState = { isLoading: boolean, locked: boolean, presentation: boolean, showGrid: boolean, log: TPatcherLog[], history: History, lib: { [key: string]: typeof Base.BaseObject }, libJS: { [key: string]: typeof Base.BaseObject }, libMax: { [key: string]: typeof Base.BaseObject }, libGen: { [key: string]: typeof Base.BaseObject }, selected: string[] };
 export type TPatcherLog = { errorLevel: -2 | -1 | 0 | 1, title: string, message: string };
 export type TMaxPatcher = { patcher: { lines: TMaxLine[], boxes: TMaxBox[], rect: number[], bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], gridsize: [number, number], [key: string]: any } };
 export type TMaxBox = { box: { id: string, maxclass: "newobj" | string, text?: string, numinlets: number, numoutlets: number, patching_rect: [number, number, number, number], presentation_rect: [number, number, number, number], presentation: number }};
 export type TMaxLine = { patchline: { destination: [string, number], source: [string, number], order: number, midpoints: number[] }};
 export type TPackage = { [key: string]: typeof Base.BaseObject | TPackage };
-type TEvents = "loaded" | "lockedChange" | "presentationChange" | "showGridChange" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect";
+type TEvents = "loaded" | "lockedChange" | "presentationChange" | "showGridChange" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected";
 
 import Base from "./objects/Base";
 import Max from "./objects/Max";
@@ -34,12 +34,12 @@ export class Patcher extends EventEmitter {
     constructor() {
         super();
         this.setMaxListeners(4096);
-        this.clear();
         this.observeHistory();
-        this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {} };
+        this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {}, selected: [] };
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
         this._state.libGen = this.packageRegister((Packages.Gen as TPackage), {});
+        this.clear();
     }
     packageRegister(pkg: TPackage, libOut: { [key: string]: typeof Base.BaseObject }, path?: string) {
         for (const key in pkg) {
@@ -60,10 +60,12 @@ export class Patcher extends EventEmitter {
         this.lines = {};
         this.boxes = {};
         this.props = { mode: "js", bgcolor: [61, 65, 70, 1], editing_bgcolor: [82, 87, 94, 1], grid: [15, 15], boxIndexCount: 0, lineIndexCount: 0 };
+        this._state.selected = [];
     }
     load(modeIn: TPatcherMode, patcherIn: TPatcher | TMaxPatcher | any) {
         this._state.isLoading = true;
         this.clear();
+        this.emit("loaded", this);
         this.props.mode = modeIn;
         if (modeIn === "max" || modeIn === "gen") {
             const rgbaMax2Css = (maxColor: number[]) => {
@@ -148,6 +150,7 @@ export class Patcher extends EventEmitter {
     deleteBox(boxID: string) {
         const box = this.boxes[boxID];
         box.destroy();
+        this.deselect(boxID);
         this.emit("deleteBox", box);
         return box;
     }
@@ -166,9 +169,10 @@ export class Patcher extends EventEmitter {
         if (this.getLinesByBox(lineIn.src[0], lineIn.dest[0], lineIn.src[1], lineIn.dest[1]).length > 0) return false;
         return true;
     }
-    deleteLine(id: string) {
-        const line = this.lines[id];
+    deleteLine(lineID: string) {
+        const line = this.lines[lineID];
         line.destroy();
+        this.deselect(lineID);
         this.emit("deleteLine", line);
         return line;
     }
@@ -296,6 +300,30 @@ export class Patcher extends EventEmitter {
         this._state.showGrid = bool;
         this.emit("showGridChange", bool);
         return this;
+    }
+    selectAllBoxes() {
+        Object.keys(this.boxes).forEach(id => this.select(id));
+    }
+    select(id: string) {
+        if (this.boxes[id] || this.lines[id]) {
+            this._state.selected.push(id);
+            this.emit("selected", id);
+        }
+    }
+    deselect(id: string) {
+        const i = this._state.selected.indexOf(id);
+        if (i >= 0) {
+            this._state.selected.splice(i, 1);
+            this.emit("deselected", id);
+        }
+    }
+    deselectAll() {
+        this._state.selected.forEach(el => this.emit("deselected", el));
+        this._state.selected = [];
+    }
+    selectOnly(id: string) {
+        this.deselectAll();
+        this.select(id);
     }
     paste(clipboard: TPatcher) {
         const idMap = {} as { [key: string]: string };
