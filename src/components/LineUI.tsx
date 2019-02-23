@@ -18,31 +18,40 @@ export class LineUI extends React.Component {
         this.setState({ destPosition: line.destPosition, srcPosition: line.srcPosition });
         return line;
     }
+    handleSelected = (id: string) => id === this.props.id ? this.setState({ selected: true }) : null;
+    handleDeselected = (id: string) => id === this.props.id ? this.setState({ selected: false }) : null;
     componentWillMount() {
-        const line = this.handleResetPos();
+        this.handleResetPos();
+        this.props.patcher.deselect(this.props.id);
         this.setState({ selected: false });
+    }
+    componentDidMount() {
+        const line = this.props.patcher.lines[this.props.id];
         if (!line) return;
         line.on("destPosChanged", this.handleDestPosChanged);
         line.on("srcPosChanged", this.handleSrcPosChanged);
+        this.props.patcher.on("selected", this.handleSelected);
+        this.props.patcher.on("deselected", this.handleDeselected);
         this.props.patcher.on("loaded", this.handleResetPos);
     }
     componentWillUnmount() {
+        this.props.patcher.off("selected", this.handleSelected);
+        this.props.patcher.off("deselected", this.handleDeselected);
         this.props.patcher.off("loaded", this.handleResetPos);
         const line = this.props.patcher.lines[this.props.id];
         if (!line) return;
         line.off("destPosChanged", this.handleDestPosChanged);
         line.off("srcPosChanged", this.handleSrcPosChanged);
     }
-    handleClick = (e: React.MouseEvent) => {
+    handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
-        if (this.state.selected) return;
-        this.setState({ selected: true });
+        if (e.shiftKey) {
+            if (this.state.selected) this.props.patcher.deselect(this.props.id);
+            else this.props.patcher.select(this.props.id);
+        } else this.props.patcher.selectOnly(this.props.id);
         e.stopPropagation();
     }
-    handleBlur = (e: React.FocusEvent) => {
-        this.setState({ selected: false });
-        e.stopPropagation();
-    }
+    handleClick = (e: React.MouseEvent) => e.stopPropagation();
     render() {
         const className = "line" + (this.state.selected ? " selected" : "");
         const start = this.state.srcPosition;
@@ -68,7 +77,7 @@ export class LineUI extends React.Component {
             destHandlerStyle = { left: destHandlerPoint.x, top: destHandlerPoint.y };
         }
         return (
-            <div className={className} id={this.props.id} tabIndex={0} style={divStyle} onMouseDown={this.handleClick} onBlur={this.handleBlur}>
+            <div className={className} id={this.props.id} tabIndex={0} style={divStyle} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
                     <path d={d.join(" ")} ref={this.refPath} />
                 </svg>
