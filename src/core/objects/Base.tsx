@@ -54,7 +54,7 @@ export class BaseObject extends EventEmitter {
         };
     }
     public get _meta(): TMeta {
-        return (this.constructor as any)["_meta"];
+        return (this.constructor as any)._meta;
     }
     private readonly _patcher: Patcher;
     private readonly _box: Box;

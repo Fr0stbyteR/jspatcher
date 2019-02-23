@@ -82,6 +82,7 @@ class Lines extends React.Component {
         this.props.patcher.on("deleteLine", this.onDeleteLine);
     }
     componentWillUnmount() {
+        this.props.patcher.off("loaded", this.onLoaded);
         this.props.patcher.off("createLine", this.onCreateLine);
         this.props.patcher.off("deleteLine", this.onDeleteLine);
     }
@@ -96,7 +97,10 @@ class Lines extends React.Component {
         this.forceUpdate();
     }
     onLoaded = () => {
-        this.lines = {};
+        for (const lineID in this.lines) {
+            delete this.lines[lineID];
+        }
+        this.forceUpdate(); // Unmount All of them, please.
         for (const lineID in this.props.patcher.lines) {
             const line = this.props.patcher.lines[lineID];
             this.lines[lineID] = <LineUI {...this.props} id={line.id} key={line.id} />;
@@ -104,11 +108,6 @@ class Lines extends React.Component {
         this.forceUpdate();
     }
     render() {
-        const lines = [];
-        for (const lineID in this.props.patcher.lines) {
-            const line = this.props.patcher.lines[lineID];
-            lines.push(<LineUI {...this.props} id={line.id} key={line.id} />);
-        }
         return (
             <div className="lines" style={this.state}>
                 {Object.values(this.lines)}
@@ -127,6 +126,7 @@ class Boxes extends React.Component {
         this.props.patcher.on("deleteBox", this.onDeleteBox);
     }
     componentWillUnmount() {
+        this.props.patcher.off("loaded", this.onLoaded);
         this.props.patcher.off("createBox", this.onCreateBox);
         this.props.patcher.off("deleteBox", this.onDeleteBox);
     }
@@ -142,10 +142,10 @@ class Boxes extends React.Component {
     }
     onLoaded = () => {
         for (const boxID in this.boxes) {
-            if (!this.props.patcher.boxes[boxID]) delete this.boxes[boxID];
+            delete this.boxes[boxID];
         }
+        this.forceUpdate(); // Unmount All of them, please.
         for (const boxID in this.props.patcher.boxes) {
-            if (this.boxes[boxID]) continue;
             const box = this.props.patcher.boxes[boxID];
             this.boxes[boxID] = <BoxUI {...this.props} id={box.id} key={box.id} />;
         }

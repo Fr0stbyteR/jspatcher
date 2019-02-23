@@ -32,12 +32,10 @@ export class LineUI extends React.Component {
         line.on("srcPosChanged", this.handleSrcPosChanged);
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleDeselected);
-        this.props.patcher.on("loaded", this.handleResetPos);
     }
     componentWillUnmount() {
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleDeselected);
-        this.props.patcher.off("loaded", this.handleResetPos);
         const line = this.props.patcher.lines[this.props.id];
         if (!line) return;
         line.off("destPosChanged", this.handleDestPosChanged);

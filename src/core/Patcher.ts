@@ -66,7 +66,6 @@ export class Patcher extends EventEmitter {
     load(modeIn: TPatcherMode, patcherIn: TPatcher | TMaxPatcher | any) {
         this._state.isLoading = true;
         this.clear();
-        this.emit("loaded", this);
         if (!patcherIn) {
             this._state.isLoading = false;
             return this;
@@ -138,7 +137,7 @@ export class Patcher extends EventEmitter {
         const box = new Box(this, boxIn);
         this.boxes[box.id] = box;
         box.init();
-        this.emit("createBox", box);
+        if (!this._state.isLoading) this.emit("createBox", box);
         return box;
     }
     createObject(parsed: { class: string, args: any[], props: { [key: string]: any } }, boxIn: Box) {
@@ -181,7 +180,7 @@ export class Patcher extends EventEmitter {
         const line = new Line(this, lineIn);
         this.lines[line.id] = line;
         line.enable();
-        this.emit("createLine", line);
+        if (!this._state.isLoading) this.emit("createLine", line);
         return line;
     }
     canCreateLine(lineIn: TLine) {

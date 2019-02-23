@@ -34,6 +34,7 @@ export class Box extends EventEmitter {
     }
     // main function when receive data from a inlet (base 0)
     fn(data: any, inlet: number) {
+        this._object.fn(data, inlet);
         return this;
     }
     get ui() {

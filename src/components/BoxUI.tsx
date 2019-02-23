@@ -23,15 +23,6 @@ export class BoxUI extends React.Component {
         this.setState({ innerUI, rect: box.rect });
         return box;
     }
-    handleLoaded = () => {
-        const box = this.props.patcher.boxes[this.props.id];
-        if (!box) return null;
-        if (!box.listeners("textChanged").includes(this.handleTextChanged)) box.on("textChanged", this.handleTextChanged);
-        const innerUI = <box.ui object={box.object} ref={this.refUI} />;
-        this.props.patcher.deselect(this.props.id);
-        this.setState({ innerUI, selected: false, rect: box.rect });
-        return box;
-    }
     handleBlur = (e: React.FocusEvent) => this.tryToggleEdit(false);
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
@@ -74,7 +65,13 @@ export class BoxUI extends React.Component {
     handleSelected = (id: string) => id === this.props.id ? this.setState({ selected: true }) : null;
     handleDeselected = (id: string) => id === this.props.id ? this.setState({ selected: false }) : null;
     componentWillMount() {
-        this.handleLoaded();
+        const box = this.props.patcher.boxes[this.props.id];
+        if (!box) return null;
+        if (!box.listeners("textChanged").includes(this.handleTextChanged)) box.on("textChanged", this.handleTextChanged);
+        const innerUI = <box.ui object={box.object} ref={this.refUI} />;
+        this.props.patcher.deselect(this.props.id);
+        this.setState({ innerUI, selected: false, rect: box.rect });
+        return box;
     }
     componentDidMount() {
         const box = this.props.patcher.boxes[this.props.id];
@@ -82,13 +79,11 @@ export class BoxUI extends React.Component {
         box.on("textChanged", this.handleTextChanged);
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleDeselected);
-        this.props.patcher.on("loaded", this.handleLoaded);
         this.inspectRectChange();
     }
     componentWillUnmount() {
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleDeselected);
-        this.props.patcher.off("loaded", this.handleLoaded);
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return;
         box.off("textChanged", this.handleTextChanged);

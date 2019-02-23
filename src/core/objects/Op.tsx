@@ -53,6 +53,7 @@ class JSBinaryOp extends BaseObject {
     static get _meta() {
         return { ...BaseObject._meta,
             package: "Op",
+            icon: "",
             description: "Binary Operation",
             inlets: [{
                 isHot: true,
@@ -118,6 +119,7 @@ class JSTernaryOp extends BaseObject {
     static get _meta() {
         return { ...BaseObject._meta,
             package: "Op",
+            icon: "",
             description: "Ternary Operation",
             inlets: [{
                 isHot: true,
@@ -188,158 +190,75 @@ class JSTernaryOp extends BaseObject {
         return this;
     }
 }
+const functions = {
+    Add: (a: any, b: any) => a + b,
+    Sub: (a: any, b: any) => a - b,
+    Mul: (a: any, b: any) => a * b,
+    Div: (a: any, b: any) => a / b,
+    Exp: (a: any, b: any) => a ** b,
+    Mod: (a: any, b: any) => a % b,
+    // tslint:disable-next-line: no-parameter-reassignment
+    Inc: (a: any) => ++a,
+    // tslint:disable-next-line: no-parameter-reassignment
+    Dec: (a: any) => --a,
+    // tslint:disable-next-line: triple-equals
+    Eql: (a: any, b: any) => a == b,
+    EqlS: (a: any, b: any) => a === b,
+    // tslint:disable-next-line: triple-equals
+    NEql: (a: any, b: any) => a != b,
+    NEqlS: (a: any, b: any) => a !== b,
+    Gtr: (a: any, b: any) => a > b,
+    Geq: (a: any, b: any) => a >= b,
+    Lss: (a: any, b: any) => a < b,
+    Leq: (a: any, b: any) => a <= b,
+    And: (a: any, b: any) => a && b,
+    Or: (a: any, b: any) => a || b,
+    Not: (a: any) => !a,
+    Typeof: (a: any) => typeof a,
+    Instanceof: (a: any, b: any) => a instanceof b
+} as { [key: string]: (...args: any[]) => any };
 
-class Add extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a + b;
-    }
-}
-
-class Sub extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a - b;
-    }
-}
-
-class Mul extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a * b;
-    }
-}
-
-class Div extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a / b;
-    }
-}
-
-class Exp extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a ** b;
-    }
-}
-
-class Mod extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a % b;
-    }
-}
-
-class Inc extends JSUnaryOp {
-    execute(a: any) {
-        // tslint:disable-next-line: no-parameter-reassignment
-        return ++a;
-    }
-}
-
-class Dec extends JSUnaryOp {
-    execute(a: any) {
-        // tslint:disable-next-line: no-parameter-reassignment
-        return --a;
-    }
-}
-
-class Eql extends JSBinaryOp {
-    execute(a: any, b: any) {
-        // tslint:disable-next-line: triple-equals
-        return a == b;
-    }
-}
-
-class EqlS extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a === b;
-    }
-}
-
-class NEql extends JSBinaryOp {
-    execute(a: any, b: any) {
-        // tslint:disable-next-line: triple-equals
-        return a != b;
-    }
-}
-
-class NEqlS extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a !== b;
-    }
-}
-
-class Gtr extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a > b;
-    }
-}
-
-class Geq extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a >= b;
-    }
-}
-
-class Lss extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a < b;
-    }
-}
-
-class Leq extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a <= b;
-    }
-}
-
-class And extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a && b;
-    }
-}
-
-class Or extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a || b;
-    }
-}
-
-class Not extends JSUnaryOp {
-    execute(a: any) {
-        return !a;
-    }
-}
-
-class Typeof extends JSUnaryOp {
-    execute(a: any) {
-        return typeof a;
-    }
-}
-
-class Instanceof extends JSBinaryOp {
-    execute(a: any, b: any) {
-        return a instanceof b;
+const Ops = {} as { [key: string]: typeof JSUnaryOp | typeof JSBinaryOp };
+for (const key in functions) {
+    const f = functions[key];
+    if (f.length === 1) {
+        Ops[key] = class extends JSUnaryOp {
+            static get _meta() {
+                return { ...JSUnaryOp._meta, name: key };
+            }
+            execute = f;
+        };
+    } else if (f.length === 2) {
+        Ops[key] = class extends JSBinaryOp {
+            static get _meta() {
+                return { ...JSBinaryOp._meta, name: key };
+            }
+            execute = f;
+        };
     }
 }
 
 export default {
-    Typeof,
-    Instanceof,
-    "+": Add,
-    "-": Sub,
-    "*": Mul,
-    "/": Div,
-    "**": Exp,
-    "%": Mod,
-    "++": Inc,
-    "--": Dec,
-    "==": Eql,
-    "===": EqlS,
-    "!=": NEql,
-    "!==": NEqlS,
-    ">": Gtr,
-    ">=": Geq,
-    "<": Lss,
-    "<=": Leq,
-    "&&": And,
-    "||": Or,
-    "!": Not,
+    Typeof: Ops.Typeof,
+    Instanceof: Ops.Instanceof,
+    "+": Ops.Add,
+    "-": Ops.Sub,
+    "*": Ops.Mul,
+    "/": Ops.Div,
+    "**": Ops.Exp,
+    "%": Ops.Mod,
+    "++": Ops.Inc,
+    "--": Ops.Dec,
+    "==": Ops.Eql,
+    "===": Ops.EqlS,
+    "!=": Ops.NEql,
+    "!==": Ops.NEqlS,
+    ">": Ops.Gtr,
+    ">=": Ops.Geq,
+    "<": Ops.Lss,
+    "<=": Ops.Leq,
+    "&&": Ops.And,
+    "||": Ops.Or,
+    "!": Ops.Not,
     "?": JSTernaryOp
 };
