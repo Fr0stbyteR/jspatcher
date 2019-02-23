@@ -9,6 +9,9 @@ export class BoxUI extends React.Component {
     refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
     refUI = React.createRef() as React.RefObject<BaseUI>;
     editingOnUnlock = false;
+    handlingToggleEditOnClick = false;
+    dragging = false;
+    dragged = false;
     handleResetPos = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
@@ -23,20 +26,61 @@ export class BoxUI extends React.Component {
         this.setState({ innerUI, rect: box.rect });
         return box;
     }
-    handleBlur = (e: React.FocusEvent) => this.tryToggleEdit(false);
+    handleRectChanged = () => {
+        const box = this.props.patcher.boxes[this.props.id];
+        if (!box) return null;
+        this.setState({ rect: box.rect });
+        return box;
+    }
+    handleBlur = (e: React.FocusEvent) => {
+        this.handlingToggleEditOnClick = false;
+        this.tryToggleEdit(false);
+    }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
+        // Handle Draggable
+        const handleDraggable = () => {
+            this.dragged = false;
+            this.dragging = true;
+            const handleMouseMove = (e: MouseEvent) => {
+                if (this.dragging && !this.editingOnUnlock && (e.movementX || e.movementY)) {
+                    if (!this.dragged) this.dragged = true;
+                    this.props.patcher.moveSelectedBox(e.movementX, e.movementY);
+                }
+                e.stopPropagation();
+            }
+            const handleMouseUp = (e: MouseEvent) => {
+                this.dragging = false;
+                document.removeEventListener("mousemove", handleMouseMove);
+                document.removeEventListener("mouseup", handleMouseUp);
+                e.stopPropagation();
+            }
+            document.addEventListener("mousemove", handleMouseMove);
+            document.addEventListener("mouseup", handleMouseUp);
+        };
+        // Handle select
         if (e.shiftKey) {
-            if (this.state.selected) this.props.patcher.deselect(this.props.id);
-            else this.props.patcher.select(this.props.id);
+            if (this.state.selected) {
+                this.props.patcher.deselect(this.props.id);
+            } else {
+                this.props.patcher.select(this.props.id);
+                handleDraggable();
+            }
         } else {
             if (this.state.selected) {
-                if (!this.editingOnUnlock) this.tryToggleEdit(true);
-            } else this.props.patcher.selectOnly(this.props.id);
+                if (!this.editingOnUnlock) this.handlingToggleEditOnClick = true; // Handle edit
+                handleDraggable();
+            } else {
+                this.props.patcher.selectOnly(this.props.id);
+                handleDraggable();
+            }
         }
         e.stopPropagation();
     }
-    handleClick = (e: React.MouseEvent) => e.stopPropagation();
+    handleClick = (e: React.MouseEvent) => {
+        if (this.handlingToggleEditOnClick && this.state.selected && !this.editingOnUnlock && !this.dragged) this.tryToggleEdit(true);
+        e.stopPropagation();
+    }
     handleKeyDown = (e: React.KeyboardEvent) => {
         if (this.props.patcher._state.locked) return;
         if (e.key === "Enter") {
@@ -67,7 +111,6 @@ export class BoxUI extends React.Component {
     componentWillMount() {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
-        if (!box.listeners("textChanged").includes(this.handleTextChanged)) box.on("textChanged", this.handleTextChanged);
         const innerUI = <box.ui object={box.object} ref={this.refUI} />;
         this.props.patcher.deselect(this.props.id);
         this.setState({ innerUI, selected: false, rect: box.rect });
@@ -77,6 +120,7 @@ export class BoxUI extends React.Component {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return;
         box.on("textChanged", this.handleTextChanged);
+        box.on("rectChanged", this.handleRectChanged);
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleDeselected);
         this.inspectRectChange();
@@ -87,6 +131,7 @@ export class BoxUI extends React.Component {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return;
         box.off("textChanged", this.handleTextChanged);
+        box.off("rectChanged", this.handleRectChanged);
     }
     render() {
         const box = this.props.patcher.boxes[this.props.id];

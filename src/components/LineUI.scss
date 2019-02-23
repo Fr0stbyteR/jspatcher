@@ -51,7 +51,7 @@
                     stroke-width: 3;
                 }
             }
-            > div.line-handler {
+            &:focus-within > div.line-handler {
                 visibility: visible;
             }
             &.dragging > div.line-handler {

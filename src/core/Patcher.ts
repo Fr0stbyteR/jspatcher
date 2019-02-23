@@ -345,6 +345,33 @@ export class Patcher extends EventEmitter {
         this.deselectAll();
         this.select(id);
     }
+    moveBox(boxID: string, deltaX: number, deltaY: number) {
+        const box = this.boxes[boxID];
+        if (!box) return;
+        box.rect[0] += deltaX;
+        box.rect[1] += deltaY;
+        box.setRect(box.rect);
+    }
+    moveSelectedBox(deltaX: number, deltaY: number) {
+        const linesConcerned = {} as { [key: string]: boolean };
+        this._state.selected.forEach((id) => {
+            if (!id.includes("box")) return;
+            const box = this.boxes[id];
+            if (!box) return;
+            box.rect[0] += deltaX;
+            box.rect[1] += deltaY;
+            const lineAsDest = this.getLinesByDestID(id);
+            const lineAsSrc = this.getLinesBySrcID(id);
+            lineAsDest.forEach(el => el.forEach(el => linesConcerned[el] = true));
+            lineAsSrc.forEach(el => el.forEach(el => linesConcerned[el] = true));
+            box.emit("rectChanged", box);
+        });
+        Object.keys(linesConcerned).forEach((lineID) => {
+            const line = this.lines[lineID];
+            if (!line) return;
+            line.emit("posChanged", line);
+        })
+    }
     paste(clipboard: TPatcher) {
         const idMap = {} as { [key: string]: string };
         const pasted = { boxes: [] as TBox[], lines: [] as TLine[] };

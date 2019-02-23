@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { Patcher } from "./Patcher";
 export type TLine = { id?: string, src: [string, number], dest: [string, number], disabled?: boolean};
-type TEvents = "passData" | "destPosChanged" | "srcPosChanged";
+type TEvents = "passData" | "destPosChanged" | "srcPosChanged" | "posChanged";
 export class Line extends EventEmitter {
     on: (type: TEvents, listener: (...args: any[]) => void) => this;
     once: (type: TEvents, listener: (...args: any[]) => void) => this;
