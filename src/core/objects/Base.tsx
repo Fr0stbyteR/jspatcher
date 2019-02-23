@@ -7,18 +7,18 @@ import "./Base.scss";
 export type TInletsMeta = {
     isHot: boolean,
     type: "anything" | "signal" | "object" | "number" | "boolean" | string,
-    varLength: boolean,
+    varLength?: boolean,
     description: string
 }[];
 export type TOutletMeta = {
     type: "anything" | "signal" | "object" | "number" | "boolean" | string,
-    varLength: boolean,
+    varLength?: boolean,
     description: string
 }[];
 export type TArgsMeta = {
     type: "anything" | "signal" | "object" | "number" | "boolean" | string,
     optional: boolean,
-    varLength: boolean,
+    varLength?: boolean,
     description: string
 }[];
 export type TPropsMeta = {
@@ -39,7 +39,7 @@ export type TMeta = {
     props: TPropsMeta
 };
 export class BaseObject extends EventEmitter {
-    static get _meta() {
+    static get _meta(): TMeta {
         return {
             package: "Base", // div will have class "package-name" "package-name-objectname"
             name: this.name,
@@ -51,14 +51,14 @@ export class BaseObject extends EventEmitter {
             outlets: [],
             args: [],
             props: []
-        } as TMeta;
+        };
     }
-    get _meta() {
+    public get _meta(): TMeta {
         return (this.constructor as any)["_meta"];
     }
-    private _patcher: Patcher;
-    private _box: Box;
-    private _mem: object;
+    private readonly _patcher: Patcher;
+    private readonly _box: Box;
+    protected _mem: { [key: string]: any };
     constructor(box: Box, patcher: Patcher) {
         super();
         // patcher object outside, use _ for pre`vent recursive stringify
@@ -159,8 +159,8 @@ export class BaseObject extends EventEmitter {
     }
 }
 class EmptyObject extends BaseObject {
-    static get _meta(): TMeta {
-        return Object.assign(BaseObject._meta, {
+    static get _meta() {
+        return { ...BaseObject._meta,
             name: this.name,
             author: "Fr0stbyteR",
             version: "1.0.0",
@@ -175,7 +175,7 @@ class EmptyObject extends BaseObject {
                 type: "anything",
                 description: "output same thing"
             }]
-        });
+        };
     }
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
@@ -188,21 +188,23 @@ class EmptyObject extends BaseObject {
     }
 }
 class InvalidObject extends BaseObject {
-    static get _meta(): TMeta {
-        return Object.assign(BaseObject._meta, {
+    static get _meta() {
+        return { ...BaseObject._meta,
             name: this.name,
-            icon : "",
-            description : "invalid object",
-            inlets : [{
-                isHot : false,
-                type : "anything",
-                description : "nothing"
+            icon: "",
+            description: "invalid object",
+            inlets: [{
+                isHot: false,
+                type: "anything",
+                varLength: true,
+                description: "nothing"
             }],
-            outlets : [{
-                type : "anything",
-                description : "nothing"
+            outlets: [{
+                type: "anything",
+                varLength: true,
+                description: "nothing"
             }]
-        });
+        };
     }
 }
 export class BaseUI extends React.Component {
@@ -269,6 +271,11 @@ export class DefaultUI extends BaseUI {
                 </div>
             </div>
         );
+    }
+}
+export class Bang {
+    toString() {
+        return "bang";
     }
 }
 export default { BaseObject, EmptyObject, InvalidObject };

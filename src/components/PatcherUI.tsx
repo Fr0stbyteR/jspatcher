@@ -19,7 +19,13 @@ export class PatcherUI extends React.Component {
     refBoxes = React.createRef() as React.RefObject<Boxes>;
     refLines = React.createRef() as React.RefObject<Lines>;
     size = { width: 0, height: 0 };
-    handleLoaded = () => this.setState({ bgcolor: this.props.patcher.props.bgcolor, editing_bgcolor: this.props.patcher.props.editing_bgcolor });
+    handleLoaded = () => {
+        this.setState({ bgcolor: this.props.patcher.props.bgcolor, editing_bgcolor: this.props.patcher.props.editing_bgcolor });
+        const grid = this.refGrid.current;
+        const boxes = this.refBoxes.current;
+        const lines = this.refLines.current;
+        [grid, boxes, lines].forEach(el => el.setState({ width: "unset", height: "unset" }));
+    }
     handleLockedChange = (e: boolean) => this.setState({ locked: e });
     handlePresentationChange = (e: boolean) => this.setState({ presentation: e });
     handleShowGridChange = (e: boolean) => this.setState({ showGrid: e });

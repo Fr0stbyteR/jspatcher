@@ -12,10 +12,13 @@ export class Line extends EventEmitter {
     protected src: [string, number];
     protected dest: [string, number];
     protected disabled = false;
-    private _patcher: Patcher;
+    private readonly _patcher: Patcher;
     constructor(patcherIn: Patcher, lineIn: TLine) {
         super();
-        Object.assign(this, lineIn);
+        this.id = lineIn.id;
+        this.src = lineIn.src;
+        this.dest = lineIn.dest;
+        this.disabled = lineIn.disabled || false;
         this._patcher = patcherIn;
     }
     setSrc(src: [string, number]) {

@@ -20,7 +20,12 @@ export class Box extends EventEmitter {
     private _patcher: Patcher;
     constructor(patcherIn: Patcher, boxIn: TBox) {
         super();
-        Object.assign(this, boxIn);
+        this.id = boxIn.id;
+        this.text = boxIn.text;
+        this.inlets = boxIn.inlets;
+        this.outlets = boxIn.outlets;
+        this.rect = boxIn.rect || (boxIn as any).patching_rect;
+        this.data = boxIn.data || ((boxIn as any).prevData ? (boxIn as any).prevData.storage : {});
         this._patcher = patcherIn;
     }
     init() {

@@ -17,8 +17,9 @@ import Base from "./objects/Base";
 import Max from "./objects/Max";
 import Gen from "./objects/Gen";
 import UI from "./objects/UI";
+import Op from "./objects/Op";
 const Packages = {
-    Base, Max, Gen, UI
+    Base, UI, Op
 } as TPackage;
 
 export class Patcher extends EventEmitter {
@@ -38,7 +39,7 @@ export class Patcher extends EventEmitter {
         this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {}, selected: [] };
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
-        this._state.libGen = this.packageRegister((Packages.Gen as TPackage), {});
+        this._state.libGen = this.packageRegister((Gen as TPackage), {});
         this.clear();
     }
     packageRegister(pkg: TPackage, libOut: { [key: string]: typeof Base.BaseObject }, path?: string) {
@@ -66,6 +67,10 @@ export class Patcher extends EventEmitter {
         this._state.isLoading = true;
         this.clear();
         this.emit("loaded", this);
+        if (!patcherIn) {
+            this._state.isLoading = false;
+            return this;
+        }
         this.props.mode = modeIn;
         if (modeIn === "max" || modeIn === "gen") {
             const rgbaMax2Css = (maxColor: number[]) => {
@@ -79,6 +84,10 @@ export class Patcher extends EventEmitter {
             };
             this._state.lib = modeIn === "max" ? this._state.libMax : this._state.libGen;
             const patcher = (patcherIn as TMaxPatcher).patcher;
+            if (!patcher) {
+                this._state.isLoading = false;
+                return this;
+            }
             this.props.bgcolor = rgbaMax2Css(patcher.bgcolor);
             this.props.editing_bgcolor = rgbaMax2Css(patcher.editing_bgcolor);
             const maxBoxes = patcher.boxes;
@@ -88,24 +97,36 @@ export class Patcher extends EventEmitter {
                 const numID = parseInt(maxBox.id.match(/\d+/)[0]);
                 if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
                 const id = "box-" + numID;
-                const box = this.createBox({
+                this.createBox({
                     id,
                     inlets: maxBox.numinlets,
                     outlets: maxBox.numoutlets,
                     rect: maxBox.patching_rect,
                     text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
                 });
-                this.boxes[id] = box;
             }
             for (let i = 0; i < maxLines.length; i++) {
                 const lineArgs = maxLines[i].patchline;
                 const id = "line-" + ++this.props.lineIndexCount;
-                const line = this.createLine({
+                this.createLine({
                     id,
                     src: [lineArgs.source[0].replace(/obj/, "box"), lineArgs.source[1]],
                     dest: [lineArgs.destination[0].replace(/obj/, "box"), lineArgs.destination[1]]
                 });
-                this.lines[id] = line; // assign after creation, else key can be created first with null value.
+            }
+        } else if (modeIn === "js") {
+            this._state.lib = this._state.libJS;
+            const patcher = patcherIn;
+            if (patcher.props) this.props = { ...this.props, ...patcher.props };
+            if (patcher.boxes) { // Boxes & data
+                for (const id in patcher.boxes) {
+                    this.createBox(patcher.boxes[id]);
+                }
+            }
+            if (patcher.lines) { // Lines
+                for (const id in patcher.lines) {
+                    this.createLine(patcher.lines[id]);
+                }
             }
         }
         this._state.isLoading = false;
