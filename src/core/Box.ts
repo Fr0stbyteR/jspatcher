@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { Patcher } from "./Patcher";
 import { BaseObject } from "./objects/Base";
 export type TBox = { id?: string, text: string, inlets: number, outlets: number, rect: [number, number, number, number], data?: { [key: string]: any } };
-type TEvents = "rectChanged" | "textChanged";
+type TEvents = "rectChanged" | "textChanged" | "highlightPort";
 export class Box extends EventEmitter {
     on: (type: TEvents, listener: (...args: any[]) => void) => this;
     once: (type: TEvents, listener: (...args: any[]) => void) => this;
@@ -54,6 +54,26 @@ export class Box extends EventEmitter {
     }
     get parsed() {
         return this._parsed;
+    }
+    getInletPosition(port: number) {
+        return { top: this.rect[1], left: ((this.rect[0] + 10) + (this.rect[2] - 20) * port / (this.inlets > 1 ? this.inlets - 1 : 1)) };
+    }
+    getOutletPosition(port: number) {
+        return { top: this.rect[1] + this.rect[3], left: ((this.rect[0] + 10) + (this.rect[2] - 20) * port / (this.outlets > 1 ? this.outlets - 1 : 1)) };
+    }
+    get inletsPositions() {
+        const positions = [];
+        for (let i = 0; i < this.inlets; i++) {
+            positions[i] = this.getInletPosition(i);
+        }
+        return positions;
+    }
+    get outletsPositions() {
+        const positions = [];
+        for (let i = 0; i < this.outlets; i++) {
+            positions[i] = this.getOutletPosition(i);
+        }
+        return positions;
     }
     get allLines() {
         const lines = [] as string[];
@@ -123,6 +143,9 @@ export class Box extends EventEmitter {
         lineAsDest.forEach(el => el.forEach(el => this._patcher.lines[el].emit("destPosChanged")));
         lineAsSrc.forEach(el => el.forEach(el => this._patcher.lines[el].emit("srcPosChanged")));
         return this;
+    }
+    highlightPort(isSrc: boolean, i: number, highlight: boolean) {
+        this.emit("highlightPort", isSrc, i, highlight);
     }
     destroy() {
         const lineAsDest = this.inletLines;

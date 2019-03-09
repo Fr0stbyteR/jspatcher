@@ -5,7 +5,7 @@ import { Box, TBox } from "./Box";
 export type TPatcherMode = "max" | "gen" | "js";
 export type TPatcher = { lines: { [key: string]: TLine }, boxes: { [key: string]: TBox }, props?: {}, [key: string]: any };
 export type TPatcherProps = { mode: TPatcherMode, bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], grid: [number, number], boxIndexCount: number, lineIndexCount: number };
-export type TPatcherState = { isLoading: boolean, locked: boolean, presentation: boolean, showGrid: boolean, log: TPatcherLog[], history: History, lib: { [key: string]: typeof Base.BaseObject }, libJS: { [key: string]: typeof Base.BaseObject }, libMax: { [key: string]: typeof Base.BaseObject }, libGen: { [key: string]: typeof Base.BaseObject }, selected: string[] };
+export type TPatcherState = { isLoading: boolean, locked: boolean, presentation: boolean, showGrid: boolean, snapToGrid: boolean, log: TPatcherLog[], history: History, lib: { [key: string]: typeof Base.BaseObject }, libJS: { [key: string]: typeof Base.BaseObject }, libMax: { [key: string]: typeof Base.BaseObject }, libGen: { [key: string]: typeof Base.BaseObject }, selected: string[] };
 export type TPatcherLog = { errorLevel: -2 | -1 | 0 | 1, title: string, message: string };
 export type TMaxPatcher = { patcher: { lines: TMaxLine[], boxes: TMaxBox[], rect: number[], bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], gridsize: [number, number], [key: string]: any } };
 export type TMaxBox = { box: { id: string, maxclass: "newobj" | string, text?: string, numinlets: number, numoutlets: number, patching_rect: [number, number, number, number], presentation_rect: [number, number, number, number], presentation: number }};
@@ -36,7 +36,7 @@ export class Patcher extends EventEmitter {
         super();
         this.setMaxListeners(4096);
         this.observeHistory();
-        this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {}, selected: [] };
+        this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, snapToGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {}, selected: [] };
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
         this._state.libGen = this.packageRegister((Gen as TPackage), {});
@@ -352,14 +352,18 @@ export class Patcher extends EventEmitter {
         box.rect[1] += deltaY;
         box.setRect(box.rect);
     }
-    moveSelectedBox(deltaX: number, deltaY: number) {
+    moveSelectedBox(boxID: string, dragOffset: { x: number, y: number }) {
         const linesConcerned = {} as { [key: string]: boolean };
+        const deltaX = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - this.boxes[boxID].rect[0] : dragOffset.x;
+        const deltaY = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - this.boxes[boxID].rect[1] : dragOffset.y;
+        const delta = { x: deltaX, y: deltaY };
+        if (!delta.x && !delta.y) return dragOffset;
         this._state.selected.forEach((id) => {
             if (!id.includes("box")) return;
             const box = this.boxes[id];
             if (!box) return;
-            box.rect[0] += deltaX;
-            box.rect[1] += deltaY;
+            box.rect[0] += delta.x;
+            box.rect[1] += delta.y;
             const lineAsDest = this.getLinesByDestID(id);
             const lineAsSrc = this.getLinesBySrcID(id);
             lineAsDest.forEach(el => el.forEach(el => linesConcerned[el] = true));
@@ -370,7 +374,45 @@ export class Patcher extends EventEmitter {
             const line = this.lines[lineID];
             if (!line) return;
             line.emit("posChanged", line);
-        })
+        });
+        return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
+    }
+    findNearestPort(lineID: string, findSrc: boolean, left: number, top: number) {
+        const current = findSrc ? this.lines[lineID].getSrc() : this.lines[lineID].getDest();
+        const currentPos = findSrc ? this.lines[lineID].srcPosition : this.lines[lineID].destPosition;
+        const currentDistance = ((currentPos.left - left) ** 2 + (currentPos.top - top) ** 2) ** 0.5;
+        let nearest = [null, null] as [string, number];
+        let minDistance = 100;
+        if (currentDistance < 100) {
+            nearest = current;
+            minDistance = currentDistance;
+        }
+        for (const id in this.boxes) {
+            const box = this.boxes[id];
+            box[findSrc ? "outletsPositions" : "inletsPositions"].forEach((pos, i) => {
+                const distance = ((pos.left - left) ** 2 + (pos.top - top) ** 2) ** 0.5;
+                if (distance < minDistance) {
+                    const canCreate = this.canCreateLine({ src: findSrc ? [id, i] : this.lines[lineID].getSrc(), dest: findSrc ? this.lines[lineID].getDest() : [id, i] });
+                    if (!canCreate) return;
+                    nearest = [id, i];
+                    minDistance = distance;
+                }
+            });
+        }
+        return nearest;
+    }
+    highlightNearestPort(lineID: string, findSrc: boolean, dragOffset: { x: number, y: number }) {
+        const origPosition = this.lines[lineID][findSrc ? "srcPosition" : "destPosition"];
+        const left = origPosition.left + dragOffset.x;
+        const top = origPosition.top + dragOffset.y;
+        const nearest = this.findNearestPort(lineID, findSrc, left, top);
+        for (const id in this.boxes) {
+            const box = this.boxes[id];
+            for (let i = 0; i < box[findSrc ? "outlets" : "inlets"]; i++) {
+                box.highlightPort(findSrc, i, nearest[0] === id && nearest[1] === i);
+            }
+        }
+        return nearest;
     }
     paste(clipboard: TPatcher) {
         const idMap = {} as { [key: string]: string };

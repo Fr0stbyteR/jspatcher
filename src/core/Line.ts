@@ -31,14 +31,21 @@ export class Line extends EventEmitter {
         this.emit("srcPosChanged", this.srcPosition);
         return this;
     }
+    getSrc() {
+        return this.src;
+    }
     setDest(dest: [string, number]) {
         const destID = dest[0];
         const destInlet = dest[1];
+        if (destID === this.dest[0] && destInlet === this.dest[1]) return this;
         this.disable();
         this.dest = [destID, destInlet];
         this.enable();
         this.emit("destPosChanged", this.destPosition);
         return this;
+    }
+    getDest() {
+        return this.dest;
     }
     disable(bool?: boolean): Line {
         // tslint:disable-next-line: no-boolean-literal-compare
@@ -79,16 +86,10 @@ export class Line extends EventEmitter {
         return destPosition.left * 65536 + destPosition.top;
     }
     get srcPosition() {
-        const rect = this._patcher.boxes[this.src[0]].rect;
-        const port = this.src[1];
-        const portCount = this._patcher.boxes[this.src[0]].outlets;
-        return { top: rect[1] + rect[3], left: ((rect[0] + 10) + (rect[2] - 20) * port / (portCount > 1 ? portCount - 1 : 1)) };
+        return this._patcher.boxes[this.src[0]].getOutletPosition(this.src[1]);
     }
     get destPosition() {
-        const rect = this._patcher.boxes[this.dest[0]].rect;
-        const port = this.dest[1];
-        const portCount = this._patcher.boxes[this.dest[0]].inlets;
-        return { top: rect[1], left: ((rect[0] + 10) + (rect[2] - 20) * port / (portCount > 1 ? portCount - 1 : 1)) };
+        return this._patcher.boxes[this.dest[0]].getInletPosition(this.dest[1]);
     }
     get srcID() {
         return this.src[0];
