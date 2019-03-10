@@ -3,7 +3,7 @@ import { Patcher } from "../core/patcher";
 import { Box } from "../core/Box";
 import { Line } from "../core/Line";
 import "./PatcherUI.scss";
-import { LineUI } from "./LineUI";
+import { LineUI, TempLineUI } from "./LineUI";
 import { BoxUI } from "./BoxUI";
 
 export class PatcherUI extends React.Component {
@@ -111,6 +111,7 @@ class Lines extends React.Component {
         return (
             <div className="lines" style={this.state}>
                 {Object.values(this.lines)}
+                <TempLineUI {...this.props} />
             </div>
         );
     }

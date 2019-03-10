@@ -11,7 +11,7 @@ export type TMaxPatcher = { patcher: { lines: TMaxLine[], boxes: TMaxBox[], rect
 export type TMaxBox = { box: { id: string, maxclass: "newobj" | string, text?: string, numinlets: number, numoutlets: number, patching_rect: [number, number, number, number], presentation_rect: [number, number, number, number], presentation: number }};
 export type TMaxLine = { patchline: { destination: [string, number], source: [string, number], order: number, midpoints: number[] }};
 export type TPackage = { [key: string]: typeof Base.BaseObject | TPackage };
-type TEvents = "loaded" | "lockedChange" | "presentationChange" | "showGridChange" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected";
+type TEvents = "loaded" | "lockedChange" | "presentationChange" | "showGridChange" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected" | "tempLine";
 
 import Base from "./objects/Base";
 import Max from "./objects/Max";
@@ -120,11 +120,15 @@ export class Patcher extends EventEmitter {
             if (patcher.boxes) { // Boxes & data
                 for (const id in patcher.boxes) {
                     this.createBox(patcher.boxes[id]);
+                    const numID = parseInt(id.match(/\d+/)[0]);
+                    if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
                 }
             }
             if (patcher.lines) { // Lines
                 for (const id in patcher.lines) {
                     this.createLine(patcher.lines[id]);
+                    const numID = parseInt(id.match(/\d+/)[0]);
+                    if (numID > this.props.lineIndexCount) this.props.lineIndexCount = numID;
                 }
             }
         }
@@ -377,22 +381,23 @@ export class Patcher extends EventEmitter {
         });
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
-    findNearestPort(lineID: string, findSrc: boolean, left: number, top: number) {
-        const current = findSrc ? this.lines[lineID].getSrc() : this.lines[lineID].getDest();
-        const currentPos = findSrc ? this.lines[lineID].srcPosition : this.lines[lineID].destPosition;
-        const currentDistance = ((currentPos.left - left) ** 2 + (currentPos.top - top) ** 2) ** 0.5;
+    findNearestPort(findSrc: boolean, left: number, top: number, from: [string, number], to?: [string, number]) {
         let nearest = [null, null] as [string, number];
         let minDistance = 100;
-        if (currentDistance < 100) {
-            nearest = current;
-            minDistance = currentDistance;
+        if (to) {
+            const currentPos = this.boxes[to[0]][findSrc ? "getOutletPosition" : "getInletPosition"](to[1]);
+            const currentDistance = ((currentPos.left - left) ** 2 + (currentPos.top - top) ** 2) ** 0.5;
+            if (currentDistance < 100) {
+                nearest = to;
+                minDistance = currentDistance;
+            }
         }
         for (const id in this.boxes) {
             const box = this.boxes[id];
             box[findSrc ? "outletsPositions" : "inletsPositions"].forEach((pos, i) => {
                 const distance = ((pos.left - left) ** 2 + (pos.top - top) ** 2) ** 0.5;
                 if (distance < minDistance) {
-                    const canCreate = this.canCreateLine({ src: findSrc ? [id, i] : this.lines[lineID].getSrc(), dest: findSrc ? this.lines[lineID].getDest() : [id, i] });
+                    const canCreate = this.canCreateLine({ src: findSrc ? [id, i] : from, dest: findSrc ? from : [id, i] });
                     if (!canCreate) return;
                     nearest = [id, i];
                     minDistance = distance;
@@ -401,11 +406,11 @@ export class Patcher extends EventEmitter {
         }
         return nearest;
     }
-    highlightNearestPort(lineID: string, findSrc: boolean, dragOffset: { x: number, y: number }) {
-        const origPosition = this.lines[lineID][findSrc ? "srcPosition" : "destPosition"];
-        const left = origPosition.left + dragOffset.x;
-        const top = origPosition.top + dragOffset.y;
-        const nearest = this.findNearestPort(lineID, findSrc, left, top);
+    highlightNearestPort(findSrc: boolean, dragOffset: { x: number, y: number }, from: [string, number], to?: [string, number]) { // to = the port need to be reconnect
+        const origPos = to ? this.boxes[to[0]][findSrc ? "getOutletPosition" : "getInletPosition"](to[1]) : this.boxes[from[0]][findSrc ? "getInletPosition" : "getOutletPosition"](from[1]);
+        const left = origPos.left + dragOffset.x;
+        const top = origPos.top + dragOffset.y;
+        const nearest = this.findNearestPort(findSrc, left, top, from, to);
         for (const id in this.boxes) {
             const box = this.boxes[id];
             for (let i = 0; i < box[findSrc ? "outlets" : "inlets"]; i++) {
@@ -413,6 +418,10 @@ export class Patcher extends EventEmitter {
             }
         }
         return nearest;
+    }
+    tempLine(findSrc: boolean, from: [string, number]) {
+        this.emit("tempLine", findSrc, from);
+        return this;
     }
     paste(clipboard: TPatcher) {
         const idMap = {} as { [key: string]: string };

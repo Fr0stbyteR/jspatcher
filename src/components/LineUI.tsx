@@ -87,24 +87,26 @@ export class LineUI extends React.Component {
         this.setState({ dragging: true });
         const dragOffset = { x: 0, y: 0 };
         let nearest = [null, null] as [string, number];
+        const line = this.props.patcher.lines[this.props.id];
         const handleMouseMove = (e: MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
             if (this.state.dragging && (e.movementX || e.movementY)) {
                 if (!this.dragged) this.dragged = true;
                 dragOffset.x += e.movementX;
                 dragOffset.y += e.movementY;
                 if (isSrc) this.setState({ srcPosition: { left: this.state.srcPosition.left + e.movementX, top: this.state.srcPosition.top + e.movementY } });
                 else this.setState({ destPosition: { left: this.state.destPosition.left + e.movementX, top: this.state.destPosition.top + e.movementY } });
-                nearest = this.props.patcher.highlightNearestPort(this.props.id, isSrc, dragOffset);
+                nearest = this.props.patcher.highlightNearestPort(isSrc, dragOffset, isSrc ? line.getDest() : line.getSrc(), isSrc ? line.getSrc() : line.getDest());
             }
-            e.stopPropagation();
         };
         const handleMouseUp = (e: MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
-            e.stopPropagation();
             this.setState({ dragging: false });
             if (!this.dragged) return;
-            const line = this.props.patcher.lines[this.props.id];
             if (nearest[0]) {
                 this.props.patcher.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
                 if (line[isSrc ? "srcID" : "destID"] === nearest[0] && line[isSrc ? "srcOutlet" : "destInlet"] === nearest[1]) this.handleResetPos();
@@ -140,6 +142,104 @@ export class LineUI extends React.Component {
                 </svg>
                 <div className="line-handler line-handler-src" style={this.srcHandlerStyle} onMouseDown={this.handleMouseDownSrc} />
                 <div className="line-handler line-handler-dest" style={this.destHandlerStyle} onMouseDown={this.handleMouseDownDest} />
+            </div>
+        );
+    }
+}
+
+export class TempLineUI extends React.Component {
+    props: { patcher: Patcher };
+    state = { show: false, destPosition: { left: 0, top: 0 }, srcPosition: { left: 0, top: 0 } };
+    refPath = React.createRef() as React.RefObject<SVGPathElement>;
+    dragged = false;
+    findSrc = false;
+    from = [null, null] as [string, number];
+    componentDidMount() {
+        this.props.patcher.on("tempLine", this.handleNewLine);
+    }
+    componentWillUnmount() {
+        this.props.patcher.on("tempLine", this.handleNewLine);
+    }
+    handleNewLine = (findSrc: boolean, from: [string, number]) => {
+        if (this.props.patcher._state.locked) return;
+        if (this.state.show) return;
+        this.findSrc = findSrc;
+        this.from = from;
+        const fromPosition = this.props.patcher.boxes[from[0]][findSrc ? "getInletPosition" : "getOutletPosition"](from[1]);
+        this.setState({ srcPosition: fromPosition, destPosition: fromPosition });
+        this.handleDraggable(findSrc);
+    }
+    handleDraggable = (isSrc: boolean) => {
+        this.dragged = false;
+        const dragOffset = { x: 0, y: 0 };
+        let nearest = [null, null] as [string, number];
+        const handleMouseMove = (e: MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (e.movementX || e.movementY) {
+                if (!this.dragged) this.dragged = true;
+                if (!this.state.show) this.setState({ show: true });
+                dragOffset.x += e.movementX;
+                dragOffset.y += e.movementY;
+                if (isSrc) this.setState({ srcPosition: { left: this.state.srcPosition.left + e.movementX, top: this.state.srcPosition.top + e.movementY } });
+                else this.setState({ destPosition: { left: this.state.destPosition.left + e.movementX, top: this.state.destPosition.top + e.movementY } });
+                nearest = this.props.patcher.highlightNearestPort(this.findSrc, dragOffset, this.from);
+            }
+        };
+        const handleMouseUp = (e: MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (!this.dragged) return;
+            if (nearest[0]) {
+                this.props.patcher.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
+                this.props.patcher.createLine({ src: this.findSrc ? nearest : this.from, dest: this.findSrc ? this.from : nearest });
+            }
+            if (!e.shiftKey) {
+                this.setState({ show: false });
+                document.removeEventListener("mousemove", handleMouseMove);
+                document.removeEventListener("mouseup", handleMouseUp);
+                document.removeEventListener("keydown", handleKeyDown);
+            }
+        };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                e.stopPropagation();
+                e.preventDefault();
+                this.setState({ show: false });
+                document.removeEventListener("mousemove", handleMouseMove);
+                document.removeEventListener("mouseup", handleMouseUp);
+                document.removeEventListener("keydown", handleKeyDown);
+            }
+        }
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener("keydown", handleKeyDown);
+    }
+    render() {
+        if (!this.state.show) {
+            return (
+                <div className="line" id="line-temp" />
+            );
+        }
+        const start = this.state.srcPosition;
+        const end = this.state.destPosition;
+        const divStyle = {
+            left: Math.min(start.left, end.left) - 5,
+            top: Math.min(start.top, end.top) - 10,
+            width: Math.abs(start.left - end.left) + 10,
+            height: Math.abs(start.top - end.top) + 20,
+        };
+        const dStart = [start.left - divStyle.left, start.top - divStyle.top];
+        const dMid = [divStyle.width / 2, divStyle.height / 2];
+        const dEnd = [end.left - divStyle.left, end.top - divStyle.top];
+        const dBezier = [dStart[0], dStart[1] + Math.max(5, (divStyle.height - 20) / 5)];
+        if (dBezier[1] > divStyle.height) dBezier[1] = divStyle.height;
+        const d = ["M", dStart[0], dStart[1], "Q", dBezier[0], dBezier[1], ",", dMid[0], dMid[1], "T", dEnd[0], dEnd[1]];
+        return (
+            <div className="line dragging" id="line-temp" tabIndex={0} style={divStyle}>
+                <svg width={divStyle.width} height={divStyle.height}>
+                    <path d={d.join(" ")} ref={this.refPath} />
+                </svg>
             </div>
         );
     }

@@ -45,19 +45,21 @@ export class BoxUI extends React.Component {
             this.dragging = true;
             let dragOffset = { x: 0, y: 0 };
             const handleMouseMove = (e: MouseEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
                 if (this.dragging && !this.editingOnUnlock && (e.movementX || e.movementY)) {
                     if (!this.dragged) this.dragged = true;
                     dragOffset.x += e.movementX;
                     dragOffset.y += e.movementY;
                     dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
                 }
-                e.stopPropagation();
             };
             const handleMouseUp = (e: MouseEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
                 this.dragging = false;
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
-                e.stopPropagation();
             };
             document.addEventListener("mousemove", handleMouseMove);
             document.addEventListener("mouseup", handleMouseUp);
@@ -213,6 +215,7 @@ class Outlets extends React.Component {
 class Inlet extends React.Component {
     props: { patcher: Patcher, box: Box, index: number };
     state = { isConnected: this.props.box.inletLines[this.props.index].length > 0, highlight: false };
+    dragged = false;
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);
     }
@@ -222,20 +225,27 @@ class Inlet extends React.Component {
     handleHighlight = (isSrc: boolean, i: number, highlight: boolean) => {
         if (!isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     }
+    handleMouseDown = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        e.stopPropagation();
+        this.props.patcher.tempLine(true, [this.props.box.id, this.props.index]);
+    }
     render() {
         const box = this.props.box;
         const i = this.props.index;
         let props = { isHot : false, type : "anything", description : "" };
         const meta = box.meta.inlets;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
+        const className = "box-port box-inlet" + (props.isHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
         return (
-            <div className={"box-port box-inlet" + (props.isHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "")} />
+            <div className={className} onMouseDown={this.handleMouseDown} />
         );
     }
 }
 class Outlet extends React.Component {
     props: { patcher: Patcher, box: Box, index: number };
     state = { isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false };
+    dragged = false;
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);
     }
@@ -245,14 +255,20 @@ class Outlet extends React.Component {
     handleHighlight = (isSrc: boolean, i: number, highlight: boolean) => {
         if (isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     }
+    handleMouseDown = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        e.stopPropagation();
+        this.props.patcher.tempLine(false, [this.props.box.id, this.props.index]);
+    }
     render() {
         const box = this.props.box;
         const i = this.props.index;
         let props = { type : "anything", description : "" };
         const meta = box.meta.outlets;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
+        const className = "box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
         return (
-            <div className={"box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "")} />
+            <div className={className} onMouseDown={this.handleMouseDown} />
         );
     }
 }
