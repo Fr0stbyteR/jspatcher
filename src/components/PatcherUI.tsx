@@ -100,12 +100,13 @@ class Lines extends React.Component {
         for (const lineID in this.lines) {
             delete this.lines[lineID];
         }
-        this.forceUpdate(); // Unmount All of them, please.
-        for (const lineID in this.props.patcher.lines) {
-            const line = this.props.patcher.lines[lineID];
-            this.lines[lineID] = <LineUI {...this.props} id={line.id} key={line.id} />;
-        }
-        this.forceUpdate();
+        this.forceUpdate(() => { // Unmount All of them, please.
+            for (const lineID in this.props.patcher.lines) {
+                const line = this.props.patcher.lines[lineID];
+                this.lines[lineID] = <LineUI {...this.props} id={line.id} key={line.id} />;
+            }
+            this.forceUpdate();
+        });
     }
     render() {
         return (
@@ -145,12 +146,13 @@ class Boxes extends React.Component {
         for (const boxID in this.boxes) {
             delete this.boxes[boxID];
         }
-        this.forceUpdate(); // Unmount All of them, please.
-        for (const boxID in this.props.patcher.boxes) {
-            const box = this.props.patcher.boxes[boxID];
-            this.boxes[boxID] = <BoxUI {...this.props} id={box.id} key={box.id} />;
-        }
-        this.forceUpdate();
+        this.forceUpdate(() => { // Unmount All of them, please.
+            for (const boxID in this.props.patcher.boxes) {
+                const box = this.props.patcher.boxes[boxID];
+                this.boxes[boxID] = <BoxUI {...this.props} id={box.id} key={box.id} />;
+            }
+            this.forceUpdate();
+        });
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (!e.shiftKey) this.props.patcher.deselectAll();

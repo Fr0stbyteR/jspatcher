@@ -4,6 +4,7 @@ import { Patcher } from "../Patcher";
 import { Box } from "../Box";
 import "./Default.scss";
 import "./Base.scss";
+import { Icon, SemanticICONS } from "semantic-ui-react";
 export type TInletsMeta = {
     isHot: boolean,
     type: "anything" | "signal" | "object" | "number" | "boolean" | string,
@@ -29,7 +30,7 @@ export type TPropsMeta = {
 export type TMeta = {
     package: string, // div will have class "package-name" "package-name-objectname"
     name: string,
-    icon: string, // semantic icon to display in UI
+    icon: SemanticICONS, // semantic icon to display in UI
     author: string,
     version: string,
     description: string,
@@ -39,7 +40,7 @@ export type TMeta = {
     props: TPropsMeta
 };
 export class BaseObject extends EventEmitter {
-    static get _meta(): TMeta {
+    protected static get _meta(): TMeta {
         return {
             package: "Base", // div will have class "package-name" "package-name-objectname"
             name: this.name,
@@ -53,8 +54,8 @@ export class BaseObject extends EventEmitter {
             props: []
         };
     }
-    public get _meta(): TMeta {
-        return (this.constructor as any)._meta;
+    get _meta() {
+        return (this.constructor as typeof BaseObject)._meta;
     }
     private readonly _patcher: Patcher;
     private readonly _box: Box;
@@ -73,6 +74,10 @@ export class BaseObject extends EventEmitter {
     // build new ui on page, return a React Component, override this
     ui() {
         return DefaultUI as typeof BaseUI;
+    }
+    // update UI's React State
+    uiUpdate(state: { [key: string]: any }) {
+        this.emit("uiUpdate", state);
     }
     // when arguments and @properties are changed, can use this in constructor
     update(args: any[], props: { [key: string]: any }) {
@@ -164,7 +169,7 @@ class EmptyObject extends BaseObject {
             name: this.name,
             author: "Fr0stbyteR",
             version: "1.0.0",
-            icon: "",
+            icon: null as SemanticICONS,
             description: "Bypass input",
             inlets: [{
                 isHot: true,
@@ -191,7 +196,7 @@ class InvalidObject extends BaseObject {
     static get _meta() {
         return { ...BaseObject._meta,
             name: this.name,
-            icon: "",
+            icon: null as SemanticICONS,
             description: "invalid object",
             inlets: [{
                 isHot: false,
@@ -225,7 +230,7 @@ export class BaseUI extends React.Component {
 }
 export class DefaultUI extends BaseUI {
     editableOnUnlock = true;
-    state = { editing: false };
+    state = { editing: false, loading: false };
     refSpan = React.createRef() as React.RefObject<HTMLSpanElement>;
     toggleEdit = (bool?: boolean) => {
         if (bool === this.state.editing) return this.state.editing;
@@ -256,6 +261,15 @@ export class DefaultUI extends BaseUI {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     }
+    componentDidMount() {
+        this.props.object.on("uiUpdate", this.handleUpdate);
+    }
+    componentWillUnmount() {
+        this.props.object.off("uiUpdate", this.handleUpdate);
+    }
+    handleUpdate = (state: { [key: string]: any }) => {
+        this.setState(state);
+    }
     render() {
         const object = this.props.object;
         const packageName = "package-" + object._meta.package.toLowerCase();
@@ -264,7 +278,7 @@ export class DefaultUI extends BaseUI {
         return (
             <div className={classArray.join(" ")}>
                 <div className="box-ui-text-container">
-                    <i className={object._meta.icon ? ("small icon " + object._meta.icon) : ""} />
+                    {object._meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object._meta.icon} /> : null}
                     <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
                         {object.box.text}
                     </span>

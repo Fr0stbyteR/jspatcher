@@ -5,7 +5,6 @@ class JSUnaryOp extends BaseObject {
     static get _meta() {
         return { ...BaseObject._meta,
             package: "Op",
-            icon: "",
             description: "Unary Operation",
             inlets: [{
                 isHot: true,
@@ -53,7 +52,6 @@ class JSBinaryOp extends BaseObject {
     static get _meta() {
         return { ...BaseObject._meta,
             package: "Op",
-            icon: "",
             description: "Binary Operation",
             inlets: [{
                 isHot: true,
@@ -119,7 +117,6 @@ class JSTernaryOp extends BaseObject {
     static get _meta() {
         return { ...BaseObject._meta,
             package: "Op",
-            icon: "",
             description: "Ternary Operation",
             inlets: [{
                 isHot: true,

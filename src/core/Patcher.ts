@@ -18,8 +18,9 @@ import Max from "./objects/Max";
 import Gen from "./objects/Gen";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
+import Window from "./objects/Window";
 const Packages = {
-    Base, UI, Op
+    Base, UI, Op, Window
 } as TPackage;
 
 export class Patcher extends EventEmitter {
@@ -32,6 +33,7 @@ export class Patcher extends EventEmitter {
     boxes: { [key: string]: Box };
     props: TPatcherProps;
     _state: TPatcherState;
+    private _packages: TPackage;
     constructor() {
         super();
         this.setMaxListeners(4096);
@@ -40,6 +42,7 @@ export class Patcher extends EventEmitter {
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
         this._state.libGen = this.packageRegister((Gen as TPackage), {});
+        this._packages = Packages;
         this.clear();
     }
     packageRegister(pkg: TPackage, libOut: { [key: string]: typeof Base.BaseObject }, path?: string) {

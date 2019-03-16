@@ -73,6 +73,7 @@
     "function-name": false,
     "variable-name": false,
     "align": false,
-    "one-variable-per-declaration": false
+    "one-variable-per-declaration": false,
+    "no-console": true
   }
 }

@@ -6,7 +6,8 @@ import "./BoxUI.scss";
 
 export class BoxUI extends React.Component {
     props: { patcher: Patcher, id: string };
-    state: { selected: boolean, rect: [number, number, number, number], innerUI: JSX.Element };
+    state: { selected: boolean, rect: [number, number, number, number] };
+    innerUI: JSX.Element;
     refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
     refUI = React.createRef() as React.RefObject<BaseUI>;
     editingOnUnlock = false;
@@ -23,8 +24,11 @@ export class BoxUI extends React.Component {
     handleTextChanged = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
-        const innerUI = <box.ui object={box.object} ref={this.refUI} />;
-        this.setState({ innerUI, rect: box.rect });
+        this.innerUI = null;
+        this.forceUpdate(() => { // Unmount and remount, please.
+            this.innerUI = <box.ui object={box.object} ref={this.refUI} />;
+            this.setState({ rect: box.rect });
+        });
         return box;
     }
     handleRectChanged = () => {
@@ -117,9 +121,9 @@ export class BoxUI extends React.Component {
     componentWillMount() {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
-        const innerUI = <box.ui object={box.object} ref={this.refUI} />;
+        this.innerUI = <box.ui object={box.object} ref={this.refUI} key="0" />;
         this.props.patcher.deselect(this.props.id);
-        this.setState({ innerUI, selected: false, rect: box.rect });
+        this.setState({ selected: false, rect: box.rect });
         return box;
     }
     componentDidMount() {
@@ -148,7 +152,7 @@ export class BoxUI extends React.Component {
                 <Inlets patcher={this.props.patcher} box={box} />
                 <Outlets patcher={this.props.patcher} box={box} />
                 <div className="box-ui">
-                    {this.state.innerUI}
+                    {this.innerUI}
                 </div>
             </div>
         );
@@ -169,11 +173,12 @@ class Inlets extends React.Component {
     }
     handleUpdate = () => {
         this.ports = [];
-        this.forceUpdate();
-        for (let i = 0; i < this.props.box.inlets; i++) {
-            this.ports.push(<Inlet {...this.props} index={i} key={i} />);
-        }
-        this.forceUpdate();
+        this.forceUpdate(() => {
+            for (let i = 0; i < this.props.box.inlets; i++) {
+                this.ports.push(<Inlet {...this.props} index={i} key={i} />);
+            }
+            this.forceUpdate();
+        });
     }
     render() {
         return (
@@ -198,11 +203,12 @@ class Outlets extends React.Component {
     }
     handleUpdate = () => {
         this.ports = [];
-        this.forceUpdate();
-        for (let i = 0; i < this.props.box.outlets; i++) {
-            this.ports.push(<Outlet {...this.props} index={i} key={i} />);
-        }
-        this.forceUpdate();
+        this.forceUpdate(() => {
+            for (let i = 0; i < this.props.box.outlets; i++) {
+                this.ports.push(<Outlet {...this.props} index={i} key={i} />);
+            }
+            this.forceUpdate();
+        });
     }
     render() {
         return (

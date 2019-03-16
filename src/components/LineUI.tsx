@@ -210,7 +210,7 @@ export class TempLineUI extends React.Component {
                 document.removeEventListener("mouseup", handleMouseUp);
                 document.removeEventListener("keydown", handleKeyDown);
             }
-        }
+        };
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
         document.addEventListener("keydown", handleKeyDown);
