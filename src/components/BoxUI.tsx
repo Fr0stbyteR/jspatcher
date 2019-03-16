@@ -27,7 +27,9 @@ export class BoxUI extends React.Component {
         this.innerUI = null;
         this.forceUpdate(() => { // Unmount and remount, please.
             this.innerUI = <box.ui object={box.object} ref={this.refUI} />;
-            this.setState({ rect: box.rect });
+            this.setState({ rect: box.rect }, () => {
+                this.inspectRectChange();
+            });
         });
         return box;
     }

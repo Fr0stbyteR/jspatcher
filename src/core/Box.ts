@@ -140,8 +140,8 @@ export class Box extends EventEmitter {
         this.emit("rectChanged", this);
         const lineAsDest = this._patcher.getLinesByDestID(this.id);
         const lineAsSrc = this._patcher.getLinesBySrcID(this.id);
-        lineAsDest.forEach(el => el.forEach(el => this._patcher.lines[el].emit("destPosChanged")));
-        lineAsSrc.forEach(el => el.forEach(el => this._patcher.lines[el].emit("srcPosChanged")));
+        lineAsDest.forEach(el => el.forEach(el => this._patcher.lines[el].uiUpdateDest()));
+        lineAsSrc.forEach(el => el.forEach(el => this._patcher.lines[el].uiUpdateSrc()));
         return this;
     }
     highlightPort(isSrc: boolean, i: number, highlight: boolean) {

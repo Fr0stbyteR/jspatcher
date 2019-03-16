@@ -28,11 +28,14 @@ export class Line extends EventEmitter {
         this.disable();
         this.src = [srcID, srcOutlet];
         this.enable();
-        this.emit("srcPosChanged", this.srcPosition);
-        return this;
+        return this.uiUpdateSrc();
     }
     getSrc() {
         return this.src;
+    }
+    uiUpdateSrc() {
+        this.emit("srcPosChanged", this.srcPosition);
+        return this;
     }
     setDest(dest: [string, number]) {
         const destID = dest[0];
@@ -41,11 +44,14 @@ export class Line extends EventEmitter {
         this.disable();
         this.dest = [destID, destInlet];
         this.enable();
-        this.emit("destPosChanged", this.destPosition);
-        return this;
+        return this.uiUpdateDest();
     }
     getDest() {
         return this.dest;
+    }
+    uiUpdateDest() {
+        this.emit("destPosChanged", this.destPosition);
+        return this;
     }
     disable(bool?: boolean): Line {
         // tslint:disable-next-line: no-boolean-literal-compare
