@@ -50,8 +50,14 @@ export class BoxUI extends React.Component {
             this.dragged = false;
             this.dragging = true;
             const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
+            const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
+            let el = patcherDiv;
+            do {
+                patcherRect[0] += el.offsetLeft;
+                patcherRect[1] += el.offsetTop;
+                el = el.offsetParent as HTMLDivElement;
+            } while (el.offsetParent);
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-            let scrollOffset = { x: 0, y: 0 };
             let dragOffset = { x: 0, y: 0 };
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
@@ -62,6 +68,12 @@ export class BoxUI extends React.Component {
                     dragOffset.y += e.movementY;
                     dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
                 }
+                const x = e.pageX - patcherRect[0];
+                const y = e.pageY - patcherRect[1];
+                if (x < 10) patcherDiv.scrollLeft += x - 10;
+                if (x > patcherRect[2] - 10) patcherDiv.scrollLeft += x + 10 - patcherRect[2];
+                if (y < 10) patcherDiv.scrollTop += y - 10;
+                if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
             };
             const handleMouseUp = (e: MouseEvent) => {
                 e.stopPropagation();
@@ -74,12 +86,12 @@ export class BoxUI extends React.Component {
             const handlePatcherScroll = (e: UIEvent) => {
                 const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
                 const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
-                scrollOffset.x += movementX;
-                scrollOffset.y += movementY;
+                dragOffset.x += movementX;
+                dragOffset.y += movementY;
                 patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
                 if (this.dragging && !this.editingOnUnlock && (movementX || movementY)) {
                     if (!this.dragged) this.dragged = true;
-                    scrollOffset = this.props.patcher.moveSelectedBox(this.props.id, scrollOffset);
+                    dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
                 }
             };
             document.addEventListener("mousemove", handleMouseMove);

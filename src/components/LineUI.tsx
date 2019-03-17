@@ -87,6 +87,13 @@ export class LineUI extends React.Component {
         this.dragged = false;
         this.setState({ dragging: true });
         const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
+        const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
+        let el = patcherDiv;
+        do {
+            patcherRect[0] += el.offsetLeft;
+            patcherRect[1] += el.offsetTop;
+            el = el.offsetParent as HTMLDivElement;
+        } while (el.offsetParent);
         let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
         const dragOffset = { x: 0, y: 0 };
         let nearest = [null, null] as [string, number];
@@ -102,6 +109,12 @@ export class LineUI extends React.Component {
                 else this.setState({ destPosition: { left: this.state.destPosition.left + e.movementX, top: this.state.destPosition.top + e.movementY } });
                 nearest = this.props.patcher.highlightNearestPort(isSrc, dragOffset, isSrc ? line.getDest() : line.getSrc(), isSrc ? line.getSrc() : line.getDest());
             }
+            const x = e.pageX - patcherRect[0];
+            const y = e.pageY - patcherRect[1];
+            if (x < 10) patcherDiv.scrollLeft += x - 10;
+            if (x > patcherRect[2] - 10) patcherDiv.scrollLeft += x + 10 - patcherRect[2];
+            if (y < 10) patcherDiv.scrollTop += y - 10;
+            if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
         };
         const handleMouseUp = (e: MouseEvent) => {
             e.stopPropagation();
@@ -191,6 +204,13 @@ export class TempLineUI extends React.Component {
     handleDraggable = (isSrc: boolean) => {
         this.dragged = false;
         const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
+        const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
+        let el = patcherDiv;
+        do {
+            patcherRect[0] += el.offsetLeft;
+            patcherRect[1] += el.offsetTop;
+            el = el.offsetParent as HTMLDivElement;
+        } while (el.offsetParent);
         let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
         const dragOffset = { x: 0, y: 0 };
         let nearest = [null, null] as [string, number];
@@ -206,6 +226,12 @@ export class TempLineUI extends React.Component {
                 else this.setState({ destPosition: { left: this.state.destPosition.left + e.movementX, top: this.state.destPosition.top + e.movementY } });
                 nearest = this.props.patcher.highlightNearestPort(this.findSrc, dragOffset, this.from);
             }
+            const x = e.pageX - patcherRect[0];
+            const y = e.pageY - patcherRect[1];
+            if (x < 10) patcherDiv.scrollLeft += x - 10;
+            if (x > patcherRect[2] - 10) patcherDiv.scrollLeft += x + 10 - patcherRect[2];
+            if (y < 10) patcherDiv.scrollTop += y - 10;
+            if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
         };
         const handleMouseUp = (e: MouseEvent) => {
             e.stopPropagation();

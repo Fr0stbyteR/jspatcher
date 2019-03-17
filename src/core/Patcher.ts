@@ -366,10 +366,13 @@ export class Patcher extends EventEmitter {
     }
     moveBox(boxID: string, deltaX: number, deltaY: number) {
         const box = this.boxes[boxID];
-        if (!box) return;
+        if (!box) return this;
         box.rect[0] += deltaX;
         box.rect[1] += deltaY;
+        if (box.rect[0] < 0) box.rect[0] = 0;
+        if (box.rect[1] < 0) box.rect[1] = 0;
         box.setRect(box.rect);
+        return this;
     }
     moveSelectedBox(boxID: string, dragOffset: { x: number, y: number }) {
         const linesConcerned = {} as { [key: string]: boolean };
@@ -383,6 +386,14 @@ export class Patcher extends EventEmitter {
             if (!box) return;
             box.rect[0] += delta.x;
             box.rect[1] += delta.y;
+            if (box.rect[0] < 0) {
+                delta.x -= box.rect[0];
+                box.rect[0] = 0;
+            }
+            if (box.rect[1] < 0) {
+                delta.y -= box.rect[1];
+                box.rect[1] = 0;
+            }
             const lineAsDest = this.getLinesByDestID(id);
             const lineAsSrc = this.getLinesBySrcID(id);
             lineAsDest.forEach(el => el.forEach(el => linesConcerned[el] = true));

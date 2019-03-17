@@ -15,6 +15,7 @@ export class PatcherUI extends React.Component {
         bgcolor: this.props.patcher.props.bgcolor,
         editing_bgcolor: this.props.patcher.props.editing_bgcolor
     };
+    refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
     refGrid = React.createRef() as React.RefObject<Grid>;
     refBoxes = React.createRef() as React.RefObject<Boxes>;
     refLines = React.createRef() as React.RefObject<Lines>;
@@ -63,7 +64,7 @@ export class PatcherUI extends React.Component {
         if (this.state.showGrid) classArray.push("show-grid");
         const bgcolor = this.state.locked ? this.state.bgcolor : this.state.editing_bgcolor;
         return (
-            <div className={classArray.join(" ")} style={{ backgroundColor: "rgba(" + bgcolor.join(",") + ")" }} onScroll={this.handleScroll}>
+            <div className={classArray.join(" ")} style={{ backgroundColor: "rgba(" + bgcolor.join(",") + ")" }} onScroll={this.handleScroll} ref={this.refDiv}>
                 <Grid {...this.props} ref={this.refGrid} />
                 <Boxes {...this.props} ref={this.refBoxes} />
                 <Lines {...this.props} ref={this.refLines} />
@@ -156,11 +157,9 @@ class Boxes extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (!e.shiftKey) this.props.patcher.deselectAll();
-        e.stopPropagation();
     }
     handleClick = (e: React.MouseEvent) => {
         if (e.ctrlKey) this.props.patcher.setLock(!this.props.patcher._state.locked);
-        e.stopPropagation();
     }
     render() {
         return (
