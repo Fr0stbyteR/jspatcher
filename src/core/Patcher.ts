@@ -380,22 +380,22 @@ export class Patcher extends EventEmitter {
         const deltaY = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - this.boxes[boxID].rect[1] : dragOffset.y;
         const delta = { x: deltaX, y: deltaY };
         if (!delta.x && !delta.y) return dragOffset;
-        this._state.selected.forEach((id) => {
-            if (!id.includes("box")) return;
-            const box = this.boxes[id];
-            if (!box) return;
+        const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
+        boxes.sort((a, b) => a.rect[0] - b.rect[0]).forEach((box) => {
             box.rect[0] += delta.x;
-            box.rect[1] += delta.y;
             if (box.rect[0] < 0) {
                 delta.x -= box.rect[0];
                 box.rect[0] = 0;
             }
+        });
+        boxes.sort((a, b) => a.rect[1] - b.rect[1]).forEach((box) => {
+            box.rect[1] += delta.y;
             if (box.rect[1] < 0) {
                 delta.y -= box.rect[1];
                 box.rect[1] = 0;
             }
-            const lineAsDest = this.getLinesByDestID(id);
-            const lineAsSrc = this.getLinesBySrcID(id);
+            const lineAsDest = this.getLinesByDestID(box.id);
+            const lineAsSrc = this.getLinesBySrcID(box.id);
             lineAsDest.forEach(el => el.forEach(el => linesConcerned[el] = true));
             lineAsSrc.forEach(el => el.forEach(el => linesConcerned[el] = true));
             box.emit("rectChanged", box);
