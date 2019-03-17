@@ -1,5 +1,5 @@
 import { AutoImporter } from "../AutoImporter";
 
-const lib = AutoImporter.importer("Window", { window });
+const lib = AutoImporter.import("Window", { window });
 
 export default lib;

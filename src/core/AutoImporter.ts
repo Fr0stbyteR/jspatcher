@@ -1,34 +1,50 @@
 import { BaseObject, TMeta, Bang } from "./objects/Base";
 import { Box } from "./Box";
 import { Patcher, TPackage } from "./Patcher";
-
+declare const window: { [key: string]: any };
 export class AutoImporter {
-    static importer(pkgName: string, root: { [key: string]: any }, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number, fromProto?: boolean) {
+    static async importFrom(address: string, name: string, pkgName?: string) {
+        const injectScript = (src: string) => {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+                script.async = true;
+                script.src = src;
+                script.addEventListener("load", resolve);
+                script.addEventListener("error", () => reject("Error loading script."));
+                script.addEventListener("abort", () => reject("Script loading aborted."));
+                document.head.appendChild(script);
+            });
+        };
+        await injectScript(address);
+        const o = {} as { [key: string]: any };
+        o[name] = window[name];
+        return this.import(pkgName || name, o);
+    }
+    static import(pkgName: string, root: { [key: string]: any }, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number, fromProto?: boolean) {
         const depth = typeof depthIn === "undefined" ? 0 : depthIn;
         const out = outIn || {};
         const path = pathIn ? pathIn.slice() : [];
         const stack = stackIn ? stackIn.slice() : [];
         let o = root;
         path.forEach(key => o = o[key]);
+        if (stack.indexOf(o) !== -1 || (pkgName !== "Window" && o === window)) return out; // cyclic object
         stack[depth] = o;
         for (const key in o) {
             if (!o.hasOwnProperty(key)) continue;
             try {
                 const el = o[key];
-                if (stack.indexOf(el) !== -1) continue; // cyclic object
                 path[depth] = key;
+                out[path.filter(v => v !== "prototype").join(".")] = this.generate(el, pkgName, root, path, fromProto);
                 if (typeof el === "object" && !Array.isArray(el)) {
-                    out[path.join(".")] = this.generator(el, pkgName, root, path, fromProto);
-                    this.importer(pkgName, root, out, path, stack, depth + 1, false);
+                    this.import(pkgName, root, out, path, stack, depth + 1, false);
                 } else {
-                    out[path.join(".")] = this.generator(el, pkgName, root, path, fromProto);
-                    if (el.hasOwnProperty("prototype")) this.importer(pkgName, root, out, [...path, "prototype"], stack, depth + 2, true);
+                    if (el.hasOwnProperty("prototype")) this.import(pkgName, root, out, [...path, "prototype"], stack, depth + 2, true);
                 }
             } catch (e) {}
         }
         return out;
     }
-    static generator(el: any, pkgName: string, root: { [key: string]: any }, pathIn: string[], fromProto: boolean) {
+    static generate(el: any, pkgName: string, root: { [key: string]: any }, pathIn: string[], fromProto: boolean) {
         const path = pathIn.slice();
         const name = path[path.length - 1];
         if (typeof el === "function") { // static function or method
@@ -215,3 +231,4 @@ export class AutoImporter {
         };
     }
 }
+window.AutoImporter = AutoImporter;
