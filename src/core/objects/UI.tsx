@@ -1,16 +1,14 @@
 import * as React from "react";
 import { Patcher } from "../Patcher";
 import { Box } from "../Box";
-import { BaseObject, BaseUI } from "./Base";
+import { BaseObject, BaseUI, TMeta } from "./Base";
 import "./UI.scss";
-import { SemanticICONS } from "semantic-ui-react";
 export class Comment extends BaseObject {
-    static get _meta() {
+    static get _meta(): TMeta {
         return { ...super._meta,
             package: "UI",
             author: "Fr0stbyteR",
             version: "1.0.0",
-            icon: null as SemanticICONS,
             description: "Text Comment"
         };
     }

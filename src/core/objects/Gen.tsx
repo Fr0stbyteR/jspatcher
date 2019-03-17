@@ -1,4 +1,4 @@
-import { BaseObject } from "./Base";
+import { BaseObject, TMeta } from "./Base";
 import { Comment } from "./UI";
 import "./Gen.scss";
 const genOperators = {
@@ -43,7 +43,7 @@ const genOperators = {
     ]
 } as { [key: string]: string[] };
 class GenObject extends BaseObject {
-    static get _meta() {
+    static get _meta(): TMeta {
         return { ...super._meta,
             package: "Gen",
             author: "Fr0stbyteR",

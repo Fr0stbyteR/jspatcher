@@ -52,7 +52,7 @@ export class AutoImporter {
         if (typeof el === "function") { // static function or method
             return class extends BaseObject {
                 static get _meta(): TMeta {
-                    return Object.assign(super._meta, {
+                    return { ...super._meta,
                         name,
                         package: pkgName,
                         description: fromProto ? "Auto-imported OOP method" : "Auto-imported static function",
@@ -92,7 +92,7 @@ export class AutoImporter {
                             type: "number",
                             description: "arguments count for " + fromProto ? "method" : "function"
                         }]
-                    });
+                    };
                 }
                 constructor(box: Box, patcher: Patcher) {
                     super(box, patcher);

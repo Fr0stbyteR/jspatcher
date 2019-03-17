@@ -19,11 +19,13 @@ export type TOutletMeta = {
 export type TArgsMeta = {
     type: "anything" | "signal" | "object" | "number" | "boolean" | string,
     optional: boolean,
+    default?: any,
     varLength?: boolean,
     description: string
 }[];
 export type TPropsMeta = {
-    name: string
+    name: string,
+    default?: any,
     type: "anything" | "signal" | "object" | "number" | "boolean" | string,
     description: string
 }[];
@@ -164,7 +166,7 @@ export class BaseObject extends EventEmitter {
     }
 }
 class EmptyObject extends BaseObject {
-    static get _meta() {
+    static get _meta(): TMeta {
         return { ...super._meta,
             author: "Fr0stbyteR",
             version: "1.0.0",
@@ -191,7 +193,7 @@ class EmptyObject extends BaseObject {
     }
 }
 class InvalidObject extends BaseObject {
-    static get _meta() {
+    static get _meta(): TMeta {
         return { ...super._meta,
             description: "invalid object",
             inlets: [{

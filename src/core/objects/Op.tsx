@@ -1,16 +1,15 @@
-import { BaseObject, Bang } from "./Base";
+import { BaseObject, Bang, TMeta } from "./Base";
 import { Patcher } from "../Patcher";
 import { Box } from "../Box";
-import { SemanticICONS } from "semantic-ui-react";
 class JSOp extends BaseObject {
-    static get _meta() {
+    static get _meta(): TMeta {
         return { ...super._meta,
             package: "Op"
         };
     }
 }
 class JSUnaryOp extends JSOp {
-    static get _meta() {
+    static get _meta(): TMeta {
         return { ...super._meta,
             description: "Unary Operation",
             inlets: [{
@@ -56,7 +55,7 @@ class JSUnaryOp extends JSOp {
 }
 
 class JSBinaryOp extends JSOp {
-    static get _meta() {
+    static get _meta(): TMeta {
         return { ...super._meta,
             description: "Binary Operation",
             inlets: [{
@@ -120,7 +119,7 @@ class JSBinaryOp extends JSOp {
 }
 
 class JSTernaryOp extends JSOp {
-    static get _meta() {
+    static get _meta(): TMeta {
         return { ...super._meta,
             description: "Ternary Operation",
             inlets: [{
