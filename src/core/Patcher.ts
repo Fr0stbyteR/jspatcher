@@ -284,6 +284,12 @@ export class Patcher extends EventEmitter {
         }
         return result;
     }
+    log(message: string) {
+        this.newLog(0, "Patcher", message);
+    }
+    error(message: string) {
+        this.newLog(1, "Patcher", message);
+    }
     newLog(errorLevel: -2 | -1 | 0 | 1, title: string, message: string) {
         const log = { errorLevel, title, message };
         this._state.log.push(log);

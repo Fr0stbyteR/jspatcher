@@ -47,12 +47,12 @@ class FileMenu extends React.Component {
                 try {
                     parsed = JSON.parse(reader.result.toString());
                 } catch (e) {
-                    console.error(e);
+                    this.props.patcher.error(e);
                 }
                 if (parsed) this.props.patcher.load(extMap[ext], parsed);
             };
             reader.onerror = (e) => {
-                console.log(reader.error);
+                this.props.patcher.error(reader.error.message);
             };
             this.refOpen.current.value = "";
         }

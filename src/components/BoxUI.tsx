@@ -49,6 +49,9 @@ export class BoxUI extends React.Component {
         const handleDraggable = () => {
             this.dragged = false;
             this.dragging = true;
+            const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
+            let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+            let scrollOffset = { x: 0, y: 0 };
             let dragOffset = { x: 0, y: 0 };
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
@@ -66,9 +69,22 @@ export class BoxUI extends React.Component {
                 this.dragging = false;
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
+                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
+            };
+            const handlePatcherScroll = (e: UIEvent) => {
+                const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
+                const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
+                scrollOffset.x += movementX;
+                scrollOffset.y += movementY;
+                patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+                if (this.dragging && !this.editingOnUnlock && (movementX || movementY)) {
+                    if (!this.dragged) this.dragged = true;
+                    scrollOffset = this.props.patcher.moveSelectedBox(this.props.id, scrollOffset);
+                }
             };
             document.addEventListener("mousemove", handleMouseMove);
             document.addEventListener("mouseup", handleMouseUp);
+            patcherDiv.addEventListener("scroll", handlePatcherScroll);
         };
         // Handle select
         if (e.shiftKey) {

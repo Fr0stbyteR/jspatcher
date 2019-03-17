@@ -5,6 +5,7 @@ import "./LineUI.scss";
 export class LineUI extends React.Component {
     props: { patcher: Patcher, id: string };
     state: { selected: boolean, destPosition: { left: number, top: number }, srcPosition: { left: number, top: number }, dragging: boolean };
+    refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
     refPath = React.createRef() as React.RefObject<SVGPathElement>;
     srcHandlerStyle = { left: 0, top: 0 };
     destHandlerStyle = { left: 0, top: 0 };
@@ -85,6 +86,8 @@ export class LineUI extends React.Component {
     handleDraggable = (isSrc: boolean) => {
         this.dragged = false;
         this.setState({ dragging: true });
+        const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
+        let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
         const dragOffset = { x: 0, y: 0 };
         let nearest = [null, null] as [string, number];
         const line = this.props.patcher.lines[this.props.id];
@@ -105,6 +108,7 @@ export class LineUI extends React.Component {
             e.preventDefault();
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
+            patcherDiv.removeEventListener("scroll", handlePatcherScroll);
             this.setState({ dragging: false });
             if (!this.dragged) return;
             if (nearest[0]) {
@@ -115,8 +119,22 @@ export class LineUI extends React.Component {
                 this.props.patcher.deleteLine(this.props.id);
             }
         };
+        const handlePatcherScroll = (e: UIEvent) => {
+            const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
+            const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
+            dragOffset.x += movementX;
+            dragOffset.y += movementY;
+            patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+            if (this.state.dragging && (movementX || movementY)) {
+                if (!this.dragged) this.dragged = true;
+                if (isSrc) this.setState({ srcPosition: { left: this.state.srcPosition.left + movementX, top: this.state.srcPosition.top + movementY } });
+                else this.setState({ destPosition: { left: this.state.destPosition.left + movementX, top: this.state.destPosition.top + movementY } });
+                nearest = this.props.patcher.highlightNearestPort(isSrc, dragOffset, isSrc ? line.getDest() : line.getSrc(), isSrc ? line.getSrc() : line.getDest());
+            }
+        };
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
+        patcherDiv.addEventListener("scroll", handlePatcherScroll);
     }
     handleClick = (e: React.MouseEvent) => e.stopPropagation();
     render() {
@@ -136,7 +154,7 @@ export class LineUI extends React.Component {
         if (dBezier[1] > divStyle.height) dBezier[1] = divStyle.height;
         const d = ["M", dStart[0], dStart[1], "Q", dBezier[0], dBezier[1], ",", dMid[0], dMid[1], "T", dEnd[0], dEnd[1]];
         return (
-            <div className={className} id={this.props.id} tabIndex={0} style={divStyle} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
+            <div className={className} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
                     <path d={d.join(" ")} ref={this.refPath} />
                 </svg>
@@ -150,6 +168,7 @@ export class LineUI extends React.Component {
 export class TempLineUI extends React.Component {
     props: { patcher: Patcher };
     state = { show: false, destPosition: { left: 0, top: 0 }, srcPosition: { left: 0, top: 0 } };
+    refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
     refPath = React.createRef() as React.RefObject<SVGPathElement>;
     dragged = false;
     findSrc = false;
@@ -171,6 +190,8 @@ export class TempLineUI extends React.Component {
     }
     handleDraggable = (isSrc: boolean) => {
         this.dragged = false;
+        const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
+        let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
         const dragOffset = { x: 0, y: 0 };
         let nearest = [null, null] as [string, number];
         const handleMouseMove = (e: MouseEvent) => {
@@ -199,6 +220,21 @@ export class TempLineUI extends React.Component {
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
                 document.removeEventListener("keydown", handleKeyDown);
+                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
+            }
+        };
+        const handlePatcherScroll = (e: UIEvent) => {
+            const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
+            const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
+            dragOffset.x += movementX;
+            dragOffset.y += movementY;
+            patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+            if (movementX || movementY) {
+                if (!this.dragged) this.dragged = true;
+                if (!this.state.show) this.setState({ show: true });
+                if (isSrc) this.setState({ srcPosition: { left: this.state.srcPosition.left + movementX, top: this.state.srcPosition.top + movementY } });
+                else this.setState({ destPosition: { left: this.state.destPosition.left + movementX, top: this.state.destPosition.top + movementY } });
+                nearest = this.props.patcher.highlightNearestPort(isSrc, dragOffset, this.from);
             }
         };
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -209,16 +245,18 @@ export class TempLineUI extends React.Component {
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
                 document.removeEventListener("keydown", handleKeyDown);
+                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
             }
         };
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
         document.addEventListener("keydown", handleKeyDown);
+        patcherDiv.addEventListener("scroll", handlePatcherScroll);
     }
     render() {
         if (!this.state.show) {
             return (
-                <div className="line" id="line-temp" />
+                <div className="line" id="line-temp" ref={this.refDiv} />
             );
         }
         const start = this.state.srcPosition;
@@ -236,7 +274,7 @@ export class TempLineUI extends React.Component {
         if (dBezier[1] > divStyle.height) dBezier[1] = divStyle.height;
         const d = ["M", dStart[0], dStart[1], "Q", dBezier[0], dBezier[1], ",", dMid[0], dMid[1], "T", dEnd[0], dEnd[1]];
         return (
-            <div className="line dragging" id="line-temp" tabIndex={0} style={divStyle}>
+            <div className="line dragging" id="line-temp" tabIndex={0} style={divStyle} ref={this.refDiv}>
                 <svg width={divStyle.width} height={divStyle.height}>
                     <path d={d.join(" ")} ref={this.refPath} />
                 </svg>
