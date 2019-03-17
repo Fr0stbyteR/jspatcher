@@ -1,10 +1,17 @@
 import { BaseObject, Bang } from "./Base";
 import { Patcher } from "../Patcher";
 import { Box } from "../Box";
-class JSUnaryOp extends BaseObject {
+import { SemanticICONS } from "semantic-ui-react";
+class JSOp extends BaseObject {
     static get _meta() {
-        return { ...BaseObject._meta,
-            package: "Op",
+        return { ...super._meta,
+            package: "Op"
+        };
+    }
+}
+class JSUnaryOp extends JSOp {
+    static get _meta() {
+        return { ...super._meta,
             description: "Unary Operation",
             inlets: [{
                 isHot: true,
@@ -48,10 +55,9 @@ class JSUnaryOp extends BaseObject {
     }
 }
 
-class JSBinaryOp extends BaseObject {
+class JSBinaryOp extends JSOp {
     static get _meta() {
-        return { ...BaseObject._meta,
-            package: "Op",
+        return { ...super._meta,
             description: "Binary Operation",
             inlets: [{
                 isHot: true,
@@ -113,10 +119,9 @@ class JSBinaryOp extends BaseObject {
     }
 }
 
-class JSTernaryOp extends BaseObject {
+class JSTernaryOp extends JSOp {
     static get _meta() {
-        return { ...BaseObject._meta,
-            package: "Op",
+        return { ...super._meta,
             description: "Ternary Operation",
             inlets: [{
                 isHot: true,

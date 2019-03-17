@@ -44,7 +44,7 @@ export class BaseObject extends EventEmitter {
         return {
             package: "Base", // div will have class "package-name" "package-name-objectname"
             name: this.name,
-            icon: "code", // semantic icon to display in UI
+            icon: null as SemanticICONS, // semantic icon to display in UI
             author: "",
             version: "0.0.0",
             description: "",
@@ -165,11 +165,9 @@ export class BaseObject extends EventEmitter {
 }
 class EmptyObject extends BaseObject {
     static get _meta() {
-        return { ...BaseObject._meta,
-            name: this.name,
+        return { ...super._meta,
             author: "Fr0stbyteR",
             version: "1.0.0",
-            icon: null as SemanticICONS,
             description: "Bypass input",
             inlets: [{
                 isHot: true,
@@ -194,9 +192,7 @@ class EmptyObject extends BaseObject {
 }
 class InvalidObject extends BaseObject {
     static get _meta() {
-        return { ...BaseObject._meta,
-            name: this.name,
-            icon: null as SemanticICONS,
+        return { ...super._meta,
             description: "invalid object",
             inlets: [{
                 isHot: false,

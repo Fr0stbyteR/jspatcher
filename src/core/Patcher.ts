@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import { Line, TLine } from "./Line";
 import { Box, TBox } from "./Box";
+import { AutoImporter } from "./AutoImporter";
 
 export type TPatcherMode = "max" | "gen" | "js";
 export type TPatcher = { lines: { [key: string]: TLine }, boxes: { [key: string]: TBox }, props?: {}, [key: string]: any };
@@ -59,6 +60,11 @@ export class Patcher extends EventEmitter {
             } else continue;
         }
         return libOut;
+    }
+    async dynamicImportPackage(address: string, name: string, pkgName?: string) {
+        const pkg = await AutoImporter.importFrom(address, name, pkgName);
+        Packages[pkgName || name] = pkg;
+        this.packageRegister(pkg, this._state.libJS);
     }
     clear() {
         this.lines = {};

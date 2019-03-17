@@ -44,14 +44,12 @@ const genOperators = {
 } as { [key: string]: string[] };
 class GenObject extends BaseObject {
     static get _meta() {
-        return Object.assign(BaseObject._meta, {
+        return { ...super._meta,
             package: "Gen",
-            name: this.name,
             author: "Fr0stbyteR",
             version: "1.0.0",
-            icon: "",
             description: "Gen Operator"
-        });
+        };
     }
 }
 const GenObjects = { comment: Comment } as { [key: string]: typeof GenObject | typeof Comment };

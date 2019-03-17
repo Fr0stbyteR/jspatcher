@@ -3,16 +3,16 @@ import { Patcher } from "../Patcher";
 import { Box } from "../Box";
 import { BaseObject, BaseUI } from "./Base";
 import "./UI.scss";
+import { SemanticICONS } from "semantic-ui-react";
 export class Comment extends BaseObject {
     static get _meta() {
-        return Object.assign(BaseObject._meta, {
+        return { ...super._meta,
             package: "UI",
-            name: this.name,
             author: "Fr0stbyteR",
             version: "1.0.0",
-            icon: "",
+            icon: null as SemanticICONS,
             description: "Text Comment"
-        });
+        };
     }
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);

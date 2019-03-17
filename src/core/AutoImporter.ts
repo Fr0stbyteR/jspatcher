@@ -5,19 +5,21 @@ declare const window: { [key: string]: any };
 export class AutoImporter {
     static async importFrom(address: string, name: string, pkgName?: string) {
         const injectScript = (src: string) => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve: (script: HTMLScriptElement) => void, reject) => {
                 const script = document.createElement("script");
                 script.async = true;
                 script.src = src;
-                script.addEventListener("load", resolve);
+                script.addEventListener("load", () => resolve(script));
                 script.addEventListener("error", () => reject("Error loading script."));
                 script.addEventListener("abort", () => reject("Script loading aborted."));
                 document.head.appendChild(script);
             });
         };
-        await injectScript(address);
+        const scriptDOM = await injectScript(address);
+        document.head.removeChild(scriptDOM);
         const o = {} as { [key: string]: any };
-        o[name] = window[name];
+        o[pkgName || name] = window[name];
+        delete window[name];
         return this.import(pkgName || name, o);
     }
     static import(pkgName: string, root: { [key: string]: any }, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number, fromProto?: boolean) {
@@ -231,4 +233,3 @@ export class AutoImporter {
         };
     }
 }
-window.AutoImporter = AutoImporter;
