@@ -3,11 +3,21 @@ import { Patcher } from "./Patcher";
 export type TLine = { id?: string, src: [string, number], dest: [string, number], disabled?: boolean};
 type TEvents = "passData" | "destPosChanged" | "srcPosChanged" | "posChanged";
 export class Line extends EventEmitter {
-    on: (type: TEvents, listener: (...args: any[]) => void) => this;
-    once: (type: TEvents, listener: (...args: any[]) => void) => this;
-    off: (type: TEvents, listener: (...args: any[]) => void) => this;
-    removeAllListeners: (type: TEvents) => this;
-    emit: (type: TEvents, ...args: any[]) => boolean;
+    on(type: TEvents, listener: (...args: any[]) => void) {
+        return super.on(type, listener);
+    }
+    once(type: TEvents, listener: (...args: any[]) => void) {
+        return super.once(type, listener);
+    }
+    off(type: TEvents, listener: (...args: any[]) => void) {
+        return super.off(type, listener);
+    }
+    removeAllListeners(type: TEvents) {
+        return super.removeAllListeners(type);
+    }
+    emit(type: TEvents, ...args: any[]) {
+        return super.emit(type, ...args);
+    }
     readonly id: string;
     protected src: [string, number];
     protected dest: [string, number];

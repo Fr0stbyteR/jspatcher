@@ -250,8 +250,11 @@ class Outlets extends React.Component {
 }
 class Inlet extends React.Component {
     props: { patcher: Patcher, box: Box, index: number };
-    state = { isConnected: this.props.box.inletLines[this.props.index].length > 0, highlight: false };
+    state: { isConnected: boolean, highlight: boolean };
     dragged = false;
+    componentWillMount() {
+        this.setState({ isConnected: this.props.box.inletLines[this.props.index].length > 0, highlight: false });
+    }
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);
         this.props.box.on("connectedPort", this.handleConnectedChange);
@@ -287,8 +290,11 @@ class Inlet extends React.Component {
 }
 class Outlet extends React.Component {
     props: { patcher: Patcher, box: Box, index: number };
-    state = { isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false };
+    state: { isConnected: boolean, highlight: boolean };
     dragged = false;
+    componentWillMount() {
+        this.setState({ isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false })
+    }
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);
         this.props.box.on("connectedPort", this.handleConnectedChange);

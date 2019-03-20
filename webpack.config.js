@@ -1,25 +1,20 @@
 const path = require('path');
 
-module.exports = {
+const config = {
   entry: './src/index.tsx',
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
-  devtool: 'inline-source-map',
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    library: 'JSPatcher',
+    libraryTarget: 'umd'
   },
   module: {
     rules: [{
-        test: /\.js$/,
+        test: /\.(ts|js)x?$/,
         use: "babel-loader",
-        exclude: /node_modules/
-      },
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.s[ac]ss$/,
@@ -43,4 +38,14 @@ module.exports = {
       }
     ]
   }
+};
+module.exports = (env, argv) => {
+  if (argv.mode === 'development') {
+    config.devtool = 'inline-source-map';
+    config.output.filename = 'index.js';
+  }
+  if (argv.mode === 'production') {
+    config.output.filename = 'index.min.js';
+  }
+  return config;
 };

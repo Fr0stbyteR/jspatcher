@@ -1,7 +1,20 @@
 {
   "presets": [
     [
-      "@babel/preset-typescript"
-    ]
+      "@babel/preset-env",
+      {
+        "targets": {
+          "browsers": "Chrome >= 49, Firefox >= 45, Edge >= 13, Safari >= 10, iOS >= 10, Android >= 68"
+        }
+      }
+    ],
+    "@babel/typescript",
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/proposal-object-rest-spread",
+    "@babel/plugin-transform-async-to-generator",
+    "@babel/plugin-transform-runtime",
   ]
 }

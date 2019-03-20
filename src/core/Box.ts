@@ -4,11 +4,21 @@ import { BaseObject } from "./objects/Base";
 export type TBox = { id?: string, text: string, inlets: number, outlets: number, rect: [number, number, number, number], data?: { [key: string]: any } };
 type TEvents = "rectChanged" | "textChanged" | "highlightPort" | "connectedPort" | "disconnectedPort";
 export class Box extends EventEmitter {
-    on: (type: TEvents, listener: (...args: any[]) => void) => this;
-    once: (type: TEvents, listener: (...args: any[]) => void) => this;
-    off: (type: TEvents, listener: (...args: any[]) => void) => this;
-    removeAllListeners: (type: TEvents) => this;
-    emit: (type: TEvents, ...args: any[]) => boolean;
+    on(type: TEvents, listener: (...args: any[]) => void) {
+        return super.on(type, listener);
+    }
+    once(type: TEvents, listener: (...args: any[]) => void) {
+        return super.once(type, listener);
+    }
+    off(type: TEvents, listener: (...args: any[]) => void) {
+        return super.off(type, listener);
+    }
+    removeAllListeners(type: TEvents) {
+        return super.removeAllListeners(type);
+    }
+    emit(type: TEvents, ...args: any[]) {
+        return super.emit(type, ...args);
+    }
     id: string;
     text = "";
     inlets = 0;
