@@ -4,13 +4,14 @@ import { Box, TBox } from "./Box";
 import { AutoImporter } from "./AutoImporter";
 
 export type TPatcherMode = "max" | "gen" | "js";
-export type TPatcher = { lines: { [key: string]: TLine }, boxes: { [key: string]: TBox }, props?: {}, [key: string]: any };
+export type TPatcher = { lines: { [key: string]: TLine }, boxes: { [key: string]: TBox }, props?: {} };
 export type TPatcherProps = { mode: TPatcherMode, bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], grid: [number, number], boxIndexCount: number, lineIndexCount: number };
 export type TPatcherState = { isLoading: boolean, locked: boolean, presentation: boolean, showGrid: boolean, snapToGrid: boolean, log: TPatcherLog[], history: History, lib: { [key: string]: typeof Base.BaseObject }, libJS: { [key: string]: typeof Base.BaseObject }, libMax: { [key: string]: typeof Base.BaseObject }, libGen: { [key: string]: typeof Base.BaseObject }, selected: string[] };
 export type TPatcherLog = { errorLevel: -2 | -1 | 0 | 1, title: string, message: string };
 export type TMaxPatcher = { patcher: { lines: TMaxLine[], boxes: TMaxBox[], rect: number[], bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], gridsize: [number, number], [key: string]: any } };
 export type TMaxBox = { box: { id: string, maxclass: "newobj" | string, text?: string, numinlets: number, numoutlets: number, patching_rect: [number, number, number, number], presentation_rect: [number, number, number, number], presentation: number }};
 export type TMaxLine = { patchline: { destination: [string, number], source: [string, number], order: number, midpoints: number[] }};
+export type TMaxClipboard = { boxes: TMaxBox[], lines: TMaxLine[], appversion: { major: number, minor: number, revision: number, architecture: string, modernui: number } };
 export type TPackage = { [key: string]: typeof Base.BaseObject | TPackage };
 type TEvents = "loaded" | "lockedChange" | "presentationChange" | "showGridChange" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected" | "tempLine";
 
@@ -94,6 +95,7 @@ export class Patcher extends EventEmitter {
             const patcher = (patcherIn as TMaxPatcher).patcher;
             if (!patcher) {
                 this._state.isLoading = false;
+                this.emit("loaded", this);
                 return this;
             }
             this.props.bgcolor = rgbaMax2Css(patcher.bgcolor);
@@ -192,7 +194,7 @@ export class Patcher extends EventEmitter {
         if (!lineIn.hasOwnProperty("id")) lineIn.id = "line-" + ++this.props.lineIndexCount;
         const line = new Line(this, lineIn);
         this.lines[line.id] = line;
-        line.enable();
+        if (!lineIn.disabled) line.enable();
         if (!this._state.isLoading) this.emit("createLine", line);
         return line;
     }
@@ -449,16 +451,59 @@ export class Patcher extends EventEmitter {
         this.emit("tempLine", findSrc, from);
         return this;
     }
-    paste(clipboard: TPatcher) {
+    paste(clipboard: TPatcher | TMaxClipboard) {
         const idMap = {} as { [key: string]: string };
         const pasted = { boxes: [] as TBox[], lines: [] as TLine[] };
+        if (Array.isArray(clipboard.boxes)) { // Max Patcher
+            const maxBoxes = clipboard.boxes;
+            for (let i = 0; i < maxBoxes.length; i++) {
+                const maxBox = maxBoxes[i]["box"];
+                const numID = parseInt(maxBox.id.match(/\d+/)[0]);
+                let id = "box-" + numID;
+                if (this.boxes[id]) {
+                    idMap[id] = "box-" + ++this.props.boxIndexCount;
+                    id = idMap[id];
+                } else {
+                    idMap[id] = id;
+                    if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
+                }
+                const box = {
+                    id,
+                    inlets: maxBox.numinlets,
+                    outlets: maxBox.numoutlets,
+                    rect: maxBox.patching_rect,
+                    text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
+                } as TBox;
+                this.createBox(box);
+                pasted.boxes.push(box);
+            }
+            if (Array.isArray(clipboard.lines)) {
+                const maxLines = clipboard.lines;
+                for (let i = 0; i < maxLines.length; i++) {
+                    const lineArgs = maxLines[i].patchline;
+                    let id = "line-" + ++this.props.lineIndexCount;
+                    if (this.lines[id]) id = "line-" + ++this.props.lineIndexCount;
+                    const line = {
+                        id,
+                        src: [idMap[lineArgs.source[0].replace(/obj/, "box")], lineArgs.source[1]],
+                        dest: [idMap[lineArgs.destination[0].replace(/obj/, "box")], lineArgs.destination[1]]
+                    } as TLine;
+                    this.createLine(line);
+                    pasted.lines.push(line);
+                }
+            }
+            return pasted;
+        }
+        if (Array.isArray(clipboard.boxes) || Array.isArray(clipboard.lines)) return pasted;
         for (const boxID in clipboard.boxes) {
             const box = clipboard.boxes[boxID];
-            if (this.boxes.hasOwnProperty(box.id)) {
+            if (this.boxes[box.id]) {
                 idMap[box.id] = "box-" + ++this.props.boxIndexCount;
                 box.id = idMap[box.id];
             } else {
                 idMap[box.id] = box.id;
+                const numID = parseInt(box.id.match(/\d+/)[0]);
+                if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
             }
             box.rect = [box.rect[0] + 20, box.rect[1] + 20, box.rect[2], box.rect[3]];
             this.createBox(box);
@@ -466,9 +511,7 @@ export class Patcher extends EventEmitter {
         }
         for (const lineID in clipboard.lines) {
             const line = clipboard.lines[lineID];
-            if (this.lines.hasOwnProperty(line.id)) {
-                line.id = "line-" + ++this.props.lineIndexCount;
-            }
+            if (this.lines[line.id]) line.id = "line-" + ++this.props.lineIndexCount;
             line.src[0] = idMap[line.src[0]];
             line.dest[0] = idMap[line.dest[0]];
             this.createLine(line);

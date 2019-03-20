@@ -6,7 +6,7 @@
     "preserveConstEnums": true,
     "target": "es2015",
     "sourceMap": true,
-    "lib": ["es2015", "dom"],
+    "lib": ["es2015", "dom", "dom.iterable"],
     "jsx": "react",
     "outDir": "dist",
     "noUnusedLocals": false,

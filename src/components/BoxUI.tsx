@@ -254,12 +254,19 @@ class Inlet extends React.Component {
     dragged = false;
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);
+        this.props.box.on("connectedPort", this.handleConnectedChange);
+        this.props.box.on("disconnectedPort", this.handleConnectedChange);
     }
     componentWillUnmount() {
         this.props.box.off("highlightPort", this.handleHighlight);
+        this.props.box.off("connectedPort", this.handleConnectedChange);
+        this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
     handleHighlight = (isSrc: boolean, i: number, highlight: boolean) => {
         if (!isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
+    }
+    handleConnectedChange = (isSrc: boolean, i: number) => {
+        if (!isSrc && i === this.props.index) this.setState({ isConnected: this.props.box.inletLines[this.props.index].length > 0 });
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
@@ -284,12 +291,19 @@ class Outlet extends React.Component {
     dragged = false;
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);
+        this.props.box.on("connectedPort", this.handleConnectedChange);
+        this.props.box.on("disconnectedPort", this.handleConnectedChange);
     }
     componentWillUnmount() {
         this.props.box.off("highlightPort", this.handleHighlight);
+        this.props.box.off("connectedPort", this.handleConnectedChange);
+        this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
     handleHighlight = (isSrc: boolean, i: number, highlight: boolean) => {
         if (isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
+    }
+    handleConnectedChange = (isSrc: boolean, i: number) => {
+        if (isSrc && i === this.props.index) this.setState({ isConnected: this.props.box.outletLines[this.props.index].length > 0 });
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;

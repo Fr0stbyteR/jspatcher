@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Menu, Dropdown, DropdownItemProps } from "semantic-ui-react";
-import { Patcher } from "../core/patcher";
+import { Patcher, TPatcher, TMaxClipboard } from "../core/patcher";
 import "./TopMenu.scss";
 
 export class TopMenu extends React.Component {
@@ -20,8 +20,14 @@ class FileMenu extends React.Component {
     refDownload = React.createRef() as React.RefObject<HTMLAnchorElement>;
     refOpen = React.createRef() as React.RefObject<HTMLInputElement>;
     state = { pAsString: "", pName: "patcher.json" };
-    handleClickNew = (e: React.MouseEvent, data: DropdownItemProps) => {
+    handleClickNew = () => {
         this.props.patcher.load("js", {});
+    };
+    handleClickNewMax = () => {
+        this.props.patcher.load("max", {});
+    };
+    handleClickNewGen = () => {
+        this.props.patcher.load("gen", {});
     };
     handleClickOpen = () => {
         this.refOpen.current.click();
@@ -58,7 +64,8 @@ class FileMenu extends React.Component {
         }
     }
     handleKeyDown = (e: KeyboardEvent) => {
-        if (e.ctrlKey && e.key === "o") this.handleClickOpen();
+        if (e.ctrlKey && e.shiftKey && e.key === "n") this.handleClickNew();
+        else if (e.ctrlKey && e.key === "o") this.handleClickOpen();
         else if (e.ctrlKey && e.key === "s") this.handleClickSaveAs();
         else return true;
         e.stopPropagation();
@@ -77,6 +84,8 @@ class FileMenu extends React.Component {
                 <Dropdown item={true} icon={false} text="File">
                     <Dropdown.Menu style={{ minWidth: "max-content" }}>
                         <Dropdown.Item onClick={this.handleClickNew} text="New Patcher" description="Ctrl + Shift + N" />
+                        <Dropdown.Item onClick={this.handleClickNewMax} text="New Max Patcher" />
+                        <Dropdown.Item onClick={this.handleClickNewGen} text="New Gen Patcher" />
                         <Dropdown.Item onClick={this.handleClickOpen} text="Open..." description="Ctrl + O" />
                         <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description="Ctrl + S" />
                     </Dropdown.Menu>
@@ -87,8 +96,17 @@ class FileMenu extends React.Component {
         );
     }
 }
-
+declare global {
+    interface Clipboard extends EventTarget {
+        readText(): Promise<string>;
+        writeText(data: string): Promise<void>;
+    }
+    interface Navigator {
+        clipboard: Clipboard;
+    }
+}
 class EditMenu extends React.Component {
+    props: { patcher: Patcher };
     handleClickUndo = () => {
     };
     handleClickRedo = () => {
@@ -98,6 +116,14 @@ class EditMenu extends React.Component {
     handleClickCopy = () => {
     };
     handleClickPaste = () => {
+        navigator.clipboard.readText()
+        .then((text) => {
+            let parsed: TPatcher | TMaxClipboard;
+            try {
+                parsed = JSON.parse(text);
+            } catch (e) {}
+            this.props.patcher.paste(parsed);
+        });
     };
     handleClickDelete = () => {
     };
@@ -105,6 +131,19 @@ class EditMenu extends React.Component {
     };
     handleClickSelectAll = () => {
     };
+    handleKeyDown = (e: KeyboardEvent) => {
+        if (e.ctrlKey && e.key === "v") this.handleClickPaste();
+        else return true;
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+    }
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleKeyDown);
+    }
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
     render() {
         return (
             <Dropdown item={true} icon={false} text="Edit">

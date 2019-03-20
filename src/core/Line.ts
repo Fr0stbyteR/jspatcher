@@ -18,7 +18,7 @@ export class Line extends EventEmitter {
         this.id = lineIn.id;
         this.src = lineIn.src;
         this.dest = lineIn.dest;
-        this.disabled = lineIn.disabled || false;
+        this.disabled = true;
         this._patcher = patcherIn;
     }
     setSrc(src: [string, number]) {

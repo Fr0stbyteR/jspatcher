@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { Patcher } from "./Patcher";
 import { BaseObject } from "./objects/Base";
 export type TBox = { id?: string, text: string, inlets: number, outlets: number, rect: [number, number, number, number], data?: { [key: string]: any } };
-type TEvents = "rectChanged" | "textChanged" | "highlightPort";
+type TEvents = "rectChanged" | "textChanged" | "highlightPort" | "connectedPort" | "disconnectedPort";
 export class Box extends EventEmitter {
     on: (type: TEvents, listener: (...args: any[]) => void) => this;
     once: (type: TEvents, listener: (...args: any[]) => void) => this;
@@ -85,18 +85,22 @@ export class Box extends EventEmitter {
     }
     // called when inlet or outlet are connected or disconnected
     connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
+        this.emit("connectedPort", true, outlet);
         if (this._object) this._object.connectedOutlet(outlet, destBox, destInlet, lineID);
         return this;
     }
     connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        this.emit("connectedPort", false, inlet);
         if (this._object) this._object.connectedInlet(inlet, srcBox, srcOutlet, lineID);
         return this;
     }
     disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
+        this.emit("disconnectedPort", true, outlet);
         if (this._object) this._object.disconnectedOutlet(outlet, destBox, destInlet, lineID);
         return this;
     }
     disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        this.emit("disconnectedPort", false, inlet);
         if (this._object) this._object.disconnectedInlet(inlet, srcBox, srcOutlet, lineID);
         return this;
     }
