@@ -23,7 +23,7 @@ class JSUnaryOp extends JSOp {
             }]
         };
     }
-    _mem: { result: any };
+    _mem = {} as { result: any };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 1;
@@ -79,7 +79,7 @@ class JSBinaryOp extends JSOp {
             }]
         };
     }
-    _mem: { arg: any, result: any };
+    _mem = {} as { arg: any, result: any };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 2;
@@ -152,7 +152,7 @@ class JSTernaryOp extends JSOp {
             }]
         };
     }
-    _mem: { args: any[], result: any };
+    _mem = {} as { args: any[], result: any };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 3;

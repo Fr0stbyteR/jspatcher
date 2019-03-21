@@ -8,6 +8,12 @@
         position: absolute;
         min-width: 100%;
         min-height: 100%;
+        > div.selection {
+            position: absolute;
+            background-color: #ffffff40;
+            border: 1px solid #ffffff80;
+            z-index: 50;
+        }
     }
     > div.lines {
         position: absolute;

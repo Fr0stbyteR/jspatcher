@@ -124,8 +124,10 @@ class Lines extends React.Component {
 
 class Boxes extends React.Component {
     props: { patcher: Patcher };
-    state = { width: "100%", height: "100%" };
+    state = { width: "100%", height: "100%", selectionRect: [0, 0, 0, 0] };
     boxes = {} as { [key: string]: JSX.Element };
+    refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
+    dragged = false;
     componentDidMount() {
         this.props.patcher.on("loaded", this.onLoaded);
         this.props.patcher.on("createBox", this.onCreateBox);
@@ -160,14 +162,83 @@ class Boxes extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (!e.shiftKey) this.props.patcher.deselectAll();
+        if (this.props.patcher._state.locked) return;
+        // Handle Draggable
+        const handleDraggable = () => {
+            this.dragged = false;
+            const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
+            const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
+            let el = patcherDiv;
+            do {
+                patcherRect[0] += el.offsetLeft;
+                patcherRect[1] += el.offsetTop;
+                el = el.offsetParent as HTMLDivElement;
+            } while (el.offsetParent);
+            let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+            const selectedBefore = this.props.patcher._state.selected.slice();
+            const selectionRect = [e.pageX - patcherRect[0] + patcherDiv.scrollLeft, e.pageY - patcherRect[1] + patcherDiv.scrollTop, 0, 0];
+            const handleMouseMove = (e: MouseEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (e.movementX || e.movementY) {
+                    if (!this.dragged) this.dragged = true;
+                    selectionRect[2] = e.pageX - patcherRect[0] + patcherDiv.scrollLeft;
+                    selectionRect[3] = e.pageY - patcherRect[1] + patcherDiv.scrollTop;
+                    this.setState({ selectionRect });
+                    this.props.patcher.selectRegion(selectionRect, selectedBefore);
+                }
+                const x = e.pageX - patcherRect[0];
+                const y = e.pageY - patcherRect[1];
+                if (x < 10) patcherDiv.scrollLeft += x - 10;
+                if (x > patcherRect[2] - 10) patcherDiv.scrollLeft += x + 10 - patcherRect[2];
+                if (y < 10) patcherDiv.scrollTop += y - 10;
+                if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
+            };
+            const handleMouseUp = (e: MouseEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
+                document.removeEventListener("mousemove", handleMouseMove);
+                document.removeEventListener("mouseup", handleMouseUp);
+                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
+                this.setState({ selectionRect: [0, 0, 0, 0] });
+            };
+            const handlePatcherScroll = (e: UIEvent) => {
+                const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
+                const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
+                selectionRect[2] += movementX;
+                selectionRect[3] += movementY;
+                patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+                if (movementX || movementY) {
+                    if (!this.dragged) this.dragged = true;
+                    this.setState({ selectionRect });
+                    this.props.patcher.selectRegion(selectionRect, selectedBefore);
+                }
+            };
+            document.addEventListener("mousemove", handleMouseMove);
+            document.addEventListener("mouseup", handleMouseUp);
+            patcherDiv.addEventListener("scroll", handlePatcherScroll);
+        };
+        handleDraggable();
     }
     handleClick = (e: React.MouseEvent) => {
-        if (e.ctrlKey) this.props.patcher.setLock(!this.props.patcher._state.locked);
+        if (e.ctrlKey && !this.dragged) this.props.patcher.setLock(!this.props.patcher._state.locked);
     }
     render() {
+        const selectionRect = this.state.selectionRect;
+        let selectionDiv;
+        if (selectionRect[2] !== selectionRect[0] && selectionRect[3] !== selectionRect[1]) {
+            const selectionDivStyle = {
+                left: Math.min(selectionRect[0], selectionRect[2]),
+                top: Math.min(selectionRect[1], selectionRect[3]),
+                width: Math.abs(selectionRect[2] - selectionRect[0]),
+                height: Math.abs(selectionRect[3] - selectionRect[1])
+            } as React.CSSProperties;
+            selectionDiv = <div className="selection" style={selectionDivStyle}/>;
+        }
         return (
-            <div className="boxes" onMouseDown={this.handleMouseDown} onClick={this.handleClick} style={this.state}>
+            <div className="boxes" onMouseDown={this.handleMouseDown} ref={this.refDiv} onClick={this.handleClick} style={this.state}>
                 {Object.values(this.boxes)}
+                {selectionDiv}
             </div>
         );
     }

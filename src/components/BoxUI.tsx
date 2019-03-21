@@ -293,7 +293,7 @@ class Outlet extends React.Component {
     state: { isConnected: boolean, highlight: boolean };
     dragged = false;
     componentWillMount() {
-        this.setState({ isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false })
+        this.setState({ isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false });
     }
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);

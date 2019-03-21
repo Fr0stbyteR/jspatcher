@@ -356,6 +356,7 @@ export class Patcher extends EventEmitter {
         Object.keys(this.boxes).forEach(id => this.select(id));
     }
     select(id: string) {
+        if (this._state.selected.indexOf(id) >= 0) return;
         if (this.boxes[id] || this.lines[id]) {
             this._state.selected.push(id);
             this.emit("selected", id);
@@ -363,10 +364,9 @@ export class Patcher extends EventEmitter {
     }
     deselect(id: string) {
         const i = this._state.selected.indexOf(id);
-        if (i >= 0) {
-            this._state.selected.splice(i, 1);
-            this.emit("deselected", id);
-        }
+        if (i === -1) return;
+        this._state.selected.splice(i, 1);
+        this.emit("deselected", id);
     }
     deselectAll() {
         this._state.selected.forEach(el => this.emit("deselected", el));
@@ -375,6 +375,25 @@ export class Patcher extends EventEmitter {
     selectOnly(id: string) {
         this.deselectAll();
         this.select(id);
+    }
+    selectRegion(selectionRect: number[], selectedBefore: string[]): any {
+        let [left, top, right, bottom] = selectionRect;
+        if (left > right) [left, right] = [right, left];
+        if (top > bottom) [top, bottom] = [bottom, top];
+        const select = selectedBefore.slice();
+        for (const boxID in this.boxes) {
+            const box = this.boxes[boxID];
+            const [boxLeft, boxTop] = box.rect;
+            const [boxRight, boxBottom] = [boxLeft + box.rect[2], boxTop + box.rect[3]];
+            if (boxLeft < right && boxTop < bottom && boxRight > left && boxBottom > top) {
+                const i = select.indexOf(boxID);
+                if (i === -1) select.push(boxID);
+                else select.splice(i, 1);
+            }
+        }
+        const deselect = this._state.selected.filter(id => select.indexOf(id) === -1);
+        select.forEach(boxID => this.select(boxID));
+        deselect.forEach(id => this.deselect(id));
     }
     moveBox(boxID: string, deltaX: number, deltaY: number) {
         const box = this.boxes[boxID];

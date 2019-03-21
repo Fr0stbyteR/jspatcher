@@ -116,6 +116,7 @@ class EditMenu extends React.Component {
     handleClickCopy = () => {
     };
     handleClickPaste = () => {
+        if (this.props.patcher._state.locked) return;
         navigator.clipboard.readText()
         .then((text) => {
             let parsed: TPatcher | TMaxClipboard;
