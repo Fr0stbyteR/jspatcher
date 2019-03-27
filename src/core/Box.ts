@@ -86,12 +86,10 @@ export class Box extends EventEmitter {
         return positions;
     }
     get allLines() {
-        const lines = [] as string[];
-        const lineAsDest = this._patcher.getLinesByDestID(this.id);
-        const lineAsSrc = this._patcher.getLinesBySrcID(this.id);
-        lineAsDest.forEach(el => el.forEach(el => lines.push(el)));
-        lineAsSrc.forEach(el => el.forEach(el => lines.push(el)));
-        return lines;
+        const lines = {} as { [key: string]: boolean };
+        this.inletLines.forEach(el => el.forEach(id => lines[id] = true));
+        this.outletLines.forEach(el => el.forEach(id => lines[id] = true));
+        return Object.keys(lines);
     }
     // called when inlet or outlet are connected or disconnected
     connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
@@ -151,11 +149,8 @@ export class Box extends EventEmitter {
     }
     setRect(rect: [number, number, number, number]) {
         this.rect = rect;
+        this.allLines.forEach(id => this._patcher.lines[id].uiUpdateDest());
         this.emit("rectChanged", this);
-        const lineAsDest = this._patcher.getLinesByDestID(this.id);
-        const lineAsSrc = this._patcher.getLinesBySrcID(this.id);
-        lineAsDest.forEach(el => el.forEach(el => this._patcher.lines[el].uiUpdateDest()));
-        lineAsSrc.forEach(el => el.forEach(el => this._patcher.lines[el].uiUpdateSrc()));
         return this;
     }
     highlightPort(isSrc: boolean, i: number, highlight: boolean) {

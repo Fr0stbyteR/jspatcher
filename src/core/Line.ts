@@ -19,9 +19,9 @@ export class Line extends EventEmitter {
         return super.emit(type, ...args);
     }
     readonly id: string;
-    protected src: [string, number];
-    protected dest: [string, number];
-    protected disabled = false;
+    src: [string, number];
+    dest: [string, number];
+    disabled = true;
     private readonly _patcher: Patcher;
     constructor(patcherIn: Patcher, lineIn: TLine) {
         super();

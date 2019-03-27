@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Patcher } from "../core/patcher";
+import { Patcher, TPatcher } from "../core/patcher";
 import { Box } from "../core/Box";
 import { Line } from "../core/Line";
 import "./PatcherUI.scss";
@@ -49,16 +49,16 @@ export class PatcherUI extends React.Component {
     componentDidMount() {
         const patcher = this.props.patcher;
         patcher.on("loaded", this.handleLoaded);
-        patcher.on("lockedChange", this.handleLockedChange);
-        patcher.on("presentationChange", this.handlePresentationChange);
-        patcher.on("showGridChange", this.handleShowGridChange);
+        patcher.on("locked", this.handleLockedChange);
+        patcher.on("presentation", this.handlePresentationChange);
+        patcher.on("showGrid", this.handleShowGridChange);
     }
     componentWillUnmount() {
         const patcher = this.props.patcher;
         patcher.off("loaded", this.handleLoaded);
-        patcher.off("lockedChange", this.handleLockedChange);
-        patcher.off("presentationChange", this.handlePresentationChange);
-        patcher.off("showGridChange", this.handleShowGridChange);
+        patcher.off("locked", this.handleLockedChange);
+        patcher.off("presentation", this.handlePresentationChange);
+        patcher.off("showGrid", this.handleShowGridChange);
     }
     render() {
         const classArray = ["patcher"];
@@ -83,21 +83,38 @@ class Lines extends React.Component {
     componentDidMount() {
         this.props.patcher.on("loaded", this.onLoaded);
         this.props.patcher.on("createLine", this.onCreateLine);
+        this.props.patcher.on("create", this.onCreate);
         this.props.patcher.on("deleteLine", this.onDeleteLine);
+        this.props.patcher.on("delete", this.onDelete);
     }
     componentWillUnmount() {
         this.props.patcher.off("loaded", this.onLoaded);
         this.props.patcher.off("createLine", this.onCreateLine);
+        this.props.patcher.off("create", this.onCreate);
         this.props.patcher.off("deleteLine", this.onDeleteLine);
+        this.props.patcher.off("delete", this.onDelete);
     }
     onCreateLine = (line: Line) => {
         if (this.props.patcher._state.isLoading) return;
         this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
         this.forceUpdate();
     }
+    onCreate = (created: TPatcher) => {
+        if (this.props.patcher._state.isLoading) return;
+        Object.keys(created.lines).forEach((id) => {
+            const line = created.lines[id];
+            this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
+        });
+        this.forceUpdate();
+    }
     onDeleteLine = (line: Line) => {
         if (this.props.patcher._state.isLoading) return;
         delete this.lines[line.id];
+        this.forceUpdate();
+    }
+    onDelete = (deleted: TPatcher) => {
+        if (this.props.patcher._state.isLoading) return;
+        Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
         this.forceUpdate();
     }
     onLoaded = () => {
@@ -131,21 +148,38 @@ class Boxes extends React.Component {
     componentDidMount() {
         this.props.patcher.on("loaded", this.onLoaded);
         this.props.patcher.on("createBox", this.onCreateBox);
+        this.props.patcher.on("create", this.onCreate);
         this.props.patcher.on("deleteBox", this.onDeleteBox);
+        this.props.patcher.on("delete", this.onDelete);
     }
     componentWillUnmount() {
         this.props.patcher.off("loaded", this.onLoaded);
         this.props.patcher.off("createBox", this.onCreateBox);
+        this.props.patcher.off("create", this.onCreate);
         this.props.patcher.off("deleteBox", this.onDeleteBox);
+        this.props.patcher.off("delete", this.onDelete);
     }
     onCreateBox = (box: Box) => {
         if (this.props.patcher._state.isLoading) return;
         this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
         this.forceUpdate();
     }
+    onCreate = (created: TPatcher) => {
+        if (this.props.patcher._state.isLoading) return;
+        Object.keys(created.boxes).forEach((id) => {
+            const box = created.boxes[id];
+            this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
+        });
+        this.forceUpdate();
+    }
     onDeleteBox = (box: Box) => {
         if (this.props.patcher._state.isLoading) return;
         delete this.boxes[box.id];
+        this.forceUpdate();
+    }
+    onDelete = (deleted: TPatcher) => {
+        if (this.props.patcher._state.isLoading) return;
+        Object.keys(deleted.boxes).forEach(id => delete this.boxes[id]);
         this.forceUpdate();
     }
     onLoaded = () => {

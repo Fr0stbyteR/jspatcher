@@ -13,7 +13,7 @@ export type TMaxBox = { box: { id: string, maxclass: "newobj" | string, text?: s
 export type TMaxLine = { patchline: { destination: [string, number], source: [string, number], order: number, midpoints: number[] }};
 export type TMaxClipboard = { boxes: TMaxBox[], lines: TMaxLine[], appversion: { major: number, minor: number, revision: number, architecture: string, modernui: number } };
 export type TPackage = { [key: string]: typeof Base.BaseObject | TPackage };
-type TEvents = "loaded" | "lockedChange" | "presentationChange" | "showGridChange" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected" | "tempLine";
+type TEvents = "loaded" | "locked" | "presentation" | "showGrid" | "create" | "delete" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected" | "tempLine";
 
 import Base from "./objects/Base";
 import Max from "./objects/Max";
@@ -38,6 +38,8 @@ export class Patcher extends EventEmitter {
     removeAllListeners(type: TEvents) {
         return super.removeAllListeners(type);
     }
+    // emit(type: "loaded", data: this): boolean;
+    // emit(type: "loaded", data: boolean): boolean;
     emit(type: TEvents, ...args: any[]) {
         return super.emit(type, ...args);
     }
@@ -204,7 +206,7 @@ export class Patcher extends EventEmitter {
         if (!lineIn.hasOwnProperty("id")) lineIn.id = "line-" + ++this.props.lineIndexCount;
         const line = new Line(this, lineIn);
         this.lines[line.id] = line;
-        if (!lineIn.disabled) line.enable();
+        line.enable();
         if (!this._state.isLoading) this.emit("createLine", line);
         return line;
     }
@@ -308,27 +310,16 @@ export class Patcher extends EventEmitter {
         this.emit("newLog", log);
     }
     observeHistory() {
-        this.on("createBox", (box) => {
-            this._state.history.do("createBox", box);
-        }).on("deleteBox", (box) => {
-            this._state.history.do("deleteBox", box);
-        }).on("createLine", (line) => {
-            this._state.history.do("createLine", line);
-        }).on("deleteLine", (line) => {
-            this._state.history.do("deleteLine", line);
-        }).on("changeBoxText", (box, oldText, text) => {
-            const info = { box, oldText, text };
-            this._state.history.do("changeBoxText", info);
-        }).on("changeLineSrc", (line, oldSrc, src) => {
-            const info = { line, oldSrc, src };
-            this._state.history.do("changeLineSrc", info);
-        }).on("changeLineDest", (line, oldDest, dest) => {
-            const info = { line, oldDest, dest };
-            this._state.history.do("changeLineDest", info);
-        }).on("updateBoxRect", (box, oldRect, rect) => {
-            const info = { box, oldRect, rect };
-            this._state.history.do("updateBoxRect", info);
-        });
+        this.on("createBox", box => this._state.history.did("createBox", box))
+        .on("deleteBox", box => this._state.history.did("deleteBox", box))
+        .on("createLine", line =>  this._state.history.did("createLine", line))
+        .on("deleteLine", line => this._state.history.did("deleteLine", line))
+        .on("create", created => this._state.history.did("create", created))
+        .on("delete", deleted => this._state.history.did("delete", deleted))
+        .on("changeBoxText", (box, oldText, text) => this._state.history.did("changeBoxText", { box, oldText, text }))
+        .on("changeLineSrc", (line, oldSrc, src) => this._state.history.did("changeLineSrc", { line, oldSrc, src }))
+        .on("changeLineDest", (line, oldDest, dest) => this._state.history.did("changeLineDest", { line, oldDest, dest }))
+        .on("updateBoxRect", (box, oldRect, rect) => this._state.history.did("updateBoxRect", { box, oldRect, rect }));
     }
     newTimestamp() {
         this._state.history.newTimestamp();
@@ -337,19 +328,19 @@ export class Patcher extends EventEmitter {
     setLock(bool: boolean): Patcher {
         if (this._state.locked === bool) return this;
         this._state.locked = bool;
-        this.emit("lockedChange", bool);
+        this.emit("locked", bool);
         return this;
     }
     setPresentation(bool: boolean) {
         if (this._state.presentation === bool) return this;
         this._state.presentation = bool;
-        this.emit("presentationChange", bool);
+        this.emit("presentation", bool);
         return this;
     }
     setShowGrid(bool: boolean) {
         if (this._state.showGrid === bool) return this;
         this._state.showGrid = bool;
-        this.emit("showGridChange", bool);
+        this.emit("showGrid", bool);
         return this;
     }
     selectAllBoxes() {
@@ -406,7 +397,7 @@ export class Patcher extends EventEmitter {
         return this;
     }
     moveSelectedBox(boxID: string, dragOffset: { x: number, y: number }) {
-        const linesConcerned = {} as { [key: string]: boolean };
+        const linesConcerned = {} as { [id: string]: true };
         const deltaX = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - this.boxes[boxID].rect[0] : dragOffset.x;
         const deltaY = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - this.boxes[boxID].rect[1] : dragOffset.y;
         const delta = { x: deltaX, y: deltaY };
@@ -425,10 +416,7 @@ export class Patcher extends EventEmitter {
                 delta.y -= box.rect[1];
                 box.rect[1] = 0;
             }
-            const lineAsDest = this.getLinesByDestID(box.id);
-            const lineAsSrc = this.getLinesBySrcID(box.id);
-            lineAsDest.forEach(el => el.forEach(el => linesConcerned[el] = true));
-            lineAsSrc.forEach(el => el.forEach(el => linesConcerned[el] = true));
+            box.allLines.forEach(id => linesConcerned[id] = true);
             box.emit("rectChanged", box);
         });
         Object.keys(linesConcerned).forEach((lineID) => {
@@ -548,13 +536,66 @@ export class Patcher extends EventEmitter {
         }
         return pasted;
     }
+    create(objects: TPatcher) {
+        this.newTimestamp();
+        const created = { boxes: {}, lines: {} } as TPatcher;
+        for (const boxID in objects.boxes) {
+            const boxIn = objects.boxes[boxID];
+            const box = new Box(this, boxIn);
+            this.boxes[box.id] = box;
+            created.boxes[box.id] = box;
+            box.init();
+            this.select(box.id);
+        }
+        for (const lineID in objects.lines) {
+            const lineIn = objects.lines[lineID];
+            const line = new Line(this, lineIn);
+            this.lines[line.id] = line;
+            created.lines[line.id] = line;
+            line.enable();
+        }
+        this.emit("create", created);
+    }
+    deleteSelected() {
+        this.newTimestamp();
+        const map = { boxes: {}, lines: {} } as { boxes: { [id: string]: true }, lines: { [id: string]: true } };
+        this._state.selected.filter(id => id.includes("line")).forEach(id => map.lines[id] = true);
+        this._state.selected.filter(id => id.includes("box")).forEach((id) => {
+            map.boxes[id] = true;
+            this.boxes[id].allLines.forEach(id => map.lines[id] = true);
+        });
+
+        const deleted = { boxes: {}, lines: {} } as TPatcher;
+        Object.keys(map.lines).forEach(id => deleted.lines[id] = this.lines[id].destroy());
+        Object.keys(map.boxes).forEach(id => deleted.boxes[id] = this.boxes[id].destroy());
+        this._state.selected = [];
+        this.emit("delete", deleted);
+        return deleted;
+    }
+    delete(objects: TPatcher) {
+        this.newTimestamp();
+        const deleted = { boxes: {}, lines: {} } as TPatcher;
+        for (const id in objects.lines) {
+            deleted.lines[id] = this.lines[id].destroy();
+        }
+        for (const id in objects.boxes) {
+            deleted.boxes[id] = this.boxes[id].destroy();
+        }
+        this.emit("delete", deleted);
+    }
+    undo() {
+        this._state.history.undo();
+    }
+    redo() {
+        this._state.history.redo();
+    }
     toString() {
         return JSON.stringify(this, (k, v) => k.charAt(0) === "_" ? undefined : v, 4);
     }
 }
 
 class History {
-    _patcher: Patcher;
+    readonly _patcher: Patcher;
     undoList: number[];
     redoList: number[];
     capture: boolean;
@@ -572,7 +613,17 @@ class History {
         if (this.capture) this.timestamp = new Date().getTime();
         return this;
     }
-    do(e: string, data: object) {
+    did(e: "create", created: TPatcher): this;
+    did(e: "delete", deleted: TPatcher): this;
+    did(e: "createBox", box: Box): this;
+    did(e: "deleteBox", box: Box): this;
+    did(e: "createLine", line: Line): this;
+    did(e: "deleteLine", line: Line): this;
+    did(e: "changeBoxText", data: { box: Box, oldText: string, text: string }): this;
+    did(e: "changeLineSrc", data: { line: Line, oldSrc: [string, number], src: [string, number] }): this;
+    did(e: "changeLineDest", data: { line: Line, oldDest: [string, number], dest: [string, number] }): this;
+    did(e: "updateBoxRect", data: { box: Box, oldRect: [number, number, number, number], rect: [number, number, number, number] }): this;
+    did(e: TEvents, data: object) {
         if (!this.capture) return this;
         if (!this.events.hasOwnProperty(this.timestamp)) {
             if (this.redoList.length) this.redoList = [];
@@ -587,44 +638,55 @@ class History {
         if (this.undoList.length === 0) return this;
         this.capture = false;
         const eID = this.undoList.pop();
+        const patcher = this._patcher;
         if (this.events[eID].hasOwnProperty("deleteBox")) {
             for (const box of this.events[eID]["deleteBox"]) {
-                this._patcher.createBox(box);
+                patcher.createBox(box);
             }
         }
         if (this.events[eID].hasOwnProperty("deleteLine")) {
             for (const line of this.events[eID]["deleteLine"]) {
-                this._patcher.createLine(line);
+                patcher.createLine(line);
+            }
+        }
+        if (this.events[eID].hasOwnProperty("delete")) {
+            for (const deleted of this.events[eID]["delete"]) {
+                patcher.create(deleted);
             }
         }
         if (this.events[eID].hasOwnProperty("changeBoxText")) {
             for (const info of this.events[eID]["changeBoxText"]) {
-                this._patcher.changeBoxText(info.box.id, info.oldText);
+                patcher.changeBoxText(info.box.id, info.oldText);
             }
         }
         if (this.events[eID].hasOwnProperty("updateBoxRect")) {
             for (const info of this.events[eID]["updateBoxRect"]) {
-                this._patcher.emit("forceBoxRect", info.box.id, info.oldRect);
+                patcher.emit("forceBoxRect", info.box.id, info.oldRect);
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineSrc")) {
             for (const info of this.events[eID]["changeLineSrc"]) {
-                this._patcher.changeLineSrc(info.line.id, info.oldSrc[0], info.oldSrc[1]);
+                patcher.changeLineSrc(info.line.id, info.oldSrc[0], info.oldSrc[1]);
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineDest")) {
             for (const info of this.events[eID]["changeLineDest"]) {
-                this._patcher.changeLineDest(info.line.id, info.oldDest[0], info.oldDest[1]);
+                patcher.changeLineDest(info.line.id, info.oldDest[0], info.oldDest[1]);
             }
         }
         if (this.events[eID].hasOwnProperty("createLine")) {
             for (const line of this.events[eID]["createLine"]) {
-                this._patcher.deleteLine(line.id);
+                patcher.deleteLine(line.id);
             }
         }
         if (this.events[eID].hasOwnProperty("createBox")) {
             for (const box of this.events[eID]["createBox"]) {
-                this._patcher.deleteBox(box.id);
+                patcher.deleteBox(box.id);
+            }
+        }
+        if (this.events[eID].hasOwnProperty("create")) {
+            for (const created of this.events[eID]["create"]) {
+                patcher.delete(created);
             }
         }
         this.redoList.push(eID);
@@ -635,44 +697,55 @@ class History {
         if (this.redoList.length === 0) return this;
         this.capture = false;
         const eID = this.redoList.pop();
+        const patcher = this._patcher;
         if (this.events[eID].hasOwnProperty("createBox")) {
             for (const box of this.events[eID]["createBox"]) {
-                this._patcher.createBox(box);
+                patcher.createBox(box);
             }
         }
         if (this.events[eID].hasOwnProperty("createLine")) {
             for (const line of this.events[eID]["createLine"]) {
-                this._patcher.createLine(line);
+                patcher.createLine(line);
+            }
+        }
+        if (this.events[eID].hasOwnProperty("create")) {
+            for (const created of this.events[eID]["create"]) {
+                patcher.create(created);
             }
         }
         if (this.events[eID].hasOwnProperty("changeBoxText")) {
             for (const info of this.events[eID]["changeBoxText"]) {
-                this._patcher.changeBoxText(info.box.id, info.text);
+                patcher.changeBoxText(info.box.id, info.text);
             }
         }
         if (this.events[eID].hasOwnProperty("updateBoxRect")) {
             for (const info of this.events[eID]["updateBoxRect"]) {
-                this._patcher.emit("forceBoxRect", info.box.id, info.rect);
+                patcher.emit("forceBoxRect", info.box.id, info.rect);
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineSrc")) {
             for (const info of this.events[eID]["changeLineSrc"]) {
-                this._patcher.changeLineSrc(info.line.id, info.src[0], info.src[1]);
+                patcher.changeLineSrc(info.line.id, info.src[0], info.src[1]);
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineDest")) {
             for (const info of this.events[eID]["changeLineDest"]) {
-                this._patcher.changeLineDest(info.line.id, info.dest[0], info.dest[1]);
+                patcher.changeLineDest(info.line.id, info.dest[0], info.dest[1]);
             }
         }
         if (this.events[eID].hasOwnProperty("deleteLine")) {
             for (const line of this.events[eID]["deleteLine"]) {
-                this._patcher.deleteLine(line.id);
+                patcher.deleteLine(line.id);
             }
         }
         if (this.events[eID].hasOwnProperty("deleteBox")) {
             for (const box of this.events[eID]["deleteBox"]) {
-                this._patcher.deleteBox(box.id);
+                patcher.deleteBox(box.id);
+            }
+        }
+        if (this.events[eID].hasOwnProperty("delete")) {
+            for (const deleted of this.events[eID]["delete"]) {
+                patcher.delete(deleted);
             }
         }
         this.undoList.push(eID);

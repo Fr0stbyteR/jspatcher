@@ -199,6 +199,7 @@ class Inlets extends React.Component {
         this.props.box.on("textChanged", this.handleUpdate);
     }
     componentWillUnmount() {
+        if (!this.props.box) return;
         this.props.box.off("textChanged", this.handleUpdate);
     }
     handleUpdate = () => {
@@ -229,6 +230,7 @@ class Outlets extends React.Component {
         this.props.box.on("textChanged", this.handleUpdate);
     }
     componentWillUnmount() {
+        if (!this.props.box) return;
         this.props.box.off("textChanged", this.handleUpdate);
     }
     handleUpdate = () => {
@@ -261,6 +263,7 @@ class Inlet extends React.Component {
         this.props.box.on("disconnectedPort", this.handleConnectedChange);
     }
     componentWillUnmount() {
+        if (!this.props.box) return;
         this.props.box.off("highlightPort", this.handleHighlight);
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
@@ -301,6 +304,7 @@ class Outlet extends React.Component {
         this.props.box.on("disconnectedPort", this.handleConnectedChange);
     }
     componentWillUnmount() {
+        if (!this.props.box) return;
         this.props.box.off("highlightPort", this.handleHighlight);
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);

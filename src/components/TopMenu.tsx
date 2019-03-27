@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Menu, Dropdown, DropdownItemProps } from "semantic-ui-react";
+import { Menu, Dropdown } from "semantic-ui-react";
 import { Patcher, TPatcher, TMaxClipboard } from "../core/patcher";
 import "./TopMenu.scss";
 
@@ -108,8 +108,12 @@ declare global {
 class EditMenu extends React.Component {
     props: { patcher: Patcher };
     handleClickUndo = () => {
+        if (this.props.patcher._state.locked) return;
+        this.props.patcher.undo();
     };
     handleClickRedo = () => {
+        if (this.props.patcher._state.locked) return;
+        this.props.patcher.redo();
     };
     handleClickCut = () => {
     };
@@ -127,13 +131,18 @@ class EditMenu extends React.Component {
         });
     };
     handleClickDelete = () => {
+        if (this.props.patcher._state.locked) return;
+        this.props.patcher.deleteSelected();
     };
     handleClickDuplicate = () => {
     };
     handleClickSelectAll = () => {
     };
     handleKeyDown = (e: KeyboardEvent) => {
+        if (e.ctrlKey && e.key === "z") this.handleClickUndo();
+        if (e.ctrlKey && e.key === "y") this.handleClickRedo();
         if (e.ctrlKey && e.key === "v") this.handleClickPaste();
+        if (e.key === "Delete" || e.key === "Backspace") this.handleClickDelete();
         else return true;
         e.stopPropagation();
         e.preventDefault();
