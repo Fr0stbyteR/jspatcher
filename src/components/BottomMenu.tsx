@@ -11,10 +11,10 @@ export class BottomMenu extends React.Component {
         this.setState({ locked: pState.locked });
     }
     componentDidMount() {
-        this.props.patcher.on("lockedChange", this.handleLockedChange);
+        this.props.patcher.on("locked", this.handleLockedChange);
     }
     componentWillUnmount() {
-        this.props.patcher.off("lockedChange", this.handleLockedChange);
+        this.props.patcher.off("locked", this.handleLockedChange);
     }
     handleLockedChange = (locked: boolean) => this.setState({ locked });
     handleClickLock = (event: React.MouseEvent) => {
