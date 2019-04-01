@@ -211,6 +211,7 @@ class InvalidObject extends BaseObject {
     }
 }
 export class BaseUI extends React.Component {
+    static sizing = "horizontal" as "horizontal" | "vertical" | "both" | "ratio";
     props: { object: BaseObject, children?: React.ReactNode };
     editableOnUnlock = false;
     toggleEdit = (bool?: boolean) => false;

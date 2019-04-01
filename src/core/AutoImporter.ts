@@ -3,25 +3,42 @@ import { Box } from "./Box";
 import { Patcher, TPackage } from "./Patcher";
 declare const window: { [key: string]: any };
 export class AutoImporter {
-    static async importFrom(address: string, name: string, pkgName?: string) {
-        const injectScript = (src: string) => {
-            return new Promise((resolve: (script: HTMLScriptElement) => void, reject) => {
-                const script = document.createElement("script");
-                script.async = true;
-                script.src = src;
-                script.addEventListener("load", () => resolve(script));
-                script.addEventListener("error", () => reject("Error loading script."));
-                script.addEventListener("abort", () => reject("Script loading aborted."));
-                document.head.appendChild(script);
-            });
-        };
-        const scriptDOM = await injectScript(address);
-        document.head.removeChild(scriptDOM);
-        const o = {} as { [key: string]: any };
-        o[pkgName || name] = window[name];
-        delete window[name];
-        return this.import(pkgName || name, o);
+    static async importFrom(address: string, pkgName: string) {
+        let ex = { _____: true }; // Original exports, detect if exports is overwritten.
+        window.exports = ex;
+        window.module = { exports: ex };
+        return new Promise((resolve: (script: HTMLScriptElement) => void, reject) => {
+            const script = document.createElement("script");
+            script.async = true;
+            script.src = address;
+            script.type = "module";
+            script.addEventListener("load", () => resolve(script));
+            script.addEventListener("error", () => reject("Error loading script."));
+            script.addEventListener("abort", () => reject("Script loading aborted."));
+            document.head.appendChild(script);
+        }).then(() => {
+            ex = window.module.exports;
+            delete window.exports;
+            delete window.module;
+            if (ex._____) {
+                delete ex._____;
+                return this.import(pkgName, ex);
+            }
+            const o = {} as { [key: string]: any }; // if exports is overwritten, wrap it
+            o[pkgName] = ex;
+            return this.import(pkgName, o);
+        });
     }
+    /*
+    static async test() {
+        // tslint:disable-next-line: no-console
+        await AutoImporter.importFrom("https://unpkg.com/@tensorflow/tfjs", "tf").then(console.log);
+        // tslint:disable-next-line: no-console
+        await AutoImporter.importFrom("https://unpkg.com/three", "THREE").then(console.log);
+        // tslint:disable-next-line: no-console
+        await AutoImporter.importFrom("https://unpkg.com/webmidi", "MIDI").then(console.log);
+    }
+    */
     static import(pkgName: string, root: { [key: string]: any }, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number, fromProto?: boolean) {
         const depth = typeof depthIn === "undefined" ? 0 : depthIn;
         const out = outIn || {};

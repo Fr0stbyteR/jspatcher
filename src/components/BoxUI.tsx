@@ -8,6 +8,7 @@ export class BoxUI extends React.Component {
     props: { patcher: Patcher, id: string };
     state: { selected: boolean, rect: [number, number, number, number] };
     innerUI: JSX.Element;
+    sizing = "horizontal" as "horizontal" | "vertical" | "both" | "ratio";
     refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
     refUI = React.createRef() as React.RefObject<BaseUI>;
     editingOnUnlock = false;
@@ -27,6 +28,7 @@ export class BoxUI extends React.Component {
         this.innerUI = null;
         this.forceUpdate(() => { // Unmount and remount, please.
             this.innerUI = <box.ui object={box.object} ref={this.refUI} />;
+            this.sizing = box.ui.sizing;
             this.setState({ rect: box.rect }, () => {
                 this.inspectRectChange();
             });
@@ -176,7 +178,12 @@ export class BoxUI extends React.Component {
     render() {
         const box = this.props.patcher.boxes[this.props.id];
         const rect = this.state.rect;
-        const divStyle = { left: rect[0], top: rect[1], width: rect[2]/*, height: rect[3]*/ };
+        const divStyle = {
+            left: rect[0],
+            top: rect[1],
+            width: this.sizing === "vertical" ? undefined : rect[2],
+            height: this.sizing === "horizontal" ? undefined : rect[3]
+        };
         return (
             <div className={"box box-default" + (this.state.selected ? " selected" : "")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onBlur={this.handleBlur} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
                 <Inlets patcher={this.props.patcher} box={box} />
