@@ -1,10 +1,11 @@
 import { BaseObject, TMeta, Bang } from "./objects/Base";
 import { Box } from "./Box";
 import { Patcher, TPackage } from "./Patcher";
-declare const window: { [key: string]: any };
+type TImportedModule = { _____?: boolean, [key: string]: any };
+declare const window: { module: { exports: TImportedModule }, exports: TImportedModule };
 export class AutoImporter {
     static async importFrom(address: string, pkgName: string) {
-        let ex = { _____: true }; // Original exports, detect if exports is overwritten.
+        let ex = { _____: true } as TImportedModule; // Original exports, detect if exports is overwritten.
         window.exports = ex;
         window.module = { exports: ex };
         return new Promise((resolve: (script: HTMLScriptElement) => void, reject) => {

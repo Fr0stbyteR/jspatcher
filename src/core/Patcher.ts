@@ -77,7 +77,7 @@ export class Patcher extends EventEmitter {
     async dynamicImportPackage(address: string, pkgName?: string) {
         const pkg = await AutoImporter.importFrom(address, pkgName);
         Packages[pkgName || name] = pkg;
-        this.packageRegister(pkg, this._state.libJS);
+        this.packageRegister(pkg, this._state.libJS, pkgName || name);
     }
     clear() {
         this.lines = {};
