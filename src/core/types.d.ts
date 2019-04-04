@@ -1,4 +1,4 @@
-import { Patcher } from "./Patcher";
+import { Patcher, History } from "./Patcher";
 import { BaseObject } from "./objects/Base";
 import { Box } from "./Box";
 import { Line } from "./Line";

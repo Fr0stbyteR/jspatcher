@@ -2,19 +2,7 @@ import { EventEmitter } from "events";
 import { Line } from "./Line";
 import { Box } from "./Box";
 import { AutoImporter } from "./AutoImporter";
-import { TLine, TBox, PatcherEventMap, THistoryElement } from "./types";
-
-export type TPatcherMode = "max" | "gen" | "js";
-export type TPatcher = { lines: { [key: string]: TLine }, boxes: { [key: string]: TBox }, props?: {} };
-export type TPatcherProps = { mode: TPatcherMode, bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], grid: [number, number], boxIndexCount: number, lineIndexCount: number };
-export type TPatcherState = { isLoading: boolean, locked: boolean, presentation: boolean, showGrid: boolean, snapToGrid: boolean, log: TPatcherLog[], history: History, lib: { [key: string]: typeof Base.BaseObject }, libJS: { [key: string]: typeof Base.BaseObject }, libMax: { [key: string]: typeof Base.BaseObject }, libGen: { [key: string]: typeof Base.BaseObject }, selected: string[] };
-export type TPatcherLog = { errorLevel: -2 | -1 | 0 | 1, title: string, message: string };
-export type TMaxPatcher = { patcher: { lines: TMaxLine[], boxes: TMaxBox[], rect: number[], bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number], gridsize: [number, number], [key: string]: any } };
-export type TMaxBox = { box: { id: string, maxclass: "newobj" | string, text?: string, numinlets: number, numoutlets: number, patching_rect: [number, number, number, number], presentation_rect: [number, number, number, number], presentation: number }};
-export type TMaxLine = { patchline: { destination: [string, number], source: [string, number], order: number, midpoints: number[] }};
-export type TMaxClipboard = { boxes: TMaxBox[], lines: TMaxLine[], appversion: { major: number, minor: number, revision: number, architecture: string, modernui: number } };
-export type TPackage = { [key: string]: typeof Base.BaseObject | TPackage };
-type TPatcherEvents = "loaded" | "locked" | "presentation" | "showGrid" | "create" | "delete" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected" | "tempLine";
+import { TLine, TBox, PatcherEventMap, THistoryElement, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard } from "./types";
 
 import Base from "./objects/Base";
 import Max from "./objects/Max";
@@ -586,7 +574,7 @@ export class Patcher extends EventEmitter {
     }
 }
 
-class History {
+export class History {
     readonly _patcher: Patcher;
     undoList: number[];
     redoList: number[];

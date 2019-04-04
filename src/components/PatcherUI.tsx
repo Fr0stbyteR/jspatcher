@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Patcher, TPatcher } from "../core/patcher";
+import { Patcher } from "../core/patcher";
 import { Box } from "../core/Box";
 import { Line } from "../core/Line";
 import "./PatcherUI.scss";
 import { LineUI, TempLineUI } from "./LineUI";
 import { BoxUI } from "./BoxUI";
+import { TPatcher } from "../core/types";
 
 export class PatcherUI extends React.Component {
     props: { patcher: Patcher };
