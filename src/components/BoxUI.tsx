@@ -275,10 +275,12 @@ class Inlet extends React.Component {
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
-    handleHighlight = (isSrc: boolean, i: number, highlight: boolean) => {
+    handleHighlight = (e: { isSrc: boolean, i: number, highlight: boolean }) => {
+        const { isSrc, i, highlight } = e;
         if (!isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     }
-    handleConnectedChange = (isSrc: boolean, i: number) => {
+    handleConnectedChange = (e: { isSrc: boolean, i: number }) => {
+        const { isSrc, i } = e;
         if (!isSrc && i === this.props.index) this.setState({ isConnected: this.props.box.inletLines[this.props.index].length > 0 });
     }
     handleMouseDown = (e: React.MouseEvent) => {
@@ -316,10 +318,12 @@ class Outlet extends React.Component {
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
-    handleHighlight = (isSrc: boolean, i: number, highlight: boolean) => {
+    handleHighlight = (e: { isSrc: boolean, i: number, highlight: boolean }) => {
+        const { isSrc, i, highlight } = e;
         if (isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     }
-    handleConnectedChange = (isSrc: boolean, i: number) => {
+    handleConnectedChange = (e: { isSrc: boolean, i: number }) => {
+        const { isSrc, i } = e;
         if (isSrc && i === this.props.index) this.setState({ isConnected: this.props.box.outletLines[this.props.index].length > 0 });
     }
     handleMouseDown = (e: React.MouseEvent) => {

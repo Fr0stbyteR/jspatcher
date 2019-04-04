@@ -18,8 +18,8 @@ export class LineUI extends React.Component {
     }
     handleSrcPosChanged = (position: { left: number, top: number }) => {
         if (this.state.srcPosition.left !== position.left || this.state.srcPosition.top !== position.top) {
-            if (this.state && this.state.selected && !this.state.dragging) this.resetHandlersPos(true);
             this.setState({ srcPosition: position });
+            if (this.state && this.state.selected && !this.state.dragging) this.resetHandlersPos(true);
         }
     }
     handleResetPos = () => {
@@ -127,7 +127,7 @@ export class LineUI extends React.Component {
             if (nearest[0]) {
                 this.props.patcher.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
                 if (line[isSrc ? "srcID" : "destID"] === nearest[0] && line[isSrc ? "srcOutlet" : "destInlet"] === nearest[1]) this.handleResetPos();
-                else this.props.patcher.lines[this.props.id][isSrc ? "setSrc" : "setDest"](nearest);
+                else this.props.patcher[isSrc ? "changeLineSrc" : "changeLineDest"](this.props.id, ...nearest);
             } else {
                 this.props.patcher.deleteLine(this.props.id);
             }
@@ -192,7 +192,8 @@ export class TempLineUI extends React.Component {
     componentWillUnmount() {
         this.props.patcher.on("tempLine", this.handleNewLine);
     }
-    handleNewLine = (findSrc: boolean, from: [string, number]) => {
+    handleNewLine = (e: { findSrc: boolean, from: [string, number] }) => {
+        const { findSrc, from } = e;
         if (this.props.patcher._state.locked) return;
         if (this.state.show) return;
         this.findSrc = findSrc;

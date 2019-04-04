@@ -1,22 +1,22 @@
 import { EventEmitter } from "events";
 import { Patcher } from "./Patcher";
-export type TLine = { id?: string, src: [string, number], dest: [string, number], disabled?: boolean};
-type TEvents = "passData" | "destPosChanged" | "srcPosChanged" | "posChanged";
+import { LineEventMap, TLine } from "./types";
+
 export class Line extends EventEmitter {
-    on(type: TEvents, listener: (...args: any[]) => void) {
+    on<K extends keyof LineEventMap>(type: K, listener: (e: LineEventMap[K]) => void) {
         return super.on(type, listener);
     }
-    once(type: TEvents, listener: (...args: any[]) => void) {
+    once<K extends keyof LineEventMap>(type: K, listener: (e: LineEventMap[K]) => void) {
         return super.once(type, listener);
     }
-    off(type: TEvents, listener: (...args: any[]) => void) {
+    off<K extends keyof LineEventMap>(type: K, listener: (e: LineEventMap[K]) => void) {
         return super.off(type, listener);
     }
-    removeAllListeners(type: TEvents) {
+    removeAllListeners<K extends keyof LineEventMap>(type: K) {
         return super.removeAllListeners(type);
     }
-    emit(type: TEvents, ...args: any[]) {
-        return super.emit(type, ...args);
+    emit<K extends keyof LineEventMap>(type: K, e: LineEventMap[K]) {
+        return super.emit(type, e);
     }
     readonly id: string;
     src: [string, number];

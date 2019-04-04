@@ -1,7 +1,8 @@
 import { EventEmitter } from "events";
-import { Line, TLine } from "./Line";
-import { Box, TBox } from "./Box";
+import { Line } from "./Line";
+import { Box } from "./Box";
 import { AutoImporter } from "./AutoImporter";
+import { TLine, TBox, PatcherEventMap, THistoryElement } from "./types";
 
 export type TPatcherMode = "max" | "gen" | "js";
 export type TPatcher = { lines: { [key: string]: TLine }, boxes: { [key: string]: TBox }, props?: {} };
@@ -13,7 +14,7 @@ export type TMaxBox = { box: { id: string, maxclass: "newobj" | string, text?: s
 export type TMaxLine = { patchline: { destination: [string, number], source: [string, number], order: number, midpoints: number[] }};
 export type TMaxClipboard = { boxes: TMaxBox[], lines: TMaxLine[], appversion: { major: number, minor: number, revision: number, architecture: string, modernui: number } };
 export type TPackage = { [key: string]: typeof Base.BaseObject | TPackage };
-type TEvents = "loaded" | "locked" | "presentation" | "showGrid" | "create" | "delete" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected" | "tempLine";
+type TPatcherEvents = "loaded" | "locked" | "presentation" | "showGrid" | "create" | "delete" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected" | "tempLine";
 
 import Base from "./objects/Base";
 import Max from "./objects/Max";
@@ -21,27 +22,24 @@ import Gen from "./objects/Gen";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
-const Packages = {
-    Base, UI, Op, Window
-} as TPackage;
+
+const Packages = { Base, UI, Op, Window } as TPackage;
 
 export class Patcher extends EventEmitter {
-    on(type: TEvents, listener: (...args: any[]) => void) {
+    on<K extends keyof PatcherEventMap>(type: K, listener: (e: PatcherEventMap[K]) => void) {
         return super.on(type, listener);
     }
-    once(type: TEvents, listener: (...args: any[]) => void) {
+    once<K extends keyof PatcherEventMap>(type: K, listener: (e: PatcherEventMap[K]) => void) {
         return super.once(type, listener);
     }
-    off(type: TEvents, listener: (...args: any[]) => void) {
+    off<K extends keyof PatcherEventMap>(type: K, listener: (e: PatcherEventMap[K]) => void) {
         return super.off(type, listener);
     }
-    removeAllListeners(type: TEvents) {
+    removeAllListeners<K extends keyof PatcherEventMap>(type: K) {
         return super.removeAllListeners(type);
     }
-    // emit(type: "loaded", data: this): boolean;
-    // emit(type: "loaded", data: boolean): boolean;
-    emit(type: TEvents, ...args: any[]) {
-        return super.emit(type, ...args);
+    emit<K extends keyof PatcherEventMap>(type: K, e: PatcherEventMap[K]) {
+        return super.emit(type, e);
     }
     lines: { [key: string]: Line };
     boxes: { [key: string]: Box };
@@ -191,7 +189,7 @@ export class Patcher extends EventEmitter {
         const oldText = this.boxes[boxID].text;
         this.boxes[boxID].changeText(text);
         this.newTimestamp();
-        this.emit("changeBoxText", this.boxes[boxID], oldText, text);
+        this.emit("changeBoxText", { oldText, text, box: this.boxes[boxID] });
         return this.boxes[boxID];
     }
     deleteBox(boxID: string) {
@@ -229,12 +227,12 @@ export class Patcher extends EventEmitter {
             this.emit("redrawLine", line);
             return line;
         }
-        const oldSrc = [line.srcID, line.srcOutlet];
+        const oldSrc = [line.srcID, line.srcOutlet] as [string, number];
         const src = [srcID, srcOutlet] as [string, number];
         line.setSrc(src);
         this.newTimestamp();
-        this.emit("changeLineSrc", line, oldSrc, src);
-        this.emit("changeLine", line, true, oldSrc, src);
+        this.emit("changeLineSrc", { line, oldSrc, src });
+        this.emit("changeLine", { line, isSrc: true, oldPort: oldSrc, port: src });
         return line;
     }
     changeLineDest(lineID: string, destID: string, destOutlet: number) {
@@ -243,12 +241,12 @@ export class Patcher extends EventEmitter {
             this.emit("redrawLine", line);
             return line;
         }
-        const oldDest = [line.destID, line.destInlet];
+        const oldDest = [line.destID, line.destInlet] as [string, number];
         const dest = [destID, destOutlet] as [string, number];
         line.setDest(dest);
         this.newTimestamp();
-        this.emit("changeLineDest", line, oldDest, dest);
-        this.emit("changeLine", line, false, oldDest, dest);
+        this.emit("changeLineDest", { line, oldDest, dest });
+        this.emit("changeLine", { line, isSrc: false, oldPort: oldDest, port: dest });
         return line;
     }
     getLinesBySrcID(srcID: string) {
@@ -309,17 +307,11 @@ export class Patcher extends EventEmitter {
         this._state.log.push(log);
         this.emit("newLog", log);
     }
-    observeHistory() {
-        this.on("createBox", box => this._state.history.did("createBox", box))
-        .on("deleteBox", box => this._state.history.did("deleteBox", box))
-        .on("createLine", line =>  this._state.history.did("createLine", line))
-        .on("deleteLine", line => this._state.history.did("deleteLine", line))
-        .on("create", created => this._state.history.did("create", created))
-        .on("delete", deleted => this._state.history.did("delete", deleted))
-        .on("changeBoxText", (box, oldText, text) => this._state.history.did("changeBoxText", { box, oldText, text }))
-        .on("changeLineSrc", (line, oldSrc, src) => this._state.history.did("changeLineSrc", { line, oldSrc, src }))
-        .on("changeLineDest", (line, oldDest, dest) => this._state.history.did("changeLineDest", { line, oldDest, dest }))
-        .on("updateBoxRect", (box, oldRect, rect) => this._state.history.did("updateBoxRect", { box, oldRect, rect }));
+    observeHistory<K extends keyof PatcherEventMap>() {
+        [
+            "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
+            "changeBoxText", "changeLineSrc", "changeLineDest", "updateBoxRect"
+        ].forEach((type: K) => this.on(type, e => this._state.history.did(type, e)));
     }
     newTimestamp() {
         this._state.history.newTimestamp();
@@ -465,7 +457,7 @@ export class Patcher extends EventEmitter {
         return nearest;
     }
     tempLine(findSrc: boolean, from: [string, number]) {
-        this.emit("tempLine", findSrc, from);
+        this.emit("tempLine", { findSrc, from });
         return this;
     }
     paste(clipboard: TPatcher | TMaxClipboard) {
@@ -599,7 +591,7 @@ class History {
     undoList: number[];
     redoList: number[];
     capture: boolean;
-    events: { [key: number]: {[key: string]: any[]} };
+    events: { [timestamp: number]: THistoryElement };
     timestamp: number;
     constructor(patcher: Patcher) {
         this._patcher = patcher;
@@ -613,25 +605,15 @@ class History {
         if (this.capture) this.timestamp = new Date().getTime();
         return this;
     }
-    did(e: "create", created: TPatcher): this;
-    did(e: "delete", deleted: TPatcher): this;
-    did(e: "createBox", box: Box): this;
-    did(e: "deleteBox", box: Box): this;
-    did(e: "createLine", line: Line): this;
-    did(e: "deleteLine", line: Line): this;
-    did(e: "changeBoxText", data: { box: Box, oldText: string, text: string }): this;
-    did(e: "changeLineSrc", data: { line: Line, oldSrc: [string, number], src: [string, number] }): this;
-    did(e: "changeLineDest", data: { line: Line, oldDest: [string, number], dest: [string, number] }): this;
-    did(e: "updateBoxRect", data: { box: Box, oldRect: [number, number, number, number], rect: [number, number, number, number] }): this;
-    did(e: TEvents, data: object) {
+    did<K extends keyof PatcherEventMap>(type: K, e: PatcherEventMap[K]) {
         if (!this.capture) return this;
         if (!this.events.hasOwnProperty(this.timestamp)) {
             if (this.redoList.length) this.redoList = [];
             this.undoList.push(this.timestamp);
-            this.events[this.timestamp] = {};
+            this.events[this.timestamp] = {} as THistoryElement;
         }
-        if (!this.events[this.timestamp].hasOwnProperty(e)) this.events[this.timestamp][e] = [];
-        this.events[this.timestamp][e].push(data);
+        if (!this.events[this.timestamp].hasOwnProperty(type)) this.events[this.timestamp][type] = [];
+        (this.events[this.timestamp][type] as PatcherEventMap[K][]).push(e);
         return this;
     }
     undo() {
@@ -655,23 +637,23 @@ class History {
             }
         }
         if (this.events[eID].hasOwnProperty("changeBoxText")) {
-            for (const info of this.events[eID]["changeBoxText"]) {
-                patcher.changeBoxText(info.box.id, info.oldText);
+            for (const e of this.events[eID]["changeBoxText"]) {
+                patcher.changeBoxText(e.box.id, e.oldText);
             }
         }
         if (this.events[eID].hasOwnProperty("updateBoxRect")) {
-            for (const info of this.events[eID]["updateBoxRect"]) {
-                patcher.emit("forceBoxRect", info.box.id, info.oldRect);
+            for (const e of this.events[eID]["updateBoxRect"]) {
+                patcher.emit("forceBoxRect", { box: e.box, oldRect: e.rect, rect: e.oldRect });
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineSrc")) {
-            for (const info of this.events[eID]["changeLineSrc"]) {
-                patcher.changeLineSrc(info.line.id, info.oldSrc[0], info.oldSrc[1]);
+            for (const e of this.events[eID]["changeLineSrc"]) {
+                patcher.changeLineSrc(e.line.id, e.oldSrc[0], e.oldSrc[1]);
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineDest")) {
-            for (const info of this.events[eID]["changeLineDest"]) {
-                patcher.changeLineDest(info.line.id, info.oldDest[0], info.oldDest[1]);
+            for (const e of this.events[eID]["changeLineDest"]) {
+                patcher.changeLineDest(e.line.id, e.oldDest[0], e.oldDest[1]);
             }
         }
         if (this.events[eID].hasOwnProperty("createLine")) {
@@ -714,23 +696,23 @@ class History {
             }
         }
         if (this.events[eID].hasOwnProperty("changeBoxText")) {
-            for (const info of this.events[eID]["changeBoxText"]) {
-                patcher.changeBoxText(info.box.id, info.text);
+            for (const e of this.events[eID]["changeBoxText"]) {
+                patcher.changeBoxText(e.box.id, e.text);
             }
         }
         if (this.events[eID].hasOwnProperty("updateBoxRect")) {
-            for (const info of this.events[eID]["updateBoxRect"]) {
-                patcher.emit("forceBoxRect", info.box.id, info.rect);
+            for (const e of this.events[eID]["updateBoxRect"]) {
+                patcher.emit("forceBoxRect", e);
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineSrc")) {
-            for (const info of this.events[eID]["changeLineSrc"]) {
-                patcher.changeLineSrc(info.line.id, info.src[0], info.src[1]);
+            for (const e of this.events[eID]["changeLineSrc"]) {
+                patcher.changeLineSrc(e.line.id, e.src[0], e.src[1]);
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineDest")) {
-            for (const info of this.events[eID]["changeLineDest"]) {
-                patcher.changeLineDest(info.line.id, info.dest[0], info.dest[1]);
+            for (const e of this.events[eID]["changeLineDest"]) {
+                patcher.changeLineDest(e.line.id, e.dest[0], e.dest[1]);
             }
         }
         if (this.events[eID].hasOwnProperty("deleteLine")) {
