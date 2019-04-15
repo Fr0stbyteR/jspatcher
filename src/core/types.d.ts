@@ -122,12 +122,11 @@ interface PatcherEventMap {
     "changeLineSrc": { line: Line, oldSrc: [string, number], src: [string, number] };
     "changeLineDest": { line: Line, oldDest: [string, number], dest: [string, number] };
     "changeLine": { line: Line, isSrc: boolean, oldPort: [string, number], port: [string, number] };
-    "forceBoxRect": { box: Box, oldRect: [number, number, number, number], rect: [number, number, number, number] };
-    "updateBoxRect": { box: Box, oldRect: [number, number, number, number], rect: [number, number, number, number] };
     "newLog": TPatcherLog;
     "selected": string;
     "deselected": string;
     "tempLine": { findSrc: boolean, from: [string, number] };
+    "moved": { selected: string[], delta: { x: number, y: number } }
 }
 
 interface LineEventMap {

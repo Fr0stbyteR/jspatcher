@@ -298,7 +298,7 @@ export class Patcher extends EventEmitter {
     observeHistory<K extends keyof PatcherEventMap>() {
         [
             "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
-            "changeBoxText", "changeLineSrc", "changeLineDest", "updateBoxRect"
+            "changeBoxText", "changeLineSrc", "changeLineDest", "moved"
         ].forEach((type: K) => this.on(type, e => this._state.history.did(type, e)));
     }
     newTimestamp() {
@@ -377,11 +377,20 @@ export class Patcher extends EventEmitter {
         return this;
     }
     moveSelectedBox(boxID: string, dragOffset: { x: number, y: number }) {
-        const linesConcerned = {} as { [id: string]: true };
         const deltaX = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - this.boxes[boxID].rect[0] : dragOffset.x;
         const deltaY = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - this.boxes[boxID].rect[1] : dragOffset.y;
         const delta = { x: deltaX, y: deltaY };
         if (!delta.x && !delta.y) return dragOffset;
+        this.move(this._state.selected, delta);
+        return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
+    }
+    dragEnd(delta: { x: number, y: number }) {
+        this.newTimestamp();
+        this.emit("moved", { delta, selected: this._state.selected });
+    }
+    move(selected: string[], delta: { x: number, y: number }) {
+        selected.forEach(id => this.select(id));
+        const linesConcerned = {} as { [id: string]: true };
         const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
         boxes.sort((a, b) => a.rect[0] - b.rect[0]).forEach((box) => {
             box.rect[0] += delta.x;
@@ -404,7 +413,6 @@ export class Patcher extends EventEmitter {
             if (!line) return;
             line.emit("posChanged", line);
         });
-        return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
     findNearestPort(findSrc: boolean, left: number, top: number, from: [string, number], to?: [string, number]) {
         let nearest = [null, null] as [string, number];
@@ -629,9 +637,10 @@ export class History {
                 patcher.changeBoxText(e.box.id, e.oldText);
             }
         }
-        if (this.events[eID].hasOwnProperty("updateBoxRect")) {
-            for (const e of this.events[eID]["updateBoxRect"]) {
-                patcher.emit("forceBoxRect", { box: e.box, oldRect: e.rect, rect: e.oldRect });
+        if (this.events[eID].hasOwnProperty("moved")) {
+            for (const e of this.events[eID]["moved"]) {
+                const delta = { x: -1 * e.delta.x, y: -1 * e.delta.y };
+                patcher.move(e.selected, delta);
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineSrc")) {
@@ -688,9 +697,9 @@ export class History {
                 patcher.changeBoxText(e.box.id, e.text);
             }
         }
-        if (this.events[eID].hasOwnProperty("updateBoxRect")) {
-            for (const e of this.events[eID]["updateBoxRect"]) {
-                patcher.emit("forceBoxRect", e);
+        if (this.events[eID].hasOwnProperty("moved")) {
+            for (const e of this.events[eID]["moved"]) {
+                patcher.move(e.selected, e.delta);
             }
         }
         if (this.events[eID].hasOwnProperty("changeLineSrc")) {

@@ -47,6 +47,7 @@ export class BoxUI extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
+        const box = this.props.patcher.boxes[this.props.id];
         // Handle Draggable
         const handleDraggable = () => {
             this.dragged = false;
@@ -61,6 +62,7 @@ export class BoxUI extends React.Component {
             } while (el.offsetParent);
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             let dragOffset = { x: 0, y: 0 };
+            const origOffset = box.rect.slice(0, 2);
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -81,6 +83,8 @@ export class BoxUI extends React.Component {
                 e.stopPropagation();
                 e.preventDefault();
                 this.dragging = false;
+                const totalOffset = { x: box.rect[0] - origOffset[0], y: box.rect[1] - origOffset[1] };
+                this.props.patcher.dragEnd(totalOffset);
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
                 patcherDiv.removeEventListener("scroll", handlePatcherScroll);
