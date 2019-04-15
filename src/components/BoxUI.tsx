@@ -87,6 +87,8 @@ export class BoxUI extends React.Component {
                 this.props.patcher.dragEnd(totalOffset);
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
+                this.refDiv.current.removeEventListener("keydown", handleKey);
+                this.refDiv.current.removeEventListener("keyup", handleKey);
                 patcherDiv.removeEventListener("scroll", handlePatcherScroll);
             };
             const handlePatcherScroll = (e: UIEvent) => {
@@ -100,8 +102,14 @@ export class BoxUI extends React.Component {
                     dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
                 }
             };
+            const handleKey = (e: KeyboardEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
+            };
             document.addEventListener("mousemove", handleMouseMove);
             document.addEventListener("mouseup", handleMouseUp);
+            this.refDiv.current.addEventListener("keydown", handleKey);
+            this.refDiv.current.addEventListener("keyup", handleKey);
             patcherDiv.addEventListener("scroll", handlePatcherScroll);
         };
         // Handle select
