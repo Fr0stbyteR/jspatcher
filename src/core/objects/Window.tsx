@@ -1,4 +1,4 @@
-import { AutoImporter } from "../AutoImporter";
+import AutoImporter from "../AutoImporter";
 
 const lib = AutoImporter.import("Window", window);
 

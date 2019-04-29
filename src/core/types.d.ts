@@ -1,14 +1,15 @@
-import { Patcher, History } from "./Patcher";
 import { BaseObject } from "./objects/Base";
-import { Box } from "./Box";
-import { Line } from "./Line";
+import Patcher from "./Patcher";
+import Box from "./Box";
+import Line from "./Line";
+import History from "./History";
 
 type TPatcherMode = "max" | "gen" | "js";
 
 type TPatcher = {
     lines: { [key: string]: TLine };
     boxes: { [key: string]: TBox };
-    props? : {}
+    props? : {};
 };
 
 type TPatcherProps = {
@@ -17,7 +18,7 @@ type TPatcherProps = {
     editing_bgcolor: [number, number, number, number];
     grid: [number, number];
     boxIndexCount: number;
-    lineIndexCount: number
+    lineIndexCount: number;
 };
 
 type TPatcherState = {
@@ -32,12 +33,12 @@ type TPatcherState = {
     libJS: { [key: string]: typeof BaseObject };
     libMax: { [key: string]: typeof BaseObject };
     libGen: { [key: string]: typeof BaseObject };
-    selected: string[]
+    selected: string[];
 };
 type TPatcherLog = {
     errorLevel: -2 | -1 | 0 | 1;
     title: string;
-    message: string
+    message: string;
 };
 
 type TMaxPatcher = {
@@ -48,8 +49,8 @@ type TMaxPatcher = {
         bgcolor: [number, number, number, number];
         editing_bgcolor: [number, number, number, number];
         gridsize: [number, number];
-        [key: string]: any
-    }
+        [key: string]: any;
+    };
 };
 type TMaxBox = {
     box: {
@@ -60,8 +61,8 @@ type TMaxBox = {
         numoutlets: number;
         patching_rect: [number, number, number, number];
         presentation_rect: [number, number, number, number];
-        presentation: number
-    }
+        presentation: number;
+    };
 };
 
 type TMaxLine = {
@@ -69,8 +70,8 @@ type TMaxLine = {
         destination: [string, number];
         source: [string, number];
         order: number;
-        midpoints: number[]
-    }
+        midpoints: number[];
+    };
 };
 
 type TMaxClipboard = {
@@ -81,8 +82,8 @@ type TMaxClipboard = {
         minor: number;
         revision: number;
         architecture: string;
-        modernui: number
-    }
+        modernui: number;
+    };
 };
 
 type TPackage = { [key: string]: typeof BaseObject | TPackage };
@@ -93,7 +94,7 @@ type TLine = {
     id? : string;
     src: [string, number];
     dest: [string, number];
-    disabled? : boolean
+    disabled? : boolean;
 };
 
 type TBox = {
@@ -102,7 +103,7 @@ type TBox = {
     inlets: number;
     outlets: number;
     rect: [number, number, number, number];
-    data? : { [key: string]: any }
+    data? : { [key: string]: any };
 };
 
 interface PatcherEventMap {
@@ -115,35 +116,35 @@ interface PatcherEventMap {
     "createBox": Box;
     "deleteBox": Box;
     "createObject": BaseObject;
-    "changeBoxText": { box: Box, oldText: string, text: string };
+    "changeBoxText": { box: Box; oldText: string; text: string };
     "createLine": Line;
     "deleteLine": Line;
     "redrawLine": Line;
-    "changeLineSrc": { line: Line, oldSrc: [string, number], src: [string, number] };
-    "changeLineDest": { line: Line, oldDest: [string, number], dest: [string, number] };
-    "changeLine": { line: Line, isSrc: boolean, oldPort: [string, number], port: [string, number] };
+    "changeLineSrc": { line: Line; oldSrc: [string, number]; src: [string, number] };
+    "changeLineDest": { line: Line; oldDest: [string, number]; dest: [string, number] };
+    "changeLine": { line: Line; isSrc: boolean; oldPort: [string, number]; port: [string, number] };
     "newLog": TPatcherLog;
     "selected": string;
     "deselected": string;
-    "tempLine": { findSrc: boolean, from: [string, number] };
-    "moved": { selected: string[], delta: { x: number, y: number } }
+    "tempLine": { findSrc: boolean; from: [string, number] };
+    "moved": { selected: string[]; delta: { x: number; y: number } };
 }
 
 interface LineEventMap {
     "passData": any;
-    "destPosChanged": { top: number, left: number };
-    "srcPosChanged": { top: number, left: number };
+    "destPosChanged": { top: number; left: number };
+    "srcPosChanged": { top: number; left: number };
     "posChanged": Line;
 }
 
 interface BoxEventMap {
     "rectChanged": Box;
     "textChanged": Box;
-    "highlightPort": { isSrc: boolean, i: number, highlight: boolean };
-    "connectedPort": { isSrc: boolean, i: number };
-    "disconnectedPort": { isSrc: boolean, i: number };
+    "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
+    "connectedPort": { isSrc: boolean; i: number };
+    "disconnectedPort": { isSrc: boolean; i: number };
 }
 
 type THistoryElement = {
-    [key in keyof PatcherEventMap]: PatcherEventMap[key][];
+    [key in keyof PatcherEventMap]?: PatcherEventMap[key][];
 };

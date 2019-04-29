@@ -1,16 +1,19 @@
 import { BaseObject, Bang, TMeta } from "./Base";
-import { Patcher } from "../Patcher";
-import { Box } from "../Box";
+import Patcher from "../Patcher";
+import Box from "../Box";
+
 class JSOp extends BaseObject {
     static get _meta(): TMeta {
-        return { ...super._meta,
+        return {
+            ...super._meta,
             package: "Op"
         };
     }
 }
 class JSUnaryOp extends JSOp {
     static get _meta(): TMeta {
-        return { ...super._meta,
+        return {
+            ...super._meta,
             description: "Unary Operation",
             inlets: [{
                 isHot: true,
@@ -23,14 +26,14 @@ class JSUnaryOp extends JSOp {
             }]
         };
     }
-    _mem = {} as { result: any };
+    _mem: { result: any } = { result: null };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 1;
         this.outlets = 1;
         this.update(box.parsed.args, box.parsed.props);
     }
-    update(args: any[], props: { [key: string]: any }) {
+    update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
         this._mem.result = 0;
         return this;
     }
@@ -49,14 +52,13 @@ class JSUnaryOp extends JSOp {
         }
         return this;
     }
-    execute(a: any) {
-        return;
-    }
+    execute(a: any) {} // eslint-disable-line class-methods-use-this, @typescript-eslint/no-unused-vars
 }
 
 class JSBinaryOp extends JSOp {
     static get _meta(): TMeta {
-        return { ...super._meta,
+        return {
+            ...super._meta,
             description: "Binary Operation",
             inlets: [{
                 isHot: true,
@@ -79,7 +81,7 @@ class JSBinaryOp extends JSOp {
             }]
         };
     }
-    _mem = {} as { arg: any, result: any };
+    _mem: { arg: any; result: any } = { arg: null, result: null };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 2;
@@ -88,7 +90,7 @@ class JSBinaryOp extends JSOp {
         this._mem.result = 0;
         this.update(box.parsed.args, box.parsed.props);
     }
-    update(args: any[], props: { [key: string]: any }) {
+    update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
         this._mem.arg = 0;
         this._mem.result = 0;
         if (args.length === 0) return this;
@@ -113,14 +115,13 @@ class JSBinaryOp extends JSOp {
         }
         return this;
     }
-    execute(a: any, b: any) {
-        return;
-    }
+    execute(a: any, b: any) {} // eslint-disable-line class-methods-use-this, @typescript-eslint/no-unused-vars
 }
 
 class JSTernaryOp extends JSOp {
     static get _meta(): TMeta {
-        return { ...super._meta,
+        return {
+            ...super._meta,
             description: "Ternary Operation",
             inlets: [{
                 isHot: true,
@@ -152,7 +153,7 @@ class JSTernaryOp extends JSOp {
             }]
         };
     }
-    _mem = {} as { args: any[], result: any };
+    _mem: { args: any[]; result: any } = { args: [], result: null };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 3;
@@ -161,7 +162,7 @@ class JSTernaryOp extends JSOp {
         this._mem.result = true;
         this.update(box.parsed.args, box.parsed.props);
     }
-    update(args: any[], props: { [key: string]: any }) {
+    update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
         this._mem.args = [true, false];
         this._mem.result = true;
         if (args.length === 0) return this;
@@ -191,22 +192,18 @@ class JSTernaryOp extends JSOp {
         return this;
     }
 }
-const functions = {
+const functions: { [key: string]: (...args: any[]) => any } = {
     Add: (a: any, b: any) => a + b,
     Sub: (a: any, b: any) => a - b,
     Mul: (a: any, b: any) => a * b,
     Div: (a: any, b: any) => a / b,
     Exp: (a: any, b: any) => a ** b,
     Mod: (a: any, b: any) => a % b,
-    // tslint:disable-next-line: no-parameter-reassignment
-    Inc: (a: any) => ++a,
-    // tslint:disable-next-line: no-parameter-reassignment
-    Dec: (a: any) => --a,
-    // tslint:disable-next-line: triple-equals
-    Eql: (a: any, b: any) => a == b,
+    Inc: (a: any) => ++a, // eslint-disable-line no-param-reassign
+    Dec: (a: any) => --a, // eslint-disable-line no-param-reassign
+    Eql: (a: any, b: any) => a == b, // eslint-disable-line eqeqeq
     EqlS: (a: any, b: any) => a === b,
-    // tslint:disable-next-line: triple-equals
-    NEql: (a: any, b: any) => a != b,
+    NEql: (a: any, b: any) => a != b, // eslint-disable-line eqeqeq
     NEqlS: (a: any, b: any) => a !== b,
     Gtr: (a: any, b: any) => a > b,
     Geq: (a: any, b: any) => a >= b,
@@ -217,9 +214,9 @@ const functions = {
     Not: (a: any) => !a,
     Typeof: (a: any) => typeof a,
     Instanceof: (a: any, b: any) => a instanceof b
-} as { [key: string]: (...args: any[]) => any };
+};
 
-const Ops = {} as { [key: string]: typeof JSUnaryOp | typeof JSBinaryOp };
+const Ops: { [key: string]: typeof JSUnaryOp | typeof JSBinaryOp } = {};
 for (const key in functions) {
     const f = functions[key];
     if (f.length === 1) {

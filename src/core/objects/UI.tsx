@@ -1,11 +1,13 @@
 import * as React from "react";
-import { Patcher } from "../Patcher";
-import { Box } from "../Box";
+import Patcher from "../Patcher";
+import Box from "../Box";
 import { BaseObject, BaseUI, TMeta } from "./Base";
 import "./UI.scss";
+
 export class Comment extends BaseObject {
     static get _meta(): TMeta {
-        return { ...super._meta,
+        return {
+            ...super._meta,
             package: "UI",
             author: "Fr0stbyteR",
             version: "1.0.0",
@@ -14,9 +16,9 @@ export class Comment extends BaseObject {
     }
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.parsed.args);
     }
-    update(args: any[], props: { [key: string]: any }) {
+    update(args: any[]) {
         if (!this.box.data.hasOwnProperty("text")) this.box.data.text = args.join(" ");
         return this;
     }
@@ -47,9 +49,9 @@ export class Comment extends BaseObject {
                 }
                 return toggle;
             }
-            handleMouseDown = (e: React.MouseEvent) => this.state.editing ? e.stopPropagation() : null;
-            handleClick = (e: React.MouseEvent) => this.state.editing ? e.stopPropagation() : null;
-            handleKeyDown = (e: React.KeyboardEvent) => this.state.editing ? e.stopPropagation() : null;
+            handleMouseDown = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
+            handleClick = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
+            handleKeyDown = (e: React.KeyboardEvent) => (this.state.editing ? e.stopPropagation() : null);
             handlePaste = (e: React.ClipboardEvent) => {
                 e.preventDefault();
                 document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));

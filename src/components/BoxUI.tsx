@@ -1,16 +1,16 @@
 import * as React from "react";
-import { Patcher } from "../core/patcher";
-import { Box } from "../core/box";
+import Patcher from "../core/Patcher";
+import Box from "../core/Box";
 import { BaseUI } from "../core/objects/Base";
 import "./BoxUI.scss";
 
-export class BoxUI extends React.Component {
-    props: { patcher: Patcher, id: string };
-    state: { selected: boolean, rect: [number, number, number, number] };
+export default class BoxUI extends React.Component {
+    props: { patcher: Patcher; id: string };
+    state: { selected: boolean; rect: [number, number, number, number] };
     innerUI: JSX.Element;
-    sizing = "horizontal" as "horizontal" | "vertical" | "both" | "ratio";
-    refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
-    refUI = React.createRef() as React.RefObject<BaseUI>;
+    sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
+    refDiv: React.RefObject<HTMLDivElement> = React.createRef();
+    refUI: React.RefObject<BaseUI> = React.createRef();
     editingOnUnlock = false;
     handlingToggleEditOnClick = false;
     dragging = false;
@@ -41,7 +41,7 @@ export class BoxUI extends React.Component {
         this.setState({ rect: box.rect });
         return box;
     }
-    handleBlur = (e: React.FocusEvent) => {
+    handleBlur = () => {
         this.handlingToggleEditOnClick = false;
         this.tryToggleEdit(false);
     }
@@ -79,18 +79,6 @@ export class BoxUI extends React.Component {
                 if (y < 10) patcherDiv.scrollTop += y - 10;
                 if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
             };
-            const handleMouseUp = (e: MouseEvent) => {
-                e.stopPropagation();
-                e.preventDefault();
-                this.dragging = false;
-                const totalOffset = { x: box.rect[0] - origOffset[0], y: box.rect[1] - origOffset[1] };
-                this.props.patcher.dragEnd(totalOffset);
-                document.removeEventListener("mousemove", handleMouseMove);
-                document.removeEventListener("mouseup", handleMouseUp);
-                this.refDiv.current.removeEventListener("keydown", handleKey);
-                this.refDiv.current.removeEventListener("keyup", handleKey);
-                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
-            };
             const handlePatcherScroll = (e: UIEvent) => {
                 const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
                 const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
@@ -106,6 +94,18 @@ export class BoxUI extends React.Component {
                 e.stopPropagation();
                 e.preventDefault();
             };
+            const handleMouseUp = (e: MouseEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.dragging = false;
+                const totalOffset = { x: box.rect[0] - origOffset[0], y: box.rect[1] - origOffset[1] };
+                this.props.patcher.dragEnd(totalOffset);
+                document.removeEventListener("mousemove", handleMouseMove);
+                document.removeEventListener("mouseup", handleMouseUp);
+                this.refDiv.current.removeEventListener("keydown", handleKey);
+                this.refDiv.current.removeEventListener("keyup", handleKey);
+                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
+            };
             document.addEventListener("mousemove", handleMouseMove);
             document.addEventListener("mouseup", handleMouseUp);
             this.refDiv.current.addEventListener("keydown", handleKey);
@@ -120,14 +120,12 @@ export class BoxUI extends React.Component {
                 this.props.patcher.select(this.props.id);
                 handleDraggable();
             }
+        } else if (this.state.selected) {
+            if (!this.editingOnUnlock) this.handlingToggleEditOnClick = true; // Handle edit
+            handleDraggable();
         } else {
-            if (this.state.selected) {
-                if (!this.editingOnUnlock) this.handlingToggleEditOnClick = true; // Handle edit
-                handleDraggable();
-            } else {
-                this.props.patcher.selectOnly(this.props.id);
-                handleDraggable();
-            }
+            this.props.patcher.selectOnly(this.props.id);
+            handleDraggable();
         }
         e.stopPropagation();
     }
@@ -160,8 +158,8 @@ export class BoxUI extends React.Component {
         this.setState({ rect: divRect });
         box.setRect(divRect);
     }
-    handleSelected = (id: string) => id === this.props.id ? this.setState({ selected: true }) : null;
-    handleDeselected = (id: string) => id === this.props.id ? this.setState({ selected: false }) : null;
+    handleSelected = (id: string) => (id === this.props.id ? this.setState({ selected: true }) : null);
+    handleDeselected = (id: string) => (id === this.props.id ? this.setState({ selected: false }) : null);
     componentWillMount() {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
@@ -207,9 +205,9 @@ export class BoxUI extends React.Component {
         );
     }
 }
-type TInletProps = { isHot: boolean, type: "anything" | "signal" | "object" | "number" | "boolean" | string, description: string };
+type TInletProps = { isHot: boolean; type: "anything" | "signal" | "object" | "number" | "boolean" | string; description: string };
 class Inlets extends React.Component {
-    props: { patcher: Patcher, box: Box };
+    props: { patcher: Patcher; box: Box };
     ports = [] as JSX.Element[];
     componentWillMount() {
         this.handleUpdate();
@@ -238,9 +236,9 @@ class Inlets extends React.Component {
         );
     }
 }
-type TOutletProps = { type: "anything" | "signal" | "object" | "number" | "boolean" | string, description: string };
+type TOutletProps = { type: "anything" | "signal" | "object" | "number" | "boolean" | string; description: string };
 class Outlets extends React.Component {
-    props: { patcher: Patcher, box: Box };
+    props: { patcher: Patcher; box: Box };
     ports = [] as JSX.Element[];
     componentWillMount() {
         this.handleUpdate();
@@ -270,8 +268,8 @@ class Outlets extends React.Component {
     }
 }
 class Inlet extends React.Component {
-    props: { patcher: Patcher, box: Box, index: number };
-    state: { isConnected: boolean, highlight: boolean };
+    props: { patcher: Patcher; box: Box; index: number };
+    state: { isConnected: boolean; highlight: boolean };
     dragged = false;
     componentWillMount() {
         this.setState({ isConnected: this.props.box.inletLines[this.props.index].length > 0, highlight: false });
@@ -287,11 +285,11 @@ class Inlet extends React.Component {
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
-    handleHighlight = (e: { isSrc: boolean, i: number, highlight: boolean }) => {
+    handleHighlight = (e: { isSrc: boolean; i: number; highlight: boolean }) => {
         const { isSrc, i, highlight } = e;
         if (!isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     }
-    handleConnectedChange = (e: { isSrc: boolean, i: number }) => {
+    handleConnectedChange = (e: { isSrc: boolean; i: number }) => {
         const { isSrc, i } = e;
         if (!isSrc && i === this.props.index) this.setState({ isConnected: this.props.box.inletLines[this.props.index].length > 0 });
     }
@@ -303,7 +301,7 @@ class Inlet extends React.Component {
     render() {
         const box = this.props.box;
         const i = this.props.index;
-        let props = { isHot : false, type : "anything", description : "" };
+        let props = { isHot: false, type: "anything", description: "" };
         const meta = box.meta.inlets;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
         const className = "box-port box-inlet" + (props.isHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
@@ -313,8 +311,8 @@ class Inlet extends React.Component {
     }
 }
 class Outlet extends React.Component {
-    props: { patcher: Patcher, box: Box, index: number };
-    state: { isConnected: boolean, highlight: boolean };
+    props: { patcher: Patcher; box: Box; index: number };
+    state: { isConnected: boolean; highlight: boolean };
     dragged = false;
     componentWillMount() {
         this.setState({ isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false });
@@ -330,11 +328,11 @@ class Outlet extends React.Component {
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
-    handleHighlight = (e: { isSrc: boolean, i: number, highlight: boolean }) => {
+    handleHighlight = (e: { isSrc: boolean; i: number; highlight: boolean }) => {
         const { isSrc, i, highlight } = e;
         if (isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     }
-    handleConnectedChange = (e: { isSrc: boolean, i: number }) => {
+    handleConnectedChange = (e: { isSrc: boolean; i: number }) => {
         const { isSrc, i } = e;
         if (isSrc && i === this.props.index) this.setState({ isConnected: this.props.box.outletLines[this.props.index].length > 0 });
     }
@@ -346,7 +344,7 @@ class Outlet extends React.Component {
     render() {
         const box = this.props.box;
         const i = this.props.index;
-        let props = { type : "anything", description : "" };
+        let props = { type: "anything", description: "" };
         const meta = box.meta.outlets;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
         const className = "box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");

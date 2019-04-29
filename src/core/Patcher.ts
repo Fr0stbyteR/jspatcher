@@ -1,8 +1,9 @@
 import { EventEmitter } from "events";
-import { Line } from "./Line";
-import { Box } from "./Box";
-import { AutoImporter } from "./AutoImporter";
-import { TLine, TBox, PatcherEventMap, THistoryElement, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard } from "./types";
+import Line from "./Line";
+import Box from "./Box";
+import History from "./History";
+import AutoImporter from "./AutoImporter";
+import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard } from "./types";
 
 import Base from "./objects/Base";
 import Max from "./objects/Max";
@@ -11,9 +12,9 @@ import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
 
-const Packages = { Base, UI, Op, Window } as TPackage;
+const Packages: TPackage = { Base, UI, Op, Window };
 
-export class Patcher extends EventEmitter {
+export default class Patcher extends EventEmitter {
     on<K extends keyof PatcherEventMap>(type: K, listener: (e: PatcherEventMap[K]) => void) {
         return super.on(type, listener);
     }
@@ -101,7 +102,7 @@ export class Patcher extends EventEmitter {
             const maxBoxes = patcher.boxes;
             const maxLines = patcher.lines;
             for (let i = 0; i < maxBoxes.length; i++) {
-                const maxBox = maxBoxes[i]["box"];
+                const maxBox = maxBoxes[i].box;
                 const numID = parseInt(maxBox.id.match(/\d+/)[0]);
                 if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
                 const id = "box-" + numID;
@@ -153,7 +154,7 @@ export class Patcher extends EventEmitter {
         if (!this._state.isLoading) this.emit("createBox", box);
         return box;
     }
-    createObject(parsed: { class: string, args: any[], props: { [key: string]: any } }, boxIn: Box) {
+    createObject(parsed: { class: string; args: any[]; props: { [key: string]: any } }, boxIn: Box) {
         let obj;
         const className = parsed.class;
         if (typeof className !== "string" || className.length === 0) {
@@ -215,8 +216,8 @@ export class Patcher extends EventEmitter {
             this.emit("redrawLine", line);
             return line;
         }
-        const oldSrc = [line.srcID, line.srcOutlet] as [string, number];
-        const src = [srcID, srcOutlet] as [string, number];
+        const oldSrc: [string, number] = [line.srcID, line.srcOutlet];
+        const src: [string, number] = [srcID, srcOutlet];
         line.setSrc(src);
         this.newTimestamp();
         this.emit("changeLineSrc", { line, oldSrc, src });
@@ -229,8 +230,8 @@ export class Patcher extends EventEmitter {
             this.emit("redrawLine", line);
             return line;
         }
-        const oldDest = [line.destID, line.destInlet] as [string, number];
-        const dest = [destID, destOutlet] as [string, number];
+        const oldDest: [string, number] = [line.destID, line.destInlet];
+        const dest: [string, number] = [destID, destOutlet];
         line.setDest(dest);
         this.newTimestamp();
         this.emit("changeLineDest", { line, oldDest, dest });
@@ -268,8 +269,9 @@ export class Patcher extends EventEmitter {
         return result;
     }
     getLinesByBox(srcID: string, destID: string, srcOutlet?: number, destInlet?: number) {
-        const result = [] as string[];
-        let srcOuts = [] as string[], destIns = [] as string[];
+        const result: string[] = [];
+        let srcOuts: string[] = [];
+        let destIns: string[] = [];
         const srcOutsWraped = this.getLinesBySrcID(srcID);
         if (srcOutlet !== undefined) srcOuts = srcOutsWraped[srcOutlet];
         else srcOutsWraped.forEach(el => srcOuts = srcOuts.concat(el));
@@ -277,11 +279,7 @@ export class Patcher extends EventEmitter {
         if (destInlet !== undefined) destIns = destInsWraped[destInlet];
         else destInsWraped.forEach(el => destIns = destIns.concat(el));
         if (!srcOuts || !destIns) return result;
-        for (const idOut of srcOuts) {
-            for (const idIn of destIns) {
-                if (idIn === idOut) result.push(idIn);
-            }
-        }
+        srcOuts.forEach(idOut => destIns.forEach(idIn => (idIn === idOut ? result.push(idIn) : undefined)));
         return result;
     }
     log(message: string) {
@@ -376,7 +374,7 @@ export class Patcher extends EventEmitter {
         box.setRect(box.rect);
         return this;
     }
-    moveSelectedBox(boxID: string, dragOffset: { x: number, y: number }) {
+    moveSelectedBox(boxID: string, dragOffset: { x: number; y: number }) {
         const deltaX = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - this.boxes[boxID].rect[0] : dragOffset.x;
         const deltaY = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - this.boxes[boxID].rect[1] : dragOffset.y;
         const delta = { x: deltaX, y: deltaY };
@@ -384,13 +382,13 @@ export class Patcher extends EventEmitter {
         this.move(this._state.selected, delta);
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
-    dragEnd(delta: { x: number, y: number }) {
+    dragEnd(delta: { x: number; y: number }) {
         this.newTimestamp();
         this.emit("moved", { delta, selected: this._state.selected });
     }
-    move(selected: string[], delta: { x: number, y: number }) {
+    move(selected: string[], delta: { x: number; y: number }) {
         selected.forEach(id => this.select(id));
-        const linesConcerned = {} as { [id: string]: true };
+        const linesConcerned: { [id: string]: true } = {};
         const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
         boxes.sort((a, b) => a.rect[0] - b.rect[0]).forEach((box) => {
             box.rect[0] += delta.x;
@@ -415,7 +413,7 @@ export class Patcher extends EventEmitter {
         });
     }
     findNearestPort(findSrc: boolean, left: number, top: number, from: [string, number], to?: [string, number]) {
-        let nearest = [null, null] as [string, number];
+        let nearest: [string, number] = [null, null];
         let minDistance = 100;
         if (to) {
             const currentPos = this.boxes[to[0]][findSrc ? "getOutletPosition" : "getInletPosition"](to[1]);
@@ -439,7 +437,7 @@ export class Patcher extends EventEmitter {
         }
         return nearest;
     }
-    highlightNearestPort(findSrc: boolean, dragOffset: { x: number, y: number }, from: [string, number], to?: [string, number]) { // to = the port need to be reconnect
+    highlightNearestPort(findSrc: boolean, dragOffset: { x: number; y: number }, from: [string, number], to?: [string, number]) { // to = the port need to be reconnect
         const origPos = to ? this.boxes[to[0]][findSrc ? "getOutletPosition" : "getInletPosition"](to[1]) : this.boxes[from[0]][findSrc ? "getInletPosition" : "getOutletPosition"](from[1]);
         const left = origPos.left + dragOffset.x;
         const top = origPos.top + dragOffset.y;
@@ -457,12 +455,12 @@ export class Patcher extends EventEmitter {
         return this;
     }
     paste(clipboard: TPatcher | TMaxClipboard) {
-        const idMap = {} as { [key: string]: string };
+        const idMap: { [key: string]: string } = {};
         const pasted = { boxes: [] as TBox[], lines: [] as TLine[] };
         if (Array.isArray(clipboard.boxes)) { // Max Patcher
             const maxBoxes = clipboard.boxes;
             for (let i = 0; i < maxBoxes.length; i++) {
-                const maxBox = maxBoxes[i]["box"];
+                const maxBox = maxBoxes[i].box;
                 const numID = parseInt(maxBox.id.match(/\d+/)[0]);
                 let id = "box-" + numID;
                 if (this.boxes[id]) {
@@ -472,13 +470,13 @@ export class Patcher extends EventEmitter {
                     idMap[id] = id;
                     if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
                 }
-                const box = {
+                const box: TBox = {
                     id,
                     inlets: maxBox.numinlets,
                     outlets: maxBox.numoutlets,
                     rect: maxBox.patching_rect,
                     text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
-                } as TBox;
+                };
                 this.createBox(box);
                 pasted.boxes.push(box);
             }
@@ -488,11 +486,11 @@ export class Patcher extends EventEmitter {
                     const lineArgs = maxLines[i].patchline;
                     let id = "line-" + ++this.props.lineIndexCount;
                     if (this.lines[id]) id = "line-" + ++this.props.lineIndexCount;
-                    const line = {
+                    const line: TLine = {
                         id,
                         src: [idMap[lineArgs.source[0].replace(/obj/, "box")], lineArgs.source[1]],
                         dest: [idMap[lineArgs.destination[0].replace(/obj/, "box")], lineArgs.destination[1]]
-                    } as TLine;
+                    };
                     this.createLine(line);
                     pasted.lines.push(line);
                 }
@@ -526,7 +524,7 @@ export class Patcher extends EventEmitter {
     }
     create(objects: TPatcher) {
         this.newTimestamp();
-        const created = { boxes: {}, lines: {} } as TPatcher;
+        const created: TPatcher = { boxes: {}, lines: {} };
         for (const boxID in objects.boxes) {
             const boxIn = objects.boxes[boxID];
             const box = new Box(this, boxIn);
@@ -546,14 +544,14 @@ export class Patcher extends EventEmitter {
     }
     deleteSelected() {
         this.newTimestamp();
-        const map = { boxes: {}, lines: {} } as { boxes: { [id: string]: true }, lines: { [id: string]: true } };
+        const map: { boxes: { [id: string]: true }; lines: { [id: string]: true } } = { boxes: {}, lines: {} };
         this._state.selected.filter(id => id.includes("line")).forEach(id => map.lines[id] = true);
         this._state.selected.filter(id => id.includes("box")).forEach((id) => {
             map.boxes[id] = true;
             this.boxes[id].allLines.forEach(id => map.lines[id] = true);
         });
 
-        const deleted = { boxes: {}, lines: {} } as TPatcher;
+        const deleted: TPatcher = { boxes: {}, lines: {} };
         Object.keys(map.lines).forEach(id => deleted.lines[id] = this.lines[id].destroy());
         Object.keys(map.boxes).forEach(id => deleted.boxes[id] = this.boxes[id].destroy());
         this._state.selected = [];
@@ -562,7 +560,7 @@ export class Patcher extends EventEmitter {
     }
     delete(objects: TPatcher) {
         this.newTimestamp();
-        const deleted = { boxes: {}, lines: {} } as TPatcher;
+        const deleted: TPatcher = { boxes: {}, lines: {} };
         for (const id in objects.lines) {
             deleted.lines[id] = this.lines[id].destroy();
         }
@@ -578,186 +576,6 @@ export class Patcher extends EventEmitter {
         this._state.history.redo();
     }
     toString() {
-        return JSON.stringify(this, (k, v) => k.charAt(0) === "_" ? undefined : v, 4);
-    }
-}
-
-export class History {
-    readonly _patcher: Patcher;
-    undoList: number[];
-    redoList: number[];
-    capture: boolean;
-    events: { [timestamp: number]: THistoryElement };
-    timestamp: number;
-    constructor(patcher: Patcher) {
-        this._patcher = patcher;
-        this.undoList = [];
-        this.redoList = [];
-        this.capture = true;
-        this.events = {};
-        this.newTimestamp();
-    }
-    newTimestamp() {
-        if (this.capture) this.timestamp = new Date().getTime();
-        return this;
-    }
-    did<K extends keyof PatcherEventMap>(type: K, e: PatcherEventMap[K]) {
-        if (!this.capture) return this;
-        if (!this.events.hasOwnProperty(this.timestamp)) {
-            if (this.redoList.length) this.redoList = [];
-            this.undoList.push(this.timestamp);
-            this.events[this.timestamp] = {} as THistoryElement;
-        }
-        if (!this.events[this.timestamp].hasOwnProperty(type)) this.events[this.timestamp][type] = [];
-        (this.events[this.timestamp][type] as PatcherEventMap[K][]).push(e);
-        return this;
-    }
-    undo() {
-        if (this.undoList.length === 0) return this;
-        this.capture = false;
-        const eID = this.undoList.pop();
-        const patcher = this._patcher;
-        if (this.events[eID].hasOwnProperty("deleteBox")) {
-            for (const box of this.events[eID]["deleteBox"]) {
-                patcher.createBox(box);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("deleteLine")) {
-            for (const line of this.events[eID]["deleteLine"]) {
-                patcher.createLine(line);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("delete")) {
-            for (const deleted of this.events[eID]["delete"]) {
-                patcher.create(deleted);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("changeBoxText")) {
-            for (const e of this.events[eID]["changeBoxText"]) {
-                patcher.changeBoxText(e.box.id, e.oldText);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("moved")) {
-            for (const e of this.events[eID]["moved"]) {
-                const delta = { x: -1 * e.delta.x, y: -1 * e.delta.y };
-                patcher.move(e.selected, delta);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("changeLineSrc")) {
-            for (const e of this.events[eID]["changeLineSrc"]) {
-                patcher.changeLineSrc(e.line.id, e.oldSrc[0], e.oldSrc[1]);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("changeLineDest")) {
-            for (const e of this.events[eID]["changeLineDest"]) {
-                patcher.changeLineDest(e.line.id, e.oldDest[0], e.oldDest[1]);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("createLine")) {
-            for (const line of this.events[eID]["createLine"]) {
-                patcher.deleteLine(line.id);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("createBox")) {
-            for (const box of this.events[eID]["createBox"]) {
-                patcher.deleteBox(box.id);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("create")) {
-            for (const created of this.events[eID]["create"]) {
-                patcher.delete(created);
-            }
-        }
-        this.redoList.push(eID);
-        this.capture = true;
-        return this;
-    }
-    redo() {
-        if (this.redoList.length === 0) return this;
-        this.capture = false;
-        const eID = this.redoList.pop();
-        const patcher = this._patcher;
-        if (this.events[eID].hasOwnProperty("createBox")) {
-            for (const box of this.events[eID]["createBox"]) {
-                patcher.createBox(box);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("createLine")) {
-            for (const line of this.events[eID]["createLine"]) {
-                patcher.createLine(line);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("create")) {
-            for (const created of this.events[eID]["create"]) {
-                patcher.create(created);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("changeBoxText")) {
-            for (const e of this.events[eID]["changeBoxText"]) {
-                patcher.changeBoxText(e.box.id, e.text);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("moved")) {
-            for (const e of this.events[eID]["moved"]) {
-                patcher.move(e.selected, e.delta);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("changeLineSrc")) {
-            for (const e of this.events[eID]["changeLineSrc"]) {
-                patcher.changeLineSrc(e.line.id, e.src[0], e.src[1]);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("changeLineDest")) {
-            for (const e of this.events[eID]["changeLineDest"]) {
-                patcher.changeLineDest(e.line.id, e.dest[0], e.dest[1]);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("deleteLine")) {
-            for (const line of this.events[eID]["deleteLine"]) {
-                patcher.deleteLine(line.id);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("deleteBox")) {
-            for (const box of this.events[eID]["deleteBox"]) {
-                patcher.deleteBox(box.id);
-            }
-        }
-        if (this.events[eID].hasOwnProperty("delete")) {
-            for (const deleted of this.events[eID]["delete"]) {
-                patcher.delete(deleted);
-            }
-        }
-        this.undoList.push(eID);
-        this.capture = true;
-        return this;
-    }
-}
-
-class SharedMemory {
-    dataSet: { [key: string]: any };
-    constructor() {
-        this.dataSet = {};
-    }
-    set(key: string, value: any) {
-        if (this.dataSet.hasOwnProperty(key)) this.dataSet[key].value = value;
-        else this.dataSet[key] = { value : undefined, inspectors : [] };
-        return this.dataSet;
-    }
-    get(key: string) {
-        if (this.dataSet.hasOwnProperty(key)) return this.dataSet[key].value;
-        return undefined;
-    }
-    // bind a variable with object id
-    on(key: string, id: string) {
-        if (!this.dataSet.hasOwnProperty(key)) this.dataSet[key] = { value : undefined, inspectors : [] };
-        this.dataSet[key].inspectors.push(id);
-        return this;
-    }
-    // unbind a variable with object id
-    off(key: string, id: string) {
-        if (!this.dataSet.hasOwnProperty(key)) return this;
-        if (this.dataSet[key].inspectors.includes(id)) this.dataSet[key].inspectors.splice(this.dataSet[key].inspectors.indexOf(id), 1);
-        if (this.dataSet[key].inspectors.length === 0) delete this.dataSet[key];
-        return this;
+        return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
     }
 }

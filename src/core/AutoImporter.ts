@@ -1,11 +1,13 @@
 import { BaseObject, TMeta, Bang } from "./objects/Base";
-import { Box } from "./Box";
-import { Patcher, TPackage } from "./Patcher";
-type TImportedModule = { _____?: boolean, [key: string]: any };
-declare const window: { module: { exports: TImportedModule }, exports: TImportedModule };
-export class AutoImporter {
+import Box from "./Box";
+import Patcher from "./Patcher";
+import { TPackage } from "./types";
+
+type TImportedModule = { _____?: boolean; [key: string]: any };
+declare const window: { module: { exports: TImportedModule }; exports: TImportedModule };
+export default class AutoImporter {
     static async importFrom(address: string, pkgName: string) {
-        let ex = { _____: true } as TImportedModule; // Original exports, detect if exports is overwritten.
+        let ex: TImportedModule = { _____: true }; // Original exports, detect if exports is overwritten.
         window.exports = ex;
         window.module = { exports: ex };
         return new Promise((resolve: (script: HTMLScriptElement) => void, reject) => {
@@ -14,8 +16,8 @@ export class AutoImporter {
             script.src = address;
             script.type = "module";
             script.addEventListener("load", () => resolve(script));
-            script.addEventListener("error", () => reject("Error loading script."));
-            script.addEventListener("abort", () => reject("Script loading aborted."));
+            script.addEventListener("error", () => reject(new Error("Error loading script.")));
+            script.addEventListener("abort", () => reject(new Error("Script loading aborted.")));
             document.head.appendChild(script);
         }).then(() => {
             ex = window.module.exports;
@@ -25,18 +27,15 @@ export class AutoImporter {
                 delete ex._____;
                 return this.import(pkgName, ex);
             }
-            const o = {} as { [key: string]: any }; // if exports is overwritten, wrap it
+            const o: { [key: string]: any } = {}; // if exports is overwritten, wrap it
             o[pkgName] = ex;
             return this.import(pkgName, o);
         });
     }
     /*
     static async test() {
-        // tslint:disable-next-line: no-console
         await AutoImporter.importFrom("https://unpkg.com/@tensorflow/tfjs", "tf").then(console.log);
-        // tslint:disable-next-line: no-console
         await AutoImporter.importFrom("https://unpkg.com/three", "THREE").then(console.log);
-        // tslint:disable-next-line: no-console
         await AutoImporter.importFrom("https://unpkg.com/webmidi", "MIDI").then(console.log);
     }
     */
@@ -57,10 +56,8 @@ export class AutoImporter {
                 out[path.filter(v => v !== "prototype").join(".")] = this.generate(el, pkgName, root, path, fromProto);
                 if (typeof el === "object" && !Array.isArray(el)) {
                     this.import(pkgName, root, out, path, stack, depth + 1, false);
-                } else {
-                    if (el.hasOwnProperty("prototype")) this.import(pkgName, root, out, [...path, "prototype"], stack, depth + 2, true);
-                }
-            } catch (e) {}
+                } else if (el.hasOwnProperty("prototype")) this.import(pkgName, root, out, [...path, "prototype"], stack, depth + 2, true);
+            } catch (e) {} // eslint-disable-line no-empty
         }
         return out;
     }
@@ -70,7 +67,8 @@ export class AutoImporter {
         if (typeof el === "function") { // static function or method
             return class extends BaseObject {
                 static get _meta(): TMeta {
-                    return { ...super._meta,
+                    return {
+                        ...super._meta,
                         name,
                         package: pkgName,
                         description: fromProto ? "Auto-imported OOP method" : "Auto-imported static function",
@@ -121,10 +119,10 @@ export class AutoImporter {
                     this._mem.instance = null;
                     this._mem.inputs = box.parsed.args.slice(); // copy array
                     this._mem.result = null;
-                    this._mem.fromProto = fromProto ? true : false;
+                    this._mem.fromProto = !!fromProto;
                     this.update(this._mem.inputs, box.parsed.props);
                 }
-                update(args: any[], props: { inlets?: number, [key: string]: any }) {
+                update(args: any[], props: { inlets?: number; [key: string]: any }) {
                     if (props && props.inlets && typeof props.inlets === "number") {
                         this.inlets = (this._mem.fromProto ? 1 : 0) + props.inlets;
                     }
@@ -153,7 +151,7 @@ export class AutoImporter {
                             else return false;
                         } else {
                             try {
-                                this._mem.result = new this._mem.fn(...this._mem.inputs);
+                                this._mem.result = new this._mem.fn(...this._mem.inputs); // eslint-disable-line new-cap
                             } catch (e) {
                                 this._mem.result = this._mem.fn(...this._mem.inputs);
                             }

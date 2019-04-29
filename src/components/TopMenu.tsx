@@ -1,9 +1,10 @@
 import * as React from "react";
 import { Menu, Dropdown } from "semantic-ui-react";
-import { Patcher, TPatcher, TMaxClipboard } from "../core/patcher";
+import Patcher from "../core/Patcher";
 import "./TopMenu.scss";
+import { TPatcher, TMaxClipboard } from "../core/types";
 
-export class TopMenu extends React.Component {
+export default class TopMenu extends React.Component {
     props: { patcher: Patcher };
     render() {
         return (
@@ -17,8 +18,8 @@ export class TopMenu extends React.Component {
 
 class FileMenu extends React.Component {
     props: { patcher: Patcher };
-    refDownload = React.createRef() as React.RefObject<HTMLAnchorElement>;
-    refOpen = React.createRef() as React.RefObject<HTMLInputElement>;
+    refDownload: React.RefObject<HTMLAnchorElement> = React.createRef();
+    refOpen: React.RefObject<HTMLInputElement> = React.createRef();
     state = { pAsString: "", pName: "patcher.json" };
     handleClickNew = () => {
         this.props.patcher.load("js", {});
@@ -44,7 +45,7 @@ class FileMenu extends React.Component {
         const file = this.refOpen.current.files[0];
         if (!file) return;
         const ext = file.name.split(".").pop();
-        const extMap = { json: "js", maxpat: "max", gendsp: "gen" } as { [key: string]: "js" | "max" | "gen" };
+        const extMap: { [key: string]: "js" | "max" | "gen" } = { json: "js", maxpat: "max", gendsp: "gen" };
         if (extMap[ext]) {
             const reader = new FileReader();
             reader.readAsText(file, "UTF-8");
@@ -90,7 +91,7 @@ class FileMenu extends React.Component {
                         <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description="Ctrl + S" />
                     </Dropdown.Menu>
                 </Dropdown>
-                <a ref={this.refDownload} target="_blank" href={this.state.pAsString} download={this.state.pName} />
+                <a ref={this.refDownload} target="_blank" rel="noopener noreferrer" href={this.state.pAsString} download={this.state.pName}> </a>
                 <input ref={this.refOpen} type="file" hidden={true} onInput={this.onInput} />
             </>
         );
@@ -100,9 +101,6 @@ declare global {
     interface Clipboard extends EventTarget {
         readText(): Promise<string>;
         writeText(data: string): Promise<void>;
-    }
-    interface Navigator {
-        clipboard: Clipboard;
     }
 }
 class EditMenu extends React.Component {
@@ -122,13 +120,13 @@ class EditMenu extends React.Component {
     handleClickPaste = () => {
         if (this.props.patcher._state.locked) return;
         navigator.clipboard.readText()
-        .then((text) => {
-            let parsed: TPatcher | TMaxClipboard;
-            try {
-                parsed = JSON.parse(text);
-            } catch (e) {}
-            this.props.patcher.paste(parsed);
-        });
+            .then((text) => {
+                let parsed: TPatcher | TMaxClipboard;
+                try {
+                    parsed = JSON.parse(text);
+                } catch (e) {} // eslint-disable-line no-empty
+                this.props.patcher.paste(parsed);
+            });
     };
     handleClickDelete = () => {
         if (this.props.patcher._state.locked) return;

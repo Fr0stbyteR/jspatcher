@@ -1,9 +1,9 @@
 import { EventEmitter } from "events";
-import { Patcher } from "./Patcher";
+import Patcher from "./Patcher";
 import { BaseObject } from "./objects/Base";
 import { BoxEventMap, TBox } from "./types";
 
-export class Box extends EventEmitter {
+export default class Box extends EventEmitter {
     on<K extends keyof BoxEventMap>(type: K, listener: (e: BoxEventMap[K]) => void) {
         return super.on(type, listener);
     }
@@ -24,8 +24,8 @@ export class Box extends EventEmitter {
     inlets = 0;
     outlets = 0;
     rect: [number, number, number, number];
-    data = {} as { [key: string]: any };
-    private _parsed: { class: string, args: any[], props: { [key: string]: any } };
+    data: { [key: string]: any } = {};
+    private _parsed: { class: string; args: any[]; props: { [key: string]: any } };
     private _object: BaseObject;
     private _patcher: Patcher;
     constructor(patcherIn: Patcher, boxIn: TBox) {
@@ -86,7 +86,7 @@ export class Box extends EventEmitter {
         return positions;
     }
     get allLines() {
-        const lines = {} as { [key: string]: boolean };
+        const lines: { [key: string]: boolean } = {};
         this.inletLines.forEach(el => el.forEach(id => lines[id] = true));
         this.outletLines.forEach(el => el.forEach(id => lines[id] = true));
         return Object.keys(lines);
@@ -182,7 +182,7 @@ export class Box extends EventEmitter {
             // Each call to exec returns the next regex match as an array
             match = REGEX.exec(strIn);
         }
-        const objOut = { class: "", args: [], props: {} } as { class: string, args: any[], props: { [key: string]: any } };
+        const objOut: { class: string; args: any[]; props: { [key: string]: any } } = { class: "", args: [], props: {} };
         let lastProp;
         if (strArray.length) objOut.class = strArray.shift();
         while (strArray.length) {

@@ -21,7 +21,7 @@
     "downlevelIteration": true
   },
   "include": [
-    "src/*.ts", "src/index.tsx"
+    "src/**/*"
   ],
   "exclude": [
     "dist",

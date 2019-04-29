@@ -1,8 +1,8 @@
 import { EventEmitter } from "events";
-import { Patcher } from "./Patcher";
+import Patcher from "./Patcher";
 import { LineEventMap, TLine } from "./types";
 
-export class Line extends EventEmitter {
+export default class Line extends EventEmitter {
     on<K extends keyof LineEventMap>(type: K, listener: (e: LineEventMap[K]) => void) {
         return super.on(type, listener);
     }
@@ -64,23 +64,19 @@ export class Line extends EventEmitter {
         return this;
     }
     disable(bool?: boolean): Line {
-        // tslint:disable-next-line: no-boolean-literal-compare
         if (bool === false) return this.enable();
         if (this.disabled) return this;
         this.disabled = true;
-        const srcBox = this.srcBox;
-        const destBox = this.destBox;
+        const { srcBox, destBox } = this;
         if (this._patcher.getLinesByBox(this.srcID, this.destID, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
         srcBox.disconnectedOutlet(this.srcOutlet, destBox, this.destInlet, this.id);
         destBox.disconnectedInlet(this.destInlet, srcBox, this.srcOutlet, this.id);
         return this;
     }
     enable(bool?: boolean): Line {
-        // tslint:disable-next-line: no-boolean-literal-compare
         if (bool === false) return this.disable();
         if (!this.disabled) return this;
-        const srcBox = this.srcBox;
-        const destBox = this.destBox;
+        const { srcBox, destBox } = this;
         if (this.srcOutlet >= srcBox.outlets || this.destInlet >= destBox.inlets) return this._patcher.deleteLine(this.id);
         if (this._patcher.getLinesByBox(this.srcID, this.destID, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
         srcBox.connectedOutlet(this.srcOutlet, destBox, this.destInlet, this.id);

@@ -1,7 +1,8 @@
 import { BaseObject, TMeta } from "./Base";
 import { Comment } from "./UI";
 import "./Gen.scss";
-const genOperators = {
+
+const genOperators: { [key: string]: string[] } = {
     common: [
         "!=p", "neqp", "==", "eq", "==p", "eqp",
         ">", "gt", ">=", "gte", ">=p", "gtep", ">p", "gtp",
@@ -24,7 +25,8 @@ const genOperators = {
         "acos", "acosh", "asin", "asinh", "atan", "atan2", "atanh", "cos", "cosh",
         "degrees", "fastcos", "fastsin", "fasttan", "hypot", "radians", "sin", "sinh", "tan", "tanh",
         "noise"
-    ], dsp: [
+    ],
+    dsp: [
         "buffer", "channels", "cycle", "data", "dim", "lookup", "nearest", "peek", "poke", "sample", "splat", "wave",
         "atodb", "dbtoa", "ftom", "mstosamps", "mtof", "sampstoms",
         "fftfullspect", "FFTFULLSPECT", "ffthop", "FFTHOP", "fftoffset", "FFTOFFSET",
@@ -35,16 +37,18 @@ const genOperators = {
         "change", "dcblock", "delta", "interp", "latch", "phasewrap", "sah", "slide",
         "elapsed", "voice", "*=", "mulequals", "+=", "accum", "plusequals", "counter",
         "round", "phasor", "rate", "train", "triangle"
-    ], jitter: [
+    ],
+    jitter: [
         "hsl2rgb", "rgb2hsl", "cell", "dim", "norm", "snorm", "qconj", "qmul", "qrot",
         "nearest", "nearestpix", "sample", "samplepix",
         "circle", "cone", "cylinder", "plane", "sphere", "torus",
         "concat", "cross", "dot", "faceforward", "length", "normalize", "reflect", "refract", "rotor", "swiz", "vec"
     ]
-} as { [key: string]: string[] };
+};
 class GenObject extends BaseObject {
     static get _meta(): TMeta {
-        return { ...super._meta,
+        return {
+            ...super._meta,
             package: "Gen",
             author: "Fr0stbyteR",
             version: "1.0.0",
@@ -52,7 +56,7 @@ class GenObject extends BaseObject {
         };
     }
 }
-const GenObjects = { comment: Comment } as { [key: string]: typeof GenObject | typeof Comment };
+const GenObjects: { [key: string]: typeof GenObject | typeof Comment } = { comment: Comment };
 for (const key in genOperators) {
     genOperators[key].forEach((name) => {
         GenObjects[name] = class extends GenObject {

@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Patcher } from "../core/Patcher";
-import { TopMenu } from "./TopMenu";
-import { PatcherUI } from "./PatcherUI";
-import { BottomMenu } from "./BottomMenu";
+import Patcher from "../core/Patcher";
+import TopMenu from "./TopMenu";
+import PatcherUI from "./PatcherUI";
+import BottomMenu from "./BottomMenu";
 import "./UI.scss";
-export class UI extends React.Component {
+
+export default class UI extends React.Component {
     props: { patcher: Patcher };
     render() {
         return (

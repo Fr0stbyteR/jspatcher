@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
-import { Patcher } from "../core/patcher";
+import Patcher from "../core/Patcher";
 import "./BottomMenu.scss";
 
-export class BottomMenu extends React.Component {
+export default class BottomMenu extends React.Component {
     props: { patcher: Patcher };
     state: { locked: boolean };
     componentWillMount() {
@@ -17,7 +17,7 @@ export class BottomMenu extends React.Component {
         this.props.patcher.off("locked", this.handleLockedChange);
     }
     handleLockedChange = (locked: boolean) => this.setState({ locked });
-    handleClickLock = (event: React.MouseEvent) => {
+    handleClickLock = () => {
         this.props.patcher.setLock(!this.state.locked);
     };
     render() {

@@ -1,19 +1,19 @@
 import * as React from "react";
-import { Patcher } from "../core/patcher";
-import { Box } from "../core/Box";
-import { Line } from "../core/Line";
+import Patcher from "../core/Patcher";
+import Box from "../core/Box";
+import Line from "../core/Line";
 import "./PatcherUI.scss";
+import BoxUI from "./BoxUI";
 import { LineUI, TempLineUI } from "./LineUI";
-import { BoxUI } from "./BoxUI";
 import { TPatcher } from "../core/types";
 
-export class PatcherUI extends React.Component {
+export default class PatcherUI extends React.Component {
     props: { patcher: Patcher };
-    state: { locked: boolean, presentation: boolean, showGrid: boolean, bgcolor: [number, number, number, number], editing_bgcolor: [number, number, number, number] };
-    refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
-    refGrid = React.createRef() as React.RefObject<Grid>;
-    refBoxes = React.createRef() as React.RefObject<Boxes>;
-    refLines = React.createRef() as React.RefObject<Lines>;
+    state: { locked: boolean; presentation: boolean; showGrid: boolean; bgcolor: [number, number, number, number]; editing_bgcolor: [number, number, number, number] };
+    refDiv: React.RefObject<HTMLDivElement> = React.createRef();
+    refGrid: React.RefObject<Grid> = React.createRef();
+    refBoxes: React.RefObject<Boxes> = React.createRef();
+    refLines: React.RefObject<Lines> = React.createRef();
     size = { width: 0, height: 0 };
     handleLoaded = () => {
         this.setState({ bgcolor: this.props.patcher.props.bgcolor, editing_bgcolor: this.props.patcher.props.editing_bgcolor });
@@ -80,7 +80,7 @@ export class PatcherUI extends React.Component {
 class Lines extends React.Component {
     props: { patcher: Patcher };
     state = { width: "100%", height: "100%" };
-    lines = {} as { [key: string]: JSX.Element };
+    lines: { [key: string]: JSX.Element } = {};
     componentDidMount() {
         this.props.patcher.on("loaded", this.onLoaded);
         this.props.patcher.on("createLine", this.onCreateLine);
@@ -143,8 +143,8 @@ class Lines extends React.Component {
 class Boxes extends React.Component {
     props: { patcher: Patcher };
     state = { width: "100%", height: "100%", selectionRect: [0, 0, 0, 0] };
-    boxes = {} as { [key: string]: JSX.Element };
-    refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
+    boxes: { [key: string]: JSX.Element } = {};
+    refDiv: React.RefObject<HTMLDivElement> = React.createRef();
     dragged = false;
     componentDidMount() {
         this.props.patcher.on("loaded", this.onLoaded);
@@ -229,14 +229,6 @@ class Boxes extends React.Component {
                 if (y < 10) patcherDiv.scrollTop += y - 10;
                 if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
             };
-            const handleMouseUp = (e: MouseEvent) => {
-                e.stopPropagation();
-                e.preventDefault();
-                document.removeEventListener("mousemove", handleMouseMove);
-                document.removeEventListener("mouseup", handleMouseUp);
-                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
-                this.setState({ selectionRect: [0, 0, 0, 0] });
-            };
             const handlePatcherScroll = (e: UIEvent) => {
                 const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
                 const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
@@ -248,6 +240,14 @@ class Boxes extends React.Component {
                     this.setState({ selectionRect });
                     this.props.patcher.selectRegion(selectionRect, selectedBefore);
                 }
+            };
+            const handleMouseUp = (e: MouseEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
+                document.removeEventListener("mousemove", handleMouseMove);
+                document.removeEventListener("mouseup", handleMouseUp);
+                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
+                this.setState({ selectionRect: [0, 0, 0, 0] });
             };
             document.addEventListener("mousemove", handleMouseMove);
             document.addEventListener("mouseup", handleMouseUp);
