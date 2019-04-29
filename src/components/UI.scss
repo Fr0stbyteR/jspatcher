@@ -5,13 +5,13 @@
     display: flex;
     flex-direction: column;
     flex: 1 1 100%;
-    &>#topmenu {
+    & > #topmenu {
         position: relative;
         flex: 0 0 auto;
         width: auto;
         /*overload semantic 100% width*/
     }
-    &>.patcher-container {
+    & > .patcher-container {
         position: relative;
         overflow: auto;
         flex: 1 1 100%;
