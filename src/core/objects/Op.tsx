@@ -52,7 +52,7 @@ class JSUnaryOp extends JSOp {
         }
         return this;
     }
-    execute(a: any) {} // eslint-disable-line class-methods-use-this, @typescript-eslint/no-unused-vars
+    execute(a: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
 
 class JSBinaryOp extends JSOp {
@@ -115,7 +115,7 @@ class JSBinaryOp extends JSOp {
         }
         return this;
     }
-    execute(a: any, b: any) {} // eslint-disable-line class-methods-use-this, @typescript-eslint/no-unused-vars
+    execute(a: any, b: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
 
 class JSTernaryOp extends JSOp {

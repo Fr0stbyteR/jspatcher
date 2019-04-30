@@ -4,18 +4,6 @@ import Patcher from "../core/Patcher";
 import "./TopMenu.scss";
 import { TPatcher, TMaxClipboard } from "../core/types";
 
-export default class TopMenu extends React.Component {
-    props: { patcher: Patcher };
-    render() {
-        return (
-            <Menu inverted={true} fixed={"top"} id="top-menu">
-                <FileMenu {...this.props} />
-                <EditMenu {...this.props} />
-            </Menu>
-        );
-    }
-}
-
 class FileMenu extends React.Component {
     props: { patcher: Patcher };
     refDownload: React.RefObject<HTMLAnchorElement> = React.createRef();
@@ -63,21 +51,6 @@ class FileMenu extends React.Component {
             };
             this.refOpen.current.value = "";
         }
-    }
-    handleKeyDown = (e: KeyboardEvent) => {
-        if (e.ctrlKey && e.shiftKey && e.key === "n") this.handleClickNew();
-        else if (e.ctrlKey && e.key === "o") this.handleClickOpen();
-        else if (e.ctrlKey && e.key === "s") this.handleClickSaveAs();
-        else return true;
-        e.stopPropagation();
-        e.preventDefault();
-        return false;
-    }
-    componentDidMount() {
-        document.addEventListener("keydown", this.handleKeyDown);
-    }
-    componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
     }
     render() {
         return (
@@ -136,22 +109,6 @@ class EditMenu extends React.Component {
     };
     handleClickSelectAll = () => {
     };
-    handleKeyDown = (e: KeyboardEvent) => {
-        if (e.ctrlKey && e.key === "z") this.handleClickUndo();
-        if (e.ctrlKey && e.key === "y") this.handleClickRedo();
-        if (e.ctrlKey && e.key === "v") this.handleClickPaste();
-        if (e.key === "Delete" || e.key === "Backspace") this.handleClickDelete();
-        else return true;
-        e.stopPropagation();
-        e.preventDefault();
-        return false;
-    }
-    componentDidMount() {
-        document.addEventListener("keydown", this.handleKeyDown);
-    }
-    componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
-    }
     render() {
         return (
             <Dropdown item={true} icon={false} text="Edit">
@@ -168,6 +125,41 @@ class EditMenu extends React.Component {
                     <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description="Ctrl + A" />
                 </Dropdown.Menu>
             </Dropdown>
+        );
+    }
+}
+export default class TopMenu extends React.Component {
+    props: { patcher: Patcher };
+    refFileMenu: React.RefObject<FileMenu> = React.createRef();
+    refEditMenu: React.RefObject<EditMenu> = React.createRef();
+    handleKeyDown = (e: KeyboardEvent) => {
+        const fileMenu = this.refFileMenu.current;
+        const editMenu = this.refEditMenu.current;
+        if (!fileMenu || !editMenu) return;
+
+        if (e.ctrlKey && e.shiftKey && e.key === "n") fileMenu.handleClickNew();
+        else if (e.ctrlKey && e.key === "o") fileMenu.handleClickOpen();
+        else if (e.ctrlKey && e.key === "s") fileMenu.handleClickSaveAs();
+        else if (e.ctrlKey && e.key === "z") editMenu.handleClickUndo();
+        else if (e.ctrlKey && e.key === "y") editMenu.handleClickRedo();
+        else if (e.ctrlKey && e.key === "v") editMenu.handleClickPaste();
+        else if (e.key === "Delete" || e.key === "Backspace") editMenu.handleClickDelete();
+        else return;
+        e.stopPropagation();
+        e.preventDefault();
+    }
+    componentDidMount() {
+        document.addEventListener("keydown", this.handleKeyDown);
+    }
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
+    render() {
+        return (
+            <Menu inverted={true} fixed={"top"} id="top-menu">
+                <FileMenu {...this.props} ref={this.refFileMenu} />
+                <EditMenu {...this.props} ref={this.refEditMenu} />
+            </Menu>
         );
     }
 }

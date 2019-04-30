@@ -176,6 +176,7 @@ export default class Patcher extends EventEmitter {
     }
     changeBoxText(boxID: string, text: string) {
         const oldText = this.boxes[boxID].text;
+        if (oldText === text) return this.boxes[boxID];
         this.boxes[boxID].changeText(text);
         this.newTimestamp();
         this.emit("changeBoxText", { oldText, text, box: this.boxes[boxID] });

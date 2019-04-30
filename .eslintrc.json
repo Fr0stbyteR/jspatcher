@@ -27,11 +27,13 @@
     },
     "rules": {
         "arrow-parens": "warn",
+        "class-methods-use-this": "off",
         "comma-dangle": ["error", "never"],
         "curly": ["warn", "multi-line"],
         "guard-for-in": "off",
         "import/newline-after-import": "warn",
         "import/no-extraneous-dependencies": "off",
+        "import/prefer-default-export": "off",
         "lines-between-class-members": "off",
         "max-len": "off",
         "no-bitwise": "off",

@@ -44,7 +44,7 @@ export type TMeta = {
     props: TPropsMeta;
 };
 export class BaseUI extends React.Component {
-    static sizing = "horizontal" as "horizontal" | "vertical" | "both" | "ratio";
+    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     props: { object: BaseObject; children?: React.ReactNode };
     editableOnUnlock = false;
     toggleEdit = (bool?: boolean) => false;
@@ -88,7 +88,11 @@ export class DefaultUI extends BaseUI {
     }
     handleMouseDown = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
     handleClick = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
-    handleKeyDown = (e: React.KeyboardEvent) => (e.key === "Enter" ? null : this.state.editing ? e.stopPropagation() : null); // propagate for parent for focus on boxUI
+    handleKeyDown = (e: React.KeyboardEvent) => { // propagate for parent for focus on boxUI
+        if (e.key === "Enter" || !this.state.editing) return;
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+    }
     handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
@@ -152,7 +156,7 @@ export class BaseObject extends EventEmitter {
         // this.update(box._args, box._props);
     }
     // build new ui on page, return a React Component, override this
-    ui() { // eslint-disable-line class-methods-use-this
+    ui() {
         return DefaultUI as typeof BaseUI;
     }
     // update UI's React State
@@ -291,7 +295,7 @@ class InvalidObject extends BaseObject {
     }
 }
 export class Bang {
-    toString() { // eslint-disable-line class-methods-use-this
+    toString() {
         return "bang";
     }
 }

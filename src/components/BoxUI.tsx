@@ -4,6 +4,17 @@ import Box from "../core/Box";
 import { BaseUI } from "../core/objects/Base";
 import "./BoxUI.scss";
 
+enum EnumResizeHandlerType {
+    n = "n",
+    ne = "ne",
+    e = "e",
+    se = "se",
+    w = "w",
+    sw = "sw",
+    s = "s",
+    nw = "nw"
+}
+
 export default class BoxUI extends React.Component {
     props: { patcher: Patcher; id: string };
     state: { selected: boolean; rect: [number, number, number, number] };
@@ -99,7 +110,7 @@ export default class BoxUI extends React.Component {
                 e.preventDefault();
                 this.dragging = false;
                 const totalOffset = { x: box.rect[0] - origOffset[0], y: box.rect[1] - origOffset[1] };
-                this.props.patcher.dragEnd(totalOffset);
+                if (this.dragged) this.props.patcher.dragEnd(totalOffset);
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
                 this.refDiv.current.removeEventListener("keydown", handleKey);
@@ -160,6 +171,25 @@ export default class BoxUI extends React.Component {
     }
     handleSelected = (id: string) => (id === this.props.id ? this.setState({ selected: true }) : null);
     handleDeselected = (id: string) => (id === this.props.id ? this.setState({ selected: false }) : null);
+    handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        const classList = e.currentTarget.classList;
+        const typeMap: { [key: string]: EnumResizeHandlerType } = {
+            "resize-handler-n": EnumResizeHandlerType.n,
+            "resize-handler-ne": EnumResizeHandlerType.ne,
+            "resize-handler-e": EnumResizeHandlerType.e,
+            "resize-handler-se": EnumResizeHandlerType.se,
+            "resize-handler-s": EnumResizeHandlerType.s,
+            "resize-handler-sw": EnumResizeHandlerType.sw,
+            "resize-handler-w": EnumResizeHandlerType.w,
+            "resize-handler-nw": EnumResizeHandlerType.nw
+        };
+        let type: EnumResizeHandlerType;
+        for (const key in typeMap) {
+            if (classList.contains(key)) {
+                type = typeMap[key];
+            }
+        }
+    };
     componentWillMount() {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
@@ -198,6 +228,16 @@ export default class BoxUI extends React.Component {
             <div className={"box box-default" + (this.state.selected ? " selected" : "")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onBlur={this.handleBlur} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
                 <Inlets patcher={this.props.patcher} box={box} />
                 <Outlets patcher={this.props.patcher} box={box} />
+                <div className="resize-handlers">
+                    <div className="resize-handler resize-handler-n" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-ne" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-se" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-s" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-sw" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-w" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
+                </div>
                 <div className="box-ui">
                     {this.innerUI}
                 </div>
