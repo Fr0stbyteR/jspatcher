@@ -11,6 +11,7 @@ import Gen from "./objects/Gen";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
+import { EnumResizeHandlerType } from "../components/BoxUI";
 
 const Packages: TPackage = { Base, UI, Op, Window };
 
@@ -376,14 +377,15 @@ export default class Patcher extends EventEmitter {
         return this;
     }
     moveSelectedBox(boxID: string, dragOffset: { x: number; y: number }) {
-        const deltaX = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - this.boxes[boxID].rect[0] : dragOffset.x;
-        const deltaY = this._state.snapToGrid ? Math.round((this.boxes[boxID].rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - this.boxes[boxID].rect[1] : dragOffset.y;
-        const delta = { x: deltaX, y: deltaY };
+        const rect = this.boxes[boxID].rect;
+        const delta = { x: 0, y: 0 };
+        delta.x = this._state.snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
+        delta.y = this._state.snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
         if (!delta.x && !delta.y) return dragOffset;
         this.move(this._state.selected, delta);
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
-    dragEnd(delta: { x: number; y: number }) {
+    moveEnd(delta: { x: number; y: number }) {
         this.newTimestamp();
         this.emit("moved", { delta, selected: this._state.selected });
     }
@@ -403,6 +405,63 @@ export default class Patcher extends EventEmitter {
             if (box.rect[1] < 0) {
                 delta.y -= box.rect[1];
                 box.rect[1] = 0;
+            }
+            box.allLines.forEach(id => linesConcerned[id] = true);
+            box.emit("rectChanged", box);
+        });
+        Object.keys(linesConcerned).forEach((lineID) => {
+            const line = this.lines[lineID];
+            if (!line) return;
+            line.emit("posChanged", line);
+        });
+    }
+    resizeSelectedBox(boxID: string, dragOffset: { x: number; y: number }, type: EnumResizeHandlerType) {
+        const rect = this.boxes[boxID].rect;
+        const delta = { x: 0, y: 0 };
+        if (type === EnumResizeHandlerType.e || type === EnumResizeHandlerType.se) {
+            delta.x = this._state.snapToGrid ? Math.round((rect[0] + rect[2] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] - rect[2] : dragOffset.x;
+        }
+        if (type === EnumResizeHandlerType.s || type === EnumResizeHandlerType.se) {
+            delta.y = this._state.snapToGrid ? Math.round((rect[1] + rect[3] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] - rect[3] : dragOffset.y;
+        }
+        if (type === EnumResizeHandlerType.w || type === EnumResizeHandlerType.nw) {
+            delta.x = this._state.snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
+        }
+        if (type === EnumResizeHandlerType.n || type === EnumResizeHandlerType.nw) {
+            delta.y = this._state.snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
+        }
+        if (!delta.x && !delta.y) return dragOffset;
+        this.resize(this._state.selected, delta, type);
+        return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
+    }
+    resizeEnd(delta: { x: number; y: number }, type: EnumResizeHandlerType) {
+        this.newTimestamp();
+        this.emit("resized", { delta, type, selected: this._state.selected });
+    }
+    resize(selected: string[], delta: { x: number; y: number }, type: EnumResizeHandlerType) {
+        selected.forEach(id => this.select(id));
+        const linesConcerned: { [id: string]: true } = {};
+        const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
+        boxes.forEach((box) => {
+            if (type === EnumResizeHandlerType.ne || type === EnumResizeHandlerType.e || type === EnumResizeHandlerType.se) {
+                if (box.rect[2] + delta.x < 15) return;
+                box.rect[2] = Math.max(box.rect[2] + delta.x, 15);
+            }
+            if (type === EnumResizeHandlerType.se || type === EnumResizeHandlerType.s || type === EnumResizeHandlerType.sw) {
+                if (box.rect[3] + delta.y < 15) return;
+                box.rect[3] = Math.max(box.rect[3] + delta.y, 15);
+            }
+            if (type === EnumResizeHandlerType.sw || type === EnumResizeHandlerType.w || type === EnumResizeHandlerType.nw) {
+                if (box.rect[2] - delta.x < 15) return;
+                if (box.rect[0] + delta.x < 0) return;
+                box.rect[2] -= delta.x;
+                box.rect[0] += delta.x;
+            }
+            if (type === EnumResizeHandlerType.nw || type === EnumResizeHandlerType.n || type === EnumResizeHandlerType.ne) {
+                if (box.rect[3] - delta.y < 15) return;
+                if (box.rect[1] + delta.y < 0) return;
+                box.rect[3] -= delta.y;
+                box.rect[1] += delta.y;
             }
             box.allLines.forEach(id => linesConcerned[id] = true);
             box.emit("rectChanged", box);

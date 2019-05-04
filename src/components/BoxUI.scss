@@ -7,9 +7,33 @@
         z-index: inherit;
         &.selected {
             box-shadow: 0 0 2px 2px rgb(0, 162, 255);
-        }
-        &:not(.selected) .ui-resizable-handle {
-            display: none;
+            & > .resize-handlers {
+                &.resize-handlers-horizontal {
+                    & > .resize-handler-e, 
+                    & > .resize-handler-w {
+                        display: block;
+                    }
+                }
+                &.resize-handlers-vertical {
+                    & > .resize-handler-n, 
+                    & > .resize-handler-s {
+                        display: block;
+                    }
+                }
+                &.resize-handlers-both {
+                    & > .resize-handler {
+                        display: block;
+                    }
+                }
+                &.resize-handlers-ratio {
+                    & > .resize-handler-ne, 
+                    & > .resize-handler-se,
+                    & > .resize-handler-sw, 
+                    & > .resize-handler-nw {
+                        display: block;
+                    }
+                }
+            }
         }
         > div.box-ui {
             height: 100%;
@@ -114,6 +138,63 @@
                 }
             }
 		}
+        & > div.resize-handlers {
+            & > div.resize-handler {
+                position: absolute;
+                display: none;
+                &.resize-handler-n {
+                    top: 0;
+                    width: 100%;
+                    height: 4px;
+                    cursor: n-resize;
+                }
+                &.resize-handler-ne {
+                    top: 0;
+                    right: 0;
+                    width: 6px;
+                    height: 6px;
+                    cursor: ne-resize;
+                }
+                &.resize-handler-e {
+                    right: 0;
+                    width: 4px;
+                    height: 100%;
+                    cursor: e-resize;
+                }
+                &.resize-handler-se {
+                    bottom: 0;
+                    right: 0;
+                    width: 6px;
+                    height: 6px;
+                    cursor: se-resize;
+                }
+                &.resize-handler-s {
+                    bottom: 0;
+                    width: 100%;
+                    height: 4px;
+                }
+                &.resize-handler-sw {
+                    bottom: 0;
+                    left: 0;
+                    width: 6px;
+                    height: 6px;
+                    cursor: sw-resize;
+                }
+                &.resize-handler-w {
+                    left: 0;
+                    width: 4px;
+                    height: 100%;
+                    cursor: w-resize;
+                }
+                &.resize-handler-nw {
+                    top: 0;
+                    right: 0;
+                    width: 6px;
+                    height: 6px;
+                    cursor: nw-resize;
+                }
+            }
+        }
 	}
 	&.locked > div.boxes > div.box {
 		> div.box-ui {
@@ -125,7 +206,10 @@
             &:not(.box-port-connected) {
                 visibility: hidden;
             }
-		}
+        }
+        > div.resize-handlers {
+            display: none;
+        }
 	}
 	&.unlocked > div.boxes > div.box {
 		> div.box-ui {
@@ -147,5 +231,8 @@
 				}
 			}
 		}
+        > div.resize-handlers {
+            display: block;
+        }
 	}
 }

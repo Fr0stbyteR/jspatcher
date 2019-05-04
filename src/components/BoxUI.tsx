@@ -4,7 +4,7 @@ import Box from "../core/Box";
 import { BaseUI } from "../core/objects/Base";
 import "./BoxUI.scss";
 
-enum EnumResizeHandlerType {
+export enum EnumResizeHandlerType {
     n = "n",
     ne = "ne",
     e = "e",
@@ -49,7 +49,9 @@ export default class BoxUI extends React.Component {
     handleRectChanged = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
-        this.setState({ rect: box.rect });
+        this.setState({ rect: box.rect }, () => {
+            this.inspectRectChange();
+        });
         return box;
     }
     handleBlur = () => {
@@ -110,7 +112,7 @@ export default class BoxUI extends React.Component {
                 e.preventDefault();
                 this.dragging = false;
                 const totalOffset = { x: box.rect[0] - origOffset[0], y: box.rect[1] - origOffset[1] };
-                if (this.dragged) this.props.patcher.dragEnd(totalOffset);
+                if (this.dragged) this.props.patcher.moveEnd(totalOffset);
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
                 this.refDiv.current.removeEventListener("keydown", handleKey);
@@ -172,6 +174,7 @@ export default class BoxUI extends React.Component {
     handleSelected = (id: string) => (id === this.props.id ? this.setState({ selected: true }) : null);
     handleDeselected = (id: string) => (id === this.props.id ? this.setState({ selected: false }) : null);
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (this.props.patcher._state.locked) return;
         const classList = e.currentTarget.classList;
         const typeMap: { [key: string]: EnumResizeHandlerType } = {
             "resize-handler-n": EnumResizeHandlerType.n,
@@ -189,6 +192,74 @@ export default class BoxUI extends React.Component {
                 type = typeMap[key];
             }
         }
+        // Handle Draggable
+        this.dragged = false;
+        this.dragging = true;
+        const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
+        const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
+        let el = patcherDiv;
+        do {
+            patcherRect[0] += el.offsetLeft;
+            patcherRect[1] += el.offsetTop;
+            el = el.offsetParent as HTMLDivElement;
+        } while (el.offsetParent);
+        let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+        let dragOffset = { x: 0, y: 0 };
+        const totalOffset = { x: 0, y: 0 };
+        const handleMouseMove = (e: MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (this.dragging && (e.movementX || e.movementY)) {
+                if (!this.dragged) this.dragged = true;
+                dragOffset.x += e.movementX;
+                dragOffset.y += e.movementY;
+                dragOffset = this.props.patcher.resizeSelectedBox(this.props.id, dragOffset, type);
+                totalOffset.x += e.movementX;
+                totalOffset.y += e.movementY;
+            }
+            const x = e.pageX - patcherRect[0];
+            const y = e.pageY - patcherRect[1];
+            if (x < 10) patcherDiv.scrollLeft += x - 10;
+            if (x > patcherRect[2] - 10) patcherDiv.scrollLeft += x + 10 - patcherRect[2];
+            if (y < 10) patcherDiv.scrollTop += y - 10;
+            if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
+        };
+        const handlePatcherScroll = (e: UIEvent) => {
+            const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
+            const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
+            dragOffset.x += movementX;
+            dragOffset.y += movementY;
+            patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+            if (this.dragging && !this.editingOnUnlock && (movementX || movementY)) {
+                if (!this.dragged) this.dragged = true;
+                dragOffset = this.props.patcher.resizeSelectedBox(this.props.id, dragOffset, type);
+            }
+            totalOffset.x += movementX;
+            totalOffset.y += movementY;
+        };
+        const handleKey = (e: KeyboardEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+        };
+        const handleMouseUp = (e: MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            this.dragging = false;
+            totalOffset.x -= dragOffset.x;
+            totalOffset.y -= dragOffset.y;
+            if (this.dragged) this.props.patcher.resizeEnd(totalOffset, type);
+            document.removeEventListener("mousemove", handleMouseMove);
+            document.removeEventListener("mouseup", handleMouseUp);
+            this.refDiv.current.removeEventListener("keydown", handleKey);
+            this.refDiv.current.removeEventListener("keyup", handleKey);
+            patcherDiv.removeEventListener("scroll", handlePatcherScroll);
+        };
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+        this.refDiv.current.addEventListener("keydown", handleKey);
+        this.refDiv.current.addEventListener("keyup", handleKey);
+        patcherDiv.addEventListener("scroll", handlePatcherScroll);
+        e.stopPropagation();
     };
     componentWillMount() {
         const box = this.props.patcher.boxes[this.props.id];
@@ -228,7 +299,7 @@ export default class BoxUI extends React.Component {
             <div className={"box box-default" + (this.state.selected ? " selected" : "")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onBlur={this.handleBlur} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
                 <Inlets patcher={this.props.patcher} box={box} />
                 <Outlets patcher={this.props.patcher} box={box} />
-                <div className="resize-handlers">
+                <div className={"resize-handlers resize-handlers-" + this.sizing}>
                     <div className="resize-handler resize-handler-n" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-ne" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown}></div>

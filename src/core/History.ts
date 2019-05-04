@@ -49,10 +49,7 @@ export default class History {
             this.events[eID].changeBoxText.forEach(e => patcher.changeBoxText(e.box.id, e.oldText));
         }
         if (this.events[eID].hasOwnProperty("moved")) {
-            this.events[eID].moved.forEach((e) => {
-                const delta = { x: -1 * e.delta.x, y: -1 * e.delta.y };
-                patcher.move(e.selected, delta);
-            });
+            this.events[eID].moved.forEach(e => patcher.move(e.selected, { x: -1 * e.delta.x, y: -1 * e.delta.y }));
         }
         if (this.events[eID].hasOwnProperty("changeLineSrc")) {
             this.events[eID].changeLineSrc.forEach(e => patcher.changeLineSrc(e.line.id, e.oldSrc[0], e.oldSrc[1]));

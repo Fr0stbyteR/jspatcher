@@ -3,6 +3,7 @@ import Patcher from "./Patcher";
 import Box from "./Box";
 import Line from "./Line";
 import History from "./History";
+import { EnumResizeHandlerType } from "../components/BoxUI";
 
 type TPatcherMode = "max" | "gen" | "js";
 
@@ -128,6 +129,7 @@ interface PatcherEventMap {
     "deselected": string;
     "tempLine": { findSrc: boolean; from: [string, number] };
     "moved": { selected: string[]; delta: { x: number; y: number } };
+    "resized": { selected: string[]; delta: { x: number; y: number }; type: EnumResizeHandlerType };
 }
 
 interface LineEventMap {

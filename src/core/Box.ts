@@ -148,6 +148,7 @@ export default class Box extends EventEmitter {
         return this;
     }
     setRect(rect: [number, number, number, number]) {
+        if (rect.every((v, i) => v === this.rect[i])) return this;
         this.rect = rect;
         this.allLines.forEach(id => this._patcher.lines[id].uiUpdateDest());
         this.emit("rectChanged", this);
