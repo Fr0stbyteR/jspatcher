@@ -298,7 +298,7 @@ export default class Patcher extends EventEmitter {
     observeHistory<K extends keyof PatcherEventMap>() {
         [
             "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
-            "changeBoxText", "changeLineSrc", "changeLineDest", "moved"
+            "changeBoxText", "changeLineSrc", "changeLineDest", "moved", "resized"
         ].forEach((type: K) => this.on(type, e => this._state.history.did(type, e)));
     }
     newTimestamp() {

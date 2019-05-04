@@ -66,6 +66,9 @@ export default class History {
         if (this.events[eID].hasOwnProperty("create")) {
             this.events[eID].create.forEach(created => patcher.delete(created));
         }
+        if (this.events[eID].hasOwnProperty("resized")) {
+            this.events[eID].resized.forEach(e => patcher.resize(e.selected, { x: -1 * e.delta.x, y: -1 * e.delta.y }, e.type));
+        }
         this.redoList.push(eID);
         this.capture = true;
         return this;
@@ -104,6 +107,9 @@ export default class History {
         }
         if (this.events[eID].hasOwnProperty("delete")) {
             this.events[eID].delete.forEach(deleted => patcher.delete(deleted));
+        }
+        if (this.events[eID].hasOwnProperty("resized")) {
+            this.events[eID].resized.forEach(e => patcher.resize(e.selected, e.delta, e.type));
         }
         this.undoList.push(eID);
         this.capture = true;
