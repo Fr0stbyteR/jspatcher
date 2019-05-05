@@ -57,7 +57,7 @@ export default class BoxUI extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
-        if (e.nativeEvent.button !== 0) return;
+        if (e.button !== 0) return;
         const box = this.props.patcher.boxes[this.props.id];
         // Handle Draggable
         const handleDraggable = () => {
@@ -408,16 +408,18 @@ class Inlet extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
-        if (e.nativeEvent.button !== 0) return;
+        if (e.button !== 0) return;
         e.stopPropagation();
         this.props.patcher.tempLine(true, [this.props.box.id, this.props.index]);
     }
     handleMouseEnter = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
+        if (e.buttons) return;
         this.setState({ highlight: true });
     }
     handleMouseLeave = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
+        if (e.buttons) return;
         this.setState({ highlight: false });
     }
     render() {
@@ -461,7 +463,7 @@ class Outlet extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
-        if (e.nativeEvent.button !== 0) return;
+        if (e.button !== 0) return;
         e.stopPropagation();
         this.props.patcher.tempLine(false, [this.props.box.id, this.props.index]);
     }
