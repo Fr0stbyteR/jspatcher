@@ -31,7 +31,7 @@ export default class BoxUI extends React.Component {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
         if (this.state && box.rect.every((v, i) => v === this.state.rect[i])) return null;
-        this.setState({ rect: box.rect });
+        this.setState({ rect: box.rect.slice() });
         return box;
     }
     handleTextChanged = () => {
@@ -41,18 +41,15 @@ export default class BoxUI extends React.Component {
         this.forceUpdate(() => { // Unmount and remount, please.
             this.innerUI = <box.ui object={box.object} ref={this.refUI} />;
             this.sizing = box.ui.sizing;
-            this.setState({ rect: box.rect }, () => this.inspectRectChange());
+            this.setState({ rect: box.rect.slice() }, () => this.inspectRectChange());
         });
         return box;
     }
     handleRectChanged = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
-        if (this.state.rect[2] === box.rect[2] && this.state.rect[3] === box.rect[3]) {
-            this.setState({ rect: box.rect });
-        } else {
-            this.setState({ rect: box.rect }, () => this.inspectRectChange());
-        }
+        if (box.rect.every((v, i) => v === this.state.rect[i])) return box;
+        this.setState({ rect: box.rect.slice() }, () => this.inspectRectChange());
         return box;
     }
     handleBlur = () => {
@@ -164,14 +161,20 @@ export default class BoxUI extends React.Component {
         this.editingOnUnlock = false;
         return false;
     }
+    /**
+     * if calculated width and height is different from expected, update rect
+     *
+     * @memberof BoxUI
+     */
     inspectRectChange = () => {
         if (!this.refDiv.current) return;
         const div = this.refDiv.current;
-        const divRect = [div.offsetLeft, div.offsetTop, div.offsetWidth, div.offsetHeight] as [number, number, number, number];
+        const divRect = div.getBoundingClientRect();
         const box = this.props.patcher.boxes[this.props.id];
-        if (divRect.every((v, i) => v === this.state.rect[i])) return;
-        this.setState({ rect: divRect });
-        box.setRect(divRect);
+        if (divRect.width === box.rect[2] && divRect.height === box.rect[3]) return;
+        const rect = [box.rect[0], box.rect[1], divRect.width, divRect.height] as [number, number, number, number];
+        this.setState({ rect });
+        box.setRect(rect);
     }
     handleSelected = (id: string) => (id === this.props.id ? this.setState({ selected: true }) : null);
     handleDeselected = (id: string) => (id === this.props.id ? this.setState({ selected: false }) : null);
@@ -268,7 +271,7 @@ export default class BoxUI extends React.Component {
         if (!box) return null;
         this.innerUI = <box.ui object={box.object} ref={this.refUI} key="0" />;
         this.props.patcher.deselect(this.props.id);
-        this.setState({ selected: false, rect: box.rect });
+        this.setState({ selected: false, rect: box.rect.slice() });
         return box;
     }
     componentDidMount() {
@@ -318,7 +321,6 @@ export default class BoxUI extends React.Component {
         );
     }
 }
-type TInletProps = { isHot: boolean; type: "anything" | "signal" | "object" | "number" | "boolean" | string; description: string };
 class Inlets extends React.Component {
     props: { patcher: Patcher; box: Box };
     ports = [] as JSX.Element[];
@@ -349,7 +351,6 @@ class Inlets extends React.Component {
         );
     }
 }
-type TOutletProps = { type: "anything" | "signal" | "object" | "number" | "boolean" | string; description: string };
 class Outlets extends React.Component {
     props: { patcher: Patcher; box: Box };
     ports = [] as JSX.Element[];
