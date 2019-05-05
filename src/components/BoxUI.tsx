@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Popup } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import { BaseUI } from "../core/objects/Base";
@@ -47,7 +48,11 @@ export default class BoxUI extends React.Component {
     handleRectChanged = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
-        this.setState({ rect: box.rect }, () => this.inspectRectChange());
+        if (this.state.rect[2] === box.rect[2] && this.state.rect[3] === box.rect[3]) {
+            this.setState({ rect: box.rect });
+        } else {
+            this.setState({ rect: box.rect }, () => this.inspectRectChange());
+        }
         return box;
     }
     handleBlur = () => {
@@ -56,6 +61,7 @@ export default class BoxUI extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
+        if (e.nativeEvent.button !== 0) return;
         const box = this.props.patcher.boxes[this.props.id];
         // Handle Draggable
         const handleDraggable = () => {
@@ -402,8 +408,17 @@ class Inlet extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
+        if (e.nativeEvent.button !== 0) return;
         e.stopPropagation();
         this.props.patcher.tempLine(true, [this.props.box.id, this.props.index]);
+    }
+    handleMouseEnter = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        this.setState({ highlight: true });
+    }
+    handleMouseLeave = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        this.setState({ highlight: false });
     }
     render() {
         const box = this.props.box;
@@ -413,7 +428,15 @@ class Inlet extends React.Component {
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
         const className = "box-port box-inlet" + (props.isHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
         return (
-            <div className={className} onMouseDown={this.handleMouseDown} />
+            <Popup
+                trigger={<div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} />}
+                content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
+                size="mini"
+                position="top right"
+                inverted
+                open={this.state.highlight}
+                horizontalOffset={12}
+            />
         );
     }
 }
@@ -445,8 +468,17 @@ class Outlet extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
+        if (e.nativeEvent.button !== 0) return;
         e.stopPropagation();
         this.props.patcher.tempLine(false, [this.props.box.id, this.props.index]);
+    }
+    handleMouseEnter = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        this.setState({ highlight: true });
+    }
+    handleMouseLeave = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        this.setState({ highlight: false });
     }
     render() {
         const box = this.props.box;
@@ -456,7 +488,15 @@ class Outlet extends React.Component {
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
         const className = "box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
         return (
-            <div className={className} onMouseDown={this.handleMouseDown} />
+            <Popup
+                trigger={<div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} />}
+                content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
+                size="mini"
+                position="bottom right"
+                inverted
+                open={this.state.highlight}
+                horizontalOffset={12}
+            />
         );
     }
 }

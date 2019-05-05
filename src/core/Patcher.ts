@@ -44,6 +44,7 @@ export default class Patcher extends EventEmitter {
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
         this._state.libGen = this.packageRegister((Gen as TPackage), {});
+        this._state.lib = this._state.libJS;
         this._packages = Packages;
         this.clear();
     }

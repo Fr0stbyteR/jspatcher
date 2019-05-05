@@ -34,6 +34,7 @@
         "import/newline-after-import": "warn",
         "import/no-extraneous-dependencies": "off",
         "import/prefer-default-export": "off",
+        "jsx-quotes": ["error", "prefer-double"],
         "lines-between-class-members": "off",
         "max-len": "off",
         "no-bitwise": "off",

@@ -197,6 +197,7 @@ class Boxes extends React.Component {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (!e.shiftKey) this.props.patcher.deselectAll();
+        if (e.nativeEvent.button !== 0) return;
         if (this.props.patcher._state.locked) return;
         // Handle Draggable
         const handleDraggable = () => {
