@@ -258,6 +258,21 @@ class Boxes extends React.Component {
     handleClick = (e: React.MouseEvent) => {
         if (e.ctrlKey && !this.dragged) this.props.patcher.setLock(!this.props.patcher._state.locked);
     }
+    handleDoubleClick = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        if (e.target !== this.refDiv.current) return;
+        const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
+        const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
+        let el = patcherDiv;
+        do {
+            patcherRect[0] += el.offsetLeft;
+            patcherRect[1] += el.offsetTop;
+            el = el.offsetParent as HTMLDivElement;
+        } while (el.offsetParent);
+        const x = e.pageX - patcherRect[0];
+        const y = e.pageY - patcherRect[1];
+        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 60, 20], _editing: true });
+    }
     render() {
         const selectionRect = this.state.selectionRect;
         let selectionDiv;
@@ -271,7 +286,7 @@ class Boxes extends React.Component {
             selectionDiv = <div className="selection" style={selectionDivStyle}/>;
         }
         return (
-            <div className="boxes" onMouseDown={this.handleMouseDown} ref={this.refDiv} onClick={this.handleClick} style={this.state}>
+            <div className="boxes" onMouseDown={this.handleMouseDown} onDoubleClick={this.handleDoubleClick} ref={this.refDiv} onClick={this.handleClick} style={this.state}>
                 {Object.values(this.boxes)}
                 {selectionDiv}
             </div>

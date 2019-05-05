@@ -10,7 +10,7 @@ type TPatcherMode = "max" | "gen" | "js";
 type TPatcher = {
     lines: { [key: string]: TLine };
     boxes: { [key: string]: TBox };
-    props? : {};
+    props?: {};
 };
 
 type TPatcherProps = {
@@ -57,7 +57,7 @@ type TMaxBox = {
     box: {
         id: string;
         maxclass: "newobj" | string;
-        text? : string;
+        text?: string;
         numinlets: number;
         numoutlets: number;
         patching_rect: [number, number, number, number];
@@ -92,19 +92,20 @@ type TPackage = { [key: string]: typeof BaseObject | TPackage };
 type TPatcherEvents = "loaded" | "locked" | "presentation" | "showGrid" | "create" | "delete" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected" | "tempLine";
 
 type TLine = {
-    id? : string;
+    id?: string;
     src: [string, number];
     dest: [string, number];
-    disabled? : boolean;
+    disabled?: boolean;
 };
 
 type TBox = {
-    id? : string;
+    id?: string;
     text: string;
     inlets: number;
     outlets: number;
     rect: [number, number, number, number];
-    data? : { [key: string]: any };
+    data?: { [key: string]: any };
+    _editing?: boolean;
 };
 
 interface PatcherEventMap {

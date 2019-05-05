@@ -40,18 +40,14 @@ export default class BoxUI extends React.Component {
         this.forceUpdate(() => { // Unmount and remount, please.
             this.innerUI = <box.ui object={box.object} ref={this.refUI} />;
             this.sizing = box.ui.sizing;
-            this.setState({ rect: box.rect }, () => {
-                this.inspectRectChange();
-            });
+            this.setState({ rect: box.rect }, () => this.inspectRectChange());
         });
         return box;
     }
     handleRectChanged = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
-        this.setState({ rect: box.rect }, () => {
-            this.inspectRectChange();
-        });
+        this.setState({ rect: box.rect }, () => this.inspectRectChange());
         return box;
     }
     handleBlur = () => {

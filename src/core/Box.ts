@@ -25,6 +25,7 @@ export default class Box extends EventEmitter {
     outlets = 0;
     rect: [number, number, number, number];
     data: { [key: string]: any } = {};
+    _editing = false;
     private _parsed: { class: string; args: any[]; props: { [key: string]: any } };
     private _object: BaseObject;
     private _patcher: Patcher;
@@ -36,6 +37,7 @@ export default class Box extends EventEmitter {
         this.outlets = boxIn.outlets;
         this.rect = boxIn.rect || (boxIn as any).patching_rect;
         this.data = boxIn.data || ((boxIn as any).prevData ? (boxIn as any).prevData.storage : {});
+        this._editing = !!boxIn._editing;
         this._patcher = patcherIn;
     }
     init() {
@@ -48,7 +50,7 @@ export default class Box extends EventEmitter {
         return this;
     }
     get ui() {
-        return this._object.ui();
+        return this._object.ui;
     }
     get meta() {
         return this._object._meta;

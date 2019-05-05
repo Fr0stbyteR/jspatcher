@@ -22,7 +22,7 @@ export class Comment extends BaseObject {
         if (!this.box.data.hasOwnProperty("text")) this.box.data.text = args.join(" ");
         return this;
     }
-    ui() {
+    get ui() {
         return class CommentUI extends BaseUI {
             editableOnUnlock = true;
             state = { editing: false };

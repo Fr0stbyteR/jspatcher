@@ -143,7 +143,7 @@ export class BaseObject extends EventEmitter {
     }
     private readonly _patcher: Patcher;
     private readonly _box: Box;
-    protected _mem: { [key: string]: any };
+    protected _mem: { [key: string]: any } = {};
     constructor(box: Box, patcher: Patcher) {
         super();
         // patcher object outside, use _ for pre`vent recursive stringify
@@ -156,8 +156,8 @@ export class BaseObject extends EventEmitter {
         // this.update(box._args, box._props);
     }
     // build new ui on page, return a React Component, override this
-    ui() {
-        return DefaultUI as typeof BaseUI;
+    get ui(): typeof BaseUI {
+        return DefaultUI;
     }
     // update UI's React State
     uiUpdate(state: { [key: string]: any }) {
@@ -265,14 +265,27 @@ class EmptyObject extends BaseObject {
             }]
         };
     }
+    protected _mem: { editing: boolean } = { editing: false };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.outlets = 1;
         this.inlets = 1;
+        this._mem.editing = box._editing;
     }
     fn(data: any, inlet: number) {
         this.outlet(0, data);
         return this;
+    }
+    get mem() {
+        return this._mem;
+    }
+    get ui() {
+        return class EmptyObjectUI extends DefaultUI {
+            componentDidMount() {
+                super.componentDidMount();
+                if ((this.props.object as EmptyObject).mem.editing) this.toggleEdit(true);
+            }
+        };
     }
 }
 class InvalidObject extends BaseObject {
