@@ -20,6 +20,10 @@ export default class PatcherUI extends React.Component {
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
         const lines = this.refLines.current;
+        const div = this.refDiv.current;
+        div.scrollLeft = 0;
+        div.scrollTop = 0;
+        this.size = { width: 0, height: 0 };
         [grid, boxes, lines].forEach(el => el.setState({ width: "unset", height: "unset" }));
     }
     handleLockedChange = (e: boolean) => this.setState({ locked: e });

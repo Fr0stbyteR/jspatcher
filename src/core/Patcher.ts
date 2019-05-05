@@ -394,19 +394,15 @@ export default class Patcher extends EventEmitter {
         selected.forEach(id => this.select(id));
         const linesConcerned: { [id: string]: true } = {};
         const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
-        boxes.sort((a, b) => a.rect[0] - b.rect[0]).forEach((box) => {
-            box.rect[0] += delta.x;
-            if (box.rect[0] < 0) {
-                delta.x -= box.rect[0];
-                box.rect[0] = 0;
-            }
-        });
-        boxes.sort((a, b) => a.rect[1] - b.rect[1]).forEach((box) => {
-            box.rect[1] += delta.y;
-            if (box.rect[1] < 0) {
-                delta.y -= box.rect[1];
-                box.rect[1] = 0;
-            }
+        if (boxes.length === 0) return;
+        const leftMost = boxes.sort((a, b) => a.rect[0] - b.rect[0])[0];
+        const topMost = boxes.sort((a, b) => a.rect[1] - b.rect[1])[0];
+        if (leftMost.rect[0] + delta.x < 0) delta.x = 0;
+        else boxes.forEach(box => box.rect[0] += delta.x);
+        if (topMost.rect[1] + delta.y < 0) delta.y = 0;
+        else boxes.forEach(box => box.rect[1] += delta.y);
+        if (!delta.x && !delta.y) return;
+        boxes.forEach((box) => {
             box.allLines.forEach(id => linesConcerned[id] = true);
             box.emit("rectChanged", box);
         });
@@ -443,27 +439,47 @@ export default class Patcher extends EventEmitter {
         selected.forEach(id => this.select(id));
         const linesConcerned: { [id: string]: true } = {};
         const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
+        if (boxes.length === 0) return;
+        const leftMost = boxes.sort((a, b) => a.rect[0] - b.rect[0])[0];
+        const topMost = boxes.sort((a, b) => a.rect[1] - b.rect[1])[0];
+        const widthLeast = boxes.sort((a, b) => a.rect[2] - b.rect[2])[0];
+        const heightLeast = boxes.sort((a, b) => a.rect[3] - b.rect[3])[0];
+        if (type === EnumResizeHandlerType.ne || type === EnumResizeHandlerType.e || type === EnumResizeHandlerType.se) {
+            if (widthLeast.rect[2] + delta.x < 15) delta.x = 0;
+            else {
+                boxes.forEach((box) => {
+                    box.rect[2] += delta.x;
+                });
+            }
+        }
+        if (type === EnumResizeHandlerType.se || type === EnumResizeHandlerType.s || type === EnumResizeHandlerType.sw) {
+            if (heightLeast.rect[3] + delta.y < 15) delta.y = 0;
+            else {
+                boxes.forEach((box) => {
+                    box.rect[3] += delta.y;
+                });
+            }
+        }
+        if (type === EnumResizeHandlerType.sw || type === EnumResizeHandlerType.w || type === EnumResizeHandlerType.nw) {
+            if (leftMost.rect[0] + delta.x < 0 || widthLeast.rect[2] - delta.x < 15) delta.x = 0;
+            else {
+                boxes.forEach((box) => {
+                    box.rect[2] -= delta.x;
+                    box.rect[0] += delta.x;
+                });
+            }
+        }
+        if (type === EnumResizeHandlerType.nw || type === EnumResizeHandlerType.n || type === EnumResizeHandlerType.ne) {
+            if (topMost.rect[1] + delta.y < 0 || heightLeast.rect[3] - delta.y < 15) delta.y = 0;
+            else {
+                boxes.forEach((box) => {
+                    box.rect[3] -= delta.y;
+                    box.rect[1] += delta.y;
+                });
+            }
+        }
+        if (!delta.x && !delta.y) return;
         boxes.forEach((box) => {
-            if (type === EnumResizeHandlerType.ne || type === EnumResizeHandlerType.e || type === EnumResizeHandlerType.se) {
-                if (box.rect[2] + delta.x < 15) return;
-                box.rect[2] = Math.max(box.rect[2] + delta.x, 15);
-            }
-            if (type === EnumResizeHandlerType.se || type === EnumResizeHandlerType.s || type === EnumResizeHandlerType.sw) {
-                if (box.rect[3] + delta.y < 15) return;
-                box.rect[3] = Math.max(box.rect[3] + delta.y, 15);
-            }
-            if (type === EnumResizeHandlerType.sw || type === EnumResizeHandlerType.w || type === EnumResizeHandlerType.nw) {
-                if (box.rect[2] - delta.x < 15) return;
-                if (box.rect[0] + delta.x < 0) return;
-                box.rect[2] -= delta.x;
-                box.rect[0] += delta.x;
-            }
-            if (type === EnumResizeHandlerType.nw || type === EnumResizeHandlerType.n || type === EnumResizeHandlerType.ne) {
-                if (box.rect[3] - delta.y < 15) return;
-                if (box.rect[1] + delta.y < 0) return;
-                box.rect[3] -= delta.y;
-                box.rect[1] += delta.y;
-            }
             box.allLines.forEach(id => linesConcerned[id] = true);
             box.emit("rectChanged", box);
         });
