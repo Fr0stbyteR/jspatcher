@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Popup } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import { BaseUI } from "../core/objects/Base";
@@ -430,7 +431,16 @@ class Inlet extends React.Component {
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
         const className = "box-port box-inlet" + (props.isHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
         return (
-            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} />
+            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+                <Popup
+                    trigger={<div />}
+                    content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
+                    position="top center"
+                    open={this.state.highlight}
+                    size="mini"
+                    inverted
+                />
+            </div>
             // <>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>
         );
     }
@@ -483,7 +493,16 @@ class Outlet extends React.Component {
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
         const className = "box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
         return (
-            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} />
+            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+                <Popup
+                    trigger={<div />}
+                    content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
+                    position="bottom center"
+                    open={this.state.highlight}
+                    size="mini"
+                    inverted
+                />
+            </div>
         );
     }
 }
