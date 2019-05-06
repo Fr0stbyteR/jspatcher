@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { EventEmitter } from "events";
 import * as React from "react";
-import { Icon, SemanticICONS } from "semantic-ui-react";
+import { Icon, SemanticICONS, Dropdown, Table } from "semantic-ui-react";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
@@ -62,7 +62,7 @@ export class BaseUI extends React.Component {
 }
 export class DefaultUI extends BaseUI {
     editableOnUnlock = true;
-    state = { editing: false, loading: false };
+    state = { editing: false, text: "", loading: false };
     refSpan = React.createRef() as React.RefObject<HTMLSpanElement>;
     toggleEdit = (bool?: boolean) => {
         if (bool === this.state.editing) return this.state.editing;
@@ -71,7 +71,7 @@ export class DefaultUI extends BaseUI {
         const toggle = !this.state.editing;
         const span = this.refSpan.current;
         if (toggle) {
-            this.setState({ editing: true });
+            this.setState({ editing: true, text: span.innerText });
             span.contentEditable = "true";
             const range = document.createRange();
             const selection = window.getSelection();
@@ -79,7 +79,7 @@ export class DefaultUI extends BaseUI {
             selection.removeAllRanges();
             selection.addRange(range);
         } else {
-            this.setState({ editing: false });
+            this.setState({ editing: false, text: span.innerText });
             span.contentEditable = "false";
             window.getSelection().removeAllRanges();
             this.props.object.patcher.changeBoxText(this.props.object.box.id, span.textContent);
@@ -92,6 +92,11 @@ export class DefaultUI extends BaseUI {
         if (e.key === "Enter" || !this.state.editing) return;
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
+    }
+    handleKeyUp = (e: React.KeyboardEvent) => {
+        if (!this.refSpan.current) return;
+        if (this.refSpan.current.innerText === this.state.text) return;
+        this.setState({ text: this.refSpan.current.innerText });
     }
     handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
@@ -111,20 +116,46 @@ export class DefaultUI extends BaseUI {
         const packageName = "package-" + object._meta.package.toLowerCase();
         const className = packageName + "-" + object._meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container", "box-ui-default"];
+        const splited = this.state.text.split(" ");
+        const options: { key: string; value: string; text: string; icon: SemanticICONS; description: string }[] = [];
+        for (const key in this.props.object.patcher._state.lib) {
+            if (options.length > 10) break;
+            if (key.indexOf(splited[0]) !== -1) {
+                const o = this.props.object.patcher._state.lib[key];
+                options.push({ key, value: key, text: key, icon: o._meta.icon, description: o._meta.description });
+            }
+        }
         return (
             <div className={classArray.join(" ")}>
                 <div className="box-ui-text-container">
                     {object._meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object._meta.icon} /> : null}
-                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
+                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} suppressContentEditableWarning={true}>
                         {object.box.text}
                     </span>
+                    {
+                        this.state.text.length
+                            ? <div className="box-ui-text-dropdown">
+                                <Table className="box-ui-text-autocomplete" striped inverted size="small" compact="very" selectable unstackable>
+                                    <Table.Body>
+                                        {options.map(option => (
+                                            <Table.Row key={option.key}>
+                                                <Table.Cell><Icon inverted={true} size="small" name={option.icon} /></Table.Cell>
+                                                <Table.Cell>{option.key}</Table.Cell>
+                                                <Table.Cell>{option.description}</Table.Cell>
+                                            </Table.Row>
+                                        ))}
+                                    </Table.Body>
+                                </Table>
+                            </div>
+                            : undefined
+                    }
                 </div>
             </div>
         );
     }
 }
 export class BaseObject extends EventEmitter {
-    protected static get _meta(): TMeta {
+    static get _meta(): TMeta {
         return {
             package: "Base", // div will have class "package-name" "package-name-objectname"
             name: this.name,

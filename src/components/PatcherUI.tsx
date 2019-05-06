@@ -33,7 +33,7 @@ export default class PatcherUI extends React.Component {
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
         const lines = this.refLines.current;
-        const div = e.target as HTMLDivElement;
+        const div = e.currentTarget as HTMLDivElement;
         let shouldUpdate = false;
         if (div.scrollWidth !== this.size.width || div.scrollHeight !== this.size.height) {
             shouldUpdate = true;
