@@ -12,7 +12,6 @@
             position: absolute;
             background-color: #ffffff40;
             border: 1px solid #ffffff80;
-            z-index: 50;
         }
     }
     > div.lines {
@@ -27,23 +26,8 @@
         min-width: 100%;
         min-height: 100%;
         pointer-events: none;
-        z-index: 1;
-    }
-    &.locked {
-        > div.boxes {
-            z-index: 20;
-        }
-        > div.lines {
-            z-index: 10;
-        }
     }
     &.unlocked {
-        > div.boxes {
-            z-index: 10;
-        }
-        > div.lines {
-            z-index: 20;
-        }
         &.show-grid > div.grid-background {
             visibility: visible;
         }

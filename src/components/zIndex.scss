@@ -1,0 +1,40 @@
+.patcher.unlocked {
+    & > div.boxes > div.box {
+        z-index: 10;
+        &.selected {
+            z-index: 40;
+        }
+        & > div.box-ports > div.box-port {
+            z-index: 30;
+        }
+        & div.box-ui > div.box-ui-default > .box-ui-text-container > .box-ui-text-dropdown {
+            z-index: 40;
+        }
+    }
+    & > div.lines > div.line {
+        z-index: 20;
+        &.selected {
+            z-index: 50;
+        }
+        & > div.line-handler {
+            z-index: 50;
+        }
+    }
+    & div.selection {
+        z-index: 50;
+    }
+    & > div.grid-background {
+        z-index: 1;
+    }
+}
+.patcher.locked {
+    & > div.boxes > div.box {
+        z-index: 20;
+        & > div.box-ports > div.box-port {
+            z-index: 10;
+        }
+    }
+    & > div.lines > div.line {
+        z-index: 10;
+    }
+}

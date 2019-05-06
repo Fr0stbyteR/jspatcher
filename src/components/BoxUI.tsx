@@ -271,7 +271,7 @@ export default class BoxUI extends React.Component {
         if (!box) return null;
         this.innerUI = <box.ui object={box.object} ref={this.refUI} key="0" />;
         this.props.patcher.deselect(this.props.id);
-        this.setState({ selected: false, rect: box.rect.slice() });
+        this.setState({ selected: this.props.patcher._state.selected.indexOf(box.id) !== 1, rect: box.rect.slice() });
         return box;
     }
     componentDidMount() {
@@ -420,7 +420,6 @@ class Inlet extends React.Component {
     }
     handleMouseLeave = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
-        if (e.buttons) return;
         this.setState({ highlight: false });
     }
     render() {
@@ -479,6 +478,7 @@ class Outlet extends React.Component {
     }
     handleMouseEnter = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
+        if (e.buttons) return;
         this.setState({ highlight: true });
     }
     handleMouseLeave = (e: React.MouseEvent) => {

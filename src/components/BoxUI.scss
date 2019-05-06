@@ -4,7 +4,6 @@
 		position: absolute;
 		pointer-events: auto;
 		min-width: 30px;
-        z-index: inherit;
         &.selected {
             box-shadow: 0 0 2px 2px rgb(0, 162, 255);
             & > .resize-handlers {
@@ -202,7 +201,6 @@
 		}
 		> div.box-ports > div.box-port {
 			pointer-events: none;
-			z-index: 10;
             &:not(.box-port-connected) {
                 visibility: hidden;
             }
@@ -212,11 +210,8 @@
         }
 	}
 	&.unlocked > div.boxes > div.box {
-		> div.box-ui {
+		& > div.box-ui {
             pointer-events: none;
-        }
-        > div.box-ports > div.box-port {
-            z-index: 30;
         }
 		&:hover {
 			> div.box-ports {

@@ -3,6 +3,7 @@ import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import Line from "../core/Line";
 import "./PatcherUI.scss";
+import "./zIndex.scss";
 import BoxUI from "./BoxUI";
 import { LineUI, TempLineUI } from "./LineUI";
 import { TPatcher } from "../core/types";
@@ -276,7 +277,8 @@ class Boxes extends React.Component {
         } while (el.offsetParent);
         const x = e.pageX - patcherRect[0];
         const y = e.pageY - patcherRect[1];
-        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 60, 20], _editing: true });
+        const box = this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 60, 20], _editing: true });
+        this.props.patcher.selectOnly(box.id);
     }
     render() {
         const selectionRect = this.state.selectionRect;

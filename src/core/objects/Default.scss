@@ -47,29 +47,14 @@
             & > .box-ui-text-autocomplete {
                 display: table-row-group;
                 position: absolute;
-                font-family: Lato, Tahoma, sans-serif;
                 width: auto;
                 max-height: 200px;
                 box-shadow: 0px 2px 5px #0008;
                 overflow: auto;
-                z-index: 120;
                 white-space: nowrap;
                 text-overflow: ellipsis;
-                & tr {
-                    display: table-row;
-                    &:nth-child(2n) {
-                        background-color: rgba(255, 255, 255, 0.05);
-                    }
-                    > * {
-                        display: table-cell;
-                        border-width: 0px;
-                        padding: 0.4em 0.6em;
-                        transition: background 0.1s ease 0s, color 0.1s ease 0s;
-                        font-size: 12px;
-                        &:last-child {
-                            overflow: hidden;
-                        }
-                    }
+                & td {
+                    border-width: 0px
                 }
             }
         }
