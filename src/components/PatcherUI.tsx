@@ -267,6 +267,7 @@ class Boxes extends React.Component {
     handleDoubleClick = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
         if (e.target !== this.refDiv.current) return;
+        if (e.ctrlKey || e.shiftKey) return;
         const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
         const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
         let el = patcherDiv;
@@ -275,10 +276,9 @@ class Boxes extends React.Component {
             patcherRect[1] += el.offsetTop;
             el = el.offsetParent as HTMLDivElement;
         } while (el.offsetParent);
-        const x = e.pageX - patcherRect[0];
-        const y = e.pageY - patcherRect[1];
-        const box = this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 60, 20], _editing: true });
-        this.props.patcher.selectOnly(box.id);
+        const x = e.pageX - patcherRect[0] + patcherDiv.scrollLeft;
+        const y = e.pageY - patcherRect[1] + patcherDiv.scrollTop;
+        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 60, 20], _editing: true });
     }
     render() {
         const selectionRect = this.state.selectionRect;

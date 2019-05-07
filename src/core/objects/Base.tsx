@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { EventEmitter } from "events";
 import * as React from "react";
-import { Icon, SemanticICONS, Dropdown, Table } from "semantic-ui-react";
+import { Icon, SemanticICONS, Dropdown, Table as table } from "semantic-ui-react";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
@@ -62,8 +62,10 @@ export class BaseUI extends React.Component {
 }
 export class DefaultUI extends BaseUI {
     editableOnUnlock = true;
-    state = { editing: false, text: "", loading: false };
+    state = { editing: false, text: "", loading: false, dropdown$: -1 };
     refSpan = React.createRef() as React.RefObject<HTMLSpanElement>;
+    refDropdown = React.createRef() as React.RefObject<HTMLTableSectionElement>;
+    dropdownCount = 0;
     toggleEdit = (bool?: boolean) => {
         if (bool === this.state.editing) return this.state.editing;
         if (this.props.object.patcher._state.locked) return this.state.editing;
@@ -89,7 +91,16 @@ export class DefaultUI extends BaseUI {
     handleMouseDown = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
     handleClick = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
     handleKeyDown = (e: React.KeyboardEvent) => { // propagate for parent for focus on boxUI
-        if (e.key === "Enter" || !this.state.editing) return;
+        if (!this.state.editing) return;
+        if (e.key === "Enter") return;
+        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+            e.preventDefault();
+            let dropdown$;
+            if (e.key === "ArrowUp") dropdown$ = Math.max(-1, this.state.dropdown$ - 1);
+            if (e.key === "ArrowDown") dropdown$ = Math.min(this.dropdownCount - 1, this.state.dropdown$ + 1);
+            this.setState({ dropdown$ });
+            if (dropdown$ >= 0 && this.refDropdown.current && dropdown$ < this.refDropdown.current.children.length) (this.refDropdown.current.children[dropdown$] as HTMLTableRowElement).scrollIntoView(false);
+        }
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
     }
@@ -102,8 +113,15 @@ export class DefaultUI extends BaseUI {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     }
+    handleMouseEnterDropdown = (e: React.MouseEvent, key: string, i: number) => {
+        this.setState({ dropdown$: i });
+    }
+    handlemouseLeaveDropdown = (e: React.MouseEvent) => {
+        this.setState({ dropdown$: -1 });
+    }
     componentDidMount() {
         this.props.object.on("uiUpdate", this.handleUpdate);
+        this.setState({ text: this.props.object.box.text });
     }
     componentWillUnmount() {
         this.props.object.off("uiUpdate", this.handleUpdate);
@@ -125,6 +143,7 @@ export class DefaultUI extends BaseUI {
                 options.push({ key, value: key, text: key, icon: o._meta.icon, description: o._meta.description });
             }
         }
+        this.dropdownCount = options.length;
         return (
             <div className={classArray.join(" ")}>
                 <div className="box-ui-text-container">
@@ -133,19 +152,19 @@ export class DefaultUI extends BaseUI {
                         {object.box.text}
                     </span>
                     {
-                        this.state.text.length
+                        this.state.editing && this.state.text.length
                             ? <div className="box-ui-text-dropdown">
-                                <Table className="box-ui-text-autocomplete" striped inverted size="small" compact="very" selectable unstackable>
-                                    <Table.Body>
-                                        {options.map(option => (
-                                            <Table.Row key={option.key}>
-                                                <Table.Cell><Icon inverted={true} size="small" name={option.icon} /></Table.Cell>
-                                                <Table.Cell>{option.key}</Table.Cell>
-                                                <Table.Cell>{option.description}</Table.Cell>
-                                            </Table.Row>
+                                <table className="ui small inverted selectable striped unstackable very compact table box-ui-text-autocomplete" onMouseLeave={this.handlemouseLeaveDropdown}>
+                                    <tbody ref={this.refDropdown}>
+                                        {options.map((option, i) => (
+                                            <tr key={option.key} className={i === this.state.dropdown$ ? "focused" : ""} onMouseEnter={e => this.handleMouseEnterDropdown(e, option.key, i)}>
+                                                <td>{option.icon ? <Icon inverted={true} size="small" name={option.icon} /> : undefined}</td>
+                                                <td>{option.key}</td>
+                                                <td>{option.description}</td>
+                                            </tr>
                                         ))}
-                                    </Table.Body>
-                                </Table>
+                                    </tbody>
+                                </table>
                             </div>
                             : undefined
                     }
@@ -314,7 +333,10 @@ class EmptyObject extends BaseObject {
         return class EmptyObjectUI extends DefaultUI {
             componentDidMount() {
                 super.componentDidMount();
-                if ((this.props.object as EmptyObject).mem.editing) this.toggleEdit(true);
+                if ((this.props.object as EmptyObject).mem.editing) {
+                    this.props.object.patcher.selectOnly(this.props.object.box.id);
+                    this.toggleEdit(true);
+                }
             }
         };
     }

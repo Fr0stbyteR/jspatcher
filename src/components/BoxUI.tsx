@@ -270,13 +270,13 @@ export default class BoxUI extends React.Component {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
         this.innerUI = <box.ui object={box.object} ref={this.refUI} key="0" />;
-        this.props.patcher.deselect(this.props.id);
-        this.setState({ selected: this.props.patcher._state.selected.indexOf(box.id) !== 1, rect: box.rect.slice() });
+        this.setState({ rect: box.rect.slice() });
         return box;
     }
     componentDidMount() {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return;
+        this.setState({ selected: this.props.patcher._state.selected.indexOf(box.id) !== -1 });
         box.on("textChanged", this.handleTextChanged);
         box.on("rectChanged", this.handleRectChanged);
         this.props.patcher.on("selected", this.handleSelected);
@@ -284,6 +284,7 @@ export default class BoxUI extends React.Component {
         this.inspectRectChange();
     }
     componentWillUnmount() {
+        this.props.patcher.deselect(this.props.id);
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleDeselected);
         const box = this.props.patcher.boxes[this.props.id];
