@@ -23,7 +23,7 @@ export default class BoxUI extends React.Component {
     sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     refDiv: React.RefObject<HTMLDivElement> = React.createRef();
     refUI: React.RefObject<BaseUI> = React.createRef();
-    editingOnUnlock = false;
+    editing = false;
     handlingToggleEditOnClick = false;
     dragging = false;
     dragged = false;
@@ -78,7 +78,7 @@ export default class BoxUI extends React.Component {
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
-                if (this.dragging && !this.editingOnUnlock && (e.movementX || e.movementY)) {
+                if (this.dragging && !this.editing && (e.movementX || e.movementY)) {
                     if (!this.dragged) this.dragged = true;
                     dragOffset.x += e.movementX;
                     dragOffset.y += e.movementY;
@@ -97,7 +97,7 @@ export default class BoxUI extends React.Component {
                 dragOffset.x += movementX;
                 dragOffset.y += movementY;
                 patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-                if (this.dragging && !this.editingOnUnlock && (movementX || movementY)) {
+                if (this.dragging && !this.editing && (movementX || movementY)) {
                     if (!this.dragged) this.dragged = true;
                     dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
                 }
@@ -133,7 +133,7 @@ export default class BoxUI extends React.Component {
                 handleDraggable();
             }
         } else if (this.state.selected) {
-            if (!this.editingOnUnlock) this.handlingToggleEditOnClick = true; // Handle edit
+            if (!this.editing) this.handlingToggleEditOnClick = true; // Handle edit
             handleDraggable();
         } else {
             this.props.patcher.selectOnly(this.props.id);
@@ -142,7 +142,7 @@ export default class BoxUI extends React.Component {
         e.stopPropagation();
     }
     handleClick = (e: React.MouseEvent) => {
-        if (this.handlingToggleEditOnClick && this.state.selected && !this.editingOnUnlock && !this.dragged) this.tryToggleEdit(true);
+        if (this.handlingToggleEditOnClick && this.state.selected && !this.editing && !this.dragged) this.tryToggleEdit(true);
         e.stopPropagation();
     }
     handleKeyDown = (e: React.KeyboardEvent) => {
@@ -155,10 +155,10 @@ export default class BoxUI extends React.Component {
     tryToggleEdit = (bool?: boolean) => {
         if (this.refUI.current && this.refUI.current.editableOnUnlock) {
             const toggled = this.refUI.current.toggleEdit(bool);
-            this.editingOnUnlock = toggled;
+            this.editing = toggled;
             return toggled;
         }
-        this.editingOnUnlock = false;
+        this.editing = false;
         return false;
     }
     /**
@@ -235,7 +235,7 @@ export default class BoxUI extends React.Component {
             dragOffset.x += movementX;
             dragOffset.y += movementY;
             patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-            if (this.dragging && !this.editingOnUnlock && (movementX || movementY)) {
+            if (this.dragging && !this.editing && (movementX || movementY)) {
                 if (!this.dragged) this.dragged = true;
                 dragOffset = this.props.patcher.resizeSelectedBox(this.props.id, dragOffset, type);
             }

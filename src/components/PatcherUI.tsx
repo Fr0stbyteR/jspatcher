@@ -278,7 +278,7 @@ class Boxes extends React.Component {
         } while (el.offsetParent);
         const x = e.pageX - patcherRect[0] + patcherDiv.scrollLeft;
         const y = e.pageY - patcherRect[1] + patcherDiv.scrollTop;
-        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 60, 20], _editing: true });
+        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 120, 20], _editing: true });
     }
     render() {
         const selectionRect = this.state.selectionRect;

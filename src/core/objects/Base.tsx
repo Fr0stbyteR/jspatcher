@@ -46,6 +46,7 @@ export type TMeta = {
 export class BaseUI extends React.Component {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     props: { object: BaseObject; children?: React.ReactNode };
+    state: { editing: boolean };
     editableOnUnlock = false;
     toggleEdit = (bool?: boolean) => false;
     render() {
@@ -65,7 +66,7 @@ export class DefaultUI extends BaseUI {
     state = { editing: false, text: "", loading: false, dropdown$: -1 };
     refSpan = React.createRef() as React.RefObject<HTMLSpanElement>;
     refDropdown = React.createRef() as React.RefObject<HTMLTableSectionElement>;
-    dropdownCount = 0;
+    dropdownOptions: { key: string; value: string; text: string; icon: SemanticICONS; description: string }[] = [];
     toggleEdit = (bool?: boolean) => {
         if (bool === this.state.editing) return this.state.editing;
         if (this.props.object.patcher._state.locked) return this.state.editing;
@@ -92,14 +93,36 @@ export class DefaultUI extends BaseUI {
     handleClick = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
     handleKeyDown = (e: React.KeyboardEvent) => { // propagate for parent for focus on boxUI
         if (!this.state.editing) return;
-        if (e.key === "Enter") return;
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$] && this.refSpan.current) {
+                this.refSpan.current.innerText = this.dropdownOptions[this.state.dropdown$].key;
+            }
+            return;
+        }
+        if (e.key === " " && this.refSpan.current) {
+            if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$]) {
+                const span = this.refSpan.current;
+                const text = this.dropdownOptions[this.state.dropdown$].key + " ";
+                span.innerText = text;
+                const range = document.createRange();
+                const selection = window.getSelection();
+                range.setStart(span.childNodes[0], text.length);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                this.setState({ text, dropdown$: -1 });
+            }
+        }
         if (e.key === "ArrowUp" || e.key === "ArrowDown") {
             e.preventDefault();
             let dropdown$;
             if (e.key === "ArrowUp") dropdown$ = Math.max(-1, this.state.dropdown$ - 1);
-            if (e.key === "ArrowDown") dropdown$ = Math.min(this.dropdownCount - 1, this.state.dropdown$ + 1);
+            if (e.key === "ArrowDown") dropdown$ = Math.min(this.dropdownOptions.length - 1, this.state.dropdown$ + 1);
             this.setState({ dropdown$ });
-            if (dropdown$ >= 0 && this.refDropdown.current && dropdown$ < this.refDropdown.current.children.length) (this.refDropdown.current.children[dropdown$] as HTMLTableRowElement).scrollIntoView(false);
+            if (dropdown$ >= 0 && this.refDropdown.current && this.dropdownOptions[this.state.dropdown$]) {
+                (this.refDropdown.current.children[dropdown$] as HTMLTableRowElement).scrollIntoView(false);
+            }
         }
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
@@ -107,17 +130,35 @@ export class DefaultUI extends BaseUI {
     handleKeyUp = (e: React.KeyboardEvent) => {
         if (!this.refSpan.current) return;
         if (this.refSpan.current.innerText === this.state.text) return;
+        this.dropdownOptions = [];
+        const splited = this.refSpan.current.innerText.split(" ");
+        for (const key in this.props.object.patcher._state.lib) {
+            if (this.dropdownOptions.length > 10) break;
+            if (key.indexOf(splited[0]) !== -1) {
+                const o = this.props.object.patcher._state.lib[key];
+                this.dropdownOptions.push({ key, value: key, text: key, icon: o._meta.icon, description: o._meta.description });
+            }
+        }
         this.setState({ text: this.refSpan.current.innerText });
     }
     handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     }
-    handleMouseEnterDropdown = (e: React.MouseEvent, key: string, i: number) => {
-        this.setState({ dropdown$: i });
-    }
-    handlemouseLeaveDropdown = (e: React.MouseEvent) => {
-        this.setState({ dropdown$: -1 });
+    handleMouseDownDropdown = (e: React.MouseEvent, key: string, i: number) => {
+        e.preventDefault();
+        if (i >= 0 && this.dropdownOptions[i] && this.refSpan.current) {
+            const span = this.refSpan.current;
+            const text = this.dropdownOptions[i].key;
+            span.innerText = text;
+            const range = document.createRange();
+            const selection = window.getSelection();
+            range.setStart(span.childNodes[0], text.length);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            this.setState({ text, dropdown$: i });
+        }
     }
     componentDidMount() {
         this.props.object.on("uiUpdate", this.handleUpdate);
@@ -134,16 +175,6 @@ export class DefaultUI extends BaseUI {
         const packageName = "package-" + object._meta.package.toLowerCase();
         const className = packageName + "-" + object._meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container", "box-ui-default"];
-        const splited = this.state.text.split(" ");
-        const options: { key: string; value: string; text: string; icon: SemanticICONS; description: string }[] = [];
-        for (const key in this.props.object.patcher._state.lib) {
-            if (options.length > 10) break;
-            if (key.indexOf(splited[0]) !== -1) {
-                const o = this.props.object.patcher._state.lib[key];
-                options.push({ key, value: key, text: key, icon: o._meta.icon, description: o._meta.description });
-            }
-        }
-        this.dropdownCount = options.length;
         return (
             <div className={classArray.join(" ")}>
                 <div className="box-ui-text-container">
@@ -154,10 +185,10 @@ export class DefaultUI extends BaseUI {
                     {
                         this.state.editing && this.state.text.length
                             ? <div className="box-ui-text-dropdown">
-                                <table className="ui small inverted selectable striped unstackable very compact table box-ui-text-autocomplete" onMouseLeave={this.handlemouseLeaveDropdown}>
+                                <table className="ui small inverted selectable striped unstackable very compact table box-ui-text-autocomplete">
                                     <tbody ref={this.refDropdown}>
-                                        {options.map((option, i) => (
-                                            <tr key={option.key} className={i === this.state.dropdown$ ? "focused" : ""} onMouseEnter={e => this.handleMouseEnterDropdown(e, option.key, i)}>
+                                        {this.dropdownOptions.map((option, i) => (
+                                            <tr key={option.key} className={i === this.state.dropdown$ ? "focused" : ""} onMouseDown={e => this.handleMouseDownDropdown(e, option.key, i)}>
                                                 <td>{option.icon ? <Icon inverted={true} size="small" name={option.icon} /> : undefined}</td>
                                                 <td>{option.key}</td>
                                                 <td>{option.description}</td>
