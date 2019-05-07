@@ -208,32 +208,26 @@ class Boxes extends React.Component {
         const handleDraggable = () => {
             this.dragged = false;
             const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
-            const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
-            let el = patcherDiv;
-            do {
-                patcherRect[0] += el.offsetLeft;
-                patcherRect[1] += el.offsetTop;
-                el = el.offsetParent as HTMLDivElement;
-            } while (el.offsetParent);
+            const patcherRect = patcherDiv.getBoundingClientRect();
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             const selectedBefore = this.props.patcher._state.selected.slice();
-            const selectionRect = [e.pageX - patcherRect[0] + patcherDiv.scrollLeft, e.pageY - patcherRect[1] + patcherDiv.scrollTop, 0, 0];
+            const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0];
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
                 if (e.movementX || e.movementY) {
                     if (!this.dragged) this.dragged = true;
-                    selectionRect[2] = e.pageX - patcherRect[0] + patcherDiv.scrollLeft;
-                    selectionRect[3] = e.pageY - patcherRect[1] + patcherDiv.scrollTop;
+                    selectionRect[2] = e.pageX - patcherRect.left + patcherDiv.scrollLeft;
+                    selectionRect[3] = e.pageY - patcherRect.top + patcherDiv.scrollTop;
                     this.setState({ selectionRect });
                     this.props.patcher.selectRegion(selectionRect, selectedBefore);
                 }
-                const x = e.pageX - patcherRect[0];
-                const y = e.pageY - patcherRect[1];
+                const x = e.pageX - patcherRect.left;
+                const y = e.pageY - patcherRect.top;
                 if (x < 10) patcherDiv.scrollLeft += x - 10;
-                if (x > patcherRect[2] - 10) patcherDiv.scrollLeft += x + 10 - patcherRect[2];
+                if (x > patcherRect.width - 10) patcherDiv.scrollLeft += x + 10 - patcherRect.width;
                 if (y < 10) patcherDiv.scrollTop += y - 10;
-                if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
+                if (y > patcherRect.height - 10) patcherDiv.scrollTop += y + 10 - patcherRect.height;
             };
             const handlePatcherScroll = (e: UIEvent) => {
                 const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
@@ -269,15 +263,9 @@ class Boxes extends React.Component {
         if (e.target !== this.refDiv.current) return;
         if (e.ctrlKey || e.shiftKey) return;
         const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
-        const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
-        let el = patcherDiv;
-        do {
-            patcherRect[0] += el.offsetLeft;
-            patcherRect[1] += el.offsetTop;
-            el = el.offsetParent as HTMLDivElement;
-        } while (el.offsetParent);
-        const x = e.pageX - patcherRect[0] + patcherDiv.scrollLeft;
-        const y = e.pageY - patcherRect[1] + patcherDiv.scrollTop;
+        const patcherRect = patcherDiv.getBoundingClientRect();
+        const x = e.pageX - patcherRect.left + patcherDiv.scrollLeft;
+        const y = e.pageY - patcherRect.top + patcherDiv.scrollTop;
         this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 120, 20], _editing: true });
     }
     render() {

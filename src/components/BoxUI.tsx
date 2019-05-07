@@ -65,13 +65,7 @@ export default class BoxUI extends React.Component {
             this.dragged = false;
             this.dragging = true;
             const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
-            const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
-            let el = patcherDiv;
-            do {
-                patcherRect[0] += el.offsetLeft;
-                patcherRect[1] += el.offsetTop;
-                el = el.offsetParent as HTMLDivElement;
-            } while (el.offsetParent);
+            const patcherRect = patcherDiv.getBoundingClientRect();
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             let dragOffset = { x: 0, y: 0 };
             const origOffset = box.rect.slice(0, 2);
@@ -84,12 +78,12 @@ export default class BoxUI extends React.Component {
                     dragOffset.y += e.movementY;
                     dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
                 }
-                const x = e.pageX - patcherRect[0];
-                const y = e.pageY - patcherRect[1];
+                const x = e.pageX - patcherRect.left;
+                const y = e.pageY - patcherRect.top;
                 if (x < 10) patcherDiv.scrollLeft += x - 10;
-                if (x > patcherRect[2] - 10) patcherDiv.scrollLeft += x + 10 - patcherRect[2];
+                if (x > patcherRect.width - 10) patcherDiv.scrollLeft += x + 10 - patcherRect.width;
                 if (y < 10) patcherDiv.scrollTop += y - 10;
-                if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
+                if (y > patcherRect.height - 10) patcherDiv.scrollTop += y + 10 - patcherRect.height;
             };
             const handlePatcherScroll = (e: UIEvent) => {
                 const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
@@ -201,13 +195,7 @@ export default class BoxUI extends React.Component {
         this.dragged = false;
         this.dragging = true;
         const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
-        const patcherRect = [0, 0, patcherDiv.clientWidth, patcherDiv.clientHeight];
-        let el = patcherDiv;
-        do {
-            patcherRect[0] += el.offsetLeft;
-            patcherRect[1] += el.offsetTop;
-            el = el.offsetParent as HTMLDivElement;
-        } while (el.offsetParent);
+        const patcherRect = patcherDiv.getBoundingClientRect();
         let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
         let dragOffset = { x: 0, y: 0 };
         const totalOffset = { x: 0, y: 0 };
@@ -222,12 +210,12 @@ export default class BoxUI extends React.Component {
                 totalOffset.x += e.movementX;
                 totalOffset.y += e.movementY;
             }
-            const x = e.pageX - patcherRect[0];
-            const y = e.pageY - patcherRect[1];
+            const x = e.pageX - patcherRect.left;
+            const y = e.pageY - patcherRect.top;
             if (x < 10) patcherDiv.scrollLeft += x - 10;
-            if (x > patcherRect[2] - 10) patcherDiv.scrollLeft += x + 10 - patcherRect[2];
+            if (x > patcherRect.width - 10) patcherDiv.scrollLeft += x + 10 - patcherRect.width;
             if (y < 10) patcherDiv.scrollTop += y - 10;
-            if (y > patcherRect[3] - 10) patcherDiv.scrollTop += y + 10 - patcherRect[3];
+            if (y > patcherRect.height - 10) patcherDiv.scrollTop += y + 10 - patcherRect.height;
         };
         const handlePatcherScroll = (e: UIEvent) => {
             const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
