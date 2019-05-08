@@ -399,6 +399,7 @@ class Inlet extends React.Component {
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
         if (e.button !== 0) return;
+        if (e.target !== e.currentTarget) return;
         e.stopPropagation();
         this.props.patcher.tempLine(true, [this.props.box.id, this.props.index]);
     }
@@ -406,6 +407,10 @@ class Inlet extends React.Component {
         if (this.props.patcher._state.locked) return;
         if (e.buttons) return;
         this.setState({ highlight: true });
+    }
+    handleMouseMove = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        if (e.currentTarget !== e.target) this.setState({ highlight: false });
     }
     handleMouseLeave = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
@@ -419,9 +424,9 @@ class Inlet extends React.Component {
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
         const className = "box-port box-inlet" + (props.isHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
         return (
-            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
                 <Popup
-                    trigger={<div />}
+                    trigger={<div style={{ pointerEvents: "none" }} />}
                     content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
                     position="top center"
                     open={this.state.highlight}
@@ -429,7 +434,6 @@ class Inlet extends React.Component {
                     inverted
                 />
             </div>
-            // <>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>
         );
     }
 }
@@ -462,6 +466,7 @@ class Outlet extends React.Component {
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
         if (e.button !== 0) return;
+        if (e.target !== e.currentTarget) return;
         e.stopPropagation();
         this.props.patcher.tempLine(false, [this.props.box.id, this.props.index]);
     }
@@ -470,9 +475,13 @@ class Outlet extends React.Component {
         if (e.buttons) return;
         this.setState({ highlight: true });
     }
-    handleMouseLeave = (e: React.MouseEvent) => {
+    handleMouseLeave = () => {
         if (this.props.patcher._state.locked) return;
         this.setState({ highlight: false });
+    }
+    handleMouseMove = (e: React.MouseEvent) => {
+        if (this.props.patcher._state.locked) return;
+        if (e.currentTarget !== e.target) this.setState({ highlight: false });
     }
     render() {
         const box = this.props.box;
@@ -482,7 +491,7 @@ class Outlet extends React.Component {
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? meta[meta.length - 1] : meta[i]) };
         const className = "box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
         return (
-            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
                 <Popup
                     trigger={<div />}
                     content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}

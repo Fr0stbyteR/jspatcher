@@ -87,8 +87,13 @@ class EditMenu extends React.Component {
         this.props.patcher.redo();
     };
     handleClickCut = () => {
+        if (this.props.patcher._state.locked) return;
+        navigator.clipboard.writeText(this.props.patcher.selectedToString())
+            .then(() => this.props.patcher.deleteSelected());
     };
     handleClickCopy = () => {
+        if (this.props.patcher._state.locked) return;
+        navigator.clipboard.writeText(this.props.patcher.selectedToString());
     };
     handleClickPaste = () => {
         if (this.props.patcher._state.locked) return;
@@ -142,6 +147,8 @@ export default class TopMenu extends React.Component {
         else if (e.ctrlKey && e.key === "s") fileMenu.handleClickSaveAs();
         else if (e.ctrlKey && e.key === "z") editMenu.handleClickUndo();
         else if (e.ctrlKey && e.key === "y") editMenu.handleClickRedo();
+        else if (e.ctrlKey && e.key === "x") editMenu.handleClickCut();
+        else if (e.ctrlKey && e.key === "c") editMenu.handleClickCopy();
         else if (e.ctrlKey && e.key === "v") editMenu.handleClickPaste();
         else if (e.key === "Delete" || e.key === "Backspace") editMenu.handleClickDelete();
         else return;

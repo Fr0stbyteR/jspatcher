@@ -348,7 +348,7 @@ export default class Patcher extends EventEmitter {
         this.deselectAll();
         this.select(id);
     }
-    selectRegion(selectionRect: number[], selectedBefore: string[]): any {
+    selectRegion(selectionRect: number[], selectedBefore: string[]) {
         let [left, top, right, bottom] = selectionRect;
         if (left > right) [left, right] = [right, left];
         if (top > bottom) [top, bottom] = [bottom, top];
@@ -366,6 +366,23 @@ export default class Patcher extends EventEmitter {
         const deselect = this._state.selected.filter(id => select.indexOf(id) === -1);
         select.forEach(boxID => this.select(boxID));
         deselect.forEach(id => this.deselect(id));
+    }
+    selectedToString() {
+        const linesConcerned: { [id: string]: true } = {};
+        const patcher: TPatcher = { lines: {}, boxes: {} };
+        this._state.selected
+            .filter(id => id.includes("box") && this.boxes[id])
+            .map(id => this.boxes[id])
+            .forEach((box) => {
+                box.allLines.forEach(id => linesConcerned[id] = true);
+                patcher.boxes[box.id] = box;
+            });
+        Object.keys(linesConcerned).forEach((lineID) => {
+            const line = this.lines[lineID];
+            if (!line) return;
+            if (patcher.boxes[line.srcID] && patcher.boxes[line.destID]) patcher.lines[lineID] = line;
+        });
+        return JSON.stringify(patcher, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
     }
     moveBox(boxID: string, deltaX: number, deltaY: number) {
         const box = this.boxes[boxID];
@@ -534,6 +551,8 @@ export default class Patcher extends EventEmitter {
     paste(clipboard: TPatcher | TMaxClipboard) {
         const idMap: { [key: string]: string } = {};
         const pasted = { boxes: [] as TBox[], lines: [] as TLine[] };
+        if (!clipboard || !clipboard.boxes) return pasted;
+        this.deselectAll();
         if (Array.isArray(clipboard.boxes)) { // Max Patcher
             const maxBoxes = clipboard.boxes;
             for (let i = 0; i < maxBoxes.length; i++) {
@@ -556,6 +575,7 @@ export default class Patcher extends EventEmitter {
                 };
                 this.createBox(box);
                 pasted.boxes.push(box);
+                this.select(box.id);
             }
             if (Array.isArray(clipboard.lines)) {
                 const maxLines = clipboard.lines;
@@ -588,6 +608,7 @@ export default class Patcher extends EventEmitter {
             box.rect = [box.rect[0] + 20, box.rect[1] + 20, box.rect[2], box.rect[3]];
             this.createBox(box);
             pasted.boxes.push(box);
+            this.select(box.id);
         }
         for (const lineID in clipboard.lines) {
             const line = clipboard.lines[lineID];

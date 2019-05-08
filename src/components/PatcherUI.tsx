@@ -30,11 +30,11 @@ export default class PatcherUI extends React.Component {
     handleLockedChange = (e: boolean) => this.setState({ locked: e });
     handlePresentationChange = (e: boolean) => this.setState({ presentation: e });
     handleShowGridChange = (e: boolean) => this.setState({ showGrid: e });
-    handleScroll = (e: React.UIEvent) => {
+    handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
         const lines = this.refLines.current;
-        const div = e.currentTarget as HTMLDivElement;
+        const div = e.currentTarget;
         let shouldUpdate = false;
         if (div.scrollWidth !== this.size.width || div.scrollHeight !== this.size.height) {
             shouldUpdate = true;
@@ -151,12 +151,14 @@ class Boxes extends React.Component {
     boxes: { [key: string]: JSX.Element } = {};
     refDiv: React.RefObject<HTMLDivElement> = React.createRef();
     dragged = false;
+    cachedMousePos = { x: 0, y: 0 };
     componentDidMount() {
         this.props.patcher.on("loaded", this.onLoaded);
         this.props.patcher.on("createBox", this.onCreateBox);
         this.props.patcher.on("create", this.onCreate);
         this.props.patcher.on("deleteBox", this.onDeleteBox);
         this.props.patcher.on("delete", this.onDelete);
+        document.addEventListener("keydown", this.handleKeyDown);
     }
     componentWillUnmount() {
         this.props.patcher.off("loaded", this.onLoaded);
@@ -164,6 +166,7 @@ class Boxes extends React.Component {
         this.props.patcher.off("create", this.onCreate);
         this.props.patcher.off("deleteBox", this.onDeleteBox);
         this.props.patcher.off("delete", this.onDelete);
+        document.removeEventListener("keydown", this.handleKeyDown);
     }
     onCreateBox = (box: Box) => {
         if (this.props.patcher._state.isLoading) return;
@@ -268,6 +271,19 @@ class Boxes extends React.Component {
         const y = e.pageY - patcherRect.top + patcherDiv.scrollTop;
         this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 120, 20], _editing: true });
     }
+    handleKeyDown = (e: KeyboardEvent) => {
+        if (this.props.patcher._state.locked) return;
+        if (e.key === "n" && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+            e.stopPropagation();
+            e.preventDefault();
+            const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
+            const patcherRect = patcherDiv.getBoundingClientRect();
+            const x = this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft;
+            const y = this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop;
+            this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 120, 20], _editing: true });
+        }
+    }
+    handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };
     render() {
         const selectionRect = this.state.selectionRect;
         let selectionDiv;
@@ -281,7 +297,7 @@ class Boxes extends React.Component {
             selectionDiv = <div className="selection" style={selectionDivStyle}/>;
         }
         return (
-            <div className="boxes" onMouseDown={this.handleMouseDown} onDoubleClick={this.handleDoubleClick} ref={this.refDiv} onClick={this.handleClick} style={this.state}>
+            <div className="boxes" onMouseDown={this.handleMouseDown} onMouseMove={this.handleMouseMove} onDoubleClick={this.handleDoubleClick} ref={this.refDiv} onClick={this.handleClick} style={this.state}>
                 {Object.values(this.boxes)}
                 {selectionDiv}
             </div>
