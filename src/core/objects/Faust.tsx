@@ -461,7 +461,7 @@ const opMap: TOpMap = {
         Atan: { symbol: "atan", inlets: 1, desc: "Arc tangent" },
         Atan2: { symbol: "atan2", inlets: 2, desc: "Arc tangent of 2 signals" },
         Cos: { symbol: "cos", inlets: 1, desc: "Cosine" },
-        Sin: { symbol: "cos", inlets: 1, desc: "Sine" },
+        Sin: { symbol: "sin", inlets: 1, desc: "Sine" },
         Tan: { symbol: "tan", inlets: 1, desc: "Tangent" },
         Exp: { symbol: "exp", inlets: 1, desc: "Base-e exponential" },
         Log: { symbol: "log", inlets: 1, desc: "Base-e logarithm" },
