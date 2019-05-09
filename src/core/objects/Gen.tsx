@@ -45,7 +45,7 @@ const genOperators: { [key: string]: string[] } = {
         "concat", "cross", "dot", "faceforward", "length", "normalize", "reflect", "refract", "rotor", "swiz", "vec"
     ]
 };
-class GenObject extends BaseObject {
+export class GenOp extends BaseObject {
     static get _meta(): TMeta {
         return {
             ...super._meta,
@@ -56,17 +56,18 @@ class GenObject extends BaseObject {
         };
     }
 }
-const GenObjects: { [key: string]: typeof GenObject | typeof Comment } = { comment: Comment };
+const GenOps: { [key: string]: typeof GenOp | typeof Comment } = { comment: Comment };
 for (const key in genOperators) {
     genOperators[key].forEach((name) => {
-        GenObjects[name] = class extends GenObject {
+        GenOps[name] = class extends GenOp {
             static get _meta() {
-                return Object.assign(GenObject._meta, {
+                return {
+                    ...super._meta,
                     name,
                     description: "Gen Operator " + name
-                });
+                };
             }
         };
     });
 }
-export default GenObjects;
+export default GenOps;

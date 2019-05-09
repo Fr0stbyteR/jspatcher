@@ -26,7 +26,7 @@ class JSUnaryOp extends JSOp {
             }]
         };
     }
-    _mem: { result: any } = { result: null };
+    protected _mem: { result: any } = { result: null };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 1;
@@ -81,7 +81,7 @@ class JSBinaryOp extends JSOp {
             }]
         };
     }
-    _mem: { arg: any; result: any } = { arg: null, result: null };
+    protected _mem: { arg: any; result: any } = { arg: null, result: null };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 2;
@@ -153,7 +153,7 @@ class JSTernaryOp extends JSOp {
             }]
         };
     }
-    _mem: { args: any[]; result: any } = { args: [], result: null };
+    protected _mem: { args: any[]; result: any } = { args: [], result: null };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 3;
@@ -212,8 +212,17 @@ const functions: { [key: string]: (...args: any[]) => any } = {
     And: (a: any, b: any) => a && b,
     Or: (a: any, b: any) => a || b,
     Not: (a: any) => !a,
+    BAnd: (a: any, b: any) => a & b,
+    BOr: (a: any, b: any) => a | b,
+    BXor: (a: any, b: any) => a ^ b,
+    BNot: (a: any) => ~a,
+    BLS: (a: any, b: any) => a << b,
+    BRS: (a: any, b: any) => a >> b,
+    BRSZ: (a: any, b: any) => a >>> b,
     Typeof: (a: any) => typeof a,
-    Instanceof: (a: any, b: any) => a instanceof b
+    Instanceof: (a: any, b: any) => a instanceof b,
+    void: (a: any) => void a, // eslint-disable-line no-void
+    in: (a: any, b: any) => a in b
 };
 
 const Ops: { [key: string]: typeof JSUnaryOp | typeof JSBinaryOp } = {};
@@ -258,5 +267,12 @@ export default {
     "&&": Ops.And,
     "||": Ops.Or,
     "!": Ops.Not,
+    "&": Ops.BAnd,
+    "|": Ops.BOr,
+    "^": Ops.BXor,
+    "~": Ops.BNot,
+    "<<": Ops.BLS,
+    ">>": Ops.BRS,
+    ">>>": Ops.BRSZ,
     "?": JSTernaryOp
 };

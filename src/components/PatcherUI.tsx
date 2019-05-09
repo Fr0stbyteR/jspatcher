@@ -269,7 +269,7 @@ class Boxes extends React.Component {
         const patcherRect = patcherDiv.getBoundingClientRect();
         const x = e.pageX - patcherRect.left + patcherDiv.scrollLeft;
         const y = e.pageY - patcherRect.top + patcherDiv.scrollTop;
-        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 120, 20], _editing: true });
+        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 90, 20], _editing: true });
     }
     handleKeyDown = (e: KeyboardEvent) => {
         if (this.props.patcher._state.locked) return;
@@ -280,7 +280,7 @@ class Boxes extends React.Component {
             const patcherRect = patcherDiv.getBoundingClientRect();
             const x = this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft;
             const y = this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop;
-            this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 120, 20], _editing: true });
+            this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 90, 20], _editing: true });
         }
     }
     handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };

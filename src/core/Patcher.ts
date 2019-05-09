@@ -7,7 +7,8 @@ import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, T
 
 import Base from "./objects/Base";
 import Max from "./objects/Max";
-import Gen from "./objects/Gen";
+import GenOps from "./objects/Gen";
+import FaustOps, { toFaustDspCode } from "./objects/Faust";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
@@ -40,10 +41,11 @@ export default class Patcher extends EventEmitter {
         super();
         this.setMaxListeners(4096);
         this.observeHistory();
-        this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, snapToGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {}, selected: [] };
+        this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, snapToGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {}, libFaust: {}, selected: [] };
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
-        this._state.libGen = this.packageRegister((Gen as TPackage), {});
+        this._state.libGen = this.packageRegister(GenOps, {});
+        this._state.libFaust = this.packageRegister(FaustOps, {});
         this._state.lib = this._state.libJS;
         this._packages = Packages;
         this.clear();
@@ -125,8 +127,8 @@ export default class Patcher extends EventEmitter {
                     dest: [lineArgs.destination[0].replace(/obj/, "box"), lineArgs.destination[1]]
                 });
             }
-        } else if (modeIn === "js") {
-            this._state.lib = this._state.libJS;
+        } else if (modeIn === "js" || modeIn === "faust") {
+            this._state.lib = modeIn === "js" ? this._state.libJS : this._state.libFaust;
             const patcher = patcherIn;
             if (patcher.props) this.props = { ...this.props, ...patcher.props };
             if (patcher.boxes) { // Boxes & data
@@ -672,6 +674,9 @@ export default class Patcher extends EventEmitter {
     }
     redo() {
         this._state.history.redo();
+    }
+    toFaustDspCode() {
+        return toFaustDspCode(this);
     }
     toString() {
         return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);

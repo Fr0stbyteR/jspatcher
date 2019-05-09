@@ -4,8 +4,10 @@ import Box from "./Box";
 import Line from "./Line";
 import History from "./History";
 import { EnumResizeHandlerType } from "../components/BoxUI";
+import { GenOp } from "./objects/Gen";
+import { FaustOp } from "./objects/Faust";
 
-type TPatcherMode = "max" | "gen" | "js";
+type TPatcherMode = "max" | "gen" | "faust" | "js";
 
 type TPatcher = {
     lines: { [key: string]: TLine };
@@ -34,6 +36,7 @@ type TPatcherState = {
     libJS: { [key: string]: typeof BaseObject };
     libMax: { [key: string]: typeof BaseObject };
     libGen: { [key: string]: typeof BaseObject };
+    libFaust: { [key: string]: typeof BaseObject };
     selected: string[];
 };
 type TPatcherLog = {

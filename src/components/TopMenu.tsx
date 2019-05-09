@@ -2,7 +2,7 @@ import * as React from "react";
 import { Menu, Dropdown } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import "./TopMenu.scss";
-import { TPatcher, TMaxClipboard } from "../core/types";
+import { TPatcher, TMaxClipboard, TPatcherMode } from "../core/types";
 
 class FileMenu extends React.Component {
     props: { patcher: Patcher };
@@ -17,6 +17,9 @@ class FileMenu extends React.Component {
     };
     handleClickNewGen = () => {
         this.props.patcher.load("gen", {});
+    };
+    handleClickNewFaust = () => {
+        this.props.patcher.load("faust", {});
     };
     handleClickOpen = () => {
         this.refOpen.current.click();
@@ -33,7 +36,7 @@ class FileMenu extends React.Component {
         const file = this.refOpen.current.files[0];
         if (!file) return;
         const ext = file.name.split(".").pop();
-        const extMap: { [key: string]: "js" | "max" | "gen" } = { json: "js", maxpat: "max", gendsp: "gen" };
+        const extMap: { [key: string]: TPatcherMode } = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
         if (extMap[ext]) {
             const reader = new FileReader();
             reader.readAsText(file, "UTF-8");
@@ -60,6 +63,7 @@ class FileMenu extends React.Component {
                         <Dropdown.Item onClick={this.handleClickNew} text="New Patcher" description="Ctrl + Shift + N" />
                         <Dropdown.Item onClick={this.handleClickNewMax} text="New Max Patcher" />
                         <Dropdown.Item onClick={this.handleClickNewGen} text="New Gen Patcher" />
+                        <Dropdown.Item onClick={this.handleClickNewFaust} text="New Faust Patcher" />
                         <Dropdown.Item onClick={this.handleClickOpen} text="Open..." description="Ctrl + O" />
                         <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description="Ctrl + S" />
                     </Dropdown.Menu>

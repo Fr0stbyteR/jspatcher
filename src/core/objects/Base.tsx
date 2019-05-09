@@ -227,14 +227,14 @@ export class BaseObject extends EventEmitter {
     protected _mem: { [key: string]: any } = {};
     constructor(box: Box, patcher: Patcher) {
         super();
-        // patcher object outside, use _ for pre`vent recursive stringify
+        // patcher object outside, use _ for prevent recursive stringify
         this._patcher = patcher;
         // the box which create this instance, use _ for prevent recursive stringify
         this._box = box;
         // should save all temporary variables here
         this._mem = {};
         // usually do this after initialization
-        // this.update(box._args, box._props);
+        // this.update(box.parsed.args, box.parsed.props);
     }
     // build new ui on page, return a React Component, override this
     get ui(): typeof BaseUI {
