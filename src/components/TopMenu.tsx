@@ -167,7 +167,7 @@ export default class TopMenu extends React.Component {
     }
     render() {
         return (
-            <Menu inverted={true} fixed={"top"} id="top-menu">
+            <Menu inverted size="mini" fixed={"top"} id="top-menu">
                 <FileMenu {...this.props} ref={this.refFileMenu} />
                 <EditMenu {...this.props} ref={this.refEditMenu} />
             </Menu>

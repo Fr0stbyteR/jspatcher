@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { EventEmitter } from "events";
 import * as React from "react";
-import { Icon, SemanticICONS, Dropdown, Table as table } from "semantic-ui-react";
+import { Icon, SemanticICONS, Table } from "semantic-ui-react";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";

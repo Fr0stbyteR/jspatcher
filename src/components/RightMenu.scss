@@ -1,0 +1,15 @@
+#right-menu {
+    position: relative;
+    width: auto;
+}
+#right-pane {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    width: 400px;
+    background-color: #1b1c1d;
+    & > h5 {
+        margin: 8px;
+    }
+}

@@ -4,7 +4,7 @@
     min-height: 100%;
     min-width: 100%;
     display: block;
-    > div.boxes {
+    & > div.boxes {
         position: absolute;
         min-width: 100%;
         min-height: 100%;
@@ -14,13 +14,13 @@
             border: 1px solid #ffffff80;
         }
     }
-    > div.lines {
+    & > div.lines {
         position: absolute;
         min-width: 100%;
         min-height: 100%;
         pointer-events: none;
     }
-    > div.grid-background {
+    & > div.grid-background {
         visibility: hidden;
         position: absolute;
         min-width: 100%;

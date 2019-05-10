@@ -1,4 +1,5 @@
 const path = require('path');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const config = {
   entry: './src/index.tsx',
@@ -37,7 +38,13 @@ const config = {
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new MonacoWebpackPlugin({
+      output: 'monaco',
+      languages: []
+    })
+  ]
 };
 module.exports = (env, argv) => {
   if (argv.mode === 'development') {

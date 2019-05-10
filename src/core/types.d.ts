@@ -134,6 +134,7 @@ interface PatcherEventMap {
     "tempLine": { findSrc: boolean; from: [string, number] };
     "moved": { selected: string[]; delta: { x: number; y: number } };
     "resized": { selected: string[]; delta: { x: number; y: number }; type: EnumResizeHandlerType };
+    "generateCode": string;
 }
 
 interface LineEventMap {

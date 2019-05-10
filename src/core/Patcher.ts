@@ -676,7 +676,9 @@ export default class Patcher extends EventEmitter {
         this._state.history.redo();
     }
     toFaustDspCode() {
-        return toFaustDspCode(this);
+        const code = toFaustDspCode(this);
+        this.emit("generateCode", code);
+        return code;
     }
     toString() {
         return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);

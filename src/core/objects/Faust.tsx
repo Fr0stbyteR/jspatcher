@@ -70,6 +70,22 @@ export class FaustOp extends BaseObject {
         });
         return exprs;
     }
+    connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
+        this.patcher.toFaustDspCode();
+        return this;
+    }
+    connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        this.patcher.toFaustDspCode();
+        return this;
+    }
+    disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
+        this.patcher.toFaustDspCode();
+        return this;
+    }
+    disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        this.patcher.toFaustDspCode();
+        return this;
+    }
 }
 
 class In extends FaustOp {
