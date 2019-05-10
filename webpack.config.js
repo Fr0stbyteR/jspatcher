@@ -9,7 +9,8 @@ const config = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     library: 'JSPatcher',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    chunkFilename: 'js/[chunkhash].js'
   },
   module: {
     rules: [{

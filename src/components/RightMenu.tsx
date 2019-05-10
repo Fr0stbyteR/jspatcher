@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Menu, Icon, MenuItemProps, Header } from "semantic-ui-react";
-import MonacoEditor from "react-monaco-editor";
+import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer } from "semantic-ui-react";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import Patcher from "../core/Patcher";
 import "./RightMenu.scss";
@@ -29,7 +28,12 @@ export default class RightMenu extends React.Component {
         if (this.codeEditor) this.codeEditor.setValue(code);
     }
     componentWillMount() {
-        this.codeEditorJSX = <MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} value={this.code} />;
+        this.codeEditorJSX = <Dimmer active><Loader content="Loading" /></Dimmer>;
+        import("react-monaco-editor").then((reactMonacoEditor) => {
+            const MonacoEditor = reactMonacoEditor.default;
+            this.codeEditorJSX = <MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} value={this.code} options={{ fontSize: 12 }} />;
+            this.forceUpdate();
+        });
     }
     componentDidMount() {
         this.props.patcher.on("generateCode", this.handleGenerateCode);
