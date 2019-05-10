@@ -27,19 +27,22 @@ export default class RightMenu extends React.Component {
         this.code = code;
         if (this.codeEditor) this.codeEditor.setValue(code);
     }
+    handleResize = () => (this.state.active === TPanels.Code && this.codeEditor ? this.codeEditor.layout() : undefined);
     componentWillMount() {
         this.codeEditorJSX = <Dimmer active><Loader content="Loading" /></Dimmer>;
         import("react-monaco-editor").then((reactMonacoEditor) => {
             const MonacoEditor = reactMonacoEditor.default;
-            this.codeEditorJSX = <MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} value={this.code} options={{ fontSize: 12 }} />;
+            this.codeEditorJSX = <div className="monaco-editor-container"><MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} value={this.code} options={{ fontSize: 12 }} /></div>;
             this.forceUpdate();
         });
     }
     componentDidMount() {
         this.props.patcher.on("generateCode", this.handleGenerateCode);
+        window.addEventListener("resize", this.handleResize);
     }
     componentWillUnmount() {
         this.props.patcher.off("generateCode", this.handleGenerateCode);
+        window.removeEventListener("resize", this.handleResize);
     }
     render() {
         const pane = this.state.active === TPanels.None

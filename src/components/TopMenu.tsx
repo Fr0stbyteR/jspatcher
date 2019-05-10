@@ -29,8 +29,7 @@ class FileMenu extends React.Component {
         this.setState({
             pAsString: "data:application/json;charset=utf-8," + encodeURIComponent(p),
             pName: "patcher.json"
-        });
-        this.refDownload.current.click();
+        }, () => this.refDownload.current.click());
     };
     onInput = () => {
         const file = this.refOpen.current.files[0];

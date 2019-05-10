@@ -11,5 +11,13 @@
     background-color: #1b1c1d;
     & > h5 {
         margin: 8px;
+        display: block;
+        position: relative;
+        flex: 0 0 auto;
+    }
+    & > .monaco-editor-container {
+        display: flex;
+        position: relative;
+        flex: 1 1 auto;
     }
 }
