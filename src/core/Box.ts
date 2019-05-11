@@ -16,7 +16,7 @@ export default class Box extends EventEmitter {
     removeAllListeners<K extends keyof BoxEventMap>(type: K) {
         return super.removeAllListeners(type);
     }
-    emit<K extends keyof BoxEventMap>(type: K, e: BoxEventMap[K]) {
+    emit<K extends keyof BoxEventMap>(type: K, e?: BoxEventMap[K]) {
         return super.emit(type, e);
     }
     id: string;
@@ -96,21 +96,25 @@ export default class Box extends EventEmitter {
     // called when inlet or outlet are connected or disconnected
     connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
         this.emit("connectedPort", { isSrc: true, i: outlet });
+        this._patcher.emit("graphChanged");
         if (this._object) this._object.connectedOutlet(outlet, destBox, destInlet, lineID);
         return this;
     }
     connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
         this.emit("connectedPort", { isSrc: false, i: inlet });
+        this._patcher.emit("graphChanged");
         if (this._object) this._object.connectedInlet(inlet, srcBox, srcOutlet, lineID);
         return this;
     }
     disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
         this.emit("disconnectedPort", { isSrc: true, i: outlet });
+        this._patcher.emit("graphChanged");
         if (this._object) this._object.disconnectedOutlet(outlet, destBox, destInlet, lineID);
         return this;
     }
     disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
         this.emit("disconnectedPort", { isSrc: false, i: inlet });
+        this._patcher.emit("graphChanged");
         if (this._object) this._object.disconnectedInlet(inlet, srcBox, srcOutlet, lineID);
         return this;
     }
@@ -147,6 +151,7 @@ export default class Box extends EventEmitter {
             lines.forEach(el => this._patcher.lines[el].enable());
         }
         this.emit("textChanged", this);
+        this._patcher.emit("graphChanged");
         return this;
     }
     setRect(rect: [number, number, number, number]) {

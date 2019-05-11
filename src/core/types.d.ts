@@ -3,9 +3,6 @@ import Patcher from "./Patcher";
 import Box from "./Box";
 import Line from "./Line";
 import History from "./History";
-import { EnumResizeHandlerType } from "../components/BoxUI";
-import { GenOp } from "./objects/Gen";
-import { FaustOp } from "./objects/Faust";
 
 type TPatcherMode = "max" | "gen" | "faust" | "js";
 
@@ -39,8 +36,16 @@ type TPatcherState = {
     libFaust: { [key: string]: typeof BaseObject };
     selected: string[];
 };
+
+declare enum EErrorLevel {
+    ERROR = 1,
+    NONE = 0,
+    WARN = -1,
+    INFO = -2
+}
+
 type TPatcherLog = {
-    errorLevel: -2 | -1 | 0 | 1;
+    errorLevel: EErrorLevel;
     title: string;
     message: string;
 };
@@ -92,8 +97,6 @@ type TMaxClipboard = {
 
 type TPackage = { [key: string]: typeof BaseObject | TPackage };
 
-type TPatcherEvents = "loaded" | "locked" | "presentation" | "showGrid" | "create" | "delete" | "createBox" | "createObject" | "changeBoxText" | "deleteBox" | "createLine" | "deleteLine" | "redrawLine" | "changeLineSrc" | "changeLineDest" | "changeLine" | "forceBoxRect" | "newLog" | "updateBoxRect" | "selected" | "deselected" | "tempLine";
-
 type TLine = {
     id?: string;
     src: [string, number];
@@ -110,6 +113,17 @@ type TBox = {
     data?: { [key: string]: any };
     _editing?: boolean;
 };
+
+declare enum EResizeHandlerType {
+    n = "n",
+    ne = "ne",
+    e = "e",
+    se = "se",
+    w = "w",
+    sw = "sw",
+    s = "s",
+    nw = "nw"
+}
 
 interface PatcherEventMap {
     "loaded": Patcher;
@@ -133,8 +147,9 @@ interface PatcherEventMap {
     "deselected": string;
     "tempLine": { findSrc: boolean; from: [string, number] };
     "moved": { selected: string[]; delta: { x: number; y: number } };
-    "resized": { selected: string[]; delta: { x: number; y: number }; type: EnumResizeHandlerType };
+    "resized": { selected: string[]; delta: { x: number; y: number }; type: EResizeHandlerType };
     "generateCode": string;
+    "graphChanged": any;
 }
 
 interface LineEventMap {

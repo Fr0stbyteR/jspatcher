@@ -15,7 +15,7 @@ export default class Line extends EventEmitter {
     removeAllListeners<K extends keyof LineEventMap>(type: K) {
         return super.removeAllListeners(type);
     }
-    emit<K extends keyof LineEventMap>(type: K, e: LineEventMap[K]) {
+    emit<K extends keyof LineEventMap>(type: K, e?: LineEventMap[K]) {
         return super.emit(type, e);
     }
     readonly id: string;

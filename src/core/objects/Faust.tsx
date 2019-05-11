@@ -70,22 +70,6 @@ export class FaustOp extends BaseObject {
         });
         return exprs;
     }
-    connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
-        this.patcher.toFaustDspCode();
-        return this;
-    }
-    connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
-        this.patcher.toFaustDspCode();
-        return this;
-    }
-    disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
-        this.patcher.toFaustDspCode();
-        return this;
-    }
-    disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
-        this.patcher.toFaustDspCode();
-        return this;
-    }
 }
 
 class In extends FaustOp {
@@ -563,7 +547,7 @@ export const toFaustDspCode = (patcher: Patcher) => {
         if (box.object instanceof Rec) return;
         exprs.push(...(box.object as FaustOp).toExpr(lineMap));
     });
-    // Build rec in/outs 
+    // Build rec in/outs
     recs.forEach((rec) => {
         exprs.push(...rec.toExpr(lineMap));
         const recIn = `${rec._meta.name}_${rec.box.id.substr(4)}`;

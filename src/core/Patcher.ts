@@ -3,7 +3,7 @@ import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
 import AutoImporter from "./AutoImporter";
-import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard } from "./types";
+import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, EResizeHandlerType } from "./types";
 
 import Base from "./objects/Base";
 import Max from "./objects/Max";
@@ -12,7 +12,6 @@ import FaustOps, { toFaustDspCode } from "./objects/Faust";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
-import { EnumResizeHandlerType } from "../components/BoxUI";
 
 const Packages: TPackage = { Base, UI, Op, Window };
 
@@ -29,7 +28,7 @@ export default class Patcher extends EventEmitter {
     removeAllListeners<K extends keyof PatcherEventMap>(type: K) {
         return super.removeAllListeners(type);
     }
-    emit<K extends keyof PatcherEventMap>(type: K, e: PatcherEventMap[K]) {
+    emit<K extends keyof PatcherEventMap>(type: K, e?: PatcherEventMap[K]) {
         return super.emit(type, e);
     }
     lines: { [key: string]: Line };
@@ -431,30 +430,30 @@ export default class Patcher extends EventEmitter {
             line.emit("posChanged", line);
         });
     }
-    resizeSelectedBox(boxID: string, dragOffset: { x: number; y: number }, type: EnumResizeHandlerType) {
+    resizeSelectedBox(boxID: string, dragOffset: { x: number; y: number }, type: EResizeHandlerType) {
         const rect = this.boxes[boxID].rect;
         const delta = { x: 0, y: 0 };
-        if (type === EnumResizeHandlerType.e || type === EnumResizeHandlerType.se) {
+        if (type === EResizeHandlerType.e || type === EResizeHandlerType.se) {
             delta.x = this._state.snapToGrid ? Math.round((rect[0] + rect[2] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] - rect[2] : dragOffset.x;
         }
-        if (type === EnumResizeHandlerType.s || type === EnumResizeHandlerType.se) {
+        if (type === EResizeHandlerType.s || type === EResizeHandlerType.se) {
             delta.y = this._state.snapToGrid ? Math.round((rect[1] + rect[3] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] - rect[3] : dragOffset.y;
         }
-        if (type === EnumResizeHandlerType.w || type === EnumResizeHandlerType.nw) {
+        if (type === EResizeHandlerType.w || type === EResizeHandlerType.nw) {
             delta.x = this._state.snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
         }
-        if (type === EnumResizeHandlerType.n || type === EnumResizeHandlerType.nw) {
+        if (type === EResizeHandlerType.n || type === EResizeHandlerType.nw) {
             delta.y = this._state.snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
         }
         if (!delta.x && !delta.y) return dragOffset;
         this.resize(this._state.selected, delta, type);
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
-    resizeEnd(delta: { x: number; y: number }, type: EnumResizeHandlerType) {
+    resizeEnd(delta: { x: number; y: number }, type: EResizeHandlerType) {
         this.newTimestamp();
         this.emit("resized", { delta, type, selected: this._state.selected });
     }
-    resize(selected: string[], delta: { x: number; y: number }, type: EnumResizeHandlerType) {
+    resize(selected: string[], delta: { x: number; y: number }, type: EResizeHandlerType) {
         selected.forEach(id => this.select(id));
         const linesConcerned: { [id: string]: true } = {};
         const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
@@ -463,7 +462,7 @@ export default class Patcher extends EventEmitter {
         const topMost = boxes.sort((a, b) => a.rect[1] - b.rect[1])[0];
         const widthLeast = boxes.sort((a, b) => a.rect[2] - b.rect[2])[0];
         const heightLeast = boxes.sort((a, b) => a.rect[3] - b.rect[3])[0];
-        if (type === EnumResizeHandlerType.ne || type === EnumResizeHandlerType.e || type === EnumResizeHandlerType.se) {
+        if (type === EResizeHandlerType.ne || type === EResizeHandlerType.e || type === EResizeHandlerType.se) {
             if (widthLeast.rect[2] + delta.x < 15) delta.x = 0;
             else {
                 boxes.forEach((box) => {
@@ -471,7 +470,7 @@ export default class Patcher extends EventEmitter {
                 });
             }
         }
-        if (type === EnumResizeHandlerType.se || type === EnumResizeHandlerType.s || type === EnumResizeHandlerType.sw) {
+        if (type === EResizeHandlerType.se || type === EResizeHandlerType.s || type === EResizeHandlerType.sw) {
             if (heightLeast.rect[3] + delta.y < 15) delta.y = 0;
             else {
                 boxes.forEach((box) => {
@@ -479,7 +478,7 @@ export default class Patcher extends EventEmitter {
                 });
             }
         }
-        if (type === EnumResizeHandlerType.sw || type === EnumResizeHandlerType.w || type === EnumResizeHandlerType.nw) {
+        if (type === EResizeHandlerType.sw || type === EResizeHandlerType.w || type === EResizeHandlerType.nw) {
             if (leftMost.rect[0] + delta.x < 0 || widthLeast.rect[2] - delta.x < 15) delta.x = 0;
             else {
                 boxes.forEach((box) => {
@@ -488,7 +487,7 @@ export default class Patcher extends EventEmitter {
                 });
             }
         }
-        if (type === EnumResizeHandlerType.nw || type === EnumResizeHandlerType.n || type === EnumResizeHandlerType.ne) {
+        if (type === EResizeHandlerType.nw || type === EResizeHandlerType.n || type === EResizeHandlerType.ne) {
             if (topMost.rect[1] + delta.y < 0 || heightLeast.rect[3] - delta.y < 15) delta.y = 0;
             else {
                 boxes.forEach((box) => {

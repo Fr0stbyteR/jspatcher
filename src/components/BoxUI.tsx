@@ -4,17 +4,7 @@ import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import { BaseUI } from "../core/objects/Base";
 import "./BoxUI.scss";
-
-export enum EnumResizeHandlerType {
-    n = "n",
-    ne = "ne",
-    e = "e",
-    se = "se",
-    w = "w",
-    sw = "sw",
-    s = "s",
-    nw = "nw"
-}
+import { EResizeHandlerType } from "../core/types";
 
 export default class BoxUI extends React.Component {
     props: { patcher: Patcher; id: string };
@@ -175,17 +165,17 @@ export default class BoxUI extends React.Component {
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.props.patcher._state.locked) return;
         const classList = e.currentTarget.classList;
-        const typeMap: { [key: string]: EnumResizeHandlerType } = {
-            "resize-handler-n": EnumResizeHandlerType.n,
-            "resize-handler-ne": EnumResizeHandlerType.ne,
-            "resize-handler-e": EnumResizeHandlerType.e,
-            "resize-handler-se": EnumResizeHandlerType.se,
-            "resize-handler-s": EnumResizeHandlerType.s,
-            "resize-handler-sw": EnumResizeHandlerType.sw,
-            "resize-handler-w": EnumResizeHandlerType.w,
-            "resize-handler-nw": EnumResizeHandlerType.nw
+        const typeMap: { [key: string]: EResizeHandlerType } = {
+            "resize-handler-n": EResizeHandlerType.n,
+            "resize-handler-ne": EResizeHandlerType.ne,
+            "resize-handler-e": EResizeHandlerType.e,
+            "resize-handler-se": EResizeHandlerType.se,
+            "resize-handler-s": EResizeHandlerType.s,
+            "resize-handler-sw": EResizeHandlerType.sw,
+            "resize-handler-w": EResizeHandlerType.w,
+            "resize-handler-nw": EResizeHandlerType.nw
         };
-        let type: EnumResizeHandlerType;
+        let type: EResizeHandlerType;
         for (const key in typeMap) {
             if (classList.contains(key)) {
                 type = typeMap[key];
