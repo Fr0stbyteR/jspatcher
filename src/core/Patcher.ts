@@ -3,7 +3,7 @@ import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
 import AutoImporter from "./AutoImporter";
-import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, EResizeHandlerType } from "./types";
+import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel } from "./types";
 
 import Base from "./objects/Base";
 import Max from "./objects/Max";
@@ -58,7 +58,8 @@ export default class Patcher extends EventEmitter {
             } else if (typeof el === "function" && el.prototype instanceof Base.BaseObject) {
                 const full = path ? path + "." + key : key;
                 if (!libOut.hasOwnProperty(key)) libOut[key] = el;
-                if (libOut.hasOwnProperty(full)) this.newLog(1, "Patcher", "Path duplicated, cannot register " + full);
+                if (!path) continue;
+                if (libOut.hasOwnProperty(full)) this.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
                 else libOut[full] = el;
             } else continue;
         }
@@ -166,11 +167,11 @@ export default class Patcher extends EventEmitter {
             if (this._state.lib.hasOwnProperty(className)) {
                 obj = new this._state.lib[className](boxIn, this);
             } else {
-                this.newLog(1, "Patcher", "Object " + className + " not found.");
+                this.newLog("error", "Patcher", "Object " + className + " not found.", this);
                 obj = new Base.InvalidObject(boxIn, this);
             }
             if (!(obj instanceof Base.BaseObject)) {
-                this.newLog(1, "Patcher", "Object " + className + " is not valid.");
+                this.newLog("error", "Patcher", "Object " + className + " is not valid.", this);
                 obj = new Base.InvalidObject(boxIn, this);
             }
         }
@@ -287,13 +288,13 @@ export default class Patcher extends EventEmitter {
         return result;
     }
     log(message: string) {
-        this.newLog(0, "Patcher", message);
+        this.newLog("none", "Patcher", message, this);
     }
     error(message: string) {
-        this.newLog(1, "Patcher", message);
+        this.newLog("error", "Patcher", message, this);
     }
-    newLog(errorLevel: -2 | -1 | 0 | 1, title: string, message: string) {
-        const log = { errorLevel, title, message };
+    newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any) {
+        const log = { errorLevel, title, message, emitter };
         this._state.log.push(log);
         this.emit("newLog", log);
     }
@@ -430,30 +431,30 @@ export default class Patcher extends EventEmitter {
             line.emit("posChanged", line);
         });
     }
-    resizeSelectedBox(boxID: string, dragOffset: { x: number; y: number }, type: EResizeHandlerType) {
+    resizeSelectedBox(boxID: string, dragOffset: { x: number; y: number }, type: TResizeHandlerType) {
         const rect = this.boxes[boxID].rect;
         const delta = { x: 0, y: 0 };
-        if (type === EResizeHandlerType.e || type === EResizeHandlerType.se) {
+        if (type === "e" || type === "se") {
             delta.x = this._state.snapToGrid ? Math.round((rect[0] + rect[2] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] - rect[2] : dragOffset.x;
         }
-        if (type === EResizeHandlerType.s || type === EResizeHandlerType.se) {
+        if (type === "s" || type === "se") {
             delta.y = this._state.snapToGrid ? Math.round((rect[1] + rect[3] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] - rect[3] : dragOffset.y;
         }
-        if (type === EResizeHandlerType.w || type === EResizeHandlerType.nw) {
+        if (type === "w" || type === "nw") {
             delta.x = this._state.snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
         }
-        if (type === EResizeHandlerType.n || type === EResizeHandlerType.nw) {
+        if (type === "n" || type === "nw") {
             delta.y = this._state.snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
         }
         if (!delta.x && !delta.y) return dragOffset;
         this.resize(this._state.selected, delta, type);
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
-    resizeEnd(delta: { x: number; y: number }, type: EResizeHandlerType) {
+    resizeEnd(delta: { x: number; y: number }, type: TResizeHandlerType) {
         this.newTimestamp();
         this.emit("resized", { delta, type, selected: this._state.selected });
     }
-    resize(selected: string[], delta: { x: number; y: number }, type: EResizeHandlerType) {
+    resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType) {
         selected.forEach(id => this.select(id));
         const linesConcerned: { [id: string]: true } = {};
         const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
@@ -462,7 +463,7 @@ export default class Patcher extends EventEmitter {
         const topMost = boxes.sort((a, b) => a.rect[1] - b.rect[1])[0];
         const widthLeast = boxes.sort((a, b) => a.rect[2] - b.rect[2])[0];
         const heightLeast = boxes.sort((a, b) => a.rect[3] - b.rect[3])[0];
-        if (type === EResizeHandlerType.ne || type === EResizeHandlerType.e || type === EResizeHandlerType.se) {
+        if (type === "ne" || type === "e" || type === "se") {
             if (widthLeast.rect[2] + delta.x < 15) delta.x = 0;
             else {
                 boxes.forEach((box) => {
@@ -470,7 +471,7 @@ export default class Patcher extends EventEmitter {
                 });
             }
         }
-        if (type === EResizeHandlerType.se || type === EResizeHandlerType.s || type === EResizeHandlerType.sw) {
+        if (type === "se" || type === "s" || type === "sw") {
             if (heightLeast.rect[3] + delta.y < 15) delta.y = 0;
             else {
                 boxes.forEach((box) => {
@@ -478,7 +479,7 @@ export default class Patcher extends EventEmitter {
                 });
             }
         }
-        if (type === EResizeHandlerType.sw || type === EResizeHandlerType.w || type === EResizeHandlerType.nw) {
+        if (type === "sw" || type === "w" || type === "nw") {
             if (leftMost.rect[0] + delta.x < 0 || widthLeast.rect[2] - delta.x < 15) delta.x = 0;
             else {
                 boxes.forEach((box) => {
@@ -487,7 +488,7 @@ export default class Patcher extends EventEmitter {
                 });
             }
         }
-        if (type === EResizeHandlerType.nw || type === EResizeHandlerType.n || type === EResizeHandlerType.ne) {
+        if (type === "nw" || type === "n" || type === "ne") {
             if (topMost.rect[1] + delta.y < 0 || heightLeast.rect[3] - delta.y < 15) delta.y = 0;
             else {
                 boxes.forEach((box) => {

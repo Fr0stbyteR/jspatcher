@@ -6,6 +6,7 @@ import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
+import { TErrorLevel } from "../types";
 
 export type TInletsMeta = {
     isHot: boolean;
@@ -64,8 +65,8 @@ export class BaseUI extends React.Component {
 export class DefaultUI extends BaseUI {
     editableOnUnlock = true;
     state = { editing: false, text: "", loading: false, dropdown$: -1 };
-    refSpan = React.createRef() as React.RefObject<HTMLSpanElement>;
-    refDropdown = React.createRef() as React.RefObject<HTMLTableSectionElement>;
+    refSpan = React.createRef<HTMLSpanElement>();
+    refDropdown = React.createRef<HTMLTableSectionElement>();
     dropdownOptions: { key: string; value: string; text: string; icon: SemanticICONS; description: string }[] = [];
     toggleEdit = (bool?: boolean) => {
         if (bool === this.state.editing) return this.state.editing;
@@ -282,19 +283,19 @@ export class BaseObject extends EventEmitter {
     }
     // output to console
     post(data: string) {
-        this._patcher.newLog(0, this._meta.name, data);
+        this._patcher.newLog("none", this._meta.name, data, this._box);
         return this;
     }
     error(data: string) {
-        this._patcher.newLog(1, this._meta.name, data);
+        this._patcher.newLog("error", this._meta.name, data, this._box);
         return this;
     }
     info(data: string) {
-        this._patcher.newLog(-2, this._meta.name, data);
+        this._patcher.newLog("info", this._meta.name, data, this._box);
         return this;
     }
     warn(data: string) {
-        this._patcher.newLog(-1, this._meta.name, data);
+        this._patcher.newLog("warn", this._meta.name, data, this._box);
         return this;
     }
     get patcher() {

@@ -5,8 +5,8 @@ import "./LineUI.scss";
 export class LineUI extends React.Component {
     props: { patcher: Patcher; id: string };
     state: { selected: boolean; destPosition: { left: number; top: number }; srcPosition: { left: number; top: number }; dragging: boolean };
-    refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
-    refPath = React.createRef() as React.RefObject<SVGPathElement>;
+    refDiv = React.createRef<HTMLDivElement>();
+    refPath = React.createRef<SVGPathElement>();
     srcHandlerStyle = { left: 0, top: 0 };
     destHandlerStyle = { left: 0, top: 0 };
     dragged = false;
@@ -175,8 +175,8 @@ export class LineUI extends React.Component {
 export class TempLineUI extends React.Component {
     props: { patcher: Patcher };
     state = { show: false, destPosition: { left: 0, top: 0 }, srcPosition: { left: 0, top: 0 } };
-    refDiv = React.createRef() as React.RefObject<HTMLDivElement>;
-    refPath = React.createRef() as React.RefObject<SVGPathElement>;
+    refDiv = React.createRef<HTMLDivElement>();
+    refPath = React.createRef<SVGPathElement>();
     dragged = false;
     findSrc = false;
     from = [null, null] as [string, number];

@@ -26,7 +26,7 @@ export class Comment extends BaseObject {
         return class CommentUI extends BaseUI {
             editableOnUnlock = true;
             state = { editing: false };
-            refSpan = React.createRef() as React.RefObject<HTMLSpanElement>;
+            refSpan = React.createRef<HTMLSpanElement>();
             toggleEdit = (bool?: boolean) => {
                 if (bool === this.state.editing) return this.state.editing;
                 if (this.props.object.patcher._state.locked) return this.state.editing;

@@ -15,9 +15,16 @@
         position: relative;
         flex: 0 0 auto;
     }
-    & > .monaco-editor-container {
+    & > div {
         display: flex;
         position: relative;
         flex: 1 1 auto;
+        overflow: auto;
+        & > table {
+            word-break: break-all;
+        }
+    }
+    &[hidden], & [hidden] {
+        display: none;
     }
 }

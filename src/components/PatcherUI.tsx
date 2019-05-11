@@ -11,10 +11,10 @@ import { TPatcher } from "../core/types";
 export default class PatcherUI extends React.Component {
     props: { patcher: Patcher };
     state: { locked: boolean; presentation: boolean; showGrid: boolean; bgcolor: [number, number, number, number]; editing_bgcolor: [number, number, number, number] };
-    refDiv: React.RefObject<HTMLDivElement> = React.createRef();
-    refGrid: React.RefObject<Grid> = React.createRef();
-    refBoxes: React.RefObject<Boxes> = React.createRef();
-    refLines: React.RefObject<Lines> = React.createRef();
+    refDiv = React.createRef<HTMLDivElement>();
+    refGrid = React.createRef<Grid>();
+    refBoxes = React.createRef<Boxes>();
+    refLines = React.createRef<Lines>();
     size = { width: 0, height: 0 };
     handleLoaded = () => {
         this.setState({ bgcolor: this.props.patcher.props.bgcolor, editing_bgcolor: this.props.patcher.props.editing_bgcolor });
@@ -149,7 +149,7 @@ class Boxes extends React.Component {
     props: { patcher: Patcher };
     state = { width: "100%", height: "100%", selectionRect: [0, 0, 0, 0] };
     boxes: { [key: string]: JSX.Element } = {};
-    refDiv: React.RefObject<HTMLDivElement> = React.createRef();
+    refDiv = React.createRef<HTMLDivElement>();
     dragged = false;
     cachedMousePos = { x: 0, y: 0 };
     componentDidMount() {

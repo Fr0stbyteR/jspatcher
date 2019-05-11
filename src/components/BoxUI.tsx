@@ -4,15 +4,15 @@ import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import { BaseUI } from "../core/objects/Base";
 import "./BoxUI.scss";
-import { EResizeHandlerType } from "../core/types";
+import { TResizeHandlerType } from "../core/types";
 
 export default class BoxUI extends React.Component {
     props: { patcher: Patcher; id: string };
     state: { selected: boolean; rect: [number, number, number, number] };
     innerUI: JSX.Element;
     sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
-    refDiv: React.RefObject<HTMLDivElement> = React.createRef();
-    refUI: React.RefObject<BaseUI> = React.createRef();
+    refDiv = React.createRef<HTMLDivElement>();
+    refUI = React.createRef<BaseUI>();
     editing = false;
     handlingToggleEditOnClick = false;
     dragging = false;
@@ -165,17 +165,17 @@ export default class BoxUI extends React.Component {
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.props.patcher._state.locked) return;
         const classList = e.currentTarget.classList;
-        const typeMap: { [key: string]: EResizeHandlerType } = {
-            "resize-handler-n": EResizeHandlerType.n,
-            "resize-handler-ne": EResizeHandlerType.ne,
-            "resize-handler-e": EResizeHandlerType.e,
-            "resize-handler-se": EResizeHandlerType.se,
-            "resize-handler-s": EResizeHandlerType.s,
-            "resize-handler-sw": EResizeHandlerType.sw,
-            "resize-handler-w": EResizeHandlerType.w,
-            "resize-handler-nw": EResizeHandlerType.nw
+        const typeMap: { [key: string]: TResizeHandlerType } = {
+            "resize-handler-n": "n",
+            "resize-handler-ne": "ne",
+            "resize-handler-e": "e",
+            "resize-handler-se": "se",
+            "resize-handler-s": "s",
+            "resize-handler-sw": "sw",
+            "resize-handler-w": "w",
+            "resize-handler-nw": "nw"
         };
-        let type: EResizeHandlerType;
+        let type: TResizeHandlerType;
         for (const key in typeMap) {
             if (classList.contains(key)) {
                 type = typeMap[key];

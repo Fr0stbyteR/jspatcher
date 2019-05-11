@@ -6,8 +6,8 @@ import { TPatcher, TMaxClipboard, TPatcherMode } from "../core/types";
 
 class FileMenu extends React.Component {
     props: { patcher: Patcher };
-    refDownload: React.RefObject<HTMLAnchorElement> = React.createRef();
-    refOpen: React.RefObject<HTMLInputElement> = React.createRef();
+    refDownload = React.createRef<HTMLAnchorElement>();
+    refOpen = React.createRef<HTMLInputElement>();
     state = { pAsString: "", pName: "patcher.json" };
     handleClickNew = () => {
         this.props.patcher.load("js", {});
@@ -138,8 +138,8 @@ class EditMenu extends React.Component {
 }
 export default class TopMenu extends React.Component {
     props: { patcher: Patcher };
-    refFileMenu: React.RefObject<FileMenu> = React.createRef();
-    refEditMenu: React.RefObject<EditMenu> = React.createRef();
+    refFileMenu = React.createRef<FileMenu>();
+    refEditMenu = React.createRef<EditMenu>();
     handleKeyDown = (e: KeyboardEvent) => {
         const fileMenu = this.refFileMenu.current;
         const editMenu = this.refEditMenu.current;

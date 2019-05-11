@@ -37,15 +37,11 @@ type TPatcherState = {
     selected: string[];
 };
 
-declare enum EErrorLevel {
-    ERROR = 1,
-    NONE = 0,
-    WARN = -1,
-    INFO = -2
-}
+type TErrorLevel = "error" | "warn" | "info" | "none"
 
 type TPatcherLog = {
-    errorLevel: EErrorLevel;
+    errorLevel: TErrorLevel;
+    emitter?: any;
     title: string;
     message: string;
 };
@@ -114,16 +110,7 @@ type TBox = {
     _editing?: boolean;
 };
 
-declare enum EResizeHandlerType {
-    n = "n",
-    ne = "ne",
-    e = "e",
-    se = "se",
-    w = "w",
-    sw = "sw",
-    s = "s",
-    nw = "nw"
-}
+type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
 
 interface PatcherEventMap {
     "loaded": Patcher;
@@ -147,7 +134,7 @@ interface PatcherEventMap {
     "deselected": string;
     "tempLine": { findSrc: boolean; from: [string, number] };
     "moved": { selected: string[]; delta: { x: number; y: number } };
-    "resized": { selected: string[]; delta: { x: number; y: number }; type: EResizeHandlerType };
+    "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType };
     "generateCode": string;
     "graphChanged": any;
 }

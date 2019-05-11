@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer } from "semantic-ui-react";
+import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table } from "semantic-ui-react";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import Patcher from "../core/Patcher";
 import "./RightMenu.scss";
@@ -12,7 +12,33 @@ enum TPanels {
 }
 class Console extends React.Component {
     props: { patcher: Patcher };
-    state: { cached: TPatcherLog[] };
+    state: { cached: TPatcherLog[] } = { cached: [] };
+    handleNewLog = (log: TPatcherLog) => {
+        const cached = this.state.cached;
+        cached.push(log);
+        this.setState({ cached });
+    }
+    componentDidMount() {
+        this.props.patcher.on("newLog", this.handleNewLog);
+    }
+    componentWillUnmount() {
+        this.props.patcher.off("newLog", this.handleNewLog);
+    }
+    render() {
+        const logs = this.state.cached.map((log, i) => (
+            <Table.Row key={i} negative={log.errorLevel === "error"} warning={log.errorLevel === "warn"} positive={log.errorLevel === "info"}>
+                <Table.Cell width={4}>{log.title}</Table.Cell>
+                <Table.Cell width={12}>{log.message}</Table.Cell>
+            </Table.Row>
+        ));
+        return (
+            <Table inverted striped selectable unstackable size="small" compact="very">
+                <Table.Body>
+                    {logs}
+                </Table.Body>
+            </Table>
+        );
+    }
 }
 class CodeEditor extends React.Component {
     props: { patcher: Patcher };
@@ -30,7 +56,7 @@ class CodeEditor extends React.Component {
         this.codeEditorJSX = <Dimmer active><Loader content="Loading" /></Dimmer>;
         import("react-monaco-editor").then((reactMonacoEditor) => {
             const MonacoEditor = reactMonacoEditor.default;
-            this.codeEditorJSX = <div className="monaco-editor-container"><MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} /></div>;
+            this.codeEditorJSX = <MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />;
             this.forceUpdate();
         });
     }
@@ -54,9 +80,18 @@ class CodeEditor extends React.Component {
 export default class RightMenu extends React.Component {
     props: { patcher: Patcher };
     state = { active: TPanels.None };
+    refCode = React.createRef<CodeEditor>();
+    refConsole = React.createRef<Console>();
     handleItemClick = (e: React.MouseEvent<HTMLAnchorElement>, data: MenuItemProps) => {
-        if (this.state.active === data.name) this.setState({ active: TPanels.None });
-        else this.setState({ active: data.name });
+        if (this.state.active === data.name) {
+            this.setState({ active: TPanels.None });
+        } else {
+            this.setState({ active: data.name }, () => {
+                if (data.name === TPanels.Code && this.refCode.current && this.refCode.current.codeEditor) {
+                    this.refCode.current.codeEditor.layout();
+                }
+            });
+        }
     };
     componentWillMount() {
     }
@@ -65,13 +100,6 @@ export default class RightMenu extends React.Component {
     componentWillUnmount() {
     }
     render() {
-        const pane = this.state.active === TPanels.None
-            ? undefined
-            : this.state.active === TPanels.Console
-                ? undefined
-                : this.state.active === TPanels.Code
-                    ? <CodeEditor { ...this.props } />
-                    : undefined;
         return (
             <>
                 <Menu icon vertical inverted size="mini" fixed={"left"} id="right-menu">
@@ -82,12 +110,15 @@ export default class RightMenu extends React.Component {
                         <Icon name="code" color={this.state.active === TPanels.Code ? "teal" : "grey"} inverted />
                     </Menu.Item>
                 </Menu>
-                {this.state.active === TPanels.None ? undefined
-                    : <div id="right-pane">
-                        <Header as="h5" inverted color="grey" content={this.state.active} />
-                        {pane}
+                <div id="right-pane" hidden={this.state.active === TPanels.None}>
+                    <Header as="h5" inverted color="grey" content={this.state.active} />
+                    <div hidden={this.state.active !== TPanels.Code}>
+                        <CodeEditor { ...this.props } ref={this.refCode} />
                     </div>
-                }
+                    <div hidden={this.state.active !== TPanels.Console}>
+                        <Console { ...this.props } ref={this.refConsole} />
+                    </div>
+                </div>
             </>
         );
     }
