@@ -44,9 +44,9 @@ export type TMeta = {
     args: TArgsMeta;
     props: TPropsMeta;
 };
-export class BaseUI extends React.Component {
+export class BaseUI<T extends BaseObject> extends React.Component {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
-    props: { object: BaseObject; children?: React.ReactNode };
+    props: { object: T; children?: React.ReactNode };
     state: { editing: boolean };
     editableOnUnlock = false;
     toggleEdit = (bool?: boolean) => false;
@@ -62,7 +62,7 @@ export class BaseUI extends React.Component {
         );
     }
 }
-export class DefaultUI extends BaseUI {
+export class DefaultUI<T extends BaseObject> extends BaseUI<T> {
     editableOnUnlock = true;
     state = { editing: false, text: "", loading: false, dropdown$: -1 };
     refSpan = React.createRef<HTMLSpanElement>();
@@ -361,8 +361,8 @@ class EmptyObject extends BaseObject {
     get mem() {
         return this._mem;
     }
-    get ui() {
-        return class EmptyObjectUI extends DefaultUI {
+    get ui(): typeof BaseUI {
+        return class EmptyObjectUI extends DefaultUI<EmptyObject> {
             componentDidMount() {
                 super.componentDidMount();
                 if ((this.props.object as EmptyObject).mem.editing) {

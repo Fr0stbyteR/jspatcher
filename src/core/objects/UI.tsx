@@ -22,8 +22,8 @@ export class Comment extends BaseObject {
         if (!this.box.data.hasOwnProperty("text")) this.box.data.text = args.join(" ");
         return this;
     }
-    get ui() {
-        return class CommentUI extends BaseUI {
+    get ui(): typeof BaseUI {
+        return class CommentUI extends BaseUI<Comment> {
             editableOnUnlock = true;
             state = { editing: false };
             refSpan = React.createRef<HTMLSpanElement>();

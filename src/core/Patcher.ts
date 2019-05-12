@@ -6,6 +6,7 @@ import AutoImporter from "./AutoImporter";
 import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel } from "./types";
 
 import Base from "./objects/Base";
+import Std from "./objects/Std";
 import Max from "./objects/Max";
 import GenOps from "./objects/Gen";
 import FaustOps, { toFaustDspCode } from "./objects/Faust";
@@ -13,7 +14,7 @@ import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
 
-const Packages: TPackage = { Base, UI, Op, Window };
+const Packages: TPackage = { Base, Std, UI, Op, Window };
 
 export default class Patcher extends EventEmitter {
     on<K extends keyof PatcherEventMap>(type: K, listener: (e: PatcherEventMap[K]) => void) {

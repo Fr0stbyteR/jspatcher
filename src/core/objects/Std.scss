@@ -1,0 +1,58 @@
+.patcher div.box-ui > div.box-ui-button {
+    &.box-ui-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: auto;
+        padding: 0px;
+        margin: 0px;
+    }
+    & > .box-ui-text-container {
+        display: flex;
+        flex: 0 0 auto;
+        padding: 0px 5px;
+        width: 100%;
+        font-family: Lato, Tahoma, sans-serif;
+        font-size: 12px;
+        margin: 0px;
+        overflow-wrap: break-word;
+        cursor: default;
+        user-select: none;
+        &:first-child {
+            border-top-width: 4px;
+        }
+        &:last-child {
+            border-bottom-width: 4px;
+        }
+        & > span {
+            position: relative;
+            word-break: break-all;
+            width: 100%;
+            line-height: 14px;
+            font-weight: bolder;
+            color: black;
+            &.editing {
+                pointer-events: auto;
+                cursor: text;
+                user-select: auto;
+            }
+            &:empty::before {
+                content: "\200b";
+            }
+            &::selection {
+                background-color: #77b2ff;
+            }
+        }
+        i.icon {
+            line-height: 14px;
+        }
+    }
+}
+.patcher.unlocked div.box.selected > div.box-ui > div.box-ui-button {
+    &:hover, &:active {
+        background-color: #e0e1e2;
+    }
+    & > .box-ui-text-container {
+        pointer-events: auto;
+    }
+}

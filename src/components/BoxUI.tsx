@@ -2,7 +2,7 @@ import * as React from "react";
 import { Popup } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
-import { BaseUI } from "../core/objects/Base";
+import { BaseUI, BaseObject } from "../core/objects/Base";
 import "./BoxUI.scss";
 import { TResizeHandlerType } from "../core/types";
 
@@ -12,7 +12,7 @@ export default class BoxUI extends React.Component {
     innerUI: JSX.Element;
     sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     refDiv = React.createRef<HTMLDivElement>();
-    refUI = React.createRef<BaseUI>();
+    refUI = React.createRef<BaseUI<BaseObject>>();
     editing = false;
     handlingToggleEditOnClick = false;
     dragging = false;

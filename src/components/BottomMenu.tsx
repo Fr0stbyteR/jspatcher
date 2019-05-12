@@ -24,7 +24,7 @@ export default class BottomMenu extends React.Component {
     handleClickGrid = () => this.props.patcher.setShowGrid(!this.state.showGrid);
     render() {
         return (
-            <Menu inverted size="mini" fixed={"bottom"} id="bottom-menu">
+            <Menu inverted icon size="mini" fixed={"bottom"} id="bottom-menu">
                 <Menu.Item name="lock" onClick={this.handleClickLock}>
                     <Icon name={this.state.locked ? "lock" : "unlock"} color="grey" size="small" inverted />
                 </Menu.Item>
