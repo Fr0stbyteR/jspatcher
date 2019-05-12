@@ -1,30 +1,62 @@
-#right-menu {
-    position: relative;
-    width: auto;
-}
-#right-pane {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    width: 350px;
-    background-color: #1b1c1d;
-    & > h5 {
-        margin: 8px;
+#right {
+    & > div.resize-handler-w {
+        position: absolute;
         display: block;
-        position: relative;
-        flex: 0 0 auto;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        cursor: w-resize;
+        z-index: 1;
     }
-    & > div {
-        display: flex;
+    & > #right-menu {
         position: relative;
+        width: auto;
+        z-index: 0;
+    }
+    & > #right-pane {
+        position: relative;
+        display: flex;
+        flex-direction: column;
         flex: 1 1 auto;
-        overflow: auto;
-        & > table {
-            word-break: break-all;
+        width: 350px;
+        max-width: 75vw;
+        min-width: 200px;
+        background-color: #1b1c1d;
+        & > h5 {
+            margin: 8px;
+            display: block;
+            position: relative;
+            flex: 0 0 auto;
+        }
+        & > div {
+            display: flex;
+            position: relative;
+            flex: 1 1 auto;
+            overflow: auto;
+            flex-direction: column;
+            & > table {
+                word-break: break-all;
+                flex: 1 1 auto;
+                overflow: auto;
+                display: block;
+                margin: 0px;
+                & tbody {
+                    display: table;
+                    width: 100%;
+                }
+                & td:empty::before {
+                    content: "\200b";
+                }
+                & tr.tr-placeholder {
+                    overflow: hidden;
+                }
+            }
+            & > .menu {
+                margin: 0px;
+            }
         }
     }
     &[hidden], & [hidden] {
-        display: none;
+        display: none !important;
     }
 }
