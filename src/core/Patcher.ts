@@ -555,6 +555,7 @@ export default class Patcher extends EventEmitter {
         const pasted = { boxes: [] as TBox[], lines: [] as TLine[] };
         if (!clipboard || !clipboard.boxes) return pasted;
         this.deselectAll();
+        this.newTimestamp();
         if (Array.isArray(clipboard.boxes)) { // Max Patcher
             const maxBoxes = clipboard.boxes;
             for (let i = 0; i < maxBoxes.length; i++) {
