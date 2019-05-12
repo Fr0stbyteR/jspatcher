@@ -28,6 +28,9 @@ class Console extends React.Component {
     handleClear = () => {
         this.setState({ cached: [] });
     }
+    componentWillMount() {
+        this.setState({ cached: this.props.patcher._state.log.slice() });
+    }
     componentDidMount() {
         this.props.patcher.on("newLog", this.handleNewLog);
     }
