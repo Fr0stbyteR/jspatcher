@@ -14,6 +14,7 @@ class Console extends React.Component {
     props: { patcher: Patcher };
     state: { cached: TPatcherLog[] } = { cached: [] };
     refTable = React.createRef<HTMLTableElement>();
+    logDuringLoading: TPatcherLog[] = [];
     handleNewLog = (log: TPatcherLog) => {
         let bottom = true;
         let table: HTMLTableElement;

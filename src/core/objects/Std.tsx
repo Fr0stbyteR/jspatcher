@@ -171,4 +171,45 @@ class Message extends StdObject {
     }
 }
 
-export default { Message };
+class Print extends StdObject {
+    static get _meta(): TMeta {
+        return {
+            ...super._meta,
+            description: "Print to console",
+            inlets: [{
+                isHot: true,
+                type: "anything",
+                description: "Anything to stringify"
+            }],
+            args: [{
+                type: "string",
+                optional: true,
+                default: "Print",
+                description: "Title"
+            }]
+        };
+    }
+    protected _mem: { title: string } = { title: "Print" };
+    constructor(box: Box, patcher: Patcher) {
+        super(box, patcher);
+        this.inlets = 1;
+        this.outlets = 0;
+        this.update(box.parsed.args, box.parsed.props);
+    }
+    update(args: any[], props: { [key: string]: any }) {
+        if (args[0]) this._mem.title = args[0];
+        return this;
+    }
+    fn(data: any, inlet: number) {
+        if (inlet === 0) {
+            if (data instanceof Bang) {
+                this.patcher.newLog("none", this._mem.title, "Bang");
+            } else {
+                this.patcher.newLog("none", this._mem.title, typeof data === "string" ? data : Util.inspect(data));
+            }
+            return this;
+        }
+        return this;
+    }
+}
+export default { Message, Print };
