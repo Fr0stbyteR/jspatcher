@@ -170,6 +170,7 @@ export default class Box extends EventEmitter {
         lineAsDest.forEach(el => el.forEach(el => this._patcher.deleteLine(el)));
         lineAsSrc.forEach(el => el.forEach(el => this._patcher.deleteLine(el)));
         delete this._patcher.boxes[this.id];
+        this._patcher.emit("graphChanged");
         return this;
     }
     static parseObjText(strIn: string) {

@@ -70,6 +70,15 @@ export class FaustOp extends BaseObject {
         });
         return exprs;
     }
+    /**
+     * A faust dsp expression which need to include once in dsp file
+     *
+     * @returns {string[]}
+     * @memberof FaustOp
+     */
+    toOnceExpr(): string[] {
+        return [];
+    }
 }
 
 class In extends FaustOp {
@@ -333,7 +342,7 @@ class Delay extends FaustOp {
         return {
             ...super._meta,
             name: this.name,
-            description: "1-sample delay",
+            description: "n-sample delay",
             inlets: [{
                 isHot: true,
                 type: "signal",
@@ -574,11 +583,11 @@ process = Main ~ Rec : ${[...recIns.map(() => "!"), ...mainOuts.map(() => "_")].
     }
     if (mainIns.length) {
         return `process(${mainIns.join(", ")}) = ${mainOuts.join(", ")} with {
-${exprs.join("\n    ")}
+    ${exprs.join("\n    ")}
 };`;
     }
     return `process = ${mainOuts.join(", ")} with {
-${exprs.join("\n    ")}
+    ${exprs.join("\n    ")}
 };`;
 };
 export default faustOps;
