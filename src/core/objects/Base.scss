@@ -1,36 +1,5 @@
 .patcher div.box-ui > div.package-base {
-    &.package-base-message > .box-ui-text-container {
-        word-break: break-all;
-        text-align: left;
-        padding: 4px 5px !important;
-        width: 100%;
-        line-height: 14px !important;
-        font-weight: bold !important;
-        margin-right: 0px;
-        user-select: none;
-        &:empty::before {
-            content: "\200b";
-        }
-    }
-    &.package-base-button {
-        word-break: break-all;
-        padding: 4px 5px !important;
-        width: 100%;
-        line-height: 14px !important;
-        font-weight: bold !important;
-        margin-right: 0px !important;
-    }
     &.package-base-invalidobject > .box-ui-text-container {
         background-color: rgb(128, 64, 64);
-    }
-}
-.patcher.unlocked div.box-ui > div.package-base {
-    &.package-base-message > .box-ui-text-container {
-        cursor: default;
-        &.editing {
-            pointer-events: auto;
-            cursor: text;
-            user-select: auto;
-        }
     }
 }

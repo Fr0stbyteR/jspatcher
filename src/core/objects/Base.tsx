@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { EventEmitter } from "events";
 import * as React from "react";
-import { Icon, SemanticICONS, Table } from "semantic-ui-react";
+import { Icon, SemanticICONS } from "semantic-ui-react";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
-import { TErrorLevel } from "../types";
 
 export type TInletsMeta = {
     isHot: boolean;

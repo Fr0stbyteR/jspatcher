@@ -10,10 +10,11 @@
     & > .box-ui-text-container {
         display: flex;
         flex: 0 0 auto;
-        padding: 0px 5px;
+        padding: 4px 5px;
         width: 100%;
         font-family: Lato, Tahoma, sans-serif;
         font-size: 12px;
+        text-align: left;
         margin: 0px;
         overflow-wrap: break-word;
         cursor: default;
@@ -29,7 +30,7 @@
             word-break: break-all;
             width: 100%;
             line-height: 14px;
-            font-weight: bolder;
+            font-weight: normal;
             color: black;
             &.editing {
                 pointer-events: auto;
@@ -40,7 +41,8 @@
                 content: "\200b";
             }
             &::selection {
-                background-color: #77b2ff;
+                background-color: #004eff;
+                color: white;
             }
         }
         i.icon {

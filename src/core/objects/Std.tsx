@@ -6,6 +6,17 @@ import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Std.scss";
 
+class StdObject extends BaseObject {
+    static get _meta(): TMeta {
+        return {
+            ...super._meta,
+            package: "Std",
+            author: "Fr0stbyteR",
+            version: "1.0.0",
+            description: "Standard Object"
+        };
+    }
+}
 export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
     editableOnUnlock = true;
     state = { editing: false, loading: false, text: "" };
@@ -50,6 +61,9 @@ export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     }
+    componentWillMount() {
+        this.setState({ text: this.props.object.data.text });
+    }
     componentDidMount() {
         this.props.object.on("uiUpdate", this.handleUpdate);
         if (this.props.object.mem.editing) this.toggleEdit(true);
@@ -77,7 +91,7 @@ export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
         );
     }
 }
-class Message extends BaseObject {
+class Message extends StdObject {
     static get _meta(): TMeta {
         return {
             ...super._meta,
