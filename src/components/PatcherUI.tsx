@@ -273,14 +273,16 @@ class Boxes extends React.Component {
     }
     handleKeyDown = (e: KeyboardEvent) => {
         if (this.props.patcher._state.locked) return;
-        if (e.key === "n" && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+        if ((e.key === "n" || e.key === "m") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
             e.stopPropagation();
             e.preventDefault();
             const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
             const patcherRect = patcherDiv.getBoundingClientRect();
             const x = this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft;
             const y = this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop;
-            this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 90, 20], _editing: true });
+            let text = "";
+            if (e.key === "m") text = "Message";
+            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 90, 20], _editing: true });
         }
     }
     handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };

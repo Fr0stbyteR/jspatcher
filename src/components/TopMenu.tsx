@@ -11,15 +11,19 @@ class FileMenu extends React.Component {
     state = { pAsString: "", pName: "patcher.json" };
     handleClickNew = () => {
         this.props.patcher.load("js", {});
+        this.setState({ pName: "patcher.json" });
     };
     handleClickNewMax = () => {
         this.props.patcher.load("max", {});
+        this.setState({ pName: "patcher.maxpat" });
     };
     handleClickNewGen = () => {
         this.props.patcher.load("gen", {});
+        this.setState({ pName: "patcher.gendsp" });
     };
     handleClickNewFaust = () => {
         this.props.patcher.load("faust", {});
+        this.setState({ pName: "patcher.dsppat" });
     };
     handleClickOpen = () => {
         this.refOpen.current.click();
@@ -27,8 +31,7 @@ class FileMenu extends React.Component {
     handleClickSaveAs = () => {
         const p = this.props.patcher.toString();
         this.setState({
-            pAsString: "data:application/json;charset=utf-8," + encodeURIComponent(p),
-            pName: "patcher.json"
+            pAsString: "data:application/json;charset=utf-8," + encodeURIComponent(p)
         }, () => this.refDownload.current.click());
     };
     onInput = () => {
@@ -46,7 +49,10 @@ class FileMenu extends React.Component {
                 } catch (e) {
                     this.props.patcher.error(e);
                 }
-                if (parsed) this.props.patcher.load(extMap[ext], parsed);
+                if (parsed) {
+                    this.props.patcher.load(extMap[ext], parsed);
+                    this.setState({ pName: file.name });
+                }
             };
             reader.onerror = (e) => {
                 this.props.patcher.error(reader.error.message);

@@ -75,6 +75,7 @@ export class DefaultUI<T extends BaseObject> extends BaseUI<T> {
         const toggle = !this.state.editing;
         const span = this.refSpan.current;
         if (toggle) {
+            this.props.object.patcher.selectOnly(this.props.object.box.id);
             this.setState({ editing: true, text: span.innerText });
             span.contentEditable = "true";
             const range = document.createRange();
@@ -304,6 +305,9 @@ export class BaseObject extends EventEmitter {
     get mem() {
         return this._mem;
     }
+    get data() {
+        return this._box.data;
+    }
     get box() {
         return this._box;
     }
@@ -365,10 +369,7 @@ class EmptyObject extends BaseObject {
         return class EmptyObjectUI extends DefaultUI<EmptyObject> {
             componentDidMount() {
                 super.componentDidMount();
-                if ((this.props.object as EmptyObject).mem.editing) {
-                    this.props.object.patcher.selectOnly(this.props.object.box.id);
-                    this.toggleEdit(true);
-                }
+                if (this.props.object.mem.editing) this.toggleEdit(true);
             }
         };
     }

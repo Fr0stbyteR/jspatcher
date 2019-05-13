@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Util from "util";
 import { Icon } from "semantic-ui-react";
 import { BaseUI, BaseObject, TMeta, Bang } from "./Base";
 import Patcher from "../Patcher";
@@ -7,7 +8,7 @@ import "./Std.scss";
 
 export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
     editableOnUnlock = true;
-    state = { editing: false, loading: false };
+    state = { editing: false, loading: false, text: "" };
     refSpan = React.createRef<HTMLSpanElement>();
     handleChanged = (text: string) => {};
     toggleEdit = (bool?: boolean) => {
@@ -17,6 +18,7 @@ export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
         const toggle = !this.state.editing;
         const span = this.refSpan.current;
         if (toggle) {
+            this.props.object.patcher.selectOnly(this.props.object.box.id);
             this.setState({ editing: true, text: span.innerText });
             span.contentEditable = "true";
             const range = document.createRange();
@@ -50,7 +52,7 @@ export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
     }
     componentDidMount() {
         this.props.object.on("uiUpdate", this.handleUpdate);
-        this.setState({ text: this.props.object.box.text });
+        if (this.props.object.mem.editing) this.toggleEdit(true);
     }
     componentWillUnmount() {
         this.props.object.off("uiUpdate", this.handleUpdate);
@@ -68,7 +70,7 @@ export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
                 <div className="box-ui-text-container">
                     {object._meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object._meta.icon} /> : null}
                     <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClickSpan} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
-                        {object.box.text}
+                        {this.state.text}
                     </span>
                 </div>
             </div>
@@ -83,7 +85,11 @@ class Message extends BaseObject {
             inlets: [{
                 isHot: true,
                 type: "anything",
-                description: "First element"
+                description: "Trigger output the message"
+            }, {
+                isHot: false,
+                type: "anything",
+                description: "Set the message"
             }],
             outlets: [{
                 type: "anything",
@@ -91,27 +97,61 @@ class Message extends BaseObject {
             }]
         };
     }
-    protected _mem: { buffer: any } = { buffer: new Bang() };
+    protected _mem: { buffer: any; editing: boolean } = { buffer: new Bang(), editing: false };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this.inlets = 1;
+        this.inlets = 2;
         this.outlets = 1;
-        this.update(box.parsed.args, box.parsed.props);
+        this._mem.editing = box._editing;
+        const args = box.parsed.args;
+        if (typeof this.data.text === "string") this._mem.buffer = this.parse(this.data.text);
+        else if (args[0]) {
+            this.data.text = this.stringify(args[0]);
+            this._mem.buffer = args[0];
+        } else {
+            this.data.text = "";
+            this._mem.buffer = new Bang();
+        }
+        this.uiUpdate({ text: this.data.text });
     }
-    update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
-        this._mem.buffer = args[0];
+    update(args: any[]) {
+        this.data.text = this.stringify(args[0]);
+        if (args[0]) this._mem.buffer = this.parse(args[0]);
+        else this._mem.buffer = new Bang();
+        this.uiUpdate({ text: this.data.text });
         return this;
     }
     fn(data: any, inlet: number) {
-        if (inlet === 0 && data instanceof Bang) {
+        if (inlet === 0) {
             this.outlet(0, this._mem.buffer);
+            return this;
+        }
+        if (inlet === 1) {
+            this.update([Util.inspect(data)]);
             return this;
         }
         return this;
     }
+    parse(o: any) {
+        if (typeof o === "string") {
+            if (o.length > 0) {
+                try {
+                    return JSON.parse(o);
+                } catch (e) {
+                    return o;
+                }
+            }
+            return new Bang();
+        }
+        return o;
+    }
+    stringify(o: any) {
+        if (typeof o === "string") return o;
+        return Util.inspect(o);
+    }
     get ui(): typeof BaseUI {
         return class MessageUI extends ButtonUI<Message> {
-            handleChanged = (text: string) => this.props.object.mem.buffer = text;
+            handleChanged = (text: string) => this.props.object.update([text]);
             handleClick = (e: React.MouseEvent) => this.props.object.outlet(0, this.props.object.mem.buffer);
         };
     }

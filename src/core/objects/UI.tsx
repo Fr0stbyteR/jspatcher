@@ -19,7 +19,7 @@ export class Comment extends BaseObject {
         this.update(box.parsed.args);
     }
     update(args: any[]) {
-        if (!this.box.data.hasOwnProperty("text")) this.box.data.text = args.join(" ");
+        if (!this.data.hasOwnProperty("text")) this.data.text = args.join(" ");
         return this;
     }
     get ui(): typeof BaseUI {
@@ -45,7 +45,7 @@ export class Comment extends BaseObject {
                     this.setState({ editing: false });
                     span.contentEditable = "false";
                     window.getSelection().removeAllRanges();
-                    this.props.object.box.data.text = span.textContent;
+                    this.props.object.data.text = span.textContent;
                 }
                 return toggle;
             }
@@ -61,7 +61,7 @@ export class Comment extends BaseObject {
                 return (
                     <BaseUI {...this.props}>
                         <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
-                            {object.box.data.text}
+                            {object.data.text}
                         </span>
                     </BaseUI>
                 );
