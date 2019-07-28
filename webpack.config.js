@@ -49,10 +49,11 @@ const config = {
 };
 module.exports = (env, argv) => {
   if (argv.mode === 'development') {
-    config.devtool = 'inline-source-map';
+    config.devtool = 'source-map';
     config.output.filename = 'index.js';
   }
   if (argv.mode === 'production') {
+    config.devtool = 'source-map';
     config.output.filename = 'index.min.js';
   }
   return config;

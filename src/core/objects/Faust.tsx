@@ -427,6 +427,14 @@ class Const extends FaustOp {
         return exprs;
     }
 }
+class Iterator extends FaustOp {
+    constructor(box: Box, patcher: Patcher) {
+        super(box, patcher);
+        this._mem.inlets = 1;
+        this._mem.outlets = 1;
+        this.update(box.parsed.args, box.parsed.props);
+    }
+}
 
 const faustOps: TPackage = {
     in: In,
