@@ -20,7 +20,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 		var moduleId, chunkId, i = 0, resolves = [];
 /******/ 		for(;i < chunkIds.length; i++) {
 /******/ 			chunkId = chunkIds[i];
-/******/ 			if(installedChunks[chunkId]) {
+/******/ 			if(Object.prototype.hasOwnProperty.call(installedChunks, chunkId) && installedChunks[chunkId]) {
 /******/ 				resolves.push(installedChunks[chunkId][0]);
 /******/ 			}
 /******/ 			installedChunks[chunkId] = 0;
@@ -78340,7 +78340,8 @@ class EmptyObject extends BaseObject {
 
     this.outlets = 1;
     this.inlets = 1;
-    this._mem.editing = box._editing;
+    this._mem.editing = !!box._editing;
+    delete box._editing;
   }
 
   fn(data, inlet) {

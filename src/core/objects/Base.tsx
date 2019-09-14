@@ -355,7 +355,8 @@ class EmptyObject extends BaseObject {
         super(box, patcher);
         this.outlets = 1;
         this.inlets = 1;
-        this._mem.editing = box._editing;
+        this._mem.editing = !!box._editing;
+        delete box._editing;
     }
     fn(data: any, inlet: number) {
         this.outlet(0, data);

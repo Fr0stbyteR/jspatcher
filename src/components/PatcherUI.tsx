@@ -17,7 +17,7 @@ export default class PatcherUI extends React.Component {
     refLines = React.createRef<Lines>();
     size = { width: 0, height: 0 };
     handleLoaded = () => {
-        this.setState({ bgcolor: this.props.patcher.props.bgcolor, editing_bgcolor: this.props.patcher.props.editing_bgcolor });
+        this.setState({ bgcolor: this.props.patcher.props.bgcolor, editing_bgcolor: this.props.patcher.props.editing_bgcolor }); // eslint-disable-line @typescript-eslint/camelcase
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
         const lines = this.refLines.current;
@@ -49,7 +49,7 @@ export default class PatcherUI extends React.Component {
             presentation: this.props.patcher._state.presentation,
             showGrid: this.props.patcher._state.showGrid,
             bgcolor: this.props.patcher.props.bgcolor,
-            editing_bgcolor: this.props.patcher.props.editing_bgcolor
+            editing_bgcolor: this.props.patcher.props.editing_bgcolor // eslint-disable-line @typescript-eslint/camelcase
         });
     }
     componentDidMount() {
