@@ -51,7 +51,11 @@ export class Comment extends BaseObject {
             }
             handleMouseDown = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
             handleClick = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
-            handleKeyDown = (e: React.KeyboardEvent) => (this.state.editing ? e.stopPropagation() : null);
+            handleKeyDown = (e: React.KeyboardEvent) => { // propagate for parent for focus on boxUI
+                if (!this.state.editing) return;
+                e.stopPropagation();
+                e.nativeEvent.stopImmediatePropagation();
+            }
             handlePaste = (e: React.ClipboardEvent) => {
                 e.preventDefault();
                 document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));

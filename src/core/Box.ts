@@ -67,23 +67,23 @@ export default class Box extends EventEmitter {
     get parsed() {
         return this._parsed;
     }
-    getInletPosition(port: number) {
+    getInletPos(port: number) {
         return { top: this.rect[1], left: ((this.rect[0] + 10) + (this.rect[2] - 20) * port / (this.inlets > 1 ? this.inlets - 1 : 1)) };
     }
-    getOutletPosition(port: number) {
+    getOutletPos(port: number) {
         return { top: this.rect[1] + this.rect[3], left: ((this.rect[0] + 10) + (this.rect[2] - 20) * port / (this.outlets > 1 ? this.outlets - 1 : 1)) };
     }
     get inletsPositions() {
         const positions = [];
         for (let i = 0; i < this.inlets; i++) {
-            positions[i] = this.getInletPosition(i);
+            positions[i] = this.getInletPos(i);
         }
         return positions;
     }
     get outletsPositions() {
         const positions = [];
         for (let i = 0; i < this.outlets; i++) {
-            positions[i] = this.getOutletPosition(i);
+            positions[i] = this.getOutletPos(i);
         }
         return positions;
     }

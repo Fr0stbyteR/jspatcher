@@ -43,10 +43,9 @@ export type TMeta = {
     args: TArgsMeta;
     props: TPropsMeta;
 };
-export class BaseUI<T extends BaseObject> extends React.Component {
+export type BaseUIState = { editing: boolean };
+export class BaseUI<T extends BaseObject, P = {}, S = {}> extends React.Component<{ object: T } & P, BaseUIState & S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
-    props: { object: T; children?: React.ReactNode };
-    state: { editing: boolean };
     editableOnUnlock = false;
     toggleEdit = (bool?: boolean) => false;
     render() {
@@ -61,7 +60,8 @@ export class BaseUI<T extends BaseObject> extends React.Component {
         );
     }
 }
-export class DefaultUI<T extends BaseObject> extends BaseUI<T> {
+type DefaultUIState = { text: string; loading: boolean; dropdown$: number } & BaseUIState;
+export class DefaultUI<T extends BaseObject> extends BaseUI<T, {}, DefaultUIState> {
     editableOnUnlock = true;
     state = { editing: false, text: "", loading: false, dropdown$: -1 };
     refSpan = React.createRef<HTMLSpanElement>();
@@ -168,9 +168,7 @@ export class DefaultUI<T extends BaseObject> extends BaseUI<T> {
     componentWillUnmount() {
         this.props.object.off("uiUpdate", this.handleUpdate);
     }
-    handleUpdate = (state: { [key: string]: any }) => {
-        this.setState(state);
-    }
+    handleUpdate = <K extends keyof DefaultUIState>(state: Pick<DefaultUIState, K> | DefaultUIState | null) => this.setState(state);
     render() {
         const object = this.props.object;
         const packageName = "package-" + object._meta.package.toLowerCase();

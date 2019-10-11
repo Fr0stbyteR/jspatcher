@@ -29,7 +29,7 @@ class Console extends React.Component {
     handleClear = () => {
         this.setState({ cached: [] });
     }
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.setState({ cached: this.props.patcher._state.log.slice() });
     }
     componentDidMount() {
@@ -75,7 +75,7 @@ class CodeEditor extends React.Component {
         if (!this.props.patcher._state.isLoading && this.codeEditor) this.codeEditor.setValue(this.code);
     }
     handleResize = () => (this.codeEditor ? this.codeEditor.layout() : undefined);
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.codeEditorJSX = <Dimmer active><Loader content="Loading" /></Dimmer>;
         import("react-monaco-editor").then((reactMonacoEditor) => {
             const MonacoEditor = reactMonacoEditor.default;
@@ -146,7 +146,7 @@ export default class RightMenu extends React.Component {
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
     }
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
     }
     componentDidMount() {
     }

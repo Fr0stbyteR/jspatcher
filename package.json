@@ -49,7 +49,7 @@
     "react-monaco-editor": "^0.25.1",
     "sass-loader": "^7.3.1",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.85.0",
+    "semantic-ui-react": "^0.88.1",
     "style-loader": "^0.23.1",
     "stylelint": "^9.10.1",
     "stylelint-config-recommended": "^2.2.0",

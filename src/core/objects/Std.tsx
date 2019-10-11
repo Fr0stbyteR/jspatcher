@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Util from "util";
 import { Icon } from "semantic-ui-react";
-import { BaseUI, BaseObject, TMeta, Bang } from "./Base";
+import { BaseUI, BaseObject, TMeta, Bang, BaseUIState } from "./Base";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Std.scss";
@@ -17,9 +17,10 @@ class StdObject extends BaseObject {
         };
     }
 }
-export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
+type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
+export class ButtonUI<T extends BaseObject> extends BaseUI<T, {}, ButtonUIState> {
     editableOnUnlock = true;
-    state = { editing: false, loading: false, text: "" };
+    state = { editing: false, loading: false, text: this.props.object.data.text };
     refSpan = React.createRef<HTMLSpanElement>();
     handleChanged = (text: string) => {};
     toggleEdit = (bool?: boolean) => {
@@ -61,9 +62,6 @@ export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     }
-    componentWillMount() {
-        this.setState({ text: this.props.object.data.text });
-    }
     componentDidMount() {
         this.props.object.on("uiUpdate", this.handleUpdate);
         if (this.props.object.mem.editing) this.toggleEdit(true);
@@ -71,9 +69,7 @@ export class ButtonUI<T extends BaseObject> extends BaseUI<T> {
     componentWillUnmount() {
         this.props.object.off("uiUpdate", this.handleUpdate);
     }
-    handleUpdate = (state: { [key: string]: any }) => {
-        this.setState(state);
-    }
+    handleUpdate = <K extends keyof ButtonUIState>(state: Pick<ButtonUIState, K> | ButtonUIState | null) => this.setState(state);
     render() {
         const object = this.props.object;
         const packageName = "package-" + object._meta.package.toLowerCase();

@@ -6,40 +6,37 @@ import { BaseUI, BaseObject } from "../core/objects/Base";
 import "./BoxUI.scss";
 import { TResizeHandlerType } from "../core/types";
 
-export default class BoxUI extends React.Component {
-    props: { patcher: Patcher; id: string };
-    state: { selected: boolean; rect: [number, number, number, number] };
-    innerUI: JSX.Element;
-    sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
+type P = { patcher: Patcher; id: string };
+type S = { selected: boolean; rect: [number, number, number, number]; innerUI: JSX.Element; sizing: "horizontal" | "vertical" | "both" | "ratio" };
+export default class BoxUI extends React.Component<P, S> {
     refDiv = React.createRef<HTMLDivElement>();
     refUI = React.createRef<BaseUI<BaseObject>>();
     editing = false;
     handlingToggleEditOnClick = false;
     dragging = false;
     dragged = false;
+    state = (() => {
+        const box = this.props.patcher.boxes[this.props.id];
+        return { selected: false, rect: box.rect.slice(), innerUI: <box.ui object={box.object} ref={this.refUI} key="0" />, sizing: "horizontal" };
+    })() as S;
     handleResetPos = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
         if (this.state && box.rect.every((v, i) => v === this.state.rect[i])) return null;
-        this.setState({ rect: box.rect.slice() });
+        this.setState({ rect: box.rect.slice() as [number, number, number, number] });
         return box;
     }
     handleTextChanged = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
-        this.innerUI = null;
-        this.forceUpdate(() => { // Unmount and remount, please.
-            this.innerUI = <box.ui object={box.object} ref={this.refUI} />;
-            this.sizing = box.ui.sizing;
-            this.setState({ rect: box.rect.slice() }, () => this.inspectRectChange());
-        });
+        this.setState({ rect: box.rect.slice() as [number, number, number, number], innerUI: <box.ui object={box.object} ref={this.refUI} />, sizing: box.ui.sizing }, () => this.inspectRectChange());
         return box;
     }
     handleRectChanged = () => {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
         if (box.rect.every((v, i) => v === this.state.rect[i])) return box;
-        this.setState({ rect: box.rect.slice() }, () => this.inspectRectChange());
+        this.setState({ rect: box.rect.slice() as [number, number, number, number] }, () => this.inspectRectChange());
         return box;
     }
     handleBlur = () => {
@@ -244,13 +241,6 @@ export default class BoxUI extends React.Component {
         patcherDiv.addEventListener("scroll", handlePatcherScroll);
         e.stopPropagation();
     };
-    componentWillMount() {
-        const box = this.props.patcher.boxes[this.props.id];
-        if (!box) return null;
-        this.innerUI = <box.ui object={box.object} ref={this.refUI} key="0" />;
-        this.setState({ rect: box.rect.slice() });
-        return box;
-    }
     componentDidMount() {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return;
@@ -276,14 +266,14 @@ export default class BoxUI extends React.Component {
         const divStyle = {
             left: rect[0],
             top: rect[1],
-            width: this.sizing === "vertical" ? undefined : rect[2],
-            height: this.sizing === "horizontal" ? undefined : rect[3]
+            width: this.state.sizing === "vertical" ? undefined : rect[2],
+            height: this.state.sizing === "horizontal" ? undefined : rect[3]
         };
         return (
             <div className={"box box-default" + (this.state.selected ? " selected" : "")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onBlur={this.handleBlur} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
                 <Inlets patcher={this.props.patcher} box={box} />
                 <Outlets patcher={this.props.patcher} box={box} />
-                <div className={"resize-handlers resize-handlers-" + this.sizing}>
+                <div className={"resize-handlers resize-handlers-" + this.state.sizing}>
                     <div className="resize-handler resize-handler-n" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-ne" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown}></div>
@@ -294,18 +284,21 @@ export default class BoxUI extends React.Component {
                     <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
                 </div>
                 <div className="box-ui">
-                    {this.innerUI}
+                    {this.state.innerUI}
                 </div>
             </div>
         );
     }
 }
-class Inlets extends React.Component {
-    props: { patcher: Patcher; box: Box };
-    ports = [] as JSX.Element[];
-    componentWillMount() {
-        this.handleUpdate();
+class Inlets extends React.Component<{ patcher: Patcher; box: Box }, { ports: JSX.Element[] }> {
+    get ports() {
+        const ports: JSX.Element[] = [];
+        for (let i = 0; i < this.props.box.inlets; i++) {
+            ports.push(<Inlet {...this.props} index={i} key={i} />);
+        }
+        return ports;
     }
+    state = { ports: this.ports };
     componentDidMount() {
         this.props.box.on("textChanged", this.handleUpdate);
     }
@@ -314,28 +307,25 @@ class Inlets extends React.Component {
         this.props.box.off("textChanged", this.handleUpdate);
     }
     handleUpdate = () => {
-        this.ports = [];
-        this.forceUpdate(() => {
-            for (let i = 0; i < this.props.box.inlets; i++) {
-                this.ports.push(<Inlet {...this.props} index={i} key={i} />);
-            }
-            this.forceUpdate();
-        });
+        this.setState({ ports: this.ports });
     }
     render() {
         return (
             <div className="box-inlets box-ports">
-                {this.ports}
+                {this.state.ports}
             </div>
         );
     }
 }
-class Outlets extends React.Component {
-    props: { patcher: Patcher; box: Box };
-    ports = [] as JSX.Element[];
-    componentWillMount() {
-        this.handleUpdate();
+class Outlets extends React.Component<{ patcher: Patcher; box: Box }, { ports: JSX.Element[] }> {
+    get ports() {
+        const ports: JSX.Element[] = [];
+        for (let i = 0; i < this.props.box.outlets; i++) {
+            ports.push(<Outlet {...this.props} index={i} key={i} />);
+        }
+        return ports;
     }
+    state = { ports: this.ports };
     componentDidMount() {
         this.props.box.on("textChanged", this.handleUpdate);
     }
@@ -344,13 +334,7 @@ class Outlets extends React.Component {
         this.props.box.off("textChanged", this.handleUpdate);
     }
     handleUpdate = () => {
-        this.ports = [];
-        this.forceUpdate(() => {
-            for (let i = 0; i < this.props.box.outlets; i++) {
-                this.ports.push(<Outlet {...this.props} index={i} key={i} />);
-            }
-            this.forceUpdate();
-        });
+        this.setState({ ports: this.ports });
     }
     render() {
         return (
@@ -360,13 +344,9 @@ class Outlets extends React.Component {
         );
     }
 }
-class Inlet extends React.Component {
-    props: { patcher: Patcher; box: Box; index: number };
-    state: { isConnected: boolean; highlight: boolean };
+class Inlet extends React.Component<{ patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
+    state = { isConnected: this.props.box.inletLines[this.props.index].length > 0, highlight: false };
     dragged = false;
-    componentWillMount() {
-        this.setState({ isConnected: this.props.box.inletLines[this.props.index].length > 0, highlight: false });
-    }
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);
         this.props.box.on("connectedPort", this.handleConnectedChange);
@@ -427,13 +407,9 @@ class Inlet extends React.Component {
         );
     }
 }
-class Outlet extends React.Component {
-    props: { patcher: Patcher; box: Box; index: number };
-    state: { isConnected: boolean; highlight: boolean };
+class Outlet extends React.Component< { patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
+    state = { isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false };
     dragged = false;
-    componentWillMount() {
-        this.setState({ isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false });
-    }
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);
         this.props.box.on("connectedPort", this.handleConnectedChange);

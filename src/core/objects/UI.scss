@@ -11,6 +11,7 @@
         cursor: default;
         span {
             width: 100%;
+            color: whitesmoke;
             &.editing {
                 pointer-events: auto;
                 cursor: text;

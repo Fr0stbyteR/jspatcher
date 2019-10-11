@@ -3,13 +3,10 @@ import { Menu, Icon } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import "./BottomMenu.scss";
 
-export default class BottomMenu extends React.Component {
-    props: { patcher: Patcher };
-    state: { locked: boolean; showGrid: boolean };
-    componentWillMount() {
-        const pState = this.props.patcher._state;
-        this.setState({ locked: pState.locked, showGrid: pState.showGrid });
-    }
+type P = { patcher: Patcher };
+type S = { locked: boolean; showGrid: boolean };
+export default class BottomMenu extends React.Component<P, S> {
+    state = { locked: this.props.patcher._state.locked, showGrid: this.props.patcher._state.showGrid };
     componentDidMount() {
         this.props.patcher.on("locked", this.handleLockedChange);
         this.props.patcher.on("showGrid", this.handleShowGridChange);

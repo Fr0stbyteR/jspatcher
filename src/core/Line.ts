@@ -44,7 +44,7 @@ export default class Line extends EventEmitter {
         return this.src;
     }
     uiUpdateSrc() {
-        this.emit("srcPosChanged", this.srcPosition);
+        this.emit("srcPosChanged", this.srcPos);
         return this;
     }
     setDest(dest: [string, number]) {
@@ -60,7 +60,7 @@ export default class Line extends EventEmitter {
         return this.dest;
     }
     uiUpdateDest() {
-        this.emit("destPosChanged", this.destPosition);
+        this.emit("destPosChanged", this.destPos);
         return this;
     }
     disable(bool?: boolean): Line {
@@ -94,14 +94,14 @@ export default class Line extends EventEmitter {
         return this.disabled ? this : this.destBox.fn(data, this.destInlet);
     }
     get positionHash() {
-        const destPosition = this.destPosition;
-        return destPosition.left * 65536 + destPosition.top;
+        const destPos = this.destPos;
+        return destPos.left * 65536 + destPos.top;
     }
-    get srcPosition() {
-        return this._patcher.boxes[this.src[0]].getOutletPosition(this.src[1]);
+    get srcPos() {
+        return this._patcher.boxes[this.src[0]].getOutletPos(this.src[1]);
     }
-    get destPosition() {
-        return this._patcher.boxes[this.dest[0]].getInletPosition(this.dest[1]);
+    get destPos() {
+        return this._patcher.boxes[this.dest[0]].getInletPos(this.dest[1]);
     }
     get srcID() {
         return this.src[0];

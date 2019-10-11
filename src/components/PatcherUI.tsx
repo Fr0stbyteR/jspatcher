@@ -8,9 +8,16 @@ import BoxUI from "./BoxUI";
 import { LineUI, TempLineUI } from "./LineUI";
 import { TPatcher } from "../core/types";
 
-export default class PatcherUI extends React.Component {
-    props: { patcher: Patcher };
-    state: { locked: boolean; presentation: boolean; showGrid: boolean; bgcolor: [number, number, number, number]; editing_bgcolor: [number, number, number, number] };
+type P = { patcher: Patcher };
+type S = { locked: boolean; presentation: boolean; showGrid: boolean; bgcolor: [number, number, number, number]; editing_bgcolor: [number, number, number, number] };
+export default class PatcherUI extends React.Component<P, S> {
+    state = {
+        locked: this.props.patcher._state.locked,
+        presentation: this.props.patcher._state.presentation,
+        showGrid: this.props.patcher._state.showGrid,
+        bgcolor: this.props.patcher.props.bgcolor,
+        editing_bgcolor: this.props.patcher.props.editing_bgcolor // eslint-disable-line @typescript-eslint/camelcase
+    };
     refDiv = React.createRef<HTMLDivElement>();
     refGrid = React.createRef<Grid>();
     refBoxes = React.createRef<Boxes>();
@@ -42,15 +49,6 @@ export default class PatcherUI extends React.Component {
             this.size.height = div.scrollHeight;
         }
         if (shouldUpdate) [grid, boxes, lines].forEach(el => el.setState({ width: this.size.width + "px", height: this.size.height + "px" }));
-    }
-    componentWillMount() {
-        this.setState({
-            locked: this.props.patcher._state.locked,
-            presentation: this.props.patcher._state.presentation,
-            showGrid: this.props.patcher._state.showGrid,
-            bgcolor: this.props.patcher.props.bgcolor,
-            editing_bgcolor: this.props.patcher.props.editing_bgcolor // eslint-disable-line @typescript-eslint/camelcase
-        });
     }
     componentDidMount() {
         const patcher = this.props.patcher;

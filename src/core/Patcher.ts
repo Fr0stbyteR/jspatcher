@@ -513,7 +513,7 @@ export default class Patcher extends EventEmitter {
         let nearest: [string, number] = [null, null];
         let minDistance = 100;
         if (to) {
-            const currentPos = this.boxes[to[0]][findSrc ? "getOutletPosition" : "getInletPosition"](to[1]);
+            const currentPos = this.boxes[to[0]][findSrc ? "getOutletPos" : "getInletPos"](to[1]);
             const currentDistance = ((currentPos.left - left) ** 2 + (currentPos.top - top) ** 2) ** 0.5;
             if (currentDistance < 100) {
                 nearest = to;
@@ -535,7 +535,7 @@ export default class Patcher extends EventEmitter {
         return nearest;
     }
     highlightNearestPort(findSrc: boolean, dragOffset: { x: number; y: number }, from: [string, number], to?: [string, number]) { // to = the port need to be reconnect
-        const origPos = to ? this.boxes[to[0]][findSrc ? "getOutletPosition" : "getInletPosition"](to[1]) : this.boxes[from[0]][findSrc ? "getInletPosition" : "getOutletPosition"](from[1]);
+        const origPos = to ? this.boxes[to[0]][findSrc ? "getOutletPos" : "getInletPos"](to[1]) : this.boxes[from[0]][findSrc ? "getInletPos" : "getOutletPos"](from[1]);
         const left = origPos.left + dragOffset.x;
         const top = origPos.top + dragOffset.y;
         const nearest = this.findNearestPort(findSrc, left, top, from, to);
