@@ -262,6 +262,7 @@ export default class BoxUI extends React.Component<P, S> {
     }
     render() {
         const box = this.props.patcher.boxes[this.props.id];
+        if (!box) return null;
         const rect = this.state.rect;
         const divStyle = {
             left: rect[0],

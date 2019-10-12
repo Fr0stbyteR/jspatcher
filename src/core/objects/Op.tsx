@@ -2,7 +2,7 @@ import { BaseObject, Bang, TMeta } from "./Base";
 import Patcher from "../Patcher";
 import Box from "../Box";
 
-class JSOp extends BaseObject {
+abstract class JSOp extends BaseObject {
     static get _meta(): TMeta {
         return {
             ...super._meta,

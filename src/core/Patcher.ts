@@ -13,8 +13,9 @@ import FaustOps, { toFaustDspCode } from "./objects/Faust";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
+import JSPMath from "./objects/Math";
 
-const Packages: TPackage = { Base, Std, UI, Op, Window };
+const Packages: TPackage = { Base, Std, UI, Op, Window, Math: JSPMath };
 
 export default class Patcher extends EventEmitter {
     on<K extends keyof PatcherEventMap>(type: K, listener: (e: PatcherEventMap[K]) => void) {
