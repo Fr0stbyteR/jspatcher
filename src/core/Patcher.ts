@@ -17,22 +17,7 @@ import JSPMath from "./objects/Math";
 
 const Packages: TPackage = { Base, Std, UI, Op, Window, Math: JSPMath };
 
-export default class Patcher extends EventEmitter {
-    on<K extends keyof PatcherEventMap>(type: K, listener: (e: PatcherEventMap[K]) => void) {
-        return super.on(type, listener);
-    }
-    once<K extends keyof PatcherEventMap>(type: K, listener: (e: PatcherEventMap[K]) => void) {
-        return super.once(type, listener);
-    }
-    off<K extends keyof PatcherEventMap>(type: K, listener: (e: PatcherEventMap[K]) => void) {
-        return super.off(type, listener);
-    }
-    removeAllListeners<K extends keyof PatcherEventMap>(type: K) {
-        return super.removeAllListeners(type);
-    }
-    emit<K extends keyof PatcherEventMap>(type: K, e?: PatcherEventMap[K]) {
-        return super.emit(type, e);
-    }
+export default class Patcher extends EventEmitter<PatcherEventMap> {
     lines: { [key: string]: Line };
     boxes: { [key: string]: Box };
     props: TPatcherProps;

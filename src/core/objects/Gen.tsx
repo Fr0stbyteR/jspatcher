@@ -46,9 +46,9 @@ const genOperators: { [key: string]: string[] } = {
     ]
 };
 export class GenOp extends BaseObject {
-    static get _meta(): TMeta {
+    static get meta(): TMeta {
         return {
-            ...super._meta,
+            ...super.meta,
             package: "Gen",
             author: "Fr0stbyteR",
             version: "1.0.0",
@@ -60,9 +60,9 @@ const GenOps: { [key: string]: typeof GenOp | typeof Comment } = { comment: Comm
 for (const key in genOperators) {
     genOperators[key].forEach((name) => {
         GenOps[name] = class extends GenOp {
-            static get _meta() {
+            static get meta() {
                 return {
-                    ...super._meta,
+                    ...super.meta,
                     name,
                     description: "Gen Operator " + name
                 };

@@ -3,28 +3,13 @@ import Patcher from "./Patcher";
 import { BaseObject } from "./objects/Base";
 import { BoxEventMap, TBox } from "./types";
 
-export default class Box extends EventEmitter {
-    on<K extends keyof BoxEventMap>(type: K, listener: (e: BoxEventMap[K]) => void) {
-        return super.on(type, listener);
-    }
-    once<K extends keyof BoxEventMap>(type: K, listener: (e: BoxEventMap[K]) => void) {
-        return super.once(type, listener);
-    }
-    off<K extends keyof BoxEventMap>(type: K, listener: (e: BoxEventMap[K]) => void) {
-        return super.off(type, listener);
-    }
-    removeAllListeners<K extends keyof BoxEventMap>(type: K) {
-        return super.removeAllListeners(type);
-    }
-    emit<K extends keyof BoxEventMap>(type: K, e?: BoxEventMap[K]) {
-        return super.emit(type, e);
-    }
+export default class Box<D = {}> extends EventEmitter<BoxEventMap> {
     id: string;
     text = "";
     inlets = 0;
     outlets = 0;
     rect: [number, number, number, number];
-    data: { [key: string]: any } = {};
+    data: D;
     _editing = false;
     private _parsed: { class: string; args: any[]; props: { [key: string]: any } };
     private _object: BaseObject;
@@ -53,7 +38,7 @@ export default class Box extends EventEmitter {
         return this._object.ui;
     }
     get meta() {
-        return this._object._meta;
+        return this._object.meta;
     }
     get outletLines() {
         return this._patcher.getLinesBySrcID(this.id);
@@ -137,19 +122,10 @@ export default class Box extends EventEmitter {
     changeText(textIn: string) {
         if (textIn === this.text) return this;
         this.text = textIn;
-        const parsed = Box.parseObjText(textIn);
-        // if same class and name
-        if (this._parsed.class === parsed.class) {
-            this._parsed = parsed;
-            this._object.update(parsed.args, parsed.props);
-        } else {
-            // else new box
-            const lines = this.allLines;
-            lines.forEach(el => this._patcher.lines[el].disable());
-            this._parsed = parsed;
-            this._object = this._patcher.createObject(parsed, this);
-            lines.forEach(el => this._patcher.lines[el].enable());
-        }
+        const lines = this.allLines;
+        lines.forEach(el => this._patcher.lines[el].disable());
+        this.init();
+        lines.forEach(el => this._patcher.lines[el].enable());
         this.emit("textChanged", this);
         this._patcher.emit("graphChanged");
         return this;

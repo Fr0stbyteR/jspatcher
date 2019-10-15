@@ -39,6 +39,28 @@ export default class AutoImporter {
         await AutoImporter.importFrom("https://unpkg.com/webmidi", "MIDI").then(console.log);
     }
     */
+    /**
+     * ```JavaScript
+     *  class A {
+     *      static a = {} // A.a
+     *      static b() {} // A.b
+     *      static get c() {} // A.c (get)
+     *      static set d(x) {} // A.d (set)
+     *      e = {}
+     *      f() {} // A.prototype.f
+     *      get g() {} // A.prototype.g (get)
+     *      set h(x) {} // A.prototype.h (set)
+     *      constructor() {} // A.prototype.constructor
+     *  }
+     *  const B = {
+     *      a: {}, // B.a
+     *      b() {} // B.b
+     *  }
+     *  const C = function() {
+     *      this.a = null; // C.prototype.constructor
+     *  }
+     * ```
+     */
     static import(pkgName: string, root: { [key: string]: any }, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number, fromProto?: boolean) {
         const depth = typeof depthIn === "undefined" ? 0 : depthIn;
         const out = outIn || {};
@@ -66,9 +88,9 @@ export default class AutoImporter {
         const name = path[path.length - 1];
         if (typeof el === "function") { // static function or method
             return class extends BaseObject {
-                static get _meta(): TMeta {
+                static get meta(): TMeta {
                     return {
-                        ...super._meta,
+                        ...super.meta,
                         name,
                         package: pkgName,
                         description: fromProto ? "Auto-imported OOP method" : "Auto-imported static function",
@@ -187,8 +209,8 @@ export default class AutoImporter {
             };
         }
         return class extends BaseObject { // static values or property getter
-            static get _meta(): TMeta {
-                return Object.assign(super._meta, {
+            static get meta(): TMeta {
+                return Object.assign(super.meta, {
                     name,
                     package: pkgName,
                     description: "Auto-imported " + fromProto ? "property getter" : "value",

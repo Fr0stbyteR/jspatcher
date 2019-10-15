@@ -3,17 +3,17 @@ import Box from "../Box";
 import Patcher from "../Patcher";
 import { TPackage } from "../types";
 
-export class FaustOp extends BaseObject {
-    static get _meta(): TMeta {
+export class FaustOp extends BaseObject<{}, { inlets: number; outlets: number; args: (number | string)[]; [key: string]: any }> {
+    static get meta(): TMeta {
         return {
-            ...super._meta,
+            ...super.meta,
             package: "FaustOps",
             author: "Fr0stbyteR",
             version: "1.0.0",
             description: "Faust Operator"
         };
     }
-    protected _mem: { inlets: number; outlets: number; args: (number | string)[]; [key: string]: any } = { inlets: 1, outlets: 1, args: [] };
+    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
     /**
      * Supress inlet if defined in args
      *
@@ -23,9 +23,9 @@ export class FaustOp extends BaseObject {
      * @memberof FaustOp
      */
     update(args: any[], props: { [key: string]: any }) {
-        this._mem.args = args.slice();
-        this.inlets = this._mem.inlets - Math.min(this._mem.inlets, args.length);
-        this.outlets = this._mem.outlets;
+        this.state.args = args.slice();
+        this.inlets = this.state.inlets - Math.min(this.state.inlets, args.length);
+        this.outlets = this.state.outlets;
         return this;
     }
     /**
@@ -48,7 +48,7 @@ export class FaustOp extends BaseObject {
             if (lines.length === 0) return "0";
             if (lines.length === 1) return lineMap[lines[0]] ? `${lineMap[lines[0]]}` : "0";
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
-        }).concat(...this._mem.args as any[]).join(", ");
+        }).concat(...this.state.args as any[]).join(", ");
 
         if (this.outletLines.length === 0) return [];
         if (this.outletLines.length === 1) {
@@ -57,7 +57,7 @@ export class FaustOp extends BaseObject {
             return outlet ? [`${outlet} = ${this.symbol[0]}(${inlets});`] : [];
         }
 
-        const result = `${this._meta.name}_${this.box.id.substr(4)}`;
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
         exprs.push(`${result} = ${this.symbol[0]}(${inlets});`);
         const allCut = new Array(this.outlets).fill("!");
         this.outletLines.forEach((outletLines, i) => {
@@ -82,9 +82,9 @@ export class FaustOp extends BaseObject {
 }
 
 class In extends FaustOp {
-    static get _meta() {
+    static get meta() {
         return {
-            ...super._meta,
+            ...super.meta,
             name: this.name,
             description: "Signal Input",
             outlets: [{
@@ -106,11 +106,11 @@ class In extends FaustOp {
         this.update(box.parsed.args, box.parsed.props);
     }
     update(args: any[], props: { [key: string]: any }) {
-        this._mem.args = args.slice();
+        this.state.args = args.slice();
         return this;
     }
     get index() {
-        const i = this.mem.args[0];
+        const i = this.state.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -123,9 +123,9 @@ class In extends FaustOp {
     }
 }
 class Out extends FaustOp {
-    static get _meta() {
+    static get meta() {
         return {
-            ...super._meta,
+            ...super.meta,
             name: this.name,
             description: "Signal Output",
             inlets: [{
@@ -148,11 +148,11 @@ class Out extends FaustOp {
         this.update(box.parsed.args, box.parsed.props);
     }
     update(args: any[], props: { [key: string]: any }) {
-        this._mem.args = args.slice();
+        this.state.args = args.slice();
         return this;
     }
     get index() {
-        const i = this.mem.args[0];
+        const i = this.state.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -163,15 +163,15 @@ class Out extends FaustOp {
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
         });
 
-        const result = `${this._meta.name}_${this.box.id.substr(4)}`;
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
         exprs.push(`${result} = ${inlets};`);
         return exprs;
     }
 }
 class Split extends FaustOp {
-    static get _meta() {
+    static get meta() {
         return {
-            ...super._meta,
+            ...super.meta,
             name: this.name,
             description: "Split Signal",
             inlets: [{
@@ -191,8 +191,8 @@ class Split extends FaustOp {
     symbol = ["<:"];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this._mem.inlets = 1;
-        this._mem.outlets = 2;
+        this.state.inlets = 1;
+        this.state.outlets = 2;
         this.update(box.parsed.args, box.parsed.props);
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -201,7 +201,7 @@ class Split extends FaustOp {
             if (lines.length === 0) return "0";
             if (lines.length === 1) return lineMap[lines[0]] ? `${lineMap[lines[0]]}` : "0";
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
-        }).concat(...this._mem.args as any[]).join(", ");
+        }).concat(...this.state.args as any[]).join(", ");
 
         if (this.outletLines.length === 0) return [];
         if (this.outletLines.length === 1) {
@@ -210,7 +210,7 @@ class Split extends FaustOp {
             return outlet ? [`${outlet} = ${inlets};`] : [];
         }
 
-        const result = `${this._meta.name}_${this.box.id.substr(4)}`;
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
         exprs.push(`${result} = ${inlets};`);
         this.outletLines.forEach((outletLines, i) => {
             if (outletLines.length === 0) return;
@@ -222,9 +222,9 @@ class Split extends FaustOp {
     }
 }
 class Merge extends FaustOp {
-    static get _meta() {
+    static get meta() {
         return {
-            ...super._meta,
+            ...super.meta,
             name: this.name,
             description: "Merge Signal",
             inlets: [{
@@ -245,8 +245,8 @@ class Merge extends FaustOp {
     symbol = [":>"];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this._mem.inlets = 2;
-        this._mem.outlets = 1;
+        this.state.inlets = 2;
+        this.state.outlets = 1;
         this.update(box.parsed.args, box.parsed.props);
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -255,7 +255,7 @@ class Merge extends FaustOp {
             if (lines.length === 0) return "0";
             if (lines.length === 1) return lineMap[lines[0]] ? `${lineMap[lines[0]]}` : "0";
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
-        }).concat(...this._mem.args as any[]).join(", ");
+        }).concat(...this.state.args as any[]).join(", ");
 
         if (this.outletLines.length === 0) return [];
         if (this.outletLines.length === 1) {
@@ -264,7 +264,7 @@ class Merge extends FaustOp {
             return outlet ? [`${outlet} = ${inlets} :> _;`] : [];
         }
 
-        const result = `${this._meta.name}_${this.box.id.substr(4)}`;
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
         exprs.push(`${result} = ${inlets} :> _;`);
         this.outletLines.forEach((outletLines, i) => {
             if (outletLines.length === 0) return;
@@ -276,9 +276,9 @@ class Merge extends FaustOp {
     }
 }
 class Rec extends FaustOp {
-    static get _meta() {
+    static get meta() {
         return {
-            ...super._meta,
+            ...super.meta,
             name: this.name,
             description: "Recursion with 1-sample delay",
             inlets: [{
@@ -295,8 +295,8 @@ class Rec extends FaustOp {
     symbol = ["~"];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this._mem.inlets = 1;
-        this._mem.outlets = 1;
+        this.state.inlets = 1;
+        this.state.outlets = 1;
         this.update(box.parsed.args, box.parsed.props);
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -305,17 +305,17 @@ class Rec extends FaustOp {
             if (lines.length === 0) return "0";
             if (lines.length === 1) return lineMap[lines[0]] ? `${lineMap[lines[0]]}` : "0";
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
-        }).concat(...this._mem.args as any[]).join(", ");
+        }).concat(...this.state.args as any[]).join(", ");
 
-        const result = `${this._meta.name}_${this.box.id.substr(4)}`;
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
         exprs.push(`${result} = ${inlets};`);
         return exprs;
     }
 }
 class Mem extends FaustOp {
-    static get _meta() {
+    static get meta() {
         return {
-            ...super._meta,
+            ...super.meta,
             name: this.name,
             description: "1-sample delay",
             inlets: [{
@@ -332,15 +332,15 @@ class Mem extends FaustOp {
     symbol = ["mem", "'"];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this._mem.inlets = 1;
-        this._mem.outlets = 1;
+        this.state.inlets = 1;
+        this.state.outlets = 1;
         this.update(box.parsed.args, box.parsed.props);
     }
 }
 class Delay extends FaustOp {
-    static get _meta() {
+    static get meta() {
         return {
-            ...super._meta,
+            ...super.meta,
             name: this.name,
             description: "n-sample delay",
             inlets: [{
@@ -366,15 +366,15 @@ class Delay extends FaustOp {
     symbol = ["@"];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this._mem.inlets = 2;
-        this._mem.outlets = 1;
+        this.state.inlets = 2;
+        this.state.outlets = 1;
         this.update(box.parsed.args, box.parsed.props);
     }
 }
 class Const extends FaustOp {
-    static get _meta() {
+    static get meta() {
         return {
-            ...super._meta,
+            ...super.meta,
             name: this.name,
             description: "Output a constant",
             inlets: [{
@@ -397,8 +397,8 @@ class Const extends FaustOp {
     symbol = ["const", "c"];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this._mem.inlets = 1;
-        this._mem.outlets = 1;
+        this.state.inlets = 1;
+        this.state.outlets = 1;
         this.update(box.parsed.args, box.parsed.props);
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -407,7 +407,7 @@ class Const extends FaustOp {
             if (lines.length === 0) return "0";
             if (lines.length === 1) return lineMap[lines[0]] ? `${lineMap[lines[0]]}` : "0";
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
-        }).concat(...this._mem.args as any[]).join(", ");
+        }).concat(...this.state.args as any[]).join(", ");
 
         if (this.outletLines.length === 0) return [];
         if (this.outletLines.length === 1) {
@@ -416,7 +416,7 @@ class Const extends FaustOp {
             return outlet ? [`${outlet} = ${inlets};`] : [];
         }
 
-        const result = `${this._meta.name}_${this.box.id.substr(4)}`;
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
         exprs.push(`${result} = ${inlets};`);
         this.outletLines.forEach((outletLines, i) => {
             if (outletLines.length === 0) return;
@@ -430,8 +430,8 @@ class Const extends FaustOp {
 class Iterator extends FaustOp {
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this._mem.inlets = 1;
-        this._mem.outlets = 1;
+        this.state.inlets = 1;
+        this.state.outlets = 1;
         this.update(box.parsed.args, box.parsed.props);
     }
 }
@@ -504,9 +504,9 @@ for (const className in opMap.mathOps) {
     }));
     const outletDesc = `${op.symbol}(${new Array(op.inlets).fill("_").join(", ")})`;
     const Op = class extends FaustOp {
-        static get _meta() {
+        static get meta() {
             return {
-                ...super._meta,
+                ...super.meta,
                 name: className,
                 description: op.desc,
                 inlets: inletsMeta,
@@ -519,8 +519,8 @@ for (const className in opMap.mathOps) {
         symbol = typeof op.symbol === "string" ? [op.symbol] : op.symbol;
         constructor(box: Box, patcher: Patcher) {
             super(box, patcher);
-            this._mem.inlets = op.inlets;
-            this._mem.outlets = 1;
+            this.state.inlets = op.inlets;
+            this.state.outlets = 1;
             this.update(box.parsed.args, box.parsed.props);
         }
     };
@@ -567,7 +567,7 @@ export const toFaustDspCode = (patcher: Patcher) => {
     // Build rec in/outs
     recs.forEach((rec) => {
         exprs.push(...rec.toExpr(lineMap));
-        const recIn = `${rec._meta.name}_${rec.box.id.substr(4)}`;
+        const recIn = `${rec.meta.name}_${rec.box.id.substr(4)}`;
         const recOut = `${recIn}_0`;
         recIns.push(recIn);
         recOuts.push(recOut);
@@ -575,11 +575,11 @@ export const toFaustDspCode = (patcher: Patcher) => {
     // Build main in/outs
     ins = ins.sort((a, b) => a.index - b.index);
     ins.forEach((in_) => {
-        mainIns.push(`${in_._meta.name}_${in_.box.id.substr(4)}_0`);
+        mainIns.push(`${in_.meta.name}_${in_.box.id.substr(4)}_0`);
     });
     outs.forEach((out) => {
         exprs.push(...out.toExpr(lineMap));
-        mainOuts.push(`${out._meta.name}_${out.box.id.substr(4)}`);
+        mainOuts.push(`${out.meta.name}_${out.box.id.substr(4)}`);
     });
     // Generate Final expressions
     if (recIns.length) {

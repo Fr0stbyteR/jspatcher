@@ -2,22 +2,7 @@ import { EventEmitter } from "events";
 import Patcher from "./Patcher";
 import { LineEventMap, TLine } from "./types";
 
-export default class Line extends EventEmitter {
-    on<K extends keyof LineEventMap>(type: K, listener: (e: LineEventMap[K]) => void) {
-        return super.on(type, listener);
-    }
-    once<K extends keyof LineEventMap>(type: K, listener: (e: LineEventMap[K]) => void) {
-        return super.once(type, listener);
-    }
-    off<K extends keyof LineEventMap>(type: K, listener: (e: LineEventMap[K]) => void) {
-        return super.off(type, listener);
-    }
-    removeAllListeners<K extends keyof LineEventMap>(type: K) {
-        return super.removeAllListeners(type);
-    }
-    emit<K extends keyof LineEventMap>(type: K, e?: LineEventMap[K]) {
-        return super.emit(type, e);
-    }
+export default class Line extends EventEmitter<LineEventMap> {
     readonly id: string;
     src: [string, number];
     dest: [string, number];

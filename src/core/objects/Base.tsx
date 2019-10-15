@@ -6,6 +6,7 @@ import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
+import { BaseUIState, DefaultUIState, BaseObjectEventMap } from "../types";
 
 export type TInletsMeta = {
     isHot: boolean;
@@ -43,15 +44,14 @@ export type TMeta = {
     args: TArgsMeta;
     props: TPropsMeta;
 };
-export type BaseUIState = { editing: boolean };
 export class BaseUI<T extends BaseObject, P = {}, S = {}> extends React.Component<{ object: T } & P, BaseUIState & S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     editableOnUnlock = false;
     toggleEdit = (bool?: boolean) => false;
     render() {
         const { object } = this.props;
-        const packageName = "package-" + object._meta.package.toLowerCase();
-        const className = packageName + "-" + object._meta.name.toLowerCase();
+        const packageName = "package-" + object.meta.package.toLowerCase();
+        const className = packageName + "-" + object.meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container"];
         return (
             <div className={classArray.join(" ")}>
@@ -60,7 +60,6 @@ export class BaseUI<T extends BaseObject, P = {}, S = {}> extends React.Componen
         );
     }
 }
-type DefaultUIState = { text: string; loading: boolean; dropdown$: number } & BaseUIState;
 export class DefaultUI<T extends BaseObject> extends BaseUI<T, {}, DefaultUIState> {
     editableOnUnlock = true;
     state = { editing: false, text: "", loading: false, dropdown$: -1 };
@@ -137,7 +136,7 @@ export class DefaultUI<T extends BaseObject> extends BaseUI<T, {}, DefaultUIStat
             if (this.dropdownOptions.length > 10) break;
             if (key.indexOf(splited[0]) !== -1) {
                 const o = this.props.object.patcher._state.lib[key];
-                this.dropdownOptions.push({ key, value: key, text: key, icon: o._meta.icon, description: o._meta.description });
+                this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
             }
         }
         this.setState({ text: this.refSpan.current.innerText });
@@ -171,13 +170,13 @@ export class DefaultUI<T extends BaseObject> extends BaseUI<T, {}, DefaultUIStat
     handleUpdate = <K extends keyof DefaultUIState>(state: Pick<DefaultUIState, K> | DefaultUIState | null) => this.setState(state);
     render() {
         const object = this.props.object;
-        const packageName = "package-" + object._meta.package.toLowerCase();
-        const className = packageName + "-" + object._meta.name.toLowerCase();
+        const packageName = "package-" + object.meta.package.toLowerCase();
+        const className = packageName + "-" + object.meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container", "box-ui-default"];
         return (
             <div className={classArray.join(" ")}>
                 <div className="box-ui-text-container">
-                    {object._meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object._meta.icon} /> : null}
+                    {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
                     <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} suppressContentEditableWarning={true}>
                         {object.box.text}
                     </span>
@@ -203,8 +202,8 @@ export class DefaultUI<T extends BaseObject> extends BaseUI<T, {}, DefaultUIStat
         );
     }
 }
-export class BaseObject extends EventEmitter {
-    static get _meta(): TMeta {
+export class BaseObject<D = {}, S = {}, UIS = {}> extends EventEmitter<BaseObjectEventMap<UIS & BaseUIState>> {
+    static get meta(): TMeta {
         return {
             package: "Base", // div will have class "package-name" "package-name-objectname"
             name: this.name,
@@ -218,20 +217,24 @@ export class BaseObject extends EventEmitter {
             props: []
         };
     }
-    get _meta() {
-        return (this.constructor as typeof BaseObject)._meta;
+    get meta() {
+        return (this.constructor as typeof BaseObject).meta;
     }
     private readonly _patcher: Patcher;
-    private readonly _box: Box;
-    protected _mem: { [key: string]: any } = {};
-    constructor(box: Box, patcher: Patcher) {
+    private readonly _box: Box<D>;
+    /**
+     * should save all temporary variables here
+     *
+     * @type {S}
+     * @memberof BaseObject
+     */
+    state: S;
+    constructor(box: Box<D>, patcher: Patcher) {
         super();
         // patcher object outside, use _ for prevent recursive stringify
         this._patcher = patcher;
         // the box which create this instance, use _ for prevent recursive stringify
         this._box = box;
-        // should save all temporary variables here
-        this._mem = {};
         // usually do this after initialization
         // this.update(box.parsed.args, box.parsed.props);
     }
@@ -240,7 +243,7 @@ export class BaseObject extends EventEmitter {
         return DefaultUI;
     }
     // update UI's React State
-    uiUpdate(state: { [key: string]: any }) {
+    uiUpdate<State = UIS & BaseUIState>(state: Pick<State, keyof State> | State | null) {
         this.emit("uiUpdate", state);
     }
     // when arguments and @properties are changed, can use this in constructor
@@ -281,29 +284,35 @@ export class BaseObject extends EventEmitter {
     }
     // output to console
     post(data: string) {
-        this._patcher.newLog("none", this._meta.name, data, this._box);
+        this._patcher.newLog("none", this.meta.name, data, this._box);
         return this;
     }
     error(data: string) {
-        this._patcher.newLog("error", this._meta.name, data, this._box);
+        this._patcher.newLog("error", this.meta.name, data, this._box);
         return this;
     }
     info(data: string) {
-        this._patcher.newLog("info", this._meta.name, data, this._box);
+        this._patcher.newLog("info", this.meta.name, data, this._box);
         return this;
     }
     warn(data: string) {
-        this._patcher.newLog("warn", this._meta.name, data, this._box);
+        this._patcher.newLog("warn", this.meta.name, data, this._box);
         return this;
     }
     get patcher() {
         return this._patcher;
     }
-    get mem() {
-        return this._mem;
-    }
+    /**
+     * this will be stored with patcher
+     *
+     * @readonly
+     * @memberof BaseObject
+     */
     get data() {
         return this._box.data;
+    }
+    set data(dataIn: D) {
+        this._box.data = dataIn;
     }
     get box() {
         return this._box;
@@ -330,10 +339,10 @@ export class BaseObject extends EventEmitter {
         return this.constructor.name;
     }
 }
-class EmptyObject extends BaseObject {
-    static get _meta(): TMeta {
+class EmptyObject extends BaseObject<{}, { editing: boolean }> {
+    static get meta(): TMeta {
         return {
-            ...super._meta,
+            ...super.meta,
             author: "Fr0stbyteR",
             version: "1.0.0",
             description: "Bypass input",
@@ -348,34 +357,31 @@ class EmptyObject extends BaseObject {
             }]
         };
     }
-    protected _mem: { editing: boolean } = { editing: false };
+    state = { editing: false };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.outlets = 1;
         this.inlets = 1;
-        this._mem.editing = !!box._editing;
+        this.state.editing = !!box._editing;
         delete box._editing;
     }
     fn(data: any, inlet: number) {
         this.outlet(0, data);
         return this;
     }
-    get mem() {
-        return this._mem;
-    }
     get ui(): typeof BaseUI {
         return class EmptyObjectUI extends DefaultUI<EmptyObject> {
             componentDidMount() {
                 super.componentDidMount();
-                if (this.props.object.mem.editing) this.toggleEdit(true);
+                if (this.props.object.state.editing) this.toggleEdit(true);
             }
         };
     }
 }
 class InvalidObject extends BaseObject {
-    static get _meta(): TMeta {
+    static get meta(): TMeta {
         return {
-            ...super._meta,
+            ...super.meta,
             description: "invalid object",
             inlets: [{
                 isHot: false,

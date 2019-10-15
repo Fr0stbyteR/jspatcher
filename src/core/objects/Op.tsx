@@ -2,18 +2,18 @@ import { BaseObject, Bang, TMeta } from "./Base";
 import Patcher from "../Patcher";
 import Box from "../Box";
 
-abstract class JSOp extends BaseObject {
-    static get _meta(): TMeta {
+abstract class JSOp<S = {}> extends BaseObject<{}, S> {
+    static get meta(): TMeta {
         return {
-            ...super._meta,
+            ...super.meta,
             package: "Op"
         };
     }
 }
-class JSUnaryOp extends JSOp {
-    static get _meta(): TMeta {
+class JSUnaryOp extends JSOp<{ result: any }> {
+    static get meta(): TMeta {
         return {
-            ...super._meta,
+            ...super.meta,
             description: "Unary Operation",
             inlets: [{
                 isHot: true,
@@ -26,7 +26,7 @@ class JSUnaryOp extends JSOp {
             }]
         };
     }
-    protected _mem: { result: any } = { result: null };
+    state = { result: null as any };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 1;
@@ -34,18 +34,18 @@ class JSUnaryOp extends JSOp {
         this.update(box.parsed.args, box.parsed.props);
     }
     update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
-        this._mem.result = 0;
+        this.state.result = 0;
         return this;
     }
     fn(data: any, inlet: number) {
         if (inlet === 0 && data instanceof Bang) {
-            this.outlet(0, this._mem.result);
+            this.outlet(0, this.state.result);
             return this;
         }
         if (inlet === 0) {
             try {
-                this._mem.result = this.execute(data);
-                this.outlet(0, this._mem.result);
+                this.state.result = this.execute(data);
+                this.outlet(0, this.state.result);
             } catch (e) {
                 this.error(e);
             }
@@ -55,10 +55,10 @@ class JSUnaryOp extends JSOp {
     execute(a: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
 
-class JSBinaryOp extends JSOp {
-    static get _meta(): TMeta {
+class JSBinaryOp extends JSOp<{ arg: any; result: any }> {
+    static get meta(): TMeta {
         return {
-            ...super._meta,
+            ...super.meta,
             description: "Binary Operation",
             inlets: [{
                 isHot: true,
@@ -81,34 +81,34 @@ class JSBinaryOp extends JSOp {
             }]
         };
     }
-    protected _mem: { arg: any; result: any } = { arg: null, result: null };
+    state = { arg: null as any, result: null as any };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 2;
         this.outlets = 1;
-        this._mem.arg = 0;
-        this._mem.result = 0;
+        this.state.arg = 0;
+        this.state.result = 0;
         this.update(box.parsed.args, box.parsed.props);
     }
     update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
-        this._mem.arg = 0;
-        this._mem.result = 0;
+        this.state.arg = 0;
+        this.state.result = 0;
         if (args.length === 0) return this;
-        this._mem.arg = args[0];
+        this.state.arg = args[0];
         return this;
     }
     fn(data: any, inlet: number) {
         if (inlet === 0 && data instanceof Bang) {
-            this.outlet(0, this._mem.result);
+            this.outlet(0, this.state.result);
             return this;
         }
         if (inlet === 1) {
-            this._mem.arg = data;
+            this.state.arg = data;
         }
         if (inlet === 0) {
             try {
-                this._mem.result = this.execute(data, this._mem.arg);
-                this.outlet(0, this._mem.result);
+                this.state.result = this.execute(data, this.state.arg);
+                this.outlet(0, this.state.result);
             } catch (e) {
                 this.error(e);
             }
@@ -118,10 +118,10 @@ class JSBinaryOp extends JSOp {
     execute(a: any, b: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
 
-class JSTernaryOp extends JSOp {
-    static get _meta(): TMeta {
+class JSTernaryOp extends JSOp<{ args: any[]; result: any }> {
+    static get meta(): TMeta {
         return {
-            ...super._meta,
+            ...super.meta,
             description: "Ternary Operation",
             inlets: [{
                 isHot: true,
@@ -153,38 +153,38 @@ class JSTernaryOp extends JSOp {
             }]
         };
     }
-    protected _mem: { args: any[]; result: any } = { args: [], result: null };
+    state = { args: [] as any[], result: null as any };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 3;
         this.outlets = 1;
-        this._mem.args = [true, false];
-        this._mem.result = true;
+        this.state.args = [true, false];
+        this.state.result = true;
         this.update(box.parsed.args, box.parsed.props);
     }
     update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
-        this._mem.args = [true, false];
-        this._mem.result = true;
+        this.state.args = [true, false];
+        this.state.result = true;
         if (args.length === 0) return this;
-        this._mem.args[0] = args[0];
-        this._mem.args[1] = args[1];
+        this.state.args[0] = args[0];
+        this.state.args[1] = args[1];
         return this;
     }
     fn(data: any, inlet: number) {
         if (inlet === 0 && data instanceof Bang) {
-            this.outlet(0, this._mem.result);
+            this.outlet(0, this.state.result);
             return this;
         }
         if (inlet === 1) {
-            this._mem.args[0] = data;
+            this.state.args[0] = data;
         }
         if (inlet === 2) {
-            this._mem.args[1] = data;
+            this.state.args[1] = data;
         }
         if (inlet === 0) {
             try {
-                this._mem.result = data ? this._mem.args[0] : this._mem.args[1];
-                this.outlet(0, this._mem.result);
+                this.state.result = data ? this.state.args[0] : this.state.args[1];
+                this.outlet(0, this.state.result);
             } catch (e) {
                 this.error(e);
             }
@@ -230,15 +230,15 @@ for (const key in functions) {
     const f = functions[key];
     if (f.length === 1) {
         Ops[key] = class extends JSUnaryOp {
-            static get _meta() {
-                return { ...JSUnaryOp._meta, name: key };
+            static get meta() {
+                return { ...JSUnaryOp.meta, name: key };
             }
             execute = f;
         };
     } else if (f.length === 2) {
         Ops[key] = class extends JSBinaryOp {
-            static get _meta() {
-                return { ...JSBinaryOp._meta, name: key };
+            static get meta() {
+                return { ...JSBinaryOp.meta, name: key };
             }
             execute = f;
         };
