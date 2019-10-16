@@ -5,6 +5,29 @@ import { TPackage } from "./types";
 
 type TImportedModule = { _____?: boolean; [key: string]: any };
 declare const window: { module: { exports: TImportedModule }; exports: TImportedModule };
+
+/**
+* ```JavaScript
+*   class A {
+*       static a = {} // A.a
+*       static b() {} // A.b
+*       static get c() {} // A.c (get)
+*       static set d(x) {} // A.d (set)
+*       e = {} // Nothing
+*       f() {} // A.prototype.f
+*       get g() {} // A.prototype.g (get)
+*       set h(x) {} // A.prototype.h (set)
+*       constructor() {} // A.prototype.constructor
+*   }
+*   const B = {
+*       a: {}, // B.a
+*       b() {} // B.b
+*   }
+*   const C = function() {
+*       this.a = null; // C.prototype.constructor
+*   }
+* ```
+*/
 export default class AutoImporter {
     static async importFrom(address: string, pkgName: string) {
         let ex: TImportedModule = { _____: true }; // Original exports, detect if exports is overwritten.
@@ -39,28 +62,6 @@ export default class AutoImporter {
         await AutoImporter.importFrom("https://unpkg.com/webmidi", "MIDI").then(console.log);
     }
     */
-    /**
-     * ```JavaScript
-     *  class A {
-     *      static a = {} // A.a
-     *      static b() {} // A.b
-     *      static get c() {} // A.c (get)
-     *      static set d(x) {} // A.d (set)
-     *      e = {}
-     *      f() {} // A.prototype.f
-     *      get g() {} // A.prototype.g (get)
-     *      set h(x) {} // A.prototype.h (set)
-     *      constructor() {} // A.prototype.constructor
-     *  }
-     *  const B = {
-     *      a: {}, // B.a
-     *      b() {} // B.b
-     *  }
-     *  const C = function() {
-     *      this.a = null; // C.prototype.constructor
-     *  }
-     * ```
-     */
     static import(pkgName: string, root: { [key: string]: any }, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number, fromProto?: boolean) {
         const depth = typeof depthIn === "undefined" ? 0 : depthIn;
         const out = outIn || {};
@@ -87,7 +88,7 @@ export default class AutoImporter {
         const path = pathIn.slice();
         const name = path[path.length - 1];
         if (typeof el === "function") { // static function or method
-            return class extends BaseObject {
+            return class extends BaseObject<{}, { name: string; fn: any; instance: any; inputs: any[]; result: any; fromProto: boolean }> {
                 static get meta(): TMeta {
                     return {
                         ...super.meta,
@@ -136,20 +137,20 @@ export default class AutoImporter {
                     super(box, patcher);
                     this.inlets = (fromProto ? 1 : 0) + (el.length === 0 ? 1 : el.length); // Function.length property
                     this.outlets = (fromProto ? 1 : 0) + 2;
-                    this._mem.name = name;
-                    this._mem.fn = el;
-                    this._mem.instance = null;
-                    this._mem.inputs = box.parsed.args.slice(); // copy array
-                    this._mem.result = null;
-                    this._mem.fromProto = !!fromProto;
-                    this.update(this._mem.inputs, box.parsed.props);
+                    this.state.name = name;
+                    this.state.fn = el;
+                    this.state.instance = null;
+                    this.state.inputs = box.parsed.args.slice(); // copy array
+                    this.state.result = null;
+                    this.state.fromProto = !!fromProto;
+                    this.update(this.state.inputs, box.parsed.props);
                 }
                 update(args: any[], props: { inlets?: number; [key: string]: any }) {
                     if (props && props.inlets && typeof props.inlets === "number") {
-                        this.inlets = (this._mem.fromProto ? 1 : 0) + props.inlets;
+                        this.inlets = (this.state.fromProto ? 1 : 0) + props.inlets;
                     }
                     if (!args) return this;
-                    this._mem.inputs = args;
+                    this.state.inputs = args;
                     return this;
                 }
                 fn(data: any, inlet: number) {
@@ -157,10 +158,10 @@ export default class AutoImporter {
                         if (this.execute()) return this.output();
                         return this;
                     }
-                    if (this._mem.fromProto) {
-                        if (inlet === 0) this._mem.instance = data;
-                        else this._mem.inputs[inlet - 1] = data;
-                    } else this._mem.inputs[inlet] = data;
+                    if (this.state.fromProto) {
+                        if (inlet === 0) this.state.instance = data;
+                        else this.state.inputs[inlet - 1] = data;
+                    } else this.state.inputs[inlet] = data;
                     if (inlet === 0) {
                         if (this.execute()) return this.output();
                     }
@@ -168,14 +169,14 @@ export default class AutoImporter {
                 }
                 execute() {
                     try {
-                        if (this._mem.fromProto) {
-                            if (this._mem.instance) this._mem.result = this._mem.instance[this._mem.name](...this._mem.inputs);
+                        if (this.state.fromProto) {
+                            if (this.state.instance) this.state.result = this.state.instance[this.state.name](...this.state.inputs);
                             else return false;
                         } else {
                             try {
-                                this._mem.result = new this._mem.fn(...this._mem.inputs); // eslint-disable-line new-cap
+                                this.state.result = new this.state.fn(...this.state.inputs); // eslint-disable-line new-cap
                             } catch (e) {
-                                this._mem.result = this._mem.fn(...this._mem.inputs);
+                                this.state.result = this.state.fn(...this.state.inputs);
                             }
                         }
                         return true;
@@ -186,14 +187,14 @@ export default class AutoImporter {
                 }
                 output() {
                     const callback = () => {
-                        if (this._mem.fromProto) return this.outlet(2, this._mem.inputs).outlet(1, this._mem.result).outlet(0, this._mem.instance);
-                        return this.outlet(1, this._mem.inputs).outlet(0, this._mem.result);
+                        if (this.state.fromProto) return this.outlet(2, this.state.inputs).outlet(1, this.state.result).outlet(0, this.state.instance);
+                        return this.outlet(1, this.state.inputs).outlet(0, this.state.result);
                     };
-                    if (this._mem.result instanceof Promise) {
+                    if (this.state.result instanceof Promise) {
                         this.loading = true;
-                        this._mem.result.then((r) => {
+                        this.state.result.then((r) => {
                             this.loading = false;
-                            this._mem.result = r;
+                            this.state.result = r;
                             callback();
                         }, (r) => {
                             this.loading = false;
@@ -208,7 +209,7 @@ export default class AutoImporter {
                 }
             };
         }
-        return class extends BaseObject { // static values or property getter
+        return class extends BaseObject<{}, { instance: any }> { // static values or property getter
             static get meta(): TMeta {
                 return Object.assign(super.meta, {
                     name,
@@ -237,18 +238,18 @@ export default class AutoImporter {
                 super(box, patcher);
                 this.inlets = fromProto ? 2 : 1;
                 this.outlets = 1;
-                this._mem.instance = null;
+                this.state.instance = null;
             }
             fn(data: any, inlet: number) {
                 if (inlet === 0) {
                     if (data instanceof Bang) {
-                        if (fromProto) return this._mem.instance ? this.outlet(0, this._mem.instance[name]) : this;
+                        if (fromProto) return this.state.instance ? this.outlet(0, this.state.instance[name]) : this;
                         let r = root;
                         path.forEach(key => r = r[key]);
                         return this.outlet(0, r);
                     }
                     if (fromProto) {
-                        this._mem.instance = data;
+                        this.state.instance = data;
                         return this;
                     }
                     try {
@@ -261,7 +262,7 @@ export default class AutoImporter {
                 }
                 if (inlet === 1 && fromProto) {
                     try {
-                        this._mem.instance[name] = data;
+                        this.state.instance[name] = data;
                     } catch (e) {
                         this.error(e);
                     }
