@@ -7,7 +7,7 @@ import Box from "../Box";
 import "./Std.scss";
 import { BaseUIState } from "../types";
 
-class StdObject<D = {}, S = {}, UIS = {}> extends BaseObject<D, S, UIS> {
+class StdObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}> extends BaseObject<D, S, I, O, A, P, U> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -19,7 +19,7 @@ class StdObject<D = {}, S = {}, UIS = {}> extends BaseObject<D, S, UIS> {
     }
 }
 type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
-export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
+export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
     editableOnUnlock = true;
     state = { editing: false, loading: false, text: this.props.object.data.text };
     refSpan = React.createRef<HTMLSpanElement>();
@@ -64,13 +64,9 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     }
     componentDidMount() {
-        this.props.object.on("uiUpdate", this.handleUpdate);
+        super.componentDidMount();
         if (this.props.object.state.editing) this.toggleEdit(true);
     }
-    componentWillUnmount() {
-        this.props.object.off("uiUpdate", this.handleUpdate);
-    }
-    handleUpdate = <K extends keyof ButtonUIState>(state: Pick<ButtonUIState, K> | ButtonUIState | null) => this.setState(state);
     render() {
         const object = this.props.object;
         const packageName = "package-" + object.meta.package.toLowerCase();
@@ -88,7 +84,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
         );
     }
 }
-class Message extends StdObject<{ text: string }, { buffer: any; editing: boolean }, { text: string }> {
+class Message extends StdObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [], [], { text: string }> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -109,7 +105,7 @@ class Message extends StdObject<{ text: string }, { buffer: any; editing: boolea
         };
     }
     state = { buffer: new Bang(), editing: false };
-    constructor(box: Box<{ text: string }>, patcher: Patcher) {
+    constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 2;
         this.outlets = 1;

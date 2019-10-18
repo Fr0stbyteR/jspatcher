@@ -1,18 +1,18 @@
 import { EventEmitter } from "events";
 import Patcher from "./Patcher";
-import { BaseObject } from "./objects/Base";
+import { Data, Args, Props, Inputs, AbstractObject } from "./objects/Base";
 import { BoxEventMap, TBox } from "./types";
 
-export default class Box<D = {}> extends EventEmitter<BoxEventMap> {
+export default class Box<T extends AbstractObject<any, any, any, any, any, any, any> = AbstractObject> extends EventEmitter<BoxEventMap> {
     id: string;
     text = "";
     inlets = 0;
     outlets = 0;
     rect: [number, number, number, number];
-    data: D;
+    data: Data<T>;
     _editing = false;
-    private _parsed: { class: string; args: any[]; props: { [key: string]: any } };
-    private _object: BaseObject;
+    private _parsed: { class: string; args: Args<T>; props: Props<T> };
+    private _object: T;
     private _patcher: Patcher;
     constructor(patcherIn: Patcher, boxIn: TBox) {
         super();
@@ -26,11 +26,11 @@ export default class Box<D = {}> extends EventEmitter<BoxEventMap> {
         this._patcher = patcherIn;
     }
     init() {
-        this._parsed = Box.parseObjText(this.text);
-        this._object = this._patcher.createObject(this._parsed, this);
+        this._parsed = Box.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };
+        this._object = this._patcher.createObject(this._parsed, this) as T;
     }
     // main function when receive data from a inlet (base 0)
-    fn(data: any, inlet: number) {
+    fn<I extends keyof Pick<Inputs<T>, number>>(data: Inputs<T>[I], inlet: I) {
         this._object.fn(data, inlet);
         return this;
     }

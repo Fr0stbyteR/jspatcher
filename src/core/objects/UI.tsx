@@ -4,17 +4,22 @@ import Box from "../Box";
 import { BaseObject, BaseUI, TMeta } from "./Base";
 import "./UI.scss";
 
-export class Comment extends BaseObject<{ text: string }> {
+export class Comment extends BaseObject<{ text: string }, {}, [], [], [string]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
             package: "UI",
             author: "Fr0stbyteR",
             version: "1.0.0",
-            description: "Text Comment"
+            description: "Text Comment",
+            args: [{
+                type: "string",
+                optional: true,
+                description: "Initial text"
+            }]
         };
     }
-    constructor(box: Box<{ text: string }>, patcher: Patcher) {
+    constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.update(box.parsed.args);
     }

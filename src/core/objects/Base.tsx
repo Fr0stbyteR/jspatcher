@@ -48,6 +48,13 @@ export class BaseUI<T extends BaseObject, P = {}, S = {}> extends React.Componen
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     editableOnUnlock = false;
     toggleEdit = (bool?: boolean) => false;
+    componentDidMount() {
+        this.props.object.on("uiUpdate", this.handleUpdate);
+    }
+    componentWillUnmount() {
+        this.props.object.off("uiUpdate", this.handleUpdate);
+    }
+    handleUpdate = <K extends keyof (BaseUIState & S)>(state: Pick<BaseUIState & S, K> | BaseUIState & S | null) => this.setState(state);
     render() {
         const { object } = this.props;
         const packageName = "package-" + object.meta.package.toLowerCase();
@@ -161,23 +168,36 @@ export class DefaultUI<T extends BaseObject> extends BaseUI<T, {}, DefaultUIStat
         }
     }
     componentDidMount() {
-        this.props.object.on("uiUpdate", this.handleUpdate);
+        super.componentDidMount();
         this.setState({ text: this.props.object.box.text });
     }
-    componentWillUnmount() {
-        this.props.object.off("uiUpdate", this.handleUpdate);
+    get containerProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
+        return {};
     }
-    handleUpdate = <K extends keyof DefaultUIState>(state: Pick<DefaultUIState, K> | DefaultUIState | null) => this.setState(state);
+    get textContainerProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
+        return {};
+    }
+    get prependProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
+        return {};
+    }
+    get spanProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement> {
+        return {};
+    }
+    get appendProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
+        return {};
+    }
     render() {
         const object = this.props.object;
         const packageName = "package-" + object.meta.package.toLowerCase();
         const className = packageName + "-" + object.meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container", "box-ui-default"];
         return (
-            <div className={classArray.join(" ")}>
-                <div className="box-ui-text-container">
-                    {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
-                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} suppressContentEditableWarning={true}>
+            <div className={classArray.join(" ")} {...this.containerProps}>
+                <div className="box-ui-text-container" {...this.textContainerProps}>
+                    <div className="box-ui-text-container-prepend" {...this.prependProps}>
+                        {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
+                    </div>
+                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} suppressContentEditableWarning={true} {...this.spanProps}>
                         {object.box.text}
                     </span>
                     {
@@ -197,12 +217,21 @@ export class DefaultUI<T extends BaseObject> extends BaseUI<T, {}, DefaultUIStat
                             </div>
                             : undefined
                     }
+                    <div className="box-ui-text-container-append" {...this.appendProps}>
+                    </div>
                 </div>
             </div>
         );
     }
 }
-export class BaseObject<D = {}, S = {}, UIS = {}> extends EventEmitter<BaseObjectEventMap<UIS & BaseUIState>> {
+export type Data<T> = T extends BaseObject<infer D, any, any, any, any, any, any> ? D : never;
+export type State<T> = T extends BaseObject<any, infer S, any, any, any, any, any> ? S : never;
+export type Inputs<T> = T extends BaseObject<any, any, infer I, any, any, any, any> ? I : never;
+export type Outputs<T> = T extends BaseObject<any, any, any, infer O, any, any, any> ? O : never;
+export type Args<T> = T extends BaseObject<any, any, any, any, infer A, any, any> ? A : never;
+export type Props<T> = T extends BaseObject<any, any, any, any, any, infer P, any> ? P : never;
+export type UIState<T> = T extends BaseObject<any, any, any, any, any, any, infer U> ? U : never;
+export abstract class AbstractObject<D extends { [key: string]: any } = { [key: string]: any }, S extends { [key: string]: any } = { [key: string]: any }, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends { [key: string]: any } = { [key: string]: any }, U extends { [key: string]: any } = { [key: string]: any }> extends EventEmitter<BaseObjectEventMap<U & BaseUIState>> {
     static get meta(): TMeta {
         return {
             package: "Base", // div will have class "package-name" "package-name-objectname"
@@ -218,44 +247,44 @@ export class BaseObject<D = {}, S = {}, UIS = {}> extends EventEmitter<BaseObjec
         };
     }
     get meta() {
-        return (this.constructor as typeof BaseObject).meta;
+        return (this.constructor as typeof AbstractObject).meta;
     }
-    private readonly _patcher: Patcher;
-    private readonly _box: Box<D>;
     /**
      * should save all temporary variables here
      *
      * @type {S}
-     * @memberof BaseObject
+     * @memberof AbstractBaseObject
      */
     state: S;
-    constructor(box: Box<D>, patcher: Patcher) {
+    protected readonly _patcher: Patcher;
+    protected readonly _box: Box<this>;
+    constructor(box: Box, patcher: Patcher) {
         super();
         // patcher object outside, use _ for prevent recursive stringify
         this._patcher = patcher;
         // the box which create this instance, use _ for prevent recursive stringify
-        this._box = box;
+        this._box = box as Box<this>;
         // usually do this after initialization
         // this.update(box.parsed.args, box.parsed.props);
     }
     // build new ui on page, return a React Component, override this
     get ui(): typeof BaseUI {
-        return DefaultUI;
+        return BaseUI;
     }
     // update UI's React State
-    uiUpdate<State = UIS & BaseUIState>(state: Pick<State, keyof State> | State | null) {
+    uiUpdate(state: Partial<U & BaseUIState> | null) {
         this.emit("uiUpdate", state);
     }
     // when arguments and @properties are changed, can use this in constructor
-    update(args: any[], props: { [key: string]: any }) {
+    update(args: A, props: P) {
         return this;
     }
     // main function when receive data from a inlet (base 0)
-    fn(data: any, inlet: number) {
+    fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         return this;
     }
     // use this function to output data with ith outlet.
-    outlet(outlet: number, data: any) {
+    outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]) {
         if (outlet >= this.outlets) return this;
         const outletLines = this.outletLines[outlet].sort((id1, id2) => { // eslint-disable-line arrow-body-style
             return this._patcher.lines[id2].positionHash - this._patcher.lines[id1].positionHash;
@@ -305,14 +334,13 @@ export class BaseObject<D = {}, S = {}, UIS = {}> extends EventEmitter<BaseObjec
     /**
      * this will be stored with patcher
      *
-     * @readonly
      * @memberof BaseObject
      */
     get data() {
-        return this._box.data;
+        return this._box.data as unknown as D;
     }
     set data(dataIn: D) {
-        this._box.data = dataIn;
+        this._box.data = dataIn as unknown as Data<this>;
     }
     get box() {
         return this._box;
@@ -339,7 +367,18 @@ export class BaseObject<D = {}, S = {}, UIS = {}> extends EventEmitter<BaseObjec
         return this.constructor.name;
     }
 }
-class EmptyObject extends BaseObject<{}, { editing: boolean }> {
+export class BaseObject<D extends { [key: string]: any } = {}, S extends { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}> extends AbstractObject<D, S, I, O, A, P, U> {
+    static get meta(): TMeta {
+        return {
+            ...super.meta,
+            package: "Base"
+        };
+    }
+    get ui(): typeof BaseUI {
+        return DefaultUI;
+    }
+}
+class EmptyObject extends BaseObject<{}, { editing: boolean }, [any], [any]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -365,7 +404,7 @@ class EmptyObject extends BaseObject<{}, { editing: boolean }> {
         this.state.editing = !!box._editing;
         delete box._editing;
     }
-    fn(data: any, inlet: number) {
+    fn<I extends keyof [any]>(data: [any][I], inlet: I) {
         this.outlet(0, data);
         return this;
     }
@@ -378,7 +417,7 @@ class EmptyObject extends BaseObject<{}, { editing: boolean }> {
         };
     }
 }
-class InvalidObject extends BaseObject {
+class InvalidObject extends BaseObject<{}, {}, [any], [undefined]> {
     static get meta(): TMeta {
         return {
             ...super.meta,

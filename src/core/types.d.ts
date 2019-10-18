@@ -90,7 +90,7 @@ type TMaxClipboard = {
         modernui: number;
     };
 };
-declare class AnyObject extends BaseObject<any, any, any> {}
+declare class AnyObject extends BaseObject<any, any, any, any, any, any, any> {}
 type TPackage = { [key: string]: typeof AnyObject | TPackage };
 
 type TLine = {
@@ -156,7 +156,7 @@ interface BoxEventMap {
 type BaseUIState = { editing: boolean };
 type DefaultUIState = { text: string; loading: boolean; dropdown$: number } & BaseUIState;
 interface BaseObjectEventMap<UIState> {
-    "uiUpdate": Pick<UIState, keyof UIState> | UIState | null;
+    "uiUpdate": Partial<UIState> | null;
 }
 type THistoryElement = {
     [key in keyof PatcherEventMap]?: PatcherEventMap[key][];

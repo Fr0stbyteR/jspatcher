@@ -2,7 +2,7 @@ import { BaseObject, Bang, TMeta } from "./Base";
 import Patcher from "../Patcher";
 import Box from "../Box";
 
-abstract class JSOp<S = {}> extends BaseObject<{}, S> {
+abstract class JSOp<S = {}, I extends any[] = [], O extends any[] = [any], A extends any[] = [], P = {}> extends BaseObject<{}, S, I, O, A, P> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -10,7 +10,7 @@ abstract class JSOp<S = {}> extends BaseObject<{}, S> {
         };
     }
 }
-class JSUnaryOp extends JSOp<{ result: any }> {
+class JSUnaryOp extends JSOp<{ result: any }, [any]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -31,9 +31,9 @@ class JSUnaryOp extends JSOp<{ result: any }> {
         super(box, patcher);
         this.inlets = 1;
         this.outlets = 1;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update();
     }
-    update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    update() {
         this.state.result = 0;
         return this;
     }
@@ -55,7 +55,7 @@ class JSUnaryOp extends JSOp<{ result: any }> {
     execute(a: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
 
-class JSBinaryOp extends JSOp<{ arg: any; result: any }> {
+class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -88,9 +88,9 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }> {
         this.outlets = 1;
         this.state.arg = 0;
         this.state.result = 0;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.parsed.args);
     }
-    update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    update(args: any[]) {
         this.state.arg = 0;
         this.state.result = 0;
         if (args.length === 0) return this;
@@ -118,7 +118,7 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }> {
     execute(a: any, b: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
 
-class JSTernaryOp extends JSOp<{ args: any[]; result: any }> {
+class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [any], [any, any]> {
     static get meta(): TMeta {
         return {
             ...super.meta,

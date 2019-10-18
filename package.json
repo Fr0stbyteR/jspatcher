@@ -24,8 +24,8 @@
     "@babel/preset-react": "^7.6.3",
     "@babel/preset-typescript": "^7.6.0",
     "@babel/runtime": "^7.6.3",
-    "@types/react": "^16.9.5",
-    "@types/react-dom": "^16.9.1",
+    "@types/react": "^16.9.9",
+    "@types/react-dom": "^16.9.2",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
     "babel-eslint": "^10.0.3",
@@ -54,7 +54,7 @@
     "stylelint-config-recommended": "^2.2.0",
     "typescript": "^3.6.4",
     "url-loader": "^1.1.2",
-    "webpack": "^4.41.1",
+    "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"
   },
   "dependencies": {}
