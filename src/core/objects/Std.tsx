@@ -19,7 +19,7 @@ class StdObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A ex
     }
 }
 type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
-export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
+export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, ButtonUIState> {
     editableOnUnlock = true;
     state = { editing: false, loading: false, text: this.props.object.data.text };
     refSpan = React.createRef<HTMLSpanElement>();
@@ -84,7 +84,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
         );
     }
 }
-class Message extends StdObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [], [], { text: string }> {
+class Message extends StdObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], [], { text: string }> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -121,7 +121,7 @@ class Message extends StdObject<{ text: string }, { buffer: any; editing: boolea
         }
         this.uiUpdate({ text: this.data.text });
     }
-    update(args: any[]) {
+    update(args: [any]) {
         this.data.text = this.stringify(args[0]);
         if (args[0]) this.state.buffer = this.parse(args[0]);
         else this.state.buffer = new Bang();
@@ -164,7 +164,7 @@ class Message extends StdObject<{ text: string }, { buffer: any; editing: boolea
     }
 }
 
-class Print extends StdObject<{}, { title: string }> {
+class Print extends StdObject<{}, { title: string }, [any], [], [string]> {
     static get meta(): TMeta {
         return {
             ...super.meta,

@@ -10,17 +10,17 @@ import { BaseUIState, DefaultUIState, BaseObjectEventMap } from "../types";
 
 export type TInletsMeta = {
     isHot: boolean;
-    type: "anything" | "signal" | "object" | "number" | "boolean" | string;
+    type: "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang";
     varLength?: boolean;
     description: string;
 }[];
 export type TOutletMeta = {
-    type: "anything" | "signal" | "object" | "number" | "boolean" | string;
+    type: "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang";
     varLength?: boolean;
     description: string;
 }[];
 export type TArgsMeta = {
-    type: "anything" | "signal" | "object" | "number" | "boolean" | string;
+    type: "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang";
     optional: boolean;
     default?: any;
     varLength?: boolean;
@@ -29,7 +29,7 @@ export type TArgsMeta = {
 export type TPropsMeta = {
     name: string;
     default?: any;
-    type: "anything" | "signal" | "object" | "number" | "boolean" | string;
+    type: "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang";
     description: string;
 }[];
 export type TMeta = {
@@ -44,7 +44,7 @@ export type TMeta = {
     args: TArgsMeta;
     props: TPropsMeta;
 };
-export class BaseUI<T extends BaseObject, P = {}, S = {}> extends React.Component<{ object: T } & P, BaseUIState & S> {
+export class BaseUI<T extends BaseObject<any, any, any, any, any, any, any>, S = {}> extends React.Component<{ object: T }, BaseUIState & S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     editableOnUnlock = false;
     toggleEdit = (bool?: boolean) => false;
@@ -67,7 +67,7 @@ export class BaseUI<T extends BaseObject, P = {}, S = {}> extends React.Componen
         );
     }
 }
-export class DefaultUI<T extends BaseObject> extends BaseUI<T, {}, DefaultUIState> {
+export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> extends BaseUI<T, DefaultUIState> {
     editableOnUnlock = true;
     state = { editing: false, text: "", loading: false, dropdown$: -1 };
     refSpan = React.createRef<HTMLSpanElement>();
@@ -276,7 +276,7 @@ export abstract class AbstractObject<D extends { [key: string]: any } = { [key: 
         this.emit("uiUpdate", state);
     }
     // when arguments and @properties are changed, can use this in constructor
-    update(args: A, props: P) {
+    update(args: A, props: Partial<P>) {
         return this;
     }
     // main function when receive data from a inlet (base 0)
@@ -292,6 +292,13 @@ export abstract class AbstractObject<D extends { [key: string]: any } = { [key: 
         for (let j = 0; j < outletLines.length; j++) {
             const lineID = outletLines[j];
             this._patcher.lines[lineID].pass(data);
+        }
+        return this;
+    }
+    outletAll(outputs: Partial<O>) {
+        for (let i = outputs.length - 1; i >= 0; i--) {
+            const e = outputs[i];
+            if (typeof e !== "undefined") this.outlet(i, e);
         }
         return this;
     }
@@ -337,10 +344,10 @@ export abstract class AbstractObject<D extends { [key: string]: any } = { [key: 
      * @memberof BaseObject
      */
     get data() {
-        return this._box.data as unknown as D;
+        return this._box.data;
     }
     set data(dataIn: D) {
-        this._box.data = dataIn as unknown as Data<this>;
+        this._box.data = dataIn as Data<this>;
     }
     get box() {
         return this._box;

@@ -3,36 +3,14 @@ import Box from "./Box";
 import Patcher from "./Patcher";
 import { TPackage } from "./types";
 
-type TImportedModule = { _____?: boolean; [key: string]: any };
+type TImportedModule = { [key: string]: any };
 declare const window: { module: { exports: TImportedModule }; exports: TImportedModule };
 
-/**
-* ```JavaScript
-*   class A {
-*       static a = {} // A.a
-*       static b() {} // A.b
-*       static get c() {} // A.c (get)
-*       static set d(x) {} // A.d (set)
-*       e = {} // Nothing
-*       f() {} // A.prototype.f
-*       get g() {} // A.prototype.g (get)
-*       set h(x) {} // A.prototype.h (set)
-*       constructor() {} // A.prototype.constructor
-*   }
-*   const B = {
-*       a: {}, // B.a
-*       b() {} // B.b
-*   }
-*   const C = function() {
-*       this.a = null; // C.prototype.constructor
-*   }
-* ```
-*/
 export default class AutoImporter {
     static async importFrom(address: string, pkgName: string) {
-        let ex: TImportedModule = { _____: true }; // Original exports, detect if exports is overwritten.
-        window.exports = ex;
-        window.module = { exports: ex };
+        const toExport: TImportedModule = {}; // Original exports, detect if exports is overwritten.
+        window.exports = toExport;
+        window.module = { exports: toExport };
         return new Promise((resolve: (script: HTMLScriptElement) => void, reject) => {
             const script = document.createElement("script");
             script.async = true;
@@ -43,15 +21,12 @@ export default class AutoImporter {
             script.addEventListener("abort", () => reject(new Error("Script loading aborted.")));
             document.head.appendChild(script);
         }).then(() => {
-            ex = window.module.exports;
+            const exported = window.module.exports;
             delete window.exports;
             delete window.module;
-            if (ex._____) {
-                delete ex._____;
-                return this.import(pkgName, ex);
-            }
+            if (toExport === exported) return this.import(pkgName, exported);
             const o: { [key: string]: any } = {}; // if exports is overwritten, wrap it
-            o[pkgName] = ex;
+            o[pkgName] = exported;
             return this.import(pkgName, o);
         });
     }
@@ -88,7 +63,7 @@ export default class AutoImporter {
         const path = pathIn.slice();
         const name = path[path.length - 1];
         if (typeof el === "function") { // static function or method
-            return class extends BaseObject<{}, { name: string; fn: any; instance: any; inputs: any[]; result: any; fromProto: boolean }> {
+            return class extends BaseObject<{}, { name: string; fn: any; instance: any; inputs: any[]; result: any; fromProto: boolean }, any[], any[], any[], { inlets: number }, { loading: boolean }> {
                 static get meta(): TMeta {
                     return {
                         ...super.meta,
@@ -133,16 +108,12 @@ export default class AutoImporter {
                         }]
                     };
                 }
+                state = { name, fn: el, instance: null as any, inputs: null as any[], result: null as any, fromProto: !!fromProto };
                 constructor(box: Box, patcher: Patcher) {
                     super(box, patcher);
                     this.inlets = (fromProto ? 1 : 0) + (el.length === 0 ? 1 : el.length); // Function.length property
                     this.outlets = (fromProto ? 1 : 0) + 2;
-                    this.state.name = name;
-                    this.state.fn = el;
-                    this.state.instance = null;
                     this.state.inputs = box.parsed.args.slice(); // copy array
-                    this.state.result = null;
-                    this.state.fromProto = !!fromProto;
                     this.update(this.state.inputs, box.parsed.props);
                 }
                 update(args: any[], props: { inlets?: number; [key: string]: any }) {
@@ -209,7 +180,7 @@ export default class AutoImporter {
                 }
             };
         }
-        return class extends BaseObject<{}, { instance: any }> { // static values or property getter
+        return class extends BaseObject<{}, { instance: any }, [any, any?], [any]> { // static values or property getter
             static get meta(): TMeta {
                 return Object.assign(super.meta, {
                     name,
@@ -234,11 +205,11 @@ export default class AutoImporter {
                     }]
                 });
             }
+            state = { instance: null as any }
             constructor(box: Box, patcher: Patcher) {
                 super(box, patcher);
                 this.inlets = fromProto ? 2 : 1;
                 this.outlets = 1;
-                this.state.instance = null;
             }
             fn(data: any, inlet: number) {
                 if (inlet === 0) {

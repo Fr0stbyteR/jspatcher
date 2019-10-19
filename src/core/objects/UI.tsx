@@ -21,9 +21,9 @@ export class Comment extends BaseObject<{ text: string }, {}, [], [], [string]> 
     }
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this.update(box.parsed.args);
+        this.update((box as Box<this>).parsed.args);
     }
-    update(args: any[]) {
+    update(args: [string]) {
         if (!this.data.hasOwnProperty("text")) this.data.text = args.join(" ");
         return this;
     }
