@@ -34,6 +34,12 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
                 varLength: true,
                 description: "Argument after method called"
             }],
+            args: [{
+                type: "anything",
+                optional: true,
+                varLength: true,
+                description: "Set arguments while loaded"
+            }],
             props: [{
                 name: "args",
                 type: "number",
@@ -41,7 +47,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
             }]
         };
     }
-    state = { instance: undefined as any, inputs: [] as any[], result: null as any };
+    state: S<Static> = { instance: undefined, inputs: [], result: null };
     get fixedInlets() {
         return 1;
     }

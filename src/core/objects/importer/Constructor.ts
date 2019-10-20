@@ -7,7 +7,8 @@ type TAnyConstructor = new (...args: any[]) => any;
 class ConstructorUI extends ImportedObjectUI<Constructor> {
     prependColor = "rgb(78, 201, 176)";
 }
-export class Constructor extends ImportedObject<TAnyConstructor, { inputs: any[]; result: any }, [any | Bang, ...any[]], [any, ...any[]], any[], { args: number }, { loading: boolean }> {
+type S = { inputs: any[]; result: any };
+export class Constructor extends ImportedObject<TAnyConstructor, S, [any | Bang, ...any[]], [any, ...any[]], any[], { args: number }, { loading: boolean }> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -26,6 +27,12 @@ export class Constructor extends ImportedObject<TAnyConstructor, { inputs: any[]
                 varLength: true,
                 description: "Argument after constructor called"
             }],
+            args: [{
+                type: "anything",
+                optional: true,
+                varLength: true,
+                description: "Set arguments while loaded"
+            }],
             props: [{
                 name: "args",
                 type: "number",
@@ -33,7 +40,7 @@ export class Constructor extends ImportedObject<TAnyConstructor, { inputs: any[]
             }]
         };
     }
-    state = { inputs: [] as any[], result: null as any };
+    state: S = { inputs: [], result: null };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         const Fn = this.imported;

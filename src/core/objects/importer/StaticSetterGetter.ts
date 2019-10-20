@@ -1,10 +1,9 @@
 import { TMeta, Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
+import { SetterGetter } from "./SetterGetter";
 import { StaticPropertyUI } from "./StaticProperty";
-import { ImportedObject } from "./ImportedObject";
+import { ImportedObjectUI } from "./ImportedObject";
 
-export class StaticSetterGetter extends ImportedObject<any, { result: any }, [Bang, any], [any], [any], {}, { loading: boolean }> {
+export class StaticSetterGetter extends SetterGetter<true> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -24,21 +23,26 @@ export class StaticSetterGetter extends ImportedObject<any, { result: any }, [Ba
             }]
         };
     }
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 2;
-        this.outlets = 1;
-        this.update([box.parsed.args]);
+    get initialInlets() {
+        return 2;
     }
-    update(args: [any]) {
-        if (args && args.length) this.imported = args[0];
-        return this;
+    get initialOutlets() {
+        return 1;
     }
     fn(data: any, inlet: number) {
         if (inlet === 0) {
-            if (data instanceof Bang && this.execute()) this.output();
+            if (!(data instanceof Bang)) return this;
+            if (typeof this.state.input !== "undefined") {
+                try {
+                    this.imported = this.state.input;
+                } catch (e) {
+                    this.error(e);
+                    return this;
+                }
+            }
+            if (this.execute()) return this.output();
         } else if (inlet === 1) {
-            this.imported = data;
+            this.state.input = data;
         }
         return this;
     }
@@ -52,25 +56,7 @@ export class StaticSetterGetter extends ImportedObject<any, { result: any }, [Ba
         }
     }
     callback = () => this.outlet(0, this.state.result);
-    output() {
-        if (this.state.result instanceof Promise) {
-            this.loading = true;
-            this.state.result.then((r) => {
-                this.loading = false;
-                this.state.result = r;
-                this.callback();
-            }, (r) => {
-                this.loading = false;
-                this.error(r);
-            });
-            return this;
-        }
-        return this.callback();
-    }
-    set loading(loading: boolean) {
-        this.uiUpdate({ loading });
-    }
-    get ui(): typeof StaticPropertyUI {
+    get ui(): typeof ImportedObjectUI {
         return StaticPropertyUI;
     }
 }

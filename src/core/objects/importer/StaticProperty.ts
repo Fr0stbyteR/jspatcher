@@ -1,12 +1,13 @@
 import { TMeta, Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
-import { ImportedObjectUI, ImportedObject } from "./ImportedObject";
+import { ImportedObjectUI } from "./ImportedObject";
+import { Property } from "./Property";
 
 export class StaticPropertyUI extends ImportedObjectUI<StaticProperty> {
     prependColor = "rgb(156, 220, 254)";
 }
-export class StaticProperty extends ImportedObject<any, { result: any }, [Bang, any], [any], [any], {}, {}> {
+export class StaticProperty extends Property<true> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -23,13 +24,17 @@ export class StaticProperty extends ImportedObject<any, { result: any }, [Bang, 
             outlets: [{
                 type: "anything",
                 description: "Value"
+            }],
+            args: [{
+                type: "anything",
+                optional: true,
+                description: "Set the value while loaded."
             }]
         };
     }
+    outlets = 1;
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this.inlets = 2;
-        this.outlets = 1;
         this.update([box.parsed.args]);
     }
     update(args: [any]) {

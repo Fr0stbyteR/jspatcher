@@ -19,6 +19,7 @@ export class StaticGetter extends Getter<true> {
             }]
         };
     }
+    outlets = 1;
     execute() {
         try {
             this.state.result = this.imported;

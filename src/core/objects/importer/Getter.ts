@@ -26,12 +26,9 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
             }]
         };
     }
-    state = { instance: undefined as any, result: null as any };
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 1;
-        this.outlets = 2;
-    }
+    state: S<Static> = { instance: undefined, result: null };
+    inlets = 1;
+    outlets = 2;
     fn(data: any, inlet: number) {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;
