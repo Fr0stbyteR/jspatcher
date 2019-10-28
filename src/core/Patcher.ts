@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
-import AutoImporter from "./AutoImporter";
+import Importer from "./objects/importer/Importer";
 import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel } from "./types";
 
 import Base from "./objects/Base";
@@ -53,7 +53,7 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
         return libOut;
     }
     async dynamicImportPackage(address: string, pkgName?: string) {
-        const pkg = await AutoImporter.importFrom(address, pkgName);
+        const pkg = await Importer.importFrom(address, pkgName);
         Packages[pkgName || name] = pkg;
         this.packageRegister(pkg, this._state.libJS, pkgName || name);
     }
@@ -602,7 +602,7 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
         }
         for (const lineID in clipboard.lines) {
             const line = clipboard.lines[lineID];
-            if (this.lines[line.id]) line.id = "line-" + ++this.props.lineIndexCount;
+            line.id = "line-" + ++this.props.lineIndexCount;
             line.src[0] = idMap[line.src[0]];
             line.dest[0] = idMap[line.dest[0]];
             this.createLine(line);

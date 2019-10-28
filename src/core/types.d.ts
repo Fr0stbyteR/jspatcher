@@ -3,6 +3,7 @@ import Patcher from "./Patcher";
 import Box from "./Box";
 import Line from "./Line";
 import History from "./History";
+import { ImportedObject } from "./objects/importer/ImportedObject";
 
 type TPatcherMode = "max" | "gen" | "faust" | "js";
 
@@ -91,6 +92,7 @@ type TMaxClipboard = {
     };
 };
 declare class AnyObject extends BaseObject<any, any, any, any, any, any, any> {}
+declare class AnyImportedObject extends ImportedObject<any, any, any, any, any, any, any> {}
 type TPackage = { [key: string]: typeof AnyObject | TPackage };
 
 type TLine = {

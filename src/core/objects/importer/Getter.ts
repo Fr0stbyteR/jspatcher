@@ -1,8 +1,8 @@
 import { TMeta, Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
+import Patcher from "../../Patcher";
+import Box from "../../Box";
 
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; result: any };
 type I<Static extends boolean> = Static extends true ? [Bang] : [any | Bang];
@@ -27,8 +27,14 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
         };
     }
     state: S<Static> = { instance: undefined, result: null };
-    inlets = 1;
-    outlets = 2;
+    constructor(box: Box, patcher: Patcher) {
+        super(box, patcher);
+        this.configurePorts();
+    }
+    configurePorts() {
+        this.inlets = 1;
+        this.outlets = 2;
+    }
     fn(data: any, inlet: number) {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;

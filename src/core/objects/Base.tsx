@@ -7,6 +7,7 @@ import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
 import { BaseUIState, DefaultUIState, BaseObjectEventMap } from "../types";
+import { stringifyError } from "../../utils";
 
 export type TInletsMeta = {
     isHot: boolean;
@@ -47,16 +48,25 @@ export type TMeta = {
 export class BaseUI<T extends BaseObject<any, any, any, any, any, any, any>, S = {}> extends React.Component<{ object: T }, BaseUIState & S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     editableOnUnlock = false;
+    get object() {
+        return this.props.object;
+    }
+    get patcher() {
+        return this.props.object.patcher;
+    }
+    get box() {
+        return this.props.object.box;
+    }
     toggleEdit = (bool?: boolean) => false;
     componentDidMount() {
-        this.props.object.on("uiUpdate", this.handleUpdate);
+        this.object.on("uiUpdate", this.handleUpdate);
     }
     componentWillUnmount() {
-        this.props.object.off("uiUpdate", this.handleUpdate);
+        this.object.off("uiUpdate", this.handleUpdate);
     }
     handleUpdate = <K extends keyof (BaseUIState & S)>(state: Pick<BaseUIState & S, K> | BaseUIState & S | null) => this.setState(state);
     render() {
-        const { object } = this.props;
+        const { object } = this;
         const packageName = "package-" + object.meta.package.toLowerCase();
         const className = packageName + "-" + object.meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container"];
@@ -74,13 +84,14 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
     refDropdown = React.createRef<HTMLTableSectionElement>();
     dropdownOptions: { key: string; value: string; text: string; icon: SemanticICONS; description: string }[] = [];
     toggleEdit = (bool?: boolean) => {
+        const { patcher, box } = this;
         if (bool === this.state.editing) return this.state.editing;
-        if (this.props.object.patcher._state.locked) return this.state.editing;
+        if (patcher._state.locked) return this.state.editing;
         if (!this.refSpan.current) return this.state.editing;
         const toggle = !this.state.editing;
         const span = this.refSpan.current;
         if (toggle) {
-            this.props.object.patcher.selectOnly(this.props.object.box.id);
+            patcher.selectOnly(box.id);
             this.setState({ editing: true, text: span.innerText });
             span.contentEditable = "true";
             const range = document.createRange();
@@ -92,7 +103,7 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
             this.setState({ editing: false, text: span.innerText });
             span.contentEditable = "false";
             window.getSelection().removeAllRanges();
-            this.props.object.patcher.changeBoxText(this.props.object.box.id, span.textContent);
+            patcher.changeBoxText(box.id, span.textContent);
         }
         return toggle;
     }
@@ -137,12 +148,13 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
     handleKeyUp = (e: React.KeyboardEvent) => {
         if (!this.refSpan.current) return;
         if (this.refSpan.current.innerText === this.state.text) return;
+        const { patcher } = this;
         this.dropdownOptions = [];
         const splited = this.refSpan.current.innerText.split(" ");
-        for (const key in this.props.object.patcher._state.lib) {
+        for (const key in patcher._state.lib) {
             if (this.dropdownOptions.length > 10) break;
             if (key.indexOf(splited[0]) !== -1) {
-                const o = this.props.object.patcher._state.lib[key];
+                const o = patcher._state.lib[key];
                 this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
             }
         }
@@ -169,7 +181,7 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
     }
     componentDidMount() {
         super.componentDidMount();
-        this.setState({ text: this.props.object.box.text });
+        this.setState({ text: this.object.box.text });
     }
     get containerProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
         return {};
@@ -187,7 +199,7 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
         return {};
     }
     render() {
-        const object = this.props.object;
+        const { object } = this;
         const packageName = "package-" + object.meta.package.toLowerCase();
         const className = packageName + "-" + object.meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container", "box-ui-default"];
@@ -319,20 +331,20 @@ export abstract class AbstractObject<D extends { [key: string]: any } = { [key: 
         return this;
     }
     // output to console
-    post(data: string) {
-        this._patcher.newLog("none", this.meta.name, data, this._box);
+    post(data: any) {
+        this._patcher.newLog("none", this.meta.name, stringifyError(data), this._box);
         return this;
     }
-    error(data: string) {
-        this._patcher.newLog("error", this.meta.name, data, this._box);
+    error(data: any) {
+        this._patcher.newLog("error", this.meta.name, stringifyError(data), this._box);
         return this;
     }
-    info(data: string) {
-        this._patcher.newLog("info", this.meta.name, data, this._box);
+    info(data: any) {
+        this._patcher.newLog("info", this.meta.name, stringifyError(data), this._box);
         return this;
     }
-    warn(data: string) {
-        this._patcher.newLog("warn", this.meta.name, data, this._box);
+    warn(data: any) {
+        this._patcher.newLog("warn", this.meta.name, stringifyError(data), this._box);
         return this;
     }
     get patcher() {
@@ -419,7 +431,7 @@ class EmptyObject extends BaseObject<{}, { editing: boolean }, [any], [any]> {
         return class EmptyObjectUI extends DefaultUI<EmptyObject> {
             componentDidMount() {
                 super.componentDidMount();
-                if (this.props.object.state.editing) this.toggleEdit(true);
+                if (this.object.state.editing) this.toggleEdit(true);
             }
         };
     }

@@ -1,6 +1,6 @@
-import AutoImporter from "../AutoImporter";
+import Importer from "./importer/Importer";
 
-const lib = AutoImporter.import("Math", {
+const lib = Importer.import("Math", {
     E: Math.E,
     LN2: Math.LN2,
     LN10: Math.LN10,

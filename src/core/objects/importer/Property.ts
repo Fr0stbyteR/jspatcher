@@ -1,5 +1,7 @@
 import { TMeta, Bang } from "../Base";
 import { ImportedObjectUI, ImportedObject } from "./ImportedObject";
+import Patcher from "../../Patcher";
+import Box from "../../Box";
 
 export class PropertyUI extends ImportedObjectUI<Property> {
     prependColor = "rgb(220, 200, 170)";
@@ -31,9 +33,15 @@ export class Property<Static extends boolean = false> extends ImportedObject<any
             }]
         };
     }
-    state = { instance: undefined } as S<Static>;
-    inlets = 2;
-    outlets = 2;
+    state: S<Static> = { instance: undefined };
+    constructor(box: Box, patcher: Patcher) {
+        super(box, patcher);
+        this.configurePorts();
+    }
+    configurePorts() {
+        this.inlets = 2;
+        this.outlets = 2;
+    }
     fn(data: any, inlet: number) {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;

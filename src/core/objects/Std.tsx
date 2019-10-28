@@ -25,13 +25,14 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
     refSpan = React.createRef<HTMLSpanElement>();
     handleChanged = (text: string) => {};
     toggleEdit = (bool?: boolean) => {
+        const { patcher, box } = this;
         if (bool === this.state.editing) return this.state.editing;
-        if (this.props.object.patcher._state.locked) return this.state.editing;
+        if (patcher._state.locked) return this.state.editing;
         if (!this.refSpan.current) return this.state.editing;
         const toggle = !this.state.editing;
         const span = this.refSpan.current;
         if (toggle) {
-            this.props.object.patcher.selectOnly(this.props.object.box.id);
+            patcher.selectOnly(box.id);
             this.setState({ editing: true, text: span.innerText });
             span.contentEditable = "true";
             const range = document.createRange();
@@ -60,15 +61,16 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
         e.nativeEvent.stopImmediatePropagation();
     }
     handlePaste = (e: React.ClipboardEvent) => {
+        if (!this.state.editing) return;
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     }
     componentDidMount() {
         super.componentDidMount();
-        if (this.props.object.state.editing) this.toggleEdit(true);
+        if (this.object.state.editing) this.toggleEdit(true);
     }
     render() {
-        const object = this.props.object;
+        const { object } = this;
         const packageName = "package-" + object.meta.package.toLowerCase();
         const className = packageName + "-" + object.meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container", "box-ui-button", "ui", "button", "compact", "mini"];
@@ -134,7 +136,7 @@ class Message extends StdObject<{ text: string }, { buffer: any; editing: boolea
             return this;
         }
         if (inlet === 1) {
-            this.update([Util.inspect(data)]);
+            this.update([data]);
             return this;
         }
         return this;
@@ -158,8 +160,10 @@ class Message extends StdObject<{ text: string }, { buffer: any; editing: boolea
     }
     get ui(): typeof BaseUI {
         return class MessageUI extends ButtonUI<Message> {
-            handleChanged = (text: string) => this.props.object.update([text]);
-            handleClick = (e: React.MouseEvent) => this.props.object.outlet(0, this.props.object.state.buffer);
+            handleChanged = (text: string) => this.object.update([text]);
+            handleClick = (e: React.MouseEvent) => {
+                if (this.patcher._state.locked) this.object.outlet(0, this.object.state.buffer);
+            }
         };
     }
 }

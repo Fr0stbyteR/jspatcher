@@ -82,7 +82,7 @@ export class FaustOp extends BaseObject<{}, { inlets: number; outlets: number; a
 }
 
 class In extends FaustOp {
-    static get meta() {
+    static get meta(): TMeta {
         return {
             ...super.meta,
             name: this.name,
@@ -123,7 +123,7 @@ class In extends FaustOp {
     }
 }
 class Out extends FaustOp {
-    static get meta() {
+    static get meta(): TMeta {
         return {
             ...super.meta,
             name: this.name,
@@ -169,7 +169,7 @@ class Out extends FaustOp {
     }
 }
 class Split extends FaustOp {
-    static get meta() {
+    static get meta(): TMeta {
         return {
             ...super.meta,
             name: this.name,
@@ -222,7 +222,7 @@ class Split extends FaustOp {
     }
 }
 class Merge extends FaustOp {
-    static get meta() {
+    static get meta(): TMeta {
         return {
             ...super.meta,
             name: this.name,
@@ -276,7 +276,7 @@ class Merge extends FaustOp {
     }
 }
 class Rec extends FaustOp {
-    static get meta() {
+    static get meta(): TMeta {
         return {
             ...super.meta,
             name: this.name,
@@ -313,7 +313,7 @@ class Rec extends FaustOp {
     }
 }
 class Mem extends FaustOp {
-    static get meta() {
+    static get meta(): TMeta {
         return {
             ...super.meta,
             name: this.name,
@@ -338,7 +338,7 @@ class Mem extends FaustOp {
     }
 }
 class Delay extends FaustOp {
-    static get meta() {
+    static get meta(): TMeta {
         return {
             ...super.meta,
             name: this.name,
@@ -372,7 +372,7 @@ class Delay extends FaustOp {
     }
 }
 class Const extends FaustOp {
-    static get meta() {
+    static get meta(): TMeta {
         return {
             ...super.meta,
             name: this.name,
@@ -499,12 +499,12 @@ for (const className in opMap.mathOps) {
     const op = opMap.mathOps[className];
     const inletsMeta = new Array(op.inlets).fill(null).map(() => ({
         isHot: true,
-        type: "signal",
+        type: "signal" as "signal",
         description: "_"
     }));
     const outletDesc = `${op.symbol}(${new Array(op.inlets).fill("_").join(", ")})`;
     const Op = class extends FaustOp {
-        static get meta() {
+        static get meta(): TMeta {
             return {
                 ...super.meta,
                 name: className,

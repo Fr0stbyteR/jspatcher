@@ -19,7 +19,10 @@ export class StaticGetter extends Getter<true> {
             }]
         };
     }
-    outlets = 1;
+    configurePorts() {
+        this.inlets = 1;
+        this.outlets = 1;
+    }
     execute() {
         try {
             this.state.result = this.imported;
