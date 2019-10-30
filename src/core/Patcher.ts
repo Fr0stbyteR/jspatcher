@@ -14,8 +14,9 @@ import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
 import JSPMath from "./objects/Math";
+import WebAudio from "./objects/WebAudio/WebAudio";
 
-const Packages: TPackage = { Base, Std, UI, Op, Window, Math: JSPMath };
+const Packages: TPackage = { Base, Std, UI, Op, Window, Math: JSPMath, WebAudio };
 
 export default class Patcher extends EventEmitter<PatcherEventMap> {
     lines: { [key: string]: Line };
@@ -27,7 +28,8 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
         super();
         this.setMaxListeners(4096);
         this.observeHistory();
-        this._state = { isLoading: false, locked: true, presentation: false, showGrid: true, snapToGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {}, libFaust: {}, selected: [] };
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this._state = { audioCtx: new AudioContext({ latencyHint: 0.00001 }), isLoading: false, locked: true, presentation: false, showGrid: true, snapToGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {}, libFaust: {}, selected: [] };
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
         this._state.libGen = this.packageRegister(GenOps, {});

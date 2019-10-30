@@ -10,9 +10,8 @@ enum TPanels {
     Console = "Console",
     Code = "Code"
 }
-class Console extends React.Component {
-    props: { patcher: Patcher };
-    state: { cached: TPatcherLog[] } = { cached: [] };
+class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLog[] }> {
+    state = { cached: this.props.patcher._state.log.slice() };
     refTable = React.createRef<HTMLTableElement>();
     logDuringLoading: TPatcherLog[] = [];
     handleNewLog = (log: TPatcherLog) => {
@@ -28,9 +27,6 @@ class Console extends React.Component {
     }
     handleClear = () => {
         this.setState({ cached: [] });
-    }
-    UNSAFE_componentWillMount() {
-        this.setState({ cached: this.props.patcher._state.log.slice() });
     }
     componentDidMount() {
         this.props.patcher.on("newLog", this.handleNewLog);
@@ -63,8 +59,8 @@ class Console extends React.Component {
         );
     }
 }
-class CodeEditor extends React.Component {
-    props: { patcher: Patcher };
+class CodeEditor extends React.Component<{ patcher: Patcher }, { e: JSX.Element }> {
+    state = { e: <Dimmer active><Loader content="Loading" /></Dimmer> };
     codeEditorJSX: JSX.Element;
     codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
     handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => {
@@ -75,15 +71,11 @@ class CodeEditor extends React.Component {
         if (!this.props.patcher._state.isLoading && this.codeEditor) this.codeEditor.setValue(this.code);
     }
     handleResize = () => (this.codeEditor ? this.codeEditor.layout() : undefined);
-    UNSAFE_componentWillMount() {
-        this.codeEditorJSX = <Dimmer active><Loader content="Loading" /></Dimmer>;
+    componentDidMount() {
         import("react-monaco-editor").then((reactMonacoEditor) => {
             const MonacoEditor = reactMonacoEditor.default;
-            this.codeEditorJSX = <MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />;
-            this.forceUpdate();
+            this.setState({ e: <MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} /> });
         });
-    }
-    componentDidMount() {
         this.props.patcher.on("loaded", this.handleGraphChanged);
         this.props.patcher.on("graphChanged", this.handleGraphChanged);
         window.addEventListener("resize", this.handleResize);
@@ -94,15 +86,14 @@ class CodeEditor extends React.Component {
         window.removeEventListener("resize", this.handleResize);
     }
     render() {
-        return this.codeEditorJSX;
+        return this.state.e;
     }
     get code() {
         return this.props.patcher.props.mode === "faust" ? this.props.patcher.toFaustDspCode() : "";
     }
 }
-export default class RightMenu extends React.Component {
-    props: { patcher: Patcher };
-    state = { active: TPanels.None };
+export default class RightMenu extends React.Component<{ patcher: Patcher }, { active: TPanels; audioOn: boolean }> {
+    state = { active: TPanels.None, audioOn: false };
     refDivPane = React.createRef<HTMLDivElement>();
     refCode = React.createRef<CodeEditor>();
     refConsole = React.createRef<Console>();
@@ -110,7 +101,7 @@ export default class RightMenu extends React.Component {
         if (this.state.active === data.name) {
             this.setState({ active: TPanels.None });
         } else {
-            this.setState({ active: data.name }, () => {
+            this.setState({ active: data.name as TPanels }, () => {
                 if (data.name === TPanels.Code && this.refCode.current && this.refCode.current.codeEditor) {
                     this.refCode.current.codeEditor.layout();
                 }
@@ -146,11 +137,23 @@ export default class RightMenu extends React.Component {
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
     }
-    UNSAFE_componentWillMount() {
+    handleAudioSwitch = (e: React.MouseEvent) => {
+        const audioCtx = this.props.patcher._state.audioCtx;
+        if (this.state.audioOn) audioCtx.suspend();
+        else audioCtx.resume();
+    }
+    handleAudioCtxStateChange = () => {
+        const audioCtx = this.props.patcher._state.audioCtx;
+        const { state } = audioCtx;
+        this.setState({ audioOn: state === "running" });
     }
     componentDidMount() {
+        const audioCtx = this.props.patcher._state.audioCtx;
+        audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
     }
     componentWillUnmount() {
+        const audioCtx = this.props.patcher._state.audioCtx;
+        audioCtx.removeEventListener("statechange", this.handleAudioCtxStateChange);
     }
     render() {
         return (
@@ -161,6 +164,10 @@ export default class RightMenu extends React.Component {
                     </Menu.Item>
                     <Menu.Item name={TPanels.Code} active={this.state.active === TPanels.Code} onClick={this.handleItemClick}>
                         <Icon name="code" color={this.state.active === TPanels.Code ? "teal" : "grey"} inverted />
+                    </Menu.Item>
+                    <div style={{ flex: "1 1 auto" }}></div>
+                    <Menu.Item name="Audio Switch" active={false} onClick={this.handleAudioSwitch}>
+                        <Icon name={this.state.audioOn ? "volume up" : "volume off"} color={this.state.audioOn ? "teal" : "grey"} inverted />
                     </Menu.Item>
                 </Menu>
                 <div id="right-pane" hidden={this.state.active === TPanels.None} ref={this.refDivPane}>

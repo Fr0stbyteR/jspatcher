@@ -91,6 +91,7 @@ export default class Importer {
         const props = Object.getOwnPropertyDescriptors(o);
         for (const key in props) {
             const prop = props[key];
+            if (key === "prototype") this.import(pkgName, root, out, [...path, "prototype"], stack, depth + 1);
             if (!prop.enumerable) continue;
             path[depth] = key;
             out[path.map(s => (s === "prototype" ? "" : s)).join(".")] = this.getObject(prop, pkgName, root, path.slice());
@@ -98,7 +99,6 @@ export default class Importer {
             if (typeof value === "object" && value !== null && !Array.isArray(value)) {
                 this.import(pkgName, root, out, path, stack, depth + 1);
             }
-            if (key === "prototype") this.import(pkgName, root, out, [...path, "prototype"], stack, depth + 2);
         }
         return out;
     }

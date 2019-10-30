@@ -5,6 +5,13 @@ import Line from "./Line";
 import History from "./History";
 import { ImportedObject } from "./objects/importer/ImportedObject";
 
+declare global {
+    interface Window {
+        patcher: Patcher;
+        webkitAudioContext?: typeof AudioContext;
+    }
+}
+
 type TPatcherMode = "max" | "gen" | "faust" | "js";
 
 type TPatcher = {
@@ -23,6 +30,7 @@ type TPatcherProps = {
 };
 
 type TPatcherState = {
+    audioCtx: AudioContext;
     isLoading: boolean;
     locked: boolean;
     presentation: boolean;

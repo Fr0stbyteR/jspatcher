@@ -5,11 +5,6 @@ import "lato-font/css/lato-font.css";
 import Patcher from "./core/Patcher";
 import UI from "./components/UI";
 
-declare global {
-    interface Window {
-        patcher: Patcher;
-    }
-}
 const patcher = new Patcher();
 window.patcher = patcher;
 
