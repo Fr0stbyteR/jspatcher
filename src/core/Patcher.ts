@@ -7,16 +7,15 @@ import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, T
 
 import Base from "./objects/Base";
 import Std from "./objects/Std";
-import Max from "./objects/Max";
 import GenOps from "./objects/Gen";
 import FaustOps, { toFaustDspCode } from "./objects/Faust";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
 import JSPMath from "./objects/Math";
-import WebAudio from "./objects/WebAudio/WebAudio";
+import JSPWebAudio from "./objects/WebAudio/Imports";
 
-const Packages: TPackage = { Base, Std, UI, Op, Window, Math: JSPMath, WebAudio };
+const Packages: TPackage = { Base, Std, UI, Op, Window, Math: JSPMath, WebAudio: JSPWebAudio };
 
 export default class Patcher extends EventEmitter<PatcherEventMap> {
     lines: { [key: string]: Line };
@@ -62,6 +61,7 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
     clear() {
         this.lines = {};
         this.boxes = {};
+        // eslint-disable-next-line @typescript-eslint/camelcase
         this.props = { mode: "js", bgcolor: [61, 65, 70, 1], editing_bgcolor: [82, 87, 94, 1], grid: [15, 15], boxIndexCount: 0, lineIndexCount: 0 };
         this._state.selected = [];
     }
@@ -91,6 +91,7 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
                 return this;
             }
             this.props.bgcolor = rgbaMax2Css(patcher.bgcolor);
+            // eslint-disable-next-line @typescript-eslint/camelcase
             this.props.editing_bgcolor = rgbaMax2Css(patcher.editing_bgcolor);
             const maxBoxes = patcher.boxes;
             const maxLines = patcher.lines;

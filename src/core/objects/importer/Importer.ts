@@ -16,7 +16,7 @@ declare const window: { module: { exports: TImportedModule }; exports: TImported
 
 export default class Importer {
     static getObject(p: PropertyDescriptor, pkgName: string, root: { [key: string]: any }, path: string[]): typeof AnyImportedObject {
-        const isStatic = path[path.length - 1] !== "prototype";
+        const isStatic = path[path.length - 2] !== "prototype";
         let Super: typeof AnyImportedObject;
         const type = typeof p.value;
         if (type === "function") {

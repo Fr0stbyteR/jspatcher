@@ -11,7 +11,7 @@ export class SetterGetter<Static extends boolean = false> extends ImportedObject
     static get meta(): TMeta {
         return {
             ...super.meta,
-            description: "Auto-imported static setter / getter",
+            description: "Auto-imported setter / getter",
             inlets: [{
                 isHot: true,
                 type: "anything",
