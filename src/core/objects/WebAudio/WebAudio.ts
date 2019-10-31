@@ -1,3 +1,3 @@
-import AudioParam from "./AudioParam";
+import WebAudio from "./Imports";
 
-export default { AudioParam };
+export default { WebAudio };

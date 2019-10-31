@@ -1,9 +1,9 @@
 import { EventEmitter } from "events";
 import Patcher from "./Patcher";
 import { Data, Args, Props, Inputs, AbstractObject } from "./objects/Base";
-import { BoxEventMap, TBox } from "./types";
+import { BoxEventMap, TBox, AnyObject } from "./types";
 
-export default class Box<T extends AbstractObject<any, any, any, any, any, any, any> = AbstractObject> extends EventEmitter<BoxEventMap> {
+export default class Box<T extends AnyObject = AbstractObject> extends EventEmitter<BoxEventMap> {
     id: string;
     text = "";
     inlets = 0;
