@@ -35,9 +35,10 @@ export class StaticProperty extends Property<true> {
     outlets = 1;
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this.update([box.parsed.args]);
+        this.update((box as Box<this>).args);
     }
-    update(args: [any]) {
+    update(args?: [any?]) {
+        this.updateBox(args);
         if (args && args.length) this.imported = args[0];
         return this;
     }

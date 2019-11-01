@@ -28,7 +28,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
             }],
             outlets: [{
                 type: "signal",
-                description: "Node connection"
+                description: "Node connection (2 channels)"
             }, {
                 type: "object",
                 description: "Instance: OscillatorNode"
@@ -55,14 +55,17 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
         super(box, patcher);
         this.inlets = 3;
         this.outlets = 2;
+        this.node.channelInterpretation = "discrete";
+        this.node.channelCountMode = "explicit";
         this.keepAlive();
-        this.update((box as Box<this>).parsed.args, (box as Box<this>).parsed.props);
         this.node.start();
+        this.update((box as Box<this>).parsed.args, (box as Box<this>).parsed.props);
     }
     keepAlive() {
         this.node.connect(this.patcher._state.dummyAudioNode, 0, 0);
     }
-    update(args: [number, string], props: { detune?: number }) {
+    update(args?: [number?, string?], props?: { detune?: number }) {
+        this.updateBox(args, props);
         if (args && args.length) {
             if (args[0] && typeof args[0] === "number" && isFinite(args[0])) this.node.frequency.setValueAtTime(args[0], this.audioCtx.currentTime);
             if (args[1] && typeof args[1] === "string" && Oscillator.isOscillatorType(args[1])) this.node.type = args[1];
@@ -72,7 +75,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
         }
         return this;
     }
-    fn<$ extends number>(data: [Bang, string, string, OscillatorType][$], inlet: $) {
+    fn<I extends [Bang, string, string, OscillatorType], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
             if (data instanceof Bang) this.outlet(1, this.node);
         } else if (inlet === 1) {
@@ -82,14 +85,14 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
             } catch (e) {
                 this.error(e.message);
             }
-        } else if (inlet === 1) {
+        } else if (inlet === 2) {
             try {
                 const curve = decodeMaxCurveFormat(data as string);
                 JSPAudioNode.applyCurve(this.node.frequency, curve, this.audioCtx);
             } catch (e) {
                 this.error(e.message);
             }
-        } else if (inlet === 2) {
+        } else if (inlet === 3) {
             if (Oscillator.isOscillatorType(data)) this.node.type = data;
         }
         return this;

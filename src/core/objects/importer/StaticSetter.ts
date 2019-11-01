@@ -22,7 +22,8 @@ export class StaticSetter extends Setter<true> {
     get initialOutlets() {
         return 0;
     }
-    update(args: [any]) {
+    update(args?: [any?]) {
+        this.updateBox(args);
         if (args && args.length) this.imported = args[0];
         return this;
     }

@@ -277,22 +277,48 @@ export abstract class AbstractObject<D extends { [key: string]: any } = { [key: 
         // the box which create this instance, use _ for prevent recursive stringify
         this._box = box as Box<this>;
         // usually do this after initialization
-        // this.update(box.parsed.args, box.parsed.props);
+        // this.update(box.args, box.props);
     }
-    // build new ui on page, return a React Component, override this
+    /**
+     * Build new ui on page, return a React Component, override this
+     *
+     * @readonly
+     * @type {typeof BaseUI}
+     * @memberof AbstractObject
+     */
     get ui(): typeof BaseUI {
         return BaseUI;
     }
-    // update UI's React State
-    uiUpdate(state: Partial<U & BaseUIState> | null) {
+    /**
+     * Update UI's React State
+     *
+     * @param {(Partial<U & BaseUIState> | null)} state
+     * @returns {this}
+     * @memberof AbstractObject
+     */
+    uiUpdate(state: Partial<U & BaseUIState> | null): this {
         this.emit("uiUpdate", state);
-    }
-    // when arguments and @properties are changed, can use this in constructor
-    update(args: A, props: Partial<P>) {
         return this;
     }
+    /**
+     *
+     * When arguments and properties are changed, can use this in constructor
+     *
+     * @param {Partial<A>} [args]
+     * @param {Partial<P>} [props]
+     * @returns {this}
+     * @memberof AbstractObject
+     */
+    update(args?: Partial<A>, props?: Partial<P>): this {
+        this.updateBox(args, props);
+        return this;
+    }
+    updateBox(args?: Partial<A>, props?: Partial<P>) {
+        if (args) this.box.args = Object.assign(this.box.args, args);
+        if (props) this.box.props = Object.assign(this.box.props, props);
+    }
     // main function when receive data from a inlet (base 0)
-    fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
+    fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $): this {
         return this;
     }
     // use this function to output data with ith outlet.

@@ -44,9 +44,10 @@ export class Setter<Static extends boolean = false> extends ImportedObject<any, 
         super(box, patcher);
         this.inlets = this.initialInlets;
         this.outlets = this.initialOutlets;
-        this.update(box.parsed.args);
+        this.update(box.args as [any]);
     }
-    update(args: any[]) {
+    update(args?: [any?]) {
+        this.updateBox(args);
         if (args && args.length) this.state.input = args[0];
         return this;
     }

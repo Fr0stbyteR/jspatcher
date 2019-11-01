@@ -46,9 +46,10 @@ export class Constructor extends ImportedObject<TAnyConstructor, S, [any | Bang,
         const Fn = this.imported;
         this.inlets = Fn.length === 0 ? 1 : Fn.length; // Function.length property
         this.outlets = 1 + this.inlets;
-        this.update(box.parsed.args.slice(), box.parsed.props);
+        this.update(box.args.slice(), box.props);
     }
-    update(args: any[], props: { args?: number }) {
+    update(args?: any[], props?: { args?: number }) {
+        this.updateBox(args, props);
         if (props && props.args && typeof props.args === "number" && props.args >= 0) {
             this.inlets = ~~props.args;
             this.outlets = 1 + this.inlets;

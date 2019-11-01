@@ -3,7 +3,7 @@ import Box from "../Box";
 import Patcher from "../Patcher";
 import { TPackage } from "../types";
 
-export class FaustOp extends BaseObject<{}, { inlets: number; outlets: number; args: (number | string)[]; [key: string]: any }> {
+export class FaustOp extends BaseObject<{}, { inlets: number; outlets: number; args: (number | string)[]; [key: string]: any }, [], [], any[]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -17,12 +17,14 @@ export class FaustOp extends BaseObject<{}, { inlets: number; outlets: number; a
     /**
      * Supress inlet if defined in args
      *
-     * @param {any[]} args
-     * @param {{ [key: string]: any }} props
+     * @param {any[]} [args]
+     * @param {{ [key: string]: any }} [props]
      * @returns
      * @memberof FaustOp
      */
-    update(args: any[], props: { [key: string]: any }) {
+    update(args?: any[]) {
+        this.updateBox(args);
+        if (!args) return this;
         this.state.args = args.slice();
         this.inlets = this.state.inlets - Math.min(this.state.inlets, args.length);
         this.outlets = this.state.outlets;
@@ -103,9 +105,11 @@ class In extends FaustOp {
         super(box, patcher);
         this.inlets = 0;
         this.outlets = 1;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.args);
     }
-    update(args: any[], props: { [key: string]: any }) {
+    update(args?: any[]) {
+        this.updateBox(args);
+        if (!args) return this;
         this.state.args = args.slice();
         return this;
     }
@@ -145,9 +149,11 @@ class Out extends FaustOp {
         super(box, patcher);
         this.inlets = 1;
         this.outlets = 0;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.args);
     }
-    update(args: any[], props: { [key: string]: any }) {
+    update(args?: any[]) {
+        this.updateBox(args);
+        if (!args) return this;
         this.state.args = args.slice();
         return this;
     }
@@ -193,7 +199,7 @@ class Split extends FaustOp {
         super(box, patcher);
         this.state.inlets = 1;
         this.state.outlets = 2;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.args);
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
@@ -247,7 +253,7 @@ class Merge extends FaustOp {
         super(box, patcher);
         this.state.inlets = 2;
         this.state.outlets = 1;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.args);
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
@@ -297,7 +303,7 @@ class Rec extends FaustOp {
         super(box, patcher);
         this.state.inlets = 1;
         this.state.outlets = 1;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.args);
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
@@ -334,7 +340,7 @@ class Mem extends FaustOp {
         super(box, patcher);
         this.state.inlets = 1;
         this.state.outlets = 1;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.args);
     }
 }
 class Delay extends FaustOp {
@@ -368,7 +374,7 @@ class Delay extends FaustOp {
         super(box, patcher);
         this.state.inlets = 2;
         this.state.outlets = 1;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.args);
     }
 }
 class Const extends FaustOp {
@@ -399,7 +405,7 @@ class Const extends FaustOp {
         super(box, patcher);
         this.state.inlets = 1;
         this.state.outlets = 1;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.args);
     }
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
@@ -432,7 +438,7 @@ class Iterator extends FaustOp {
         super(box, patcher);
         this.state.inlets = 1;
         this.state.outlets = 1;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update(box.args);
     }
 }
 
@@ -521,7 +527,7 @@ for (const className in opMap.mathOps) {
             super(box, patcher);
             this.state.inlets = op.inlets;
             this.state.outlets = 1;
-            this.update(box.parsed.args, box.parsed.props);
+            this.update(box.args);
         }
     };
     if (typeof op.symbol === "string") faustOps[op.symbol] = Op;

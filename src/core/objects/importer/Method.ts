@@ -59,9 +59,10 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
         const fn = this.imported;
         this.inlets = Math.max(1, this.fixedInlets + fn.length); // Function.length property
         this.outlets = this.fixedOutlets + fn.length;
-        this.update(box.parsed.args.slice(), box.parsed.props);
+        this.update(box.args.slice(), box.props);
     }
-    update(args: any[], props: { args?: number }) {
+    update(args?: any[], props?: { args?: number }) {
+        this.updateBox(args, props);
         if (props && props.args && typeof props.args === "number" && props.args >= 0) {
             const argsCount = ~~props.args;
             this.inlets = Math.max(1, this.fixedInlets + argsCount);

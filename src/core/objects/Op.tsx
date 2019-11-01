@@ -88,12 +88,13 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any
         this.outlets = 1;
         this.state.arg = 0;
         this.state.result = 0;
-        this.update(box.parsed.args);
+        this.update((box as Box<this>).args);
     }
-    update(args: any[]) {
+    update(args?: [any?]) {
+        this.updateBox(args);
         this.state.arg = 0;
         this.state.result = 0;
-        if (args.length === 0) return this;
+        if (!args || args.length === 0) return this;
         this.state.arg = args[0];
         return this;
     }
@@ -160,12 +161,13 @@ class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [a
         this.outlets = 1;
         this.state.args = [true, false];
         this.state.result = true;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update((box as Box<this>).args);
     }
-    update(args: any[], props: { [key: string]: any }) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    update(args?: [any?, any?]) {
+        this.updateBox(args);
         this.state.args = [true, false];
         this.state.result = true;
-        if (args.length === 0) return this;
+        if (!args || args.length === 0) return this;
         this.state.args[0] = args[0];
         this.state.args[1] = args[1];
         return this;

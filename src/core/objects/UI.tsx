@@ -23,8 +23,9 @@ export class Comment extends BaseObject<{ text: string }, {}, [], [], [string]> 
         super(box, patcher);
         this.update((box as Box<this>).parsed.args);
     }
-    update(args: [string]) {
-        if (!this.data.hasOwnProperty("text")) this.data.text = args.join(" ");
+    update(args?: [string?]) {
+        this.updateBox(args);
+        if (args && !this.data.hasOwnProperty("text")) this.data.text = args.join(" ");
         return this;
     }
     get ui(): typeof BaseUI {

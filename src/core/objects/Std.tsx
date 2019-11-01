@@ -86,7 +86,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
         );
     }
 }
-class Message extends StdObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], [], { text: string }> {
+class Message extends StdObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], {}, { text: string }> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -112,7 +112,7 @@ class Message extends StdObject<{ text: string }, { buffer: any; editing: boolea
         this.inlets = 2;
         this.outlets = 1;
         this.state.editing = box._editing;
-        const args = box.parsed.args;
+        const args = box.args;
         if (typeof this.data.text === "string") this.state.buffer = this.parse(this.data.text);
         else if (args[0]) {
             this.data.text = this.stringify(args[0]);
@@ -123,7 +123,9 @@ class Message extends StdObject<{ text: string }, { buffer: any; editing: boolea
         }
         this.uiUpdate({ text: this.data.text });
     }
-    update(args: [any]) {
+    update(args?: [any?]) {
+        this.updateBox(args);
+        if (!args) return this;
         this.data.text = this.stringify(args[0]);
         if (args[0]) this.state.buffer = this.parse(args[0]);
         else this.state.buffer = new Bang();
@@ -191,10 +193,11 @@ class Print extends StdObject<{}, { title: string }, [any], [], [string]> {
         super(box, patcher);
         this.inlets = 1;
         this.outlets = 0;
-        this.update(box.parsed.args, box.parsed.props);
+        this.update((box as Box<this>).args, (box as Box<this>).props);
     }
-    update(args: any[], props: { [key: string]: any }) {
-        if (args[0]) this.state.title = args[0];
+    update(args?: [string?], props?: { [key: string]: any }) {
+        this.updateBox(args, props);
+        if (args && args[0]) this.state.title = args[0];
         return this;
     }
     fn(data: any, inlet: number) {

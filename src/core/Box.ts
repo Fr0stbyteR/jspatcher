@@ -10,6 +10,8 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
     outlets = 0;
     rect: [number, number, number, number];
     data: Data<T>;
+    args: Args<T> = [] as any;
+    props: Props<T> = {} as any;
     _editing = false;
     private _parsed: { class: string; args: Args<T>; props: Props<T> };
     private _object: T;
@@ -27,6 +29,8 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
     }
     init() {
         this._parsed = Box.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };
+        Object.assign(this.args, this._parsed.args);
+        Object.assign(this.props, this._parsed.props);
         this._object = this._patcher.createObject(this._parsed, this) as T;
     }
     // main function when receive data from a inlet (base 0)
