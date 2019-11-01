@@ -1,4 +1,5 @@
 import Importer from "../importer/Importer";
+import Oscillator from "./Oscillator";
 import { TPackage } from "../../types";
 
 const WebAudioAPI: { [key: string]: any } = {
@@ -12,4 +13,7 @@ const outs: TPackage = {};
 for (const key in WebAudioAPI) {
     outs[key] = Importer.import(key, WebAudioAPI[key]);
 }
-export default outs;
+export default {
+    ...outs,
+    Oscillator
+};
