@@ -1,7 +1,7 @@
-import { BaseObject, TMeta } from "../Base";
+import { BaseObject, TMeta, Bang } from "../Base";
 import Box from "../../Box";
 
-export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = {}, I extends "signal"[] = [], O extends ("signal" | "object")[] = [], A extends any[] = [], P = {}> extends BaseObject<{}, { node: T } & S, I, O, A, P> {
+export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = {}, I extends [Bang?, ...string[]] = [], O extends (null | T)[] = [], A extends any[] = [], P = {}> extends BaseObject<{}, { node: T } & S, I, O, A, P> {
     static get _meta(): TMeta {
         return {
             ...super.meta,
@@ -24,6 +24,28 @@ export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = 
         if (outlet >= from.state.node.numberOfOutputs) return false;
         if (inlet >= to.state.node.numberOfInputs) return false;
         return true;
+    }
+    static applyCurve(param: AudioParam, curve: number[][], audioCtx: AudioContext) {
+        param.cancelScheduledValues(audioCtx.currentTime);
+        let t = 0;
+        curve.forEach((a) => {
+            if (a.length === 1) {
+                param.setValueAtTime(a[0], audioCtx.currentTime + t);
+            } else if (a.length > 1) {
+                t += a[1];
+                if (a.length === 3 && a[2] === 1) {
+                    param.exponentialRampToValueAtTime(a[0], audioCtx.currentTime + t);
+                } else {
+                    param.linearRampToValueAtTime(a[0], audioCtx.currentTime + t);
+                }
+            }
+        });
+    }
+    get node() {
+        return this.state.node;
+    }
+    get audioCtx() {
+        return this.patcher._state.audioCtx;
     }
     keepAlive() {}
     connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {

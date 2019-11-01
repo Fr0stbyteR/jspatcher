@@ -28,7 +28,25 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
         this.setMaxListeners(4096);
         this.observeHistory();
         const AudioContext = window.AudioContext || window.webkitAudioContext;
-        this._state = { audioCtx: new AudioContext({ latencyHint: 0.00001 }), isLoading: false, locked: true, presentation: false, showGrid: true, snapToGrid: true, log: [], history: new History(this), lib: {}, libJS: {}, libMax: {}, libGen: {}, libFaust: {}, selected: [] };
+        const audioCtx = new AudioContext({ latencyHint: 0.00001 });
+        const dummyAudioNode = audioCtx.createScriptProcessor(1024, 1, 1);
+        this._state = {
+            audioCtx,
+            dummyAudioNode,
+            isLoading: false,
+            locked: true,
+            presentation: false,
+            showGrid: true,
+            snapToGrid: true,
+            log: [],
+            history: new History(this),
+            lib: {},
+            libJS: {},
+            libMax: {},
+            libGen: {},
+            libFaust: {},
+            selected: []
+        };
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
         this._state.libGen = this.packageRegister(GenOps, {});

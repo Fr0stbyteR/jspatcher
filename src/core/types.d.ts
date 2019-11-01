@@ -31,6 +31,7 @@ type TPatcherProps = {
 
 type TPatcherState = {
     audioCtx: AudioContext;
+    dummyAudioNode: ScriptProcessorNode;
     isLoading: boolean;
     locked: boolean;
     presentation: boolean;

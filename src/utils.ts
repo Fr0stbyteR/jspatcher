@@ -16,6 +16,7 @@ export const stringifyError = (data: any) => {
  */
 export const decodeMaxCurveFormat = (sIn: string | number): number[][] => {
     if (typeof sIn === "number") return [[sIn]];
+    if (typeof sIn !== "string") throw new Error("Failed to decode curve.");
     const tuples = sIn.split(",").filter(s => !!s);
     return tuples.map(sTuple => sTuple.split(" ").filter(s => !!s).map((s) => {
         const n = +s;
