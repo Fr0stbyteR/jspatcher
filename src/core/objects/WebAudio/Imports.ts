@@ -7,7 +7,8 @@ const WebAudioAPI: { [key: string]: any } = {
     AudioParam,
     AudioNode,
     AudioScheduledSourceNode,
-    OscillatorNode
+    OscillatorNode,
+    AudioDestinationNode
 };
 const outs: TPackage = {};
 for (const key in WebAudioAPI) {

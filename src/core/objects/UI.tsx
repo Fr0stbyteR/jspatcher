@@ -21,7 +21,7 @@ export class Comment extends BaseObject<{ text: string }, {}, [], [], [string]> 
     }
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this.update((box as Box<this>).parsed.args);
+        this.update((box as Box<this>).args);
     }
     update(args?: [string?]) {
         this.updateBox(args);

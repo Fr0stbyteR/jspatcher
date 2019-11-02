@@ -59,7 +59,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
         this.node.channelCountMode = "explicit";
         this.keepAlive();
         this.node.start();
-        this.update((box as Box<this>).parsed.args, (box as Box<this>).parsed.props);
+        this.update((box as Box<this>).args, (box as Box<this>).props);
     }
     keepAlive() {
         this.node.connect(this.patcher._state.dummyAudioNode, 0, 0);
