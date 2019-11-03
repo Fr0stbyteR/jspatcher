@@ -53,7 +53,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
     state = { node: this.patcher._state.audioCtx.createOscillator() };
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        this.inlets = 3;
+        this.inlets = 4;
         this.outlets = 2;
         this.node.channelInterpretation = "discrete";
         this.node.channelCountMode = "explicit";
@@ -63,6 +63,10 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
     }
     keepAlive() {
         this.node.connect(this.patcher._state.dummyAudioNode, 0, 0);
+    }
+    destroy() {
+        this.node.disconnect();
+        return this;
     }
     update(args?: [number?, string?], props?: { detune?: number }) {
         this.updateBox(args, props);

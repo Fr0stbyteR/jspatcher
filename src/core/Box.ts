@@ -149,6 +149,7 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
         const lineAsSrc = this.outletLines;
         lineAsDest.forEach(el => el.forEach(el => this._patcher.deleteLine(el)));
         lineAsSrc.forEach(el => el.forEach(el => this._patcher.deleteLine(el)));
+        this._object.destroy();
         delete this._patcher.boxes[this.id];
         this._patcher.emit("graphChanged");
         return this;

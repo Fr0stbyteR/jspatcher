@@ -1,5 +1,7 @@
 import Importer from "../importer/Importer";
 import Oscillator from "./Oscillator";
+import Destination from "./Destination";
+import Splitter from "./Splitter";
 import { TPackage } from "../../types";
 
 const WebAudioAPI: { [key: string]: any } = {
@@ -8,7 +10,8 @@ const WebAudioAPI: { [key: string]: any } = {
     AudioNode,
     AudioScheduledSourceNode,
     OscillatorNode,
-    AudioDestinationNode
+    AudioDestinationNode,
+    ChannelSplitterNode
 };
 const outs: TPackage = {};
 for (const key in WebAudioAPI) {
@@ -16,5 +19,7 @@ for (const key in WebAudioAPI) {
 }
 export default {
     ...outs,
-    Oscillator
+    Oscillator,
+    Destination,
+    Splitter
 };
