@@ -128,6 +128,9 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
         this.text = textIn;
         const lines = this.allLines;
         lines.forEach(el => this._patcher.lines[el].disable());
+        this.args = [] as Args<T>;
+        // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
+        this.props = {} as Props<T>;
         this.init();
         lines.forEach(el => this._patcher.lines[el].enable());
         this.emit("textChanged", this);

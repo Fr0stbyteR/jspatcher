@@ -3,48 +3,52 @@ import { TMeta, Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
 
-export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Bang], (null | ChannelSplitterNode)[], [number]> {
+export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, ...null[]], [null, ChannelMergerNode], [number]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
-            description: "WebAudio DestinationNode",
+            description: "WebAudio ChannelMergerNode",
             inlets: [{
                 isHot: true,
                 type: "signal",
                 description: "Node connection, bang to Output DestinationNode instance"
+            }, {
+                isHot: false,
+                type: "signal",
+                description: "Node connection"
             }],
             outlets: [{
                 type: "signal",
-                description: "Node connection (1 channel)"
+                description: "Node connection (n channels)"
             }, {
                 type: "object",
-                description: "Instance: DestinationNode"
+                description: "Instance: ChannelMergerNode"
             }],
             args: [{
                 type: "number",
                 optional: true,
-                description: "Number of Outputs"
+                description: "Number of Inputs"
             }],
             props: []
         };
     }
-    state = { node: null as ChannelSplitterNode };
+    state = { node: null as ChannelMergerNode };
     _meta: TMeta;
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         const channelCount = box.args && box.args[0] && ~~box.args[0] > 0 ? ~~box.args[0] : 6;
-        this.state.node = this.patcher._state.audioCtx.createChannelSplitter(channelCount);
+        this.state.node = this.patcher._state.audioCtx.createChannelMerger(channelCount);
         this.node.channelInterpretation = "discrete";
         this.node.channelCountMode = "explicit";
-        this.inlets = 1;
-        this.outlets = channelCount + 1;
-        const factoryMeta = Splitter.meta;
-        const signalOutlet = factoryMeta.outlets[0];
-        const nodeOutlet = factoryMeta.outlets[1];
-        for (let i = 0; i < channelCount; i++) {
-            factoryMeta.outlets[i] = signalOutlet;
+        this.inlets = channelCount;
+        this.outlets = 2;
+        const factoryMeta = Merger.meta;
+        const bangInlet = factoryMeta.inlets[0];
+        const siganlInlet = factoryMeta.inlets[1];
+        factoryMeta.outlets = [bangInlet];
+        for (let i = 1; i < channelCount; i++) {
+            factoryMeta.outlets[i] = siganlInlet;
         }
-        factoryMeta.outlets[channelCount] = nodeOutlet;
         this._meta = factoryMeta;
         this.keepAlive();
     }
@@ -52,7 +56,7 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
         return this._meta;
     }
     keepAlive() {
-        this.patcher._state.dummyAudioNode.connect(this.node, 0, 0);
+        this.node.connect(this.patcher._state.dummyAudioNode, 0, 0);
     }
     destroy() {
         this.node.disconnect();
