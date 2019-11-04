@@ -34,6 +34,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
         if (toggle) {
             patcher.selectOnly(box.id);
             this.setState({ editing: true, text: span.innerText });
+            this.props.object.state.editing = true;
             span.contentEditable = "true";
             const range = document.createRange();
             const selection = window.getSelection();
@@ -42,6 +43,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
             selection.addRange(range);
         } else {
             this.setState({ editing: false, text: span.innerText });
+            this.props.object.state.editing = false;
             span.contentEditable = "false";
             window.getSelection().removeAllRanges();
             this.handleChanged(span.textContent);

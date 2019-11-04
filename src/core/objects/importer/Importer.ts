@@ -86,7 +86,7 @@ export default class Importer {
         const path = pathIn ? pathIn.slice() : [];
         const stack = stackIn ? stackIn.slice() : [];
         const o = path.reduce((acc, cur) => acc[cur], root);
-        if (stack.indexOf(o) !== -1 || (pkgName !== "Window" && o === window)) return out; // cyclic object
+        if (typeof o === "undefined" || o === null || stack.indexOf(o) !== -1 || (pkgName !== "Window" && o === window)) return out; // cyclic object
         stack[depth] = o;
         const props = Object.getOwnPropertyDescriptors(o);
         for (const key in props) {

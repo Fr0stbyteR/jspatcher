@@ -32,6 +32,7 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
         Object.assign(this.args, this._parsed.args);
         Object.assign(this.props, this._parsed.props);
         this._object = this._patcher.createObject(this._parsed, this) as T;
+        this._editing = false;
     }
     // main function when receive data from a inlet (base 0)
     fn<I extends keyof Pick<Inputs<T>, number>>(data: Inputs<T>[I], inlet: I) {
