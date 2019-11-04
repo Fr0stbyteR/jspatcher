@@ -11,7 +11,7 @@ export default class Destination extends JSPAudioNode<AudioDestinationNode, {}, 
             inlets: [{
                 isHot: true,
                 type: "signal",
-                description: "Node connection, bang to Output DestinationNode instance"
+                description: "Node connection, bang to output DestinationNode instance"
             }],
             outlets: [{
                 type: "object",

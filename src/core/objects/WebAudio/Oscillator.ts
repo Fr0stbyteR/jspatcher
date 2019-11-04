@@ -28,7 +28,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
             }],
             outlets: [{
                 type: "signal",
-                description: "Node connection (2 channels)"
+                description: "Node connection (1 channel)"
             }, {
                 type: "object",
                 description: "Instance: OscillatorNode"

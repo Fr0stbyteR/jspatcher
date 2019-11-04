@@ -1,16 +1,33 @@
 import Importer from "../importer/Importer";
+import { TPackage } from "../../types";
+import audioContext from "./audioContext";
 import Oscillator from "./Oscillator";
 import Destination from "./Destination";
 import Splitter from "./Splitter";
 import Merger from "./Merger";
-import { TPackage } from "../../types";
+import Gain from "./Gain";
 
-const WebAudioAPI: { [key: string]: any } = {
-    AudioContext: window.AudioContext || window.webkitAudioContext,
+const {
+    BaseAudioContext,
+    AudioContext,
+    webkitAudioContext,
     AudioParam,
     AudioNode,
     AudioScheduledSourceNode,
     OscillatorNode,
+    GainNode,
+    AudioDestinationNode,
+    ChannelSplitterNode
+} = window;
+const WebAudioAPI: { [key: string]: any } = {
+    BaseAudioContext,
+    AudioContext,
+    webkitAudioContext,
+    AudioParam,
+    AudioNode,
+    AudioScheduledSourceNode,
+    OscillatorNode,
+    GainNode,
     AudioDestinationNode,
     ChannelSplitterNode
 };
@@ -20,7 +37,9 @@ for (const key in WebAudioAPI) {
 }
 export default {
     ...outs,
+    audioContext,
     Oscillator,
+    Gain,
     Destination,
     Splitter,
     Merger

@@ -11,7 +11,7 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, .
             inlets: [{
                 isHot: true,
                 type: "signal",
-                description: "Node connection, bang to Output DestinationNode instance"
+                description: "Node connection, bang to output DestinationNode instance"
             }, {
                 isHot: false,
                 type: "signal",

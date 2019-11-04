@@ -7,18 +7,18 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
     static get meta(): TMeta {
         return {
             ...super.meta,
-            description: "WebAudio DestinationNode",
+            description: "WebAudio ChannelSplitterNode",
             inlets: [{
                 isHot: true,
                 type: "signal",
-                description: "Node connection, bang to Output DestinationNode instance"
+                description: "Node connection, bang to output ChannelSplitterNode instance"
             }],
             outlets: [{
                 type: "signal",
                 description: "Node connection (1 channel)"
             }, {
                 type: "object",
-                description: "Instance: DestinationNode"
+                description: "Instance: ChannelSplitterNode"
             }],
             args: [{
                 type: "number",
