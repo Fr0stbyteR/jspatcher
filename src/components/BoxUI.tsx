@@ -4,7 +4,7 @@ import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import { BaseUI, BaseObject } from "../core/objects/Base";
 import "./BoxUI.scss";
-import { TResizeHandlerType } from "../core/types";
+import { TResizeHandlerType, BoxEventMap } from "../core/types";
 
 type P = { patcher: Patcher; id: string };
 type S = { selected: boolean; rect: [number, number, number, number]; innerUI: JSX.Element; sizing: "horizontal" | "vertical" | "both" | "ratio" };
@@ -359,13 +359,13 @@ class Inlet extends React.Component<{ patcher: Patcher; box: Box; index: number 
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
-    handleHighlight = (e: { isSrc: boolean; i: number; highlight: boolean }) => {
+    handleHighlight = (e: BoxEventMap["highlightPort"]) => {
         const { isSrc, i, highlight } = e;
         if (!isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     }
-    handleConnectedChange = (e: { isSrc: boolean; i: number }) => {
-        const { isSrc, i } = e;
-        if (!isSrc && i === this.props.index) this.setState({ isConnected: this.props.box.inletLines[this.props.index].length > 0 });
+    handleConnectedChange = (e: BoxEventMap["disconnectedPort" | "connectedPort"]) => {
+        const { isSrc, i, last } = e;
+        if (!isSrc && i === this.props.index) this.setState({ isConnected: !last });
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;
@@ -422,13 +422,13 @@ class Outlet extends React.Component< { patcher: Patcher; box: Box; index: numbe
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
-    handleHighlight = (e: { isSrc: boolean; i: number; highlight: boolean }) => {
+    handleHighlight = (e: BoxEventMap["highlightPort"]) => {
         const { isSrc, i, highlight } = e;
         if (isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     }
-    handleConnectedChange = (e: { isSrc: boolean; i: number }) => {
-        const { isSrc, i } = e;
-        if (isSrc && i === this.props.index) this.setState({ isConnected: this.props.box.outletLines[this.props.index].length > 0 });
+    handleConnectedChange = (e: BoxEventMap["disconnectedPort" | "connectedPort"]) => {
+        const { isSrc, i, last } = e;
+        if (isSrc && i === this.props.index) this.setState({ isConnected: !last });
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher._state.locked) return;

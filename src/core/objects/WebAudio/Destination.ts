@@ -22,6 +22,7 @@ export default class Destination extends JSPAudioNode<AudioDestinationNode, {}, 
         };
     }
     state = { node: this.patcher._state.audioCtx.destination };
+    inletConnections = [{ node: this.state.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 1;

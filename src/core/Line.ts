@@ -70,8 +70,8 @@ export default class Line extends EventEmitter<LineEventMap> {
         return this;
     }
     destroy() {
-        delete this._patcher.lines[this.id];
         this.disable();
+        delete this._patcher.lines[this.id];
         return this;
     }
     pass(data: any) {

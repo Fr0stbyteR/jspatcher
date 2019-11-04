@@ -103,6 +103,8 @@ type TMaxClipboard = {
 declare class AnyObject extends BaseObject<any, any, any, any, any, any, any> {}
 declare class AnyImportedObject extends ImportedObject<any, any, any, any, any, any, any> {}
 type TPackage = { [key: string]: typeof AnyObject | TPackage };
+type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };
+type TAudioNodeOutletConnection = { node: AudioNode; index: number };
 
 type TLine = {
     id?: string;
@@ -161,8 +163,8 @@ interface BoxEventMap {
     "rectChanged": Box;
     "textChanged": Box;
     "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
-    "connectedPort": { isSrc: boolean; i: number };
-    "disconnectedPort": { isSrc: boolean; i: number };
+    "connectedPort": { isSrc: boolean; i: number; last?: false };
+    "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
 }
 type BaseUIState = { editing: boolean };
 type DefaultUIState = { text: string; loading: boolean; dropdown$: number } & BaseUIState;

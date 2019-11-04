@@ -85,27 +85,29 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
     }
     // called when inlet or outlet are connected or disconnected
     connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
+        if (this._object) this._object.connectedOutlet(outlet, destBox, destInlet, lineID);
         this.emit("connectedPort", { isSrc: true, i: outlet });
         this._patcher.emit("graphChanged");
-        if (this._object) this._object.connectedOutlet(outlet, destBox, destInlet, lineID);
         return this;
     }
     connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        if (this._object) this._object.connectedInlet(inlet, srcBox, srcOutlet, lineID);
         this.emit("connectedPort", { isSrc: false, i: inlet });
         this._patcher.emit("graphChanged");
-        if (this._object) this._object.connectedInlet(inlet, srcBox, srcOutlet, lineID);
         return this;
     }
     disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
-        this.emit("disconnectedPort", { isSrc: true, i: outlet });
-        this._patcher.emit("graphChanged");
         if (this._object) this._object.disconnectedOutlet(outlet, destBox, destInlet, lineID);
+        const last = this._patcher.getLinesBySrcID(this.id)[outlet].length === 1;
+        this.emit("disconnectedPort", { isSrc: true, i: outlet, last });
+        this._patcher.emit("graphChanged");
         return this;
     }
     disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
-        this.emit("disconnectedPort", { isSrc: false, i: inlet });
-        this._patcher.emit("graphChanged");
         if (this._object) this._object.disconnectedInlet(inlet, srcBox, srcOutlet, lineID);
+        const last = this._patcher.getLinesByDestID(this.id)[inlet].length === 1;
+        this.emit("disconnectedPort", { isSrc: false, i: inlet, last });
+        this._patcher.emit("graphChanged");
         return this;
     }
     isOutletTo(outlet: number, box: Box, inlet: number) {

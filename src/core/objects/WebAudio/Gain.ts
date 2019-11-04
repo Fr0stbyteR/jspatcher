@@ -15,8 +15,8 @@ export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, string], [nu
                 description: "Node connection, bang to output GainNode instance"
             }, {
                 isHot: false,
-                type: "string",
-                description: "gain: curve"
+                type: "signal",
+                description: "gain: curve or node connection"
             }],
             outlets: [{
                 type: "signal",
@@ -34,6 +34,8 @@ export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, string], [nu
         };
     }
     state = { node: this.patcher._state.audioCtx.createGain() };
+    inletConnections = [{ node: this.state.node, index: 0 }, { node: this.state.node.gain }];
+    outletConnections = [{ node: this.state.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 2;

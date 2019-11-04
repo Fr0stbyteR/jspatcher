@@ -15,12 +15,12 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
                 description: "Output OscillatorNode instance"
             }, {
                 isHot: false,
-                type: "string",
-                description: "frequency: curve"
+                type: "signal",
+                description: "frequency: curve or node connection"
             }, {
                 isHot: false,
-                type: "string",
-                description: "detune: curve"
+                type: "signal",
+                description: "detune: curve or node connection"
             }, {
                 isHot: false,
                 type: "string",
@@ -51,6 +51,8 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
     }
     static isOscillatorType = (x: any): x is OscillatorType => x === "sine" || x === "square" || x === "sawtooth" || x === "triangle" || x === "custom";
     state = { node: this.patcher._state.audioCtx.createOscillator() };
+    inletConnections = [null, { node: this.state.node.frequency }, { node: this.state.node.detune }];
+    outletConnections = [{ node: this.state.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 4;
@@ -92,7 +94,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
         } else if (inlet === 2) {
             try {
                 const curve = decodeMaxCurveFormat(data as string);
-                JSPAudioNode.applyCurve(this.node.frequency, curve, this.audioCtx);
+                JSPAudioNode.applyCurve(this.node.detune, curve, this.audioCtx);
             } catch (e) {
                 this.error(e.message);
             }

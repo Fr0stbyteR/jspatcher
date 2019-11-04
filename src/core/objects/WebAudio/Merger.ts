@@ -45,11 +45,14 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, .
         const factoryMeta = Merger.meta;
         const bangInlet = factoryMeta.inlets[0];
         const siganlInlet = factoryMeta.inlets[1];
-        factoryMeta.outlets = [bangInlet];
+        this.inletConnections = [{ node: this.state.node, index: 0 }];
+        factoryMeta.inlets = [bangInlet];
         for (let i = 1; i < channelCount; i++) {
-            factoryMeta.outlets[i] = siganlInlet;
+            factoryMeta.inlets[i] = siganlInlet;
+            this.inletConnections[i] = { node: this.state.node, index: i };
         }
         this._meta = factoryMeta;
+        this.outletConnections = [{ node: this.state.node, index: 0 }];
         this.keepAlive();
     }
     get meta() {

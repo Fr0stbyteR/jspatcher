@@ -41,8 +41,11 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
         const factoryMeta = Splitter.meta;
         const signalOutlet = factoryMeta.outlets[0];
         const nodeOutlet = factoryMeta.outlets[1];
+        this.inletConnections = [{ node: this.state.node, index: 0 }];
+        this.outletConnections = [];
         for (let i = 0; i < channelCount; i++) {
             factoryMeta.outlets[i] = signalOutlet;
+            this.outletConnections[i] = { node: this.state.node, index: i };
         }
         factoryMeta.outlets[channelCount] = nodeOutlet;
         this._meta = factoryMeta;
