@@ -88,7 +88,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
         );
     }
 }
-class Message extends StdObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], {}, { text: string }> {
+class message extends StdObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], {}, { text: string }> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -163,7 +163,7 @@ class Message extends StdObject<{ text: string }, { buffer: any; editing: boolea
         return Util.inspect(o);
     }
     get ui(): typeof BaseUI {
-        return class MessageUI extends ButtonUI<Message> {
+        return class MessageUI extends ButtonUI<message> {
             handleChanged = (text: string) => this.object.update([text]);
             handleClick = (e: React.MouseEvent) => {
                 if (this.patcher._state.locked) this.object.outlet(0, this.object.state.buffer);
@@ -172,7 +172,7 @@ class Message extends StdObject<{ text: string }, { buffer: any; editing: boolea
     }
 }
 
-class Print extends StdObject<{}, { title: string }, [any], [], [string]> {
+class print extends StdObject<{}, { title: string }, [any], [], [string]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -214,4 +214,4 @@ class Print extends StdObject<{}, { title: string }, [any], [], [string]> {
         return this;
     }
 }
-export default { Message, Print };
+export default { message, print };

@@ -248,8 +248,8 @@ for (const key in functions) {
 }
 
 export default {
-    Typeof: Ops.Typeof,
-    Instanceof: Ops.Instanceof,
+    typeof: Ops.Typeof,
+    instanceof: Ops.Instanceof,
     "+": Ops.Add,
     "-": Ops.Sub,
     "*": Ops.Mul,

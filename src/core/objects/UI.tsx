@@ -4,7 +4,7 @@ import Box from "../Box";
 import { BaseObject, BaseUI, TMeta } from "./Base";
 import "./UI.scss";
 
-export class Comment extends BaseObject<{ text: string }, {}, [], [], [string]> {
+export class comment extends BaseObject<{ text: string }, {}, [], [], [string]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -29,7 +29,7 @@ export class Comment extends BaseObject<{ text: string }, {}, [], [], [string]> 
         return this;
     }
     get ui(): typeof BaseUI {
-        return class CommentUI extends BaseUI<Comment> {
+        return class CommentUI extends BaseUI<comment> {
             editableOnUnlock = true;
             state = { editing: false };
             refSpan = React.createRef<HTMLSpanElement>();
@@ -79,4 +79,4 @@ export class Comment extends BaseObject<{ text: string }, {}, [], [], [string]> 
         };
     }
 }
-export default { Comment };
+export default { comment };

@@ -26,6 +26,7 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
         this.data = boxIn.data || ((boxIn as any).prevData ? (boxIn as any).prevData.storage : {});
         this._editing = !!boxIn._editing;
         this._patcher = patcherIn;
+        this.setMaxListeners(64);
     }
     init() {
         this._parsed = Box.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };

@@ -5,6 +5,7 @@ import Destination from "./Destination";
 import Splitter from "./Splitter";
 import Merger from "./Merger";
 import Gain from "./Gain";
+import Analyser from "./Analyser";
 /*
 const {
     BaseAudioContext,
@@ -42,5 +43,6 @@ export default {
     Gain,
     Destination,
     Splitter,
-    Merger
+    Merger,
+    Analyser
 };

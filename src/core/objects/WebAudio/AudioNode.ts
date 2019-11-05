@@ -2,7 +2,7 @@ import { BaseObject, TMeta, Bang } from "../Base";
 import Box from "../../Box";
 import { TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../../types";
 
-export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = {}, I extends [Bang?, ...string[]] = [], O extends (null | T)[] = [], A extends any[] = [], P = {}> extends BaseObject<{}, { node: T } & S, I, O, A, P> {
+export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = {}, I extends [Bang?, ...any[]] = [], O extends (null | any | T)[] = [], A extends any[] = [], P = {}> extends BaseObject<{}, { node: T } & S, I, O, A, P> {
     static get _meta(): TMeta {
         return {
             ...super.meta,
@@ -41,6 +41,9 @@ export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = 
                 }
             }
         });
+    }
+    set node(nodeIn: T) {
+        this.state.node = nodeIn;
     }
     get node() {
         return this.state.node;

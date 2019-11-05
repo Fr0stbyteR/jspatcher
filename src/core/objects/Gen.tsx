@@ -1,5 +1,5 @@
 import { BaseObject, TMeta } from "./Base";
-import { Comment } from "./UI";
+import { comment } from "./UI";
 import "./Gen.scss";
 
 const genOperators: { [key: string]: string[] } = {
@@ -56,7 +56,7 @@ export class GenOp extends BaseObject {
         };
     }
 }
-const GenOps: { [key: string]: typeof GenOp | typeof Comment } = { comment: Comment };
+const GenOps: { [key: string]: typeof GenOp | typeof comment } = { comment };
 for (const key in genOperators) {
     genOperators[key].forEach((name) => {
         GenOps[name] = class extends GenOp {

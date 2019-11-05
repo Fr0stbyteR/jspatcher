@@ -279,7 +279,7 @@ class Boxes extends React.Component {
             const x = this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft;
             const y = this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop;
             let text = "";
-            if (e.key === "m") text = "Message";
+            if (e.key === "m") text = "message";
             this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 90, 20], _editing: true });
         }
     }

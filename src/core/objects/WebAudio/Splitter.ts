@@ -33,7 +33,7 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         const channelCount = box.args && box.args[0] && ~~box.args[0] > 0 ? ~~box.args[0] : 6;
-        this.state.node = this.patcher._state.audioCtx.createChannelSplitter(channelCount);
+        this.node = this.patcher._state.audioCtx.createChannelSplitter(channelCount);
         this.node.channelInterpretation = "discrete";
         this.node.channelCountMode = "explicit";
         this.inlets = 1;
@@ -41,11 +41,11 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
         const factoryMeta = Splitter.meta;
         const signalOutlet = factoryMeta.outlets[0];
         const nodeOutlet = factoryMeta.outlets[1];
-        this.inletConnections = [{ node: this.state.node, index: 0 }];
+        this.inletConnections = [{ node: this.node, index: 0 }];
         this.outletConnections = [];
         for (let i = 0; i < channelCount; i++) {
             factoryMeta.outlets[i] = signalOutlet;
-            this.outletConnections[i] = { node: this.state.node, index: i };
+            this.outletConnections[i] = { node: this.node, index: i };
         }
         factoryMeta.outlets[channelCount] = nodeOutlet;
         this._meta = factoryMeta;

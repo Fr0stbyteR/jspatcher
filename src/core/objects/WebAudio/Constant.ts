@@ -34,8 +34,8 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
         };
     }
     state = { node: this.patcher._state.audioCtx.createConstantSource() };
-    inletConnections = [null, { node: this.state.node.offset }];
-    outletConnections = [{ node: this.state.node, index: 0 }];
+    inletConnections = [null, { node: this.node.offset }];
+    outletConnections = [{ node: this.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 4;

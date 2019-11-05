@@ -51,8 +51,8 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
     }
     static isOscillatorType = (x: any): x is OscillatorType => x === "sine" || x === "square" || x === "sawtooth" || x === "triangle" || x === "custom";
     state = { node: this.patcher._state.audioCtx.createOscillator() };
-    inletConnections = [null, { node: this.state.node.frequency }, { node: this.state.node.detune }];
-    outletConnections = [{ node: this.state.node, index: 0 }];
+    inletConnections = [null, { node: this.node.frequency }, { node: this.node.detune }];
+    outletConnections = [{ node: this.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         this.inlets = 4;
