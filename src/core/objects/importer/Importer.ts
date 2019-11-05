@@ -1,4 +1,3 @@
-import { Constructor } from "./Constructor";
 import { StaticMethod } from "./StaticMethod";
 import { StaticSetter } from "./StaticSetter";
 import { StaticSetterGetter } from "./StaticSetterGetter";
@@ -12,7 +11,10 @@ import { Property } from "./Property";
 import { AnyImportedObject, TPackage } from "../../types";
 
 type TImportedModule = { [key: string]: any };
-declare const window: { module: { exports: TImportedModule }; exports: TImportedModule };
+declare interface Window {
+    module: { exports: TImportedModule };
+    exports: TImportedModule;
+}
 
 export default class Importer {
     static getObject(p: PropertyDescriptor, pkgName: string, root: { [key: string]: any }, path: string[]): typeof AnyImportedObject {
@@ -20,12 +22,8 @@ export default class Importer {
         let Super: typeof AnyImportedObject;
         const type = typeof p.value;
         if (type === "function") {
-            const str: string = p.value.toString();
-            const constructable = str.startsWith("class") || (str.startsWith("function") && str.match(/\bthis\b/));
-            if (isStatic) {
-                if (constructable) Super = Constructor;
-                else Super = StaticMethod;
-            } else Super = Method;
+            if (isStatic) Super = StaticMethod;
+            else Super = Method;
         } else if (type === "undefined") {
             const setter = p.set;
             const getter = p.get;
@@ -53,7 +51,7 @@ export default class Importer {
     static async importFrom(address: string, pkgName: string) {
         const toExport: TImportedModule = {}; // Original exports, detect if exports is overwritten.
         window.exports = toExport;
-        window.module = { exports: toExport };
+        window.module = { exports: toExport } as any;
         return new Promise((resolve: (script: HTMLScriptElement) => void, reject) => {
             const script = document.createElement("script");
             script.async = true;
@@ -80,24 +78,31 @@ export default class Importer {
         await Importer.importFrom("https://unpkg.com/webmidi", "MIDI").then(console.log);
     }
     */
-    static import(pkgName: string, root: { [key: string]: any }, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number) {
+    static import(pkgName: string, root: { [key: string]: any }, all?: boolean, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number) {
         const depth = typeof depthIn === "undefined" ? 0 : depthIn;
         const out = outIn || {};
         const path = pathIn ? pathIn.slice() : [];
         const stack = stackIn ? stackIn.slice() : [];
         const o = path.reduce((acc, cur) => acc[cur], root);
-        if (typeof o === "undefined" || o === null || stack.indexOf(o) !== -1 || (pkgName !== "Window" && o === window)) return out; // cyclic object
+        if (typeof o === "undefined" || o === null || stack.indexOf(o) !== -1 || (pkgName !== "window" && o === window)) return out; // cyclic object
         stack[depth] = o;
         const props = Object.getOwnPropertyDescriptors(o);
         for (const key in props) {
+            if (all) {
+                if (typeof o === "function" && ["arguments", "caller", "length", "name"].indexOf(key) >= 0) continue;
+                if (typeof o === "object" && ["constructor"].indexOf(key) >= 0) continue;
+            }
             const prop = props[key];
-            if (key === "prototype") this.import(pkgName, root, out, [...path, "prototype"], stack, depth + 1);
-            if (!prop.enumerable) continue;
+            if (key === "prototype") {
+                this.import(pkgName, root, all, out, [...path, "prototype"], stack, depth + 1);
+                continue;
+            }
+            if (!all && !prop.enumerable) continue;
             path[depth] = key;
             out[path.map(s => (s === "prototype" ? "" : s)).join(".")] = this.getObject(prop, pkgName, root, path.slice());
             const value = prop.value;
-            if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-                this.import(pkgName, root, out, path, stack, depth + 1);
+            if ((typeof value === "object" || typeof value === "function") && value !== null && !Array.isArray(value)) {
+                this.import(pkgName, root, all, out, path, stack, depth + 1);
             }
         }
         return out;

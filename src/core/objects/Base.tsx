@@ -121,7 +121,7 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
         if (e.key === " " && this.refSpan.current) {
             if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$]) {
                 const span = this.refSpan.current;
-                const text = this.dropdownOptions[this.state.dropdown$].key + " ";
+                const text = this.state.text.split(" ").slice(0, -1).join(" ") + this.dropdownOptions[this.state.dropdown$].key + " ";
                 span.innerText = text;
                 const range = document.createRange();
                 const selection = window.getSelection();
@@ -150,12 +150,28 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
         if (this.refSpan.current.innerText === this.state.text) return;
         const { patcher } = this;
         this.dropdownOptions = [];
-        const splited = this.refSpan.current.innerText.split(" ");
-        for (const key in patcher._state.lib) {
-            if (this.dropdownOptions.length > 10) break;
-            if (key.indexOf(splited[0]) !== -1) {
-                const o = patcher._state.lib[key];
-                this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
+        const splitted = this.refSpan.current.innerText.split(" ");
+        if (splitted.length === 1) {
+            const keys = Object.keys(patcher._state.lib).sort();
+            for (let i = 0; i < keys.length; i++) {
+                if (this.dropdownOptions.length > 10) break;
+                const key = keys[i];
+                if (key.startsWith(splitted[splitted.length - 1])) {
+                    const o = patcher._state.lib[key];
+                    this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
+                }
+            }
+        } else if (splitted[0] === "new" && splitted.length === 2) {
+            const keys = Object.keys(patcher._state.lib).sort();
+            for (let i = 0; i < keys.length; i++) {
+                if (this.dropdownOptions.length > 10) break;
+                const key = keys[i];
+                if (key.startsWith(splitted[splitted.length - 1])) {
+                    const o = patcher._state.lib[key];
+                    if (o.meta.description === "Auto-imported static method") {
+                        this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
+                    }
+                }
             }
         }
         this.setState({ text: this.refSpan.current.innerText });
@@ -168,7 +184,7 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
         e.preventDefault();
         if (i >= 0 && this.dropdownOptions[i] && this.refSpan.current) {
             const span = this.refSpan.current;
-            const text = this.dropdownOptions[i].key;
+            const text = this.state.text.split(" ").slice(0, -1).join(" ") + this.dropdownOptions[i].key;
             span.innerText = text;
             const range = document.createRange();
             const selection = window.getSelection();

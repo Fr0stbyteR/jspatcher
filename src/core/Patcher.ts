@@ -7,15 +7,15 @@ import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, T
 
 import Base from "./objects/Base";
 import Std from "./objects/Std";
+import New from "./objects/importer/New";
 import GenOps from "./objects/Gen";
 import FaustOps, { toFaustDspCode } from "./objects/Faust";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
-import JSPMath from "./objects/Math";
 import JSPWebAudio from "./objects/WebAudio/Imports";
 
-const Packages: TPackage = { Base, Std, UI, Op, Window, Math: JSPMath, WebAudio: JSPWebAudio };
+const Packages: TPackage = { Base, Std, UI, Op, Window, WebAudio: JSPWebAudio, new: New };
 
 export default class Patcher extends EventEmitter<PatcherEventMap> {
     lines: { [key: string]: Line };
@@ -172,7 +172,7 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
         if (typeof className !== "string" || className.length === 0) {
             obj = new Base.EmptyObject(boxIn, this);
         } else {
-            if (this._state.lib.hasOwnProperty(className)) {
+            if (this._state.lib[className]) {
                 obj = new this._state.lib[className](boxIn, this);
             } else {
                 this.newLog("error", "Patcher", "Object " + className + " not found.", this);
