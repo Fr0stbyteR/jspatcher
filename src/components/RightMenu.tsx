@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref } from "semantic-ui-react";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
+import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
 import "./RightMenu.scss";
 import { TPatcherLog } from "../core/types";
@@ -59,22 +60,22 @@ class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLo
         );
     }
 }
-class CodeEditor extends React.Component<{ patcher: Patcher }, { e: JSX.Element }> {
-    state = { e: <Dimmer active><Loader content="Loading" /></Dimmer> };
-    codeEditorJSX: JSX.Element;
+class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: boolean }> {
+    state = { editorLoaded: false };
     codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
+    editorJSX: typeof MonacoEditor;
     handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => {
         this.codeEditor = monaco;
         this.codeEditor.setValue(this.code);
     }
     handleGraphChanged = () => {
-        if (!this.props.patcher._state.isLoading && this.codeEditor) this.codeEditor.setValue(this.code);
+        if (!this.props.patcher._state.isLoading && this.state.editorLoaded) this.codeEditor.setValue(this.code);
     }
-    handleResize = () => (this.codeEditor ? this.codeEditor.layout() : undefined);
+    handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
     componentDidMount() {
         import("react-monaco-editor").then((reactMonacoEditor) => {
-            const MonacoEditor = reactMonacoEditor.default;
-            this.setState({ e: <MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} /> });
+            this.editorJSX = reactMonacoEditor.default;
+            this.setState({ editorLoaded: true });
         });
         this.props.patcher.on("loaded", this.handleGraphChanged);
         this.props.patcher.on("graphChanged", this.handleGraphChanged);
@@ -86,14 +87,16 @@ class CodeEditor extends React.Component<{ patcher: Patcher }, { e: JSX.Element 
         window.removeEventListener("resize", this.handleResize);
     }
     render() {
-        return this.state.e;
+        return this.state.editorLoaded
+            ? <MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
+            : <Dimmer active><Loader content="Loading" /></Dimmer>;
     }
     get code() {
         return this.props.patcher.props.mode === "faust" ? this.props.patcher.toFaustDspCode() : "";
     }
 }
-export default class RightMenu extends React.Component<{ patcher: Patcher }, { active: TPanels; audioOn: boolean }> {
-    state = { active: TPanels.None, audioOn: false };
+export default class RightMenu extends React.Component<{ patcher: Patcher }, { active: TPanels; codePanel: boolean; audioOn: boolean }> {
+    state = { active: TPanels.None, codePanel: false, audioOn: false };
     refDivPane = React.createRef<HTMLDivElement>();
     refCode = React.createRef<CodeEditor>();
     refConsole = React.createRef<Console>();
@@ -147,13 +150,19 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
         const { state } = audioCtx;
         this.setState({ audioOn: state === "running" });
     }
+    handlePatcherLoaded = () => {
+        const codePanel = this.props.patcher.props.mode === "faust" || this.props.patcher.props.mode === "gen";
+        this.setState({ active: TPanels.None, codePanel });
+    }
     componentDidMount() {
         const audioCtx = this.props.patcher._state.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
+        this.props.patcher.on("loaded", this.handlePatcherLoaded);
     }
     componentWillUnmount() {
         const audioCtx = this.props.patcher._state.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleAudioCtxStateChange);
+        this.props.patcher.off("loaded", this.handlePatcherLoaded);
     }
     render() {
         return (
@@ -162,7 +171,7 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
                     <Menu.Item name={TPanels.Console} active={this.state.active === TPanels.Console} onClick={this.handleItemClick}>
                         <Icon name="bars" color={this.state.active === TPanels.Console ? "teal" : "grey"} inverted />
                     </Menu.Item>
-                    <Menu.Item name={TPanels.Code} active={this.state.active === TPanels.Code} onClick={this.handleItemClick}>
+                    <Menu.Item name={TPanels.Code} hidden={!this.state.codePanel} active={this.state.active === TPanels.Code} onClick={this.handleItemClick}>
                         <Icon name="code" color={this.state.active === TPanels.Code ? "teal" : "grey"} inverted />
                     </Menu.Item>
                     <div style={{ flex: "1 1 auto" }}></div>

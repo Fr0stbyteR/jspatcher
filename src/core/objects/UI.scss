@@ -9,7 +9,7 @@
         font-weight: normal;
         user-select: none;
         cursor: default;
-        span {
+        & span {
             width: 100%;
             color: whitesmoke;
             &.editing {
@@ -20,6 +20,13 @@
             &:empty::before {
                 content: "\200b";
             }
+        }
+    }
+    &.package-ui-code {
+        height: 100%;
+        width: 100%;
+        & > div {
+            overflow: hidden;
         }
     }
 }

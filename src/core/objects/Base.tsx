@@ -45,7 +45,7 @@ export type TMeta = {
     args: TArgsMeta;
     props: TPropsMeta;
 };
-export class BaseUI<T extends BaseObject<any, any, any, any, any, any, any>, S = {}> extends React.Component<{ object: T }, BaseUIState & S> {
+export class BaseUI<T extends BaseObject<any, any, any, any, any, any, any>, S = {}> extends React.Component<{ object: T; custom?: React.HTMLAttributes<HTMLDivElement> }, BaseUIState & S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     editableOnUnlock = false;
     get object() {
@@ -71,7 +71,7 @@ export class BaseUI<T extends BaseObject<any, any, any, any, any, any, any>, S =
         const className = packageName + "-" + object.meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container"];
         return (
-            <div className={classArray.join(" ")}>
+            <div className={classArray.join(" ")} {...this.props.custom}>
                 {this.props.children}
             </div>
         );

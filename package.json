@@ -4,8 +4,9 @@
   "description": "patcher js",
   "private": true,
   "scripts": {
-    "build": "webpack --mode development",
-    "dist": "webpack --mode production"
+    "cleanup": "node src/scripts/cleanup.js",
+    "build": "npm run cleanup && webpack --mode development",
+    "dist": "npm run cleanup && webpack --mode production"
   },
   "keywords": [
     "js",

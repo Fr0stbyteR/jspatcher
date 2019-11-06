@@ -104,7 +104,7 @@ class message extends StdObject<{ text: string }, { buffer: any; editing: boolea
             }],
             outlets: [{
                 type: "anything",
-                description: "message to send"
+                description: "Message to send"
             }]
         };
     }

@@ -77,6 +77,9 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
         this.packageRegister(pkg, this._state.libJS, pkgName || name);
     }
     clear() {
+        for (const id in this.boxes) {
+            this.boxes[id].object.destroy();
+        }
         this.lines = {};
         this.boxes = {};
         // eslint-disable-next-line @typescript-eslint/camelcase

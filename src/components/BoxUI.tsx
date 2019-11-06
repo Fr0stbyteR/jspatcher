@@ -17,7 +17,7 @@ export default class BoxUI extends React.Component<P, S> {
     dragged = false;
     state = (() => {
         const box = this.props.patcher.boxes[this.props.id];
-        return { selected: false, rect: box.rect.slice(), innerUI: <box.ui object={box.object} ref={this.refUI} key="0" />, sizing: "horizontal" };
+        return { selected: false, rect: box.rect.slice(), innerUI: <box.ui object={box.object} ref={this.refUI} key="0" />, sizing: box.ui.sizing };
     })() as S;
     handleResetPos = () => {
         const box = this.props.patcher.boxes[this.props.id];
@@ -466,6 +466,7 @@ class Outlet extends React.Component< { patcher: Patcher; box: Box; index: numbe
                     open={this.state.highlight}
                     size="mini"
                     inverted
+                    offset="0px, 5px"
                 />
             </div>
         );

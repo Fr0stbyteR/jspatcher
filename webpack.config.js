@@ -43,7 +43,7 @@ const config = {
   plugins: [
     new MonacoWebpackPlugin({
       output: 'monaco',
-      languages: []
+      languages: ['javascript']
     })
   ]
 };
