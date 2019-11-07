@@ -67,7 +67,7 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
         };
     }
     static isBiquadFilterType = (x: any): x is BiquadFilterType => ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"].indexOf(x) >= 0;
-    state = { node: this.patcher.state.audioCtx.createBiquadFilter() };
+    state = { node: this.audioCtx.createBiquadFilter() };
     inletConnections = [{ node: this.node, index: 0 }, { node: this.node.frequency }, { node: this.node.detune }, { node: this.node.Q }, { node: this.node.gain }];
     outletConnections = [{ node: this.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
@@ -80,7 +80,7 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
         this.update((box as Box<this>).args, (box as Box<this>).props);
     }
     keepAlive() {
-        this.node.connect(this.patcher.state.dummyAudioNode, 0, 0);
+        this.node.connect(this.dummyAudioNode, 0, 0);
     }
     destroy() {
         this.node.disconnect();

@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import { MappedEventEmitter } from "../utils";
 import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
@@ -14,11 +14,10 @@ import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
 import JSPWebAudio from "./objects/WebAudio/Imports";
-import { detectOS } from "../utils";
 
 const Packages: TPackage = { Base, Std, UI, Op, Window, WebAudio: JSPWebAudio, new: New };
 
-export default class Patcher extends EventEmitter<PatcherEventMap> {
+export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     lines: { [key: string]: Line };
     boxes: { [key: string]: Box };
     props: TPatcherProps;
@@ -28,12 +27,7 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
         super();
         this.setMaxListeners(4096);
         this.observeHistory();
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioCtx = new AudioContext({ latencyHint: 0.00001 });
-        const dummyAudioNode = audioCtx.createScriptProcessor(1024, 1, 1);
         this._state = {
-            audioCtx,
-            dummyAudioNode,
             isLoading: false,
             locked: true,
             presentation: false,
@@ -46,8 +40,7 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
             libMax: {},
             libGen: {},
             libFaust: {},
-            selected: [],
-            os: detectOS()
+            selected: []
         };
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
@@ -311,11 +304,12 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
         this._state.log.push(log);
         this.emit("newLog", log);
     }
-    observeHistory<K extends keyof PatcherEventMap>() {
-        [
+    observeHistory() {
+        const eventNames = [
             "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
             "changeBoxText", "changeLineSrc", "changeLineDest", "moved", "resized"
-        ].forEach((type: K) => this.on(type, e => this._state.history.did(type, e)));
+        ] as const;
+        eventNames.forEach(type => this.on(type, e => this._state.history.did(type, e)));
     }
     newTimestamp() {
         this._state.history.newTimestamp();
@@ -699,5 +693,8 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
     }
     get state() {
         return this._state;
+    }
+    get env() {
+        return window.jspatcherEnv;
     }
 }

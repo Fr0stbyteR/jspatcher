@@ -141,12 +141,12 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
         document.addEventListener("mouseup", handleMouseUp);
     }
     handleAudioSwitch = (e: React.MouseEvent) => {
-        const audioCtx = this.props.patcher.state.audioCtx;
+        const audioCtx = this.props.patcher.env.audioCtx;
         if (this.state.audioOn) audioCtx.suspend();
         else audioCtx.resume();
     }
     handleAudioCtxStateChange = () => {
-        const audioCtx = this.props.patcher.state.audioCtx;
+        const audioCtx = this.props.patcher.env.audioCtx;
         const { state } = audioCtx;
         this.setState({ audioOn: state === "running" });
     }
@@ -155,12 +155,12 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
         this.setState({ active: TPanels.None, codePanel });
     }
     componentDidMount() {
-        const audioCtx = this.props.patcher.state.audioCtx;
+        const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.on("loaded", this.handlePatcherLoaded);
     }
     componentWillUnmount() {
-        const audioCtx = this.props.patcher.state.audioCtx;
+        const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.off("loaded", this.handlePatcherLoaded);
     }

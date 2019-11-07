@@ -37,7 +37,7 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, .
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         const channelCount = box.args && box.args[0] && ~~box.args[0] > 0 ? ~~box.args[0] : 6;
-        this.node = this.patcher.state.audioCtx.createChannelMerger(channelCount);
+        this.node = this.audioCtx.createChannelMerger(channelCount);
         this.node.channelInterpretation = "discrete";
         this.node.channelCountMode = "explicit";
         this.inlets = channelCount;
@@ -59,7 +59,7 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, .
         return this._meta;
     }
     keepAlive() {
-        this.node.connect(this.patcher.state.dummyAudioNode, 0, 0);
+        this.node.connect(this.dummyAudioNode, 0, 0);
     }
     destroy() {
         this.node.disconnect();

@@ -49,7 +49,10 @@ export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = 
         return this.state.node;
     }
     get audioCtx() {
-        return this.patcher.state.audioCtx;
+        return this.patcher.env.audioCtx;
+    }
+    get dummyAudioNode() {
+        return this.patcher.env.dummyAudioNode;
     }
     inletConnections: TAudioNodeInletConnection[] = [];
     outletConnections: TAudioNodeOutletConnection[] = [];

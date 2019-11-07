@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { EventEmitter } from "events";
 import * as React from "react";
 import { Icon, SemanticICONS } from "semantic-ui-react";
+import { stringifyError, MappedEventEmitter } from "../../utils";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
-import { BaseUIState, DefaultUIState, BaseObjectEventMap } from "../types";
-import { stringifyError } from "../../utils";
+import { BaseUIState, DefaultUIState, BaseObjectEventMap, AnyObject } from "../types";
 
 export type TInletsMeta = {
     isHot: boolean;
@@ -45,7 +43,7 @@ export type TMeta = {
     args: TArgsMeta;
     props: TPropsMeta;
 };
-export class BaseUI<T extends BaseObject<any, any, any, any, any, any, any>, S = {}> extends React.Component<{ object: T; custom?: React.HTMLAttributes<HTMLDivElement> }, BaseUIState & S> {
+export class BaseUI<T extends AnyObject, S = {}> extends React.Component<{ object: T; custom?: React.HTMLAttributes<HTMLDivElement> }, BaseUIState & S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     editableOnUnlock = false;
     get object() {
@@ -77,7 +75,7 @@ export class BaseUI<T extends BaseObject<any, any, any, any, any, any, any>, S =
         );
     }
 }
-export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> extends BaseUI<T, DefaultUIState> {
+export class DefaultUI<T extends AnyObject> extends BaseUI<T, DefaultUIState> {
     editableOnUnlock = true;
     state = { editing: false, text: "", loading: false, dropdown$: -1 };
     refSpan = React.createRef<HTMLSpanElement>();
@@ -252,14 +250,15 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
         );
     }
 }
-export type Data<T> = T extends BaseObject<infer D, any, any, any, any, any, any> ? D : never;
-export type State<T> = T extends BaseObject<any, infer S, any, any, any, any, any> ? S : never;
-export type Inputs<T> = T extends BaseObject<any, any, infer I, any, any, any, any> ? I : never;
-export type Outputs<T> = T extends BaseObject<any, any, any, infer O, any, any, any> ? O : never;
-export type Args<T> = T extends BaseObject<any, any, any, any, infer A, any, any> ? A : never;
-export type Props<T> = T extends BaseObject<any, any, any, any, any, infer P, any> ? P : never;
-export type UIState<T> = T extends BaseObject<any, any, any, any, any, any, infer U> ? U : never;
-export abstract class AbstractObject<D extends { [key: string]: any } = { [key: string]: any }, S extends { [key: string]: any } = { [key: string]: any }, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends { [key: string]: any } = { [key: string]: any }, U extends { [key: string]: any } = { [key: string]: any }> extends EventEmitter<BaseObjectEventMap<U & BaseUIState>> {
+export type Data<T> = T extends BaseObject<infer D, any, any, any, any, any, any, any> ? D : never;
+export type State<T> = T extends BaseObject<any, infer S, any, any, any, any, any, any> ? S : never;
+export type Inputs<T> = T extends BaseObject<any, any, infer I, any, any, any, any, any> ? I : never;
+export type Outputs<T> = T extends BaseObject<any, any, any, infer O, any, any, any, any> ? O : never;
+export type Args<T> = T extends BaseObject<any, any, any, any, infer A, any, any, any> ? A : never;
+export type Props<T> = T extends BaseObject<any, any, any, any, any, infer P, any, any> ? P : never;
+export type UIState<T> = T extends BaseObject<any, any, any, any, any, any, infer U, any> ? U : never;
+export type EventMap<T> = T extends BaseObject<any, any, any, any, any, any, any, infer E> ? E : never;
+export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends MappedEventEmitter<E & BaseObjectEventMap<U & BaseUIState>> {
     static get meta(): TMeta {
         return {
             package: "Base", // div will have class "package-name" "package-name-objectname"
@@ -313,7 +312,7 @@ export abstract class AbstractObject<D extends { [key: string]: any } = { [key: 
      * @memberof AbstractObject
      */
     uiUpdate(state: Partial<U & BaseUIState> | null): this {
-        this.emit("uiUpdate", state);
+        this.emit("uiUpdate", state as any);
         return this;
     }
     /**
@@ -428,7 +427,7 @@ export abstract class AbstractObject<D extends { [key: string]: any } = { [key: 
         return this.constructor.name;
     }
 }
-export class BaseObject<D extends { [key: string]: any } = {}, S extends { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}> extends AbstractObject<D, S, I, O, A, P, U> {
+export class BaseObject<D extends { [key: string]: any } = {}, S extends { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}, E extends { [key: string]: any } = {}> extends AbstractObject<D, S, I, O, A, P, U, E> {
     static get meta(): TMeta {
         return {
             ...super.meta,

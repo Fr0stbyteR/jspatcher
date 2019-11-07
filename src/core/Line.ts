@@ -1,8 +1,8 @@
-import { EventEmitter } from "events";
+import { MappedEventEmitter } from "../utils";
 import Patcher from "./Patcher";
 import { LineEventMap, TLine, TLineType } from "./types";
 
-export default class Line extends EventEmitter<LineEventMap> {
+export default class Line extends MappedEventEmitter<LineEventMap> {
     readonly id: string;
     src: [string, number];
     dest: [string, number];

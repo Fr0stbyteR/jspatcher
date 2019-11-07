@@ -4,11 +4,13 @@ import Box from "./Box";
 import Line from "./Line";
 import History from "./History";
 import { ImportedObject } from "./objects/importer/ImportedObject";
+import Env from "../env";
 
 declare global {
     interface Window {
         patcher: Patcher;
         webkitAudioContext?: typeof AudioContext;
+        jspatcherEnv: Env;
     }
 }
 
@@ -30,8 +32,6 @@ type TPatcherProps = {
 };
 
 type TPatcherState = {
-    audioCtx: AudioContext;
-    dummyAudioNode: ScriptProcessorNode;
     isLoading: boolean;
     locked: boolean;
     presentation: boolean;
@@ -45,7 +45,6 @@ type TPatcherState = {
     libGen: { [key: string]: typeof BaseObject };
     libFaust: { [key: string]: typeof BaseObject };
     selected: string[];
-    os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
 };
 
 type TErrorLevel = "error" | "warn" | "info" | "none"
@@ -101,13 +100,13 @@ type TMaxClipboard = {
         modernui: number;
     };
 };
-declare class AnyObject extends BaseObject<any, any, any, any, any, any, any> {}
+declare class AnyObject extends BaseObject<any, any, any, any, any, any, any, any> {}
 declare class AnyImportedObject extends ImportedObject<any, any, any, any, any, any, any> {}
 type TPackage = { [key: string]: typeof AnyObject | TPackage };
 type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };
 type TAudioNodeOutletConnection = { node: AudioNode; index: number };
 
-type TLine = {
+declare type TLine = {
     id?: string;
     src: [string, number];
     dest: [string, number];

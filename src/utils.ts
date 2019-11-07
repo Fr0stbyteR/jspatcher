@@ -1,4 +1,5 @@
 import { inspect } from "util";
+import { EventEmitter } from "events";
 
 export const stringifyError = (data: any) => {
     if (typeof data === "string") return data;
@@ -43,3 +44,51 @@ export const detectOS = (): "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown" =
     if (appVersion.indexOf("Linux") !== -1) return "Linux";
     return "Unknown";
 };
+export class MappedEventEmitter<M extends {} = {}, K extends keyof M = keyof M> {
+    ee = new EventEmitter();
+    addListener(event: K, listener: (e: M[K]) => void) {
+        return this.ee.addListener(event as string, listener);
+    }
+    on(event: K, listener: (e: M[K], ...args: any) => void) {
+        return this.ee.on(event as string, listener);
+    }
+    once(event: K, listener: (e: M[K]) => void) {
+        return this.ee.once(event as string, listener);
+    }
+    prependListener(event: K, listener: (e: M[K]) => void) {
+        return this.ee.prependListener(event as string, listener);
+    }
+    prependOnceListener(event: K, listener: (e: M[K]) => void) {
+        return this.ee.prependOnceListener(event as string, listener);
+    }
+    removeListener(event: K, listener: (e: M[K]) => void) {
+        return this.ee.removeListener(event as string, listener);
+    }
+    off(event: K, listener: (e: M[K]) => void) {
+        return this.ee.off(event as string, listener);
+    }
+    removeAllListeners(event?: K) {
+        return this.ee.removeAllListeners(event as string);
+    }
+    setMaxListeners(n: number) {
+        return this.ee.setMaxListeners(n);
+    }
+    getMaxListeners() {
+        return this.ee.getMaxListeners();
+    }
+    listeners(event: K) {
+        return this.ee.listeners(event as string);
+    }
+    rawListeners(event: K) {
+        return this.ee.rawListeners(event as string);
+    }
+    emit(event: K, e?: M[K]) {
+        return this.ee.emit(event as string, e);
+    }
+    eventNames() {
+        return this.ee.eventNames();
+    }
+    listenerCount(type: K) {
+        return this.ee.listenerCount(type as string);
+    }
+}
