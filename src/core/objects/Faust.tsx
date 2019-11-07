@@ -3,7 +3,7 @@ import Box from "../Box";
 import Patcher from "../Patcher";
 import { TPackage } from "../types";
 
-export class FaustOp extends BaseObject<{}, { inlets: number; outlets: number; args: (number | string)[]; [key: string]: any }, [], [], any[]> {
+export class FaustOp extends BaseObject<{}, { inlets: number; outlets: number; args: (number | string)[] }, [], [], any[]> {
     static get meta(): TMeta {
         return {
             ...super.meta,

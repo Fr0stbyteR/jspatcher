@@ -83,8 +83,8 @@ export class JSPAudioWorklet extends JSPAudioNode<AudioWorkletNode, {}, [AudioWo
         return this._meta;
     }
     keepAlive() {
-        if (this.node.numberOfOutputs) this.node.connect(this.patcher.env.dummyAudioNode, 0, 0);
-        else if (this.node.numberOfInputs) this.patcher.env.dummyAudioNode.connect(this.node, 0, 0);
+        if (this.node.numberOfOutputs) this.node.connect(this.dummyAudioNode, 0, 0);
+        else if (this.node.numberOfInputs) this.dummyAudioNode.connect(this.node, 0, 0);
     }
     destroy() {
         this.node.disconnect();

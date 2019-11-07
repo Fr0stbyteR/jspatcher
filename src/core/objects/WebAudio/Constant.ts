@@ -33,7 +33,7 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
             props: []
         };
     }
-    state = { node: this.patcher.state.audioCtx.createConstantSource() };
+    state = { node: this.audioCtx.createConstantSource() };
     inletConnections = [null, { node: this.node.offset }];
     outletConnections = [{ node: this.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
@@ -47,7 +47,7 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
         this.update((box as Box<this>).args);
     }
     keepAlive() {
-        this.node.connect(this.patcher.state.dummyAudioNode, 0, 0);
+        this.node.connect(this.dummyAudioNode, 0, 0);
     }
     destroy() {
         this.node.disconnect();

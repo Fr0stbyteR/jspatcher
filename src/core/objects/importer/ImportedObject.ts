@@ -69,3 +69,4 @@ export abstract class ImportedObject<T, S, I extends any[], O extends any[], A e
         }
     }
 }
+export class AnyImportedObject extends ImportedObject<any, any, any, any, any, any, any> {}

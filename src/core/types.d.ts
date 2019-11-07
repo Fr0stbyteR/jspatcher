@@ -1,9 +1,8 @@
-import { BaseObject } from "./objects/Base";
+import { BaseObject, AnyObject } from "./objects/Base";
 import Patcher from "./Patcher";
 import Box from "./Box";
 import Line from "./Line";
 import History from "./History";
-import { ImportedObject } from "./objects/importer/ImportedObject";
 import Env from "../env";
 
 declare global {
@@ -100,8 +99,6 @@ type TMaxClipboard = {
         modernui: number;
     };
 };
-declare class AnyObject extends BaseObject<any, any, any, any, any, any, any, any> {}
-declare class AnyImportedObject extends ImportedObject<any, any, any, any, any, any, any> {}
 type TPackage = { [key: string]: typeof AnyObject | TPackage };
 type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };
 type TAudioNodeOutletConnection = { node: AudioNode; index: number };

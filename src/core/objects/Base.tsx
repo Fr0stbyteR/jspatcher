@@ -5,7 +5,7 @@ import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
-import { BaseUIState, DefaultUIState, BaseObjectEventMap, AnyObject } from "../types";
+import { BaseUIState, DefaultUIState, BaseObjectEventMap, TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../types";
 
 export type TInletsMeta = {
     isHot: boolean;
@@ -427,7 +427,7 @@ export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I ext
         return this.constructor.name;
     }
 }
-export class BaseObject<D extends { [key: string]: any } = {}, S extends { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}, E extends { [key: string]: any } = {}> extends AbstractObject<D, S, I, O, A, P, U, E> {
+export class BaseObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends AbstractObject<D, S, I, O, A, P, U, E> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -436,6 +436,115 @@ export class BaseObject<D extends { [key: string]: any } = {}, S extends { [key:
     }
     get ui(): typeof BaseUI {
         return DefaultUI;
+    }
+}
+export class AnyObject extends BaseObject<any, any, any, any, any, any, any, any> {}
+export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P, U, E> {
+    static isConnectable(from: any, outlet: number, to: any, inlet: number) {
+        if (!(from instanceof BaseAudioObject)) return false;
+        if (!(to instanceof BaseAudioObject)) return false;
+        if (!from.outletConnections[outlet]) return false;
+        if (!to.inletConnections[inlet]) return false;
+        return true;
+    }
+    static applyCurve(param: AudioParam, curve: number[][], audioCtx: AudioContext) {
+        param.cancelScheduledValues(audioCtx.currentTime);
+        let t = 0;
+        curve.forEach((a) => {
+            if (a.length === 1) {
+                param.setValueAtTime(a[0], audioCtx.currentTime + t);
+            } else if (a.length > 1) {
+                t += a[1];
+                if (a.length === 3 && a[2] === 1) {
+                    param.exponentialRampToValueAtTime(a[0], audioCtx.currentTime + t);
+                } else {
+                    param.linearRampToValueAtTime(a[0], audioCtx.currentTime + t);
+                }
+            }
+        });
+    }
+    get audioCtx() {
+        return this.patcher.env.audioCtx;
+    }
+    get dummyAudioNode() {
+        return this.patcher.env.dummyAudioNode;
+    }
+    inletConnections: TAudioNodeInletConnection[] = [];
+    outletConnections: TAudioNodeOutletConnection[] = [];
+    keepAlive() {}
+    connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        const srcObj = srcBox.object;
+        if (BaseAudioObject.isConnectable(srcObj, srcOutlet, this, inlet)) {
+            const from = (srcObj as BaseAudioObject).outletConnections[srcOutlet];
+            const to = this.inletConnections[inlet];
+            const isAudioParam = to.node instanceof AudioParam;
+            if (isAudioParam) from.node.connect(to.node as AudioParam, from.index);
+            else from.node.connect(to.node as AudioNode, from.index, to.index);
+        }
+        return this;
+    }
+    disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        const srcObj = srcBox.object;
+        if (BaseAudioObject.isConnectable(srcObj, srcOutlet, this, inlet)) {
+            const from = (srcObj as BaseAudioObject).outletConnections[srcOutlet];
+            const to = this.inletConnections[inlet];
+            const isAudioParam = to.node instanceof AudioParam;
+            if (isAudioParam) from.node.disconnect(to.node as AudioParam, from.index);
+            else from.node.disconnect(to.node as AudioNode, from.index, to.index);
+        }
+        return this;
+    }
+    connectAll() {
+        const inletLines = this.inletLines;
+        for (let inlet = 0; inlet < this.inlets; inlet++) {
+            for (let j = 0; j < inletLines[inlet].length; j++) {
+                const line = this.patcher.lines[inletLines[inlet][j]];
+                const { srcBox, srcOutlet, id } = line;
+                this.connectedInlet(inlet, srcBox, srcOutlet, id);
+            }
+        }
+        const outletLines = this.outletLines;
+        for (let outlet = 0; outlet < this.outlets; outlet++) {
+            for (let j = 0; j < outletLines[outlet].length; j++) {
+                const line = this._patcher.lines[outletLines[outlet][j]];
+                const { destBox, destInlet } = line;
+                const destObj = destBox.object;
+                if (BaseAudioObject.isConnectable(this, outlet, destObj, destInlet)) {
+                    const from = this.outletConnections[outlet];
+                    const to = (destObj as BaseAudioObject).inletConnections[outlet];
+                    const isAudioParam = to.node instanceof AudioParam;
+                    if (isAudioParam) from.node.connect(to.node as AudioParam, from.index);
+                    else from.node.connect(to.node as AudioNode, from.index, to.index);
+                }
+            }
+        }
+        return this;
+    }
+    disconnectAll() {
+        const inletLines = this.inletLines;
+        for (let inlet = 0; inlet < this.inlets; inlet++) {
+            for (let j = 0; j < inletLines[inlet].length; j++) {
+                const line = this.patcher.lines[inletLines[inlet][j]];
+                const { srcBox, srcOutlet, id } = line;
+                this.disconnectedInlet(inlet, srcBox, srcOutlet, id);
+            }
+        }
+        const outletLines = this.outletLines;
+        for (let outlet = 0; outlet < this.outlets; outlet++) {
+            for (let j = 0; j < outletLines[outlet].length; j++) {
+                const line = this._patcher.lines[outletLines[outlet][j]];
+                const { destBox, destInlet } = line;
+                const destObj = destBox.object;
+                if (BaseAudioObject.isConnectable(this, outlet, destObj, destInlet)) {
+                    const from = this.outletConnections[outlet];
+                    const to = (destObj as BaseAudioObject).inletConnections[outlet];
+                    const isAudioParam = to.node instanceof AudioParam;
+                    if (isAudioParam) from.node.disconnect(to.node as AudioParam, from.index);
+                    else from.node.disconnect(to.node as AudioNode, from.index, to.index);
+                }
+            }
+        }
+        return this;
     }
 }
 class EmptyObject extends BaseObject<{}, { editing: boolean }, [any], [any]> {

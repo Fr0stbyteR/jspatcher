@@ -8,7 +8,8 @@ import { SetterGetter } from "./SetterGetter";
 import { Setter } from "./Setter";
 import { Getter } from "./Getter";
 import { Property } from "./Property";
-import { AnyImportedObject, TPackage } from "../../types";
+import { TPackage } from "../../types";
+import { AnyImportedObject } from "./ImportedObject";
 
 type TImportedModule = { [key: string]: any };
 declare interface Window {
