@@ -1,37 +1,43 @@
 import * as React from "react";
 import Patcher from "../core/Patcher";
 import "./LineUI.scss";
+import { TLineType } from "../core/types";
 
-type position = { left: number; top: number };
+type TPosition = { left: number; top: number };
 type P = { patcher: Patcher; id: string };
-type S = { selected: boolean; dragging: boolean; destPos: position; srcPos: position; srcHandlerPos: position; destHandlerPos: position };
+type S = { type: TLineType; selected: boolean; dragging: boolean; destPos: TPosition; srcPos: TPosition; srcHandlerPos: TPosition; destHandlerPos: TPosition };
 export class LineUI extends React.Component<P, S> {
     state = (() => {
-        const line = this.props.patcher.lines[this.props.id];
-        return { selected: false, dragging: false, destPos: line.destPos, srcPos: line.srcPos, srcHandlerPos: { left: 0, top: 0 }, destHandlerPos: { left: 0, top: 0 } };
+        const { line } = this;
+        return { type: line.type, selected: false, dragging: false, destPos: line.destPos, srcPos: line.srcPos, srcHandlerPos: { left: 0, top: 0 }, destHandlerPos: { left: 0, top: 0 } };
     })();
     refDiv = React.createRef<HTMLDivElement>();
     refPath = React.createRef<SVGPathElement>();
     dragged = false;
+    get line() {
+        return this.props.patcher.lines[this.props.id];
+    }
     handleDestPosChanged = (position: { left: number; top: number }) => {
+        const { line } = this;
         if (this.state.destPos.left !== position.left || this.state.destPos.top !== position.top) {
-            this.setState({ destPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
+            this.setState({ type: line.type, destPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
         }
     }
     handleSrcPosChanged = (position: { left: number; top: number }) => {
+        const { line } = this;
         if (this.state.srcPos.left !== position.left || this.state.srcPos.top !== position.top) {
-            this.setState({ srcPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
+            this.setState({ type: line.type, srcPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
         }
     }
     handleResetPos = () => {
-        const line = this.props.patcher.lines[this.props.id];
+        const { line } = this;
         this.setState({ destPos: line.destPos, srcPos: line.srcPos }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
         return line;
     }
     handleSelected = (id: string) => (id === this.props.id ? this.setState({ selected: true }) : null);
     handleDeselected = (id: string) => (id === this.props.id ? this.setState({ selected: false }) : null);
     componentDidMount() {
-        const line = this.props.patcher.lines[this.props.id];
+        const { line } = this;
         if (!line) return;
         line.on("destPosChanged", this.handleDestPosChanged);
         line.on("srcPosChanged", this.handleSrcPosChanged);
@@ -42,7 +48,7 @@ export class LineUI extends React.Component<P, S> {
     componentWillUnmount() {
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleDeselected);
-        const line = this.props.patcher.lines[this.props.id];
+        const { line } = this;
         if (!line) return;
         line.off("destPosChanged", this.handleDestPosChanged);
         line.off("srcPosChanged", this.handleSrcPosChanged);
@@ -86,7 +92,7 @@ export class LineUI extends React.Component<P, S> {
         let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
         const dragOffset = { x: 0, y: 0 };
         let nearest = [null, null] as [string, number];
-        const line = this.props.patcher.lines[this.props.id];
+        const { line } = this;
         const handleMouseMove = (e: MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
@@ -155,10 +161,12 @@ export class LineUI extends React.Component<P, S> {
         const dBezier = [dStart[0], dStart[1] + Math.max(5, (divStyle.height - 20) / 5)];
         if (dBezier[1] > divStyle.height) dBezier[1] = divStyle.height;
         const d = ["M", dStart[0], dStart[1], "Q", dBezier[0], dBezier[1], ",", dMid[0], dMid[1], "T", dEnd[0], dEnd[1]];
+        const dJoined = d.join(" ");
         return (
             <div className={className} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
-                    <path d={d.join(" ")} ref={this.refPath} />
+                    <path className="normal" d={dJoined} ref={this.refPath} />
+                    {this.state.type === "audio" ? <path className="audio" d={dJoined} ref={this.refPath} /> : undefined}
                 </svg>
                 <div className="line-handler line-handler-src" style={this.state.srcHandlerPos} onMouseDown={this.handleMouseDownSrc} />
                 <div className="line-handler line-handler-dest" style={this.state.destHandlerPos} onMouseDown={this.handleMouseDownDest} />
@@ -167,7 +175,7 @@ export class LineUI extends React.Component<P, S> {
     }
 }
 
-export class TempLineUI extends React.Component<{ patcher: Patcher }, { show: boolean; srcPos: position; destPos: position }> {
+export class TempLineUI extends React.Component<{ patcher: Patcher }, { show: boolean; srcPos: TPosition; destPos: TPosition }> {
     state = { show: false, srcPos: { left: 0, top: 0 }, destPos: { left: 0, top: 0 } };
     refDiv = React.createRef<HTMLDivElement>();
     refPath = React.createRef<SVGPathElement>();
@@ -282,10 +290,11 @@ export class TempLineUI extends React.Component<{ patcher: Patcher }, { show: bo
         const dBezier = [dStart[0], dStart[1] + Math.max(5, (divStyle.height - 20) / 5)];
         if (dBezier[1] > divStyle.height) dBezier[1] = divStyle.height;
         const d = ["M", dStart[0], dStart[1], "Q", dBezier[0], dBezier[1], ",", dMid[0], dMid[1], "T", dEnd[0], dEnd[1]];
+        const dJoined = d.join(" ");
         return (
             <div className="line dragging" id="line-temp" tabIndex={0} style={divStyle} ref={this.refDiv}>
                 <svg width={divStyle.width} height={divStyle.height}>
-                    <path d={d.join(" ")} ref={this.refPath} />
+                    <path className="normal" d={dJoined} ref={this.refPath} />
                 </svg>
             </div>
         );

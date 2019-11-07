@@ -5,10 +5,16 @@
         pointer-events: none;
         > svg {
             filter: drop-shadow(rgba(200, 200, 200, 0.5) 0px 0px 0.5px);
-            > path {
+            > path.normal {
                 stroke: rgb(158, 159, 159);
                 stroke-width: 2;
                 fill: transparent;
+            }
+            > path.audio {
+                stroke: rgb(215, 248, 135);
+                stroke-width: 2;
+                fill: transparent;
+                stroke-dasharray: 4, 4;
             }
             &:hover {
                 filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);

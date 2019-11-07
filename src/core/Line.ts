@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import Patcher from "./Patcher";
-import { LineEventMap, TLine } from "./types";
+import { LineEventMap, TLine, TLineType } from "./types";
 
 export default class Line extends EventEmitter<LineEventMap> {
     readonly id: string;
@@ -105,5 +105,8 @@ export default class Line extends EventEmitter<LineEventMap> {
     }
     get destBox() {
         return this._patcher.boxes[this.dest[0]];
+    }
+    get type(): TLineType {
+        return this.srcBox.object.meta.inlets[this.srcOutlet].type === "signal" && this.srcBox.object.meta.outlets[this.destInlet].type === "signal" ? "audio" : "normal";
     }
 }

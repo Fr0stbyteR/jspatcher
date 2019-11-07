@@ -112,6 +112,7 @@ type TLine = {
     dest: [string, number];
     disabled?: boolean;
 };
+type TLineType = "normal" | "audio";
 
 type TBox = {
     id?: string;

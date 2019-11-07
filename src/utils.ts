@@ -24,3 +24,22 @@ export const decodeMaxCurveFormat = (sIn: string | number): number[][] => {
         throw new Error(`Curve element: ${s} in ${sIn} is not finite.`);
     }));
 };
+
+/**
+ * Gives OS name as follows:
+ * "Windows"    for all versions of Windows,
+ * "MacOS"      for all versions of Macintosh OS,
+ * "Linux"      for all versions of Linux,
+ * "UNIX"       for all other UNIX flavors,
+ * "Unknown" indicates failure to detect the OS
+ *
+ * @returns {"Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown"} OS name
+ */
+export const detectOS = (): "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown" => {
+    const { appVersion } = navigator;
+    if (appVersion.indexOf("Win") !== -1) return "Windows";
+    if (appVersion.indexOf("Mac") !== -1) return "MacOS";
+    if (appVersion.indexOf("X11") !== -1) return "UNIX";
+    if (appVersion.indexOf("Linux") !== -1) return "Linux";
+    return "Unknown";
+};
