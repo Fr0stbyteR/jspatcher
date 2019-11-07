@@ -6,6 +6,7 @@ import Splitter from "./Splitter";
 import Merger from "./Merger";
 import Gain from "./Gain";
 import Analyser from "./Analyser";
+import { audioWorklet, JSPAudioWorklet } from "./AudioWorklet";
 /*
 const {
     BaseAudioContext,
@@ -38,11 +39,13 @@ for (const key in WebAudioAPI) {
 export default {
     // ...outs,
     audioContext,
-    Constant,
-    Oscillator,
-    Gain,
-    Destination,
-    Splitter,
-    Merger,
-    Analyser
+    "Constant~": Constant,
+    "Oscillator~": Oscillator,
+    "Gain~": Gain,
+    "Destination~": Destination,
+    "Splitter~": Splitter,
+    "Merger~": Merger,
+    "Analyser~": Analyser,
+    audioWorklet,
+    "AudioWorklet~": JSPAudioWorklet
 };

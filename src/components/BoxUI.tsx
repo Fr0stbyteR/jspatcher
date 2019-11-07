@@ -302,10 +302,12 @@ class Inlets extends React.Component<{ patcher: Patcher; box: Box }, { ports: JS
     state = { ports: this.ports };
     componentDidMount() {
         this.props.box.on("textChanged", this.handleUpdate);
+        this.props.box.on("ioCountChanged", this.handleUpdate);
     }
     componentWillUnmount() {
         if (!this.props.box) return;
         this.props.box.off("textChanged", this.handleUpdate);
+        this.props.box.off("ioCountChanged", this.handleUpdate);
     }
     handleUpdate = () => {
         this.setState({ ports: this.ports });
@@ -329,10 +331,12 @@ class Outlets extends React.Component<{ patcher: Patcher; box: Box }, { ports: J
     state = { ports: this.ports };
     componentDidMount() {
         this.props.box.on("textChanged", this.handleUpdate);
+        this.props.box.on("ioCountChanged", this.handleUpdate);
     }
     componentWillUnmount() {
         if (!this.props.box) return;
         this.props.box.off("textChanged", this.handleUpdate);
+        this.props.box.off("ioCountChanged", this.handleUpdate);
     }
     handleUpdate = () => {
         this.setState({ ports: this.ports });

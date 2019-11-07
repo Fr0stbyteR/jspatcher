@@ -114,14 +114,14 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
         if (e.key === "Enter") {
             e.preventDefault();
             if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$] && this.refSpan.current) {
-                this.refSpan.current.innerText = this.dropdownOptions[this.state.dropdown$].key;
+                this.refSpan.current.innerText = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[this.state.dropdown$].key).join(" ");
             }
             return;
         }
         if (e.key === " " && this.refSpan.current) {
             if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$]) {
                 const span = this.refSpan.current;
-                const text = this.state.text.split(" ").slice(0, -1).join(" ") + this.dropdownOptions[this.state.dropdown$].key + " ";
+                const text = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[this.state.dropdown$].key).join(" ") + " ";
                 span.innerText = text;
                 const range = document.createRange();
                 const selection = window.getSelection();
@@ -184,7 +184,7 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
         e.preventDefault();
         if (i >= 0 && this.dropdownOptions[i] && this.refSpan.current) {
             const span = this.refSpan.current;
-            const text = this.state.text.split(" ").slice(0, -1).join(" ") + this.dropdownOptions[i].key;
+            const text = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[i].key).join(" ");
             span.innerText = text;
             const range = document.createRange();
             const selection = window.getSelection();
@@ -410,13 +410,13 @@ export abstract class AbstractObject<D extends { [key: string]: any } = { [key: 
         return this._box.inlets;
     }
     set inlets(i: number) {
-        this._box.inlets = i;
+        this._box.setInlets(i);
     }
     get outlets() {
         return this._box.outlets;
     }
     set outlets(i: number) {
-        this._box.outlets = i;
+        this._box.setOutlets(i);
     }
     get outletLines() {
         return this._box.outletLines;

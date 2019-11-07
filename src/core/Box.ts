@@ -58,6 +58,14 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
     get parsed() {
         return this._parsed;
     }
+    setInlets(count: number) {
+        this.inlets = count;
+        this.emit("ioCountChanged", this);
+    }
+    setOutlets(count: number) {
+        this.outlets = count;
+        this.emit("ioCountChanged", this);
+    }
     getInletPos(port: number) {
         return { top: this.rect[1], left: ((this.rect[0] + 10) + (this.rect[2] - 20) * port / (this.inlets > 1 ? this.inlets - 1 : 1)) };
     }
@@ -184,7 +192,7 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
         if (strArray.length) objOut.class = strArray.shift();
         while (strArray.length) {
             const el = strArray.shift();
-            if (typeof lastProp === "undefined" && el.charAt(0) !== "@") {
+            if (typeof lastProp === "undefined" && el.charAt(0) !== "@") { // is arg, to push
                 try {
                     objOut.args.push(JSON.parse(el));
                 } catch (e) {
@@ -192,18 +200,18 @@ export default class Box<T extends AnyObject = AbstractObject> extends EventEmit
                 }
                 continue;
             }
-            if (el.length > 1 && el.charAt(0) === "@") {
+            if (el.length > 1 && el.charAt(0) === "@") { // is prop key
                 lastProp = el.substr(1);
                 objOut.props[lastProp] = [];
                 continue;
             }
-            try {
+            try { // is prop value
                 objOut.props[lastProp].push(JSON.parse(el));
             } catch (e) {
                 objOut.props[lastProp].push(el);
             }
         }
-        for (const key in objOut.props) {
+        for (const key in objOut.props) { // no value = true, one value need to parse, else array
             if (objOut.props[key].length === 0) objOut.props[key] = true;
             else if (objOut.props[key].length === 1) objOut.props[key] = parseToPrimitive(objOut.props[key][0]);
         }

@@ -89,8 +89,15 @@ export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = 
         for (let outlet = 0; outlet < this.outlets; outlet++) {
             for (let j = 0; j < outletLines[outlet].length; j++) {
                 const line = this._patcher.lines[outletLines[outlet][j]];
-                const { destBox, destInlet, id } = line;
-                this.connectedOutlet(outlet, destBox, destInlet, id);
+                const { destBox, destInlet } = line;
+                const destObj = destBox.object;
+                if (JSPAudioNode.isConnectable(this, outlet, destObj, destInlet)) {
+                    const from = this.outletConnections[outlet];
+                    const to = (destObj as AnyJSPAudioNode).inletConnections[outlet];
+                    const isAudioParam = to.node instanceof AudioParam;
+                    if (isAudioParam) from.node.connect(to.node as AudioParam, from.index);
+                    else from.node.connect(to.node as AudioNode, from.index, to.index);
+                }
             }
         }
         return this;
@@ -108,8 +115,15 @@ export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = 
         for (let outlet = 0; outlet < this.outlets; outlet++) {
             for (let j = 0; j < outletLines[outlet].length; j++) {
                 const line = this._patcher.lines[outletLines[outlet][j]];
-                const { destBox, destInlet, id } = line;
-                this.disconnectedOutlet(outlet, destBox, destInlet, id);
+                const { destBox, destInlet } = line;
+                const destObj = destBox.object;
+                if (JSPAudioNode.isConnectable(this, outlet, destObj, destInlet)) {
+                    const from = this.outletConnections[outlet];
+                    const to = (destObj as AnyJSPAudioNode).inletConnections[outlet];
+                    const isAudioParam = to.node instanceof AudioParam;
+                    if (isAudioParam) from.node.disconnect(to.node as AudioParam, from.index);
+                    else from.node.disconnect(to.node as AudioNode, from.index, to.index);
+                }
             }
         }
         return this;

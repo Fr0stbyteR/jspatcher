@@ -44,7 +44,7 @@ export class Constructor extends ImportedObject<TAnyConstructor, S, [any | Bang,
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
         const Fn = this.imported;
-        this.inlets = Fn.length === 0 ? 1 : Fn.length; // Function.length property
+        this.inlets = Fn.length || 1; // Function.length property
         this.outlets = 1 + this.inlets;
         this.update(box.args.slice(), box.props);
     }

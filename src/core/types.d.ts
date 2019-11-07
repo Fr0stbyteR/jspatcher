@@ -165,6 +165,7 @@ interface BoxEventMap {
     "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
     "connectedPort": { isSrc: boolean; i: number; last?: false };
     "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
+    "ioCountChanged": Box;
 }
 type BaseUIState = { editing: boolean };
 type DefaultUIState = { text: string; loading: boolean; dropdown$: number } & BaseUIState;
