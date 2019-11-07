@@ -166,7 +166,7 @@ export class LineUI extends React.Component<P, S> {
             <div className={className} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
                     <path className="normal" d={dJoined} ref={this.refPath} />
-                    {this.state.type === "audio" ? <path className="audio" d={dJoined} ref={this.refPath} /> : undefined}
+                    {this.state.type === "audio" ? <path className="audio" d={dJoined} /> : undefined}
                 </svg>
                 <div className="line-handler line-handler-src" style={this.state.srcHandlerPos} onMouseDown={this.handleMouseDownSrc} />
                 <div className="line-handler line-handler-dest" style={this.state.destHandlerPos} onMouseDown={this.handleMouseDownDest} />

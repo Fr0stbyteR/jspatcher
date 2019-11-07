@@ -107,6 +107,6 @@ export default class Line extends EventEmitter<LineEventMap> {
         return this._patcher.boxes[this.dest[0]];
     }
     get type(): TLineType {
-        return this.srcBox.object.meta.inlets[this.srcOutlet].type === "signal" && this.srcBox.object.meta.outlets[this.destInlet].type === "signal" ? "audio" : "normal";
+        return this.srcBox.object.meta.outlets[this.srcOutlet].type === "signal" && this.destBox.object.meta.inlets[this.destInlet].type === "signal" ? "audio" : "normal";
     }
 }

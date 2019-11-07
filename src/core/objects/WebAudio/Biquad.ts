@@ -12,7 +12,7 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
             description: "WebAudio BiquadFilterNode",
             inlets: [{
                 isHot: true,
-                type: "bang",
+                type: "signal",
                 description: "Node connection (1 channel), bang to output BiquadFilterNode instance"
             }, {
                 isHot: false,
