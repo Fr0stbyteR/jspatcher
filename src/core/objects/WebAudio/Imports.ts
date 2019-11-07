@@ -7,6 +7,7 @@ import Merger from "./Merger";
 import Gain from "./Gain";
 import Analyser from "./Analyser";
 import { audioWorklet, JSPAudioWorklet } from "./AudioWorklet";
+import Biquad from "./Biquad";
 /*
 const {
     BaseAudioContext,
@@ -47,5 +48,6 @@ export default {
     "Merger~": Merger,
     "Analyser~": Analyser,
     audioWorklet,
-    "AudioWorklet~": JSPAudioWorklet
+    "AudioWorklet~": JSPAudioWorklet,
+    "Biquad~": Biquad
 };

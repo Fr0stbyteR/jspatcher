@@ -4,7 +4,7 @@ import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { decodeMaxCurveFormat } from "../../../utils";
 
-export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, string, string, OscillatorType], [null, OscillatorNode], [number, string], { detune: number }> {
+export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, string, string, OscillatorType], [null, OscillatorNode], [number, OscillatorType], { detune: number }> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -70,7 +70,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
         this.node.disconnect();
         return this;
     }
-    update(args?: [number?, string?], props?: { detune?: number }) {
+    update(args?: [number?, OscillatorType?], props?: { detune?: number }) {
         this.updateBox(args, props);
         if (args && args.length) {
             if (args[0] && typeof args[0] === "number" && isFinite(args[0])) this.node.frequency.setValueAtTime(args[0], this.audioCtx.currentTime);
