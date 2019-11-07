@@ -86,7 +86,7 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
     toggleEdit = (bool?: boolean) => {
         const { patcher, box } = this;
         if (bool === this.state.editing) return this.state.editing;
-        if (patcher._state.locked) return this.state.editing;
+        if (patcher.state.locked) return this.state.editing;
         if (!this.refSpan.current) return this.state.editing;
         const toggle = !this.state.editing;
         const span = this.refSpan.current;
@@ -152,22 +152,22 @@ export class DefaultUI<T extends BaseObject<any, any, any, any, any, any, any>> 
         this.dropdownOptions = [];
         const splitted = this.refSpan.current.innerText.split(" ");
         if (splitted.length === 1) {
-            const keys = Object.keys(patcher._state.lib).sort();
+            const keys = Object.keys(patcher.state.lib).sort();
             for (let i = 0; i < keys.length; i++) {
                 if (this.dropdownOptions.length > 10) break;
                 const key = keys[i];
                 if (key.startsWith(splitted[splitted.length - 1])) {
-                    const o = patcher._state.lib[key];
+                    const o = patcher.state.lib[key];
                     this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
                 }
             }
         } else if (splitted[0] === "new" && splitted.length === 2) {
-            const keys = Object.keys(patcher._state.lib).sort();
+            const keys = Object.keys(patcher.state.lib).sort();
             for (let i = 0; i < keys.length; i++) {
                 if (this.dropdownOptions.length > 10) break;
                 const key = keys[i];
                 if (key.startsWith(splitted[splitted.length - 1])) {
-                    const o = patcher._state.lib[key];
+                    const o = patcher.state.lib[key];
                     if (o.meta.description === "Auto-imported static method") {
                         this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
                     }

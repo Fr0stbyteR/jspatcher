@@ -44,7 +44,7 @@ export default class BoxUI extends React.Component<P, S> {
         this.tryToggleEdit(false);
     }
     handleMouseDown = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
         const box = this.props.patcher.boxes[this.props.id];
         // Handle Draggable
@@ -127,7 +127,7 @@ export default class BoxUI extends React.Component<P, S> {
         e.stopPropagation();
     }
     handleKeyDown = (e: React.KeyboardEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (e.key === "Enter") {
             if (this.tryToggleEdit()) e.preventDefault();
             else this.refDiv.current.focus();
@@ -160,7 +160,7 @@ export default class BoxUI extends React.Component<P, S> {
     handleSelected = (id: string) => (id === this.props.id ? this.setState({ selected: true }) : null);
     handleDeselected = (id: string) => (id === this.props.id ? this.setState({ selected: false }) : null);
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         const classList = e.currentTarget.classList;
         const typeMap: { [key: string]: TResizeHandlerType } = {
             "resize-handler-n": "n",
@@ -244,7 +244,7 @@ export default class BoxUI extends React.Component<P, S> {
     componentDidMount() {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return;
-        this.setState({ selected: this.props.patcher._state.selected.indexOf(box.id) !== -1 });
+        this.setState({ selected: this.props.patcher.state.selected.indexOf(box.id) !== -1 });
         box.on("textChanged", this.handleTextChanged);
         box.on("rectChanged", this.handleRectChanged);
         this.props.patcher.on("selected", this.handleSelected);
@@ -372,23 +372,23 @@ class Inlet extends React.Component<{ patcher: Patcher; box: Box; index: number 
         if (!isSrc && i === this.props.index) this.setState({ isConnected: !last });
     }
     handleMouseDown = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
         if (e.target !== e.currentTarget) return;
         e.stopPropagation();
         this.props.patcher.tempLine(true, [this.props.box.id, this.props.index]);
     }
     handleMouseEnter = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (e.buttons) return;
         this.setState({ highlight: true });
     }
     handleMouseMove = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (e.currentTarget !== e.target) this.setState({ highlight: false });
     }
     handleMouseLeave = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         this.setState({ highlight: false });
     }
     render() {
@@ -435,23 +435,23 @@ class Outlet extends React.Component< { patcher: Patcher; box: Box; index: numbe
         if (isSrc && i === this.props.index) this.setState({ isConnected: !last });
     }
     handleMouseDown = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
         if (e.target !== e.currentTarget) return;
         e.stopPropagation();
         this.props.patcher.tempLine(false, [this.props.box.id, this.props.index]);
     }
     handleMouseEnter = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (e.buttons) return;
         this.setState({ highlight: true });
     }
     handleMouseLeave = () => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         this.setState({ highlight: false });
     }
     handleMouseMove = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (e.currentTarget !== e.target) this.setState({ highlight: false });
     }
     render() {

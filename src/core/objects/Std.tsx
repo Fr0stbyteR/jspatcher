@@ -27,7 +27,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
     toggleEdit = (bool?: boolean) => {
         const { patcher, box } = this;
         if (bool === this.state.editing) return this.state.editing;
-        if (patcher._state.locked) return this.state.editing;
+        if (patcher.state.locked) return this.state.editing;
         if (!this.refSpan.current) return this.state.editing;
         const toggle = !this.state.editing;
         const span = this.refSpan.current;
@@ -166,7 +166,7 @@ class message extends StdObject<{ text: string }, { buffer: any; editing: boolea
         return class MessageUI extends ButtonUI<message> {
             handleChanged = (text: string) => this.object.update([text]);
             handleClick = (e: React.MouseEvent) => {
-                if (this.patcher._state.locked) this.object.outlet(0, this.object.state.buffer);
+                if (this.patcher.state.locked) this.object.outlet(0, this.object.state.buffer);
             }
         };
     }

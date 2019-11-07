@@ -61,7 +61,7 @@ export default class New extends BaseObject<{}, S, [any | Bang, ...any[]], [any,
         this.updateBox(args, props);
         if (args) {
             if (args[0]) {
-                const Wrapper = this.patcher._state.lib[args[0]];
+                const Wrapper = this.patcher.state.lib[args[0]];
                 if (!Wrapper) this.error(`Function ${args[0]} not found.`);
                 else if (Wrapper.prototype instanceof StaticMethod) {
                     this.state.Wrapper = Wrapper as typeof StaticMethod;

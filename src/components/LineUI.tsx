@@ -66,7 +66,7 @@ export class LineUI extends React.Component<P, S> {
         return null;
     }
     handleMouseDown = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         this.setState(this.handlersPos);
         if (e.shiftKey) {
             if (this.state.selected) this.props.patcher.deselect(this.props.id);
@@ -75,12 +75,12 @@ export class LineUI extends React.Component<P, S> {
         e.stopPropagation();
     }
     handleMouseDownSrc = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         this.handleDraggable(true);
         e.stopPropagation();
     }
     handleMouseDownDest = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         this.handleDraggable(false);
         e.stopPropagation();
     }
@@ -190,7 +190,7 @@ export class TempLineUI extends React.Component<{ patcher: Patcher }, { show: bo
     }
     handleNewLine = (e: { findSrc: boolean; from: [string, number] }) => {
         const { findSrc, from } = e;
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (this.state.show) return;
         this.findSrc = findSrc;
         this.from = from;

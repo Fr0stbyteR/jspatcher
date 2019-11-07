@@ -12,7 +12,7 @@ enum TPanels {
     Code = "Code"
 }
 class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLog[] }> {
-    state = { cached: this.props.patcher._state.log.slice() };
+    state = { cached: this.props.patcher.state.log.slice() };
     refTable = React.createRef<HTMLTableElement>();
     logDuringLoading: TPatcherLog[] = [];
     handleNewLog = (log: TPatcherLog) => {
@@ -69,7 +69,7 @@ class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: b
         this.codeEditor.setValue(this.code);
     }
     handleGraphChanged = () => {
-        if (!this.props.patcher._state.isLoading && this.state.editorLoaded) this.codeEditor.setValue(this.code);
+        if (!this.props.patcher.state.isLoading && this.state.editorLoaded) this.codeEditor.setValue(this.code);
     }
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
     componentDidMount() {
@@ -141,12 +141,12 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
         document.addEventListener("mouseup", handleMouseUp);
     }
     handleAudioSwitch = (e: React.MouseEvent) => {
-        const audioCtx = this.props.patcher._state.audioCtx;
+        const audioCtx = this.props.patcher.state.audioCtx;
         if (this.state.audioOn) audioCtx.suspend();
         else audioCtx.resume();
     }
     handleAudioCtxStateChange = () => {
-        const audioCtx = this.props.patcher._state.audioCtx;
+        const audioCtx = this.props.patcher.state.audioCtx;
         const { state } = audioCtx;
         this.setState({ audioOn: state === "running" });
     }
@@ -155,12 +155,12 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
         this.setState({ active: TPanels.None, codePanel });
     }
     componentDidMount() {
-        const audioCtx = this.props.patcher._state.audioCtx;
+        const audioCtx = this.props.patcher.state.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.on("loaded", this.handlePatcherLoaded);
     }
     componentWillUnmount() {
-        const audioCtx = this.props.patcher._state.audioCtx;
+        const audioCtx = this.props.patcher.state.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.off("loaded", this.handlePatcherLoaded);
     }

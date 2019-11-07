@@ -88,24 +88,24 @@ declare global {
 class EditMenu extends React.Component {
     props: { patcher: Patcher };
     handleClickUndo = () => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         this.props.patcher.undo();
     };
     handleClickRedo = () => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         this.props.patcher.redo();
     };
     handleClickCut = () => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         navigator.clipboard.writeText(this.props.patcher.selectedToString())
             .then(() => this.props.patcher.deleteSelected());
     };
     handleClickCopy = () => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         navigator.clipboard.writeText(this.props.patcher.selectedToString());
     };
     handleClickPaste = () => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         navigator.clipboard.readText()
             .then((text) => {
                 let parsed: TPatcher | TMaxClipboard;
@@ -116,11 +116,11 @@ class EditMenu extends React.Component {
             });
     };
     handleClickDelete = () => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         this.props.patcher.deleteSelected();
     };
     handleClickDuplicate = () => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         const text = this.props.patcher.selectedToString();
         let parsed: TPatcher;
         try {
@@ -129,7 +129,7 @@ class EditMenu extends React.Component {
         this.props.patcher.paste(parsed);
     };
     handleClickSelectAll = () => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         this.props.patcher.selectAllBoxes();
     };
     render() {

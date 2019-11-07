@@ -28,7 +28,7 @@ export default class audioContext extends BaseObject<{}, {}, [Bang], [AudioConte
     }
     fn<I extends [Bang], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(0, this.patcher._state.audioCtx);
+            if (data instanceof Bang) this.outlet(0, this.patcher.state.audioCtx);
         }
         return this;
     }

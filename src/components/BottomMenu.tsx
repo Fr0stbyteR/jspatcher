@@ -6,7 +6,7 @@ import "./BottomMenu.scss";
 type P = { patcher: Patcher };
 type S = { locked: boolean; showGrid: boolean };
 export default class BottomMenu extends React.Component<P, S> {
-    state = { locked: this.props.patcher._state.locked, showGrid: this.props.patcher._state.showGrid };
+    state = { locked: this.props.patcher.state.locked, showGrid: this.props.patcher.state.showGrid };
     componentDidMount() {
         this.props.patcher.on("locked", this.handleLockedChange);
         this.props.patcher.on("showGrid", this.handleShowGridChange);

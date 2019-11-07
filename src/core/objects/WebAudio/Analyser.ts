@@ -80,7 +80,7 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
             }]
         };
     }
-    state = { node: this.patcher._state.audioCtx.createAnalyser() };
+    state = { node: this.patcher.state.audioCtx.createAnalyser() };
     inletConnections = [{ node: this.node, index: 0 }];
     outletConnections = [{ node: this.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
@@ -92,7 +92,7 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
         this.update((box as Box<this>).args, (box as Box<this>).props);
     }
     keepAlive() {
-        this.node.connect(this.patcher._state.dummyAudioNode, 0, 0);
+        this.node.connect(this.patcher.state.dummyAudioNode, 0, 0);
     }
     destroy() {
         this.node.disconnect();

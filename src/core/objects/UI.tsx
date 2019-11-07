@@ -39,7 +39,7 @@ export class comment extends BaseObject<{ value: string }, {}, [], [], [string]>
             refSpan = React.createRef<HTMLSpanElement>();
             toggleEdit = (bool?: boolean) => {
                 if (bool === this.state.editing) return this.state.editing;
-                if (this.props.object.patcher._state.locked) return this.state.editing;
+                if (this.props.object.patcher.state.locked) return this.state.editing;
                 if (!this.refSpan.current) return this.state.editing;
                 const toggle = !this.state.editing;
                 const span = this.refSpan.current;

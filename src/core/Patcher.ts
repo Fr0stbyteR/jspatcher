@@ -14,6 +14,7 @@ import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
 import JSPWebAudio from "./objects/WebAudio/Imports";
+import { detectOS } from "../utils";
 
 const Packages: TPackage = { Base, Std, UI, Op, Window, WebAudio: JSPWebAudio, new: New };
 
@@ -45,7 +46,8 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
             libMax: {},
             libGen: {},
             libFaust: {},
-            selected: []
+            selected: [],
+            os: detectOS()
         };
         this._state.libJS = this.packageRegister(Packages, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
@@ -694,5 +696,8 @@ export default class Patcher extends EventEmitter<PatcherEventMap> {
     }
     toString() {
         return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
+    }
+    get state() {
+        return this._state;
     }
 }

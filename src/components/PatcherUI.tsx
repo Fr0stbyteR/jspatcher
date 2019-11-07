@@ -12,9 +12,9 @@ type P = { patcher: Patcher };
 type S = { locked: boolean; presentation: boolean; showGrid: boolean; bgcolor: [number, number, number, number]; editing_bgcolor: [number, number, number, number] };
 export default class PatcherUI extends React.Component<P, S> {
     state = {
-        locked: this.props.patcher._state.locked,
-        presentation: this.props.patcher._state.presentation,
-        showGrid: this.props.patcher._state.showGrid,
+        locked: this.props.patcher.state.locked,
+        presentation: this.props.patcher.state.presentation,
+        showGrid: this.props.patcher.state.showGrid,
         bgcolor: this.props.patcher.props.bgcolor,
         editing_bgcolor: this.props.patcher.props.editing_bgcolor // eslint-disable-line @typescript-eslint/camelcase
     };
@@ -99,12 +99,12 @@ class Lines extends React.Component {
         this.props.patcher.off("delete", this.onDelete);
     }
     onCreateLine = (line: Line) => {
-        if (this.props.patcher._state.isLoading) return;
+        if (this.props.patcher.state.isLoading) return;
         this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
         this.forceUpdate();
     }
     onCreate = (created: TPatcher) => {
-        if (this.props.patcher._state.isLoading) return;
+        if (this.props.patcher.state.isLoading) return;
         Object.keys(created.lines).forEach((id) => {
             const line = created.lines[id];
             this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
@@ -112,12 +112,12 @@ class Lines extends React.Component {
         this.forceUpdate();
     }
     onDeleteLine = (line: Line) => {
-        if (this.props.patcher._state.isLoading) return;
+        if (this.props.patcher.state.isLoading) return;
         delete this.lines[line.id];
         this.forceUpdate();
     }
     onDelete = (deleted: TPatcher) => {
-        if (this.props.patcher._state.isLoading) return;
+        if (this.props.patcher.state.isLoading) return;
         Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
         this.forceUpdate();
     }
@@ -167,12 +167,12 @@ class Boxes extends React.Component {
         document.removeEventListener("keydown", this.handleKeyDown);
     }
     onCreateBox = (box: Box) => {
-        if (this.props.patcher._state.isLoading) return;
+        if (this.props.patcher.state.isLoading) return;
         this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
         this.forceUpdate();
     }
     onCreate = (created: TPatcher) => {
-        if (this.props.patcher._state.isLoading) return;
+        if (this.props.patcher.state.isLoading) return;
         Object.keys(created.boxes).forEach((id) => {
             const box = created.boxes[id];
             this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
@@ -180,12 +180,12 @@ class Boxes extends React.Component {
         this.forceUpdate();
     }
     onDeleteBox = (box: Box) => {
-        if (this.props.patcher._state.isLoading) return;
+        if (this.props.patcher.state.isLoading) return;
         delete this.boxes[box.id];
         this.forceUpdate();
     }
     onDelete = (deleted: TPatcher) => {
-        if (this.props.patcher._state.isLoading) return;
+        if (this.props.patcher.state.isLoading) return;
         Object.keys(deleted.boxes).forEach(id => delete this.boxes[id]);
         this.forceUpdate();
     }
@@ -204,14 +204,14 @@ class Boxes extends React.Component {
     handleMouseDown = (e: React.MouseEvent) => {
         if (!e.shiftKey) this.props.patcher.deselectAll();
         if (e.button !== 0) return;
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         // Handle Draggable
         const handleDraggable = () => {
             this.dragged = false;
             const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
             const patcherRect = patcherDiv.getBoundingClientRect();
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-            const selectedBefore = this.props.patcher._state.selected.slice();
+            const selectedBefore = this.props.patcher.state.selected.slice();
             const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0];
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
@@ -257,10 +257,10 @@ class Boxes extends React.Component {
         handleDraggable();
     }
     handleClick = (e: React.MouseEvent) => {
-        if (e.ctrlKey && !this.dragged) this.props.patcher.setLock(!this.props.patcher._state.locked);
+        if (e.ctrlKey && !this.dragged) this.props.patcher.setLock(!this.props.patcher.state.locked);
     }
     handleDoubleClick = (e: React.MouseEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if (e.target !== this.refDiv.current) return;
         if (e.ctrlKey || e.shiftKey) return;
         const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
@@ -270,7 +270,7 @@ class Boxes extends React.Component {
         this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 90, 20], _editing: true });
     }
     handleKeyDown = (e: KeyboardEvent) => {
-        if (this.props.patcher._state.locked) return;
+        if (this.props.patcher.state.locked) return;
         if ((e.key === "n" || e.key === "m") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
             e.stopPropagation();
             e.preventDefault();

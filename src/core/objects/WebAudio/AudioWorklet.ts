@@ -34,8 +34,8 @@ export class audioWorklet extends BaseObject<{}, {}, [Bang, string], [AudioWorkl
         super(box, patcher);
         this.inlets = 2;
         this.outlets = 2;
-        if (!this.patcher._state.audioCtx.audioWorklet) this.error("AudioWorklet not found.");
-        else this.audioWorklet = this.patcher._state.audioCtx.audioWorklet;
+        if (!this.patcher.state.audioCtx.audioWorklet) this.error("AudioWorklet not found.");
+        else this.audioWorklet = this.patcher.state.audioCtx.audioWorklet;
     }
     fn<I extends [Bang, string], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
@@ -83,8 +83,8 @@ export class JSPAudioWorklet extends JSPAudioNode<AudioWorkletNode, {}, [AudioWo
         return this._meta;
     }
     keepAlive() {
-        if (this.node.numberOfOutputs) this.node.connect(this.patcher._state.dummyAudioNode, 0, 0);
-        else if (this.node.numberOfInputs) this.patcher._state.dummyAudioNode.connect(this.node, 0, 0);
+        if (this.node.numberOfOutputs) this.node.connect(this.patcher.state.dummyAudioNode, 0, 0);
+        else if (this.node.numberOfInputs) this.patcher.state.dummyAudioNode.connect(this.node, 0, 0);
     }
     destroy() {
         this.node.disconnect();

@@ -45,6 +45,7 @@ type TPatcherState = {
     libGen: { [key: string]: typeof BaseObject };
     libFaust: { [key: string]: typeof BaseObject };
     selected: string[];
+    os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
 };
 
 type TErrorLevel = "error" | "warn" | "info" | "none"
