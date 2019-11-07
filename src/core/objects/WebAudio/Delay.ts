@@ -4,37 +4,37 @@ import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { decodeMaxCurveFormat } from "../../../utils";
 
-export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, string], [null, GainNode], [number]> {
+export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, string], [null, DelayNode], [number]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
-            description: "WebAudio GainNode",
+            description: "WebAudio DelayNode",
             inlets: [{
                 isHot: true,
                 type: "signal",
-                description: "Node connection, bang to output GainNode instance"
+                description: "Node connection, bang to output DelayNode instance"
             }, {
                 isHot: false,
                 type: "signal",
-                description: "gain: curve or node connection"
+                description: "delayTime: curve or node connection"
             }],
             outlets: [{
                 type: "signal",
                 description: "Node connection"
             }, {
                 type: "object",
-                description: "Instance: GainNode"
+                description: "Instance: DelayNode"
             }],
             args: [{
                 type: "number",
                 optional: true,
-                description: "Initial gain"
+                description: "Initial delayTime"
             }],
             props: []
         };
     }
-    state = { node: this.audioCtx.createGain() };
-    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.gain }];
+    state = { node: this.audioCtx.createDelay() };
+    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.delayTime }];
     outletConnections = [{ node: this.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
@@ -56,7 +56,7 @@ export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, string], [nu
         if (args && args.length) {
             if (args[0] && typeof args[0] === "number" && isFinite(args[0])) {
                 try {
-                    this.node.gain.setValueAtTime(args[0], this.audioCtx.currentTime);
+                    this.node.delayTime.setValueAtTime(args[0], this.audioCtx.currentTime);
                 } catch (e) {
                     this.error((e as Error).message);
                 }
@@ -70,7 +70,7 @@ export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, string], [nu
         } else if (inlet === 1) {
             try {
                 const curve = decodeMaxCurveFormat(data as string);
-                JSPAudioNode.applyCurve(this.node.gain, curve, this.audioCtx);
+                JSPAudioNode.applyCurve(this.node.delayTime, curve, this.audioCtx);
             } catch (e) {
                 this.error(e.message);
             }

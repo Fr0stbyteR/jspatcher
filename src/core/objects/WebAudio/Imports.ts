@@ -8,6 +8,8 @@ import Gain from "./Gain";
 import Analyser from "./Analyser";
 import { audioWorklet, JSPAudioWorklet } from "./AudioWorklet";
 import Biquad from "./Biquad";
+import Convolver from "./Convolver";
+import Delay from "./Delay";
 /*
 const {
     BaseAudioContext,
@@ -49,5 +51,7 @@ export default {
     "Analyser~": Analyser,
     audioWorklet,
     "AudioWorklet~": JSPAudioWorklet,
-    "Biquad~": Biquad
+    "Biquad~": Biquad,
+    "Convolver~": Convolver,
+    "Delay~": Delay
 };

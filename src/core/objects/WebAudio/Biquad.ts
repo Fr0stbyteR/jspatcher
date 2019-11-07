@@ -89,11 +89,15 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
     update(args?: [], props?: BiquadFilterOptions) {
         this.updateBox(args, props);
         if (props) {
-            if (props.frequency && typeof props.frequency === "number" && isFinite(props.frequency)) this.node.frequency.setValueAtTime(props.frequency, this.audioCtx.currentTime);
-            if (props.detune && typeof props.detune === "number" && isFinite(props.detune)) this.node.detune.setValueAtTime(props.detune, this.audioCtx.currentTime);
-            if (props.Q && typeof props.Q === "number" && isFinite(props.Q)) this.node.Q.setValueAtTime(props.Q, this.audioCtx.currentTime);
-            if (props.gain && typeof props.gain === "number" && isFinite(props.gain)) this.node.gain.setValueAtTime(props.gain, this.audioCtx.currentTime);
-            if (props.type && typeof props.type === "string" && Biquad.isBiquadFilterType(props.type)) this.node.type = props.type;
+            try {
+                if (props.frequency && typeof props.frequency === "number" && isFinite(props.frequency)) this.node.frequency.setValueAtTime(props.frequency, this.audioCtx.currentTime);
+                if (props.detune && typeof props.detune === "number" && isFinite(props.detune)) this.node.detune.setValueAtTime(props.detune, this.audioCtx.currentTime);
+                if (props.Q && typeof props.Q === "number" && isFinite(props.Q)) this.node.Q.setValueAtTime(props.Q, this.audioCtx.currentTime);
+                if (props.gain && typeof props.gain === "number" && isFinite(props.gain)) this.node.gain.setValueAtTime(props.gain, this.audioCtx.currentTime);
+                if (props.type && typeof props.type === "string" && Biquad.isBiquadFilterType(props.type)) this.node.type = props.type;
+            } catch (e) {
+                this.error(e.message);
+            }
         }
         return this;
     }

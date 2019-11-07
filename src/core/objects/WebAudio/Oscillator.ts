@@ -73,11 +73,29 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
     update(args?: [number?, OscillatorType?], props?: { detune?: number }) {
         this.updateBox(args, props);
         if (args && args.length) {
-            if (args[0] && typeof args[0] === "number" && isFinite(args[0])) this.node.frequency.setValueAtTime(args[0], this.audioCtx.currentTime);
-            if (args[1] && typeof args[1] === "string" && Oscillator.isOscillatorType(args[1])) this.node.type = args[1];
+            if (args[0] && typeof args[0] === "number" && isFinite(args[0])) {
+                try {
+                    this.node.frequency.setValueAtTime(args[0], this.audioCtx.currentTime);
+                } catch (e) {
+                    this.error((e as Error).message);
+                }
+            }
+            if (args[1] && typeof args[1] === "string" && Oscillator.isOscillatorType(args[1])) {
+                try {
+                    this.node.type = args[1];
+                } catch (e) {
+                    this.error((e as Error).message);
+                }
+            }
         }
         if (props) {
-            if (props.detune && typeof props.detune === "number" && isFinite(props.detune)) this.node.detune.setValueAtTime(props.detune, this.audioCtx.currentTime);
+            if (props.detune && typeof props.detune === "number" && isFinite(props.detune)) {
+                try {
+                    this.node.detune.setValueAtTime(props.detune, this.audioCtx.currentTime);
+                } catch (e) {
+                    this.error((e as Error).message);
+                }
+            }
         }
         return this;
     }
