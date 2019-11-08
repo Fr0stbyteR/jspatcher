@@ -63,13 +63,6 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
         this.node.start();
         this.update((box as Box<this>).args, (box as Box<this>).props);
     }
-    keepAlive() {
-        this.node.connect(this.dummyAudioNode, 0, 0);
-    }
-    destroy() {
-        this.node.disconnect();
-        return this;
-    }
     update(args?: [number?, OscillatorType?], props?: { detune?: number }) {
         this.updateBox(args, props);
         if (args && args.length) {

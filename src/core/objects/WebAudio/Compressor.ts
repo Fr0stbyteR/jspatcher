@@ -78,13 +78,6 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
         this.keepAlive();
         this.update((box as Box<this>).args, (box as Box<this>).props);
     }
-    keepAlive() {
-        this.node.connect(this.dummyAudioNode, 0, 0);
-    }
-    destroy() {
-        this.node.disconnect();
-        return this;
-    }
     update(args?: [], props?: DynamicsCompressorOptions) {
         this.updateBox(args, props);
         if (props) {

@@ -64,13 +64,6 @@ export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward
         this.keepAlive();
         this.connectAll();
     }
-    keepAlive() {
-        this.node.connect(this.dummyAudioNode, 0, 0);
-    }
-    destroy() {
-        if (this.node) this.node.disconnect();
-        return this;
-    }
     update(args?: [number[], number[]]) {
         this.updateBox(args);
         if (args) {

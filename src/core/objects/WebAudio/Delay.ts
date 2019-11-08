@@ -45,13 +45,6 @@ export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, string], [
         this.keepAlive();
         this.update((box as Box<this>).args);
     }
-    keepAlive() {
-        this.node.connect(this.dummyAudioNode, 0, 0);
-    }
-    destroy() {
-        this.node.disconnect();
-        return this;
-    }
     update(args?: [number?]) {
         this.updateBox(args);
         if (args && args.length) {

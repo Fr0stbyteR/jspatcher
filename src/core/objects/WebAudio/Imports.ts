@@ -1,5 +1,5 @@
 import audioContext from "./audioContext";
-import audioWorklet from "./AudioWorklet";
+import audioWorklet from "./audioWorklet";
 import AnyNode from "./AnyNode";
 import Constant from "./Constant";
 import Oscillator from "./Oscillator";
@@ -18,6 +18,7 @@ import StreamDest from "./StreamDestination";
 import StreamSrc from "./StreamSource";
 import Panner from "./Panner";
 import StereoPanner from "./StereoPanner";
+import WaveShaper from "./WaveShaper";
 /*
 const {
     BaseAudioContext,
@@ -68,5 +69,6 @@ export default {
     "streamdest~": StreamDest,
     "streamsrc~": StreamSrc,
     "panner~": Panner,
-    "pan~": StereoPanner
+    "pan~": StereoPanner,
+    "waveshaper~": WaveShaper
 };

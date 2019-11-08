@@ -34,9 +34,6 @@ export default class StreamDest extends JSPAudioNode<MediaStreamAudioDestination
         this.node.channelCountMode = "explicit";
         this.keepAlive();
     }
-    keepAlive() {
-        this.dummyAudioNode.connect(this.node, 0, 0);
-    }
     fn<I extends [Bang], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
             if (data instanceof Bang) this.outletAll([this.node, this.node.stream]);

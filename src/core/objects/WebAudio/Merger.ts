@@ -69,13 +69,6 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | 
         this.keepAlive();
         this.connectAll();
     }
-    keepAlive() {
-        this.node.connect(this.dummyAudioNode, 0, 0);
-    }
-    destroy() {
-        this.node.disconnect();
-        return this;
-    }
     fn<I extends [Bang], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
             if (typeof data === "number") {

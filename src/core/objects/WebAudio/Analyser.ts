@@ -92,13 +92,6 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
         this.keepAlive();
         this.update((box as Box<this>).args, (box as Box<this>).props);
     }
-    keepAlive() {
-        this.node.connect(this.dummyAudioNode, 0, 0);
-    }
-    destroy() {
-        this.node.disconnect();
-        return this;
-    }
     update(args?: [], props?: Partial<TOptions>) {
         this.updateBox(args, props);
         if (props) {

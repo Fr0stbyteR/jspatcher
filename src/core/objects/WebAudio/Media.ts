@@ -44,13 +44,6 @@ export default class Media extends JSPAudioNode<MediaElementAudioSourceNode, { e
         this.keepAlive();
         this.connectAll();
     }
-    keepAlive() {
-        this.node.connect(this.dummyAudioNode, 0, 0);
-    }
-    destroy() {
-        if (this.node) this.node.disconnect();
-        return this;
-    }
     fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
             if (data instanceof Bang) {

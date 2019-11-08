@@ -28,14 +28,6 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
     get meta() {
         return this._meta;
     }
-    keepAlive() {
-        if (this.node.numberOfOutputs) this.node.connect(this.dummyAudioNode, 0, 0);
-        else if (this.node.numberOfInputs) this.dummyAudioNode.connect(this.node, 0, 0);
-    }
-    destroy() {
-        this.node.disconnect();
-        return this;
-    }
     fn<I extends [AudioNode], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
             try {
