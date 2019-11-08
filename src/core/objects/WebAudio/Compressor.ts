@@ -91,7 +91,7 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
             const paramMap = ["threshold", "knee", "ratio", "attack", "release"] as const;
             paramMap.forEach((key) => {
                 try {
-                    if (props[key] && typeof props[key] === "number" && isFinite(props[key])) this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
+                    if (typeof props[key] === "number") this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
                 } catch (e) {
                     this.error(e.message);
                 }

@@ -17,7 +17,7 @@ export default class StreamSrc extends JSPAudioNode<MediaStreamAudioSourceNode, 
             }],
             outlets: [{
                 type: "signal",
-                description: "Node connection (1 channel)"
+                description: "Node connection"
             }, {
                 type: "object",
                 description: "Instance: MediaStreamAudioSourceNode"

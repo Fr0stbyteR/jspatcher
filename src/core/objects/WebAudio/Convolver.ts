@@ -60,7 +60,7 @@ export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [],
         this.updateBox(args, props);
         if (props) {
             try {
-                if (props.normalize) this.node.normalize = props.normalize;
+                if (typeof props.normalize === "boolean") this.node.normalize = props.normalize;
             } catch (e) {
                 this.error((e as Error).message);
             }

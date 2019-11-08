@@ -92,12 +92,12 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
             const paramMap = ["frequency", "detune", "Q", "gain"] as const;
             paramMap.forEach((key) => {
                 try {
-                    if (props[key] && typeof props[key] === "number" && isFinite(props[key])) this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
+                    if (typeof props[key] === "number") this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
                 } catch (e) {
                     this.error(e.message);
                 }
             });
-            if (props.type && typeof props.type === "string" && Biquad.isBiquadFilterType(props.type)) {
+            if (typeof props.type === "string") {
                 try {
                     this.node.type = props.type;
                 } catch (e) {

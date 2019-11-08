@@ -102,7 +102,7 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
         this.updateBox(args, props);
         if (props) {
             try {
-                if (props.fftSize) this.node.fftSize = props.fftSize;
+                if (typeof props.fftSize === "number") this.node.fftSize = props.fftSize;
                 if (typeof props.minDecibels === "number") this.node.minDecibels = props.minDecibels;
                 if (typeof props.maxDecibels === "number") this.node.maxDecibels = props.maxDecibels;
                 if (typeof props.smoothingTimeConstant === "number") this.node.smoothingTimeConstant = props.smoothingTimeConstant;
@@ -119,7 +119,7 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
             if (typeof data === "object") {
                 const props = data as I[5];
                 try {
-                    if (props.fftSize) this.node.fftSize = props.fftSize;
+                    if (typeof props.fftSize === "number") this.node.fftSize = props.fftSize;
                     if (typeof props.minDecibels === "number") this.node.minDecibels = props.minDecibels;
                     if (typeof props.maxDecibels === "number") this.node.maxDecibels = props.maxDecibels;
                     if (typeof props.smoothingTimeConstant === "number") this.node.smoothingTimeConstant = props.smoothingTimeConstant;

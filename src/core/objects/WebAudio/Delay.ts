@@ -54,7 +54,7 @@ export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, string], [
     update(args?: [number?]) {
         this.updateBox(args);
         if (args && args.length) {
-            if (args[0] && typeof args[0] === "number" && isFinite(args[0])) {
+            if (typeof args[0] === "number") {
                 try {
                     this.node.delayTime.setValueAtTime(args[0], this.audioCtx.currentTime);
                 } catch (e) {

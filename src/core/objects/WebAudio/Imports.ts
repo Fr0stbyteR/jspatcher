@@ -16,6 +16,7 @@ import IIRFilter from "./IIRFilter";
 import Media from "./Media";
 import StreamDest from "./StreamDestination";
 import StreamSrc from "./StreamSource";
+import Panner from "./Panner";
 /*
 const {
     BaseAudioContext,
@@ -64,5 +65,6 @@ export default {
     "iir~": IIRFilter,
     "media~": Media,
     "streamdest~": StreamDest,
-    "streamsrc~": StreamSrc
+    "streamsrc~": StreamSrc,
+    "panner~": Panner
 };

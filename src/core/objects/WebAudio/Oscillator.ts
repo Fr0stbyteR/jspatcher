@@ -73,14 +73,14 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
     update(args?: [number?, OscillatorType?], props?: { detune?: number }) {
         this.updateBox(args, props);
         if (args && args.length) {
-            if (args[0] && typeof args[0] === "number" && isFinite(args[0])) {
+            if (typeof args[0] === "number") {
                 try {
                     this.node.frequency.setValueAtTime(args[0], this.audioCtx.currentTime);
                 } catch (e) {
                     this.error((e as Error).message);
                 }
             }
-            if (args[1] && typeof args[1] === "string" && Oscillator.isOscillatorType(args[1])) {
+            if (typeof args[1] === "string") {
                 try {
                     this.node.type = args[1];
                 } catch (e) {
@@ -89,7 +89,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
             }
         }
         if (props) {
-            if (props.detune && typeof props.detune === "number" && isFinite(props.detune)) {
+            if (typeof props.detune === "number") {
                 try {
                     this.node.detune.setValueAtTime(props.detune, this.audioCtx.currentTime);
                 } catch (e) {
@@ -102,22 +102,20 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
     fn<I extends [Bang, string, string, OscillatorType], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
             if (data instanceof Bang) this.outlet(1, this.node);
-        } else if (inlet === 1) {
+        } else {
             try {
-                const curve = decodeMaxCurveFormat(data as string);
-                JSPAudioNode.applyCurve(this.node.frequency, curve, this.audioCtx);
+                if (inlet === 1) {
+                    const curve = decodeMaxCurveFormat(data as string);
+                    JSPAudioNode.applyCurve(this.node.frequency, curve, this.audioCtx);
+                } else if (inlet === 2) {
+                    const curve = decodeMaxCurveFormat(data as string);
+                    JSPAudioNode.applyCurve(this.node.detune, curve, this.audioCtx);
+                } else if (inlet === 3) {
+                    this.node.type = data as OscillatorType;
+                }
             } catch (e) {
-                this.error(e.message);
+                this.error((e as Error).message);
             }
-        } else if (inlet === 2) {
-            try {
-                const curve = decodeMaxCurveFormat(data as string);
-                JSPAudioNode.applyCurve(this.node.detune, curve, this.audioCtx);
-            } catch (e) {
-                this.error(e.message);
-            }
-        } else if (inlet === 3) {
-            if (Oscillator.isOscillatorType(data)) this.node.type = data;
         }
         return this;
     }
