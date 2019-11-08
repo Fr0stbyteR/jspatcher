@@ -4,71 +4,70 @@ import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { decodeMaxCurveFormat } from "../../../utils";
 
-type I = [Bang, string, string, string, string, BiquadFilterType];
-export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null, BiquadFilterNode], [], BiquadFilterOptions> {
+type I = [Bang, string, string, string, string, string];
+export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {}, I, [null, DynamicsCompressorNode], [], DynamicsCompressorOptions> {
     static get meta(): TMeta {
         return {
             ...super.meta,
-            description: "WebAudio BiquadFilterNode",
+            description: "WebAudio DynamicsCompressorNode",
             inlets: [{
                 isHot: true,
                 type: "signal",
-                description: "Node connection (1 channel), bang to output BiquadFilterNode instance"
+                description: "Node connection (1 channel), bang to output DynamicsCompressorNode instance"
             }, {
                 isHot: false,
                 type: "signal",
-                description: "frequency: curve or node connection"
+                description: "threshold: curve or node connection"
             }, {
                 isHot: false,
                 type: "signal",
-                description: "detune: curve or node connection"
+                description: "knee: curve or node connection"
             }, {
                 isHot: false,
                 type: "signal",
-                description: "Q: curve or node connection"
+                description: "ratio: curve or node connection"
             }, {
                 isHot: false,
                 type: "signal",
-                description: "gain: curve or node connection"
+                description: "attack: curve or node connection"
             }, {
                 isHot: false,
                 type: "string",
-                description: 'type: "lowpass" | "highpass" | "bandpass" | "lowshelf" | "highshelf" | "peaking" | "notch" | "allpass"'
+                description: "release: curve or node connection"
             }],
             outlets: [{
                 type: "signal",
                 description: "Node connection (1 channel)"
             }, {
                 type: "object",
-                description: "Instance: BiquadFilterNode"
+                description: "Instance: DynamicsCompressorNode"
             }],
             args: [],
             props: [{
-                name: "frequency",
+                name: "threshold",
                 type: "number",
-                description: "Initial frequency"
+                description: "Initial threshold"
             }, {
-                name: "detune",
+                name: "knee",
                 type: "number",
-                description: "Initial detune"
+                description: "Initial knee"
             }, {
-                name: "Q",
+                name: "ratio",
                 type: "number",
-                description: "Initial Q"
+                description: "Initial ratio"
             }, {
-                name: "gain",
+                name: "attack",
                 type: "number",
-                description: "Initial gain"
+                description: "Initial attack"
             }, {
-                name: "type",
-                type: "string",
-                description: 'Initial type: "lowpass" | "highpass" | "bandpass" | "lowshelf" | "highshelf" | "peaking" | "notch" | "allpass"'
+                name: "release",
+                type: "number",
+                description: "Initial release"
             }]
         };
     }
-    static isBiquadFilterType = (x: any): x is BiquadFilterType => ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"].indexOf(x) >= 0;
-    state = { node: this.audioCtx.createBiquadFilter() };
-    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.frequency }, { node: this.node.detune }, { node: this.node.Q }, { node: this.node.gain }];
+    state = { node: this.audioCtx.createDynamicsCompressor() };
+    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.threshold }, { node: this.node.knee }, { node: this.node.ratio }, null, { node: this.node.attack }, { node: this.node.release }];
     outletConnections = [{ node: this.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
@@ -86,10 +85,10 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
         this.node.disconnect();
         return this;
     }
-    update(args?: [], props?: BiquadFilterOptions) {
+    update(args?: [], props?: DynamicsCompressorOptions) {
         this.updateBox(args, props);
         if (props) {
-            const paramMap = ["frequency", "detune", "Q", "gain"] as const;
+            const paramMap = ["threshold", "knee", "ratio", "attack", "release"] as const;
             paramMap.forEach((key) => {
                 try {
                     if (props[key] && typeof props[key] === "number" && isFinite(props[key])) this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
@@ -97,23 +96,14 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
                     this.error(e.message);
                 }
             });
-            if (props.type && typeof props.type === "string" && Biquad.isBiquadFilterType(props.type)) {
-                try {
-                    this.node.type = props.type;
-                } catch (e) {
-                    this.error(e.message);
-                }
-            }
         }
         return this;
     }
     fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
-        const paramMap = ["frequency", "detune", "Q", "gain"] as const;
+        const paramMap = ["threshold", "knee", "ratio", "attack", "release"] as const;
         if (inlet === 0) {
             if (data instanceof Bang) this.outlet(1, this.node);
-        } else if (inlet === 5) {
-            if (Biquad.isBiquadFilterType(data)) this.node.type = data;
-        } else if (inlet > 0 && inlet < 5) {
+        } else if (inlet > 0 && inlet < 6) {
             try {
                 const curve = decodeMaxCurveFormat(data as string);
                 JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);

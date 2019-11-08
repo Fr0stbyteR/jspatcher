@@ -10,6 +10,7 @@ import { audioWorklet, JSPAudioWorklet } from "./AudioWorklet";
 import Biquad from "./Biquad";
 import Convolver from "./Convolver";
 import Delay from "./Delay";
+import Compressor from "./Compressor";
 /*
 const {
     BaseAudioContext,
@@ -53,5 +54,6 @@ export default {
     "AudioWorklet~": JSPAudioWorklet,
     "Biquad~": Biquad,
     "Convolver~": Convolver,
-    "Delay~": Delay
+    "Delay~": Delay,
+    "Compressor~": Compressor
 };
