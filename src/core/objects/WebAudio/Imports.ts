@@ -17,6 +17,7 @@ import Media from "./Media";
 import StreamDest from "./StreamDestination";
 import StreamSrc from "./StreamSource";
 import Panner from "./Panner";
+import StereoPanner from "./StereoPanner";
 /*
 const {
     BaseAudioContext,
@@ -66,5 +67,6 @@ export default {
     "media~": Media,
     "streamdest~": StreamDest,
     "streamsrc~": StreamSrc,
-    "panner~": Panner
+    "panner~": Panner,
+    "pan~": StereoPanner
 };

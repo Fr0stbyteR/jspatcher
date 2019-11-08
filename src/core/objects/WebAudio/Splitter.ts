@@ -11,7 +11,7 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
             inlets: [{
                 isHot: true,
                 type: "signal",
-                description: "Node connection, bang to output ChannelSplitterNode instance"
+                description: "Node connection, bang to output ChannelSplitterNode instance, number to change outputs"
             }],
             outlets: [{
                 type: "signal",
@@ -29,19 +29,31 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
         };
     }
     state = { node: null as ChannelSplitterNode };
+    inletConnections = [{ node: this.node, index: 0 }];
     _meta: TMeta;
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        const channelCount = box.args && box.args[0] && ~~box.args[0] > 0 ? ~~box.args[0] : 6;
+        this.inlets = 1;
+        this.update((box as Box<this>).args);
+    }
+    get meta() {
+        return this._meta;
+    }
+    update(args?: [number]) {
+        this.updateBox(args);
+        const channelCount = (args && typeof args[0] === "number" && ~~args[0]) > 0 ? ~~args[0] : 6;
+        this.resetNode(channelCount);
+        return this;
+    }
+    resetNode(channelCount: number) {
+        this.disconnectAll();
+        this.destroy();
         this.node = this.audioCtx.createChannelSplitter(channelCount);
         this.node.channelInterpretation = "discrete";
         this.node.channelCountMode = "explicit";
-        this.inlets = 1;
-        this.outlets = channelCount + 1;
         const factoryMeta = Splitter.meta;
         const signalOutlet = factoryMeta.outlets[0];
         const nodeOutlet = factoryMeta.outlets[1];
-        this.inletConnections = [{ node: this.node, index: 0 }];
         this.outletConnections = [];
         for (let i = 0; i < channelCount; i++) {
             factoryMeta.outlets[i] = signalOutlet;
@@ -49,10 +61,9 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
         }
         factoryMeta.outlets[channelCount] = nodeOutlet;
         this._meta = factoryMeta;
+        this.outlets = channelCount + 1;
         this.keepAlive();
-    }
-    get meta() {
-        return this._meta;
+        this.connectAll();
     }
     keepAlive() {
         this.dummyAudioNode.connect(this.node, 0, 0);
@@ -63,7 +74,11 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
     }
     fn<I extends [Bang], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(this.outlets - 1, this.node);
+            if (typeof data === "number") {
+                const channelCount = ~~data > 0 ? ~~data : 6;
+                if (this.node && channelCount !== this.node.numberOfOutputs) this.resetNode(channelCount);
+                this.outlet(this.outlets - 1, this.node);
+            } else if (data instanceof Bang) this.outlet(this.outlets - 1, this.node);
         }
         return this;
     }

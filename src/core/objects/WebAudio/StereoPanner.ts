@@ -4,37 +4,37 @@ import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { decodeMaxCurveFormat } from "../../../utils";
 
-export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, string], [null, DelayNode], [number]> {
+export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Bang, string], [null, StereoPannerNode], [number]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
-            description: "WebAudio DelayNode",
+            description: "WebAudio StereoPannerNode",
             inlets: [{
                 isHot: true,
                 type: "signal",
-                description: "Node connection, bang to output DelayNode instance"
+                description: "Node connection, bang to output StereoPannerNode instance"
             }, {
                 isHot: false,
                 type: "signal",
-                description: "delayTime: curve or node connection"
+                description: "pan: curve or node connection"
             }],
             outlets: [{
                 type: "signal",
                 description: "Node connection"
             }, {
                 type: "object",
-                description: "Instance: DelayNode"
+                description: "Instance: StereoPannerNode"
             }],
             args: [{
                 type: "number",
                 optional: true,
-                description: "Initial delayTime"
+                description: "Initial pan"
             }],
             props: []
         };
     }
-    state = { node: this.audioCtx.createDelay() };
-    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.delayTime }];
+    state = { node: this.audioCtx.createStereoPanner() };
+    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.pan }];
     outletConnections = [{ node: this.node, index: 0 }];
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
@@ -57,7 +57,7 @@ export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, string], [
         if (args && args.length) {
             if (typeof args[0] === "number") {
                 try {
-                    this.node.delayTime.setValueAtTime(args[0], this.audioCtx.currentTime);
+                    this.node.pan.setValueAtTime(args[0], this.audioCtx.currentTime);
                 } catch (e) {
                     this.error((e as Error).message);
                 }
@@ -71,7 +71,7 @@ export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, string], [
         } else if (inlet === 1) {
             try {
                 const curve = decodeMaxCurveFormat(data as string);
-                JSPAudioNode.applyCurve(this.node.delayTime, curve, this.audioCtx);
+                JSPAudioNode.applyCurve(this.node.pan, curve, this.audioCtx);
             } catch (e) {
                 this.error(e.message);
             }

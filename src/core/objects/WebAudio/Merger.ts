@@ -3,7 +3,7 @@ import { TMeta, Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
 
-export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, ...null[]], [null, ChannelMergerNode], [number]> {
+export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | number, ...null[]], [null, ChannelMergerNode], [number]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -11,7 +11,7 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, .
             inlets: [{
                 isHot: true,
                 type: "signal",
-                description: "Node connection, bang to output DestinationNode instance"
+                description: "Node connection, bang to output DestinationNode instance, number to change inputs"
             }, {
                 isHot: false,
                 type: "signal",
@@ -33,15 +33,28 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, .
         };
     }
     state = { node: null as ChannelMergerNode };
+    outletConnections = [{ node: this.node, index: 0 }];
     _meta: TMeta;
     constructor(box: Box, patcher: Patcher) {
         super(box, patcher);
-        const channelCount = box.args && box.args[0] && ~~box.args[0] > 0 ? ~~box.args[0] : 6;
+        this.outlets = 2;
+        this.update((box as Box<this>).args);
+    }
+    get meta() {
+        return this._meta;
+    }
+    update(args?: [number]) {
+        this.updateBox(args);
+        const channelCount = (args && typeof args[0] === "number" && ~~args[0]) > 0 ? ~~args[0] : 6;
+        this.resetNode(channelCount);
+        return this;
+    }
+    resetNode(channelCount: number) {
+        this.disconnectAll();
+        this.destroy();
         this.node = this.audioCtx.createChannelMerger(channelCount);
         this.node.channelInterpretation = "discrete";
         this.node.channelCountMode = "explicit";
-        this.inlets = channelCount;
-        this.outlets = 2;
         const factoryMeta = Merger.meta;
         const bangInlet = factoryMeta.inlets[0];
         const siganlInlet = factoryMeta.inlets[1];
@@ -52,11 +65,9 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, .
             this.inletConnections[i] = { node: this.node, index: i };
         }
         this._meta = factoryMeta;
-        this.outletConnections = [{ node: this.node, index: 0 }];
+        this.inlets = channelCount;
         this.keepAlive();
-    }
-    get meta() {
-        return this._meta;
+        this.connectAll();
     }
     keepAlive() {
         this.node.connect(this.dummyAudioNode, 0, 0);
@@ -67,7 +78,11 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang, .
     }
     fn<I extends [Bang], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
         if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(this.outlets - 1, this.node);
+            if (typeof data === "number") {
+                const channelCount = ~~data > 0 ? ~~data : 6;
+                if (this.node && channelCount !== this.node.numberOfInputs) this.resetNode(channelCount);
+                this.outlet(1, this.node);
+            } else if (data instanceof Bang) this.outlet(1, this.node);
         }
         return this;
     }
