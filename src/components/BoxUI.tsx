@@ -54,15 +54,20 @@ export default class BoxUI extends React.Component<P, S> {
             const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
             const patcherRect = patcherDiv.getBoundingClientRect();
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+            const lastPos = { x: e.pageX, y: e.pageY };
             let dragOffset = { x: 0, y: 0 };
             const origOffset = box.rect.slice(0, 2);
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
-                if (this.dragging && !this.editing && (e.movementX || e.movementY)) {
+                const movementX = e.pageX - lastPos.x;
+                const movementY = e.pageY - lastPos.y;
+                lastPos.x = e.pageX;
+                lastPos.y = e.pageY;
+                if (this.dragging && !this.editing && (movementX | movementY)) {
                     if (!this.dragged) this.dragged = true;
-                    dragOffset.x += e.movementX;
-                    dragOffset.y += e.movementY;
+                    dragOffset.x += movementX;
+                    dragOffset.y += movementY;
                     dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
                 }
                 const x = e.pageX - patcherRect.left;
@@ -184,18 +189,23 @@ export default class BoxUI extends React.Component<P, S> {
         const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
         const patcherRect = patcherDiv.getBoundingClientRect();
         let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+        const lastPos = { x: e.pageX, y: e.pageY };
         let dragOffset = { x: 0, y: 0 };
         const totalOffset = { x: 0, y: 0 };
         const handleMouseMove = (e: MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
-            if (this.dragging && (e.movementX || e.movementY)) {
+            const movementX = e.pageX - lastPos.x;
+            const movementY = e.pageY - lastPos.y;
+            lastPos.x = e.pageX;
+            lastPos.y = e.pageY;
+            if (this.dragging && (movementX || movementY)) {
                 if (!this.dragged) this.dragged = true;
-                dragOffset.x += e.movementX;
-                dragOffset.y += e.movementY;
+                dragOffset.x += movementX;
+                dragOffset.y += movementY;
                 dragOffset = this.props.patcher.resizeSelectedBox(this.props.id, dragOffset, type);
-                totalOffset.x += e.movementX;
-                totalOffset.y += e.movementY;
+                totalOffset.x += movementX;
+                totalOffset.y += movementY;
             }
             const x = e.pageX - patcherRect.left;
             const y = e.pageY - patcherRect.top;

@@ -76,32 +76,37 @@ export class LineUI extends React.Component<P, S> {
     }
     handleMouseDownSrc = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
-        this.handleDraggable(true);
+        this.handleDraggable(e, true);
         e.stopPropagation();
     }
     handleMouseDownDest = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
-        this.handleDraggable(false);
+        this.handleDraggable(e, false);
         e.stopPropagation();
     }
-    handleDraggable = (isSrc: boolean) => {
+    handleDraggable = (e: React.MouseEvent, isSrc: boolean) => {
         this.dragged = false;
         this.setState({ dragging: true });
         const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
         const patcherRect = patcherDiv.getBoundingClientRect();
         let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+        const lastPos = { x: e.pageX, y: e.pageY };
         const dragOffset = { x: 0, y: 0 };
         let nearest = [null, null] as [string, number];
         const { line } = this;
         const handleMouseMove = (e: MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
-            if (this.state.dragging && (e.movementX || e.movementY)) {
+            const movementX = e.pageX - lastPos.x;
+            const movementY = e.pageY - lastPos.y;
+            lastPos.x = e.pageX;
+            lastPos.y = e.pageY;
+            if (this.state.dragging && (movementX || movementY)) {
                 if (!this.dragged) this.dragged = true;
-                dragOffset.x += e.movementX;
-                dragOffset.y += e.movementY;
-                if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + e.movementX, top: this.state.srcPos.top + e.movementY } });
-                else this.setState({ destPos: { left: this.state.destPos.left + e.movementX, top: this.state.destPos.top + e.movementY } });
+                dragOffset.x += movementX;
+                dragOffset.y += movementY;
+                if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + movementX, top: this.state.srcPos.top + movementY } });
+                else this.setState({ destPos: { left: this.state.destPos.left + movementX, top: this.state.destPos.top + movementY } });
                 nearest = this.props.patcher.highlightNearestPort(isSrc, dragOffset, isSrc ? line.getDest() : line.getSrc(), isSrc ? line.getSrc() : line.getDest());
             }
             const x = e.pageX - patcherRect.left;
@@ -196,25 +201,30 @@ export class TempLineUI extends React.Component<{ patcher: Patcher }, { show: bo
         this.from = from;
         const fromPos = this.props.patcher.boxes[from[0]][findSrc ? "getInletPos" : "getOutletPos"](from[1]);
         this.setState({ srcPos: fromPos, destPos: fromPos });
-        this.handleDraggable(findSrc);
+        this.handleDraggable(findSrc, fromPos);
     }
-    handleDraggable = (isSrc: boolean) => {
+    handleDraggable = (isSrc: boolean, pos: { top: number; left: number }) => {
         this.dragged = false;
         const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
         const patcherRect = patcherDiv.getBoundingClientRect();
         let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+        const lastPos = { x: pos.left + patcherRect.left, y: pos.top + patcherRect.top };
         const dragOffset = { x: 0, y: 0 };
         let nearest = [null, null] as [string, number];
         const handleMouseMove = (e: MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
-            if (e.movementX || e.movementY) {
+            const movementX = e.pageX - lastPos.x;
+            const movementY = e.pageY - lastPos.y;
+            lastPos.x = e.pageX;
+            lastPos.y = e.pageY;
+            if (movementX || movementY) {
                 if (!this.dragged) this.dragged = true;
                 if (!this.state.show) this.setState({ show: true });
-                dragOffset.x += e.movementX;
-                dragOffset.y += e.movementY;
-                if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + e.movementX, top: this.state.srcPos.top + e.movementY } });
-                else this.setState({ destPos: { left: this.state.destPos.left + e.movementX, top: this.state.destPos.top + e.movementY } });
+                dragOffset.x += movementX;
+                dragOffset.y += movementY;
+                if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + movementX, top: this.state.srcPos.top + movementY } });
+                else this.setState({ destPos: { left: this.state.destPos.left + movementX, top: this.state.destPos.top + movementY } });
                 nearest = this.props.patcher.highlightNearestPort(this.findSrc, dragOffset, this.from);
             }
             const x = e.pageX - patcherRect.left;
