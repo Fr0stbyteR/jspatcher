@@ -1,4 +1,6 @@
 import audioContext from "./audioContext";
+import audioWorklet from "./AudioWorklet";
+import AnyNode from "./AnyNode";
 import Constant from "./Constant";
 import Oscillator from "./Oscillator";
 import Destination from "./Destination";
@@ -6,11 +8,11 @@ import Splitter from "./Splitter";
 import Merger from "./Merger";
 import Gain from "./Gain";
 import Analyser from "./Analyser";
-import { audioWorklet, JSPAudioWorklet } from "./AudioWorklet";
 import Biquad from "./Biquad";
 import Convolver from "./Convolver";
 import Delay from "./Delay";
 import Compressor from "./Compressor";
+import IIRFilter from "./IIRFilter";
 /*
 const {
     BaseAudioContext,
@@ -43,17 +45,18 @@ for (const key in WebAudioAPI) {
 export default {
     // ...outs,
     audioContext,
-    "Constant~": Constant,
-    "Oscillator~": Oscillator,
-    "Gain~": Gain,
-    "Destination~": Destination,
-    "Splitter~": Splitter,
-    "Merger~": Merger,
-    "Analyser~": Analyser,
     audioWorklet,
-    "AudioWorklet~": JSPAudioWorklet,
-    "Biquad~": Biquad,
-    "Convolver~": Convolver,
-    "Delay~": Delay,
-    "Compressor~": Compressor
+    "node~": AnyNode,
+    "constant~": Constant,
+    "oscillator~": Oscillator,
+    "gain~": Gain,
+    "destination~": Destination,
+    "splitter~": Splitter,
+    "merger~": Merger,
+    "analyser~": Analyser,
+    "biquad~": Biquad,
+    "convolver~": Convolver,
+    "delay~": Delay,
+    "compressor~": Compressor,
+    "iir~": IIRFilter
 };

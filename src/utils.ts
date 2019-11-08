@@ -92,3 +92,5 @@ export class MappedEventEmitter<M extends {} = {}, K extends keyof M = keyof M> 
         return this.ee.listenerCount(type as string);
     }
 }
+export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
+export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
