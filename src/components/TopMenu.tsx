@@ -61,16 +61,17 @@ class FileMenu extends React.Component {
         }
     }
     render() {
+        const ctrl = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";
         return (
             <>
                 <Dropdown item={true} icon={false} text="File">
                     <Dropdown.Menu style={{ minWidth: "max-content" }}>
-                        <Dropdown.Item onClick={this.handleClickNew} text="New Patcher" description="Ctrl + Shift + N" />
+                        <Dropdown.Item onClick={this.handleClickNew} text="New Patcher" description={`${ctrl} + Shift + N`} />
                         <Dropdown.Item onClick={this.handleClickNewMax} text="New Max Patcher" />
                         <Dropdown.Item onClick={this.handleClickNewGen} text="New Gen Patcher" />
                         <Dropdown.Item onClick={this.handleClickNewFaust} text="New Faust Patcher" />
-                        <Dropdown.Item onClick={this.handleClickOpen} text="Open..." description="Ctrl + O" />
-                        <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description="Ctrl + S" />
+                        <Dropdown.Item onClick={this.handleClickOpen} text="Open..." description={`${ctrl} + O`} />
+                        <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description={`${ctrl} + S`} />
                     </Dropdown.Menu>
                 </Dropdown>
                 <a ref={this.refDownload} target="_blank" rel="noopener noreferrer" href={this.state.pAsString} download={this.state.pName}> </a>
@@ -133,19 +134,20 @@ class EditMenu extends React.Component {
         this.props.patcher.selectAllBoxes();
     };
     render() {
+        const ctrl = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";
         return (
             <Dropdown item={true} icon={false} text="Edit">
                 <Dropdown.Menu style={{ minWidth: "max-content" }}>
-                    <Dropdown.Item onClick={this.handleClickUndo} text="Undo" description="Ctrl + Z" />
-                    <Dropdown.Item onClick={this.handleClickRedo} text="Redo" description="Ctrl + Y" />
+                    <Dropdown.Item onClick={this.handleClickUndo} text="Undo" description={`${ctrl} + Z`} />
+                    <Dropdown.Item onClick={this.handleClickRedo} text="Redo" description={`${ctrl} + Y`} />
                     <Dropdown.Divider />
-                    <Dropdown.Item onClick={this.handleClickCut} text="Cut" description="Ctrl + X" />
-                    <Dropdown.Item onClick={this.handleClickCopy} text="Copy" description="Ctrl + C" />
-                    <Dropdown.Item onClick={this.handleClickPaste} text="Paste" description="Ctrl + V" />
+                    <Dropdown.Item onClick={this.handleClickCut} text="Cut" description={`${ctrl} + X`} />
+                    <Dropdown.Item onClick={this.handleClickCopy} text="Copy" description={`${ctrl} + C`} />
+                    <Dropdown.Item onClick={this.handleClickPaste} text="Paste" description={`${ctrl} + V`} />
                     <Dropdown.Item onClick={this.handleClickDelete} text="Delete" description="Del" />
                     <Dropdown.Divider />
-                    <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description="Ctrl + D" />
-                    <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description="Ctrl + A" />
+                    <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description={`${ctrl} + D`} />
+                    <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description={`${ctrl} + A`} />
                 </Dropdown.Menu>
             </Dropdown>
         );
@@ -160,17 +162,18 @@ export default class TopMenu extends React.Component {
         const editMenu = this.refEditMenu.current;
         if (!fileMenu || !editMenu) return;
 
-        if (e.ctrlKey && e.shiftKey && e.key === "n") fileMenu.handleClickNew();
-        else if (e.ctrlKey && e.key === "o") fileMenu.handleClickOpen();
-        else if (e.ctrlKey && e.key === "s") fileMenu.handleClickSaveAs();
-        else if (e.ctrlKey && e.key === "z") editMenu.handleClickUndo();
-        else if (e.ctrlKey && e.key === "y") editMenu.handleClickRedo();
-        else if (e.ctrlKey && e.key === "x") editMenu.handleClickCut();
-        else if (e.ctrlKey && e.key === "c") editMenu.handleClickCopy();
-        else if (e.ctrlKey && e.key === "v") editMenu.handleClickPaste();
+        const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        if (ctrlKey && e.shiftKey && e.key === "n") fileMenu.handleClickNew();
+        else if (ctrlKey && e.key === "o") fileMenu.handleClickOpen();
+        else if (ctrlKey && e.key === "s") fileMenu.handleClickSaveAs();
+        else if (ctrlKey && e.key === "z") editMenu.handleClickUndo();
+        else if (ctrlKey && e.key === "y") editMenu.handleClickRedo();
+        else if (ctrlKey && e.key === "x") editMenu.handleClickCut();
+        else if (ctrlKey && e.key === "c") editMenu.handleClickCopy();
+        else if (ctrlKey && e.key === "v") editMenu.handleClickPaste();
         else if (e.key === "Delete" || e.key === "Backspace") editMenu.handleClickDelete();
-        else if (e.ctrlKey && e.key === "d") editMenu.handleClickDuplicate();
-        else if (e.ctrlKey && e.key === "a") editMenu.handleClickSelectAll();
+        else if (ctrlKey && e.key === "d") editMenu.handleClickDuplicate();
+        else if (ctrlKey && e.key === "a") editMenu.handleClickSelectAll();
         else return;
         e.stopPropagation();
         e.preventDefault();

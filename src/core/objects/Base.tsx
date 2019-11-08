@@ -116,7 +116,7 @@ export class DefaultUI<T extends AnyObject> extends BaseUI<T, DefaultUIState> {
             }
             return;
         }
-        if (e.key === " " && this.refSpan.current) {
+        if ((e.key === " " || e.key === "Tab") && this.refSpan.current) {
             if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$]) {
                 const span = this.refSpan.current;
                 const text = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[this.state.dropdown$].key).join(" ") + " ";

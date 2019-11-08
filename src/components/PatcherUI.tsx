@@ -257,12 +257,14 @@ class Boxes extends React.Component {
         handleDraggable();
     }
     handleClick = (e: React.MouseEvent) => {
-        if (e.ctrlKey && !this.dragged) this.props.patcher.setLock(!this.props.patcher.state.locked);
+        const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        if (ctrlKey && !this.dragged) this.props.patcher.setLock(!this.props.patcher.state.locked);
     }
     handleDoubleClick = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.target !== this.refDiv.current) return;
-        if (e.ctrlKey || e.shiftKey) return;
+        const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        if (ctrlKey || e.shiftKey) return;
         const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
         const patcherRect = patcherDiv.getBoundingClientRect();
         const x = e.pageX - patcherRect.left + patcherDiv.scrollLeft;
