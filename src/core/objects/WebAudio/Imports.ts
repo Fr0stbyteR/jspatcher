@@ -13,6 +13,9 @@ import Convolver from "./Convolver";
 import Delay from "./Delay";
 import Compressor from "./Compressor";
 import IIRFilter from "./IIRFilter";
+import Media from "./Media";
+import StreamDest from "./StreamDestination";
+import StreamSrc from "./StreamSource";
 /*
 const {
     BaseAudioContext,
@@ -58,5 +61,8 @@ export default {
     "convolver~": Convolver,
     "delay~": Delay,
     "compressor~": Compressor,
-    "iir~": IIRFilter
+    "iir~": IIRFilter,
+    "media~": Media,
+    "streamdest~": StreamDest,
+    "streamsrc~": StreamSrc
 };
