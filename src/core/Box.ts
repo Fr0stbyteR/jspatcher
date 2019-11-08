@@ -59,12 +59,22 @@ export default class Box<T extends AnyObject = AbstractObject> extends MappedEve
         return this._parsed;
     }
     setInlets(count: number) {
+        const lines = this.allLines;
+        lines.forEach(el => this._patcher.lines[el].disable());
         this.inlets = count;
+        lines.forEach(el => this._patcher.lines[el].enable());
+        this.inletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateDest()));
         this.emit("ioCountChanged", this);
+        this._patcher.emit("graphChanged");
     }
     setOutlets(count: number) {
+        const lines = this.allLines;
+        lines.forEach(el => this._patcher.lines[el].disable());
         this.outlets = count;
+        lines.forEach(el => this._patcher.lines[el].enable());
+        this.inletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateSrc()));
         this.emit("ioCountChanged", this);
+        this._patcher.emit("graphChanged");
     }
     getInletPos(port: number) {
         return { top: this.rect[1], left: ((this.rect[0] + 10) + (this.rect[2] - 20) * port / (this.inlets > 1 ? this.inlets - 1 : 1)) };
