@@ -1,8 +1,9 @@
-import { TMeta, Bang, BaseObject } from "../Base";
+import { Bang, DefaultObject } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
+import { TMeta } from "../../types";
 
-export default class audioContext extends BaseObject<{}, {}, [Bang], [AudioContext]> {
+export default class audioContext extends DefaultObject<{}, {}, [Bang], [AudioContext]> {
     static get meta(): TMeta {
         return {
             ...super.meta,

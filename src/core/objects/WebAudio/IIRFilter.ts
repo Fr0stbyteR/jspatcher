@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { isNumberArray } from "../../../utils";
-import { TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../../types";
+import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta } from "../../types";
 
 type I = [Bang, number[], number[]];
 export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward: number[]; feedback: number[] }, I, [null, IIRFilterNode], [number[], number[]], {}> {

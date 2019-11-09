@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as Util from "util";
 import { Icon } from "semantic-ui-react";
-import { BaseUI, BaseObject, TMeta, Bang } from "./Base";
+import { BaseUI, DefaultObject, Bang } from "./Base";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Std.scss";
-import { BaseUIState } from "../types";
+import { BaseUIState, TMeta } from "../types";
 
-class StdObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}> extends BaseObject<D, S, I, O, A, P, U> {
+class StdObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -19,9 +19,9 @@ class StdObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A ex
     }
 }
 type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
-export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, ButtonUIState> {
+export class ButtonUI<T extends DefaultObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, ButtonUIState> {
     editableOnUnlock = true;
-    state = { editing: false, loading: false, text: this.props.object.data.text };
+    state = { ...super.state, editing: false, loading: false, text: this.props.object.data.text };
     refSpan = React.createRef<HTMLSpanElement>();
     handleChanged = (text: string) => {};
     toggleEdit = (bool?: boolean) => {

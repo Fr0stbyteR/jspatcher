@@ -1,15 +1,16 @@
 import { StaticMethod } from "./StaticMethod";
-import { BaseObject, Bang, TMeta } from "../Base";
+import { DefaultObject, Bang } from "../Base";
 import Patcher from "../../Patcher";
 import Box from "../../Box";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
+import { TMeta } from "../../types";
 
 class NewUI extends ImportedObjectUI<New> {
     prependColor = "rgb(78, 201, 176)";
 }
 type TAnyConstructor = new (...args: any[]) => any;
 type S = { Wrapper: typeof StaticMethod; inputs: any[]; result: any };
-export default class New extends BaseObject<{}, S, [any | Bang, ...any[]], [any, ...any[]], any[], { args: number }, { loading: boolean }> {
+export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [any, ...any[]], any[], { args: number }, { loading: boolean }> {
     static get meta(): TMeta {
         return {
             ...super.meta,

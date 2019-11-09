@@ -1,7 +1,8 @@
 import JSPAudioNode from "./AudioNode";
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
+import { TMeta } from "../../types";
 
 export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | number, ...null[]], [null, ChannelMergerNode], [number]> {
     static get meta(): TMeta {

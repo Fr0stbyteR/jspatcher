@@ -5,47 +5,11 @@ import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
-import { BaseUIState, DefaultUIState, BaseObjectEventMap, TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../types";
+import { BaseUIState, DefaultUIState, TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap } from "../types";
 
-export type TInletsMeta = {
-    isHot: boolean;
-    type: "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang";
-    varLength?: boolean;
-    description: string;
-}[];
-export type TOutletMeta = {
-    type: "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang";
-    varLength?: boolean;
-    description: string;
-}[];
-export type TArgsMeta = {
-    type: "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang";
-    optional: boolean;
-    default?: any;
-    varLength?: boolean;
-    description: string;
-}[];
-export type TPropsMeta = {
-    name: string;
-    default?: any;
-    type: "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang";
-    description: string;
-}[];
-export type TMeta = {
-    package: string; // div will have class "package-name" "package-name-objectname"
-    name: string;
-    icon: SemanticICONS; // semantic icon to display in UI
-    author: string;
-    version: string;
-    description: string;
-    inlets: TInletsMeta;
-    outlets: TOutletMeta;
-    args: TArgsMeta;
-    props: TPropsMeta;
-};
-export class BaseUI<T extends AnyObject, S = {}> extends React.Component<{ object: T; custom?: React.HTMLAttributes<HTMLDivElement> }, BaseUIState & S> {
-    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
-    editableOnUnlock = false;
+export abstract class AbstractUI<T extends AbstractObject = AbstractObject, S extends { [key: string]: any } = {}> extends React.Component<{ object: T; custom?: React.HTMLAttributes<HTMLDivElement>}, S> {
+    // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
+    state = {} as Readonly<S>;
     get object() {
         return this.props.object;
     }
@@ -55,14 +19,27 @@ export class BaseUI<T extends AnyObject, S = {}> extends React.Component<{ objec
     get box() {
         return this.props.object.box;
     }
-    toggleEdit = (bool?: boolean) => false;
     componentDidMount() {
-        this.object.on("uiUpdate", this.handleUpdate);
+        this.object.on("uiUpdate", e => this.setState(e));
     }
     componentWillUnmount() {
-        this.object.off("uiUpdate", this.handleUpdate);
+        this.object.off("uiUpdate", e => this.setState(e));
     }
-    handleUpdate = <K extends keyof (BaseUIState & S)>(state: Pick<BaseUIState & S, K> | BaseUIState & S | null) => this.setState(state);
+}
+type BaseUIAdditionalState = { editing: boolean };
+export class BaseUI<T extends BaseObject = BaseObject, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, S & BaseUIAdditionalState & BaseUIState> {
+    state = {
+        ...super.state,
+        hidden: false,
+        background: false,
+        presentation: false,
+        ignoreClick: false,
+        hint: "",
+        editing: false
+    };
+    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
+    editableOnUnlock = false;
+    toggleEdit = (bool?: boolean) => false;
     render() {
         const { object } = this;
         const packageName = "package-" + object.meta.package.toLowerCase();
@@ -75,9 +52,24 @@ export class BaseUI<T extends AnyObject, S = {}> extends React.Component<{ objec
         );
     }
 }
-export class DefaultUI<T extends AnyObject> extends BaseUI<T, DefaultUIState> {
+type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number } & BaseUIAdditionalState;
+export class DefaultUI<T extends DefaultObject = DefaultObject, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = { a: number }> extends BaseUI<T, DefaultUIState & DefaultUIAdditionalState & S> {
     editableOnUnlock = true;
-    state = { editing: false, text: "", loading: false, dropdown$: -1 };
+    state = {
+        ...super.state,
+        bgColor: "rgb(51, 51, 51)",
+        borderColor: "rgb(125, 126, 132)",
+        textColor: "rgb(255, 255, 255)",
+        fontFamily: "Lato",
+        fontSize: 12,
+        fontStyle: "normal",
+        fontWeight: "normal",
+        textAlign: "left",
+        editing: false,
+        text: "",
+        loading: false,
+        dropdown$: -1
+    };
     refSpan = React.createRef<HTMLSpanElement>();
     refDropdown = React.createRef<HTMLTableSectionElement>();
     dropdownOptions: { key: string; value: string; text: string; icon: SemanticICONS; description: string }[] = [];
@@ -258,7 +250,7 @@ export type Args<T> = T extends BaseObject<any, any, any, any, infer A, any, any
 export type Props<T> = T extends BaseObject<any, any, any, any, any, infer P, any, any> ? P : never;
 export type UIState<T> = T extends BaseObject<any, any, any, any, any, any, infer U, any> ? U : never;
 export type EventMap<T> = T extends BaseObject<any, any, any, any, any, any, any, infer E> ? E : never;
-export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends MappedEventEmitter<E & BaseObjectEventMap<U & BaseUIState>> {
+export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends MappedEventEmitter<E & ObjectEventMap<U>> {
     static get meta(): TMeta {
         return {
             package: "Base", // div will have class "package-name" "package-name-objectname"
@@ -276,6 +268,7 @@ export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I ext
     get meta() {
         return (this.constructor as typeof AbstractObject).meta;
     }
+    superMeta: TMeta = null;
     /**
      * should save all temporary variables here
      *
@@ -307,11 +300,11 @@ export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I ext
     /**
      * Update UI's React State
      *
-     * @param {(Partial<U & BaseUIState> | null)} state
+     * @param {(Partial<U> | null)} state
      * @returns {this}
      * @memberof AbstractObject
      */
-    uiUpdate(state: Partial<U & BaseUIState> | null): this {
+    uiUpdate(state: Partial<U> | null): this {
         this.emit("uiUpdate", state as any);
         return this;
     }
@@ -328,6 +321,13 @@ export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I ext
         this.updateBox(args, props);
         return this;
     }
+    /**
+     * Store the input args and props with the box
+     *
+     * @param {Partial<A>} [args]
+     * @param {Partial<P>} [props]
+     * @memberof AbstractObject
+     */
     updateBox(args?: Partial<A>, props?: Partial<P>) {
         if (args) this.box.args = Object.assign(this.box.args, args);
         if (props) this.box.props = Object.assign(this.box.props, props);
@@ -427,11 +427,99 @@ export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I ext
         return this.constructor.name;
     }
 }
-export class BaseObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends AbstractObject<D, S, I, O, A, P, U, E> {
+export class BaseObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends AbstractObject<D, S, I, O, A, P, U & BaseUIState, E> {
     static get meta(): TMeta {
         return {
             ...super.meta,
-            package: "Base"
+            package: "Base",
+            props: [{
+                name: "hidden",
+                type: "boolean",
+                default: false,
+                description: "Hide on lock"
+            }, {
+                name: "background",
+                type: "boolean",
+                default: false,
+                description: "Include in background"
+            }, {
+                name: "presentation",
+                type: "boolean",
+                default: false,
+                description: "Include in presentation"
+            }, {
+                name: "rect",
+                type: "object",
+                description: "Position and dimensions in patch"
+            }, {
+                name: "presentationRect",
+                type: "object",
+                description: "Position and dimensions in presentation"
+            }, {
+                name: "ignoreClick",
+                type: "boolean",
+                default: false,
+                description: "Ignore Click"
+            }, {
+                name: "hint",
+                type: "string",
+                default: "",
+                description: "Hint on hover"
+            }]
+        };
+    }
+    get superMeta() {
+        return super.meta || null;
+    }
+}
+export class DefaultObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P, U & DefaultUIState, E> {
+    static get meta(): TMeta {
+        return {
+            ...super.meta,
+            props: [{
+                name: "bgColor",
+                type: "color",
+                default: "rgb(51, 51, 51)",
+                description: "Background color"
+            }, {
+                name: "borderColor",
+                type: "color",
+                default: "rgb(125, 126, 132)",
+                description: "Border color"
+            }, {
+                name: "textColor",
+                type: "color",
+                default: "rgb(255, 255, 255)",
+                description: "Text color"
+            }, {
+                name: "fontFamily",
+                type: "enum",
+                enum: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
+                default: "Lato",
+                description: "Font family"
+            }, {
+                name: "fontSize",
+                type: "number",
+                default: 12,
+                description: "Text font size"
+            }, {
+                name: "fontStyle",
+                type: "enum",
+                enum: ["normal", "italic", "oblique"],
+                default: "normal",
+                description: "Text style"
+            }, {
+                name: "fontWeight",
+                type: "string",
+                default: "normal",
+                description: 'Text style: "normal" | "bold" | "lighter" | "bolder" | number'
+            }, {
+                name: "textAlign",
+                type: "enum",
+                enum: ["center", "left", "right"],
+                default: "left",
+                description: "Text style"
+            }]
         };
     }
     get ui(): typeof BaseUI {
@@ -439,7 +527,7 @@ export class BaseObject<D extends {} = {}, S extends {} = {}, I extends any[] = 
     }
 }
 export class AnyObject extends BaseObject<any, any, any, any, any, any, any, any> {}
-export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P, U, E> {
+export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends {} = {}, U extends UIState<DefaultObject> = UIState<DefaultObject>, E extends {} = {}> extends DefaultObject<D, S, I, O, A, P, U, E> {
     static isConnectable(from: any, outlet: number, to: any, inlet: number) {
         if (!(from instanceof BaseAudioObject)) return false;
         if (!(to instanceof BaseAudioObject)) return false;
@@ -511,7 +599,10 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
         return this;
     }
 }
-class EmptyObject extends BaseObject<{}, { editing: boolean }, [any], [any]> {
+export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends {} = {}, U extends UIState<DefaultObject> = UIState<DefaultObject>, E extends {} = {}> extends DefaultObject<D, S, I, O, A, P, U, E> {
+
+}
+class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -550,7 +641,7 @@ class EmptyObject extends BaseObject<{}, { editing: boolean }, [any], [any]> {
         };
     }
 }
-class InvalidObject extends BaseObject<{}, {}, [any], [undefined]> {
+class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
     static get meta(): TMeta {
         return {
             ...super.meta,

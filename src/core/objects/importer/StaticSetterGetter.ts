@@ -1,7 +1,8 @@
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import { SetterGetter } from "./SetterGetter";
 import { StaticPropertyUI } from "./StaticProperty";
 import { ImportedObjectUI } from "./ImportedObject";
+import { TMeta } from "../../types";
 
 export class StaticSetterGetter extends SetterGetter<true> {
     static get meta(): TMeta {

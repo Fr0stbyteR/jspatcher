@@ -1,8 +1,9 @@
 import JSPAudioNode from "./AudioNode";
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { decodeMaxCurveFormat } from "../../../utils";
+import { TMeta } from "../../types";
 
 type I = [Bang, string, string, string, string, string, string, PannerOptions];
 export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, PannerNode], [], PannerOptions> {

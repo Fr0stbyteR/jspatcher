@@ -4,7 +4,7 @@ import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
 import "./RightMenu.scss";
-import { TPatcherLog } from "../core/types";
+import { TPatcherLog, TArgsMeta, TPropsMeta } from "../core/types";
 
 enum TPanels {
     None = "None",
@@ -58,6 +58,16 @@ class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLo
                 </Menu>
             </>
         );
+    }
+}
+class Inspector extends React.Component<{ patcher: Patcher }, { args: TArgsMeta[]; props: { [level: string]: TPropsMeta[] } }> {
+    state: { args: TArgsMeta[]; props: { [level: string]: TPropsMeta[] } } = { args: [], props: {} };
+    componentDidMount() {
+        this.props.patcher.on("selected", (e) => {
+        });
+    }
+    componentWillUnmount() {
+
     }
 }
 class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: boolean }> {

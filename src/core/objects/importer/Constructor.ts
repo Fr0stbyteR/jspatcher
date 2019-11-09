@@ -1,7 +1,8 @@
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { ImportedObjectUI, ImportedObject } from "./ImportedObject";
+import { TMeta } from "../../types";
 
 type TAnyConstructor = new (...args: any[]) => any;
 class ConstructorUI extends ImportedObjectUI<Constructor> {

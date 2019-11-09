@@ -1,4 +1,5 @@
-import { AbstractObject, BaseObject, TMeta, DefaultUI } from "../Base";
+import { AbstractObject, DefaultObject, DefaultUI } from "../Base";
+import { TMeta } from "../../types";
 
 /**
 * ```JavaScript
@@ -28,7 +29,7 @@ export class ImportedObjectUI<T extends AbstractObject> extends DefaultUI<T> {
         return { style: { backgroundColor: this.prependColor } };
     }
 }
-export abstract class ImportedObject<T, S, I extends any[], O extends any[], A extends any[], P, U> extends BaseObject<{}, S, I, O, A, P, U> {
+export abstract class ImportedObject<T, S, I extends any[], O extends any[], A extends any[], P, U> extends DefaultObject<{}, S, I, O, A, P, U> {
     static pkgName: string;
     static root: { [key: string]: any };
     static path: string[];

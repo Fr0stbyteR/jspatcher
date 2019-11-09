@@ -1,3 +1,4 @@
+import { SemanticICONS } from "semantic-ui-react";
 import { BaseObject, AnyObject } from "./objects/Base";
 import Patcher from "./Patcher";
 import Box from "./Box";
@@ -165,9 +166,66 @@ interface BoxEventMap {
     "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
     "ioCountChanged": Box;
 }
-type BaseUIState = { editing: boolean };
-type DefaultUIState = { text: string; loading: boolean; dropdown$: number } & BaseUIState;
-interface BaseObjectEventMap<UIState> {
+type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang" | "color" | "enum";
+type TInletsMeta = {
+    isHot: boolean;
+    type: TMetaType;
+    enum?: string[];
+    varLength?: boolean;
+    description: string;
+}[];
+type TOutletMeta = {
+    type: TMetaType;
+    enum?: string[];
+    varLength?: boolean;
+    description: string;
+}[];
+type TArgsMeta = {
+    type: TMetaType;
+    enum?: string[];
+    optional: boolean;
+    default?: any;
+    varLength?: boolean;
+    description: string;
+}[];
+type TPropsMeta = {
+    name: string;
+    enum?: string[];
+    default?: any;
+    type: TMetaType;
+    description: string;
+}[];
+type TMeta = {
+    package: string; // div will have class "package-name" "package-name-objectname"
+    name: string;
+    icon: SemanticICONS; // semantic icon to display in UI
+    author: string;
+    version: string;
+    description: string;
+    inlets: TInletsMeta;
+    outlets: TOutletMeta;
+    args: TArgsMeta;
+    props: TPropsMeta;
+};
+
+type BaseUIState = {
+    hidden: boolean;
+    background: boolean;
+    presentation: boolean;
+    ignoreClick: boolean;
+    hint: string;
+};
+type DefaultUIState = {
+    bgColor: string;
+    borderColor: string;
+    textColor: string;
+    fontFamily: string;
+    fontSize: number;
+    fontStyle: "normal" | "italic" | "oblique";
+    fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
+    textAlign: "center" | "left" | "right";
+} & BaseUIState;
+interface ObjectEventMap<UIState> {
     "uiUpdate": Partial<UIState> | null;
 }
 type THistoryElement = {

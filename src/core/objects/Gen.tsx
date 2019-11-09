@@ -1,6 +1,7 @@
-import { BaseObject, TMeta } from "./Base";
+import { DefaultObject } from "./Base";
 import { comment } from "./UI";
 import "./Gen.scss";
+import { TMeta } from "../types";
 
 const genOperators: { [key: string]: string[] } = {
     common: [
@@ -45,7 +46,7 @@ const genOperators: { [key: string]: string[] } = {
         "concat", "cross", "dot", "faceforward", "length", "normalize", "reflect", "refract", "rotor", "swiz", "vec"
     ]
 };
-export class GenOp extends BaseObject {
+export class GenOp extends DefaultObject {
     static get meta(): TMeta {
         return {
             ...super.meta,

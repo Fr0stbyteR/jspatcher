@@ -1,8 +1,9 @@
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
 import Patcher from "../../Patcher";
 import Box from "../../Box";
+import { TMeta } from "../../types";
 
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; result: any };
 type I<Static extends boolean> = Static extends true ? [Bang] : [any | Bang];

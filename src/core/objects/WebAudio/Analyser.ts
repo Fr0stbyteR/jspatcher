@@ -1,7 +1,8 @@
 import JSPAudioNode from "./AudioNode";
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
+import { TMeta } from "../../types";
 
 type TOptions = {
     fftSize: 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16384 | 32768;

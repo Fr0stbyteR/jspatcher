@@ -1,9 +1,9 @@
-import { BaseObject, TMeta } from "./Base";
+import { DefaultObject } from "./Base";
 import Box from "../Box";
 import Patcher from "../Patcher";
-import { TPackage } from "../types";
+import { TPackage, TMeta } from "../types";
 
-export class FaustOp extends BaseObject<{}, { inlets: number; outlets: number; args: (number | string)[] }, [], [], any[]> {
+export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number; args: (number | string)[] }, [], [], any[]> {
     static get meta(): TMeta {
         return {
             ...super.meta,

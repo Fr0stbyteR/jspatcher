@@ -4,11 +4,11 @@ import MonacoEditor from "react-monaco-editor";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import Patcher from "../Patcher";
 import Box from "../Box";
-import { BaseObject, BaseUI, TMeta, Bang } from "./Base";
+import { DefaultObject, BaseUI, Bang } from "./Base";
 import "./UI.scss";
-import { PatcherEventMap } from "../types";
+import { PatcherEventMap, TMeta } from "../types";
 
-export class comment extends BaseObject<{ value: string }, {}, [], [], [string]> {
+export class comment extends DefaultObject<{ value: string }, {}, [], [], [string]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -35,7 +35,7 @@ export class comment extends BaseObject<{ value: string }, {}, [], [], [string]>
     get ui(): typeof BaseUI {
         return class CommentUI extends BaseUI<comment> {
             editableOnUnlock = true;
-            state = { editing: false };
+            state = { ...super.state, editing: false };
             refSpan = React.createRef<HTMLSpanElement>();
             toggleEdit = (bool?: boolean) => {
                 if (bool === this.state.editing) return this.state.editing;
@@ -83,7 +83,7 @@ export class comment extends BaseObject<{ value: string }, {}, [], [], [string]>
         };
     }
 }
-export class code extends BaseObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }> {
+export class code extends DefaultObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -139,7 +139,7 @@ export class code extends BaseObject<{ value: string }, {}, [Bang, string], [str
         return class CodeUI extends BaseUI<comment, { language: string; value: string; editorLoaded: boolean }> {
             static sizing = "both" as const;
             editableOnUnlock = false;
-            state = { editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };
+            state = { ...super.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };
             codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
             editorJSX: typeof MonacoEditor;
             handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => this.codeEditor = monaco;

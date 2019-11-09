@@ -224,6 +224,7 @@ export default class Box<T extends AnyObject = AbstractObject> extends MappedEve
         for (const key in objOut.props) { // no value = true, one value need to parse, else array
             if (objOut.props[key].length === 0) objOut.props[key] = true;
             else if (objOut.props[key].length === 1) objOut.props[key] = parseToPrimitive(objOut.props[key][0]);
+            else objOut.props[key] = parseToPrimitive(objOut.props[key].join(" "));
         }
         return objOut;
     }

@@ -1,8 +1,9 @@
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { ImportedObjectUI } from "./ImportedObject";
 import { Property } from "./Property";
+import { TMeta } from "../../types";
 
 export class StaticPropertyUI extends ImportedObjectUI<StaticProperty> {
     prependColor = "rgb(156, 220, 254)";

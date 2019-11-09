@@ -1,8 +1,9 @@
-import { BaseObject, Bang, TMeta } from "./Base";
+import { DefaultObject, Bang } from "./Base";
 import Patcher from "../Patcher";
 import Box from "../Box";
+import { TMeta } from "../types";
 
-abstract class JSOp<S = {}, I extends any[] = [], O extends any[] = [any], A extends any[] = [], P = {}> extends BaseObject<{}, S, I, O, A, P> {
+abstract class JSOp<S = {}, I extends any[] = [], O extends any[] = [any], A extends any[] = [], P = {}> extends DefaultObject<{}, S, I, O, A, P> {
     static get meta(): TMeta {
         return {
             ...super.meta,

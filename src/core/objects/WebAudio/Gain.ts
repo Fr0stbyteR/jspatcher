@@ -1,8 +1,9 @@
 import JSPAudioNode from "./AudioNode";
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { decodeMaxCurveFormat } from "../../../utils";
+import { TMeta } from "../../types";
 
 export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, string], [null, GainNode], [number]> {
     static get meta(): TMeta {

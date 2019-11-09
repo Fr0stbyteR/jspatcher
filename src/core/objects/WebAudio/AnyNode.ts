@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { TMeta } from "../Base";
+import { TMeta } from "../../types";
 
 export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...null[]], null[]> {
     static get meta(): TMeta {

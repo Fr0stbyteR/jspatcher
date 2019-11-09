@@ -1,8 +1,8 @@
 import JSPAudioNode from "./AudioNode";
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
-import { TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../../types";
+import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta } from "../../types";
 
 type I = [Bang | MediaStream];
 export default class StreamSrc extends JSPAudioNode<MediaStreamAudioSourceNode, { stream: MediaStream }, I, [null, MediaStreamAudioSourceNode], [], {}> {

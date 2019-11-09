@@ -1,8 +1,9 @@
-import { TMeta, Bang } from "../Base";
+import { Bang } from "../Base";
 import Box from "../../Box";
 import Patcher from "../../Patcher";
 import { ImportedObjectUI, ImportedObject } from "./ImportedObject";
 import { PropertyUI } from "./Property";
+import { TMeta } from "../../types";
 
 type TAnyFunction = (...args: any[]) => any;
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; inputs: any[]; result: any };
