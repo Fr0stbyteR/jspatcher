@@ -1,6 +1,6 @@
 import { MappedEventEmitter } from "../utils";
 import Patcher from "./Patcher";
-import { LineEventMap, TLine, TLineType } from "./types";
+import { LineEventMap, TLine, TLineType, TMetaType } from "./types";
 
 export default class Line extends MappedEventEmitter<LineEventMap> {
     readonly id: string;
@@ -107,6 +107,14 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
         return this._patcher.boxes[this.dest[0]];
     }
     get type(): TLineType {
-        return this.srcBox.object.meta.outlets[this.srcOutlet].type === "signal" && this.destBox.object.meta.inlets[this.destInlet].type === "signal" ? "audio" : "normal";
+        const srcMeta = this.srcBox.object.meta.outlets;
+        const destMeta = this.destBox.object.meta.inlets;
+        let srcType: TMetaType = "anything";
+        let destType: TMetaType = "anything";
+        if (srcMeta[this.srcOutlet]) srcType = srcMeta[this.srcOutlet].type;
+        else if (srcMeta[srcMeta.length - 1] && srcMeta[srcMeta.length - 1].varLength) srcType = srcMeta[srcMeta.length - 1].type;
+        if (destMeta[this.destInlet]) destType = destMeta[this.destInlet].type;
+        else if (destMeta[destMeta.length - 1] && destMeta[destMeta.length - 1].varLength) destType = destMeta[destMeta.length - 1].type;
+        return srcType === "signal" && destType === "signal" ? "audio" : "normal";
     }
 }
