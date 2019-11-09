@@ -1,3 +1,4 @@
+import * as React from "react";
 import { AbstractObject, DefaultObject, DefaultUI } from "../Base";
 import { TMeta } from "../../types";
 
@@ -25,8 +26,8 @@ import { TMeta } from "../../types";
 */
 export class ImportedObjectUI<T extends AbstractObject> extends DefaultUI<T> {
     prependColor: string;
-    get prependProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
-        return { style: { backgroundColor: this.prependColor } };
+    render() {
+        return <DefaultUI {...this.props} prependProps={{ style: { backgroundColor: this.prependColor } }} />;
     }
 }
 export abstract class ImportedObject<T, S, I extends any[], O extends any[], A extends any[], P, U> extends DefaultObject<{}, S, I, O, A, P, U> {

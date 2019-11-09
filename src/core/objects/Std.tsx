@@ -19,7 +19,7 @@ class StdObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A ex
     }
 }
 type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
-export class ButtonUI<T extends DefaultObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, ButtonUIState> {
+export class ButtonUI<T extends DefaultObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
     editableOnUnlock = true;
     state = { ...super.state, editing: false, loading: false, text: this.props.object.data.text };
     refSpan = React.createRef<HTMLSpanElement>();
@@ -73,18 +73,16 @@ export class ButtonUI<T extends DefaultObject<{ text: string }, { editing: boole
     }
     render() {
         const { object } = this;
-        const packageName = "package-" + object.meta.package.toLowerCase();
-        const className = packageName + "-" + object.meta.name.toLowerCase();
-        const classArray = [packageName, className, "box-ui-container", "box-ui-button", "ui", "button", "compact", "mini"];
+        const classArray = ["box-ui-button", "ui", "button", "compact", "mini"];
         return (
-            <div className={classArray.join(" ")} onClick={this.handleClick}>
+            <BaseUI {...this.props} additionalClassName={classArray.join(" ")} containerProps={{ onClick: this.handleClick }}>
                 <div className="box-ui-text-container">
                     {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
                     <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClickSpan} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
                         {this.state.text}
                     </span>
                 </div>
-            </div>
+            </BaseUI>
         );
     }
 }

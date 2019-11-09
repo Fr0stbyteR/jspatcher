@@ -136,7 +136,7 @@ export class code extends DefaultObject<{ value: string }, {}, [Bang, string], [
         return this;
     }
     get ui(): typeof BaseUI {
-        return class CodeUI extends BaseUI<comment, { language: string; value: string; editorLoaded: boolean }> {
+        return class CodeUI extends BaseUI<comment, {}, { language: string; value: string; editorLoaded: boolean }> {
             static sizing = "both" as const;
             editableOnUnlock = false;
             state = { ...super.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };
@@ -166,7 +166,7 @@ export class code extends DefaultObject<{ value: string }, {}, [Bang, string], [
                 this.patcher.off("resized", this.handleResize);
             }
             render() {
-                return <BaseUI {...this.props} custom={{ onKeyDown: this.handleKeyDown, onKeyUp: this.handleKeyUp }}>
+                return <BaseUI {...this.props} containerProps={{ onKeyDown: this.handleKeyDown, onKeyUp: this.handleKeyUp }}>
                     {
                         this.state.editorLoaded
                             ? <this.editorJSX value={this.state.value} language={this.state.language} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} onChange={this.handleChange} options={{ fontSize: 12 }} />

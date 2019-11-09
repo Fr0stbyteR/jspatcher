@@ -7,7 +7,7 @@ import "./Default.scss";
 import "./Base.scss";
 import { BaseUIState, DefaultUIState, TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap } from "../types";
 
-export abstract class AbstractUI<T extends AbstractObject = AbstractObject, S extends { [key: string]: any } = {}> extends React.Component<{ object: T; custom?: React.HTMLAttributes<HTMLDivElement>}, S> {
+export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P extends Partial<{ object: T }> & { [key: string]: any } = {}, S extends { [key: string]: any } = {}> extends React.Component<{ object: T } & P, S> {
     // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
     state = {} as Readonly<S>;
     get object() {
@@ -26,8 +26,12 @@ export abstract class AbstractUI<T extends AbstractObject = AbstractObject, S ex
         this.object.off("uiUpdate", e => this.setState(e));
     }
 }
+type BaseUIProps = {
+    containerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
+    additionalClassName?: string;
+};
 type BaseUIAdditionalState = { editing: boolean };
-export class BaseUI<T extends BaseObject = BaseObject, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, S & BaseUIAdditionalState & BaseUIState> {
+export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIAdditionalState & BaseUIState> {
     state = {
         ...super.state,
         hidden: false,
@@ -44,16 +48,22 @@ export class BaseUI<T extends BaseObject = BaseObject, S extends Partial<BaseUIS
         const { object } = this;
         const packageName = "package-" + object.meta.package.toLowerCase();
         const className = packageName + "-" + object.meta.name.toLowerCase();
-        const classArray = [packageName, className, "box-ui-container"];
+        const classArray = [packageName, className, "box-ui-container", this.props.additionalClassName];
         return (
-            <div className={classArray.join(" ")} {...this.props.custom}>
+            <div className={classArray.join(" ")} {...this.props.containerProps}>
                 {this.props.children}
             </div>
         );
     }
 }
+type DefaultUIProps = {
+    textContainerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
+    prependProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
+    spanProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement>;
+    appendProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
+}
 type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number } & BaseUIAdditionalState;
-export class DefaultUI<T extends DefaultObject = DefaultObject, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = { a: number }> extends BaseUI<T, DefaultUIState & DefaultUIAdditionalState & S> {
+export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState & DefaultUIAdditionalState> {
     editableOnUnlock = true;
     state = {
         ...super.state,
@@ -189,33 +199,15 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, S extends Partia
         super.componentDidMount();
         this.setState({ text: this.object.box.text });
     }
-    get containerProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
-        return {};
-    }
-    get textContainerProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
-        return {};
-    }
-    get prependProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
-        return {};
-    }
-    get spanProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement> {
-        return {};
-    }
-    get appendProps(): JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement> {
-        return {};
-    }
     render() {
         const { object } = this;
-        const packageName = "package-" + object.meta.package.toLowerCase();
-        const className = packageName + "-" + object.meta.name.toLowerCase();
-        const classArray = [packageName, className, "box-ui-container", "box-ui-default"];
         return (
-            <div className={classArray.join(" ")} {...this.containerProps}>
-                <div className="box-ui-text-container" {...this.textContainerProps}>
-                    <div className="box-ui-text-container-prepend" {...this.prependProps}>
+            <BaseUI {...this.props} additionalClassName="box-ui-default">
+                <div className="box-ui-text-container" {...this.props.textContainerProps}>
+                    <div className="box-ui-text-container-prepend" {...this.props.prependProps}>
                         {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
                     </div>
-                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} suppressContentEditableWarning={true} {...this.spanProps}>
+                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} suppressContentEditableWarning={true} {...this.props.spanProps}>
                         {object.box.text}
                     </span>
                     {
@@ -235,10 +227,10 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, S extends Partia
                             </div>
                             : undefined
                     }
-                    <div className="box-ui-text-container-append" {...this.appendProps}>
+                    <div className="box-ui-text-container-append" {...this.props.appendProps}>
                     </div>
                 </div>
-            </div>
+            </BaseUI>
         );
     }
 }
