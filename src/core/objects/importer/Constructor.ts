@@ -97,6 +97,6 @@ export class Constructor extends ImportedObject<TAnyConstructor, S, [any | Bang,
         return ConstructorUI;
     }
     set loading(loading: boolean) {
-        this.uiUpdate({ loading });
+        this.updateUI({ loading });
     }
 }

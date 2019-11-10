@@ -122,7 +122,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         return NewUI;
     }
     set loading(loading: boolean) {
-        this.uiUpdate({ loading });
+        this.updateUI({ loading });
     }
     get name() {
         const c = this.state.Wrapper;

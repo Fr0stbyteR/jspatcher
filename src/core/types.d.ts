@@ -75,8 +75,9 @@ type TMaxBox = {
         numinlets: number;
         numoutlets: number;
         patching_rect: [number, number, number, number];
-        presentation_rect: [number, number, number, number];
-        presentation: number;
+        presentation_rect?: [number, number, number, number];
+        background?: number;
+        presentation?: number;
     };
 };
 
@@ -118,6 +119,9 @@ type TBox = {
     inlets: number;
     outlets: number;
     rect: [number, number, number, number];
+    background?: boolean;
+    presentation?: boolean;
+    presentationRect?: [number, number, number, number];
     data?: { [key: string]: any };
     _editing?: boolean;
 };
@@ -160,6 +164,9 @@ interface LineEventMap {
 
 interface BoxEventMap {
     "rectChanged": Box;
+    "presentationRectChanged": Box;
+    "backgroundChanged": Box;
+    "presentationChanged": Box;
     "textChanged": Box;
     "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
     "connectedPort": { isSrc: boolean; i: number; last?: false };
@@ -210,8 +217,6 @@ type TMeta = {
 
 type BaseUIState = {
     hidden: boolean;
-    background: boolean;
-    presentation: boolean;
     ignoreClick: boolean;
     hint: string;
 };

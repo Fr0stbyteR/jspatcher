@@ -111,6 +111,6 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
         return PropertyUI;
     }
     set loading(loading: boolean) {
-        this.uiUpdate({ loading });
+        this.updateUI({ loading });
     }
 }

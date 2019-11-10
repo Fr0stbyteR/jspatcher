@@ -72,6 +72,6 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
         return PropertyUI;
     }
     set loading(loading: boolean) {
-        this.uiUpdate({ loading });
+        this.updateUI({ loading });
     }
 }

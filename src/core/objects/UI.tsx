@@ -122,7 +122,7 @@ export class code extends DefaultObject<{ value: string }, {}, [Bang, string], [
     }
     update(args?: [string?], props?: {}) {
         this.updateBox(args);
-        if (args && args[0]) this.uiUpdate({ language: args[0] });
+        if (args && args[0]) this.updateUI({ language: args[0] });
         return this;
     }
     fn<$ extends number>(data: [Bang, string][$], inlet: $) {
@@ -130,7 +130,7 @@ export class code extends DefaultObject<{ value: string }, {}, [Bang, string], [
             if (data instanceof Bang) this.outlet(0, this.box.data.value);
         } else if (inlet === 1) {
             const value = typeof data === "string" ? data : `${data}`;
-            this.uiUpdate({ value });
+            this.updateUI({ value });
             this.box.data.value = value;
         }
         return this;

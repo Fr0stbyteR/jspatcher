@@ -1,7 +1,7 @@
 import { MappedEventEmitter } from "../utils";
 import Patcher from "./Patcher";
 import { Data, Args, Props, Inputs, AbstractObject, AnyObject } from "./objects/Base";
-import { BoxEventMap, TBox } from "./types";
+import { BoxEventMap, TBox, TMaxBox } from "./types";
 
 export default class Box<T extends AnyObject = AbstractObject> extends MappedEventEmitter<BoxEventMap> {
     id: string;
@@ -9,6 +9,9 @@ export default class Box<T extends AnyObject = AbstractObject> extends MappedEve
     inlets = 0;
     outlets = 0;
     rect: [number, number, number, number];
+    backgorund: boolean;
+    presentation: boolean;
+    presentationRect: [number, number, number, number];
     data: Data<T>;
     args: Args<T> = [] as any;
     props: Props<T> = {} as any;
@@ -22,7 +25,11 @@ export default class Box<T extends AnyObject = AbstractObject> extends MappedEve
         this.text = boxIn.text;
         this.inlets = boxIn.inlets;
         this.outlets = boxIn.outlets;
-        this.rect = boxIn.rect || (boxIn as any).patching_rect;
+        const maxBoxIn = boxIn as unknown as TMaxBox["box"];
+        this.rect = boxIn.rect || maxBoxIn.patching_rect;
+        this.presentation = boxIn.background || !!maxBoxIn.background;
+        this.presentation = boxIn.presentation || !!maxBoxIn.presentation;
+        this.presentationRect = boxIn.presentationRect || maxBoxIn.presentation_rect;
         this.data = boxIn.data || ((boxIn as any).prevData ? (boxIn as any).prevData.storage : {});
         this._editing = !!boxIn._editing;
         this._patcher = patcherIn;
@@ -164,6 +171,24 @@ export default class Box<T extends AnyObject = AbstractObject> extends MappedEve
         this.rect = rect;
         this.allLines.forEach(id => this._patcher.lines[id].uiUpdateDest());
         this.emit("rectChanged", this);
+        return this;
+    }
+    setBackground(bool: boolean) {
+        if (!!this.backgorund === !!bool) return this;
+        this.backgorund = bool;
+        this.emit("backgroundChanged", this);
+        return this;
+    }
+    setPresentation(bool: boolean) {
+        if (!!this.presentation === !!bool) return this;
+        this.presentation = bool;
+        this.emit("presentationChanged", this);
+        return this;
+    }
+    setPresentationRect(rect: [number, number, number, number]) {
+        if (rect.every((v, i) => v === this.presentationRect[i])) return this;
+        this.presentationRect = rect;
+        this.emit("presentationRectChanged", this);
         return this;
     }
     highlightPort(isSrc: boolean, i: number, highlight: boolean) {

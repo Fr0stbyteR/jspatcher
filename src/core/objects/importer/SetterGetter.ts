@@ -99,7 +99,7 @@ export class SetterGetter<Static extends boolean = false> extends ImportedObject
         return this.callback();
     }
     set loading(loading: boolean) {
-        this.uiUpdate({ loading });
+        this.updateUI({ loading });
     }
     get ui(): typeof ImportedObjectUI {
         return PropertyUI;

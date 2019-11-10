@@ -1,7 +1,7 @@
-import { Bang, BaseAudioObject } from "../Base";
+import { Bang, DefaultAudioObject } from "../Base";
 import { TMeta } from "../../types";
 
-export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = {}, I extends [Bang?, ...any[]] = [], O extends (null | any | T)[] = [], A extends any[] = [], P = {}> extends BaseAudioObject<{}, { node: T } & S, I, O, A, P> {
+export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = {}, I extends [Bang?, ...any[]] = [], O extends (null | any | T)[] = [], A extends any[] = [], P = {}> extends DefaultAudioObject<{}, { node: T } & S, I, O, A, P> {
     static get _meta(): TMeta {
         return {
             ...super.meta,

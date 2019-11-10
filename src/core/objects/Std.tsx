@@ -121,7 +121,7 @@ class message extends StdObject<{ text: string }, { buffer: any; editing: boolea
             this.data.text = "";
             this.state.buffer = new Bang();
         }
-        this.uiUpdate({ text: this.data.text });
+        this.updateUI({ text: this.data.text });
     }
     update(args?: [any?]) {
         this.updateBox(args);
@@ -129,7 +129,7 @@ class message extends StdObject<{ text: string }, { buffer: any; editing: boolea
         this.data.text = this.stringify(args[0]);
         if (args[0]) this.state.buffer = this.parse(args[0]);
         else this.state.buffer = new Bang();
-        this.uiUpdate({ text: this.data.text });
+        this.updateUI({ text: this.data.text });
         return this;
     }
     fn(data: any, inlet: number) {
