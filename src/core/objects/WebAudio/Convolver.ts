@@ -30,7 +30,7 @@ export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [],
                 description: "Instance: ConvolverNode"
             }],
             args: [],
-            props: [{
+            props: [...super.meta.props, {
                 name: "normalize",
                 type: "boolean",
                 description: "Controls whether the impulse response from the buffer will be scaled by an equal-power normalization"

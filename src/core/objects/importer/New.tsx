@@ -42,7 +42,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
                 varLength: true,
                 description: "Set arguments while loaded"
             }],
-            props: [{
+            props: [...super.meta.props, {
                 name: "args",
                 type: "number",
                 description: "arguments count for constructor"

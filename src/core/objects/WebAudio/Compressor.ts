@@ -42,7 +42,7 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
                 description: "Instance: DynamicsCompressorNode"
             }],
             args: [],
-            props: [{
+            props: [...super.meta.props, {
                 name: "threshold",
                 type: "number",
                 description: "Initial threshold"

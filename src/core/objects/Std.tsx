@@ -1,7 +1,5 @@
 import * as Util from "util";
 import { DefaultObject, Bang } from "./Base";
-import Patcher from "../Patcher";
-import Box from "../Box";
 import "./Std.scss";
 import { TMeta } from "../types";
 

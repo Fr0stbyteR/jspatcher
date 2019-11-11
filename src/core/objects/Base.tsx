@@ -246,6 +246,7 @@ export abstract class AbstractObject<
 > extends MappedEventEmitter<ObjectEventMap<I, A, P, U, E>> {
     static get meta(): TMeta {
         return {
+            parent: null,
             package: "Base", // div will have class "package-name" "package-name-objectname"
             name: this.name,
             icon: null as SemanticICONS, // semantic icon to display in UI
@@ -261,7 +262,6 @@ export abstract class AbstractObject<
     get meta() {
         return (this.constructor as typeof AbstractObject).meta;
     }
-    readonly superMeta: TMeta = null;
     /**
      * should save all temporary variables here
      *
@@ -489,11 +489,15 @@ export class BaseObject<
     A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {},
     U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}
 > extends AbstractObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
+    static get superMeta(): TMeta {
+        const meta = super.meta;
+        return { ...meta, parent: { ...meta, name: super.name } };
+    }
     static get meta(): TMeta {
         return {
             ...super.meta,
             package: "Base",
-            props: [{
+            props: [...super.meta.props, {
                 name: "hidden",
                 type: "boolean",
                 default: false,
@@ -529,9 +533,6 @@ export class BaseObject<
             }]
         };
     }
-    get superMeta() {
-        return super.meta || null;
-    }
     subscribe() {
         super.subscribe();
         this.on("update", this.updateBox);
@@ -562,7 +563,7 @@ export class DefaultObject<
     static get meta(): TMeta {
         return {
             ...super.meta,
-            props: [{
+            props: [...super.meta.props, {
                 name: "bgColor",
                 type: "color",
                 default: "rgb(51, 51, 51)",

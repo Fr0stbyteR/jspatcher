@@ -1,9 +1,9 @@
 import { MappedEventEmitter } from "../utils";
 import Patcher from "./Patcher";
-import { AbstractObject, AnyObject } from "./objects/Base";
+import { AnyObject } from "./objects/Base";
 import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs } from "./types";
 
-export default class Box<T extends AnyObject = AbstractObject> extends MappedEventEmitter<BoxEventMap> {
+export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmitter<BoxEventMap> {
     id: string;
     text = "";
     inlets = 0;
@@ -42,7 +42,15 @@ export default class Box<T extends AnyObject = AbstractObject> extends MappedEve
         this._object = this._patcher.createObject(this._parsed, this) as T;
         this._editing = false;
     }
-    // main function when receive data from a inlet (base 0)
+    /**
+     * Main function when receive data from a inlet (base 0)
+     *
+     * @template I
+     * @param {Inputs<T>[I]} data
+     * @param {I} inlet
+     * @returns
+     * @memberof Box
+     */
     fn<I extends keyof Pick<Inputs<T>, number>>(data: Inputs<T>[I], inlet: I) {
         this._object.fn(data, inlet);
         return this;

@@ -42,7 +42,7 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
                 description: "Instance: BiquadFilterNode"
             }],
             args: [],
-            props: [{
+            props: [...super.meta.props, {
                 name: "frequency",
                 type: "number",
                 description: "Initial frequency"

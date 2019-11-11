@@ -41,7 +41,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
                 optional: true,
                 description: 'Initial type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
             }],
-            props: [{
+            props: [...super.meta.props, {
                 name: "detune",
                 type: "number",
                 description: "Initial detune"

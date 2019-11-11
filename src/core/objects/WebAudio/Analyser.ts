@@ -60,7 +60,7 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
                 description: "Instance: AnalyserNode"
             }],
             args: [],
-            props: [{
+            props: [...super.meta.props, {
                 name: "fftSize",
                 type: "number",
                 description: "The size of the FFT to be used: power of 2"

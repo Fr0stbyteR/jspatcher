@@ -50,7 +50,7 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
                 description: "Instance: PannerNode"
             }],
             args: [],
-            props: [{
+            props: [...super.meta.props, {
                 name: "coneInnerAngle",
                 type: "number",
                 description: "Initial coneInnerAngle"

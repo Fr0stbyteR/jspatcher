@@ -39,7 +39,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
                 varLength: true,
                 description: "Set arguments while loaded"
             }],
-            props: [{
+            props: [...super.meta.props, {
                 name: "args",
                 type: "number",
                 description: "arguments count for method"

@@ -29,7 +29,7 @@ export default class WaveShaper extends JSPAudioNode<WaveShaperNode, {}, I, [nul
                 description: "Instance: WaveShaperNode"
             }],
             args: [],
-            props: [{
+            props: [...super.meta.props, {
                 name: "oversample",
                 type: "string",
                 description: "Initial oversample"

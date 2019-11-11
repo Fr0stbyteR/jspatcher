@@ -203,6 +203,7 @@ type TPropsMeta = {
     description: string;
 }[];
 type TMeta = {
+    parent: TMeta;
     package: string; // div will have class "package-name" "package-name-objectname"
     name: string;
     icon: SemanticICONS; // semantic icon to display in UI
