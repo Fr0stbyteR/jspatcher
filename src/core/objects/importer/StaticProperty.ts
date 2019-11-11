@@ -1,6 +1,4 @@
 import { Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { ImportedObjectUI } from "./ImportedObject";
 import { Property } from "./Property";
 import { TMeta } from "../../types";
@@ -33,25 +31,23 @@ export class StaticProperty extends Property<true> {
             }]
         };
     }
-    outlets = 1;
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.update((box as Box<this>).args);
-    }
-    update(args?: [any?]) {
-        this.updateBox(args);
-        if (args && args.length) this.imported = args[0];
-        return this;
-    }
-    fn(data: any, inlet: number) {
+    handlePreInit = () => {
+        this.inlets = 2;
+        this.outlets = 1;
+    };
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             if (data instanceof Bang) this.outlet(0, this.imported);
         } else if (inlet === 1) {
             this.imported = data;
         }
-        return this;
+    };
+    subscribe() {
+        super.subscribe();
+        this.on("updateArgs", (args) => {
+            if (args.length) this.imported = args[0];
+        });
+        this.on("inlet", this.handleInlet);
     }
-    get ui(): typeof ImportedObjectUI {
-        return StaticPropertyUI;
-    }
+    uiComponent = StaticPropertyUI;
 }

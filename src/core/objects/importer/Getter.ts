@@ -1,8 +1,6 @@
 import { Bang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
-import Patcher from "../../Patcher";
-import Box from "../../Box";
 import { TMeta } from "../../types";
 
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; result: any };
@@ -28,20 +26,21 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
         };
     }
     state: S<Static> = { instance: undefined, result: null };
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.configurePorts();
-    }
-    configurePorts() {
+    handlePreInit = () => {
         this.inlets = 1;
         this.outlets = 2;
-    }
-    fn(data: any, inlet: number) {
+    };
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;
             if (this.execute()) return this.output();
         }
         return this;
+    }
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", this.handlePreInit);
+        this.on("inlet", this.handleInlet);
     }
     execute() {
         try {
@@ -68,9 +67,7 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
         }
         return this.callback();
     }
-    get ui(): typeof ImportedObjectUI {
-        return PropertyUI;
-    }
+    uiComponent: typeof ImportedObjectUI = PropertyUI;
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }

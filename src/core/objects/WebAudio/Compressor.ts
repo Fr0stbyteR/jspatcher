@@ -1,7 +1,5 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { decodeMaxCurveFormat } from "../../../utils";
 import { TMeta } from "../../types";
 
@@ -70,18 +68,16 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
     state = { node: this.audioCtx.createDynamicsCompressor() };
     inletConnections = [{ node: this.node, index: 0 }, { node: this.node.threshold }, { node: this.node.knee }, { node: this.node.ratio }, null, { node: this.node.attack }, { node: this.node.release }];
     outletConnections = [{ node: this.node, index: 0 }];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 6;
-        this.outlets = 2;
-        this.node.channelInterpretation = "discrete";
-        this.node.channelCountMode = "explicit";
-        this.keepAlive();
-        this.update((box as Box<this>).args, (box as Box<this>).props);
-    }
-    update(args?: [], props?: DynamicsCompressorOptions) {
-        this.updateBox(args, props);
-        if (props) {
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 6;
+            this.outlets = 2;
+            this.node.channelInterpretation = "discrete";
+            this.node.channelCountMode = "explicit";
+            this.keepAlive();
+        });
+        this.on("updateProps", (props) => {
             const paramMap = ["threshold", "knee", "ratio", "attack", "release"] as const;
             paramMap.forEach((key) => {
                 try {
@@ -90,21 +86,19 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
                     this.error(e.message);
                 }
             });
-        }
-        return this;
-    }
-    fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
-        const paramMap = ["threshold", "knee", "ratio", "attack", "release"] as const;
-        if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(1, this.node);
-        } else if (inlet > 0 && inlet < 6) {
-            try {
-                const curve = decodeMaxCurveFormat(data as string);
-                JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
-            } catch (e) {
-                this.error(e.message);
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            const paramMap = ["threshold", "knee", "ratio", "attack", "release"] as const;
+            if (inlet === 0) {
+                if (data instanceof Bang) this.outlet(1, this.node);
+            } else if (inlet > 0 && inlet < 6) {
+                try {
+                    const curve = decodeMaxCurveFormat(data as string);
+                    JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
+                } catch (e) {
+                    this.error(e.message);
+                }
             }
-        }
-        return this;
+        });
     }
 }

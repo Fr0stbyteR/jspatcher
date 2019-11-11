@@ -1,5 +1,4 @@
 import { Bang } from "../Base";
-import { ImportedObjectUI } from "./ImportedObject";
 import { StaticPropertyUI } from "./StaticProperty";
 import { Method } from "./Method";
 import { TMeta } from "../../types";
@@ -30,21 +29,16 @@ export class StaticMethod extends Method<true> {
             }]
         };
     }
-    get fixedInlets() {
-        return 0;
-    }
-    get fixedOutlets() {
-        return 1;
-    }
-    fn(data: any, inlet: number) {
+    initialInlets = 0;
+    initialOutlets = 1;
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.inputs[inlet] = data;
-            if (this.execute()) return this.output();
+            if (this.execute()) this.output();
         } else {
             this.state.inputs[inlet] = data;
         }
-        return this;
-    }
+    };
     execute() {
         const fn = this.imported;
         try {
@@ -56,7 +50,5 @@ export class StaticMethod extends Method<true> {
         }
     }
     callback = () => this.outletAll([this.state.result, ...this.state.inputs]);
-    get ui(): typeof ImportedObjectUI {
-        return StaticPropertyUI;
-    }
+    uiComponent = StaticPropertyUI;
 }

@@ -1,7 +1,5 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { decodeMaxCurveFormat } from "../../../utils";
 import { TMeta } from "../../types";
 
@@ -37,34 +35,36 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
     state = { node: this.audioCtx.createConstantSource() };
     inletConnections = [null, { node: this.node.offset }];
     outletConnections = [{ node: this.node, index: 0 }];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 4;
-        this.outlets = 2;
-        this.node.channelInterpretation = "discrete";
-        this.node.channelCountMode = "explicit";
-        this.keepAlive();
-        this.node.start();
-        this.update((box as Box<this>).args);
-    }
-    update(args?: [number?]) {
-        this.updateBox(args);
-        if (args && args.length) {
-            if (args[0] && typeof args[0] === "number" && isFinite(args[0])) this.node.offset.setValueAtTime(args[0], this.audioCtx.currentTime);
-        }
-        return this;
-    }
-    fn<I extends [Bang, string], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
-        if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(1, this.node);
-        } else if (inlet === 1) {
-            try {
-                const curve = decodeMaxCurveFormat(data as string);
-                JSPAudioNode.applyCurve(this.node.offset, curve, this.audioCtx);
-            } catch (e) {
-                this.error(e.message);
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 4;
+            this.outlets = 2;
+            this.node.channelInterpretation = "discrete";
+            this.node.channelCountMode = "explicit";
+            this.keepAlive();
+            this.node.start();
+        });
+        this.on("updateArgs", (args) => {
+            if (typeof args[0] === "number") {
+                try {
+                    this.node.offset.setValueAtTime(args[0], this.audioCtx.currentTime);
+                } catch (e) {
+                    this.error((e as Error).message);
+                }
             }
-        }
-        return this;
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (data instanceof Bang) this.outlet(1, this.node);
+            } else if (inlet === 1) {
+                try {
+                    const curve = decodeMaxCurveFormat(data as string);
+                    JSPAudioNode.applyCurve(this.node.offset, curve, this.audioCtx);
+                } catch (e) {
+                    this.error(e.message);
+                }
+            }
+        });
     }
 }

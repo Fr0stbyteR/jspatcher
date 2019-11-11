@@ -1,6 +1,4 @@
 import { DefaultObject, Bang } from "./Base";
-import Patcher from "../Patcher";
-import Box from "../Box";
 import { TMeta } from "../types";
 
 abstract class JSOp<S = {}, I extends any[] = [], O extends any[] = [any], A extends any[] = [], P = {}> extends DefaultObject<{}, S, I, O, A, P> {
@@ -28,30 +26,26 @@ class JSUnaryOp extends JSOp<{ result: any }, [any]> {
         };
     }
     state = { result: null as any };
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 1;
-        this.outlets = 1;
-        this.update();
-    }
-    update() {
-        this.state.result = 0;
-        return this;
-    }
-    fn(data: any, inlet: number) {
-        if (inlet === 0 && data instanceof Bang) {
-            this.outlet(0, this.state.result);
-            return this;
-        }
-        if (inlet === 0) {
-            try {
-                this.state.result = this.execute(data);
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 1;
+        });
+        this.on("update", () => this.state.result = 0);
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (!(data instanceof Bang)) {
+                    try {
+                        this.state.result = this.execute(data);
+                    } catch (e) {
+                        this.error(e);
+                        return;
+                    }
+                }
                 this.outlet(0, this.state.result);
-            } catch (e) {
-                this.error(e);
             }
-        }
-        return this;
+        });
     }
     execute(a: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
@@ -82,40 +76,34 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any
             }]
         };
     }
-    state = { arg: null as any, result: null as any };
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 2;
-        this.outlets = 1;
-        this.state.arg = 0;
-        this.state.result = 0;
-        this.update((box as Box<this>).args);
-    }
-    update(args?: [any?]) {
-        this.updateBox(args);
-        this.state.arg = 0;
-        this.state.result = 0;
-        if (!args || args.length === 0) return this;
-        this.state.arg = args[0];
-        return this;
-    }
-    fn(data: any, inlet: number) {
-        if (inlet === 0 && data instanceof Bang) {
-            this.outlet(0, this.state.result);
-            return this;
-        }
-        if (inlet === 1) {
-            this.state.arg = data;
-        }
-        if (inlet === 0) {
-            try {
-                this.state.result = this.execute(data, this.state.arg);
+    state = { arg: 0 as any, result: 0 as any };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 2;
+            this.outlets = 1;
+        });
+        this.on("updateArgs", (args) => {
+            this.state.arg = 0;
+            this.state.result = 0;
+            if (!args || args.length === 0) return;
+            this.state.arg = args[0];
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (!(data instanceof Bang)) {
+                    try {
+                        this.state.result = this.execute(data, this.state.arg);
+                    } catch (e) {
+                        this.error(e);
+                        return;
+                    }
+                }
                 this.outlet(0, this.state.result);
-            } catch (e) {
-                this.error(e);
+            } else if (inlet === 1) {
+                this.state.arg = data;
             }
-        }
-        return this;
+        });
     }
     execute(a: any, b: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
@@ -155,44 +143,37 @@ class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [a
             }]
         };
     }
-    state = { args: [] as any[], result: null as any };
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 3;
-        this.outlets = 1;
-        this.state.args = [true, false];
-        this.state.result = true;
-        this.update((box as Box<this>).args);
-    }
-    update(args?: [any?, any?]) {
-        this.updateBox(args);
-        this.state.args = [true, false];
-        this.state.result = true;
-        if (!args || args.length === 0) return this;
-        this.state.args[0] = args[0];
-        this.state.args[1] = args[1];
-        return this;
-    }
-    fn(data: any, inlet: number) {
-        if (inlet === 0 && data instanceof Bang) {
-            this.outlet(0, this.state.result);
-            return this;
-        }
-        if (inlet === 1) {
-            this.state.args[0] = data;
-        }
-        if (inlet === 2) {
-            this.state.args[1] = data;
-        }
-        if (inlet === 0) {
-            try {
-                this.state.result = data ? this.state.args[0] : this.state.args[1];
+    state = { args: [true, false] as any[], result: true as any };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 3;
+            this.outlets = 1;
+        });
+        this.on("updateArgs", (args) => {
+            this.state.args = [true, false];
+            this.state.result = true;
+            if (!args || args.length === 0) return;
+            this.state.args[0] = args[0];
+            this.state.args[1] = args[1];
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (!(data instanceof Bang)) {
+                    try {
+                        this.state.result = data ? this.state.args[0] : this.state.args[1];
+                    } catch (e) {
+                        this.error(e);
+                        return;
+                    }
+                }
                 this.outlet(0, this.state.result);
-            } catch (e) {
-                this.error(e);
+            } else if (inlet === 1) {
+                this.state.args[0] = data;
+            } else if (inlet === 2) {
+                this.state.args[1] = data;
             }
-        }
-        return this;
+        });
     }
 }
 const functions: { [key: string]: (...args: any[]) => any } = {

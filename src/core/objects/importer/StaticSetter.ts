@@ -16,22 +16,13 @@ export class StaticSetter extends Setter<true> {
             outlets: []
         };
     }
-    get initialInlets() {
-        return 1;
-    }
-    get initialOutlets() {
-        return 0;
-    }
-    update(args?: [any?]) {
-        this.updateBox(args);
-        if (args && args.length) this.imported = args[0];
-        return this;
-    }
-    fn(data: any, inlet: number) {
+    initialInlets = 1;
+    initialOutlets = 0;
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) this.imported = data;
-        return this;
-    }
-    get ui(): typeof ImportedObjectUI {
-        return StaticPropertyUI;
-    }
+    };
+    handleUpdateArgs = (args: [any?]) => {
+        if (args.length) this.imported = args[0];
+    };
+    uiComponent: typeof ImportedObjectUI = StaticPropertyUI;
 }

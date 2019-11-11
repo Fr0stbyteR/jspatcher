@@ -28,12 +28,12 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
     get meta() {
         return this._meta;
     }
-    fn<I extends [AudioNode], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             try {
                 if (data instanceof AudioNode) {
                     this.disconnectAll();
-                    this.destroy();
+                    this.handleDestroy();
                     this.state.node = data;
                     const inlets = this.node.numberOfInputs || 1;
                     const outlets = this.node.numberOfOutputs;
@@ -67,5 +67,9 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
             }
         }
         return this;
+    }
+    subscribe() {
+        super.subscribe();
+        this.on("inlet", this.handleInlet);
     }
 }

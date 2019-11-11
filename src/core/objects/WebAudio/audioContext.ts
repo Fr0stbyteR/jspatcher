@@ -1,6 +1,4 @@
 import { Bang, DefaultObject } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { TMeta } from "../../types";
 
 export default class audioContext extends DefaultObject<{}, {}, [Bang], [AudioContext]> {
@@ -22,15 +20,16 @@ export default class audioContext extends DefaultObject<{}, {}, [Bang], [AudioCo
         };
     }
     state = {};
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 1;
-        this.outlets = 1;
-    }
-    fn<I extends [Bang], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
-        if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(0, this.patcher.env.audioCtx);
-        }
-        return this;
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 1;
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (data instanceof Bang) this.outlet(0, this.patcher.env.audioCtx);
+            }
+        });
     }
 }

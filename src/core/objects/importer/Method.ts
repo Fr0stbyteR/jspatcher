@@ -1,7 +1,5 @@
 import { Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
-import { ImportedObjectUI, ImportedObject } from "./ImportedObject";
+import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
 import { TMeta } from "../../types";
 
@@ -49,37 +47,34 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
         };
     }
     state: S<Static> = { instance: undefined, inputs: [], result: null };
-    get fixedInlets() {
-        return 1;
-    }
-    get fixedOutlets() {
-        return 2;
-    }
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        const fn = this.imported;
-        this.inlets = Math.max(1, this.fixedInlets + fn.length); // Function.length property
-        this.outlets = this.fixedOutlets + fn.length;
-        this.update(box.args.slice(), box.props);
-    }
-    update(args?: any[], props?: { args?: number }) {
-        this.updateBox(args, props);
-        if (props && props.args && typeof props.args === "number" && props.args >= 0) {
-            const argsCount = ~~props.args;
-            this.inlets = Math.max(1, this.fixedInlets + argsCount);
-            this.outlets = this.fixedOutlets + argsCount;
-        }
-        if (args) this.state.inputs = args;
-        return this;
-    }
-    fn(data: any, inlet: number) {
+    initialInlets = 1;
+    initialOutlets = 2;
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;
-            if (this.execute()) return this.output();
+            if (this.execute()) this.output();
         } else {
             this.state.inputs[inlet] = data;
         }
-        return this;
+    };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            const fn = this.imported;
+            this.inlets = Math.max(1, this.initialInlets + fn.length); // Function.length property
+            this.outlets = this.initialOutlets + fn.length;
+        });
+        this.on("updateArgs", (args) => {
+            this.state.inputs = args.slice();
+        });
+        this.on("updateProps", (props) => {
+            if (props.args && typeof props.args === "number" && props.args >= 0) {
+                const argsCount = ~~props.args;
+                this.inlets = Math.max(1, this.initialInlets + argsCount);
+                this.outlets = this.initialOutlets + argsCount;
+            }
+        });
+        this.on("inlet", this.handleInlet);
     }
     execute() {
         const fn = this.imported;
@@ -107,9 +102,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
         }
         return this.callback();
     }
-    get ui(): typeof ImportedObjectUI {
-        return PropertyUI;
-    }
+    uiComponent: typeof ImportedObjectUI = PropertyUI;
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }

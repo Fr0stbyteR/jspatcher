@@ -1,6 +1,4 @@
 import { Bang, DefaultObject } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { TMeta } from "../../types";
 
 export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], [AudioWorklet, Bang]> {
@@ -30,14 +28,7 @@ export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], 
     }
     state = {};
     audioWorklet: AudioWorklet;
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 2;
-        this.outlets = 2;
-        if (!this.patcher.env.audioCtx.audioWorklet) this.error("AudioWorklet not found.");
-        else this.audioWorklet = this.patcher.env.audioCtx.audioWorklet;
-    }
-    fn<I extends [Bang, string], $ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             if (data instanceof Bang) this.outlet(0, this.audioWorklet);
         } else if (inlet === 1) {
@@ -52,6 +43,15 @@ export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], 
                 }
             }
         }
-        return this;
+    }
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 2;
+            this.outlets = 2;
+            if (!this.patcher.env.audioCtx.audioWorklet) this.error("AudioWorklet not found.");
+            else this.audioWorklet = this.patcher.env.audioCtx.audioWorklet;
+        });
+        this.on("inlet", this.handleInlet);
     }
 }

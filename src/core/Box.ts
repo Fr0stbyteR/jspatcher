@@ -1,7 +1,7 @@
 import { MappedEventEmitter } from "../utils";
 import Patcher from "./Patcher";
-import { Data, Args, Props, Inputs, AbstractObject, AnyObject } from "./objects/Base";
-import { BoxEventMap, TBox, TMaxBox } from "./types";
+import { AbstractObject, AnyObject } from "./objects/Base";
+import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs } from "./types";
 
 export default class Box<T extends AnyObject = AbstractObject> extends MappedEventEmitter<BoxEventMap> {
     id: string;
@@ -49,6 +49,12 @@ export default class Box<T extends AnyObject = AbstractObject> extends MappedEve
     }
     get ui() {
         return this._object.ui;
+    }
+    get uiRef() {
+        return this._object.uiRef;
+    }
+    get uiComponent() {
+        return this._object.uiComponent;
     }
     get meta() {
         return this._object.meta;

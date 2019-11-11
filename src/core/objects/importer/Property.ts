@@ -1,7 +1,5 @@
 import { Bang } from "../Base";
 import { ImportedObjectUI, ImportedObject } from "./ImportedObject";
-import Patcher from "../../Patcher";
-import Box from "../../Box";
 import { TMeta } from "../../types";
 
 export class PropertyUI extends ImportedObjectUI<Property> {
@@ -35,15 +33,11 @@ export class Property<Static extends boolean = false> extends ImportedObject<any
         };
     }
     state: S<Static> = { instance: undefined };
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.configurePorts();
-    }
-    configurePorts() {
+    handlePreInit = () => {
         this.inlets = 2;
         this.outlets = 2;
-    }
-    fn(data: any, inlet: number) {
+    };
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;
             let result;
@@ -51,7 +45,6 @@ export class Property<Static extends boolean = false> extends ImportedObject<any
                 result = this.state.instance[this.name];
             } catch (e) {
                 this.error(e);
-                return this;
             }
             this.outletAll([this.state.instance, result] as O<Static>);
         } else if (inlet === 1) {
@@ -59,12 +52,13 @@ export class Property<Static extends boolean = false> extends ImportedObject<any
                 this.state.instance[this.name] = data;
             } catch (e) {
                 this.error(e);
-                return this;
             }
         }
-        return this;
+    };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", this.handlePreInit);
+        this.on("inlet", this.handleInlet);
     }
-    get ui(): typeof ImportedObjectUI {
-        return PropertyUI;
-    }
+    uiComponent: typeof ImportedObjectUI = PropertyUI;
 }

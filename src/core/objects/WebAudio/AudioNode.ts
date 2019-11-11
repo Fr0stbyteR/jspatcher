@@ -24,8 +24,11 @@ export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = 
         else if (this.node.numberOfInputs) this.dummyAudioNode.connect(this.node, 0, 0);
         return this;
     }
-    destroy() {
+    handleDestroy = () => {
         if (this.node) this.node.disconnect();
-        return this;
+    };
+    subscribe() {
+        super.subscribe();
+        this.on("destroy", this.handleDestroy);
     }
 }

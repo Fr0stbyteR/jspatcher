@@ -8,6 +8,7 @@ import "./Base.scss";
 import { BaseUIState, DefaultUIState, TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap } from "../types";
 
 export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P extends Partial<{ object: T }> & { [key: string]: any } = {}, S extends { [key: string]: any } = {}> extends React.Component<{ object: T } & P, S> {
+    static sizing: "horizontal" | "vertical" | "both" | "ratio";
     // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
     state = {} as Readonly<S>;
     get object() {
@@ -25,13 +26,16 @@ export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P ex
     componentWillUnmount() {
         this.object.off("uiUpdate", e => this.setState(e));
     }
+    render() {
+        return <></>;
+    }
 }
 type BaseUIProps = {
     containerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     additionalClassName?: string;
 };
 type BaseUIAdditionalState = { editing: boolean };
-export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIAdditionalState & BaseUIState> {
+export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIAdditionalState & BaseUIState> {
     state = {
         ...super.state,
         hidden: false,
@@ -234,15 +238,12 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         );
     }
 }
-export type Data<T> = T extends BaseObject<infer D, any, any, any, any, any, any, any> ? D : never;
-export type State<T> = T extends BaseObject<any, infer S, any, any, any, any, any, any> ? S : never;
-export type Inputs<T> = T extends BaseObject<any, any, infer I, any, any, any, any, any> ? I : never;
-export type Outputs<T> = T extends BaseObject<any, any, any, infer O, any, any, any, any> ? O : never;
-export type Args<T> = T extends BaseObject<any, any, any, any, infer A, any, any, any> ? A : never;
-export type Props<T> = T extends BaseObject<any, any, any, any, any, infer P, any, any> ? P : never;
-export type UIState<T> = T extends BaseObject<any, any, any, any, any, any, infer U, any> ? U : never;
-export type EventMap<T> = T extends BaseObject<any, any, any, any, any, any, any, infer E> ? E : never;
-export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends {} = {}, U extends {} = {}, E extends {} = {}> extends MappedEventEmitter<E & ObjectEventMap<U>> {
+export abstract class AbstractObject<
+    D extends {} = {}, S extends {} = {},
+    I extends any[] = any[], O extends any[] = any[],
+    A extends any[] = any[], P extends {} = {},
+    U extends {} = {}, E extends Partial<ObjectEventMap<I, A, P, U, {}>> & { [key: string]: any } = {}
+> extends MappedEventEmitter<ObjectEventMap<I, A, P, U, E>> {
     static get meta(): TMeta {
         return {
             package: "Base", // div will have class "package-name" "package-name-objectname"
@@ -260,7 +261,7 @@ export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I ext
     get meta() {
         return (this.constructor as typeof AbstractObject).meta;
     }
-    superMeta: TMeta = null;
+    readonly superMeta: TMeta = null;
     /**
      * should save all temporary variables here
      *
@@ -276,66 +277,108 @@ export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I ext
         this._patcher = patcher;
         // the box which create this instance, use _ for prevent recursive stringify
         this._box = box as Box<this>;
-        // usually do this after initialization
-        // this.update(box.args, box.props);
     }
+    /**
+     * Will be called just after constructed
+     *
+     * @memberof AbstractObject
+     */
+    init() {
+        // build UI
+        this.uiRef = React.createRef();
+        this.uiProps = { object: this, ref: this.uiRef, key: this.box.id };
+        this.ui = <this.uiComponent {...this.uiProps} />;
+        // process args and props
+        this.subscribe();
+        this.emit("preInit");
+        this.update(this.box.args, this.box.props);
+        this.emit("postInit");
+        return this;
+    }
+    /**
+     * Do everything here
+     *
+     * @returns {void}
+     * @memberof AbstractObject
+     */
+    subscribe(): void {}
+    /**
+     * React.Component related
+     *
+     * @type {typeof BaseUI}
+     * @memberof AbstractObject
+     */
+    uiComponent: typeof BaseUI = BaseUI;
+    /**
+     * React ref of UI
+     *
+     * @memberof AbstractObject
+     */
+    uiRef: React.RefObject<BaseUI<AnyObject>>;
+    /**
+     * Props give to Component
+     *
+     * @memberof AbstractObject
+     */
+    uiProps: JSX.IntrinsicClassAttributes<BaseUI<AnyObject>> & { object: AnyObject };
     /**
      * Build new ui on page, return a React Component, override this
      *
      * @readonly
-     * @type {typeof BaseUI}
+     * @type {JSX.Element}
      * @memberof AbstractObject
      */
-    get ui(): typeof BaseUI {
-        return BaseUI;
-    }
+    ui: JSX.Element;
     /**
      * Update UI's React State
      *
-     * @param {(Partial<U> | null)} state
+     * @param {(Partial<U>)} state
      * @returns {this}
      * @memberof AbstractObject
      */
-    updateUI(state: Partial<U> | null): this {
-        this.emit("uiUpdate", state as any);
-        return this;
-    }
-    /**
-     *
-     * When arguments and properties are changed, can use this in constructor
-     *
-     * @param {Partial<A>} [args]
-     * @param {Partial<P>} [props]
-     * @returns {this}
-     * @memberof AbstractObject
-     */
-    update(args?: Partial<A>, props?: Partial<P> & { [key: string]: any }): this {
-        this.updateBox(args, props);
-        return this;
-    }
-    /**
-     * From a props update, retrieve those who can affect UI, then updateUI with them
-     *
-     * @param {(Partial<P> & { [key: string]: any })} props
-     * @returns
-     * @memberof AbstractObject
-     */
-    updateUIFromProps(props: Partial<P> & { [key: string]: any }) {
+    updateUI(state: Partial<U>): this {
+        this.emit("uiUpdate", state);
         return this;
     }
     /**
      * Store the input args and props with the box
      *
-     * @param {Partial<A>} [args]
-     * @param {Partial<P>} [props]
+     * @returns {this}
      * @memberof AbstractObject
      */
-    updateBox(args?: Partial<A>, props?: Partial<P>) {
+    updateBox: (e: { args?: Partial<A>; props?: Partial<P> }) => this = ({ args, props }): this => {
         if (args) this.box.args = Object.assign(this.box.args, args);
         if (props) this.box.props = Object.assign(this.box.props, props);
+        return this;
     }
-    // main function when receive data from a inlet (base 0)
-    fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $): this {
+    /**
+     *
+     * Will be called when arguments and properties are changed
+     *
+     * @param {Partial<A>} [args]
+     * @param {Partial<P>} [props]
+     * @returns {this}
+     * @private
+     * @memberof AbstractObject
+     */
+    private update(args?: Partial<A>, props?: Partial<P>): this {
+        this.emit("update", { args, props });
+        if (args && args.length) this.emit("updateArgs", args);
+        if (props && Object.keys(props).length) this.emit("updateProps", props);
+        return this;
+    }
+    /**
+     * Main function when receive data from a inlet (base 0)
+     *
+     * @private
+     * @template $
+     * @param {I[$]} data
+     * @param {$} inlet
+     * @returns {this}
+     * @memberof AbstractObject
+     */
+    fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(data: I[$], inlet: $): this {
+        this.emit("inlet", { data, inlet });
         return this;
     }
     // use this function to output data with ith outlet.
@@ -358,19 +401,24 @@ export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I ext
         return this;
     }
     destroy() {
+        this.emit("destroy", this);
         return this;
     }
     // called when inlet or outlet are connected or disconnected
     connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
+        this.emit("connectedOutlet", { outlet, destBox, destInlet, lineID });
         return this;
     }
     connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        this.emit("connectedInlet", { inlet, srcBox, srcOutlet, lineID });
         return this;
     }
     disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
+        this.emit("disconnectedOutlet", { outlet, destBox, destInlet, lineID });
         return this;
     }
     disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        this.emit("disconnectedInlet", { inlet, srcBox, srcOutlet, lineID });
         return this;
     }
     // output to console
@@ -402,7 +450,7 @@ export abstract class AbstractObject<D extends {} = {}, S extends {} = {}, I ext
         return this._box.data;
     }
     set data(dataIn: D) {
-        this._box.data = dataIn as Data<this>;
+        this._box.data = dataIn as any;
     }
     get box() {
         return this._box;
@@ -435,7 +483,12 @@ type BaseAdditionalProps = {
     rect: [number, number, number, number];
     presentationRect: [number, number, number, number];
 };
-export class BaseObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends AbstractObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
+export class BaseObject<
+    D extends {} = {}, S extends {} = {},
+    I extends any[] = [], O extends any[] = [],
+    A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {},
+    U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}
+> extends AbstractObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -479,29 +532,33 @@ export class BaseObject<D extends {} = {}, S extends {} = {}, I extends any[] = 
     get superMeta() {
         return super.meta || null;
     }
-    update(args?: Partial<A>, props?: Partial<P> & { [key: string]: any }): this {
-        super.update(args, props);
-        this.updateUIFromProps(props);
-        return this;
-    }
-    updateUIFromProps(props: Partial<P> & { [key: string]: any }) {
-        if (props) {
-            const uiState: Partial<U & BaseUIState> = {};
-            for (const key in props) {
-                if (key === "hint") uiState[key] = props[key];
-                else if (key === "rect") this.box.setRect(props[key]);
-                else if (key === "presentationRect") this.box.setPresentationRect(props[key]);
-                else if (key === "presentation") this.box.setPresentation(props[key]);
-                else if (key === "background") this.box.setBackground(props[key]);
-                else if (key === "ignoreClick") uiState[key] = props[key];
-                else if (key === "hidden") uiState[key] = props[key];
+    subscribe() {
+        super.subscribe();
+        this.on("update", this.updateBox);
+        const updateUIFromProps = (props: Partial<P> & { [key: string]: any }) => {
+            if (props) {
+                const uiState: Partial<U & BaseUIState> = {};
+                for (const key in props) {
+                    if (key === "hint") uiState[key] = props[key];
+                    else if (key === "rect") this.box.setRect(props[key]);
+                    else if (key === "presentationRect") this.box.setPresentationRect(props[key]);
+                    else if (key === "presentation") this.box.setPresentation(props[key]);
+                    else if (key === "background") this.box.setBackground(props[key]);
+                    else if (key === "ignoreClick") uiState[key] = props[key];
+                    else if (key === "hidden") uiState[key] = props[key];
+                }
+                this.updateUI(uiState);
             }
-            this.updateUI(uiState);
-        }
-        return this;
+        };
+        this.on("updateProps", updateUIFromProps);
     }
 }
-export class DefaultObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P, U & DefaultUIState, E> {
+export class DefaultObject<
+    D extends {} = {}, S extends {} = {},
+    I extends any[] = [], O extends any[] = [],
+    A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {},
+    U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}
+> extends BaseObject<D, S, I, O, A, P, U & DefaultUIState, E> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -551,26 +608,26 @@ export class DefaultObject<D extends {} = {}, S extends {} = {}, I extends any[]
             }]
         };
     }
-    updateUIFromProps(props: Partial<P> & { [key: string]: any }) {
-        super.updateUIFromProps(props);
-        if (props) {
-            const uiState: Partial<U & DefaultUIState> = {};
-            for (const key in props) {
-                if (key === "bgColor") uiState[key] = props[key];
-                else if (key === "borderColor") uiState[key] = props[key];
-                else if (key === "textColor") uiState[key] = props[key];
-                else if (key === "fontFamily") uiState[key] = props[key];
-                else if (key === "fontSize") uiState[key] = props[key];
-                else if (key === "fontStyle") uiState[key] = props[key];
-                else if (key === "fontWeight") uiState[key] = props[key];
-                else if (key === "textAlign") uiState[key] = props[key];
+    uiComponent = DefaultUI;
+    subscribe() {
+        super.subscribe();
+        const updateUIFromProps = (props: Partial<P> & { [key: string]: any }) => {
+            if (props) {
+                const uiState: Partial<U & DefaultUIState> = {};
+                for (const key in props) {
+                    if (key === "bgColor") uiState[key] = props[key];
+                    else if (key === "borderColor") uiState[key] = props[key];
+                    else if (key === "textColor") uiState[key] = props[key];
+                    else if (key === "fontFamily") uiState[key] = props[key];
+                    else if (key === "fontSize") uiState[key] = props[key];
+                    else if (key === "fontStyle") uiState[key] = props[key];
+                    else if (key === "fontWeight") uiState[key] = props[key];
+                    else if (key === "textAlign") uiState[key] = props[key];
+                }
+                this.updateUI(uiState);
             }
-            this.updateUI(uiState);
-        }
-        return this;
-    }
-    get ui(): typeof BaseUI {
-        return DefaultUI;
+        };
+        this.on("updateProps", updateUIFromProps);
     }
 }
 export class AnyObject extends BaseObject<any, any, any, any, any, any, any, any> {}
@@ -578,8 +635,12 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     static isConnectable(from: any, outlet: number, to: any, inlet: number) {
         if (!(from instanceof BaseAudioObject)) return false;
         if (!(to instanceof BaseAudioObject)) return false;
-        if (!from.outletConnections[outlet]) return false;
-        if (!to.inletConnections[inlet]) return false;
+        const fromConnection = from.outletConnections[outlet];
+        const toConnection = to.inletConnections[inlet];
+        if (!fromConnection) return false;
+        if (!toConnection) return false;
+        if (!fromConnection.node) return false;
+        if (!toConnection.node) return false;
         return true;
     }
     static applyCurve(param: AudioParam, curve: number[][], audioCtx: AudioContext) {
@@ -607,27 +668,28 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     inletConnections: TAudioNodeInletConnection[] = [];
     outletConnections: TAudioNodeOutletConnection[] = [];
     keepAlive() {}
-    connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
-        const srcObj = srcBox.object;
-        if (BaseAudioObject.isConnectable(srcObj, srcOutlet, this, inlet)) {
-            const from = (srcObj as BaseAudioObject).outletConnections[srcOutlet];
-            const to = this.inletConnections[inlet];
-            const isAudioParam = to.node instanceof AudioParam;
-            if (isAudioParam) from.node.connect(to.node as AudioParam, from.index);
-            else from.node.connect(to.node as AudioNode, from.index, to.index);
-        }
-        return this;
-    }
-    disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
-        const srcObj = srcBox.object;
-        if (BaseAudioObject.isConnectable(srcObj, srcOutlet, this, inlet)) {
-            const from = (srcObj as BaseAudioObject).outletConnections[srcOutlet];
-            const to = this.inletConnections[inlet];
-            const isAudioParam = to.node instanceof AudioParam;
-            if (isAudioParam) from.node.disconnect(to.node as AudioParam, from.index);
-            else from.node.disconnect(to.node as AudioNode, from.index, to.index);
-        }
-        return this;
+    subscribe() {
+        super.subscribe();
+        this.on("connectedInlet", ({ inlet, srcBox, srcOutlet }) => {
+            const srcObj = srcBox.object;
+            if (BaseAudioObject.isConnectable(srcObj, srcOutlet, this, inlet)) {
+                const from = (srcObj as BaseAudioObject).outletConnections[srcOutlet];
+                const to = this.inletConnections[inlet];
+                const isAudioParam = to.node instanceof AudioParam;
+                if (isAudioParam) from.node.connect(to.node as AudioParam, from.index);
+                else from.node.connect(to.node as AudioNode, from.index, to.index);
+            }
+        });
+        this.on("disconnectedInlet", ({ inlet, srcBox, srcOutlet }) => {
+            const srcObj = srcBox.object;
+            if (BaseAudioObject.isConnectable(srcObj, srcOutlet, this, inlet)) {
+                const from = (srcObj as BaseAudioObject).outletConnections[srcOutlet];
+                const to = this.inletConnections[inlet];
+                const isAudioParam = to.node instanceof AudioParam;
+                if (isAudioParam) from.node.disconnect(to.node as AudioParam, from.index);
+                else from.node.disconnect(to.node as AudioNode, from.index, to.index);
+            }
+        });
     }
     connectAll() {
         const lines = this.box.allLines;
@@ -650,26 +712,32 @@ export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends 
     static get meta(): TMeta {
         return DefaultObject.meta;
     }
-    updateUIFromProps(props: Partial<P> & { [key: string]: any }) {
-        super.updateUIFromProps(props);
-        if (props) {
-            const uiState: Partial<U & DefaultUIState> = {};
-            for (const key in props) {
-                if (key === "bgColor") uiState[key] = props[key];
-                else if (key === "borderColor") uiState[key] = props[key];
-                else if (key === "textColor") uiState[key] = props[key];
-                else if (key === "fontFamily") uiState[key] = props[key];
-                else if (key === "fontSize") uiState[key] = props[key];
-                else if (key === "fontStyle") uiState[key] = props[key];
-                else if (key === "fontWeight") uiState[key] = props[key];
-                else if (key === "textAlign") uiState[key] = props[key];
+    uiComponent = DefaultUI;
+    subscribe() {
+        super.subscribe();
+        const updateUIFromProps = (props: Partial<P> & { [key: string]: any }) => {
+            if (props) {
+                const uiState: Partial<U & DefaultUIState> = {};
+                for (const key in props) {
+                    if (key === "bgColor") uiState[key] = props[key];
+                    else if (key === "borderColor") uiState[key] = props[key];
+                    else if (key === "textColor") uiState[key] = props[key];
+                    else if (key === "fontFamily") uiState[key] = props[key];
+                    else if (key === "fontSize") uiState[key] = props[key];
+                    else if (key === "fontStyle") uiState[key] = props[key];
+                    else if (key === "fontWeight") uiState[key] = props[key];
+                    else if (key === "textAlign") uiState[key] = props[key];
+                }
+                this.updateUI(uiState);
             }
-            this.updateUI(uiState);
-        }
-        return this;
+        };
+        this.on("updateProps", updateUIFromProps);
     }
-    get ui(): typeof BaseUI {
-        return DefaultUI;
+}
+class EmptyObjectUI extends DefaultUI<EmptyObject> {
+    componentDidMount() {
+        super.componentDidMount();
+        if (this.object.state.editing) this.toggleEdit(true);
     }
 }
 class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
@@ -691,25 +759,17 @@ class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> 
         };
     }
     state = { editing: false };
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.outlets = 1;
-        this.inlets = 1;
-        this.state.editing = !!box._editing;
-        delete box._editing;
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.outlets = 1;
+            this.inlets = 1;
+            this.state.editing = !!this.box._editing;
+            delete this.box._editing;
+        });
+        this.on("inlet", ({ data, inlet }) => this.outlet(0, data));
     }
-    fn<I extends keyof [any]>(data: [any][I], inlet: I) {
-        this.outlet(0, data);
-        return this;
-    }
-    get ui(): typeof BaseUI {
-        return class EmptyObjectUI extends DefaultUI<EmptyObject> {
-            componentDidMount() {
-                super.componentDidMount();
-                if (this.object.state.editing) this.toggleEdit(true);
-            }
-        };
-    }
+    uiComponent: typeof DefaultUI = EmptyObjectUI;
 }
 class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
     static get meta(): TMeta {

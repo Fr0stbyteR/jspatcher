@@ -1,6 +1,5 @@
 import { Bang } from "../Base";
 import { Getter } from "./Getter";
-import { ImportedObjectUI } from "./ImportedObject";
 import { StaticPropertyUI } from "./StaticProperty";
 import { TMeta } from "../../types";
 
@@ -20,9 +19,13 @@ export class StaticGetter extends Getter<true> {
             }]
         };
     }
-    configurePorts() {
+    handlePreInit = () => {
         this.inlets = 1;
         this.outlets = 1;
+    };
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+        if (inlet === 0 && data instanceof Bang && this.execute()) return this.output();
+        return this;
     }
     execute() {
         try {
@@ -33,12 +36,6 @@ export class StaticGetter extends Getter<true> {
             return false;
         }
     }
-    fn(data: any, inlet: number) {
-        if (inlet === 0 && data instanceof Bang && this.execute()) return this.output();
-        return this;
-    }
     callback = () => this.outlet(0, this.state.result);
-    get ui(): typeof ImportedObjectUI {
-        return StaticPropertyUI;
-    }
+    uiComponent = StaticPropertyUI;
 }

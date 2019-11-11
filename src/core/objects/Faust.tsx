@@ -14,21 +14,19 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
         };
     }
     state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
+    subscribe() {
+        super.subscribe();
+        this.on("updateArgs", args => this.state.args = args.slice());
+        this.on("updateArgs", this.configureIO);
+    }
     /**
      * Supress inlet if defined in args
      *
-     * @param {any[]} [args]
-     * @param {{ [key: string]: any }} [props]
-     * @returns
      * @memberof FaustOp
      */
-    update(args?: any[]) {
-        this.updateBox(args);
-        if (!args) return this;
-        this.state.args = args.slice();
+    configureIO = (args: any[]) => {
         this.inlets = this.state.inlets - Math.min(this.state.inlets, args.length);
         this.outlets = this.state.outlets;
-        return this;
     }
     /**
      * Symbol used to register class
@@ -101,18 +99,14 @@ class In extends FaustOp {
         };
     }
     symbol = ["in"];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 0;
-        this.outlets = 1;
-        this.update(box.args);
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 0;
+            this.outlets = 1;
+        });
     }
-    update(args?: any[]) {
-        this.updateBox(args);
-        if (!args) return this;
-        this.state.args = args.slice();
-        return this;
-    }
+    configureIO = () => {};
     get index() {
         const i = this.state.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
@@ -145,18 +139,14 @@ class Out extends FaustOp {
         };
     }
     symbol = ["out"];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 1;
-        this.outlets = 0;
-        this.update(box.args);
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 0;
+        });
     }
-    update(args?: any[]) {
-        this.updateBox(args);
-        if (!args) return this;
-        this.state.args = args.slice();
-        return this;
-    }
+    configureIO = () => {};
     get index() {
         const i = this.state.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
@@ -195,12 +185,7 @@ class Split extends FaustOp {
         };
     }
     symbol = ["<:"];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.state.inlets = 1;
-        this.state.outlets = 2;
-        this.update(box.args);
-    }
+    state = { ...super.state, inlets: 1, outlets: 2 };
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
@@ -249,12 +234,7 @@ class Merge extends FaustOp {
         };
     }
     symbol = [":>"];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.state.inlets = 2;
-        this.state.outlets = 1;
-        this.update(box.args);
-    }
+    state = { ...super.state, inlets: 2, outlets: 1 };
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
@@ -299,12 +279,7 @@ class Rec extends FaustOp {
         };
     }
     symbol = ["~"];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.state.inlets = 1;
-        this.state.outlets = 1;
-        this.update(box.args);
-    }
+    state = { ...super.state, inlets: 1, outlets: 1 };
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
@@ -336,12 +311,7 @@ class Mem extends FaustOp {
         };
     }
     symbol = ["mem", "'"];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.state.inlets = 1;
-        this.state.outlets = 1;
-        this.update(box.args);
-    }
+    state = { ...super.state, inlets: 1, outlets: 1 };
 }
 class Delay extends FaustOp {
     static get meta(): TMeta {
@@ -370,12 +340,7 @@ class Delay extends FaustOp {
         };
     }
     symbol = ["@"];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.state.inlets = 2;
-        this.state.outlets = 1;
-        this.update(box.args);
-    }
+    state = { ...super.state, inlets: 2, outlets: 1 };
 }
 class Const extends FaustOp {
     static get meta(): TMeta {
@@ -401,12 +366,7 @@ class Const extends FaustOp {
         };
     }
     symbol = ["const", "c"];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.state.inlets = 1;
-        this.state.outlets = 1;
-        this.update(box.args);
-    }
+    state = { ...super.state, inlets: 1, outlets: 1 };
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
@@ -434,12 +394,7 @@ class Const extends FaustOp {
     }
 }
 class Iterator extends FaustOp {
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.state.inlets = 1;
-        this.state.outlets = 1;
-        this.update(box.args);
-    }
+    state = { ...super.state, inlets: 1, outlets: 1 };
 }
 
 const faustOps: TPackage = {
@@ -523,12 +478,7 @@ for (const className in opMap.mathOps) {
             };
         }
         symbol = typeof op.symbol === "string" ? [op.symbol] : op.symbol;
-        constructor(box: Box, patcher: Patcher) {
-            super(box, patcher);
-            this.state.inlets = op.inlets;
-            this.state.outlets = 1;
-            this.update(box.args);
-        }
+        state = { ...super.state, inlets: op.inlets, outlets: 1 };
     };
     if (typeof op.symbol === "string") faustOps[op.symbol] = Op;
     else op.symbol.forEach(symbol => faustOps[symbol] = Op);

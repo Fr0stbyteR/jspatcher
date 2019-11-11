@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AbstractObject, DefaultObject, DefaultUI } from "../Base";
+import { DefaultObject, DefaultUI } from "../Base";
 import { TMeta } from "../../types";
 
 /**
@@ -24,10 +24,12 @@ import { TMeta } from "../../types";
 *   }
 * ```
 */
-export class ImportedObjectUI<T extends AbstractObject> extends DefaultUI<T> {
+export class ImportedObjectUI<T extends DefaultObject> extends DefaultUI<T> {
     prependColor: string;
+    refDefaultUI = React.createRef<DefaultUI>();
+    toggleEdit = (bool?: boolean) => this.refDefaultUI && this.refDefaultUI.current && this.refDefaultUI.current.toggleEdit(bool);
     render() {
-        return <DefaultUI {...this.props} prependProps={{ style: { backgroundColor: this.prependColor } }} />;
+        return <DefaultUI {...this.props} prependProps={{ style: { backgroundColor: this.prependColor } }} ref={this.refDefaultUI} />;
     }
 }
 export abstract class ImportedObject<T, S, I extends any[], O extends any[], A extends any[], P, U> extends DefaultObject<{}, S, I, O, A, P, U> {

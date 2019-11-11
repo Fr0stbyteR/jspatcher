@@ -1,9 +1,7 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { isNumberArray } from "../../../utils";
-import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta } from "../../types";
+import { TMeta } from "../../types";
 
 type I = [Bang, number[], number[]];
 export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward: number[]; feedback: number[] }, I, [null, IIRFilterNode], [number[], number[]], {}> {
@@ -46,13 +44,28 @@ export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward
         };
     }
     state = { node: undefined as IIRFilterNode, feedforward: [] as number[], feedback: [] as number[] };
-    inletConnections: TAudioNodeInletConnection[] = [];
-    outletConnections: TAudioNodeOutletConnection[] = [];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 3;
-        this.outlets = 2;
-        this.update((box as Box<this>).args);
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 3;
+            this.outlets = 2;
+        });
+        this.on("update", ({ args }) => {
+            if (isNumberArray(args[0])) this.state.feedforward = args[0];
+            if (isNumberArray(args[1])) this.state.feedback = args[1];
+            this.resetNode();
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (data instanceof Bang) this.outlet(1, this.node);
+            } else if (inlet === 1) {
+                if (isNumberArray(data)) this.state.feedforward = data;
+                this.resetNode();
+            } else if (inlet === 2) {
+                if (isNumberArray(data)) this.state.feedback = data;
+                this.resetNode();
+            }
+        });
     }
     resetNode() {
         this.destroy();
@@ -63,26 +76,5 @@ export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward
         this.outletConnections[0] = { node: this.node, index: 0 };
         this.keepAlive();
         this.connectAll();
-    }
-    update(args?: [number[], number[]]) {
-        this.updateBox(args);
-        if (args) {
-            if (isNumberArray(args[0])) this.state.feedforward = args[0];
-            if (isNumberArray(args[1])) this.state.feedback = args[1];
-        }
-        this.resetNode();
-        return this;
-    }
-    fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
-        if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(1, this.node);
-        } else if (inlet === 1) {
-            if (isNumberArray(data)) this.state.feedforward = data;
-            this.resetNode();
-        } else if (inlet === 2) {
-            if (isNumberArray(data)) this.state.feedback = data;
-            this.resetNode();
-        }
-        return this;
     }
 }

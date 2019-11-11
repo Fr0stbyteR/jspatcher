@@ -1,7 +1,5 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { TMeta } from "../../types";
 
 type TOptions = {
@@ -84,18 +82,16 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
     state = { node: this.audioCtx.createAnalyser() };
     inletConnections = [{ node: this.node, index: 0 }];
     outletConnections = [{ node: this.node, index: 0 }];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 6;
-        this.outlets = 6;
-        this.node.channelInterpretation = "discrete";
-        this.node.channelCountMode = "explicit";
-        this.keepAlive();
-        this.update((box as Box<this>).args, (box as Box<this>).props);
-    }
-    update(args?: [], props?: Partial<TOptions>) {
-        this.updateBox(args, props);
-        if (props) {
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 6;
+            this.outlets = 6;
+            this.node.channelInterpretation = "discrete";
+            this.node.channelCountMode = "explicit";
+            this.keepAlive();
+        });
+        this.on("updateProps", (props) => {
             try {
                 if (typeof props.fftSize === "number") this.node.fftSize = props.fftSize;
                 if (typeof props.minDecibels === "number") this.node.minDecibels = props.minDecibels;
@@ -104,45 +100,43 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
             } catch (e) {
                 this.error((e as Error).message);
             }
-        }
-        return this;
-    }
-    fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
-        if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(5, this.node);
-        } else if (inlet === 5) {
-            if (typeof data === "object") {
-                const props = data as I[5];
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (data instanceof Bang) this.outlet(5, this.node);
+            } else if (inlet === 5) {
+                if (typeof data === "object") {
+                    const props = data as I[5];
+                    try {
+                        if (typeof props.fftSize === "number") this.node.fftSize = props.fftSize;
+                        if (typeof props.minDecibels === "number") this.node.minDecibels = props.minDecibels;
+                        if (typeof props.maxDecibels === "number") this.node.maxDecibels = props.maxDecibels;
+                        if (typeof props.smoothingTimeConstant === "number") this.node.smoothingTimeConstant = props.smoothingTimeConstant;
+                    } catch (e) {
+                        this.error((e as Error).message);
+                    }
+                } else {
+                    this.error("Invalid options");
+                }
+            } else {
                 try {
-                    if (typeof props.fftSize === "number") this.node.fftSize = props.fftSize;
-                    if (typeof props.minDecibels === "number") this.node.minDecibels = props.minDecibels;
-                    if (typeof props.maxDecibels === "number") this.node.maxDecibels = props.maxDecibels;
-                    if (typeof props.smoothingTimeConstant === "number") this.node.smoothingTimeConstant = props.smoothingTimeConstant;
+                    if (inlet === 1) {
+                        this.node.getFloatTimeDomainData(data as I[1]);
+                        this.outlet(1, data as I[1]);
+                    } else if (inlet === 2) {
+                        this.node.getByteTimeDomainData(data as I[2]);
+                        this.outlet(2, data as I[2]);
+                    } else if (inlet === 3) {
+                        this.node.getFloatFrequencyData(data as I[3]);
+                        this.outlet(3, data as I[3]);
+                    } else if (inlet === 4) {
+                        this.node.getByteFrequencyData(data as I[4]);
+                        this.outlet(4, data as I[4]);
+                    }
                 } catch (e) {
                     this.error((e as Error).message);
                 }
-            } else {
-                this.error("Invalid options");
             }
-        } else {
-            try {
-                if (inlet === 1) {
-                    this.node.getFloatTimeDomainData(data as I[1]);
-                    this.outlet(1, data as I[1]);
-                } else if (inlet === 2) {
-                    this.node.getByteTimeDomainData(data as I[2]);
-                    this.outlet(2, data as I[2]);
-                } else if (inlet === 3) {
-                    this.node.getFloatFrequencyData(data as I[3]);
-                    this.outlet(3, data as I[3]);
-                } else if (inlet === 4) {
-                    this.node.getByteFrequencyData(data as I[4]);
-                    this.outlet(4, data as I[4]);
-                }
-            } catch (e) {
-                this.error((e as Error).message);
-            }
-        }
-        return this;
+        });
     }
 }

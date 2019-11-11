@@ -1,6 +1,4 @@
 import { Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
 import { TMeta } from "../../types";
@@ -34,41 +32,35 @@ export class Setter<Static extends boolean = false> extends ImportedObject<any, 
             }]
         };
     }
-    get initialInlets() {
-        return 2;
-    }
-    get initialOutlets() {
-        return 1;
-    }
+    initialInlets = 2;
+    initialOutlets = 1;
     state: S<Static> = { instance: undefined, input: null };
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = this.initialInlets;
-        this.outlets = this.initialOutlets;
-        this.update(box.args as [any]);
-    }
-    update(args?: [any?]) {
-        this.updateBox(args);
-        if (args && args.length) this.state.input = args[0];
-        return this;
-    }
-    fn(data: any, inlet: number) {
+    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;
-            if (typeof this.state.instance === "undefined") return this;
+            if (typeof this.state.instance === "undefined") return;
             try {
                 this.state.instance[this.name] = this.state.input;
             } catch (e) {
                 this.error(e);
-                return this;
+                return;
             }
             this.outlet(0, this.state.instance);
         } else {
             this.state.input = data;
         }
-        return this;
+    };
+    handleUpdateArgs = (args: [any?]) => {
+        if (args.length) this.state.input = args[0];
+    };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = this.initialInlets;
+            this.outlets = this.initialOutlets;
+        });
+        this.on("updateArgs", this.handleUpdateArgs);
+        this.on("inlet", this.handleInlet);
     }
-    get ui(): typeof ImportedObjectUI {
-        return PropertyUI;
-    }
+    uiComponent: typeof ImportedObjectUI = PropertyUI;
 }

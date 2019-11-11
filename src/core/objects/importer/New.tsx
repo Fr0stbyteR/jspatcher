@@ -1,7 +1,5 @@
 import { StaticMethod } from "./StaticMethod";
 import { DefaultObject, Bang } from "../Base";
-import Patcher from "../../Patcher";
-import Box from "../../Box";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { TMeta } from "../../types";
 
@@ -52,15 +50,13 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         };
     }
     state: S = { Wrapper: null, inputs: [], result: null };
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 1;
-        this.outlets = 1;
-        this.update(box.args.slice(), box.props);
-    }
-    update(args?: any[], props?: { args?: number }) {
-        this.updateBox(args, props);
-        if (args) {
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 1;
+        });
+        this.on("updateArgs", (args) => {
             if (args[0]) {
                 const Wrapper = this.patcher.state.lib[args[0]];
                 if (!Wrapper) this.error(`Function ${args[0]} not found.`);
@@ -76,21 +72,21 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
                 this.error("A constructor is needed.");
             }
             this.state.inputs = args.slice(1);
-        }
-        if (props && props.args && typeof props.args === "number" && props.args >= 0) {
-            this.inlets = ~~props.args;
-            this.outlets = 1 + this.inlets;
-        }
-        return this;
-    }
-    fn(data: any, inlet: number) {
-        if (inlet === 0) {
-            if (!(data instanceof Bang)) this.state.inputs[inlet] = data;
-            if (this.execute()) return this.output();
-        } else {
-            this.state.inputs[inlet] = data;
-        }
-        return this;
+        });
+        this.on("updateProps", (props) => {
+            if (props.args && typeof props.args === "number" && props.args >= 0) {
+                this.inlets = ~~props.args;
+                this.outlets = 1 + this.inlets;
+            }
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (!(data instanceof Bang)) this.state.inputs[inlet] = data;
+                if (this.execute()) this.output();
+            } else {
+                this.state.inputs[inlet] = data;
+            }
+        });
     }
     execute() {
         const Fn = this.imported;
@@ -118,9 +114,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         }
         return this.callback();
     }
-    get ui() {
-        return NewUI;
-    }
+    uiComponent = NewUI;
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }

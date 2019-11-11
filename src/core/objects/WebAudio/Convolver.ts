@@ -1,7 +1,5 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { TMeta } from "../../types";
 
 type I = [Bang, AudioBuffer, boolean];
@@ -42,48 +40,44 @@ export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [],
     state = { node: this.audioCtx.createConvolver() };
     inletConnections = [{ node: this.node, index: 0 }];
     outletConnections = [{ node: this.node, index: 0 }];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 3;
-        this.outlets = 2;
-        this.node.channelInterpretation = "discrete";
-        this.node.channelCountMode = "explicit";
-        this.keepAlive();
-        this.update((box as Box<this>).args, (box as Box<this>).props);
-    }
-    update(args?: [], props?: { normalize?: boolean }) {
-        this.updateBox(args, props);
-        if (props) {
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 3;
+            this.outlets = 2;
+            this.node.channelInterpretation = "discrete";
+            this.node.channelCountMode = "explicit";
+            this.keepAlive();
+        });
+        this.on("updateProps", (props) => {
             try {
                 if (typeof props.normalize === "boolean") this.node.normalize = props.normalize;
             } catch (e) {
                 this.error((e as Error).message);
             }
-        }
-        return this;
-    }
-    fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
-        if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(1, this.node);
-        } else if (inlet === 1) {
-            if (data instanceof AudioBuffer) {
-                try {
-                    this.node.buffer = data as I[1];
-                } catch (e) {
-                    this.error((e as Error).message);
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (data instanceof Bang) this.outlet(1, this.node);
+            } else if (inlet === 1) {
+                if (data instanceof AudioBuffer) {
+                    try {
+                        this.node.buffer = data as I[1];
+                    } catch (e) {
+                        this.error((e as Error).message);
+                    }
+                } else {
+                    this.error("Invalid ArrayBuffer");
                 }
-            } else {
-                this.error("Invalid ArrayBuffer");
-            }
-        } else if (inlet === 2) {
-            if (typeof data === "boolean") {
-                try {
-                    this.node.normalize = data;
-                } catch (e) {
-                    this.error((e as Error).message);
+            } else if (inlet === 2) {
+                if (typeof data === "boolean") {
+                    try {
+                        this.node.normalize = data;
+                    } catch (e) {
+                        this.error((e as Error).message);
+                    }
                 }
             }
-        }
-        return this;
+        });
     }
 }

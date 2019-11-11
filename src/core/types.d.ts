@@ -1,5 +1,5 @@
 import { SemanticICONS } from "semantic-ui-react";
-import { BaseObject, AnyObject } from "./objects/Base";
+import { BaseObject, AnyObject, AbstractObject } from "./objects/Base";
 import Patcher from "./Patcher";
 import Box from "./Box";
 import Line from "./Line";
@@ -230,9 +230,30 @@ type DefaultUIState = {
     fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
     textAlign: "center" | "left" | "right";
 } & BaseUIState;
-interface ObjectEventMap<UIState> {
-    "uiUpdate": Partial<UIState> | null;
-}
+
+type Data<T> = T extends AbstractObject<infer D, any, any, any, any, any, any, any> ? D : never;
+type State<T> = T extends AbstractObject<any, infer S, any, any, any, any, any, any> ? S : never;
+type Inputs<T> = T extends AbstractObject<any, any, infer I, any, any, any, any, any> ? I : never;
+type Outputs<T> = T extends AbstractObject<any, any, any, infer O, any, any, any, any> ? O : never;
+type Args<T> = T extends AbstractObject<any, any, any, any, infer A, any, any, any> ? A : never;
+type Props<T> = T extends AbstractObject<any, any, any, any, any, infer P, any, any> ? P : never;
+type UIState<T> = T extends AbstractObject<any, any, any, any, any, any, infer U, any> ? U : never;
+type EventMap<T> = T extends AbstractObject<any, any, any, any, any, any, any, infer E> ? E : never;
+type TInletEvent<I extends any[] = [], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
+type ObjectEventMap<I extends any[], A extends any[], P, U, E> = {
+    "preInit": null;
+    "update": { args?: Partial<A>; props?: Partial<P> };
+    "updateArgs": Partial<A>;
+    "updateProps": Partial<P>;
+    "postInit": null;
+    "uiUpdate": Partial<U> | null;
+    "inlet": TInletEvent<I>;
+    "connectedInlet": { inlet: number; srcBox: Box; srcOutlet: number; lineID: string };
+    "connectedOutlet": { outlet: number; destBox: Box; destInlet: number; lineID: string };
+    "disconnectedInlet": { inlet: number; srcBox: Box; srcOutlet: number; lineID: string };
+    "disconnectedOutlet": { outlet: number; destBox: Box; destInlet: number; lineID: string };
+    "destroy": AnyObject;
+} & E;
 type THistoryElement = {
     [key in keyof PatcherEventMap]?: PatcherEventMap[key][];
 };

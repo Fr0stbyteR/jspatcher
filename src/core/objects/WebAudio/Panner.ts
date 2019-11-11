@@ -1,7 +1,5 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import Box from "../../Box";
-import Patcher from "../../Patcher";
 import { decodeMaxCurveFormat } from "../../../utils";
 import { TMeta } from "../../types";
 
@@ -114,18 +112,16 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
     state = { node: this.audioCtx.createPanner() };
     inletConnections = [{ node: this.node, index: 0 }, { node: this.node.orientationX }, { node: this.node.orientationY }, { node: this.node.orientationZ }, null, { node: this.node.positionX }, { node: this.node.positionY }, { node: this.node.positionZ }];
     outletConnections = [{ node: this.node, index: 0 }];
-    constructor(box: Box, patcher: Patcher) {
-        super(box, patcher);
-        this.inlets = 8;
-        this.outlets = 2;
-        this.node.channelInterpretation = "discrete";
-        this.node.channelCountMode = "explicit";
-        this.keepAlive();
-        this.update((box as Box<this>).args, (box as Box<this>).props);
-    }
-    update(args?: [], props?: PannerOptions) {
-        this.updateBox(args, props);
-        if (props) {
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 8;
+            this.outlets = 2;
+            this.node.channelInterpretation = "discrete";
+            this.node.channelCountMode = "explicit";
+            this.keepAlive();
+        });
+        this.on("updateProps", (props) => {
             const paramMap = ["orientationX", "orientationY", "orientationZ", "positionX", "positionY", "positionZ"] as const;
             const numberParamMap = ["coneInnerAngle", "coneOuterAngle", "coneOuterGain", "maxDistance", "refDistance", "rolloffFactor"] as const;
             try {
@@ -140,38 +136,36 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
             } catch (e) {
                 this.error(e.message);
             }
-        }
-        return this;
-    }
-    fn<$ extends keyof Pick<I, number>>(data: I[$], inlet: $) {
-        const paramMap = ["orientationX", "orientationY", "orientationZ", "positionX", "positionY", "positionZ"] as const;
-        const numberParamMap = ["coneInnerAngle", "coneOuterAngle", "coneOuterGain", "maxDistance", "refDistance", "rolloffFactor"] as const;
-        if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(1, this.node);
-        } else if (inlet > 0 && inlet < 7) {
-            try {
-                const curve = decodeMaxCurveFormat(data as string);
-                JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
-            } catch (e) {
-                this.error(e.message);
-            }
-        } else if (inlet === 7) {
-            if (typeof data === "object") {
-                const props = data as PannerOptions;
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            const paramMap = ["orientationX", "orientationY", "orientationZ", "positionX", "positionY", "positionZ"] as const;
+            const numberParamMap = ["coneInnerAngle", "coneOuterAngle", "coneOuterGain", "maxDistance", "refDistance", "rolloffFactor"] as const;
+            if (inlet === 0) {
+                if (data instanceof Bang) this.outlet(1, this.node);
+            } else if (inlet > 0 && inlet < 7) {
                 try {
-                    paramMap.forEach((key) => {
-                        if (typeof props[key] === "number") this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
-                    });
-                    numberParamMap.forEach((key) => {
-                        if (typeof props[key] === "number") this.node[key] = props[key];
-                    });
-                    if (typeof props.distanceModel === "string") this.node.distanceModel = props.distanceModel;
-                    if (typeof props.panningModel === "string") this.node.panningModel = props.panningModel;
+                    const curve = decodeMaxCurveFormat(data as string);
+                    JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
                 } catch (e) {
                     this.error(e.message);
                 }
+            } else if (inlet === 7) {
+                if (typeof data === "object") {
+                    const props = data as PannerOptions;
+                    try {
+                        paramMap.forEach((key) => {
+                            if (typeof props[key] === "number") this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
+                        });
+                        numberParamMap.forEach((key) => {
+                            if (typeof props[key] === "number") this.node[key] = props[key];
+                        });
+                        if (typeof props.distanceModel === "string") this.node.distanceModel = props.distanceModel;
+                        if (typeof props.panningModel === "string") this.node.panningModel = props.panningModel;
+                    } catch (e) {
+                        this.error(e.message);
+                    }
+                }
             }
-        }
-        return this;
+        });
     }
 }

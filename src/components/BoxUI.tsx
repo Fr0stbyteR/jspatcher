@@ -2,7 +2,6 @@ import * as React from "react";
 import { Popup } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
-import { BaseUI, BaseObject } from "../core/objects/Base";
 import "./BoxUI.scss";
 import { TResizeHandlerType, BoxEventMap } from "../core/types";
 
@@ -10,30 +9,32 @@ type P = { patcher: Patcher; id: string };
 type S = { selected: boolean; rect: [number, number, number, number]; innerUI: JSX.Element; sizing: "horizontal" | "vertical" | "both" | "ratio" };
 export default class BoxUI extends React.Component<P, S> {
     refDiv = React.createRef<HTMLDivElement>();
-    refUI = React.createRef<BaseUI<BaseObject>>();
     editing = false;
     handlingToggleEditOnClick = false;
     dragging = false;
     dragged = false;
     state = (() => {
         const box = this.props.patcher.boxes[this.props.id];
-        return { selected: false, rect: box.rect.slice(), innerUI: <box.ui object={box.object} ref={this.refUI} key="0" />, sizing: box.ui.sizing };
+        return { selected: false, rect: box.rect.slice(), innerUI: box.ui, sizing: box.uiComponent.sizing };
     })() as S;
+    get box() {
+        return this.props.patcher.boxes[this.props.id];
+    }
     handleResetPos = () => {
-        const box = this.props.patcher.boxes[this.props.id];
+        const { box } = this;
         if (!box) return null;
         if (this.state && box.rect.every((v, i) => v === this.state.rect[i])) return null;
         this.setState({ rect: box.rect.slice() as [number, number, number, number] });
         return box;
     }
     handleTextChanged = () => {
-        const box = this.props.patcher.boxes[this.props.id];
+        const { box } = this;
         if (!box) return null;
-        this.setState({ rect: box.rect.slice() as [number, number, number, number], innerUI: <box.ui object={box.object} ref={this.refUI} />, sizing: box.ui.sizing }, () => this.inspectRectChange());
+        this.setState({ rect: box.rect.slice() as [number, number, number, number], innerUI: box.ui, sizing: box.uiComponent.sizing }, () => this.inspectRectChange());
         return box;
     }
     handleRectChanged = () => {
-        const box = this.props.patcher.boxes[this.props.id];
+        const { box } = this;
         if (!box) return null;
         if (box.rect.every((v, i) => v === this.state.rect[i])) return box;
         this.setState({ rect: box.rect.slice() as [number, number, number, number] }, () => this.inspectRectChange());
@@ -46,7 +47,7 @@ export default class BoxUI extends React.Component<P, S> {
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
-        const box = this.props.patcher.boxes[this.props.id];
+        const { box } = this;
         // Handle Draggable
         const handleDraggable = () => {
             this.dragged = false;
@@ -139,8 +140,9 @@ export default class BoxUI extends React.Component<P, S> {
         }
     }
     tryToggleEdit = (bool?: boolean) => {
-        if (this.refUI.current && this.refUI.current.editableOnUnlock) {
-            const toggled = this.refUI.current.toggleEdit(bool);
+        const { box } = this;
+        if (box.uiRef.current && box.uiRef.current.editableOnUnlock) {
+            const toggled = box.uiRef.current.toggleEdit(bool);
             this.editing = toggled;
             return toggled;
         }
