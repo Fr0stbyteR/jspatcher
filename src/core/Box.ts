@@ -13,8 +13,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     presentation: boolean;
     presentationRect: [number, number, number, number];
     data: Data<T>;
-    args: Args<T> = [] as any;
-    props: Props<T> = {} as any;
+    args: Args<T>;
+    props: Props<T>;
     _editing = false;
     private _parsed: { class: string; args: Args<T>; props: Props<T> };
     private _object: T;
@@ -23,6 +23,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         super();
         this.id = boxIn.id;
         this.text = boxIn.text;
+        this.args = (boxIn.args || []) as Args<T>;
+        this.props = (boxIn.props || {}) as Props<T>;
         this.inlets = boxIn.inlets;
         this.outlets = boxIn.outlets;
         const maxBoxIn = boxIn as unknown as TMaxBox["box"];
@@ -178,6 +180,13 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         lines.forEach(el => this._patcher.lines[el].enable());
         this.emit("textChanged", this);
         this._patcher.emit("graphChanged");
+        return this;
+    }
+    update(e: { args?: any[]; props?: { [key: string]: any } }) {
+        const { args, props } = e;
+        if (args) this.args = Object.assign(this.args, args);
+        if (props) this.props = Object.assign(this.props, props);
+        this.emit("updatedFromObject", { args, props });
         return this;
     }
     setRect(rect: [number, number, number, number]) {

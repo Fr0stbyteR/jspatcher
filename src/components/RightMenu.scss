@@ -56,6 +56,27 @@
                 margin: 0px;
             }
         }
+        & > div#right-pane-inspector {
+            & .division-title {
+                display: block;
+                position: relative;
+                flex: 0 0 auto;
+                background-color: #252525;
+                margin: 0px;
+                padding: 4px 8px 4px 30px;
+                border-bottom: 1px solid #4a4a4a;
+                font-weight: normal;
+            }
+            & table:not(.last-table) {
+                flex: 0 0 auto;
+            }
+            & div.checkbox {
+                vertical-align: top;
+            }
+            & .ui.dropdown .menu > .item {
+                font-size: 1em !important;
+            }
+        }
     }
     &[hidden], & [hidden] {
         display: none !important;

@@ -3,3 +3,11 @@
         background-color: rgb(128, 64, 64);
     }
 }
+.patcher.locked div.box-ui {
+    & > .hidden {
+        visibility: hidden;
+    }
+    & > .ignore-click {
+        pointer-events: none;
+    }
+}

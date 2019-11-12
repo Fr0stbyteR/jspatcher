@@ -122,6 +122,8 @@ type TBox = {
     background?: boolean;
     presentation?: boolean;
     presentationRect?: [number, number, number, number];
+    args?: any[];
+    props?: { [key: string]: any };
     data?: { [key: string]: any };
     _editing?: boolean;
 };
@@ -172,6 +174,7 @@ interface BoxEventMap {
     "connectedPort": { isSrc: boolean; i: number; last?: false };
     "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
     "ioCountChanged": Box;
+    "updatedFromObject": { args?: any[]; props?: { [key: string]: any } };
 }
 type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang" | "color" | "enum";
 type TInletsMeta = {

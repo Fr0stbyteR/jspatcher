@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref } from "semantic-ui-react";
+import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown } from "semantic-ui-react";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
 import "./RightMenu.scss";
-import { TPatcherLog, TMeta, PatcherEventMap } from "../core/types";
+import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta } from "../core/types";
+import Box from "../core/Box";
 
 enum TPanels {
     None = "None",
@@ -61,17 +62,88 @@ class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLo
         );
     }
 }
-class Inspector extends React.Component<{ patcher: Patcher }, { meta: TMeta; args: any[]; props: { [key: string]: any } }> {
-    state: { meta: TMeta; args: any[]; props: { [key: string]: any } } = { meta: null, args: [], props: {} };
-    handleSelected = (e: PatcherEventMap["selected"]) => {
+class InspectorArgItem extends React.Component<{ patcher: Patcher; meta: TArgsMeta[number]; value: any; index: number; onChange: (value: any, argIndex: number) => any }, { hinting: boolean }> {
+    state = { hinting: false };
+    handleCheckboxChange = () => this.props.onChange(!this.props.value, this.props.index);
+    metaItem(meta: TArgsMeta[number], value: any) {
+        const { type } = meta;
+        if (type === "boolean") return <Checkbox fitted checked={value} onChange={this.handleCheckboxChange} />;
+        if (type === "number") return <span>{value}</span>;
+        if (type === "string") return <span>{value}</span>;
+        if (type === "color") return <span className="color">{value}</span>;
+        if (type === "enum") return <Dropdown size="mini" options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} value={value} />;
+        if (type === "object") return <span>{JSON.stringify(value)}</span>;
+        if (type === "anything") return <span>{typeof value === "string" ? value : JSON.stringify(value)}</span>;
+        return <></>;
+    }
+    render() {
+        const { type, optional, varLength, description } = this.props.meta;
+        const title = `${description.length ? `${description}: ` : ""}${type}`;
+        return (
+            <Table.Row>
+                <Table.Cell width={4} title={title}>
+                    {varLength ? "..." : ""}arg{this.props.index}{optional ? "?" : ""}
+                </Table.Cell>
+                <Table.Cell width={12}>{this.metaItem(this.props.meta, this.props.value)}</Table.Cell>
+            </Table.Row>
+        );
+    }
+}
+class InspectorPropItem extends React.Component<{ patcher: Patcher; meta: TPropsMeta[number]; value: any; onChange: (value: any, key: string) => any }, { hinting: boolean }> {
+    state = { hinting: false };
+    handleCheckboxChange = () => this.props.onChange(!this.props.value, this.props.meta.name);
+    metaItem(meta: TPropsMeta[number], value: any) {
+        const { type } = meta;
+        if (type === "boolean") return <Checkbox fitted checked={value} onChange={this.handleCheckboxChange} />;
+        if (type === "number") return <span>{value}</span>;
+        if (type === "string") return <span>{value}</span>;
+        if (type === "color") return <span className="color">{value}</span>;
+        if (type === "enum") return <Dropdown size="mini" options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} value={value} />;
+        if (type === "object") return <span>{JSON.stringify(value)}</span>;
+        if (type === "anything") return <span>{typeof value === "string" ? value : JSON.stringify(value)}</span>;
+        return <></>;
+    }
+    render() {
+        const { name, type, description } = this.props.meta;
+        const title = `${description.length ? `${description}: ` : ""}${type}`;
+        return (
+            <Table.Row>
+                <Table.Cell width={6} title={title}>{name}</Table.Cell>
+                <Table.Cell width={10}>{this.metaItem(this.props.meta, this.props.value)}</Table.Cell>
+            </Table.Row>
+        );
+    }
+}
+type InspectorState = {
+    meta: TMeta;
+    args: any[];
+    props: { [key: string]: any };
+    rect: [number, number, number, number];
+    presentationRect: [number, number, number, number];
+};
+class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
+    state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null };
+    boxes: Box[];
+    box: Box;
+    handleBoxUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => this.setState({ args: e.args || [], props: e.props || {} });
+    handleSelected = () => {
         const boxes = this.props.patcher.state.selected.filter(id => id.includes("box") && this.props.patcher.boxes[id]).map(id => this.props.patcher.boxes[id]);
+        this.boxes = boxes;
+        if (this.box && this.boxes.indexOf(this.box) === -1) {
+            this.box.off("updatedFromObject", this.handleBoxUpdate);
+            this.box = null;
+        }
+        if (!this.box && this.boxes.length) {
+            this.box = this.boxes[0];
+            this.box.on("updatedFromObject", this.handleBoxUpdate);
+        }
         if (boxes.length === 0) {
-            this.setState({ meta: null, args: [], props: {} });
+            this.setState({ meta: null, args: [], props: {}, rect: null, presentationRect: null });
             return;
         }
-        const { meta, args, props } = boxes[0];
+        const { meta, args, props, rect, presentationRect } = boxes[0];
         if (boxes.length === 1) {
-            this.setState({ meta, args, props });
+            this.setState({ meta, args, props, rect, presentationRect });
             return;
         }
         const commonProps = meta.props.slice();
@@ -96,7 +168,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, { meta: TMeta; arg
                 }
             }
         }
-        this.setState({ meta, args, props });
+        this.setState({ meta, args, props, rect: null, presentationRect: null });
     };
     componentDidMount() {
         this.props.patcher.on("selected", this.handleSelected);
@@ -106,6 +178,17 @@ class Inspector extends React.Component<{ patcher: Patcher }, { meta: TMeta; arg
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleSelected);
     }
+    handleChange = (value: any, key: number | string) => {
+        if (typeof key === "number") {
+            const state: any[] = [];
+            state[key] = value;
+            this.boxes.forEach(box => box.object.update(state));
+        } else {
+            const state: { [key: string]: any } = {};
+            state[key] = value;
+            this.boxes.forEach(box => box.object.update(undefined, state));
+        }
+    };
     render() {
         const { meta, args, props } = this.state;
         if (!meta) {
@@ -114,28 +197,27 @@ class Inspector extends React.Component<{ patcher: Patcher }, { meta: TMeta; arg
                 </Menu>
             );
         }
-        const argsTable = meta.args.map(({ type, enum: enums, optional, default: defaultValue, varLength, description }, i) => (
-            <Table.Row key={i}>
-                <Table.Cell width={4}>arg{i}{optional ? "?" : ""}</Table.Cell>
-                <Table.Cell width={12}>{typeof args[i] === "undefined" ? defaultValue : args[i]}</Table.Cell>
-            </Table.Row>
-        ));
-        const propsTable = meta.props.map(({ name, type, enum: enums, default: defaultValue, description }, i) => (
-            <Table.Row key={i}>
-                <Table.Cell width={4}>{name}</Table.Cell>
-                <Table.Cell width={12}>{typeof props[name] === "undefined" ? defaultValue : props[name]}</Table.Cell>
-            </Table.Row>
-        ));
+        const argsTable = meta.args.map((argMeta, i) => {
+            const { default: defaultValue } = argMeta;
+            return <InspectorArgItem {...this.props} key={i} meta={argMeta} index={i} value={typeof args[i] === "undefined" ? defaultValue : args[i]} onChange={this.handleChange} />;
+        });
+        const propsTable = meta.props.map((propMeta) => {
+            const { name, default: defaultValue } = propMeta;
+            const value = name === "rect" ? this.state.rect
+                : name === "presentationRect" ? this.state.presentationRect
+                    : typeof props[name] === "undefined" ? defaultValue : props[name];
+            return <InspectorPropItem key={name} {...this.props} meta={propMeta} value={value} onChange={this.handleChange} />;
+        });
         return (
             <>
-                <Header as="h5" inverted color="grey" content={"Arguments"} />
+                <Header className="division-title" as="h5" inverted color="grey" content={"Arguments"} />
                 <Table inverted celled striped selectable unstackable size="small" compact="very">
                     <Table.Body>
                         {argsTable}
                     </Table.Body>
                 </Table>
-                <Header as="h5" inverted color="grey" content={"Properties"} />
-                <Table inverted celled striped selectable unstackable size="small" compact="very">
+                <Header className="division-title" as="h5" inverted color="grey" content={"Properties"} />
+                <Table className="last-table" inverted celled striped selectable unstackable size="small" compact="very">
                     <Table.Body>
                         {propsTable}
                     </Table.Body>
@@ -227,7 +309,7 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
     }
-    handleAudioSwitch = (e: React.MouseEvent) => {
+    handleAudioSwitch = () => {
         const audioCtx = this.props.patcher.env.audioCtx;
         if (this.state.audioOn) audioCtx.suspend();
         else audioCtx.resume();
@@ -271,13 +353,13 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
                 </Menu>
                 <div id="right-pane" hidden={this.state.active === TPanels.None} ref={this.refDivPane}>
                     <Header as="h5" inverted color="grey" content={this.state.active} />
-                    <div hidden={this.state.active !== TPanels.Code}>
+                    <div id="right-pane-code-editor" hidden={this.state.active !== TPanels.Code}>
                         <CodeEditor { ...this.props } ref={this.refCode} />
                     </div>
-                    <div hidden={this.state.active !== TPanels.Inspector}>
+                    <div id="right-pane-inspector" hidden={this.state.active !== TPanels.Inspector}>
                         <Inspector { ...this.props } ref={this.refInspector} />
                     </div>
-                    <div hidden={this.state.active !== TPanels.Console}>
+                    <div id="right-pane-console" hidden={this.state.active !== TPanels.Console}>
                         <Console { ...this.props } ref={this.refConsole} />
                     </div>
                 </div>

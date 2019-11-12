@@ -289,7 +289,7 @@ class Boxes extends React.Component {
     render() {
         const selectionRect = this.state.selectionRect;
         let selectionDiv;
-        if (selectionRect[2] !== selectionRect[0] && selectionRect[3] !== selectionRect[1]) {
+        if (selectionRect[2] !== selectionRect[0] || selectionRect[3] !== selectionRect[1]) {
             const selectionDivStyle = {
                 left: Math.min(selectionRect[0], selectionRect[2]),
                 top: Math.min(selectionRect[1], selectionRect[3]),

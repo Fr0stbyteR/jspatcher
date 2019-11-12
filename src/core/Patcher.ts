@@ -351,8 +351,9 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.emit("deselected", id);
     }
     deselectAll() {
-        this._state.selected.forEach(el => this.emit("deselected", el));
+        const { selected } = this._state;
         this._state.selected = [];
+        selected.forEach(el => this.emit("deselected", el));
     }
     selectOnly(id: string) {
         this.deselectAll();

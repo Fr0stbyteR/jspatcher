@@ -35,7 +35,7 @@ type BaseUIProps = {
     additionalClassName?: string;
 };
 type BaseUIAdditionalState = { editing: boolean };
-export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIAdditionalState & BaseUIState> {
+export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> = {}, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIAdditionalState & BaseUIState> {
     state = {
         ...super.state,
         hidden: false,
@@ -48,13 +48,19 @@ export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIPr
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     editableOnUnlock = false;
     toggleEdit = (bool?: boolean) => false;
+    handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+        if ((this.props.object as T).patcher.state.locked) e.currentTarget.title = this.state.hint;
+    }
+    handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.title = "";
     render() {
         const { object } = this;
         const packageName = "package-" + object.meta.package.toLowerCase();
         const className = packageName + "-" + object.meta.name.toLowerCase();
         const classArray = [packageName, className, "box-ui-container", this.props.additionalClassName];
+        if (this.state.hidden) classArray.push("hidden");
+        if (this.state.ignoreClick) classArray.push("ignore-click");
         return (
-            <div className={classArray.join(" ")} {...this.props.containerProps}>
+            <div className={classArray.join(" ")} {...this.props.containerProps} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
                 {this.props.children}
             </div>
         );
@@ -65,7 +71,7 @@ type DefaultUIProps = {
     prependProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     spanProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement>;
     appendProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
-}
+} & BaseUIProps;
 type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number } & BaseUIAdditionalState;
 export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState & DefaultUIAdditionalState> {
     editableOnUnlock = true;
@@ -205,9 +211,18 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
     }
     render() {
         const { object } = this;
+        const textContainerStyle: React.CSSProperties = {
+            borderColor: this.state.borderColor,
+            color: this.state.textColor,
+            fontFamily: `${this.state.fontFamily}, Tahoma, sans-serif`,
+            fontSize: this.state.fontSize,
+            fontWeight: this.state.fontWeight,
+            fontStyle: this.state.fontStyle,
+            textAlign: this.state.textAlign
+        };
         return (
-            <BaseUI {...this.props} additionalClassName="box-ui-default">
-                <div className="box-ui-text-container" {...this.props.textContainerProps}>
+            <BaseUI {...this.props} additionalClassName="box-ui-default" containerProps={{ style: { backgroundColor: this.state.bgColor } }}>
+                <div className="box-ui-text-container" {...this.props.textContainerProps} style={textContainerStyle}>
                     <div className="box-ui-text-container-prepend" {...this.props.prependProps}>
                         {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
                     </div>
@@ -346,9 +361,8 @@ export abstract class AbstractObject<
      * @returns {this}
      * @memberof AbstractObject
      */
-    updateBox: (e: { args?: Partial<A>; props?: Partial<P> }) => this = ({ args, props }): this => {
-        if (args) this.box.args = Object.assign(this.box.args, args);
-        if (props) this.box.props = Object.assign(this.box.props, props);
+    updateBox = (e: { args?: Partial<A>; props?: Partial<P> }): this => {
+        this.box.update(e);
         return this;
     }
     /**
@@ -358,10 +372,9 @@ export abstract class AbstractObject<
      * @param {Partial<A>} [args]
      * @param {Partial<P>} [props]
      * @returns {this}
-     * @private
      * @memberof AbstractObject
      */
-    private update(args?: Partial<A>, props?: Partial<P>): this {
+    update(args?: Partial<A>, props?: Partial<P>): this {
         this.emit("update", { args, props });
         if (args && args.length) this.emit("updateArgs", args);
         if (props && Object.keys(props).length) this.emit("updateProps", props);
