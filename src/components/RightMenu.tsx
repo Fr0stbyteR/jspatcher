@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown } from "semantic-ui-react";
+import { ChromePicker, ColorResult } from "react-color";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
@@ -62,20 +63,43 @@ class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLo
         );
     }
 }
-class InspectorArgItem extends React.Component<{ patcher: Patcher; meta: TArgsMeta[number]; value: any; index: number; onChange: (value: any, argIndex: number) => any }, { hinting: boolean }> {
-    state = { hinting: false };
-    handleCheckboxChange = () => this.props.onChange(!this.props.value, this.props.index);
-    metaItem(meta: TArgsMeta[number], value: any) {
+class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ patcher: Patcher; meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number]; value: any; index?: number; onChange: (value: any, key: MetaType extends "arg" ? number : string) => any }, { hinting: boolean; showColorPicker: boolean }> {
+    state = { hinting: false, showColorPicker: false };
+    handleChangeCheckbox: () => any;
+    handleClickColorSpan = () => this.setState({ showColorPicker: !this.state.showColorPicker });
+    handleChangeColor: (e: ColorResult) => any;
+    metaItem(meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number], value: any) {
         const { type } = meta;
-        if (type === "boolean") return <Checkbox fitted checked={value} onChange={this.handleCheckboxChange} />;
+        if (type === "boolean") return <Checkbox fitted checked={value} onChange={this.handleChangeCheckbox} />;
         if (type === "number") return <span>{value}</span>;
         if (type === "string") return <span>{value}</span>;
-        if (type === "color") return <span className="color">{value}</span>;
+        if (type === "color") {
+            return (
+                <>
+                    <span className="color" style={{ backgroundColor: value }} onClick={this.handleClickColorSpan}></span>
+                    {
+                        this.state.showColorPicker
+                            ? <>
+                                <div className="color-picker-fullscreen-cover" onClick={this.handleClickColorSpan}></div>
+                                <ChromePicker color={value} onChange={this.handleChangeColor} />
+                            </>
+                            : <></>}
+                </>
+            );
+        }
         if (type === "enum") return <Dropdown size="mini" options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} value={value} />;
         if (type === "object") return <span>{JSON.stringify(value)}</span>;
         if (type === "anything") return <span>{typeof value === "string" ? value : JSON.stringify(value)}</span>;
         return <></>;
     }
+    render() {
+        return <></>;
+    }
+}
+class InspectorArgItem extends InspectorItem<"arg"> {
+    state = { hinting: false, showColorPicker: false };
+    handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.index);
+    handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.index);
     render() {
         const { type, optional, varLength, description } = this.props.meta;
         const title = `${description.length ? `${description}: ` : ""}${type}`;
@@ -89,20 +113,9 @@ class InspectorArgItem extends React.Component<{ patcher: Patcher; meta: TArgsMe
         );
     }
 }
-class InspectorPropItem extends React.Component<{ patcher: Patcher; meta: TPropsMeta[number]; value: any; onChange: (value: any, key: string) => any }, { hinting: boolean }> {
-    state = { hinting: false };
-    handleCheckboxChange = () => this.props.onChange(!this.props.value, this.props.meta.name);
-    metaItem(meta: TPropsMeta[number], value: any) {
-        const { type } = meta;
-        if (type === "boolean") return <Checkbox fitted checked={value} onChange={this.handleCheckboxChange} />;
-        if (type === "number") return <span>{value}</span>;
-        if (type === "string") return <span>{value}</span>;
-        if (type === "color") return <span className="color">{value}</span>;
-        if (type === "enum") return <Dropdown size="mini" options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} value={value} />;
-        if (type === "object") return <span>{JSON.stringify(value)}</span>;
-        if (type === "anything") return <span>{typeof value === "string" ? value : JSON.stringify(value)}</span>;
-        return <></>;
-    }
+class InspectorPropItem extends InspectorItem<"prop"> {
+    handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.meta.name);
+    handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.meta.name);
     render() {
         const { name, type, description } = this.props.meta;
         const title = `${description.length ? `${description}: ` : ""}${type}`;

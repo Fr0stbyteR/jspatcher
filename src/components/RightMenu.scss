@@ -70,6 +70,31 @@
             & table:not(.last-table) {
                 flex: 0 0 auto;
             }
+            & span.color {
+                width: 40px;
+                height: 18px;
+                cursor: pointer;
+                display: inline-block;
+                border: 3px solid whitesmoke;
+                border-radius: 4px;
+                line-height: 12px;
+                &::before {
+                    content: "\200b";
+                }
+            }
+            & div.color-picker-fullscreen-cover {
+                position: fixed;
+                top: 0px;
+                right: 0px;
+                bottom: 0px;
+                left: 0px;
+            }
+            & div.chrome-picker {
+                position: absolute;
+                right: 0px;
+                margin: 10px;
+                z-index: 2;
+            }
             & div.checkbox {
                 vertical-align: top;
             }
