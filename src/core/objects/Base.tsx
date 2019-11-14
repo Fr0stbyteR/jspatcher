@@ -11,13 +11,13 @@ export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P ex
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
     // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
     state = {} as Readonly<S>;
-    get object() {
+    get object(): T {
         return this.props.object;
     }
     get patcher() {
         return this.props.object.patcher;
     }
-    get box() {
+    get box(): Box<T> {
         return this.props.object.box;
     }
     componentDidMount() {
@@ -36,13 +36,13 @@ type BaseUIProps = {
 };
 type BaseUIAdditionalState = { editing: boolean };
 export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> = {}, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIAdditionalState & BaseUIState> {
-    state = {
+    state: S & BaseUIAdditionalState & BaseUIState = {
         ...super.state,
-        hidden: false,
-        background: false,
-        presentation: false,
-        ignoreClick: false,
-        hint: "",
+        hidden: this.box.props.hidden || false,
+        background: this.box.background || false,
+        presentation: this.box.presentation || false,
+        ignoreClick: this.box.props.ignoreClick || false,
+        hint: this.box.props.hint || "",
         editing: false
     };
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
@@ -52,17 +52,6 @@ export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIPr
         if ((this.props.object as T).patcher.state.locked) e.currentTarget.title = this.state.hint;
     }
     handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.title = "";
-    componentDidMount() {
-        super.componentDidMount();
-        const { props } = this.props.object.box;
-        const uiState: { [key: string]: any } = {};
-        for (const key in props) {
-            if (key === "hint") uiState[key] = props[key];
-            else if (key === "ignoreClick") uiState[key] = props[key];
-            else if (key === "hidden") uiState[key] = props[key];
-        }
-        this.setState(uiState);
-    }
     render() {
         const { object } = this;
         const packageName = "package-" + object.meta.package.toLowerCase();
@@ -86,18 +75,18 @@ type DefaultUIProps = {
 type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number } & BaseUIAdditionalState;
 export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState & DefaultUIAdditionalState> {
     editableOnUnlock = true;
-    state = {
+    state: S & DefaultUIState & DefaultUIAdditionalState = {
         ...super.state,
-        bgColor: "rgb(51, 51, 51)",
-        borderColor: "rgb(125, 126, 132)",
-        textColor: "rgb(255, 255, 255)",
-        fontFamily: "Lato",
-        fontSize: 12,
-        fontStyle: "normal",
-        fontWeight: "normal",
-        textAlign: "left",
+        bgColor: this.box.props.bgColor || "rgb(51, 51, 51)",
+        borderColor: this.box.props.borderColor || "rgb(125, 126, 132)",
+        textColor: this.box.props.textColor || "rgb(255, 255, 255)",
+        fontFamily: this.box.props.fontFamily || "Lato",
+        fontSize: this.box.props.fontSize || 12,
+        fontStyle: this.box.props.fontStyle || "normal",
+        fontWeight: this.box.props.fontWeight || "normal",
+        textAlign: this.box.props.textAlign || "left",
         editing: false,
-        text: "",
+        text: this.box.text || "",
         loading: false,
         dropdown$: -1
     };
@@ -215,22 +204,6 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
             selection.addRange(range);
             this.setState({ text, dropdown$: i });
         }
-    }
-    componentDidMount() {
-        super.componentDidMount();
-        const { props, text } = this.props.object.box;
-        const uiState: { [key: string]: any } = { text };
-        for (const key in props) {
-            if (key === "bgColor") uiState[key] = props[key];
-            else if (key === "borderColor") uiState[key] = props[key];
-            else if (key === "textColor") uiState[key] = props[key];
-            else if (key === "fontFamily") uiState[key] = props[key];
-            else if (key === "fontSize") uiState[key] = props[key];
-            else if (key === "fontStyle") uiState[key] = props[key];
-            else if (key === "fontWeight") uiState[key] = props[key];
-            else if (key === "textAlign") uiState[key] = props[key];
-        }
-        this.setState(uiState);
     }
     render() {
         const { object } = this;
@@ -572,7 +545,7 @@ export class BaseObject<
     subscribe() {
         super.subscribe();
         this.on("update", this.updateBox);
-        const updateUIFromProps = (props: Partial<P> & { [key: string]: any }) => {
+        const updateUIFromProps = (props: Partial<P & BaseUIState & BaseAdditionalProps>) => {
             if (props) {
                 const uiState: Partial<U & BaseUIState> = {};
                 for (const key in props) {
@@ -595,7 +568,7 @@ export class DefaultObject<
     I extends any[] = [], O extends any[] = [],
     A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {},
     U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}
-> extends BaseObject<D, S, I, O, A, P, U & DefaultUIState, E> {
+> extends BaseObject<D, S, I, O, A, P & DefaultUIState, U & DefaultUIState, E> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -648,7 +621,7 @@ export class DefaultObject<
     uiComponent = DefaultUI;
     subscribe() {
         super.subscribe();
-        const updateUIFromProps = (props: Partial<P> & { [key: string]: any }) => {
+        const updateUIFromProps = (props: Partial<P & DefaultUIState>) => {
             if (props) {
                 const uiState: Partial<U & DefaultUIState> = {};
                 for (const key in props) {

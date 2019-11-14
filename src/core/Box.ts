@@ -9,7 +9,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     inlets = 0;
     outlets = 0;
     rect: [number, number, number, number];
-    backgorund: boolean;
+    background: boolean;
     presentation: boolean;
     presentationRect: [number, number, number, number];
     data: Data<T>;
@@ -29,7 +29,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.outlets = boxIn.outlets;
         const maxBoxIn = boxIn as unknown as TMaxBox["box"];
         this.rect = boxIn.rect || maxBoxIn.patching_rect;
-        this.presentation = boxIn.background || !!maxBoxIn.background;
+        this.background = boxIn.background || !!maxBoxIn.background;
         this.presentation = boxIn.presentation || !!maxBoxIn.presentation;
         this.presentationRect = boxIn.presentationRect || maxBoxIn.presentation_rect;
         this.data = boxIn.data || ((boxIn as any).prevData ? (boxIn as any).prevData.storage : {});
@@ -197,8 +197,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         return this;
     }
     setBackground(bool: boolean) {
-        if (!!this.backgorund === !!bool) return this;
-        this.backgorund = bool;
+        if (!!this.background === !!bool) return this;
+        this.background = bool;
         this.emit("backgroundChanged", this);
         return this;
     }

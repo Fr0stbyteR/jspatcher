@@ -162,6 +162,10 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
         const commonProps = meta.props.slice();
         for (let i = commonProps.length - 1; i >= 0; i--) {
             const prop = commonProps[i];
+            if (prop.name === "rect" || prop.name === "presentationRect") {
+                commonProps.splice(i, 1);
+                continue;
+            }
             const value = typeof props[prop.name] === "undefined" ? prop.default : props[prop.name];
             for (let j = 1; j < boxes.length; j++) {
                 let found = false;
@@ -176,11 +180,12 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
                     }
                 }
                 if (!found) {
-                    commonProps.pop();
+                    commonProps.splice(i, 1);
                     break;
                 }
             }
         }
+        meta.props = commonProps;
         this.setState({ meta, args, props, rect: null, presentationRect: null });
     };
     componentDidMount() {
