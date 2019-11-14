@@ -158,6 +158,13 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
             return;
         }
         const { meta, args, props, rect, presentationRect } = boxes[0];
+        for (let i = meta.props.length - 1; i >= 0; i--) {
+            const prop = meta.props[i];
+            if (meta.props.findIndex($prop => $prop.name === prop.name) !== i) {
+                meta.props.splice(i, 1);
+                continue;
+            }
+        }
         if (boxes.length === 1) {
             this.setState({ meta, args, props, rect, presentationRect });
             return;
@@ -189,6 +196,29 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
             }
         }
         meta.props = commonProps;
+        const commonArgs = meta.args.slice();
+        for (let i = commonArgs.length - 1; i >= 0; i--) {
+            const arg = commonArgs[i];
+            const value = typeof args[i] === "undefined" ? arg.default : args[i];
+            for (let j = 1; j < boxes.length; j++) {
+                let found = false;
+                const $args = boxes[j].args;
+                const $metaArgs = boxes[j].meta.args;
+                for (let k = 0; k < $metaArgs.length; k++) {
+                    const $arg = $metaArgs[k];
+                    const $value = typeof $args[k] === "undefined" ? $arg.default : $args[k];
+                    if (k === i && value === $value) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    commonArgs.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        meta.args = commonArgs;
         this.setState({ meta, args, props, rect: null, presentationRect: null });
     };
     componentDidMount() {

@@ -21,11 +21,6 @@ export class StaticMethod extends Method<true> {
                 type: "anything",
                 varLength: true,
                 description: "Argument after method called"
-            }],
-            props: [...super.meta.props, {
-                name: "args",
-                type: "number",
-                description: "arguments count for method"
             }]
         };
     }
