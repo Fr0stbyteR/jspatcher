@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown } from "semantic-ui-react";
+import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown, DropdownProps } from "semantic-ui-react";
 import { ChromePicker, ColorResult } from "react-color";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import MonacoEditor from "react-monaco-editor";
@@ -68,6 +68,7 @@ class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ p
     handleChangeCheckbox: () => any;
     handleClickColorSpan = () => this.setState({ showColorPicker: !this.state.showColorPicker });
     handleChangeColor: (e: ColorResult) => any;
+    handleChangeDropdown: (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => any;
     metaItem(meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number], value: any) {
         const { type } = meta;
         if (type === "boolean") return <Checkbox fitted checked={value} onChange={this.handleChangeCheckbox} />;
@@ -87,7 +88,7 @@ class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ p
                 </>
             );
         }
-        if (type === "enum") return <Dropdown size="mini" options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} value={value} />;
+        if (type === "enum") return <Dropdown size="mini" options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} value={value} onChange={this.handleChangeDropdown} />;
         if (type === "object") return <span>{JSON.stringify(value)}</span>;
         if (type === "anything") return <span>{typeof value === "string" ? value : JSON.stringify(value)}</span>;
         return <></>;
@@ -100,6 +101,7 @@ class InspectorArgItem extends InspectorItem<"arg"> {
     state = { hinting: false, showColorPicker: false };
     handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.index);
     handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.index);
+    handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value, this.props.index);
     render() {
         const { type, optional, varLength, description } = this.props.meta;
         const title = `${description.length ? `${description}: ` : ""}${type}`;
@@ -116,6 +118,7 @@ class InspectorArgItem extends InspectorItem<"arg"> {
 class InspectorPropItem extends InspectorItem<"prop"> {
     handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.meta.name);
     handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.meta.name);
+    handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value, this.props.meta.name);
     render() {
         const { name, type, description } = this.props.meta;
         const title = `${description.length ? `${description}: ` : ""}${type}`;

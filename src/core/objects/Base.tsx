@@ -612,7 +612,7 @@ export class DefaultObject<
             }, {
                 name: "textAlign",
                 type: "enum",
-                enum: ["center", "left", "right"],
+                enum: ["left", "center", "right"],
                 default: "left",
                 description: "Text style"
             }]
