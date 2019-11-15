@@ -63,34 +63,72 @@ class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLo
         );
     }
 }
-class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ patcher: Patcher; meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number]; value: any; index?: number; onChange: (value: any, key: MetaType extends "arg" ? number : string) => any }, { hinting: boolean; showColorPicker: boolean }> {
-    state = { hinting: false, showColorPicker: false };
-    handleChangeCheckbox: () => any;
+class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ patcher: Patcher; meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number]; value: any; index?: number; onChange: (value: any, key: MetaType extends "arg" ? number : string) => any }, { hinting: boolean; showColorPicker: boolean; inputEditing: boolean }> {
+    state = { hinting: false, showColorPicker: false, inputEditing: false };
+    refInput = React.createRef<HTMLInputElement>();
+    key: MetaType extends "arg" ? number : string;
     handleClickColorSpan = () => this.setState({ showColorPicker: !this.state.showColorPicker });
-    handleChangeColor: (e: ColorResult) => any;
-    handleChangeDropdown: (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => any;
+    handleClickInput = () => this.setState({ inputEditing: true }, () => (this.refInput.current ? this.refInput.current.focus() : undefined));
+    handleNumberInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        this.props.onChange(+e.currentTarget.value, this.key);
+        this.setState({ inputEditing: false });
+    }
+    handleStringInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        this.props.onChange(e.currentTarget.value, this.key);
+        this.setState({ inputEditing: false });
+    }
+    handleObjectInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        let value = e.currentTarget.value;
+        try {
+            value = JSON.parse(value);
+        } catch (e) {} // eslint-disable-line no-empty
+        this.props.onChange(value, this.key);
+        this.setState({ inputEditing: false });
+    }
+    handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
+    handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.key);
+    handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.key);
+    handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value, this.key);
     metaItem(meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number], value: any) {
         const { type } = meta;
-        if (type === "boolean") return <Checkbox fitted checked={value} onChange={this.handleChangeCheckbox} />;
-        if (type === "number") return <span>{value}</span>;
-        if (type === "string") return <span>{value}</span>;
+        if (type === "boolean") return <Checkbox className="inspector-value boolean" fitted checked={value} onChange={this.handleChangeCheckbox} />;
+        if (type === "number") {
+            return this.state.inputEditing
+                ? <input ref={this.refInput} type="number" className="inspector-input" defaultValue={value} onBlur={this.handleNumberInputBlur} onKeyDown={this.handleInputKeyDown} />
+                : <span className="inspector-value number" onClick={this.handleClickInput}>{value}</span>;
+        }
+        if (type === "string") {
+            return this.state.inputEditing
+                ? <input ref={this.refInput} className="inspector-input" defaultValue={value} onBlur={this.handleStringInputBlur} onKeyDown={this.handleInputKeyDown} />
+                : <span className="inspector-value string" onClick={this.handleClickInput}>{value}</span>;
+        }
         if (type === "color") {
             return (
                 <>
-                    <span className="color" style={{ backgroundColor: value }} onClick={this.handleClickColorSpan}></span>
+                    <span className="inspector-value color" style={{ backgroundColor: value }} onClick={this.handleClickColorSpan} />
                     {
                         this.state.showColorPicker
                             ? <>
-                                <div className="color-picker-fullscreen-cover" onClick={this.handleClickColorSpan}></div>
+                                <div className="color-picker-fullscreen-cover" onClick={this.handleClickColorSpan} />
                                 <ChromePicker color={value} onChange={this.handleChangeColor} />
                             </>
                             : <></>}
                 </>
             );
         }
-        if (type === "enum") return <Dropdown size="mini" options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} value={value} onChange={this.handleChangeDropdown} />;
-        if (type === "object") return <span>{JSON.stringify(value)}</span>;
-        if (type === "anything") return <span>{typeof value === "string" ? value : JSON.stringify(value)}</span>;
+        if (type === "enum") return <Dropdown className="inspector-value enum" size="mini" options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} value={value} onChange={this.handleChangeDropdown} />;
+        if (type === "object") {
+            const strValue = JSON.stringify(value);
+            return this.state.inputEditing
+                ? <input ref={this.refInput} className="inspector-input" defaultValue={strValue} onBlur={this.handleObjectInputBlur} onKeyDown={this.handleInputKeyDown} />
+                : <span className="inspector-value object" onClick={this.handleClickInput}>{strValue}</span>;
+        }
+        if (type === "anything") {
+            const strValue = typeof value === "string" ? value : JSON.stringify(value);
+            return this.state.inputEditing
+                ? <input ref={this.refInput} className="inspector-input" defaultValue={strValue} onBlur={this.handleObjectInputBlur} onKeyDown={this.handleInputKeyDown} />
+                : <span className="inspector-value anything" onClick={this.handleClickInput}>{strValue}</span>;
+        }
         return <></>;
     }
     render() {
@@ -98,10 +136,7 @@ class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ p
     }
 }
 class InspectorArgItem extends InspectorItem<"arg"> {
-    state = { hinting: false, showColorPicker: false };
-    handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.index);
-    handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.index);
-    handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value, this.props.index);
+    key = this.props.index;
     render() {
         const { type, optional, varLength, description } = this.props.meta;
         const title = `${description.length ? `${description}: ` : ""}${type}`;
@@ -116,9 +151,7 @@ class InspectorArgItem extends InspectorItem<"arg"> {
     }
 }
 class InspectorPropItem extends InspectorItem<"prop"> {
-    handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.meta.name);
-    handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.meta.name);
-    handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value, this.props.meta.name);
+    key = this.props.meta.name;
     render() {
         const { name, type, description } = this.props.meta;
         const title = `${description.length ? `${description}: ` : ""}${type}`;
@@ -142,16 +175,24 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
     boxes: Box[];
     box: Box;
     handleBoxUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => this.setState({ args: e.args || [], props: e.props || {} });
+    handleBoxRectChanged = (box: Box) => this.setState({ rect: box.rect });
+    handleBoxPresentationRectChanged = (box: Box) => this.setState({ presentationRect: box.presentationRect });
     handleSelected = () => {
         const boxes = this.props.patcher.state.selected.filter(id => id.includes("box") && this.props.patcher.boxes[id]).map(id => this.props.patcher.boxes[id]);
         this.boxes = boxes;
         if (this.box && this.boxes.indexOf(this.box) === -1) {
             this.box.off("updatedFromObject", this.handleBoxUpdate);
+            this.box.off("rectChanged", this.handleBoxRectChanged);
+            this.box.off("presentationRectChanged", this.handleBoxPresentationRectChanged);
+            this.box.off("textChanged", this.handleSelected);
             this.box = null;
         }
         if (!this.box && this.boxes.length) {
             this.box = this.boxes[0];
             this.box.on("updatedFromObject", this.handleBoxUpdate);
+            this.box.on("rectChanged", this.handleBoxRectChanged);
+            this.box.on("presentationRectChanged", this.handleBoxPresentationRectChanged);
+            this.box.on("textChanged", this.handleSelected);
         }
         if (boxes.length === 0) {
             this.setState({ meta: null, args: [], props: {}, rect: null, presentationRect: null });

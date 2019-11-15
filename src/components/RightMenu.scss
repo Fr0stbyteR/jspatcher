@@ -70,16 +70,52 @@
             & table:not(.last-table) {
                 flex: 0 0 auto;
             }
-            & span.color {
-                width: 40px;
-                height: 18px;
-                cursor: pointer;
+            & span.inspector-value {
+                &.number, &.string, &.object, &.anything {
+                    display: inline-block;
+                    padding: 0em 0.6em;
+                    line-height: 28px;
+                    width: calc(100% + 1.2em);
+                    margin: -0.4em -0.6em;
+                    cursor: pointer;
+                    &:hover {
+                        background-color: rgba(245, 245, 245, 0.2);
+                    }
+                    &::before {
+                        content: "\200b";
+                    }
+                    &::selection {
+                        background-color: #004eff;
+                        color: white;
+                    }
+                }
+                &.color {
+                    width: 40px;
+                    height: 18px;
+                    cursor: pointer;
+                    display: inline-block;
+                    border: 3px solid whitesmoke;
+                    border-radius: 4px;
+                    line-height: 12px;
+                    &::before {
+                        content: "\200b";
+                    }
+                }
+            }
+            & input.inspector-input {
                 display: inline-block;
-                border: 3px solid whitesmoke;
-                border-radius: 4px;
-                line-height: 12px;
-                &::before {
-                    content: "\200b";
+                background-color: rgba(0, 0, 0, 0.5);
+                font-size: unset;
+                font-family: unset;
+                border: unset;
+                color: unset;
+                padding: 0em 0.6em;
+                line-height: 28px;
+                width: calc(100% + 1.2em);
+                margin: -0.4em -0.6em;
+                &::selection {
+                    background-color: #004eff;
+                    color: white;
                 }
             }
             & div.color-picker-fullscreen-cover {

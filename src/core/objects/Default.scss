@@ -44,6 +44,10 @@
             &:empty::before {
                 content: "\200b";
             }
+            &::selection {
+                background-color: #004eff;
+                color: white;
+            }
         }
         & > .box-ui-text-dropdown {
             position: absolute;
