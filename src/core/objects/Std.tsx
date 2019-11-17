@@ -175,7 +175,7 @@ class ForIn extends StdObject<{}, { buffer: any }, [any, any], [string | number 
         });
     }
 }
-class set extends StdObject<{}, { object: { [key: string]: any } | any[]; key: string | number; value: any }, [{ [key: string]: any } | any[], string | number, any], [{ [key: string]: any } | any[]], [string | number, any]> {
+class set extends StdObject<{}, { key: string | number; value: any }, [{ [key: string]: any } | any[], string | number, any], [{ [key: string]: any } | any[]], [string | number, any]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -209,7 +209,7 @@ class set extends StdObject<{}, { object: { [key: string]: any } | any[]; key: s
             }]
         };
     }
-    state = { object: null as { [key: string]: any } | any[], key: undefined as string | number, value: undefined as any };
+    state = { key: undefined as string | number, value: undefined as any };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -223,8 +223,12 @@ class set extends StdObject<{}, { object: { [key: string]: any } | any[]; key: s
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 if (typeof this.state.key === "string" || typeof this.state.key === "number") {
-                    data[this.state.key] = this.state.value;
-                    this.outlet(0, data);
+                    try {
+                        data[this.state.key] = this.state.value;
+                        this.outlet(0, data);
+                    } catch (e) {
+                        this.error((e as Error).message);
+                    }
                 } else {
                     this.error("Key not defined");
                 }
@@ -233,6 +237,59 @@ class set extends StdObject<{}, { object: { [key: string]: any } | any[]; key: s
                 else this.error("Key should be a number or a string");
             } else if (inlet === 2) {
                 this.state.value = data;
+            }
+        });
+    }
+}
+class get extends StdObject<{}, { key: string | number }, [{ [key: string]: any } | any[], string | number], [{ [key: string]: any } | any[]], [string | number]> {
+    static get meta(): TMeta {
+        return {
+            ...super.meta,
+            description: "Get a property of incoming object",
+            inlets: [{
+                isHot: true,
+                type: "object",
+                description: "Object to get a property"
+            }, {
+                isHot: false,
+                type: "string",
+                description: "Key / name of the property"
+            }],
+            outlets: [{
+                type: "anything",
+                description: "Object bypass"
+            }],
+            args: [{
+                type: "anything",
+                optional: false,
+                description: "Initial key of the property"
+            }]
+        };
+    }
+    state = { key: undefined as string | number };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 2;
+            this.outlets = 1;
+        });
+        this.on("updateArgs", (args) => {
+            if (typeof args[0] === "string" || typeof args[0] === "number") this.state.key = args[0];
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (typeof this.state.key === "string" || typeof this.state.key === "number") {
+                    try {
+                        this.outlet(0, (data as any)[this.state.key]);
+                    } catch (e) {
+                        this.error((e as Error).message);
+                    }
+                } else {
+                    this.error("Key not defined");
+                }
+            } else if (inlet === 1) {
+                if (typeof data === "string" || typeof data === "number") this.state.key = data;
+                else this.error("Key should be a number or a string");
             }
         });
     }
@@ -335,4 +392,4 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         });
     }
 }
-export default { print, for: For, "for-in": ForIn, if: If, sel, set };
+export default { print, for: For, "for-in": ForIn, if: If, sel, set, get };
