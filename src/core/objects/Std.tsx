@@ -127,6 +127,116 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
         });
     }
 }
+class ForIn extends StdObject<{}, { buffer: any }, [any, any], [string | number | symbol, any], [{ [key: string]: any }]> {
+    static get meta(): TMeta {
+        return {
+            ...super.meta,
+            description: "Object key-value iterator",
+            inlets: [{
+                isHot: true,
+                type: "anything",
+                description: "Iterate input, bang to redo"
+            }, {
+                isHot: false,
+                type: "object",
+                description: "Set the iteration object"
+            }],
+            outlets: [{
+                type: "anything",
+                description: "Key"
+            }, {
+                type: "anything",
+                description: "Value"
+            }],
+            args: [{
+                type: "object",
+                optional: true,
+                description: "Initial object to iterate"
+            }]
+        };
+    }
+    state = { buffer: null as any };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 2;
+            this.outlets = 2;
+        });
+        this.on("updateArgs", args => this.state.buffer = args[0]);
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (!(data instanceof Bang)) this.state.buffer = data;
+                for (const key in this.state.buffer) {
+                    this.outletAll([key, this.state.buffer[key]]);
+                }
+            } else if (inlet === 1) {
+                this.state.buffer = data;
+            }
+        });
+    }
+}
+class set extends StdObject<{}, { object: { [key: string]: any } | any[]; key: string | number; value: any }, [{ [key: string]: any } | any[], string | number, any], [{ [key: string]: any } | any[]], [string | number, any]> {
+    static get meta(): TMeta {
+        return {
+            ...super.meta,
+            description: "Set a property of incoming object",
+            inlets: [{
+                isHot: true,
+                type: "object",
+                description: "Object to set a property"
+            }, {
+                isHot: false,
+                type: "string",
+                description: "Key / name of the property"
+            }, {
+                isHot: false,
+                type: "anything",
+                description: "Value to set to the property"
+            }],
+            outlets: [{
+                type: "anything",
+                description: "Object bypass"
+            }],
+            args: [{
+                type: "anything",
+                optional: false,
+                description: "Initial key of the property"
+            }, {
+                type: "anything",
+                optional: true,
+                default: undefined,
+                description: "Initial value of the property"
+            }]
+        };
+    }
+    state = { object: null as { [key: string]: any } | any[], key: undefined as string | number, value: undefined as any };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 3;
+            this.outlets = 1;
+        });
+        this.on("updateArgs", (args) => {
+            if (typeof args[0] === "string" || typeof args[0] === "number") this.state.key = args[0];
+            if (typeof args[1] !== "undefined") this.state.value = args[1];
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (typeof this.state.key === "string" || typeof this.state.key === "number") {
+                    data[this.state.key] = this.state.value;
+                    this.outlet(0, data);
+                } else {
+                    this.error("Key not defined");
+                }
+            } else if (inlet === 1) {
+                if (typeof data === "string" || typeof data === "number") this.state.key = data;
+                else this.error("Key should be a number or a string");
+            } else if (inlet === 2) {
+                this.state.value = data;
+            }
+        });
+    }
+}
 class If extends StdObject<{}, {}, [boolean], [Bang, Bang]> {
     static get meta(): TMeta {
         return {
@@ -225,4 +335,4 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         });
     }
 }
-export default { print, for: For, if: If, sel };
+export default { print, for: For, "for-in": ForIn, if: If, sel, set };

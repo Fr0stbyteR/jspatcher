@@ -95,7 +95,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         lines.forEach(el => this._patcher.lines[el].disable());
         this.outlets = count;
         lines.forEach(el => this._patcher.lines[el].enable());
-        this.inletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateSrc()));
+        this.outletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateSrc()));
         this.emit("ioCountChanged", this);
         this._patcher.emit("graphChanged");
     }
