@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown, DropdownProps } from "semantic-ui-react";
+import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown, DropdownProps, DropdownItemProps } from "semantic-ui-react";
 import { ChromePicker, ColorResult } from "react-color";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import MonacoEditor from "react-monaco-editor";
@@ -63,72 +63,116 @@ class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLo
         );
     }
 }
-class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ patcher: Patcher; meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number]; value: any; index?: number; onChange: (value: any, key: MetaType extends "arg" ? number : string) => any }, { hinting: boolean; showColorPicker: boolean; inputEditing: boolean }> {
-    state = { hinting: false, showColorPicker: false, inputEditing: false };
+class InspectorBooleanItem extends React.Component<{ itemKey: number | string; value: boolean; onChange: (value: boolean, key: number | string) => any }> {
+    handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.itemKey);
+    render() {
+        return <Checkbox className="inspector-value boolean" fitted checked={this.props.value} onChange={this.handleChangeCheckbox} />;
+    }
+}
+class InspectorNumberItem extends React.Component<{ itemKey: number | string; value: number; onChange: (value: number, key: number | string) => any }, { inputEditing: boolean }> {
+    state = { inputEditing: false };
     refInput = React.createRef<HTMLInputElement>();
-    key: MetaType extends "arg" ? number : string;
-    handleClickColorSpan = () => this.setState({ showColorPicker: !this.state.showColorPicker });
     handleClickInput = () => this.setState({ inputEditing: true }, () => (this.refInput.current ? this.refInput.current.focus() : undefined));
     handleNumberInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        this.props.onChange(+e.currentTarget.value, this.key);
+        this.props.onChange(+e.currentTarget.value, this.props.itemKey);
         this.setState({ inputEditing: false });
     }
+    handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
+    componentWillUnmount() {
+        if (this.state.inputEditing && this.refInput.current) this.props.onChange(+this.refInput.current.value, this.props.itemKey);
+    }
+    render() {
+        return this.state.inputEditing
+            ? <input ref={this.refInput} type="number" className="inspector-input" defaultValue={this.props.value} onBlur={this.handleNumberInputBlur} onKeyDown={this.handleInputKeyDown} />
+            : <span className="inspector-value number" onClick={this.handleClickInput}>{this.props.value}</span>;
+    }
+}
+class InspectorStringItem extends React.Component<{ itemKey: number | string; value: string; onChange: (value: string, key: number | string) => any }, { inputEditing: boolean }> {
+    state = { inputEditing: false };
+    refInput = React.createRef<HTMLInputElement>();
+    handleClickInput = () => this.setState({ inputEditing: true }, () => (this.refInput.current ? this.refInput.current.focus() : undefined));
     handleStringInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        this.props.onChange(e.currentTarget.value, this.key);
+        this.props.onChange(e.currentTarget.value, this.props.itemKey);
         this.setState({ inputEditing: false });
     }
+    handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
+    componentWillUnmount() {
+        if (this.state.inputEditing && this.refInput.current) this.props.onChange(this.refInput.current.value, this.props.itemKey);
+    }
+    render() {
+        return this.state.inputEditing
+            ? <input ref={this.refInput} className="inspector-input" defaultValue={this.props.value} onBlur={this.handleStringInputBlur} onKeyDown={this.handleInputKeyDown} />
+            : <span className="inspector-value string" onClick={this.handleClickInput}>{this.props.value}</span>;
+    }
+}
+class InspectorColorItem extends React.Component<{ itemKey: number | string; value: string; onChange: (value: string, key: number | string) => any }, { showColorPicker: boolean }> {
+    state = { showColorPicker: false };
+    handleClickColorSpan = () => this.setState({ showColorPicker: !this.state.showColorPicker });
+    handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.itemKey);
+    render() {
+        return (
+            <>
+                <span className="inspector-value color" style={{ backgroundColor: this.props.value }} onClick={this.handleClickColorSpan} />
+                {
+                    this.state.showColorPicker
+                        ? <>
+                            <div className="color-picker-fullscreen-cover" onClick={this.handleClickColorSpan} />
+                            <ChromePicker color={this.props.value} onChange={this.handleChangeColor} />
+                        </>
+                        : <></>}
+            </>
+        );
+    }
+}
+class InspectorEnumItem extends React.Component<{ itemKey: number | string; value: string | number | boolean; onChange: (value: string | number | boolean, key: number | string) => any; options: DropdownItemProps[] }> {
+    handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value as string | number | boolean, this.props.itemKey);
+    render() {
+        return <Dropdown className="inspector-value enum" size="mini" options={this.props.options} value={this.props.value} onChange={this.handleChangeDropdown} />;
+    }
+}
+class InspectorObjectItem extends React.Component<{ itemKey: number | string; value: any; onChange: (value: any, key: number | string) => any }, { inputEditing: boolean }> {
+    state = { inputEditing: false };
+    refInput = React.createRef<HTMLInputElement>();
+    handleClickInput = () => this.setState({ inputEditing: true }, () => (this.refInput.current ? this.refInput.current.focus() : undefined));
     handleObjectInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         let value = e.currentTarget.value;
         try {
             value = JSON.parse(value);
         } catch (e) {} // eslint-disable-line no-empty
-        this.props.onChange(value, this.key);
+        this.props.onChange(value, this.props.itemKey);
         this.setState({ inputEditing: false });
     }
     handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
-    handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.key);
-    handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.key);
-    handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value, this.key);
+    componentWillUnmount() {
+        if (this.state.inputEditing && this.refInput.current) {
+            let value = this.refInput.current.value;
+            try {
+                value = JSON.parse(value);
+            } catch (e) {} // eslint-disable-line no-empty
+            this.props.onChange(value, this.props.itemKey);
+        }
+    }
+    render() {
+        return this.state.inputEditing
+            ? <input ref={this.refInput} className="inspector-input" defaultValue={this.props.value} onBlur={this.handleObjectInputBlur} onKeyDown={this.handleInputKeyDown} />
+            : <span className="inspector-value object" onClick={this.handleClickInput}>{this.props.value}</span>;
+    }
+}
+class InpectorAnythingItem extends InspectorObjectItem {}
+class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ patcher: Patcher; meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number]; value: any; index?: number; onChange: (value: any, key: MetaType extends "arg" ? number : string) => any }, { showColorPicker: boolean; inputEditing: boolean }> {
+    state = { showColorPicker: false, inputEditing: false };
+    refInput = React.createRef<HTMLInputElement>();
+    key: MetaType extends "arg" ? number : string;
     metaItem(meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number], value: any) {
         const { type } = meta;
-        if (type === "boolean") return <Checkbox className="inspector-value boolean" fitted checked={value} onChange={this.handleChangeCheckbox} />;
-        if (type === "number") {
-            return this.state.inputEditing
-                ? <input ref={this.refInput} type="number" className="inspector-input" defaultValue={value} onBlur={this.handleNumberInputBlur} onKeyDown={this.handleInputKeyDown} />
-                : <span className="inspector-value number" onClick={this.handleClickInput}>{value}</span>;
-        }
-        if (type === "string") {
-            return this.state.inputEditing
-                ? <input ref={this.refInput} className="inspector-input" defaultValue={value} onBlur={this.handleStringInputBlur} onKeyDown={this.handleInputKeyDown} />
-                : <span className="inspector-value string" onClick={this.handleClickInput}>{value}</span>;
-        }
-        if (type === "color") {
-            return (
-                <>
-                    <span className="inspector-value color" style={{ backgroundColor: value }} onClick={this.handleClickColorSpan} />
-                    {
-                        this.state.showColorPicker
-                            ? <>
-                                <div className="color-picker-fullscreen-cover" onClick={this.handleClickColorSpan} />
-                                <ChromePicker color={value} onChange={this.handleChangeColor} />
-                            </>
-                            : <></>}
-                </>
-            );
-        }
-        if (type === "enum") return <Dropdown className="inspector-value enum" size="mini" options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} value={value} onChange={this.handleChangeDropdown} />;
-        if (type === "object") {
-            const strValue = JSON.stringify(value);
-            return this.state.inputEditing
-                ? <input ref={this.refInput} className="inspector-input" defaultValue={strValue} onBlur={this.handleObjectInputBlur} onKeyDown={this.handleInputKeyDown} />
-                : <span className="inspector-value object" onClick={this.handleClickInput}>{strValue}</span>;
-        }
-        if (type === "anything") {
-            const strValue = typeof value === "string" ? value : JSON.stringify(value);
-            return this.state.inputEditing
-                ? <input ref={this.refInput} className="inspector-input" defaultValue={strValue} onBlur={this.handleObjectInputBlur} onKeyDown={this.handleInputKeyDown} />
-                : <span className="inspector-value anything" onClick={this.handleClickInput}>{strValue}</span>;
-        }
+        const itemProps = { itemKey: this.key, value, onChange: this.props.onChange };
+        if (type === "boolean") return <InspectorBooleanItem {...itemProps} />;
+        if (type === "number") return <InspectorNumberItem {...itemProps} />;
+        if (type === "string") return <InspectorStringItem {...itemProps} />;
+        if (type === "color") return <InspectorColorItem {...itemProps} />;
+        if (type === "enum") return <InspectorEnumItem {...itemProps} options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} />;
+        if (type === "object") return <InspectorObjectItem {...itemProps} value={JSON.stringify(value)} />;
+        if (type === "anything") return <InpectorAnythingItem {...itemProps} value={typeof value === "string" ? value : JSON.stringify(value)} />;
         return <></>;
     }
     render() {
@@ -177,9 +221,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
     handleBoxUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => this.setState({ args: e.args || [], props: e.props || {} });
     handleBoxRectChanged = (box: Box) => this.setState({ rect: box.rect });
     handleBoxPresentationRectChanged = (box: Box) => this.setState({ presentationRect: box.presentationRect });
-    handleSelected = () => {
-        const boxes = this.props.patcher.state.selected.filter(id => id.includes("box") && this.props.patcher.boxes[id]).map(id => this.props.patcher.boxes[id]);
-        this.boxes = boxes;
+    subscribeBox = () => {
         if (this.box && this.boxes.indexOf(this.box) === -1) {
             this.box.off("updatedFromObject", this.handleBoxUpdate);
             this.box.off("rectChanged", this.handleBoxRectChanged);
@@ -187,6 +229,8 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
             this.box.off("textChanged", this.handleSelected);
             this.box = null;
         }
+    };
+    unSubscribeBox = () => {
         if (!this.box && this.boxes.length) {
             this.box = this.boxes[0];
             this.box.on("updatedFromObject", this.handleBoxUpdate);
@@ -194,6 +238,12 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
             this.box.on("presentationRectChanged", this.handleBoxPresentationRectChanged);
             this.box.on("textChanged", this.handleSelected);
         }
+    };
+    handleSelected = () => {
+        const boxes = this.props.patcher.state.selected.filter(id => id.includes("box") && this.props.patcher.boxes[id]).map(id => this.props.patcher.boxes[id]);
+        this.boxes = boxes;
+        this.unSubscribeBox();
+        this.subscribeBox();
         if (boxes.length === 0) {
             this.setState({ meta: null, args: [], props: {}, rect: null, presentationRect: null });
             return;
@@ -241,6 +291,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
         for (let i = commonArgs.length - 1; i >= 0; i--) {
             const arg = commonArgs[i];
             const value = typeof args[i] === "undefined" ? arg.default : args[i];
+            const varLength = !!arg.varLength;
             for (let j = 1; j < boxes.length; j++) {
                 let found = false;
                 const $args = boxes[j].args;
@@ -248,7 +299,8 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
                 for (let k = 0; k < $metaArgs.length; k++) {
                     const $arg = $metaArgs[k];
                     const $value = typeof $args[k] === "undefined" ? $arg.default : $args[k];
-                    if (k === i && value === $value) {
+                    const $varLength = !!$arg.varLength;
+                    if (k === i && value === $value && varLength === $varLength) {
                         found = true;
                         break;
                     }
@@ -263,17 +315,23 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
         this.setState({ meta, args, props, rect: null, presentationRect: null });
     };
     componentDidMount() {
+        this.handleSelected();
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleSelected);
     }
     componentWillUnmount() {
+        this.unSubscribeBox();
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleSelected);
     }
     handleChange = (value: any, key: number | string) => {
         if (typeof key === "number") {
             const state: any[] = [];
-            state[key] = value;
+            if (this.box.meta.args[key].varLength && Array.isArray(value)) {
+                value.forEach((v, i) => state[i + key] = v);
+            } else {
+                state[key] = value;
+            }
             this.boxes.forEach(box => box.object.update(state));
         } else {
             const state: { [key: string]: any } = {};
@@ -290,8 +348,9 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
             );
         }
         const argsTable = meta.args.map((argMeta, i) => {
-            const { default: defaultValue } = argMeta;
-            return <InspectorArgItem {...this.props} key={i} meta={argMeta} index={i} value={typeof args[i] === "undefined" ? defaultValue : args[i]} onChange={this.handleChange} />;
+            const { default: defaultValue, varLength } = argMeta;
+            const value = varLength ? args.slice(i) : typeof args[i] === "undefined" ? defaultValue : args[i];
+            return <InspectorArgItem {...this.props} key={i} meta={argMeta} index={i} value={value} onChange={this.handleChange} />;
         });
         const propsTable = meta.props.map((propMeta) => {
             const { name, default: defaultValue } = propMeta;
