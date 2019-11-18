@@ -221,7 +221,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
     handleBoxUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => this.setState({ args: e.args || [], props: e.props || {} });
     handleBoxRectChanged = (box: Box) => this.setState({ rect: box.rect });
     handleBoxPresentationRectChanged = (box: Box) => this.setState({ presentationRect: box.presentationRect });
-    subscribeBox = () => {
+    unSubscribeBox = () => {
         if (this.box && this.boxes.indexOf(this.box) === -1) {
             this.box.off("updatedFromObject", this.handleBoxUpdate);
             this.box.off("rectChanged", this.handleBoxRectChanged);
@@ -230,7 +230,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
             this.box = null;
         }
     };
-    unSubscribeBox = () => {
+    subscribeBox = () => {
         if (!this.box && this.boxes.length) {
             this.box = this.boxes[0];
             this.box.on("updatedFromObject", this.handleBoxUpdate);
@@ -325,6 +325,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
         this.props.patcher.off("deselected", this.handleSelected);
     }
     handleChange = (value: any, key: number | string) => {
+        if (!this.box) return;
         if (typeof key === "number") {
             const state: any[] = [];
             if (this.box.meta.args[key].varLength && Array.isArray(value)) {

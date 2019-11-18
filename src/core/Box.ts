@@ -39,7 +39,11 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     }
     init() {
         this._parsed = Box.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };
-        Object.assign(this.args, this._parsed.args);
+        const newMeta = this._patcher.getObjectMeta(this._parsed);
+        for (const key in this.props) {
+            if (!newMeta.props.find(prop => prop.name === key)) delete this.props[key];
+        }
+        if (this._parsed.args.length) this.args = this._parsed.args;
         Object.assign(this.props, this._parsed.props);
         this._object = this._patcher.createObject(this._parsed, this) as T;
         this._editing = false;
@@ -174,8 +178,6 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         const lines = this.allLines;
         lines.forEach(el => this._patcher.lines[el].disable());
         this.args = [] as Args<T>;
-        // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
-        this.props = {} as Props<T>;
         this.init();
         lines.forEach(el => this._patcher.lines[el].enable());
         this.emit("textChanged", this);

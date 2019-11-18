@@ -298,7 +298,7 @@ export abstract class AbstractObject<
         // build UI
         this.uiRef = React.createRef();
         this.uiProps = { object: this, ref: this.uiRef, key: this.box.id };
-        this.ui = <this.uiComponent {...this.uiProps} />;
+        this.ui = <this.uiComponent {...this.uiProps} key={new Date().getTime()} />;
         // process args and props
         this.subscribe();
         this.emit("preInit");

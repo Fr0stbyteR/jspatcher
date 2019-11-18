@@ -185,6 +185,16 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.emit("createObject", obj);
         return obj;
     }
+    getObjectMeta(parsed: { class: string; args: any[]; props: { [key: string]: any } }) {
+        const className = parsed.class;
+        if (typeof className !== "string" || className.length === 0) {
+            return Base.EmptyObject.meta;
+        }
+        if (this._state.lib[className].meta) {
+            return this._state.lib[className].meta;
+        }
+        return Base.InvalidObject.meta;
+    }
     changeBoxText(boxID: string, text: string) {
         const oldText = this.boxes[boxID].text;
         if (oldText === text) return this.boxes[boxID];
