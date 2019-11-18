@@ -30,14 +30,14 @@ export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P ex
         return <></>;
     }
 }
-type BaseUIProps = {
+export type BaseUIProps = {
     containerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     additionalClassName?: string;
 };
-type BaseUIAdditionalState = { editing: boolean };
-export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> = {}, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIAdditionalState & BaseUIState> {
+export type BaseUIAdditionalState = { editing: boolean };
+export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIAdditionalState & BaseUIState> {
     state: S & BaseUIAdditionalState & BaseUIState = {
-        ...super.state,
+        ...this.state,
         hidden: this.box.props.hidden || false,
         background: this.box.background || false,
         presentation: this.box.presentation || false,
@@ -66,17 +66,17 @@ export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIPr
         );
     }
 }
-type DefaultUIProps = {
+export type DefaultUIProps = {
     textContainerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     prependProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     spanProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement>;
     appendProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
 } & BaseUIProps;
-type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number } & BaseUIAdditionalState;
+export type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number } & BaseUIAdditionalState;
 export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState & DefaultUIAdditionalState> {
     editableOnUnlock = true;
     state: S & DefaultUIState & DefaultUIAdditionalState = {
-        ...super.state,
+        ...this.state,
         bgColor: this.box.props.bgColor || "rgb(51, 51, 51)",
         borderColor: this.box.props.borderColor || "rgb(125, 126, 132)",
         textColor: this.box.props.textColor || "rgb(255, 255, 255)",
@@ -510,7 +510,8 @@ export class BaseObject<
                 name: "hidden",
                 type: "boolean",
                 default: false,
-                description: "Hide on lock"
+                description: "Hide on lock",
+                isUIState: true
             }, {
                 name: "background",
                 type: "boolean",
@@ -533,29 +534,30 @@ export class BaseObject<
                 name: "ignoreClick",
                 type: "boolean",
                 default: false,
-                description: "Ignore Click"
+                description: "Ignore Click",
+                isUIState: true
             }, {
                 name: "hint",
                 type: "string",
                 default: "",
-                description: "Hint on hover"
+                description: "Hint on hover",
+                isUIState: true
             }]
         };
     }
     subscribe() {
         super.subscribe();
         this.on("update", this.updateBox);
+        const isUIStateKey = (x: any): x is keyof (U & BaseUIState) => !!this.meta.props.find(prop => !!prop.isUIState);
         const updateUIFromProps = (props: Partial<P & BaseUIState & BaseAdditionalProps>) => {
             if (props) {
                 const uiState: Partial<U & BaseUIState> = {};
                 for (const key in props) {
-                    if (key === "hint") uiState[key] = props[key];
-                    else if (key === "rect") this.box.setRect(props[key]);
+                    if (key === "rect") this.box.setRect(props[key]);
                     else if (key === "presentationRect") this.box.setPresentationRect(props[key]);
                     else if (key === "presentation") this.box.setPresentation(props[key]);
                     else if (key === "background") this.box.setBackground(props[key]);
-                    else if (key === "ignoreClick") uiState[key] = props[key];
-                    else if (key === "hidden") uiState[key] = props[key];
+                    else if (isUIStateKey(key)) uiState[key as keyof (U & BaseUIState)] = props[key] as any;
                 }
                 this.updateUI(uiState);
             }
@@ -576,69 +578,57 @@ export class DefaultObject<
                 name: "bgColor",
                 type: "color",
                 default: "rgb(51, 51, 51)",
-                description: "Background color"
+                description: "Background color",
+                isUIState: true
             }, {
                 name: "borderColor",
                 type: "color",
                 default: "rgb(125, 126, 132)",
-                description: "Border color"
+                description: "Border color",
+                isUIState: true
             }, {
                 name: "textColor",
                 type: "color",
                 default: "rgb(255, 255, 255)",
-                description: "Text color"
+                description: "Text color",
+                isUIState: true
             }, {
                 name: "fontFamily",
                 type: "enum",
                 enum: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
                 default: "Lato",
-                description: "Font family"
+                description: "Font family",
+                isUIState: true
             }, {
                 name: "fontSize",
                 type: "number",
                 default: 12,
-                description: "Text font size"
+                description: "Text font size",
+                isUIState: true
             }, {
                 name: "fontStyle",
                 type: "enum",
                 enum: ["normal", "italic", "oblique"],
                 default: "normal",
-                description: "Text style"
+                description: "Text style",
+                isUIState: true
             }, {
                 name: "fontWeight",
                 type: "string",
                 default: "normal",
-                description: 'Text style: "normal" | "bold" | "lighter" | "bolder" | number'
+                description: 'Text style: "normal" | "bold" | "lighter" | "bolder" | number',
+                isUIState: true
             }, {
                 name: "textAlign",
                 type: "enum",
                 enum: ["left", "center", "right"],
                 default: "left",
-                description: "Text style"
+                description: "Text style",
+                isUIState: true
             }]
         };
     }
     uiComponent = DefaultUI;
-    subscribe() {
-        super.subscribe();
-        const updateUIFromProps = (props: Partial<P & DefaultUIState>) => {
-            if (props) {
-                const uiState: Partial<U & DefaultUIState> = {};
-                for (const key in props) {
-                    if (key === "bgColor") uiState[key] = props[key];
-                    else if (key === "borderColor") uiState[key] = props[key];
-                    else if (key === "textColor") uiState[key] = props[key];
-                    else if (key === "fontFamily") uiState[key] = props[key];
-                    else if (key === "fontSize") uiState[key] = props[key];
-                    else if (key === "fontStyle") uiState[key] = props[key];
-                    else if (key === "fontWeight") uiState[key] = props[key];
-                    else if (key === "textAlign") uiState[key] = props[key];
-                }
-                this.updateUI(uiState);
-            }
-        };
-        this.on("updateProps", updateUIFromProps);
-    }
 }
 export class AnyObject extends BaseObject<any, any, any, any, any, any, any, any> {}
 export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
@@ -723,26 +713,6 @@ export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends 
         return DefaultObject.meta;
     }
     uiComponent = DefaultUI;
-    subscribe() {
-        super.subscribe();
-        const updateUIFromProps = (props: Partial<P> & { [key: string]: any }) => {
-            if (props) {
-                const uiState: Partial<U & DefaultUIState> = {};
-                for (const key in props) {
-                    if (key === "bgColor") uiState[key] = props[key];
-                    else if (key === "borderColor") uiState[key] = props[key];
-                    else if (key === "textColor") uiState[key] = props[key];
-                    else if (key === "fontFamily") uiState[key] = props[key];
-                    else if (key === "fontSize") uiState[key] = props[key];
-                    else if (key === "fontStyle") uiState[key] = props[key];
-                    else if (key === "fontWeight") uiState[key] = props[key];
-                    else if (key === "textAlign") uiState[key] = props[key];
-                }
-                this.updateUI(uiState);
-            }
-        };
-        this.on("updateProps", updateUIFromProps);
-    }
 }
 class EmptyObjectUI extends DefaultUI<EmptyObject> {
     componentDidMount() {

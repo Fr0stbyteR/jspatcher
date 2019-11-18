@@ -185,7 +185,7 @@ class Split extends FaustOp {
         };
     }
     symbol = ["<:"];
-    state = { ...super.state, inlets: 1, outlets: 2 };
+    state = { inlets: 1, outlets: 2, args: [] as (number | string)[] };
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
@@ -234,7 +234,7 @@ class Merge extends FaustOp {
         };
     }
     symbol = [":>"];
-    state = { ...super.state, inlets: 2, outlets: 1 };
+    state = { inlets: 2, outlets: 1, args: [] as (number | string)[] };
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
@@ -279,7 +279,7 @@ class Rec extends FaustOp {
         };
     }
     symbol = ["~"];
-    state = { ...super.state, inlets: 1, outlets: 1 };
+    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
@@ -311,7 +311,7 @@ class Mem extends FaustOp {
         };
     }
     symbol = ["mem", "'"];
-    state = { ...super.state, inlets: 1, outlets: 1 };
+    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
 }
 class Delay extends FaustOp {
     static get meta(): TMeta {
@@ -340,7 +340,7 @@ class Delay extends FaustOp {
         };
     }
     symbol = ["@"];
-    state = { ...super.state, inlets: 2, outlets: 1 };
+    state = { inlets: 2, outlets: 1, args: [] as (number | string)[] };
 }
 class Const extends FaustOp {
     static get meta(): TMeta {
@@ -366,7 +366,7 @@ class Const extends FaustOp {
         };
     }
     symbol = ["const", "c"];
-    state = { ...super.state, inlets: 1, outlets: 1 };
+    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
     toExpr(lineMap: { [id: string]: string }): string[] {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
@@ -394,7 +394,7 @@ class Const extends FaustOp {
     }
 }
 class Iterator extends FaustOp {
-    state = { ...super.state, inlets: 1, outlets: 1 };
+    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
 }
 
 const faustOps: TPackage = {
@@ -478,7 +478,7 @@ for (const className in opMap.mathOps) {
             };
         }
         symbol = typeof op.symbol === "string" ? [op.symbol] : op.symbol;
-        state = { ...super.state, inlets: op.inlets, outlets: 1 };
+        state = { inlets: op.inlets, outlets: 1, args: [] as (number | string)[] };
     };
     if (typeof op.symbol === "string") faustOps[op.symbol] = Op;
     else op.symbol.forEach(symbol => faustOps[symbol] = Op);

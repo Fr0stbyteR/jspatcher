@@ -10,7 +10,7 @@ import { PatcherEventMap, TMeta, BaseUIState } from "../types";
 type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
 export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
     editableOnUnlock = true;
-    state = { ...super.state, editing: false, loading: false, text: this.props.object.data.text };
+    state: ButtonUIState = { ...this.state, editing: false, loading: false, text: this.props.object.data.text };
     refSpan = React.createRef<HTMLSpanElement>();
     handleChanged = (text: string) => {};
     toggleEdit = (bool?: boolean) => {
@@ -155,9 +155,10 @@ class message extends BaseObject<{ text: string }, { buffer: any; editing: boole
     }
     uiComponent: typeof BaseUI = MessageUI;
 }
-class CommentUI extends BaseUI<comment> {
+type CommentUIState = { editing: boolean } & BaseUIState;
+class CommentUI extends BaseUI<comment, {}, CommentUIState> {
     editableOnUnlock = true;
-    state = { ...super.state, editing: false };
+    state: CommentUIState = { ...this.state, editing: false };
     refSpan = React.createRef<HTMLSpanElement>();
     toggleEdit = (bool?: boolean) => {
         if (bool === this.state.editing) return this.state.editing;
@@ -226,10 +227,11 @@ export class comment extends BaseObject<{ value: string }, {}, [], [], [string]>
     }
     uiComponent: typeof BaseUI = CommentUI;
 }
-class CodeUI extends BaseUI<comment, {}, { language: string; value: string; editorLoaded: boolean }> {
+type CodeUIState = { language: string; value: string; editorLoaded: boolean; editing: boolean } & BaseUIState;
+class CodeUI extends BaseUI<comment, {}, CodeUIState> {
     static sizing = "both" as const;
     editableOnUnlock = false;
-    state = { ...super.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };
+    state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };
     codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
     handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => this.codeEditor = monaco;

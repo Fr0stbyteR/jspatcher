@@ -94,3 +94,41 @@ export class MappedEventEmitter<M> {
 }
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
+export const toMIDI = (f: number) => ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][(f % 12 + 12) % 12] + Math.round(f / 12 - 2);
+export const toRad = (degrees: number) => degrees * Math.PI / 180;
+export const atodb = (a: number) => 20 * Math.log10(a);
+export const dbtoa = (db: number) => 10 ** (db / 20);
+export const roundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number | number[]) => {
+    const radii = [0, 0, 0, 0];
+    if (typeof radius === "number") radii.fill(radius);
+    else radius.forEach((v, i) => radii[i] = v);
+    ctx.beginPath();
+    ctx.moveTo(x + radii[0], y);
+    ctx.lineTo(x + width - radii[1], y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radii[1]);
+    ctx.lineTo(x + width, y + height - radii[2]);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radii[2], y + height);
+    ctx.lineTo(x + radii[3], y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radii[3]);
+    ctx.lineTo(x, y + radii[0]);
+    ctx.quadraticCurveTo(x, y, x + radii[0], y);
+    ctx.closePath();
+    ctx.stroke();
+};
+export const fillRoundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number | number[]) => {
+    const radii = [0, 0, 0, 0];
+    if (typeof radius === "number") radii.fill(radius);
+    else radius.forEach((v, i) => radii[i] = v);
+    ctx.beginPath();
+    ctx.moveTo(x + radii[0], y);
+    ctx.lineTo(x + width - radii[1], y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radii[1]);
+    ctx.lineTo(x + width, y + height - radii[2]);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radii[2], y + height);
+    ctx.lineTo(x + radii[3], y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radii[3]);
+    ctx.lineTo(x, y + radii[0]);
+    ctx.quadraticCurveTo(x, y, x + radii[0], y);
+    ctx.closePath();
+    ctx.fill();
+};

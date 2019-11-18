@@ -204,6 +204,7 @@ type TPropsMeta = {
     default?: any;
     type: TMetaType;
     description: string;
+    isUIState?: boolean;
 }[];
 type TMeta = {
     parent: TMeta;
