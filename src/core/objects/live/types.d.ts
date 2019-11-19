@@ -28,11 +28,9 @@ declare interface LiveUIProps {
     max: number;
     step: number;
     type: "float" | "int" | "enum";
-    enum: string[];
+    enums: string[];
     active: boolean;
     focus: boolean;
-    width: number;
-    height: number;
     shortName: string;
     longName: string;
     unitStyle: "int" | "float" | "time" | "hertz" | "decibel" | "%" | "pan" | "semitones" | "midi" | "custom" | "native";
@@ -40,5 +38,4 @@ declare interface LiveUIProps {
     exponent: number;
     speedLim: number;
     frameRate: number;
-    onChange: (e: { value: number; displayValue: string }) => any;
 }

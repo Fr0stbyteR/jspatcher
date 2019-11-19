@@ -339,6 +339,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
             state[key] = value;
             this.boxes.forEach(box => box.object.update(undefined, state));
         }
+        this.handleSelected();
     };
     render() {
         const { meta, args, props } = this.state;

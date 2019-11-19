@@ -41,7 +41,7 @@ class print extends StdObject<{}, { title: string }, [any], [], [string]> {
             this.outlets = 0;
         });
         this.on("updateArgs", (args) => {
-            if (args[0]) this.state.title = args[0];
+            if (typeof args[0] !== "undefined") this.state.title = args[0];
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {

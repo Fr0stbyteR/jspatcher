@@ -5,7 +5,7 @@ import MonacoEditor from "react-monaco-editor";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import { BaseUI, Bang, BaseObject } from "./Base";
 import "./UI.scss";
-import { PatcherEventMap, TMeta, BaseUIState } from "../types";
+import { TMeta, BaseUIState } from "../types";
 
 type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
 export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
@@ -106,7 +106,7 @@ class message extends BaseObject<{ text: string }, { buffer: any; editing: boole
     }
     state = { buffer: new Bang(), editing: false };
     handleUpdateArgs = (args: any[]) => {
-        if (args[0]) {
+        if (typeof args[0] !== "undefined") {
             this.data.text = this.stringify(args[0]);
             this.state.buffer = this.parse(args[0]);
         } else {
@@ -122,7 +122,7 @@ class message extends BaseObject<{ text: string }, { buffer: any; editing: boole
             this.state.editing = this.box._editing;
             const args = this.box.args;
             if (typeof this.data.text === "string") this.state.buffer = this.parse(this.data.text);
-            else if (args[0]) {
+            else if (typeof args[0] !== "undefined") {
                 this.data.text = this.stringify(args[0]);
                 this.state.buffer = args[0];
             } else {
@@ -235,7 +235,7 @@ class CodeUI extends BaseUI<comment, {}, CodeUIState> {
     codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
     handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
-    handleResize = (e: PatcherEventMap["resized"]) => (this.state.editorLoaded && e.selected.indexOf(this.box.id) >= 0 ? this.codeEditor.layout() : undefined);
+    handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
     handleChange = (value: string, event: monacoEditor.editor.IModelContentChangedEvent) => this.object.data.value = value;
     handleKeyDown = (e: React.KeyboardEvent) => {
         e.stopPropagation();
@@ -251,11 +251,11 @@ class CodeUI extends BaseUI<comment, {}, CodeUIState> {
             this.editorJSX = reactMonacoEditor.default;
             this.setState({ editorLoaded: true });
         });
-        this.patcher.on("resized", this.handleResize);
+        this.box.on("resized", this.handleResize);
     }
     componentWillUnmount() {
         super.componentWillUnmount();
-        this.patcher.off("resized", this.handleResize);
+        this.box.off("resized", this.handleResize);
     }
     render() {
         return <BaseUI {...this.props} containerProps={{ onKeyDown: this.handleKeyDown, onKeyUp: this.handleKeyUp }}>

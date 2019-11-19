@@ -1,34 +1,48 @@
 import * as React from "react";
-import { toMIDI } from "../../../utils";
+import { toMIDI, iNormExp } from "../../../utils";
 import { BaseAudioObject, BaseUI, BaseUIAdditionalState } from "../Base";
 import { TMeta, BaseUIState } from "../../types";
 
-type LiveUIState = LiveUIProps & BaseUIState & BaseUIAdditionalState;
-export class LiveUI<T extends Partial<LiveUIProps> & { [key: string]: any } = {}> extends BaseUI<LiveObject, T & LiveUIProps, T & LiveUIProps> {
+export const getDisplayValue = (value: number, type: string, unitstyle: string, units: string, enums: string[]) => {
+    if (type === "enum") return enums[value];
+    if (unitstyle === "int") return value.toFixed(0);
+    if (unitstyle === "float") return value.toFixed(2);
+    if (unitstyle === "time") return value.toFixed(type === "int" ? 0 : 2) + " ms";
+    if (unitstyle === "hertz") return value.toFixed(type === "int" ? 0 : 2) + " Hz";
+    if (unitstyle === "decibel") return value.toFixed(type === "int" ? 0 : 2) + " dB";
+    if (unitstyle === "%") return value.toFixed(type === "int" ? 0 : 2) + " %";
+    if (unitstyle === "pan") return value === 0 ? "C" : (type === "int" ? Math.abs(value) : Math.abs(value).toFixed(2)) + (value < 0 ? " L" : " R");
+    if (unitstyle === "semitones") return value.toFixed(type === "int" ? 0 : 2) + " st";
+    if (unitstyle === "midi") return toMIDI(value);
+    if (unitstyle === "custom") return value.toFixed(type === "int" ? 0 : 2) + " " + units;
+    if (unitstyle === "native") return value.toFixed(type === "int" ? 0 : 2);
+    return "N/A";
+};
+export type LiveUIState = LiveUIProps & BaseUIState & BaseUIAdditionalState;
+export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [key: string]: any } = {}> extends BaseUI<T, {}, P & LiveUIProps> {
     // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
-    state: T & LiveUIState = {
+    state: P & LiveUIState = {
         ...this.state,
-        value: this.props.value || 0,
-        min: this.props.min || 0,
-        max: typeof this.props.max === "number" ? this.props.max : 127,
-        step: this.props.step || 0,
-        type: this.props.type || "int",
-        enum: this.props.enum || [] as string[],
-        active: typeof this.props.active === "boolean" ? this.props.active : true,
-        focus: this.props.focus || false,
-        width: this.props.width || 15,
-        height: this.props.height || 15,
-        shortName: this.props.shortName || "",
-        longName: this.props.longName || "",
-        unitStyle: this.props.unitStyle || "int",
-        units: this.props.units || "",
-        exponent: this.props.exponent || 0,
-        speedLim: this.props.speedLim || 16,
-        frameRate: this.props.frameRate || 60,
-        onChange: this.props.onChange || (() => {})
+        value: this.box.props.value || 0,
+        min: this.box.props.min || 0,
+        max: typeof this.box.props.max === "number" ? this.box.props.max : 127,
+        step: this.box.props.step || 1,
+        type: this.box.props.type || "int",
+        enums: this.box.props.enums || [""],
+        active: typeof this.box.props.active === "boolean" ? this.box.props.active : true,
+        focus: this.box.props.focus || false,
+        shortName: this.box.props.shortName || "",
+        longName: this.box.props.longName || "",
+        unitStyle: this.box.props.unitStyle || "int",
+        units: this.box.props.units || "",
+        exponent: this.box.props.exponent || 0,
+        speedLim: this.box.props.speedLim || 16,
+        frameRate: this.box.props.frameRate || 60
     };
+    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     refCanvas = React.createRef<HTMLCanvasElement>();
     className: string;
+    paintScheduled = false;
     $paintRaf = -1;
     $changeTimer = -1;
     get canvas() {
@@ -106,27 +120,53 @@ export class LiveUI<T extends Partial<LiveUIProps> & { [key: string]: any } = {}
     handlePointerUp = (e: PointerUpEvent) => {};
     handleFocusIn = (e: React.FocusEvent) => this.setState({ focus: true });
     handleFocusOut = (e: React.FocusEvent) => this.setState({ focus: false });
-    get displayValue() {
-        const { value, type, unitStyle, units } = this.state;
-        if (type === "enum") return this.state.enum[value];
-        if (unitStyle === "int") return value.toFixed(0);
-        if (unitStyle === "float") return value.toFixed(2);
-        if (unitStyle === "time") return value.toFixed(type === "int" ? 0 : 2) + " ms";
-        if (unitStyle === "hertz") return value.toFixed(type === "int" ? 0 : 2) + " Hz";
-        if (unitStyle === "decibel") return value.toFixed(type === "int" ? 0 : 2) + " dB";
-        if (unitStyle === "%") return value.toFixed(type === "int" ? 0 : 2) + " %";
-        if (unitStyle === "pan") return value === 0 ? "C" : (type === "int" ? Math.abs(value) : Math.abs(value).toFixed(2)) + (value < 0 ? " L" : " R");
-        if (unitStyle === "semitones") return value.toFixed(type === "int" ? 0 : 2) + " st";
-        if (unitStyle === "midi") return toMIDI(value);
-        if (unitStyle === "custom") return value.toFixed(type === "int" ? 0 : 2) + " " + units;
-        if (unitStyle === "native") return value.toFixed(type === "int" ? 0 : 2);
-        return "N/A";
+    /**
+     * Normalized value between 0 - 1.
+     *
+     * @readonly
+     * @memberof LiveUI
+     */
+    get distance() {
+        return LiveUI.getDistance(this.state);
     }
-    setValue(value: number) {
+    static getDistance(state: { type: "enum" | "int" | "float"; value: number; min: number; max: number; exponent: number; enums?: string[] }) {
+        const { type, max, min, value, exponent, enums } = state;
+        const normalized = type === "enum" ? Math.max(0, Math.min(enums.length - 1, value)) / (enums.length - 1) : (value - min) / (max - min);
+        return iNormExp(normalized || 0, exponent);
+    }
+    /**
+     * Count steps in range min-max with step
+     *
+     * @readonly
+     * @memberof LiveUI
+     */
+    get stepsCount() {
+        const { type, max, min, step, enums } = this.state;
+        if (type === "enum") return enums.length - 1;
+        if (type === "float") return Math.min(Number.MAX_SAFE_INTEGER, Math.floor((max - min) / step));
+        return Math.min(Math.floor((max - min) / (Math.round(step) || 1)), max - min);
+    }
+    /**
+     * Pixels for each step
+     *
+     * @readonly
+     * @memberof LiveUI
+     */
+    get stepPixels() {
+        const full = 100;
+        const stepsCount = this.stepsCount;
+        return full / stepsCount;
+    }
+    get displayValue() {
+        const { value, type, unitStyle, units, enums } = this.state;
+        return getDisplayValue(value, type, unitStyle, units, enums);
+    }
+    setValueToOutput(value: number) {
         this.setState({ value });
+        this.scheduleChangeHandler();
     }
     changeCallback = () => {
-        this.state.onChange({ value: this.state.value, displayValue: this.displayValue });
+        this.props.object.onChangeFromUI({ value: this.state.value, displayValue: this.displayValue });
         this.$changeTimer = -1;
     }
     scheduleChangeHandler() {
@@ -134,17 +174,29 @@ export class LiveUI<T extends Partial<LiveUIProps> & { [key: string]: any } = {}
     }
     paintCallback = () => {
         this.paint();
-        this.$paintRaf = -1 * Math.round(Math.abs(60 / this.state.frameRate)) || -1;
+        this.$paintRaf = (-1 * Math.round(Math.abs(60 / this.state.frameRate))) || -1;
+        this.paintScheduled = false;
     }
     noPaintCallback = () => {
         this.$paintRaf++;
+        this.paintScheduled = false;
+        this.schedulePaint();
     }
     schedulePaint() {
+        if (this.paintScheduled) return;
         if (this.$paintRaf === -1) this.$paintRaf = requestAnimationFrame(this.paintCallback);
-        else if (this.$paintRaf < -1) this.$paintRaf = requestAnimationFrame(this.noPaintCallback);
+        else if (this.$paintRaf < -1) requestAnimationFrame(this.noPaintCallback);
+        this.paintScheduled = true;
     }
+    handleResize = () => this.schedulePaint();
     componentDidMount() {
+        super.componentDidMount();
         this.schedulePaint();
+        this.box.on("resized", this.handleResize);
+    }
+    componentWillUnmount() {
+        super.componentWillUnmount();
+        this.box.off("resized", this.handleResize);
     }
     componentDidUpdate() {
         this.schedulePaint();
@@ -152,27 +204,31 @@ export class LiveUI<T extends Partial<LiveUIProps> & { [key: string]: any } = {}
     paint() {}
     render() {
         return (
-            <canvas
-                ref={this.refCanvas}
-                className={["live-component", this.className].join(" ")}
-                tabIndex={1}
-                onKeyDown={this.handleKeyDown}
-                onKeyUp={this.handleKeyUp}
-                onTouchStart={this.handleTouchStart}
-                onWheel={this.handleWheel}
-                onClick={this.handleClick}
-                onMouseDown={this.handleMouseDown}
-                onMouseOver={this.handleMouseOver}
-                onMouseOut={this.handleMouseOut}
-                onContextMenu={this.handleContextMenu}
-                onFocus={this.handleFocusIn}
-                onBlur={this.handleFocusOut}
-            />
+            <BaseUI {...this.props}>
+                <canvas
+                    ref={this.refCanvas}
+                    className={["live-component", this.className].join(" ")}
+                    style={{ position: "absolute", display: "inline-block", width: "100%", height: "100%" }}
+                    tabIndex={1}
+                    onKeyDown={this.handleKeyDown}
+                    onKeyUp={this.handleKeyUp}
+                    onTouchStart={this.handleTouchStart}
+                    onWheel={this.handleWheel}
+                    onClick={this.handleClick}
+                    onMouseDown={this.handleMouseDown}
+                    onMouseOver={this.handleMouseOver}
+                    onMouseOut={this.handleMouseOut}
+                    onContextMenu={this.handleContextMenu}
+                    onFocus={this.handleFocusIn}
+                    onBlur={this.handleFocusOut}
+                />
+            </BaseUI>
         );
     }
 }
-type LiveObjectState = { value: number };
-export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<LiveUIState> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & LiveUIState, U & LiveUIState> {
+type LiveObjectState = { value: number; displayValue: string };
+type LiveObjectEventMap = { "changeFromUI": { value: number; displayValue: string } };
+export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<LiveUIState> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & LiveUIState, U & LiveUIState, LiveObjectEventMap> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -201,13 +257,104 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
             }, {
                 name: "step",
                 type: "number",
-                default: 0,
+                default: 1,
                 description: "Value change step",
+                isUIState: true
+            }, {
+                name: "type",
+                type: "enum",
+                enum: ["enum", "float", "int"],
+                default: "int",
+                description: "Value type",
+                isUIState: true
+            }, {
+                name: "enum",
+                type: "object",
+                default: [""],
+                description: "Enum values",
+                isUIState: true
+            }, {
+                name: "active",
+                type: "boolean",
+                default: true,
+                description: "Active state",
+                isUIState: true
+            }, {
+                name: "focus",
+                type: "boolean",
+                default: false,
+                description: "Focus state",
+                isUIState: true
+            }, {
+                name: "shortName",
+                type: "string",
+                default: "",
+                description: "Short name to display",
+                isUIState: true
+            }, {
+                name: "longName",
+                type: "string",
+                default: "",
+                description: "Long name to display",
+                isUIState: true
+            }, {
+                name: "unitStyle",
+                type: "enum",
+                enum: ["float", "int", "time", "hertz", "decibel", "%", "pan", "semitones", "midi", "custom", "native"],
+                default: "int",
+                description: "Style of unit to display",
+                isUIState: true
+            }, {
+                name: "units",
+                type: "string",
+                default: "",
+                description: "If unitStyle set to custom, display this as unit",
+                isUIState: true
+            }, {
+                name: "exponent",
+                type: "number",
+                default: 0,
+                description: "UI modulation curve, 0 for linear",
+                isUIState: true
+            }, {
+                name: "speedLim",
+                type: "number",
+                default: 16,
+                description: "Value output speed limit in ms",
+                isUIState: true
+            }, {
+                name: "frameRate",
+                type: "number",
+                default: 60,
+                description: "UI refresh rate",
                 isUIState: true
             }]
         };
     }
     // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
-    state = { value: 0 } as S & LiveObjectState;
+    state = { value: 0, displayValue: "0" } as S & LiveObjectState;
     uiComponent: typeof LiveUI;
+    /**
+     * Get a nearest valid number
+     *
+     * @returns {number}
+     * @memberof LiveObject
+     */
+    calcValidNumber(): number {
+        const { value } = this.state;
+        const min = this.box.props.min || 0;
+        const max = this.box.props.max || 127;
+        const step = this.box.props.step || 1;
+        const v = Math.min(max, Math.max(min, value));
+        return min + Math.floor((v - min) / step) * step;
+    }
+    calcDisplayValue() {
+        const { value } = this.state;
+        const { type, unitStyle, units, enums } = this.box.props;
+        this.state.displayValue = getDisplayValue(value || 0, type || "int", unitStyle || "int", units || "", enums || [""]);
+        return this.state.displayValue;
+    }
+    onChangeFromUI(e: { value: number; displayValue: string }) {
+        this.emit("changeFromUI", e);
+    }
 }

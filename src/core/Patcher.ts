@@ -14,8 +14,9 @@ import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
 import JSPWebAudio from "./objects/WebAudio/Imports";
+import live from "./objects/live/exports";
 
-const Packages: TPackage = { Base, Std, UI, Op, Window, WebAudio: JSPWebAudio, new: New };
+const Packages: TPackage = { Base, Std, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live };
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     lines: { [key: string]: Line };
@@ -328,6 +329,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     setLock(bool: boolean): Patcher {
         if (this._state.locked === bool) return this;
+        this.deselectAll();
         this._state.locked = bool;
         this.emit("locked", bool);
         return this;
@@ -520,6 +522,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         boxes.forEach((box) => {
             box.allLines.forEach(id => linesConcerned[id] = true);
             box.emit("rectChanged", box);
+            box.emit("resized", box);
         });
         Object.keys(linesConcerned).forEach((lineID) => {
             const line = this.lines[lineID];

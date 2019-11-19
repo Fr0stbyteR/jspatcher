@@ -98,6 +98,8 @@ export const toMIDI = (f: number) => ["C", "C#", "D", "D#", "E", "F", "F#", "G",
 export const toRad = (degrees: number) => degrees * Math.PI / 180;
 export const atodb = (a: number) => 20 * Math.log10(a);
 export const dbtoa = (db: number) => 10 ** (db / 20);
+export const iNormExp = (x: number, e: number) => x ** (1.5 ** -e);
+export const normExp = (x: number, e: number) => x ** (1.5 ** e);
 export const roundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number | number[]) => {
     const radii = [0, 0, 0, 0];
     if (typeof radius === "number") radii.fill(radius);

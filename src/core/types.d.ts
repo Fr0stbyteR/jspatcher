@@ -166,6 +166,7 @@ interface LineEventMap {
 
 interface BoxEventMap {
     "rectChanged": Box;
+    "resized": Box;
     "presentationRectChanged": Box;
     "backgroundChanged": Box;
     "presentationChanged": Box;
@@ -184,7 +185,7 @@ type TInletsMeta = {
     varLength?: boolean;
     description: string;
 }[];
-type TOutletMeta = {
+type TOutletsMeta = {
     type: TMetaType;
     enum?: string[];
     varLength?: boolean;
@@ -215,7 +216,7 @@ type TMeta = {
     version: string;
     description: string;
     inlets: TInletsMeta;
-    outlets: TOutletMeta;
+    outlets: TOutletsMeta;
     args: TArgsMeta;
     props: TPropsMeta;
 };
