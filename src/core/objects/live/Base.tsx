@@ -346,7 +346,8 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
         const max = this.box.props.max || 127;
         const step = this.box.props.step || 1;
         const v = Math.min(max, Math.max(min, value));
-        return min + Math.floor((v - min) / step) * step;
+        this.state.value = min + Math.floor((v - min) / step) * step;
+        return this.state.value;
     }
     calcDisplayValue() {
         const { value } = this.state;

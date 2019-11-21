@@ -253,7 +253,7 @@ export class LiveNumbox extends LiveObject<{}, {}, [number | Bang, number], [num
                 this.state.value = args[0];
                 this.calcValidNumber();
                 this.calcDisplayValue();
-                this.updateUI({ value: args[0] });
+                this.updateUI({ value: this.state.value });
             }
         });
         this.on("inlet", ({ data, inlet }) => {
@@ -263,7 +263,7 @@ export class LiveNumbox extends LiveObject<{}, {}, [number | Bang, number], [num
                     this.state.value = value;
                     this.calcValidNumber();
                     this.calcDisplayValue();
-                    this.updateUI({ value });
+                    this.updateUI({ value: this.state.value });
                 }
                 this.outletAll([this.state.value, this.state.displayValue]);
             }
