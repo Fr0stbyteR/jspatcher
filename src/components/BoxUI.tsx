@@ -288,12 +288,12 @@ export default class BoxUI extends React.Component<P, S> {
                 <Outlets patcher={this.props.patcher} box={box} />
                 <div className={"resize-handlers resize-handlers-" + this.state.sizing}>
                     <div className="resize-handler resize-handler-n" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-ne" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-se" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-s" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-sw" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-w" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-ne" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-se" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-sw" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
                 </div>
                 <div className="box-ui">
