@@ -263,3 +263,5 @@ type ObjectEventMap<I extends any[], A extends any[], P, U, E> = {
 type THistoryElement = {
     [key in keyof PatcherEventMap]?: PatcherEventMap[key][];
 };
+
+type TCurve = string | number | number[] | number[][];

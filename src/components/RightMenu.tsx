@@ -153,9 +153,10 @@ class InspectorObjectItem extends React.Component<{ itemKey: number | string; va
         }
     }
     render() {
+        const value = this.props.value;
         return this.state.inputEditing
-            ? <input ref={this.refInput} className="inspector-input" defaultValue={this.props.value} onBlur={this.handleObjectInputBlur} onKeyDown={this.handleInputKeyDown} />
-            : <span className="inspector-value object" onClick={this.handleClickInput}>{this.props.value}</span>;
+            ? <input ref={this.refInput} className="inspector-input" defaultValue={typeof value === "string" ? value : JSON.stringify(value)} onBlur={this.handleObjectInputBlur} onKeyDown={this.handleInputKeyDown} />
+            : <span className="inspector-value object" onClick={this.handleClickInput}>{typeof value === "string" ? `"${value}"` : JSON.stringify(value)}</span>;
     }
 }
 class InpectorAnythingItem extends InspectorObjectItem {}
@@ -171,8 +172,8 @@ class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ p
         if (type === "string") return <InspectorStringItem {...itemProps} />;
         if (type === "color") return <InspectorColorItem {...itemProps} />;
         if (type === "enum") return <InspectorEnumItem {...itemProps} options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} />;
-        if (type === "object") return <InspectorObjectItem {...itemProps} value={JSON.stringify(value)} />;
-        if (type === "anything") return <InpectorAnythingItem {...itemProps} value={typeof value === "string" ? value : JSON.stringify(value)} />;
+        if (type === "object") return <InspectorObjectItem {...itemProps} />;
+        if (type === "anything") return <InpectorAnythingItem {...itemProps} />;
         return <></>;
     }
     render() {

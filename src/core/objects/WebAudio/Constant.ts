@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeMaxCurveFormat } from "../../../utils";
-import { TMeta } from "../../types";
+import { decodeCurve } from "../../../utils";
+import { TMeta, TCurve } from "../../types";
 
-export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang, string], [null, ConstantSourceNode], [number]> {
+export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang, TCurve], [null, ConstantSourceNode], [number]> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -59,7 +59,7 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
                 if (data instanceof Bang) this.outlet(1, this.node);
             } else if (inlet === 1) {
                 try {
-                    const curve = decodeMaxCurveFormat(data as string);
+                    const curve = decodeCurve(data as TCurve);
                     JSPAudioNode.applyCurve(this.node.offset, curve, this.audioCtx);
                 } catch (e) {
                     this.error(e.message);

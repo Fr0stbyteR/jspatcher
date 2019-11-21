@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeMaxCurveFormat } from "../../../utils";
-import { TMeta } from "../../types";
+import { decodeCurve } from "../../../utils";
+import { TMeta, TCurve } from "../../types";
 
-type I = [Bang, string, string, string, string, string, string, PannerOptions];
+type I = [Bang, TCurve, TCurve, TCurve, TCurve, TCurve, TCurve, PannerOptions];
 export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, PannerNode], [], PannerOptions> {
     static get meta(): TMeta {
         return {
@@ -31,11 +31,11 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
                 description: "positionX: curve or node connection"
             }, {
                 isHot: false,
-                type: "string",
+                type: "signal",
                 description: "positionY: curve or node connection"
             }, {
                 isHot: false,
-                type: "string",
+                type: "signal",
                 description: "positionZ: curve or node connection"
             }, {
                 isHot: false,
@@ -144,7 +144,7 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
                 if (data instanceof Bang) this.outlet(1, this.node);
             } else if (inlet > 0 && inlet < 7) {
                 try {
-                    const curve = decodeMaxCurveFormat(data as string);
+                    const curve = decodeCurve(data as TCurve);
                     JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
                 } catch (e) {
                     this.error(e.message);

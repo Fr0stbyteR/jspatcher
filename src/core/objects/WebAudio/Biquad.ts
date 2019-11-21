@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeMaxCurveFormat } from "../../../utils";
-import { TMeta } from "../../types";
+import { decodeCurve } from "../../../utils";
+import { TMeta, TCurve } from "../../types";
 
-type I = [Bang, string, string, string, string, BiquadFilterType];
+type I = [Bang, TCurve, TCurve, TCurve, TCurve, BiquadFilterType];
 export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null, BiquadFilterNode], [], BiquadFilterOptions> {
     static get meta(): TMeta {
         return {
@@ -103,7 +103,7 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
                 if (Biquad.isBiquadFilterType(data)) this.node.type = data;
             } else if (inlet > 0 && inlet < 5) {
                 try {
-                    const curve = decodeMaxCurveFormat(data as string);
+                    const curve = decodeCurve(data as TCurve);
                     JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
                 } catch (e) {
                     this.error(e.message);

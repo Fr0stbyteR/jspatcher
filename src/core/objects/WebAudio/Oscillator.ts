@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeMaxCurveFormat } from "../../../utils";
-import { TMeta } from "../../types";
+import { decodeCurve } from "../../../utils";
+import { TMeta, TCurve } from "../../types";
 
-export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, string, string, OscillatorType], [null, OscillatorNode], [number, OscillatorType], { detune: number }> {
+export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, TCurve, TCurve, OscillatorType], [null, OscillatorNode], [number, OscillatorType], { detune: number }> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -93,10 +93,10 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
             } else {
                 try {
                     if (inlet === 1) {
-                        const curve = decodeMaxCurveFormat(data as string);
+                        const curve = decodeCurve(data as TCurve);
                         JSPAudioNode.applyCurve(this.node.frequency, curve, this.audioCtx);
                     } else if (inlet === 2) {
-                        const curve = decodeMaxCurveFormat(data as string);
+                        const curve = decodeCurve(data as TCurve);
                         JSPAudioNode.applyCurve(this.node.detune, curve, this.audioCtx);
                     } else if (inlet === 3) {
                         this.node.type = data as OscillatorType;

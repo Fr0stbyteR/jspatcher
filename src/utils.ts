@@ -1,6 +1,8 @@
 import { inspect } from "util";
 import { EventEmitter } from "events";
 
+export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
+export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
 export const stringifyError = (data: any) => {
     if (typeof data === "string") return data;
     if (data instanceof Error) return data.stack;
@@ -12,11 +14,13 @@ export const stringifyError = (data: any) => {
  * i.e. `0, 1 1000 0.5` means go to 0 immediately then go to 1 in 1000 ms with a curve of e^0.5.
  * The function transform the string to number[][], i.e. `[[0], [1, 1000, 0.5]]`
  *
- * @param {(string | number)} sIn Max/MSP-style curve
+ * @param {(string | number | number[] | number[][])} sIn Max/MSP-style curve
  * @returns {number[][]}
  */
-export const decodeMaxCurveFormat = (sIn: string | number): number[][] => {
+export const decodeCurve = (sIn: string | number | number[] | number[][]): number[][] => {
     if (typeof sIn === "number") return [[sIn]];
+    if (isNumberArray(sIn)) return [sIn];
+    if (Array.isArray(sIn) && sIn.every(a => isNumberArray(a))) return sIn;
     if (typeof sIn !== "string") throw new Error("Failed to decode curve.");
     const tuples = sIn.split(",").filter(s => !!s);
     return tuples.map(sTuple => sTuple.split(" ").filter(s => !!s).map((s) => {
@@ -92,14 +96,12 @@ export class MappedEventEmitter<M> {
         return this._emitter.listenerCount(type as string);
     }
 }
-export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
-export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
 export const toMIDI = (f: number) => ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"][(f % 12 + 12) % 12] + Math.round(f / 12 - 2);
 export const toRad = (degrees: number) => degrees * Math.PI / 180;
 export const atodb = (a: number) => 20 * Math.log10(a);
 export const dbtoa = (db: number) => 10 ** (db / 20);
-export const iNormExp = (x: number, e: number) => x ** (1.5 ** -e);
-export const normExp = (x: number, e: number) => x ** (1.5 ** e);
+export const iNormExp = (x: number, e: number) => Math.max(0, x) ** (1.5 ** -e);
+export const normExp = (x: number, e: number) => Math.max(0, x) ** (1.5 ** e);
 export const roundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number | number[]) => {
     const radii = [0, 0, 0, 0];
     if (typeof radius === "number") radii.fill(radius);

@@ -237,7 +237,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
                 return value.toString();
             }
         };
-        const REGEX = /"([^"]*)"|[^\s]+/gi;
+        const REGEX = /`([^`]*)`|[^\s]+/gi;
         const strArray = [];
         let match = REGEX.exec(strIn);
         while (match != null) {

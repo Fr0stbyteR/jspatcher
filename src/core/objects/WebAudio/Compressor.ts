@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeMaxCurveFormat } from "../../../utils";
-import { TMeta } from "../../types";
+import { decodeCurve } from "../../../utils";
+import { TMeta, TCurve } from "../../types";
 
-type I = [Bang, string, string, string, string, string];
+type I = [Bang, TCurve, TCurve, TCurve, TCurve, TCurve];
 export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {}, I, [null, DynamicsCompressorNode], [], DynamicsCompressorOptions> {
     static get meta(): TMeta {
         return {
@@ -31,7 +31,7 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
                 description: "attack: curve or node connection"
             }, {
                 isHot: false,
-                type: "string",
+                type: "signal",
                 description: "release: curve or node connection"
             }],
             outlets: [{
@@ -93,7 +93,7 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
                 if (data instanceof Bang) this.outlet(1, this.node);
             } else if (inlet > 0 && inlet < 6) {
                 try {
-                    const curve = decodeMaxCurveFormat(data as string);
+                    const curve = decodeCurve(data as TCurve);
                     JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
                 } catch (e) {
                     this.error(e.message);
