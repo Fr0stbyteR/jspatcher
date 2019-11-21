@@ -9,6 +9,7 @@ import Base from "./objects/Base";
 import Std from "./objects/Std";
 import New from "./objects/importer/New";
 import GenOps from "./objects/Gen";
+import Max from "./objects/Max";
 import FaustOps, { toFaustDspCode } from "./objects/Faust";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
@@ -16,7 +17,7 @@ import Window from "./objects/Window";
 import JSPWebAudio from "./objects/WebAudio/Imports";
 import live from "./objects/live/exports";
 
-const Packages: TPackage = { Base, Std, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live };
+const Packages: TPackage = { Base, Std, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live };
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     lines: { [key: string]: Line };
