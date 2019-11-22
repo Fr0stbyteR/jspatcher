@@ -19,9 +19,9 @@ interface LiveNumboxProps extends LiveUIProps {
     activeTriColor2: string;
     activeSliderColor: string;
 }
-
-class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps> {
-    state: LiveNumboxProps & LiveUIState = {
+type LiveNumboxAdditionalState = { inputBuffer: string };
+class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps & LiveNumboxAdditionalState> {
+    state: LiveNumboxProps & LiveUIState & LiveNumboxAdditionalState = {
         ...this.state,
         shortName: this.box.props.shortName || "live.numbox",
         bgColor: this.box.props.bgColor || "rgba(195, 195, 195, 1)",
@@ -41,7 +41,8 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps> {
         min: this.box.props.min || 0,
         max: typeof this.box.props.max === "number" ? this.box.props.max : 127,
         type: this.box.props.type || "int",
-        unitStyle: this.box.props.unitStyle || "int"
+        unitStyle: this.box.props.unitStyle || "int",
+        inputBuffer: ""
     }
     className = "live-numbox";
     paint() {
@@ -61,13 +62,14 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps> {
             activeTriColor,
             triColor2,
             activeTriColor2,
-            activeSliderColor
+            activeSliderColor,
+            inputBuffer
         } = this.state;
         const width = this.box.rect[2];
         const height = this.box.rect[3];
         const ctx = this.ctx;
         const distance = this.distance;
-        const displayValue = this.displayValue;
+        const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
 
         ctx.canvas.width = width;
         ctx.canvas.height = height;
@@ -121,6 +123,38 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps> {
     handlePointerDrag = (e: PointerDragEvent) => {
         const newValue = this.getValueFromDelta(e);
         if (newValue !== this.state.value) this.setValueToOutput(newValue);
+    }
+    handleKeyDown = (e: React.KeyboardEvent) => {
+        if (!this.state.inputBuffer) {
+            let addStep = 0;
+            if (e.key === "ArrowUp" || e.key === "ArrowRight") addStep = 1;
+            if (e.key === "ArrowDown" || e.key === "ArrowLeft") addStep = -1;
+            if (addStep !== 0) {
+                const newValue = this.object.toValidValue(this.state.value + this.state.step * addStep);
+                if (newValue !== this.state.value) this.setValueToOutput(newValue);
+            }
+        }
+        if (e.key.match(/[0-9.-]/)) {
+            this.setState({ inputBuffer: this.state.inputBuffer + e.key });
+            return;
+        }
+        if (e.key === "Backspace") {
+            this.setState({ inputBuffer: this.state.inputBuffer.slice(0, -1) });
+            return;
+        }
+        if (e.key === "Enter") {
+            const newValue = this.object.toValidValue(+this.state.inputBuffer);
+            this.setState({ inputBuffer: "" });
+            if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        }
+    }
+    handleFocusOut = () => {
+        if (this.state.inputBuffer) {
+            const newValue = this.object.toValidValue(+this.state.inputBuffer);
+            this.setState({ inputBuffer: "" });
+            if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        }
+        this.setState({ focus: false });
     }
 }
 
@@ -251,8 +285,7 @@ export class LiveNumbox extends LiveObject<{}, {}, [number | Bang, number], [num
         this.on("updateArgs", (args) => {
             if (typeof args[0] === "number") {
                 this.state.value = args[0];
-                this.calcValidNumber();
-                this.calcDisplayValue();
+                this.validateValue();
                 this.updateUI({ value: this.state.value });
             }
         });
@@ -261,8 +294,7 @@ export class LiveNumbox extends LiveObject<{}, {}, [number | Bang, number], [num
                 if (!(data instanceof Bang)) {
                     const value = +data;
                     this.state.value = value;
-                    this.calcValidNumber();
-                    this.calcDisplayValue();
+                    this.validateValue();
                     this.updateUI({ value: this.state.value });
                 }
                 this.outletAll([this.state.value, this.state.displayValue]);

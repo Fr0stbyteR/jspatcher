@@ -53,7 +53,7 @@ export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [ke
     }
     handleKeyDown = (e: React.KeyboardEvent) => {};
     handleKeyUp = (e: React.KeyboardEvent) => {};
-    handleTouchStart = (e: React.TouchEvent) => {
+    private handleTouchStart = (e: React.TouchEvent) => {
         this.canvas.focus();
         const rect = this.canvas.getBoundingClientRect();
         let prevX = e.touches[0].pageX;
@@ -87,7 +87,7 @@ export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [ke
     };
     handleWheel = (e: React.WheelEvent) => {};
     handleClick = (e: React.MouseEvent) => {};
-    handleMouseDown = (e: React.MouseEvent) => {
+    private handleMouseDown = (e: React.MouseEvent) => {
         e.preventDefault();
         this.canvas.focus();
         const rect = this.canvas.getBoundingClientRect();
@@ -228,7 +228,7 @@ export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [ke
 }
 type LiveObjectState = { value: number; displayValue: string };
 type LiveObjectEventMap = { "changeFromUI": { value: number; displayValue: string } };
-export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<LiveUIState> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & LiveUIState, U & LiveUIState, LiveObjectEventMap> {
+export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<Exclude<LiveUIState, "value">> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & Exclude<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
     static get meta(): TMeta {
         return {
             ...super.meta,
@@ -237,12 +237,6 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
             version: "1.0.0",
             description: "Ab**ton Live User ?",
             props: [...super.meta.props, {
-                name: "value",
-                type: "number",
-                default: 0,
-                description: "Value",
-                isUIState: true
-            }, {
                 name: "min",
                 type: "number",
                 default: 0,
@@ -340,22 +334,32 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
      * @returns {number}
      * @memberof LiveObject
      */
-    calcValidNumber(): number {
-        const { value } = this.state;
+    toValidValue(value: number): number {
         const min = this.box.props.min || 0;
         const max = this.box.props.max || 127;
         const step = this.box.props.step || 1;
         const v = Math.min(max, Math.max(min, value));
-        this.state.value = min + Math.floor((v - min) / step) * step;
-        return this.state.value;
+        return min + Math.floor((v - min) / step) * step;
     }
-    calcDisplayValue() {
-        const { value } = this.state;
+    toDisplayValue(value: number): string {
         const { type, unitStyle, units, enums } = this.box.props;
-        this.state.displayValue = getDisplayValue(value || 0, type || "int", unitStyle || "int", units || "", enums || [""]);
-        return this.state.displayValue;
+        return getDisplayValue(value || 0, type || "int", unitStyle || "int", units || "", enums || [""]);
+    }
+    validateValue() {
+        this.state.value = this.toValidValue(this.state.value);
+        this.state.displayValue = this.toDisplayValue(this.state.value);
     }
     onChangeFromUI(e: { value: number; displayValue: string }) {
         this.emit("changeFromUI", e);
+    }
+    subscribe() {
+        super.subscribe();
+        this.on("updateProps", (props) => {
+            if (typeof props.max !== "undefined" || typeof props.min !== "undefined" || typeof props.step !== "undefined") {
+                const lastValue = this.state.value;
+                this.validateValue();
+                if (lastValue !== this.state.value) this.updateUI({ value: this.state.value } as any);
+            }
+        });
     }
 }

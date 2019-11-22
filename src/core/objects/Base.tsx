@@ -548,7 +548,7 @@ export class BaseObject<
     subscribe() {
         super.subscribe();
         this.on("update", this.updateBox);
-        const isUIStateKey = (x: any): x is keyof (U & BaseUIState) => !!this.meta.props.find(prop => !!prop.isUIState);
+        const isUIStateKey = (x: any): x is keyof (U & BaseUIState) => !!this.meta.props.find(prop => !!prop.isUIState && prop.name === x);
         const updateUIFromProps = (props: Partial<P & BaseUIState & BaseAdditionalProps>) => {
             if (props) {
                 const uiState: Partial<U & BaseUIState> = {};

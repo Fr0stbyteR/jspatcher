@@ -150,15 +150,13 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], Live
         });
         this.on("updateArgs", (args) => {
             this.state.value = +!!args[0];
-            this.calcValidNumber();
-            this.calcDisplayValue();
+            this.validateValue();
             this.updateUI({ value: this.state.value });
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 this.state.value = +!!data;
-                this.calcValidNumber();
-                this.calcDisplayValue();
+                this.validateValue();
                 this.updateUI({ value: this.state.value });
                 if (this.state.value && this.box.props.transition !== "One->Zero") this.outlet(0, new Bang());
             }
@@ -166,8 +164,7 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], Live
         this.on("changeFromUI", ({ value }) => {
             const lastValue = this.state.value;
             this.state.value = value;
-            this.calcValidNumber();
-            this.calcDisplayValue();
+            this.validateValue();
             const b01 = this.box.props.transition !== "One->Zero";
             const b10 = this.box.props.transition === "One->Zero" || this.box.props.transition === "Both";
             if ((b01 && lastValue < this.state.value) || (b10 && lastValue > this.state.value)) this.outlet(0, new Bang());
