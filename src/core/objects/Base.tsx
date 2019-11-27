@@ -9,7 +9,6 @@ import { BaseUIState, DefaultUIState, TAudioNodeInletConnection, TAudioNodeOutle
 
 export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P extends Partial<{ object: T }> & { [key: string]: any } = {}, S extends { [key: string]: any } = {}> extends React.Component<{ object: T } & P, S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
-    // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
     state = {} as Readonly<S>;
     get object(): T {
         return this.props.object;

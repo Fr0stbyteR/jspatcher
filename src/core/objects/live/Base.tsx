@@ -20,7 +20,6 @@ export const getDisplayValue = (value: number, type: string, unitstyle: string, 
 };
 export type LiveUIState = LiveUIProps & BaseUIState & BaseUIAdditionalState;
 export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [key: string]: any } = {}> extends BaseUI<T, {}, P & LiveUIProps> {
-    // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
     state: P & LiveUIState = {
         ...this.state,
         value: this.box.props.value || 0,
@@ -325,7 +324,6 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
             }]
         };
     }
-    // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
     state = { value: 0, displayValue: "0" } as S & LiveObjectState;
     uiComponent: typeof LiveUI;
     /**

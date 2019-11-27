@@ -23,8 +23,8 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
         focusBorderColor: this.box.props.focusBorderColor || "rgba(80, 80, 80, 1)"
     }
     className = "live-button";
-    inTouch: boolean = false;
-    $resetTimer: number = -1;
+    inTouch = false;
+    $resetTimer = -1;
     resetCallback = () => {
         this.setValueToOutput(0);
         this.$resetTimer = -1;
@@ -112,13 +112,13 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], Live
                 name: "bgOnColor",
                 type: "color",
                 default: "rgba(195, 195, 195, 1)",
-                description: "Background color (inactive)",
+                description: "Background color (on / inactive)",
                 isUIState: true
             }, {
                 name: "activeBgColor",
                 type: "color",
                 default: "rgba(109, 215, 255, 1)",
-                description: "Background color (active)",
+                description: "Background color (on /active)",
                 isUIState: true
             }, {
                 name: "borderColor",
