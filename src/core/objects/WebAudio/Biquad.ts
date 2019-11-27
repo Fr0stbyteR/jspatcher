@@ -5,66 +5,68 @@ import { TMeta, TCurve } from "../../types";
 
 type I = [Bang, TCurve, TCurve, TCurve, TCurve, BiquadFilterType];
 export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null, BiquadFilterNode], [], BiquadFilterOptions> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio BiquadFilterNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection (1 channel), bang to output BiquadFilterNode instance"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "frequency: curve or node connection"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "detune: curve or node connection"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "Q: curve or node connection"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "gain: curve or node connection"
-            }, {
-                isHot: false,
-                type: "string",
-                description: 'type: "lowpass" | "highpass" | "bandpass" | "lowshelf" | "highshelf" | "peaking" | "notch" | "allpass"'
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection (1 channel)"
-            }, {
-                type: "object",
-                description: "Instance: BiquadFilterNode"
-            }],
-            args: [],
-            props: [...super.meta.props, {
-                name: "frequency",
-                type: "number",
-                description: "Initial frequency"
-            }, {
-                name: "detune",
-                type: "number",
-                description: "Initial detune"
-            }, {
-                name: "Q",
-                type: "number",
-                description: "Initial Q"
-            }, {
-                name: "gain",
-                type: "number",
-                description: "Initial gain"
-            }, {
-                name: "type",
-                type: "string",
-                description: 'Initial type: "lowpass" | "highpass" | "bandpass" | "lowshelf" | "highshelf" | "peaking" | "notch" | "allpass"'
-            }]
-        };
-    }
+    static description = "WebAudio BiquadFilterNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection (1 channel), bang to output BiquadFilterNode instance"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "frequency: curve or node connection"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "detune: curve or node connection"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "Q: curve or node connection"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "gain: curve or node connection"
+    }, {
+        isHot: false,
+        type: "enum",
+        enums: ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"],
+        description: 'type: "lowpass" | "highpass" | "bandpass" | "lowshelf" | "highshelf" | "peaking" | "notch" | "allpass"'
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection (1 channel)"
+    }, {
+        type: "object",
+        description: "Instance: BiquadFilterNode"
+    }];
+    static props: TMeta["props"] = {
+        frequency: {
+            type: "number",
+            default: 350,
+            description: "Initial frequency"
+        },
+        detune: {
+            type: "number",
+            default: 100,
+            description: "Initial detune"
+        },
+        Q: {
+            type: "number",
+            default: 100,
+            description: "Initial Q"
+        },
+        gain: {
+            type: "number",
+            default: 25,
+            description: "Initial gain"
+        },
+        type: {
+            type: "enum",
+            enums: ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"],
+            default: "lowpass",
+            description: 'Initial type: "lowpass" | "highpass" | "bandpass" | "lowshelf" | "highshelf" | "peaking" | "notch" | "allpass"'
+        }
+    };
     static isBiquadFilterType = (x: any): x is BiquadFilterType => ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"].indexOf(x) >= 0;
     state = { node: this.audioCtx.createBiquadFilter() };
     inletConnections = [{ node: this.node, index: 0 }, { node: this.node.frequency }, { node: this.node.detune }, { node: this.node.Q }, { node: this.node.gain }];

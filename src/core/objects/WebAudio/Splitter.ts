@@ -3,30 +3,24 @@ import { Bang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Bang], (null | ChannelSplitterNode)[], [number]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio ChannelSplitterNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output ChannelSplitterNode instance, number to change outputs"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection (1 channel)"
-            }, {
-                type: "object",
-                description: "Instance: ChannelSplitterNode"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                description: "Number of Outputs"
-            }],
-            props: []
-        };
-    }
+    static description = "WebAudio ChannelSplitterNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output ChannelSplitterNode instance, number to change outputs"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection (1 channel)"
+    }, {
+        type: "object",
+        description: "Instance: ChannelSplitterNode"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        description: "Number of Outputs"
+    }];
     state = { node: null as ChannelSplitterNode };
     inletConnections = [{ node: this.node, index: 0 }];
     _meta: TMeta;

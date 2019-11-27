@@ -159,122 +159,118 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps & LiveNumboxAdditi
 }
 
 export class LiveNumbox extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveNumboxProps> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Number box",
-            inlets: [{
-                isHot: true,
-                type: "number",
-                description: "Set and output the value"
-            }, {
-                isHot: false,
-                type: "number",
-                description: "Set without output the value"
-            }],
-            outlets: [{
-                type: "number",
-                description: "Number value"
-            }, {
-                type: "string",
-                description: "Display value"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                default: 0,
-                description: "Initial value"
-            }],
-            props: [...super.meta.props, {
-                name: "bgColor",
-                type: "color",
-                default: "rgba(195, 195, 195, 1)",
-                description: "Background color (inactive)",
-                isUIState: true
-            }, {
-                name: "activeBgColor",
-                type: "color",
-                default: "rgba(195, 195, 195, 1)",
-                description: "Background color (active)",
-                isUIState: true
-            }, {
-                name: "borderColor",
-                type: "color",
-                default: "rgba(80, 80, 80, 1)",
-                description: "Border color (unfocus)",
-                isUIState: true
-            }, {
-                name: "focusBorderColor",
-                type: "color",
-                default: "rgba(80, 80, 80, 1)",
-                description: "Border color (focus)",
-                isUIState: true
-            }, {
-                name: "textColor",
-                type: "color",
-                default: "rgba(0, 0, 0, 1)",
-                description: "Text color",
-                isUIState: true
-            }, {
-                name: "fontFamily",
-                type: "enum",
-                enum: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
-                default: "Arial",
-                description: "Font family",
-                isUIState: true
-            }, {
-                name: "fontSize",
-                type: "number",
-                default: 10,
-                description: "Text font size",
-                isUIState: true
-            }, {
-                name: "fontFace",
-                type: "enum",
-                enum: ["regular", "bold", "italic", "bold italic"],
-                default: "regular",
-                description: "Text style",
-                isUIState: true
-            }, {
-                name: "appearance",
-                type: "enum",
-                enum: ["default", "slider", "triangle"],
-                default: "default",
-                description: "Text style",
-                isUIState: true
-            }, {
-                name: "triColor",
-                type: "color",
-                default: "rgba(195, 195, 195, 1)",
-                description: "Triangle color (inactive)",
-                isUIState: true
-            }, {
-                name: "activeTriColor",
-                type: "color",
-                default: "rgba(165, 165, 165, 1)",
-                description: "Triangle color (active)",
-                isUIState: true
-            }, {
-                name: "triColor2",
-                type: "color",
-                default: "rgba(165, 165, 165, 1)",
-                description: "Triangle color on positive value (inactive)",
-                isUIState: true
-            }, {
-                name: "activeTriColor2",
-                type: "color",
-                default: "rgba(109, 215, 255, 1)",
-                description: "Triangle color on positive value (active)",
-                isUIState: true
-            }, {
-                name: "activeSliderColor",
-                type: "color",
-                default: "rgba(109, 215, 255, 1)",
-                description: "Slider color",
-                isUIState: true
-            }]
-        };
-    }
+    static description = "Number box";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "number",
+        description: "Set and output the value"
+    }, {
+        isHot: false,
+        type: "number",
+        description: "Set without output the value"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "number",
+        description: "Number value"
+    }, {
+        type: "string",
+        description: "Display value"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        default: 0,
+        description: "Initial value"
+    }];
+    static props: TMeta["props"] = {
+        bgColor: {
+            type: "color",
+            default: "rgba(195, 195, 195, 1)",
+            description: "Background color (inactive)",
+            isUIState: true
+        },
+        activeBgColor: {
+            type: "color",
+            default: "rgba(195, 195, 195, 1)",
+            description: "Background color (active)",
+            isUIState: true
+        },
+        borderColor: {
+            type: "color",
+            default: "rgba(80, 80, 80, 1)",
+            description: "Border color (unfocus)",
+            isUIState: true
+        },
+        focusBorderColor: {
+            type: "color",
+            default: "rgba(80, 80, 80, 1)",
+            description: "Border color (focus)",
+            isUIState: true
+        },
+        textColor: {
+            type: "color",
+            default: "rgba(0, 0, 0, 1)",
+            description: "Text color",
+            isUIState: true
+        },
+        fontFamily: {
+            type: "enum",
+            enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
+            default: "Arial",
+            description: "Font family",
+            isUIState: true
+        },
+        fontSize: {
+            type: "number",
+            default: 10,
+            description: "Text font size",
+            isUIState: true
+        },
+        fontFace: {
+            type: "enum",
+            enums: ["regular", "bold", "italic", "bold italic"],
+            default: "regular",
+            description: "Text style",
+            isUIState: true
+        },
+        appearance: {
+            type: "enum",
+            enums: ["default", "slider", "triangle"],
+            default: "default",
+            description: "Text style",
+            isUIState: true
+        },
+        triColor: {
+            type: "color",
+            default: "rgba(195, 195, 195, 1)",
+            description: "Triangle color (inactive)",
+            isUIState: true
+        },
+        activeTriColor: {
+            type: "color",
+            default: "rgba(165, 165, 165, 1)",
+            description: "Triangle color (active)",
+            isUIState: true
+        },
+        triColor2: {
+            type: "color",
+            default: "rgba(165, 165, 165, 1)",
+            description: "Triangle color on positive value (inactive)",
+            isUIState: true
+        },
+        activeTriColor2: {
+            type: "color",
+            default: "rgba(109, 215, 255, 1)",
+            description: "Triangle color on positive value (active)",
+            isUIState: true
+        },
+        activeSliderColor: {
+            type: "color",
+            default: "rgba(109, 215, 255, 1)",
+            description: "Slider color",
+            isUIState: true
+        }
+    };
     uiComponent = LiveNumboxUI;
     subscribe() {
         super.subscribe();

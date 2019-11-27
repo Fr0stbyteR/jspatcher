@@ -4,26 +4,19 @@ import { TMeta } from "../../types";
 
 type I = [Bang | HTMLMediaElement];
 export default class Media extends JSPAudioNode<MediaElementAudioSourceNode, { element: HTMLMediaElement }, I, [null, MediaElementAudioSourceNode], [], {}> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio MediaElementAudioSourceNode",
-            inlets: [{
-                isHot: true,
-                type: "object",
-                description: "HTMLMediaElement to construct node, bang to output MediaElementAudioSourceNode instance"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection"
-            }, {
-                type: "object",
-                description: "Instance: MediaElementAudioSourceNode"
-            }],
-            args: [],
-            props: []
-        };
-    }
+    static description = "WebAudio MediaElementAudioSourceNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "object",
+        description: "HTMLMediaElement to construct node, bang to output MediaElementAudioSourceNode instance"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection"
+    }, {
+        type: "object",
+        description: "Instance: MediaElementAudioSourceNode"
+    }];
     state = { node: undefined as MediaElementAudioSourceNode, element: undefined as HTMLMediaElement };
     subscribe() {
         super.subscribe();

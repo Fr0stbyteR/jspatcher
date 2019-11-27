@@ -3,23 +3,16 @@ import { Bang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class Destination extends JSPAudioNode<AudioDestinationNode, {}, [Bang], [AudioDestinationNode]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio DestinationNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output DestinationNode instance"
-            }],
-            outlets: [{
-                type: "object",
-                description: "Instance: DestinationNode"
-            }],
-            args: [],
-            props: []
-        };
-    }
+    static description = "WebAudio DestinationNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output DestinationNode instance"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "object",
+        description: "Instance: DestinationNode"
+    }];
     state = { node: this.audioCtx.destination };
     inletConnections = [{ node: this.node, index: 0 }];
     subscribe() {

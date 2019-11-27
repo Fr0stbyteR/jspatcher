@@ -3,26 +3,19 @@ import { Bang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class StreamDest extends JSPAudioNode<MediaStreamAudioDestinationNode, {}, [Bang], [MediaStreamAudioDestinationNode, MediaStream]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio MediaStreamAudioDestinationNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output MediaStreamAudioDestinationNode instance with its stream"
-            }],
-            outlets: [{
-                type: "object",
-                description: "Instance: MediaStreamAudioDestinationNode"
-            }, {
-                type: "object",
-                description: "Stream"
-            }],
-            args: [],
-            props: []
-        };
-    }
+    static description = "WebAudio MediaStreamAudioDestinationNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output MediaStreamAudioDestinationNode instance with its stream"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "object",
+        description: "Instance: MediaStreamAudioDestinationNode"
+    }, {
+        type: "object",
+        description: "Stream"
+    }];
     state = { node: this.audioCtx.createMediaStreamDestination() };
     inletConnections = [{ node: this.node, index: 0 }];
     subscribe() {

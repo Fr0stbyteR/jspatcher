@@ -82,28 +82,23 @@ class MessageUI extends ButtonUI<message> {
     }
 }
 class message extends BaseObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], {}, { text: string }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            package: "UI",
-            author: "Fr0stbyteR",
-            version: "1.0.0",
-            description: "Message",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Trigger output the message"
-            }, {
-                isHot: false,
-                type: "anything",
-                description: "Set the message"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Message to send"
-            }]
-        };
-    }
+    static package = "UI";
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "Message";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Trigger output the message"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Set the message"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Message to send"
+    }];
     state = { buffer: new Bang(), editing: false };
     handleUpdateArgs = (args: any[]) => {
         if (typeof args[0] !== "undefined") {
@@ -205,20 +200,15 @@ class CommentUI extends BaseUI<comment, {}, CommentUIState> {
     }
 }
 export class comment extends BaseObject<{ value: string }, {}, [], [], [string]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            package: "UI",
-            author: "Fr0stbyteR",
-            version: "1.0.0",
-            description: "Text Comment",
-            args: [{
-                type: "string",
-                optional: true,
-                description: "Initial text"
-            }]
-        };
-    }
+    static package = "UI";
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "Text Comment";
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: true,
+        description: "Initial text"
+    }];
     subscribe() {
         super.subscribe();
         this.on("updateArgs", (args) => {
@@ -268,34 +258,29 @@ class CodeUI extends BaseUI<comment, {}, CodeUIState> {
     }
 }
 export class code extends BaseObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            package: "UI",
-            author: "Fr0stbyteR",
-            version: "1.0.0",
-            description: "Code Editor",
-            inlets: [{
-                isHot: true,
-                type: "bang",
-                description: "Trigger output the code"
-            }, {
-                isHot: false,
-                type: "string",
-                description: "Set the code"
-            }],
-            outlets: [{
-                type: "string",
-                description: "Code"
-            }],
-            args: [{
-                type: "string",
-                optional: true,
-                default: "javascript",
-                description: "language"
-            }]
-        };
-    }
+    static package = "UI";
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "Code Editor";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Trigger output the code"
+    }, {
+        isHot: false,
+        type: "string",
+        description: "Set the code"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "string",
+        description: "Code"
+    }];
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: true,
+        default: "javascript",
+        description: "language"
+    }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

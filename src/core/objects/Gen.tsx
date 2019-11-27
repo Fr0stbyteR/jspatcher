@@ -1,7 +1,6 @@
 import { DefaultObject } from "./Base";
 import { comment } from "./UI";
 import "./Gen.scss";
-import { TMeta } from "../types";
 
 const genOperators: { [key: string]: string[] } = {
     common: [
@@ -47,27 +46,16 @@ const genOperators: { [key: string]: string[] } = {
     ]
 };
 export class GenOp extends DefaultObject {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            package: "Gen",
-            author: "Fr0stbyteR",
-            version: "1.0.0",
-            description: "Gen Operator"
-        };
-    }
+    static package = "Gen";
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "Gen Operator";
 }
 const GenOps: { [key: string]: typeof GenOp | typeof comment } = { comment };
 for (const key in genOperators) {
     genOperators[key].forEach((name) => {
         GenOps[name] = class extends GenOp {
-            static get meta() {
-                return {
-                    ...super.meta,
-                    name,
-                    description: "Gen Operator " + name
-                };
-            }
+            static description = "Gen Operator " + name;
         };
     });
 }

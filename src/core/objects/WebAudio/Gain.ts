@@ -4,34 +4,28 @@ import { decodeCurve } from "../../../utils";
 import { TMeta, TCurve } from "../../types";
 
 export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, TCurve], [null, GainNode], [number]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio GainNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output GainNode instance"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "gain: curve or node connection"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection"
-            }, {
-                type: "object",
-                description: "Instance: GainNode"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                description: "Initial gain"
-            }],
-            props: []
-        };
-    }
+    static description = "WebAudio GainNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output GainNode instance"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "gain: curve or node connection"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection"
+    }, {
+        type: "object",
+        description: "Instance: GainNode"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        description: "Initial gain"
+    }];
     state = { node: this.audioCtx.createGain() };
     inletConnections = [{ node: this.node, index: 0 }, { node: this.node.gain }];
     outletConnections = [{ node: this.node, index: 0 }];

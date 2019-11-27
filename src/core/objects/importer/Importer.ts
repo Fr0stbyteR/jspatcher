@@ -44,9 +44,10 @@ export default class Importer {
             else Super = Property;
         }
         return class extends Super {
-            static pkgName = pkgName;
+            static package = pkgName;
             static root = root;
             static path = path;
+            static _name = path[path.length - 1];
         };
     }
     static async importFrom(address: string, pkgName: string) {

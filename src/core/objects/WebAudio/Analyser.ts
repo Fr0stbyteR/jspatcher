@@ -11,74 +11,73 @@ type TOptions = {
 type I = [Bang, Float32Array, Uint8Array, Float32Array, Uint8Array, Partial<TOptions>];
 type O = [null, Float32Array, Uint8Array, Float32Array, Uint8Array, AnalyserNode];
 export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], TOptions> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio AnalyserNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output AnalyserNode instance"
-            }, {
-                isHot: true,
-                type: "object",
-                description: "getFloatTimeDomainData(): Float32Array"
-            }, {
-                isHot: true,
-                type: "object",
-                description: "getByteTimeDomainData(): Uint8Array"
-            }, {
-                isHot: true,
-                type: "object",
-                description: "getFloatFrequencyData(): Float32Array"
-            }, {
-                isHot: true,
-                type: "object",
-                description: "getByteFrequencyData(): Uint8Array"
-            }, {
-                isHot: false,
-                type: "object",
-                description: "Options: { fftSize, minDecibels, maxDecibels, smoothingTimeConstant }"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection"
-            }, {
-                type: "object",
-                description: "getFloatTimeDomainData result"
-            }, {
-                type: "object",
-                description: "getByteTimeDomainData result"
-            }, {
-                type: "object",
-                description: "getFloatFrequencyData result"
-            }, {
-                type: "object",
-                description: "getByteFrequencyData result"
-            }, {
-                type: "object",
-                description: "Instance: AnalyserNode"
-            }],
-            args: [],
-            props: [...super.meta.props, {
-                name: "fftSize",
-                type: "number",
-                description: "The size of the FFT to be used: power of 2"
-            }, {
-                name: "minDecibels",
-                type: "number",
-                description: "The minimum power value in the scaling range for the FFT analysis data"
-            }, {
-                name: "maxDecibels",
-                type: "number",
-                description: "The maximum power value in the scaling range for the FFT analysis data"
-            }, {
-                name: "smoothingTimeConstant",
-                type: "number",
-                description: "The averaging constant with the last analysis frame"
-            }]
-        };
-    }
+    static description = "WebAudio AnalyserNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output AnalyserNode instance"
+    }, {
+        isHot: true,
+        type: "object",
+        description: "getFloatTimeDomainData(): Float32Array"
+    }, {
+        isHot: true,
+        type: "object",
+        description: "getByteTimeDomainData(): Uint8Array"
+    }, {
+        isHot: true,
+        type: "object",
+        description: "getFloatFrequencyData(): Float32Array"
+    }, {
+        isHot: true,
+        type: "object",
+        description: "getByteFrequencyData(): Uint8Array"
+    }, {
+        isHot: false,
+        type: "object",
+        description: "Options: { fftSize, minDecibels, maxDecibels, smoothingTimeConstant }"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection"
+    }, {
+        type: "object",
+        description: "getFloatTimeDomainData result"
+    }, {
+        type: "object",
+        description: "getByteTimeDomainData result"
+    }, {
+        type: "object",
+        description: "getFloatFrequencyData result"
+    }, {
+        type: "object",
+        description: "getByteFrequencyData result"
+    }, {
+        type: "object",
+        description: "Instance: AnalyserNode"
+    }];
+    static props: TMeta["props"] = {
+        fftSize: {
+            type: "number",
+            default: 2048,
+            description: "The size of the FFT to be used: power of 2"
+        },
+        minDecibels: {
+            type: "number",
+            default: -100,
+            description: "The minimum power value in the scaling range for the FFT analysis data"
+        },
+        maxDecibels: {
+            type: "number",
+            default: -10,
+            description: "The maximum power value in the scaling range for the FFT analysis data"
+        },
+        smoothingTimeConstant: {
+            type: "number",
+            default: 0.8,
+            description: "The averaging constant with the last analysis frame"
+        }
+    };
     state = { node: this.audioCtx.createAnalyser() };
     inletConnections = [{ node: this.node, index: 0 }];
     outletConnections = [{ node: this.node, index: 0 }];

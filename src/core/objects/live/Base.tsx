@@ -228,102 +228,98 @@ export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [ke
 type LiveObjectState = { value: number; displayValue: string };
 type LiveObjectEventMap = { "changeFromUI": { value: number; displayValue: string } };
 export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<Exclude<LiveUIState, "value">> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & Exclude<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            package: "live",
-            author: "Fr0stbyteR",
-            version: "1.0.0",
-            description: "Ab**ton Live User ?",
-            props: [...super.meta.props, {
-                name: "min",
-                type: "number",
-                default: 0,
-                description: "Minimum value",
-                isUIState: true
-            }, {
-                name: "max",
-                type: "number",
-                default: 127,
-                description: "Maximum value",
-                isUIState: true
-            }, {
-                name: "step",
-                type: "number",
-                default: 1,
-                description: "Value change step",
-                isUIState: true
-            }, {
-                name: "type",
-                type: "enum",
-                enum: ["enum", "float", "int"],
-                default: "int",
-                description: "Value type",
-                isUIState: true
-            }, {
-                name: "enum",
-                type: "object",
-                default: [""],
-                description: "Enum values",
-                isUIState: true
-            }, {
-                name: "active",
-                type: "boolean",
-                default: true,
-                description: "Active state",
-                isUIState: true
-            }, {
-                name: "focus",
-                type: "boolean",
-                default: false,
-                description: "Focus state",
-                isUIState: true
-            }, {
-                name: "shortName",
-                type: "string",
-                default: "",
-                description: "Short name to display",
-                isUIState: true
-            }, {
-                name: "longName",
-                type: "string",
-                default: "",
-                description: "Long name to display",
-                isUIState: true
-            }, {
-                name: "unitStyle",
-                type: "enum",
-                enum: ["float", "int", "time", "hertz", "decibel", "%", "pan", "semitones", "midi", "custom", "native"],
-                default: "int",
-                description: "Style of unit to display",
-                isUIState: true
-            }, {
-                name: "units",
-                type: "string",
-                default: "",
-                description: "If unitStyle set to custom, display this as unit",
-                isUIState: true
-            }, {
-                name: "exponent",
-                type: "number",
-                default: 0,
-                description: "UI modulation curve, 0 for linear",
-                isUIState: true
-            }, {
-                name: "speedLim",
-                type: "number",
-                default: 16,
-                description: "Value output speed limit in ms",
-                isUIState: true
-            }, {
-                name: "frameRate",
-                type: "number",
-                default: 60,
-                description: "UI refresh rate",
-                isUIState: true
-            }]
-        };
-    }
+    static package = "live";
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "Ab**ton Live User ?";
+    static props: TMeta["props"] = {
+        min: {
+            type: "number",
+            default: 0,
+            description: "Minimum value",
+            isUIState: true
+        },
+        max: {
+            type: "number",
+            default: 127,
+            description: "Maximum value",
+            isUIState: true
+        },
+        step: {
+            type: "number",
+            default: 1,
+            description: "Value change step",
+            isUIState: true
+        },
+        type: {
+            type: "enum",
+            enums: ["enum", "float", "int"],
+            default: "int",
+            description: "Value type",
+            isUIState: true
+        },
+        enum: {
+            type: "object",
+            default: [""],
+            description: "Enum values",
+            isUIState: true
+        },
+        active: {
+            type: "boolean",
+            default: true,
+            description: "Active state",
+            isUIState: true
+        },
+        focus: {
+            type: "boolean",
+            default: false,
+            description: "Focus state",
+            isUIState: true
+        },
+        shortName: {
+            type: "string",
+            default: "",
+            description: "Short name to display",
+            isUIState: true
+        },
+        longName: {
+            type: "string",
+            default: "",
+            description: "Long name to display",
+            isUIState: true
+        },
+        unitStyle: {
+            type: "enum",
+            enums: ["float", "int", "time", "hertz", "decibel", "%", "pan", "semitones", "midi", "custom", "native"],
+            default: "int",
+            description: "Style of unit to display",
+            isUIState: true
+        },
+        units: {
+            type: "string",
+            default: "",
+            description: "If unitStyle set to custom, display this as unit",
+            isUIState: true
+        },
+        exponent: {
+            type: "number",
+            default: 0,
+            description: "UI modulation curve, 0 for linear",
+            isUIState: true
+        },
+        speedLim: {
+            type: "number",
+            default: 16,
+            description: "Value output speed limit in ms",
+            isUIState: true
+        },
+        frameRate: {
+            type: "number",
+            default: 60,
+            description: "UI refresh rate",
+            isUIState: true
+        }
+    };
     state = { value: 0, displayValue: "0" } as S & LiveObjectState;
     uiComponent: typeof LiveUI;
     /**

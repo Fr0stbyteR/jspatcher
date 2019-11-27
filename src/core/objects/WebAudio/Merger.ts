@@ -3,34 +3,28 @@ import { Bang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | number, ...null[]], [null, ChannelMergerNode], [number]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio ChannelMergerNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output DestinationNode instance, number to change inputs"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "Node connection"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection (n channels)"
-            }, {
-                type: "object",
-                description: "Instance: ChannelMergerNode"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                description: "Number of Inputs"
-            }],
-            props: []
-        };
-    }
+    static description = "WebAudio ChannelMergerNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output DestinationNode instance, number to change inputs"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "Node connection"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection (n channels)"
+    }, {
+        type: "object",
+        description: "Instance: ChannelMergerNode"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        description: "Number of Inputs"
+    }];
     state = { node: null as ChannelMergerNode };
     outletConnections = [{ node: this.node, index: 0 }];
     _meta: TMeta;

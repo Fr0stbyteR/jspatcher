@@ -4,15 +4,10 @@ import Patcher from "../Patcher";
 import { TPackage, TMeta } from "../types";
 
 export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number; args: (number | string)[] }, [], [], any[]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            package: "FaustOps",
-            author: "Fr0stbyteR",
-            version: "1.0.0",
-            description: "Faust Operator"
-        };
-    }
+    static package = "FaustOps";
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "Faust Operator";
     state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
     subscribe() {
         super.subscribe();
@@ -82,22 +77,16 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
 }
 
 class In extends FaustOp {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            name: this.name,
-            description: "Signal Input",
-            outlets: [{
-                type: "signal",
-                description: "_"
-            }],
-            args: [{
-                type: "number",
-                optional: false,
-                description: "Signal index (0-based)"
-            }]
-        };
-    }
+    static description = "Signal Input";
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: false,
+        description: "Signal index (0-based)"
+    }];
     symbol = ["in"];
     subscribe() {
         super.subscribe();
@@ -121,23 +110,17 @@ class In extends FaustOp {
     }
 }
 class Out extends FaustOp {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            name: this.name,
-            description: "Signal Output",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "_"
-            }],
-            args: [{
-                type: "number",
-                optional: false,
-                description: "Signal index (0-based)"
-            }]
-        };
-    }
+    static description = "Signal Output";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: false,
+        description: "Signal index (0-based)"
+    }];
     symbol = ["out"];
     subscribe() {
         super.subscribe();

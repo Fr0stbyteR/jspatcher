@@ -4,35 +4,25 @@ import "./Std.scss";
 import { TMeta } from "../types";
 
 class StdObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            package: "Std",
-            author: "Fr0stbyteR",
-            version: "1.0.0",
-            description: "Standard Object"
-        };
-    }
+    static package = "Std";
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "Standard Objects";
 }
 
 class print extends StdObject<{}, { title: string }, [any], [], [string]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Print to console",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Anything to stringify"
-            }],
-            args: [{
-                type: "string",
-                optional: true,
-                default: "Print",
-                description: "Title"
-            }]
-        };
-    }
+    static description = "Print to console";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Anything to stringify"
+    }];
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: true,
+        default: "Print",
+        description: "Title"
+    }]
     state = { title: "Print" };
     subscribe() {
         super.subscribe();
@@ -55,47 +45,42 @@ class print extends StdObject<{}, { title: string }, [any], [], [string]> {
     }
 }
 class For extends StdObject<{}, { start: number; end: number; step: number }, [Bang, number, number, number], [number], [number, number, number?]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Number iterator",
-            inlets: [{
-                isHot: true,
-                type: "bang",
-                description: "Do iterations"
-            }, {
-                isHot: false,
-                type: "number",
-                description: "Set the starting point"
-            }, {
-                isHot: false,
-                type: "number",
-                description: "Set the end point (excluded)"
-            }, {
-                isHot: false,
-                type: "number",
-                description: "Set the step"
-            }],
-            outlets: [{
-                type: "number",
-                description: "Output all iterations one by one"
-            }],
-            args: [{
-                type: "number",
-                optional: false,
-                description: "The starting point"
-            }, {
-                type: "number",
-                optional: false,
-                description: "The end point (excluded)"
-            }, {
-                type: "number",
-                optional: true,
-                default: 1,
-                description: "The step"
-            }]
-        };
-    }
+    static description = "Number iterator";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Do iterations"
+    }, {
+        isHot: false,
+        type: "number",
+        description: "Set the starting point"
+    }, {
+        isHot: false,
+        type: "number",
+        description: "Set the end point (excluded)"
+    }, {
+        isHot: false,
+        type: "number",
+        description: "Set the step"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "number",
+        description: "Output all iterations one by one"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: false,
+        description: "The starting point"
+    }, {
+        type: "number",
+        optional: false,
+        description: "The end point (excluded)"
+    }, {
+        type: "number",
+        optional: true,
+        default: 1,
+        description: "The step"
+    }];
     state = { start: 0, end: 0, step: 1 };
     subscribe() {
         super.subscribe();
@@ -128,33 +113,28 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
     }
 }
 class ForIn extends StdObject<{}, { buffer: any }, [any, any], [string | number | symbol, any], [{ [key: string]: any }]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Object key-value iterator",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Iterate input, bang to redo"
-            }, {
-                isHot: false,
-                type: "object",
-                description: "Set the iteration object"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Key"
-            }, {
-                type: "anything",
-                description: "Value"
-            }],
-            args: [{
-                type: "object",
-                optional: true,
-                description: "Initial object to iterate"
-            }]
-        };
-    }
+    static description = "Object key-value iterator";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Iterate input, bang to redo"
+    }, {
+        isHot: false,
+        type: "object",
+        description: "Set the iteration object"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Key"
+    }, {
+        type: "anything",
+        description: "Value"
+    }];
+    static args: TMeta["args"] = [{
+        type: "object",
+        optional: true,
+        description: "Initial object to iterate"
+    }];
     state = { buffer: null as any };
     subscribe() {
         super.subscribe();
@@ -176,39 +156,34 @@ class ForIn extends StdObject<{}, { buffer: any }, [any, any], [string | number 
     }
 }
 class set extends StdObject<{}, { key: string | number; value: any }, [{ [key: string]: any } | any[], string | number, any], [{ [key: string]: any } | any[]], [string | number, any]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Set a property of incoming object",
-            inlets: [{
-                isHot: true,
-                type: "object",
-                description: "Object to set a property"
-            }, {
-                isHot: false,
-                type: "string",
-                description: "Key / name of the property"
-            }, {
-                isHot: false,
-                type: "anything",
-                description: "Value to set to the property"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Object bypass"
-            }],
-            args: [{
-                type: "anything",
-                optional: false,
-                description: "Initial key of the property"
-            }, {
-                type: "anything",
-                optional: true,
-                default: undefined,
-                description: "Initial value of the property"
-            }]
-        };
-    }
+    static description = "Set a property of incoming object";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "object",
+        description: "Object to set a property"
+    }, {
+        isHot: false,
+        type: "string",
+        description: "Key / name of the property"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Value to set to the property"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Object bypass"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: false,
+        description: "Initial key of the property"
+    }, {
+        type: "anything",
+        optional: true,
+        default: undefined,
+        description: "Initial value of the property"
+    }];
     state = { key: undefined as string | number, value: undefined as any };
     subscribe() {
         super.subscribe();
@@ -242,30 +217,25 @@ class set extends StdObject<{}, { key: string | number; value: any }, [{ [key: s
     }
 }
 class get extends StdObject<{}, { key: string | number }, [{ [key: string]: any } | any[], string | number], [{ [key: string]: any } | any[]], [string | number]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Get a property of incoming object",
-            inlets: [{
-                isHot: true,
-                type: "object",
-                description: "Object to get a property"
-            }, {
-                isHot: false,
-                type: "string",
-                description: "Key / name of the property"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Object bypass"
-            }],
-            args: [{
-                type: "anything",
-                optional: false,
-                description: "Initial key of the property"
-            }]
-        };
-    }
+    static description = "Get a property of incoming object";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "object",
+        description: "Object to get a property"
+    }, {
+        isHot: false,
+        type: "string",
+        description: "Key / name of the property"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Object bypass"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: false,
+        description: "Initial key of the property"
+    }];
     state = { key: undefined as string | number };
     subscribe() {
         super.subscribe();
@@ -295,24 +265,19 @@ class get extends StdObject<{}, { key: string | number }, [{ [key: string]: any 
     }
 }
 class If extends StdObject<{}, {}, [boolean], [Bang, Bang]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Output a bang on true / false",
-            inlets: [{
-                isHot: true,
-                type: "boolean",
-                description: "True for a bang to left outlet, false for right"
-            }],
-            outlets: [{
-                type: "bang",
-                description: "True?"
-            }, {
-                type: "bang",
-                description: "False?"
-            }]
-        };
-    }
+    static description = "Output a bang on true / false";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "boolean",
+        description: "True for a bang to left outlet, false for right"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "bang",
+        description: "True?"
+    }, {
+        type: "bang",
+        description: "False?"
+    }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -325,38 +290,33 @@ class If extends StdObject<{}, {}, [boolean], [Bang, Bang]> {
     }
 }
 class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Output a bang on a matched inlet",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                varLength: false,
-                description: "Test for match"
-            }, {
-                isHot: false,
-                type: "anything",
-                varLength: true,
-                description: "Set value for match"
-            }],
-            outlets: [{
-                type: "bang",
-                varLength: false,
-                description: "Bang if match"
-            }, {
-                type: "anything",
-                varLength: false,
-                description: "Bypass if not matched"
-            }],
-            args: [{
-                type: "anything",
-                optional: false,
-                varLength: true,
-                description: "Initial value for match"
-            }]
-        };
-    }
+    static description = "Output a bang on a matched inlet";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        varLength: false,
+        description: "Test for match"
+    }, {
+        isHot: false,
+        type: "anything",
+        varLength: true,
+        description: "Set value for match"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "bang",
+        varLength: false,
+        description: "Bang if match"
+    }, {
+        type: "anything",
+        varLength: false,
+        description: "Bypass if not matched"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: false,
+        varLength: true,
+        description: "Initial value for match"
+    }];
     meta = sel.meta;
     state = { array: [] as any[] };
     subscribe() {

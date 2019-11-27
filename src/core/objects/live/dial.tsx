@@ -26,28 +26,28 @@ type LiveDialAdditionalState = { inputBuffer: string };
 class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalState> {
     state: LiveDialProps & LiveUIState & LiveDialAdditionalState = {
         ...this.state,
-        shortName: this.box.props.shortName || "live.dial",
-        borderColor: this.box.props.borderColor || "rgba(90, 90, 90, 1)",
-        focusBorderColor: this.box.props.focusBorderColor || "rgba(80, 80, 80, 1)",
-        dialColor: this.box.props.dialColor || "rgba(109, 215, 255, 1)",
-        activeDialColor: this.box.props.activeDialColor || "rgba(109, 215, 255, 1)",
-        needleColor: this.box.props.needleColor || "rgba(105, 105, 105, 1)",
-        activeNeedleColor: this.box.props.activeNeedleColor || "rgba(40, 40, 40, 1)",
-        panelColor: this.box.props.panelColor || "rgba(165, 165, 165, 1)",
-        triBorderColor: this.box.props.triBorderColor || "rgba(50, 50, 50, 1)",
-        triColor: this.box.props.triColor || "rgba(40, 40, 40, 1)",
-        textColor: this.box.props.textColor || "rgba(255, 255, 255, 1)",
-        fontFamily: this.box.props.fontFamily || "Arial",
-        fontSize: this.box.props.fontSize || 10,
-        fontFace: this.box.props.fontFace || "regular",
-        appearance: this.box.props.appearance || "vertical",
+        shortName: this.box.props.shortName || this.object.meta.props.shortName.default,
+        borderColor: this.box.props.borderColor || this.object.meta.props.borderColor.default,
+        focusBorderColor: this.box.props.focusBorderColor || this.object.meta.props.focusBorderColor.default,
+        dialColor: this.box.props.dialColor || this.object.meta.props.dialColor.default,
+        activeDialColor: this.box.props.activeDialColor || this.object.meta.props.activeDialColor.default,
+        needleColor: this.box.props.needleColor || this.object.meta.props.needleColor.default,
+        activeNeedleColor: this.box.props.activeNeedleColor || this.object.meta.props.activeNeedleColor.default,
+        panelColor: this.box.props.panelColor || this.object.meta.props.panelColor.default,
+        triBorderColor: this.box.props.triBorderColor || this.object.meta.props.triBorderColor.default,
+        triColor: this.box.props.triColor || this.object.meta.props.triColor.default,
+        textColor: this.box.props.textColor || this.object.meta.props.textColor.default,
+        fontFamily: this.box.props.fontFamily || this.object.meta.props.fontFamily.default,
+        fontSize: this.box.props.fontSize || this.object.meta.props.fontSize.default,
+        fontFace: this.box.props.fontFace || this.object.meta.props.fontFace.default,
+        appearance: this.box.props.appearance || this.object.meta.props.appearance.default,
         showName: this.box.props.showName !== false,
         showNumber: this.box.props.showNumber !== false,
         triangle: !!this.box.props.triangle,
-        min: this.box.props.min || 0,
-        max: typeof this.box.props.max === "number" ? this.box.props.max : 127,
-        type: this.box.props.type || "int",
-        unitStyle: this.box.props.unitStyle || "int",
+        min: this.box.props.min || this.object.meta.props.min.default,
+        max: typeof this.box.props.max === "number" ? this.box.props.max : this.object.meta.props.max.default,
+        type: this.box.props.type || this.object.meta.props.type.default,
+        unitStyle: this.box.props.unitStyle || this.object.meta.props.unitStyle.default,
         inputBuffer: ""
     }
     className = "live-dial";
@@ -304,140 +304,136 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalStat
 }
 
 export class LiveDial extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveDialProps> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Dial knob",
-            inlets: [{
-                isHot: true,
-                type: "number",
-                description: "Set and output the value"
-            }, {
-                isHot: false,
-                type: "number",
-                description: "Set without output the value"
-            }],
-            outlets: [{
-                type: "number",
-                description: "Number value"
-            }, {
-                type: "string",
-                description: "Display value"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                default: 0,
-                description: "Initial value"
-            }],
-            props: [...super.meta.props, {
-                name: "borderColor",
-                type: "color",
-                default: "rgba(90, 90, 90, 1)",
-                description: "Border color (unfocus)",
-                isUIState: true
-            }, {
-                name: "focusBorderColor",
-                type: "color",
-                default: "rgba(80, 80, 80, 1)",
-                description: "Border color (focus)",
-                isUIState: true
-            }, {
-                name: "dialColor",
-                type: "color",
-                default: "rgba(109, 215, 255, 1)",
-                description: "Dial color (inactive)",
-                isUIState: true
-            }, {
-                name: "activeDialColor",
-                type: "color",
-                default: "rgba(109, 215, 255, 1)",
-                description: "Dial color (active)",
-                isUIState: true
-            }, {
-                name: "needleColor",
-                type: "color",
-                default: "rgba(105, 105, 105, 1)",
-                description: "Needle color (inactive)",
-                isUIState: true
-            }, {
-                name: "activeNeedleColor",
-                type: "color",
-                default: "rgba(40, 40, 40, 1)",
-                description: "Needle color (active)",
-                isUIState: true
-            }, {
-                name: "panelColor",
-                type: "color",
-                default: "rgba(165, 165, 165, 1)",
-                description: "Panel color",
-                isUIState: true
-            }, {
-                name: "triBorderColor",
-                type: "color",
-                default: "rgba(50, 50, 50, 1)",
-                description: "Triangle border color",
-                isUIState: true
-            }, {
-                name: "triColor",
-                type: "color",
-                default: "rgba(40, 40, 40, 1)",
-                description: "Triangle color (inactive)",
-                isUIState: true
-            }, {
-                name: "textColor",
-                type: "color",
-                default: "rgba(255, 255, 255, 1)",
-                description: "Text color",
-                isUIState: true
-            }, {
-                name: "fontFamily",
-                type: "enum",
-                enum: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
-                default: "Arial",
-                description: "Font family",
-                isUIState: true
-            }, {
-                name: "fontSize",
-                type: "number",
-                default: 10,
-                description: "Text font size",
-                isUIState: true
-            }, {
-                name: "fontFace",
-                type: "enum",
-                enum: ["regular", "bold", "italic", "bold italic"],
-                default: "regular",
-                description: "Text style",
-                isUIState: true
-            }, {
-                name: "appearance",
-                type: "enum",
-                enum: ["vertical", "tiny", "panel"],
-                default: "vertical",
-                description: "Dial style",
-                isUIState: true
-            }, {
-                name: "showName",
-                type: "boolean",
-                default: true,
-                description: "Display name",
-                isUIState: true
-            }, {
-                name: "showNumber",
-                type: "boolean",
-                default: true,
-                description: "Display number as text",
-                isUIState: true
-            }, {
-                name: "triangle",
-                type: "boolean",
-                default: false,
-                description: "Display yriangle",
-                isUIState: true
-            }]
-        };
-    }
+    static description = "Dial knob";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "number",
+        description: "Set and output the value"
+    }, {
+        isHot: false,
+        type: "number",
+        description: "Set without output the value"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "number",
+        description: "Number value"
+    }, {
+        type: "string",
+        description: "Display value"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        default: 0,
+        description: "Initial value"
+    }];
+    static props: TMeta["props"] = {
+        borderColor: {
+            type: "color",
+            default: "rgba(90, 90, 90, 1)",
+            description: "Border color (unfocus)",
+            isUIState: true
+        },
+        focusBorderColor: {
+            type: "color",
+            default: "rgba(80, 80, 80, 1)",
+            description: "Border color (focus)",
+            isUIState: true
+        },
+        dialColor: {
+            type: "color",
+            default: "rgba(109, 215, 255, 1)",
+            description: "Dial color (inactive)",
+            isUIState: true
+        },
+        activeDialColor: {
+            type: "color",
+            default: "rgba(109, 215, 255, 1)",
+            description: "Dial color (active)",
+            isUIState: true
+        },
+        needleColor: {
+            type: "color",
+            default: "rgba(105, 105, 105, 1)",
+            description: "Needle color (inactive)",
+            isUIState: true
+        },
+        activeNeedleColor: {
+            type: "color",
+            default: "rgba(40, 40, 40, 1)",
+            description: "Needle color (active)",
+            isUIState: true
+        },
+        panelColor: {
+            type: "color",
+            default: "rgba(165, 165, 165, 1)",
+            description: "Panel color",
+            isUIState: true
+        },
+        triBorderColor: {
+            type: "color",
+            default: "rgba(50, 50, 50, 1)",
+            description: "Triangle border color",
+            isUIState: true
+        },
+        triColor: {
+            type: "color",
+            default: "rgba(40, 40, 40, 1)",
+            description: "Triangle color (inactive)",
+            isUIState: true
+        },
+        textColor: {
+            type: "color",
+            default: "rgba(255, 255, 255, 1)",
+            description: "Text color",
+            isUIState: true
+        },
+        fontFamily: {
+            type: "enum",
+            enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
+            default: "Arial",
+            description: "Font family",
+            isUIState: true
+        },
+        fontSize: {
+            type: "number",
+            default: 10,
+            description: "Text font size",
+            isUIState: true
+        },
+        fontFace: {
+            type: "enum",
+            enums: ["regular", "bold", "italic", "bold italic"],
+            default: "regular",
+            description: "Text style",
+            isUIState: true
+        },
+        appearance: {
+            type: "enum",
+            enums: ["vertical", "tiny", "panel"],
+            default: "vertical",
+            description: "Dial style",
+            isUIState: true
+        },
+        showName: {
+            type: "boolean",
+            default: true,
+            description: "Display name",
+            isUIState: true
+        },
+        showNumber: {
+            type: "boolean",
+            default: true,
+            description: "Display number as text",
+            isUIState: true
+        },
+        triangle: {
+            type: "boolean",
+            default: false,
+            description: "Display yriangle",
+            isUIState: true
+        }
+    };
     uiComponent = LiveDialUI;
     subscribe() {
         super.subscribe();

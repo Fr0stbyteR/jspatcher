@@ -7,34 +7,29 @@ type S<Static extends boolean> = { instance: Static extends true ? undefined : a
 type I<Static extends boolean> = Static extends true ? [any] : [any | Bang, any];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
 export class SetterGetter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [any], {}, { loading: boolean }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Auto-imported setter / getter",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Instance to manipulate"
-            }, {
-                isHot: false,
-                type: "anything",
-                description: "Set the value"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Instance bypass"
-            }, {
-                type: "anything",
-                description: "Value"
-            }],
-            args: [{
-                type: "anything",
-                optional: true,
-                varLength: false,
-                description: "Initial value to set"
-            }]
-        };
-    }
+    static description = "Auto-imported setter / getter";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Instance to manipulate"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Set the value"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Instance bypass"
+    }, {
+        type: "anything",
+        description: "Value"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: true,
+        varLength: false,
+        description: "Initial value to set"
+    }];
     initialInlets = 2;
     initialOutlets = 2;
     state: S<Static> = { instance: undefined, input: null, result: null };

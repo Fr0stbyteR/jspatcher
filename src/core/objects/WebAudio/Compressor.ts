@@ -5,66 +5,66 @@ import { TMeta, TCurve } from "../../types";
 
 type I = [Bang, TCurve, TCurve, TCurve, TCurve, TCurve];
 export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {}, I, [null, DynamicsCompressorNode], [], DynamicsCompressorOptions> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio DynamicsCompressorNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection (1 channel), bang to output DynamicsCompressorNode instance"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "threshold: curve or node connection"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "knee: curve or node connection"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "ratio: curve or node connection"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "attack: curve or node connection"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "release: curve or node connection"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection (1 channel)"
-            }, {
-                type: "object",
-                description: "Instance: DynamicsCompressorNode"
-            }],
-            args: [],
-            props: [...super.meta.props, {
-                name: "threshold",
-                type: "number",
-                description: "Initial threshold"
-            }, {
-                name: "knee",
-                type: "number",
-                description: "Initial knee"
-            }, {
-                name: "ratio",
-                type: "number",
-                description: "Initial ratio"
-            }, {
-                name: "attack",
-                type: "number",
-                description: "Initial attack"
-            }, {
-                name: "release",
-                type: "number",
-                description: "Initial release"
-            }]
-        };
-    }
+    static description = "WebAudio DynamicsCompressorNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection (1 channel), bang to output DynamicsCompressorNode instance"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "threshold: curve or node connection"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "knee: curve or node connection"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "ratio: curve or node connection"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "attack: curve or node connection"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "release: curve or node connection"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection (1 channel)"
+    }, {
+        type: "object",
+        description: "Instance: DynamicsCompressorNode"
+    }];
+    static props: TMeta["props"] = {
+        threshold: {
+            type: "number",
+            default: -24,
+            description: "Initial threshold"
+        },
+        knee: {
+            type: "number",
+            default: 30,
+            description: "Initial knee"
+        },
+        ratio: {
+            type: "number",
+            default: 12,
+            description: "Initial ratio"
+        },
+        attack: {
+            type: "number",
+            default: 0.003,
+            description: "Initial attack"
+        },
+        release: {
+            type: "number",
+            default: 0.25,
+            description: "Initial release"
+        }
+    };
     state = { node: this.audioCtx.createDynamicsCompressor() };
     inletConnections = [{ node: this.node, index: 0 }, { node: this.node.threshold }, { node: this.node.knee }, { node: this.node.ratio }, null, { node: this.node.attack }, { node: this.node.release }];
     outletConnections = [{ node: this.node, index: 0 }];

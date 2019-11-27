@@ -160,7 +160,14 @@ class InspectorObjectItem extends React.Component<{ itemKey: number | string; va
     }
 }
 class InpectorAnythingItem extends InspectorObjectItem {}
-class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ patcher: Patcher; meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number]; value: any; index?: number; onChange: (value: any, key: MetaType extends "arg" ? number : string) => any }, { showColorPicker: boolean; inputEditing: boolean }> {
+type InspectorItemProps<MetaType extends "arg" | "prop"> = {
+    patcher: Patcher;
+    meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number];
+    value: any;
+    itemKey: MetaType extends "arg" ? number : string;
+    onChange: (value: any, key: MetaType extends "arg" ? number : string) => any;
+};
+class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<InspectorItemProps<MetaType>, { showColorPicker: boolean; inputEditing: boolean }> {
     state = { showColorPicker: false, inputEditing: false };
     refInput = React.createRef<HTMLInputElement>();
     key: MetaType extends "arg" ? number : string;
@@ -171,7 +178,7 @@ class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ p
         if (type === "number") return <InspectorNumberItem {...itemProps} />;
         if (type === "string") return <InspectorStringItem {...itemProps} />;
         if (type === "color") return <InspectorColorItem {...itemProps} />;
-        if (type === "enum") return <InspectorEnumItem {...itemProps} options={meta.enum.map((text, i) => ({ text, key: i, value: text }))} />;
+        if (type === "enum") return <InspectorEnumItem {...itemProps} options={meta.enums.map((text, i) => ({ text, key: i, value: text }))} />;
         if (type === "object") return <InspectorObjectItem {...itemProps} />;
         if (type === "anything") return <InpectorAnythingItem {...itemProps} />;
         return <></>;
@@ -181,14 +188,14 @@ class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<{ p
     }
 }
 class InspectorArgItem extends InspectorItem<"arg"> {
-    key = this.props.index;
+    key = this.props.itemKey;
     render() {
         const { type, optional, varLength, description } = this.props.meta;
         const title = `${description.length ? `${description}: ` : ""}${type}`;
         return (
             <Table.Row>
                 <Table.Cell width={4} title={title}>
-                    {varLength ? "..." : ""}arg{this.props.index}{optional ? "?" : ""}
+                    {varLength ? "..." : ""}arg{this.props.itemKey}{optional ? "?" : ""}
                 </Table.Cell>
                 <Table.Cell width={12}>{this.metaItem(this.props.meta, this.props.value)}</Table.Cell>
             </Table.Row>
@@ -196,13 +203,13 @@ class InspectorArgItem extends InspectorItem<"arg"> {
     }
 }
 class InspectorPropItem extends InspectorItem<"prop"> {
-    key = this.props.meta.name;
+    key = this.props.itemKey;
     render() {
-        const { name, type, description } = this.props.meta;
+        const { type, description } = this.props.meta;
         const title = `${description.length ? `${description}: ` : ""}${type}`;
         return (
             <Table.Row>
-                <Table.Cell width={6} title={title}>{name}</Table.Cell>
+                <Table.Cell width={6} title={title}>{this.props.itemKey}</Table.Cell>
                 <Table.Cell width={10}>{this.metaItem(this.props.meta, this.props.value)}</Table.Cell>
             </Table.Row>
         );
@@ -250,39 +257,32 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
             return;
         }
         const { meta, args, props, rect, presentationRect } = boxes[0];
-        for (let i = meta.props.length - 1; i >= 0; i--) {
-            const prop = meta.props[i];
-            if (meta.props.findIndex($prop => $prop.name === prop.name) !== i) {
-                meta.props.splice(i, 1);
-                continue;
-            }
-        }
         if (boxes.length === 1) {
             this.setState({ meta, args, props, rect, presentationRect });
             return;
         }
-        const commonProps = meta.props.slice();
-        for (let i = commonProps.length - 1; i >= 0; i--) {
-            const prop = commonProps[i];
-            if (prop.name === "rect" || prop.name === "presentationRect") {
-                commonProps.splice(i, 1);
+        const commonProps = { ...meta.props };
+        for (const key in commonProps) {
+            const prop = commonProps[key];
+            if (key === "rect" || key === "presentationRect") {
+                delete commonProps[key];
                 continue;
             }
-            const value = typeof props[prop.name] === "undefined" ? prop.default : props[prop.name];
+            const value = typeof props[key] === "undefined" ? prop.default : props[key];
             for (let j = 1; j < boxes.length; j++) {
                 let found = false;
                 const $props = boxes[j].props;
                 const $metaProps = boxes[j].meta.props;
-                for (let k = 0; k < $metaProps.length; k++) {
-                    const $prop = $metaProps[k];
-                    const $value = typeof $props[$prop.name] === "undefined" ? $prop.default : $props[$prop.name];
-                    if ($prop.name === prop.name && value === $value) {
+                for (const $key in $metaProps) {
+                    const $prop = $metaProps[$key];
+                    const $value = typeof $props[$key] === "undefined" ? $prop.default : $props[$key];
+                    if (key === $key && value === $value) {
                         found = true;
                         break;
                     }
                 }
                 if (!found) {
-                    commonProps.splice(i, 1);
+                    delete commonProps[key];
                     break;
                 }
             }
@@ -353,14 +353,15 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
         const argsTable = meta.args.map((argMeta, i) => {
             const { default: defaultValue, varLength } = argMeta;
             const value = varLength ? args.slice(i) : typeof args[i] === "undefined" ? defaultValue : args[i];
-            return <InspectorArgItem {...this.props} key={i} meta={argMeta} index={i} value={value} onChange={this.handleChange} />;
+            return <InspectorArgItem {...this.props} key={i} itemKey={i} meta={argMeta} value={value} onChange={this.handleChange} />;
         });
-        const propsTable = meta.props.map((propMeta) => {
-            const { name, default: defaultValue } = propMeta;
+        const propsTable = Object.keys(meta.props).map((name) => {
+            const propMeta = meta.props[name];
+            const { default: defaultValue } = propMeta;
             const value = name === "rect" ? this.state.rect
                 : name === "presentationRect" ? this.state.presentationRect
                     : typeof props[name] === "undefined" ? defaultValue : props[name];
-            return <InspectorPropItem key={name} {...this.props} meta={propMeta} value={value} onChange={this.handleChange} />;
+            return <InspectorPropItem {...this.props} key={name} itemKey={name} meta={propMeta} value={value} onChange={this.handleChange} />;
         });
         return (
             <>

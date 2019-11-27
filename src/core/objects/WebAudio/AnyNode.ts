@@ -2,27 +2,20 @@ import JSPAudioNode from "./AudioNode";
 import { TMeta } from "../../types";
 
 export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...null[]], null[]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio AudioNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, AudioNode instance to set the node."
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "Node connection"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection"
-            }],
-            args: [],
-            props: []
-        };
-    }
+    static description = "WebAudio AudioNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, AudioNode instance to set the node."
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "Node connection"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection"
+    }];
     state = { node: undefined as AudioNode };
     _meta: TMeta = AnyNode.meta;
     get meta() {

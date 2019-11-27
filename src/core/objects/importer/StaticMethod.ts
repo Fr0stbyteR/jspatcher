@@ -4,26 +4,21 @@ import { Method } from "./Method";
 import { TMeta } from "../../types";
 
 export class StaticMethod extends Method<true> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Auto-imported static method",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                varLength: true,
-                description: "Method argument"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Method return value"
-            }, {
-                type: "anything",
-                varLength: true,
-                description: "Argument after method called"
-            }]
-        };
-    }
+    static description = "Auto-imported static method";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        varLength: true,
+        description: "Method argument"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Method return value"
+    }, {
+        type: "anything",
+        varLength: true,
+        description: "Argument after method called"
+    }];
     initialInlets = 0;
     initialOutlets = 1;
     handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {

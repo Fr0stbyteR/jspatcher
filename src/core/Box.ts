@@ -41,7 +41,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this._parsed = Box.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };
         const newMeta = this._patcher.getObjectMeta(this._parsed);
         for (const key in this.props) {
-            if (!newMeta.props.find(prop => prop.name === key)) delete this.props[key];
+            if (!newMeta.props[key]) delete this.props[key];
         }
         if (this._parsed.args.length) this.args = this._parsed.args;
         Object.assign(this.props, this._parsed.props);

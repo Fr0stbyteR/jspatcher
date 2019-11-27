@@ -2,23 +2,16 @@ import { Bang, DefaultObject } from "../Base";
 import { TMeta } from "../../types";
 
 export default class audioContext extends DefaultObject<{}, {}, [Bang], [AudioContext]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Get currrent patcher's audio context",
-            inlets: [{
-                isHot: true,
-                type: "bang",
-                description: "Output current audio context"
-            }],
-            outlets: [{
-                type: "object",
-                description: "Current audio context"
-            }],
-            args: [],
-            props: []
-        };
-    }
+    static description = "Get currrent patcher's audio context";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Output current audio context"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "object",
+        description: "Current audio context"
+    }];
     state = {};
     subscribe() {
         super.subscribe();

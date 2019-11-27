@@ -1,6 +1,5 @@
 import * as React from "react";
 import { DefaultObject, DefaultUI } from "../Base";
-import { TMeta } from "../../types";
 
 /**
 * ```JavaScript
@@ -33,17 +32,9 @@ export class ImportedObjectUI<T extends DefaultObject> extends DefaultUI<T> {
     }
 }
 export abstract class ImportedObject<T, S, I extends any[], O extends any[], A extends any[], P, U> extends DefaultObject<{}, S, I, O, A, P, U> {
-    static pkgName: string;
     static root: { [key: string]: any };
     static path: string[];
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            name: this.path[this.path.length - 1],
-            package: this.pkgName,
-            description: "Auto-imported object"
-        };
-    }
+    static description = "Auto-imported object";
     get name() {
         const c = (this.constructor as typeof ImportedObject);
         return c.path[c.path.length - 1];

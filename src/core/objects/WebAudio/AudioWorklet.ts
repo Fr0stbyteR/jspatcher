@@ -2,30 +2,23 @@ import { Bang, DefaultObject } from "../Base";
 import { TMeta } from "../../types";
 
 export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], [AudioWorklet, Bang]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Get currrent patcher's audio worklet from context",
-            inlets: [{
-                isHot: true,
-                type: "bang",
-                description: "Output current audio worklet"
-            }, {
-                isHot: true,
-                type: "string",
-                description: "Code to add as module"
-            }],
-            outlets: [{
-                type: "object",
-                description: "Current audio worklet"
-            }, {
-                type: "bang",
-                description: "Output a bang while module is added"
-            }],
-            args: [],
-            props: []
-        };
-    }
+    static description = "Get currrent patcher's audio worklet from context";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Output current audio worklet"
+    }, {
+        isHot: true,
+        type: "string",
+        description: "Code to add as module"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "object",
+        description: "Current audio worklet"
+    }, {
+        type: "bang",
+        description: "Output a bang while module is added"
+    }];
     state = {};
     audioWorklet: AudioWorklet;
     handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {

@@ -4,34 +4,28 @@ import { decodeCurve } from "../../../utils";
 import { TMeta, TCurve } from "../../types";
 
 export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, TCurve], [null, DelayNode], [number]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio DelayNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output DelayNode instance"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "delayTime: curve or node connection"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection"
-            }, {
-                type: "object",
-                description: "Instance: DelayNode"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                description: "Initial delayTime"
-            }],
-            props: []
-        };
-    }
+    static description = "WebAudio DelayNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output DelayNode instance"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "delayTime: curve or node connection"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection"
+    }, {
+        type: "object",
+        description: "Instance: DelayNode"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        description: "Initial delayTime"
+    }];
     state = { node: this.audioCtx.createDelay() };
     inletConnections = [{ node: this.node, index: 0 }, { node: this.node.delayTime }];
     outletConnections = [{ node: this.node, index: 0 }];

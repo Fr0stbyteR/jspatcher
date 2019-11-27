@@ -4,50 +4,49 @@ import { decodeCurve } from "../../../utils";
 import { TMeta, TCurve } from "../../types";
 
 export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, TCurve, TCurve, OscillatorType], [null, OscillatorNode], [number, OscillatorType], { detune: number }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio OscillatorNode",
-            inlets: [{
-                isHot: true,
-                type: "bang",
-                description: "Output OscillatorNode instance"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "frequency: curve or node connection"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "detune: curve or node connection"
-            }, {
-                isHot: false,
-                type: "string",
-                description: 'type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection (1 channel)"
-            }, {
-                type: "object",
-                description: "Instance: OscillatorNode"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                description: "Initial frequency"
-            }, {
-                type: "string",
-                optional: true,
-                description: 'Initial type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
-            }],
-            props: [...super.meta.props, {
-                name: "detune",
-                type: "number",
-                description: "Initial detune"
-            }]
-        };
-    }
+    static description = "WebAudio OscillatorNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Output OscillatorNode instance"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "frequency: curve or node connection"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "detune: curve or node connection"
+    }, {
+        isHot: false,
+        type: "enum",
+        enums: ["sine", "square", "sawtooth", "triangle", "custom"],
+        description: 'type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection (1 channel)"
+    }, {
+        type: "object",
+        description: "Instance: OscillatorNode"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        description: "Initial frequency"
+    }, {
+        type: "enum",
+        enums: ["sine", "square", "sawtooth", "triangle", "custom"],
+        optional: true,
+        description: 'Initial type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
+    }];
+    static props: TMeta["props"] = {
+        detune: {
+            type: "number",
+            default: 0,
+            description: "Initial detune"
+        }
+    };
     static isOscillatorType = (x: any): x is OscillatorType => x === "sine" || x === "square" || x === "sawtooth" || x === "triangle" || x === "custom";
     state = { node: this.audioCtx.createOscillator() };
     inletConnections = [null, { node: this.node.frequency }, { node: this.node.detune }];

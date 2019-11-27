@@ -5,44 +5,38 @@ import { TMeta } from "../../types";
 
 type I = [Bang, number[], number[]];
 export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward: number[]; feedback: number[] }, I, [null, IIRFilterNode], [number[], number[]], {}> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio IIRFilterNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection (1 channel), bang to output IIRFilterNode instance"
-            }, {
-                isHot: false,
-                type: "object",
-                description: "feedforward, A sequence of coefficients, change will reconstruct the node: number[]"
-            }, {
-                isHot: false,
-                type: "object",
-                description: "feedback, A sequence of coefficients, change will reconstruct the node: number[]"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection (1 channel)"
-            }, {
-                type: "object",
-                description: "Instance: IIRFilterNode"
-            }],
-            args: [{
-                type: "object",
-                optional: false,
-                default: [],
-                description: "feedforward, A sequence of coefficients: number[]"
-            }, {
-                type: "object",
-                optional: false,
-                default: [],
-                description: "feedback, A sequence of coefficients: number[]"
-            }],
-            props: []
-        };
-    }
+    static description = "WebAudio IIRFilterNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection (1 channel), bang to output IIRFilterNode instance"
+    }, {
+        isHot: false,
+        type: "object",
+        description: "feedforward, A sequence of coefficients, change will reconstruct the node: number[]"
+    }, {
+        isHot: false,
+        type: "object",
+        description: "feedback, A sequence of coefficients, change will reconstruct the node: number[]"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection (1 channel)"
+    }, {
+        type: "object",
+        description: "Instance: IIRFilterNode"
+    }];
+    static args: TMeta["args"] = [{
+        type: "object",
+        optional: false,
+        default: [],
+        description: "feedforward, A sequence of coefficients: number[]"
+    }, {
+        type: "object",
+        optional: false,
+        default: [],
+        description: "feedback, A sequence of coefficients: number[]"
+    }];
     state = { node: undefined as IIRFilterNode, feedforward: [] as number[], feedback: [] as number[] };
     subscribe() {
         super.subscribe();

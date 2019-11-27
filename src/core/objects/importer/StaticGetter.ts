@@ -4,21 +4,16 @@ import { StaticPropertyUI } from "./StaticProperty";
 import { TMeta } from "../../types";
 
 export class StaticGetter extends Getter<true> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Auto-imported static getter",
-            inlets: [{
-                isHot: true,
-                type: "bang",
-                description: "Get the value"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Value"
-            }]
-        };
-    }
+    static description = "Auto-imported static getter";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Get the value"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Value"
+    }];
     handlePreInit = () => {
         this.inlets = 1;
         this.outlets = 1;

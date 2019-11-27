@@ -4,34 +4,28 @@ import { decodeCurve } from "../../../utils";
 import { TMeta, TCurve } from "../../types";
 
 export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang, TCurve], [null, ConstantSourceNode], [number]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio ConstantSourceNode",
-            inlets: [{
-                isHot: true,
-                type: "bang",
-                description: "Output ConstantSourceNode instance"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "offset: curve or node connection"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection (1 channel)"
-            }, {
-                type: "object",
-                description: "Instance: ConstantSourceNode"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                description: "Initial offset"
-            }],
-            props: []
-        };
-    }
+    static description = "WebAudio ConstantSourceNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Output ConstantSourceNode instance"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "offset: curve or node connection"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection (1 channel)"
+    }, {
+        type: "object",
+        description: "Instance: ConstantSourceNode"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        description: "Initial offset"
+    }];
     state = { node: this.audioCtx.createConstantSource() };
     inletConnections = [null, { node: this.node.offset }];
     outletConnections = [{ node: this.node, index: 0 }];

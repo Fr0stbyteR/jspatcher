@@ -7,31 +7,26 @@ type S<Static extends boolean> = { instance: Static extends true ? undefined : a
 type I<Static extends boolean> = Static extends true ? [any] : [any | Bang, any];
 type O<Static extends boolean> = Static extends true ? [] : [any];
 export class Setter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [any], {}, {}> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Auto-imported setter",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Instance to set property"
-            }, {
-                isHot: false,
-                type: "anything",
-                description: "Set the value"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Instance bypass"
-            }],
-            args: [{
-                type: "anything",
-                optional: true,
-                varLength: false,
-                description: "Initial value to set"
-            }]
-        };
-    }
+    static description = "Auto-imported setter";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Instance to set property"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Set the value"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Instance bypass"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: true,
+        varLength: false,
+        description: "Initial value to set"
+    }];
     initialInlets = 2;
     initialOutlets = 1;
     state: S<Static> = { instance: undefined, input: null };

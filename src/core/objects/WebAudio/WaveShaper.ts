@@ -4,38 +4,36 @@ import { TMeta } from "../../types";
 
 type I = [Bang, Float32Array, OverSampleType];
 export default class WaveShaper extends JSPAudioNode<WaveShaperNode, {}, I, [null, WaveShaperNode], [], { oversample?: OverSampleType }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio WaveShaperNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output WaveShaperNode instance"
-            }, {
-                isHot: false,
-                type: "object",
-                description: "curve: Float32Array"
-            }, {
-                isHot: false,
-                type: "string",
-                description: 'oversample: "none" | "2x" | "4x"'
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection"
-            }, {
-                type: "object",
-                description: "Instance: WaveShaperNode"
-            }],
-            args: [],
-            props: [...super.meta.props, {
-                name: "oversample",
-                type: "string",
-                description: "Initial oversample"
-            }]
-        };
-    }
+    static description = "WebAudio WaveShaperNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output WaveShaperNode instance"
+    }, {
+        isHot: false,
+        type: "object",
+        description: "curve: Float32Array"
+    }, {
+        isHot: false,
+        type: "enum",
+        enums: ["none", "2x", "4x"],
+        description: 'oversample: "none" | "2x" | "4x"'
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection"
+    }, {
+        type: "object",
+        description: "Instance: WaveShaperNode"
+    }];
+    static props: TMeta["props"] = {
+        oversample: {
+            type: "enum",
+            enums: ["none", "2x", "4x"],
+            default: "none",
+            description: "Initial oversample"
+        }
+    };
     state = { node: this.audioCtx.createWaveShaper() };
     inletConnections = [{ node: this.node, index: 0 }];
     outletConnections = [{ node: this.node, index: 0 }];

@@ -4,34 +4,28 @@ import { decodeCurve } from "../../../utils";
 import { TMeta, TCurve } from "../../types";
 
 export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Bang, TCurve], [null, StereoPannerNode], [number]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio StereoPannerNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output StereoPannerNode instance"
-            }, {
-                isHot: false,
-                type: "signal",
-                description: "pan: curve or node connection"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection"
-            }, {
-                type: "object",
-                description: "Instance: StereoPannerNode"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                description: "Initial pan"
-            }],
-            props: []
-        };
-    }
+    static description = "WebAudio StereoPannerNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output StereoPannerNode instance"
+    }, {
+        isHot: false,
+        type: "signal",
+        description: "pan: curve or node connection"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection"
+    }, {
+        type: "object",
+        description: "Instance: StereoPannerNode"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        description: "Initial pan"
+    }];
     state = { node: this.audioCtx.createStereoPanner() };
     inletConnections = [{ node: this.node, index: 0 }, { node: this.node.pan }];
     outletConnections = [{ node: this.node, index: 0 }];

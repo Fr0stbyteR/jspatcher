@@ -178,37 +178,40 @@ interface BoxEventMap {
     "updatedFromObject": { args?: any[]; props?: { [key: string]: any } };
 }
 type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang" | "color" | "enum";
-type TInletsMeta = {
+type TInletMeta = {
     isHot: boolean;
     type: TMetaType;
-    enum?: string[];
+    enums?: string[];
     varLength?: boolean;
     description: string;
-}[];
-type TOutletsMeta = {
+};
+type TInletsMeta = TInletMeta[];
+type TOutletMeta = {
     type: TMetaType;
-    enum?: string[];
+    enums?: string[];
     varLength?: boolean;
     description: string;
-}[];
-type TArgsMeta = {
+};
+type TOutletsMeta = TOutletMeta[];
+type TArgMeta = {
     type: TMetaType;
-    enum?: string[];
+    enums?: string[];
     optional: boolean;
     default?: any;
     varLength?: boolean;
     description: string;
-}[];
-type TPropsMeta = {
-    name: string;
-    enum?: string[];
-    default?: any;
+};
+type TArgsMeta = TArgMeta[];
+type TPropMeta = {
     type: TMetaType;
+    enums?: string[];
+    default: any;
+    group?: string;
     description: string;
     isUIState?: boolean;
-}[];
+};
+type TPropsMeta = { [key: string]: TPropMeta };
 type TMeta = {
-    parent: TMeta;
     package: string; // div will have class "package-name" "package-name-objectname"
     name: string;
     icon: SemanticICONS; // semantic icon to display in UI

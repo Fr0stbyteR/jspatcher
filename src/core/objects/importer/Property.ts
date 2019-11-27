@@ -10,28 +10,24 @@ type I<Static extends boolean> = Static extends true ? [Bang, any] : [any | Bang
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
 type A<Static extends boolean> = Static extends true ? [any] : [];
 export class Property<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, A<Static>, {}, {}> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Auto-imported property",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Instance to read, bang to get the value"
-            }, {
-                isHot: false,
-                type: "anything",
-                description: "Set the value"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Instance bypass"
-            }, {
-                type: "anything",
-                description: "Value"
-            }]
-        };
-    }
+    static description = "Auto-imported property";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Constructor argument, output instance constructed"
+    }, {
+        isHot: false,
+        type: "anything",
+        varLength: true,
+        description: "Constructor argument"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Instance bypass"
+    }, {
+        type: "anything",
+        description: "Value"
+    }];
     state: S<Static> = { instance: undefined };
     handlePreInit = () => {
         this.inlets = 2;

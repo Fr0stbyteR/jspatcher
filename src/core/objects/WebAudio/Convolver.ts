@@ -5,37 +5,33 @@ import { TMeta } from "../../types";
 type I = [Bang, AudioBuffer, boolean];
 type O = [null, ConvolverNode];
 export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [], { normalize: boolean }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "WebAudio ConvolverNode",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "Node connection, bang to output ConvolverNode instance"
-            }, {
-                isHot: true,
-                type: "object",
-                description: "buffer (2-4 channels): AudioBuffer"
-            }, {
-                isHot: true,
-                type: "boolean",
-                description: "normalize: boolean"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "Node connection (2-4 channels)"
-            }, {
-                type: "object",
-                description: "Instance: ConvolverNode"
-            }],
-            args: [],
-            props: [...super.meta.props, {
-                name: "normalize",
-                type: "boolean",
-                description: "Controls whether the impulse response from the buffer will be scaled by an equal-power normalization"
-            }]
-        };
+    static description = "WebAudio ConvolverNode";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Node connection, bang to output ConvolverNode instance"
+    }, {
+        isHot: true,
+        type: "object",
+        description: "buffer (2-4 channels): AudioBuffer"
+    }, {
+        isHot: true,
+        type: "boolean",
+        description: "normalize: boolean"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Node connection (2-4 channels)"
+    }, {
+        type: "object",
+        description: "Instance: ConvolverNode"
+    }];
+    static props: TMeta["props"] = {
+        normalize: {
+            type: "boolean",
+            default: true,
+            description: "Controls whether the impulse response from the buffer will be scaled by an equal-power normalization"
+        }
     }
     state = { node: this.audioCtx.createConvolver() };
     inletConnections = [{ node: this.node, index: 0 }];

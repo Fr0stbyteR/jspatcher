@@ -254,19 +254,30 @@ export abstract class AbstractObject<
     A extends any[] = any[], P extends {} = {},
     U extends {} = {}, E extends Partial<ObjectEventMap<I, A, P, U, {}>> & { [key: string]: any } = {}
 > extends MappedEventEmitter<ObjectEventMap<I, A, P, U, E>> {
+    static package = "Base"; // div will have class "packageName" "packageName-objectName"
+    static get _name() {
+        return this.name;
+    }
+    static icon = null as SemanticICONS;
+    static author = "";
+    static version = "0.0.0";
+    static description = "";
+    static inlets: TMeta["inlets"] = [];
+    static outlets: TMeta["outlets"] = [];
+    static args: TMeta["args"] = [];
+    static props: TMeta["props"] = {};
     static get meta(): TMeta {
         return {
-            parent: null,
-            package: "Base", // div will have class "package-name" "package-name-objectname"
-            name: this.name,
-            icon: null as SemanticICONS, // semantic icon to display in UI
-            author: "",
-            version: "0.0.0",
-            description: "",
-            inlets: [],
-            outlets: [],
-            args: [],
-            props: []
+            package: this.package, // div will have class "package-name" "package-name-objectname"
+            name: this._name,
+            icon: this.icon, // semantic icon to display in UI
+            author: this.author,
+            version: this.version,
+            description: this.description,
+            inlets: this.inlets,
+            outlets: this.outlets,
+            args: this.args,
+            props: this.props
         };
     }
     get meta() {
@@ -497,57 +508,78 @@ export class BaseObject<
     A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {},
     U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}
 > extends AbstractObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
-    static get superMeta(): TMeta {
-        const meta = super.meta;
-        return { ...meta, parent: { ...meta, name: super.name } };
-    }
+    static props: TMeta["props"] = {
+        hidden: {
+            type: "boolean",
+            default: false,
+            description: "Hide on lock",
+            isUIState: true
+        },
+        background: {
+            type: "boolean",
+            default: false,
+            description: "Include in background"
+        },
+        presentation: {
+            type: "boolean",
+            default: false,
+            description: "Include in presentation"
+        },
+        rect: {
+            type: "object",
+            default: [],
+            description: "Position and dimensions in patch"
+        },
+        presentationRect: {
+            type: "object",
+            default: [],
+            description: "Position and dimensions in presentation"
+        },
+        ignoreClick: {
+            type: "boolean",
+            default: false,
+            description: "Ignore Click",
+            isUIState: true
+        },
+        hint: {
+            type: "string",
+            default: "",
+            description: "Hint on hover",
+            isUIState: true
+        }
+    };
     static get meta(): TMeta {
+        const superName = Object.getPrototypeOf(this).name;
+        const thisName = this.name;
+        const superMeta = Object.getPrototypeOf(this).meta;
+        const superProps = superMeta.props;
+        for (const key in superProps) {
+            superProps[key].group = superName;
+        }
+        const thisProps = this.props;
+        for (const key in thisProps) {
+            thisProps[key].group = thisName;
+        }
         return {
-            ...super.meta,
-            package: "Base",
-            props: [...super.meta.props, {
-                name: "hidden",
-                type: "boolean",
-                default: false,
-                description: "Hide on lock",
-                isUIState: true
-            }, {
-                name: "background",
-                type: "boolean",
-                default: false,
-                description: "Include in background"
-            }, {
-                name: "presentation",
-                type: "boolean",
-                default: false,
-                description: "Include in presentation"
-            }, {
-                name: "rect",
-                type: "object",
-                description: "Position and dimensions in patch"
-            }, {
-                name: "presentationRect",
-                type: "object",
-                description: "Position and dimensions in presentation"
-            }, {
-                name: "ignoreClick",
-                type: "boolean",
-                default: false,
-                description: "Ignore Click",
-                isUIState: true
-            }, {
-                name: "hint",
-                type: "string",
-                default: "",
-                description: "Hint on hover",
-                isUIState: true
-            }]
+            package: this.package,
+            name: this._name,
+            icon: this.icon,
+            author: this.author,
+            version: this.version,
+            description: this.description,
+            inlets: this.inlets,
+            outlets: this.outlets,
+            args: this.args,
+            props: {
+                ...superProps,
+                ...thisProps
+            }
         };
     }
     subscribe() {
         super.subscribe();
         this.on("update", this.updateBox);
-        const isUIStateKey = (x: any): x is keyof (U & BaseUIState) => !!this.meta.props.find(prop => !!prop.isUIState && prop.name === x);
+        const isUIStateKey = (x: any): x is keyof (U & BaseUIState) => this.meta.props[x] && this.meta.props[x].isUIState;
         const updateUIFromProps = (props: Partial<P & BaseUIState & BaseAdditionalProps>) => {
             if (props) {
                 const uiState: Partial<U & BaseUIState> = {};
@@ -570,63 +602,59 @@ export class DefaultObject<
     A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {},
     U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}
 > extends BaseObject<D, S, I, O, A, P & DefaultUIState, U & DefaultUIState, E> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            props: [...super.meta.props, {
-                name: "bgColor",
-                type: "color",
-                default: "rgb(51, 51, 51)",
-                description: "Background color",
-                isUIState: true
-            }, {
-                name: "borderColor",
-                type: "color",
-                default: "rgb(125, 126, 132)",
-                description: "Border color",
-                isUIState: true
-            }, {
-                name: "textColor",
-                type: "color",
-                default: "rgb(255, 255, 255)",
-                description: "Text color",
-                isUIState: true
-            }, {
-                name: "fontFamily",
-                type: "enum",
-                enum: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
-                default: "Lato",
-                description: "Font family",
-                isUIState: true
-            }, {
-                name: "fontSize",
-                type: "number",
-                default: 12,
-                description: "Text font size",
-                isUIState: true
-            }, {
-                name: "fontStyle",
-                type: "enum",
-                enum: ["normal", "italic", "oblique"],
-                default: "normal",
-                description: "Text style",
-                isUIState: true
-            }, {
-                name: "fontWeight",
-                type: "string",
-                default: "normal",
-                description: 'Text style: "normal" | "bold" | "lighter" | "bolder" | number',
-                isUIState: true
-            }, {
-                name: "textAlign",
-                type: "enum",
-                enum: ["left", "center", "right"],
-                default: "left",
-                description: "Text style",
-                isUIState: true
-            }]
-        };
-    }
+    static props: TMeta["props"] = {
+        bgColor: {
+            type: "color",
+            default: "rgb(51, 51, 51)",
+            description: "Background color",
+            isUIState: true
+        },
+        borderColor: {
+            type: "color",
+            default: "rgb(125, 126, 132)",
+            description: "Border color",
+            isUIState: true
+        },
+        textColor: {
+            type: "color",
+            default: "rgb(255, 255, 255)",
+            description: "Text color",
+            isUIState: true
+        },
+        fontFamily: {
+            type: "enum",
+            enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
+            default: "Lato",
+            description: "Font family",
+            isUIState: true
+        },
+        fontSize: {
+            type: "number",
+            default: 12,
+            description: "Text font size",
+            isUIState: true
+        },
+        fontStyle: {
+            type: "enum",
+            enums: ["normal", "italic", "oblique"],
+            default: "normal",
+            description: "Text style",
+            isUIState: true
+        },
+        fontWeight: {
+            type: "string",
+            default: "normal",
+            description: 'Text style: "normal" | "bold" | "lighter" | "bolder" | number',
+            isUIState: true
+        },
+        textAlign: {
+            type: "enum",
+            enums: ["left", "center", "right"],
+            default: "left",
+            description: "Text style",
+            isUIState: true
+        }
+    };
     uiComponent = DefaultUI;
 }
 export class AnyObject extends BaseObject<any, any, any, any, any, any, any, any> {}
@@ -708,9 +736,7 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     }
 }
 export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseAudioObject<D, S, I, O, A, P, U & DefaultUIState, E> {
-    static get meta(): TMeta {
-        return DefaultObject.meta;
-    }
+    static props = DefaultObject.props;
     uiComponent = DefaultUI;
 }
 class EmptyObjectUI extends DefaultUI<EmptyObject> {
@@ -720,23 +746,18 @@ class EmptyObjectUI extends DefaultUI<EmptyObject> {
     }
 }
 class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            author: "Fr0stbyteR",
-            version: "1.0.0",
-            description: "Bypass input",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "output same thing"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "output same thing"
-            }]
-        };
-    }
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "Bypass input";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "output same thing"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "output same thing"
+    }]
     state = { editing: false };
     subscribe() {
         super.subscribe();
@@ -751,23 +772,18 @@ class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> 
     uiComponent: typeof DefaultUI = EmptyObjectUI;
 }
 class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "invalid object",
-            inlets: [{
-                isHot: false,
-                type: "anything",
-                varLength: true,
-                description: "nothing"
-            }],
-            outlets: [{
-                type: "anything",
-                varLength: true,
-                description: "nothing"
-            }]
-        };
-    }
+    static description = "invalid object";
+    static inlets: TMeta["inlets"] = [{
+        isHot: false,
+        type: "anything",
+        varLength: true,
+        description: "nothing"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        varLength: true,
+        description: "nothing"
+    }];
 }
 export class Bang {
     toString() {

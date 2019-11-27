@@ -9,46 +9,43 @@ class NewUI extends ImportedObjectUI<New> {
 type TAnyConstructor = new (...args: any[]) => any;
 type S = { Wrapper: typeof StaticMethod; inputs: any[]; result: any };
 export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [any, ...any[]], any[], { args: number }, { loading: boolean }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Call function as a constructor ",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Constructor argument, output instance constructed"
-            }, {
-                isHot: false,
-                type: "anything",
-                varLength: true,
-                description: "Constructor argument"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Instance constructed"
-            }, {
-                type: "anything",
-                varLength: true,
-                description: "Argument after constructor called"
-            }],
-            args: [{
-                type: "string",
-                optional: false,
-                varLength: false,
-                description: "Constructor name"
-            }, {
-                type: "anything",
-                optional: true,
-                varLength: true,
-                description: "Set arguments while loaded"
-            }],
-            props: [...super.meta.props, {
-                name: "args",
-                type: "number",
-                description: "arguments count for constructor"
-            }]
-        };
-    }
+    static description = "Call function as a constructor";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Constructor argument, output instance constructed"
+    }, {
+        isHot: false,
+        type: "anything",
+        varLength: true,
+        description: "Constructor argument"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Instance constructed"
+    }, {
+        type: "anything",
+        varLength: true,
+        description: "Argument after constructor called"
+    }];
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: false,
+        varLength: false,
+        description: "Constructor name"
+    }, {
+        type: "anything",
+        optional: true,
+        varLength: true,
+        description: "Set arguments while loaded"
+    }];
+    static props: TMeta["props"] = {
+        args: {
+            type: "number",
+            default: 0,
+            description: "arguments count for method"
+        }
+    };
     state: S = { Wrapper: null, inputs: [], result: null };
     subscribe() {
         super.subscribe();

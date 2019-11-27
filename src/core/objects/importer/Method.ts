@@ -8,44 +8,41 @@ type S<Static extends boolean> = { instance: Static extends true ? undefined : a
 type I<Static extends boolean> = Static extends true ? [any | Bang, ...any[]] : [any | Bang, any, ...any[]];
 type O<Static extends boolean> = Static extends true ? [any, ...any[]] : [any, any, ...any[]];
 export class Method<Static extends boolean = false> extends ImportedObject<TAnyFunction, S<Static>, I<Static>, O<Static>, any[], { args: number }, { loading: boolean }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Auto-imported method",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Instance to read"
-            }, {
-                isHot: false,
-                type: "anything",
-                varLength: true,
-                description: "Method argument"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Instance bypass"
-            }, {
-                type: "anything",
-                description: "Method return value"
-            }, {
-                type: "anything",
-                varLength: true,
-                description: "Argument after method called"
-            }],
-            args: [{
-                type: "anything",
-                optional: true,
-                varLength: true,
-                description: "Set arguments while loaded"
-            }],
-            props: [...super.meta.props, {
-                name: "args",
-                type: "number",
-                description: "arguments count for method"
-            }]
-        };
-    }
+    static description = "Auto-imported method";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Instance to read"
+    }, {
+        isHot: false,
+        type: "anything",
+        varLength: true,
+        description: "Method argument"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Instance bypass"
+    }, {
+        type: "anything",
+        description: "Method return value"
+    }, {
+        type: "anything",
+        varLength: true,
+        description: "Argument after method called"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: true,
+        varLength: true,
+        description: "Set arguments while loaded"
+    }];
+    static props: TMeta["props"] = {
+        args: {
+            type: "number",
+            default: 0,
+            description: "arguments count for method"
+        }
+    };
     state: S<Static> = { instance: undefined, inputs: [], result: null };
     initialInlets = 1;
     initialOutlets = 2;

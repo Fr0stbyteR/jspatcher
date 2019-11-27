@@ -7,24 +7,19 @@ type S<Static extends boolean> = { instance: Static extends true ? undefined : a
 type I<Static extends boolean> = Static extends true ? [Bang] : [any | Bang];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
 export class Getter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [], {}, { loading: boolean }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Auto-imported getter",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Instance to read"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Instance bypass"
-            }, {
-                type: "anything",
-                description: "Value"
-            }]
-        };
-    }
+    static description = "Auto-imported getter";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Instance to read"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Instance bypass"
+    }, {
+        type: "anything",
+        description: "Value"
+    }];
     state: S<Static> = { instance: undefined, result: null };
     handlePreInit = () => {
         this.inlets = 1;

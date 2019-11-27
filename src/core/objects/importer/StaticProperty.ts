@@ -7,30 +7,25 @@ export class StaticPropertyUI extends ImportedObjectUI<StaticProperty> {
     prependColor = "rgb(156, 220, 254)";
 }
 export class StaticProperty extends Property<true> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Auto-imported static property",
-            inlets: [{
-                isHot: true,
-                type: "bang",
-                description: "Get the value"
-            }, {
-                isHot: false,
-                type: "anything",
-                description: "Set the value"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Value"
-            }],
-            args: [{
-                type: "anything",
-                optional: true,
-                description: "Set the value while loaded."
-            }]
-        };
-    }
+    static description = "Auto-imported static property";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Get the value"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Set the value"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Value"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: true,
+        description: "Set the value while loaded."
+    }];
     handlePreInit = () => {
         this.inlets = 2;
         this.outlets = 1;

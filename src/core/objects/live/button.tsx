@@ -14,13 +14,13 @@ interface LiveButtonProps extends LiveUIProps {
 class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
     state: LiveButtonProps & LiveUIState = {
         ...this.state,
-        shortName: this.box.props.shortName || "live.button",
-        bgColor: this.box.props.bgColor || "rgba(90, 90, 90, 1)",
-        activeBgColor: this.box.props.activeBgColor || "rgba(90, 90, 90, 1)",
-        bgOnColor: this.box.props.bgColor || "rgba(195, 195, 195, 1)",
-        activeBgOnColor: this.box.props.activeBgColor || "rgba(109, 215, 255, 1)",
-        borderColor: this.box.props.borderColor || "rgba(80, 80, 80, 1)",
-        focusBorderColor: this.box.props.focusBorderColor || "rgba(80, 80, 80, 1)"
+        shortName: this.box.props.shortName || this.object.meta.props.shortName.default,
+        bgColor: this.box.props.bgColor || this.object.meta.props.bgColor.default,
+        activeBgColor: this.box.props.activeBgColor || this.object.meta.props.activeBgColor.default,
+        bgOnColor: this.box.props.bgOnColor || this.object.meta.props.bgOnColor.default,
+        activeBgOnColor: this.box.props.activeBgOnColor || this.object.meta.props.activeBgOnColor.default,
+        borderColor: this.box.props.borderColor || this.object.meta.props.borderColor.default,
+        focusBorderColor: this.box.props.focusBorderColor || this.object.meta.props.focusBorderColor.default
     }
     className = "live-button";
     inTouch = false;
@@ -77,70 +77,66 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
 }
 
 export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], LiveButtonProps & { transition: "Zero->One" | "One->Zero" | "Both" }> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Button",
-            inlets: [{
-                isHot: true,
-                type: "number",
-                description: "Output a bang following transition prop."
-            }],
-            outlets: [{
-                type: "bang",
-                description: "Bang"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                default: 0,
-                description: "Initial value"
-            }],
-            props: [...super.meta.props, {
-                name: "bgColor",
-                type: "color",
-                default: "rgba(90, 90, 90, 1)",
-                description: "Background color (inactive)",
-                isUIState: true
-            }, {
-                name: "activeBgColor",
-                type: "color",
-                default: "rgba(90, 90, 90, 1)",
-                description: "Background color (active)",
-                isUIState: true
-            }, {
-                name: "bgOnColor",
-                type: "color",
-                default: "rgba(195, 195, 195, 1)",
-                description: "Background color (on / inactive)",
-                isUIState: true
-            }, {
-                name: "activeBgColor",
-                type: "color",
-                default: "rgba(109, 215, 255, 1)",
-                description: "Background color (on /active)",
-                isUIState: true
-            }, {
-                name: "borderColor",
-                type: "color",
-                default: "rgba(80, 80, 80, 1)",
-                description: "Border color (unfocus)",
-                isUIState: true
-            }, {
-                name: "focusBorderColor",
-                type: "color",
-                default: "rgba(80, 80, 80, 1)",
-                description: "Border color (focus)",
-                isUIState: true
-            }, {
-                name: "transition",
-                type: "enum",
-                enum: ["Zero->One", "One->Zero", "Both"],
-                default: "Zero->One",
-                description: "Specifies when a bang message will be sent to the outlet"
-            }]
-        };
-    }
+    static description = "Button";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "number",
+        description: "Output a bang following transition prop."
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "bang",
+        description: "Bang"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        default: 0,
+        description: "Initial value"
+    }];
+    static props: TMeta["props"] = {
+        bgColor: {
+            type: "color",
+            default: "rgba(90, 90, 90, 1)",
+            description: "Background color (inactive)",
+            isUIState: true
+        },
+        activeBgColor: {
+            type: "color",
+            default: "rgba(90, 90, 90, 1)",
+            description: "Background color (active)",
+            isUIState: true
+        },
+        bgOnColor: {
+            type: "color",
+            default: "rgba(195, 195, 195, 1)",
+            description: "Background color (on / inactive)",
+            isUIState: true
+        },
+        activeBgOnColor: {
+            type: "color",
+            default: "rgba(109, 215, 255, 1)",
+            description: "Background color (on / active)",
+            isUIState: true
+        },
+        borderColor: {
+            type: "color",
+            default: "rgba(80, 80, 80, 1)",
+            description: "Border color (unfocus)",
+            isUIState: true
+        },
+        focusBorderColor: {
+            type: "color",
+            default: "rgba(80, 80, 80, 1)",
+            description: "Border color (focus)",
+            isUIState: true
+        },
+        transition: {
+            type: "enum",
+            enums: ["Zero->One", "One->Zero", "Both"],
+            default: "Zero->One",
+            description: "Specifies when a bang message will be sent to the outlet"
+        }
+    };
     uiComponent = LiveButtonUI;
     subscribe() {
         super.subscribe();
