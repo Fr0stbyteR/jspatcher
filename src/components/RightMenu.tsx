@@ -197,7 +197,7 @@ class InspectorArgItem extends InspectorItem<"arg"> {
                 <Table.Cell width={4} title={title}>
                     {varLength ? "..." : ""}arg{this.props.itemKey}{optional ? "?" : ""}
                 </Table.Cell>
-                <Table.Cell width={12}>{this.metaItem(this.props.meta, this.props.value)}</Table.Cell>
+                <Table.Cell className="inspector-value-cell" width={12}>{this.metaItem(this.props.meta, this.props.value)}</Table.Cell>
             </Table.Row>
         );
     }
@@ -210,7 +210,7 @@ class InspectorPropItem extends InspectorItem<"prop"> {
         return (
             <Table.Row>
                 <Table.Cell width={6} title={title}>{this.props.itemKey}</Table.Cell>
-                <Table.Cell width={10}>{this.metaItem(this.props.meta, this.props.value)}</Table.Cell>
+                <Table.Cell width={10} className="inspector-value-cell">{this.metaItem(this.props.meta, this.props.value)}</Table.Cell>
             </Table.Row>
         );
     }
@@ -350,31 +350,47 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
                 </Menu>
             );
         }
-        const argsTable = meta.args.map((argMeta, i) => {
+        const table: JSX.Element[] = [];
+        table.push(
+            <Table.Row key={"__division_args"} active>
+                <Table.Cell colSpan={2} width={16} className="division-name">Arguments</Table.Cell>
+            </Table.Row>
+        );
+        meta.args.forEach((argMeta, i) => {
             const { default: defaultValue, varLength } = argMeta;
             const value = varLength ? args.slice(i) : typeof args[i] === "undefined" ? defaultValue : args[i];
-            return <InspectorArgItem {...this.props} key={i} itemKey={i} meta={argMeta} value={value} onChange={this.handleChange} />;
+            table.push(
+                <InspectorArgItem {...this.props} key={i} itemKey={i} meta={argMeta} value={value} onChange={this.handleChange} />
+            );
         });
-        const propsTable = Object.keys(meta.props).map((name) => {
+        table.push(
+            <Table.Row key={"__division_props"} active>
+                <Table.Cell colSpan={2} width={16} className="division-name">Properties</Table.Cell>
+            </Table.Row>
+        );
+        let lastGroup: string;
+        Object.keys(meta.props).forEach((name) => {
             const propMeta = meta.props[name];
-            const { default: defaultValue } = propMeta;
+            const { default: defaultValue, group } = propMeta;
             const value = name === "rect" ? this.state.rect
                 : name === "presentationRect" ? this.state.presentationRect
                     : typeof props[name] === "undefined" ? defaultValue : props[name];
-            return <InspectorPropItem {...this.props} key={name} itemKey={name} meta={propMeta} value={value} onChange={this.handleChange} />;
+            const item = <InspectorPropItem {...this.props} key={name} itemKey={name} meta={propMeta} value={value} onChange={this.handleChange} />;
+            if (group !== lastGroup) {
+                lastGroup = group;
+                table.push(
+                    <Table.Row key={"__division_" + group} active>
+                        <Table.Cell colSpan={2} width={16} className="group-name">{group}</Table.Cell>
+                    </Table.Row>
+                );
+            }
+            table.push(item);
         });
         return (
             <>
-                <Header className="division-title" as="h5" inverted color="grey" content={"Arguments"} />
-                <Table inverted celled striped selectable unstackable size="small" compact="very">
-                    <Table.Body>
-                        {argsTable}
-                    </Table.Body>
-                </Table>
-                <Header className="division-title" as="h5" inverted color="grey" content={"Properties"} />
                 <Table className="last-table" inverted celled striped selectable unstackable size="small" compact="very">
                     <Table.Body>
-                        {propsTable}
+                        {table}
                     </Table.Body>
                 </Table>
                 <Menu icon inverted size="mini">

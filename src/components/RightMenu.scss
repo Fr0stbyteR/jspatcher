@@ -57,20 +57,23 @@
             }
         }
         & > div#right-pane-inspector {
-            & .division-title {
-                display: block;
-                position: relative;
-                flex: 0 0 auto;
-                background-color: #252525;
-                margin: 0px;
-                padding: 4px 8px 4px 30px;
-                border-bottom: 1px solid #4a4a4a;
-                font-weight: normal;
+            & .division-name {
+                font-weight: bold;
+                padding-left: 30px;
+                line-height: 12px;
+            }
+            & .group-name {
+                font-weight: bold;
+                padding-left: 20px;
+                line-height: 12px;
+            }
+            & .inspector-value-cell {
+                vertical-align: initial;
             }
             & table:not(.last-table) {
                 flex: 0 0 auto;
             }
-            & span.inspector-value {
+            & .inspector-value {
                 &.number, &.string, &.object, &.anything {
                     display: inline-block;
                     padding: 0em 0.6em;
@@ -100,6 +103,9 @@
                     &::before {
                         content: "\200b";
                     }
+                }
+                &.enum {
+                    position: absolute;
                 }
             }
             & input.inspector-input {

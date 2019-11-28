@@ -549,13 +549,9 @@ export class BaseObject<
         }
     };
     static get meta(): TMeta {
-        const superName = Object.getPrototypeOf(this).name;
         const thisName = this.name;
         const superMeta = Object.getPrototypeOf(this).meta;
         const superProps = superMeta.props;
-        for (const key in superProps) {
-            superProps[key].group = superName;
-        }
         const thisProps = this.props;
         for (const key in thisProps) {
             thisProps[key].group = thisName;
