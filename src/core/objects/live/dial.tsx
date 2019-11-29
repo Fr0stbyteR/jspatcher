@@ -208,10 +208,10 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalStat
             const tinyOffset = appearance === "tiny" ? 12 : 0;
             if (appearance === "tiny") {
                 ctx.textAlign = "left";
-                ctx.fillText(displayValue, tinyOffset, height - panelOffset, width);
+                ctx.fillText(displayValue, tinyOffset, height - 2, width);
             } else {
                 ctx.textAlign = "center";
-                ctx.fillText(displayValue, width * 0.5, height - panelOffset, width);
+                ctx.fillText(displayValue, width * 0.5, height - 2, width);
             }
         }
         // draw triangle if it is enabled
@@ -329,6 +329,18 @@ export class LiveDial extends LiveObject<{}, {}, [number | Bang, number], [numbe
         description: "Initial value"
     }];
     static props: TMeta["props"] = {
+        shortName: {
+            type: "string",
+            default: "live.dial",
+            description: "Short name to display",
+            isUIState: true
+        },
+        longName: {
+            type: "string",
+            default: "live.dial",
+            description: "Long name to display",
+            isUIState: true
+        },
         borderColor: {
             type: "color",
             default: "rgba(90, 90, 90, 1)",

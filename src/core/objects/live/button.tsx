@@ -95,6 +95,24 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], Live
         description: "Initial value"
     }];
     static props: TMeta["props"] = {
+        shortName: {
+            type: "string",
+            default: "live.button",
+            description: "Short name to display",
+            isUIState: true
+        },
+        longName: {
+            type: "string",
+            default: "live.button",
+            description: "Long name to display",
+            isUIState: true
+        },
+        max: {
+            type: "number",
+            default: 1,
+            description: "Maximum value",
+            isUIState: true
+        },
         bgColor: {
             type: "color",
             default: "rgba(90, 90, 90, 1)",

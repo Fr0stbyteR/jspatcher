@@ -555,7 +555,7 @@ export class BaseObject<
         const superProps = superMeta.props;
         const thisProps = this.props;
         for (const key in thisProps) {
-            thisProps[key].group = thisName;
+            thisProps[key].group = key in superProps ? superProps[key].group : thisName;
         }
         return {
             package: this.package,
