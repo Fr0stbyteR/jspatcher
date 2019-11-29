@@ -220,6 +220,7 @@ export class comment extends BaseObject<{ value: string }, {}, [], [], [string]>
 type CodeUIState = { language: string; value: string; editorLoaded: boolean; editing: boolean } & BaseUIState;
 class CodeUI extends BaseUI<comment, {}, CodeUIState> {
     static sizing = "both" as const;
+    static defaultSize: [number, number] = [400, 225];
     editableOnUnlock = false;
     state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };
     codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
@@ -286,10 +287,7 @@ export class code extends BaseObject<{ value: string }, {}, [Bang, string], [str
         this.on("preInit", () => {
             this.inlets = 2;
             this.outlets = 1;
-            if (typeof this.box.data.value === "undefined") {
-                this.box.data.value = "";
-                this.box.setRect([...this.box.rect.slice(0, 2), 400, 225] as [number, number, number, number]);
-            }
+            if (typeof this.box.data.value === "undefined") this.box.data.value = "";
         });
         this.on("updateArgs", (args) => {
             if (args[0]) this.updateUI({ language: args[0] });

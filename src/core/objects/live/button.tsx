@@ -12,6 +12,7 @@ interface LiveButtonProps extends LiveUIProps {
 }
 
 class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
+    static defaultSize: [number, number] = [30, 30];
     state: LiveButtonProps & LiveUIState = {
         ...this.state,
         shortName: this.box.props.shortName || this.object.meta.props.shortName.default,
@@ -102,7 +103,7 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], Live
         },
         activeBgColor: {
             type: "color",
-            default: "rgba(90, 90, 90, 1)",
+            default: "rgba(195, 195, 195, 1)",
             description: "Background color (active)",
             isUIState: true
         },

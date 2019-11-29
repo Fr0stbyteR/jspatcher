@@ -180,6 +180,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.args = [] as Args<T>;
         this.init();
         lines.forEach(el => this._patcher.lines[el].enable());
+        const { defaultSize } = this._object.uiComponent;
+        if (defaultSize && defaultSize.every(v => typeof v === "number" && v > 0) && defaultSize.length === 2) this.size = defaultSize;
         this.emit("textChanged", this);
         this._patcher.emit("graphChanged");
         return this;
@@ -193,10 +195,44 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     }
     setRect(rect: [number, number, number, number]) {
         if (rect.every((v, i) => v === this.rect[i])) return this;
+        if (!rect.every(v => typeof v === "number")) return this;
+        if (rect.length !== 4) return this;
         this.rect = rect;
         this.allLines.forEach(id => this._patcher.lines[id].uiUpdateDest());
         this.emit("rectChanged", this);
         return this;
+    }
+    set position([leftIn, topIn]: [number, number]) {
+        const [left, top, width, height] = this.rect;
+        this.setRect([leftIn || left, topIn || top, width, height] as [number, number, number, number]);
+    }
+    set size([widthIn, heightIn]: [number, number]) {
+        const [left, top, width, height] = this.rect;
+        this.setRect([left, top, widthIn || width, heightIn || height] as [number, number, number, number]);
+    }
+    get left() {
+        return this.rect[0];
+    }
+    set left(leftIn: number) {
+        this.position = [leftIn, 0];
+    }
+    get top() {
+        return this.rect[1];
+    }
+    set top(topIn: number) {
+        this.position = [0, topIn];
+    }
+    get width() {
+        return this.rect[2];
+    }
+    set width(widthIn: number) {
+        this.size = [widthIn, 0];
+    }
+    get height() {
+        return this.rect[3];
+    }
+    set height(heightIn: number) {
+        this.size = [0, heightIn];
     }
     setBackground(bool: boolean) {
         if (!!this.background === !!bool) return this;

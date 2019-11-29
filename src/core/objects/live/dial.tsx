@@ -24,6 +24,7 @@ interface LiveDialProps extends LiveUIProps {
 }
 type LiveDialAdditionalState = { inputBuffer: string };
 class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalState> {
+    static defaultSize: [number, number] = [45, 60];
     state: LiveDialProps & LiveUIState & LiveDialAdditionalState = {
         ...this.state,
         shortName: this.box.props.shortName || this.object.meta.props.shortName.default,
@@ -360,7 +361,7 @@ export class LiveDial extends LiveObject<{}, {}, [number | Bang, number], [numbe
         },
         activeNeedleColor: {
             type: "color",
-            default: "rgba(40, 40, 40, 1)",
+            default: "rgba(195, 195, 195, 1)",
             description: "Needle color (active)",
             isUIState: true
         },
@@ -438,7 +439,6 @@ export class LiveDial extends LiveObject<{}, {}, [number | Bang, number], [numbe
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
-            if (this.inlets !== 2) this.box.setRect([...this.box.rect.slice(0, 2), 45, 60] as [number, number, number, number]);
             this.inlets = 2;
             this.outlets = 2;
         });

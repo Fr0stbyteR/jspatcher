@@ -9,6 +9,7 @@ import { BaseUIState, DefaultUIState, TAudioNodeInletConnection, TAudioNodeOutle
 
 export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P extends Partial<{ object: T }> & { [key: string]: any } = {}, S extends { [key: string]: any } = {}> extends React.Component<{ object: T } & P, S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
+    static defaultSize: [number, number];
     state = {} as Readonly<S>;
     get object(): T {
         return this.props.object;
@@ -549,7 +550,7 @@ export class BaseObject<
         }
     };
     static get meta(): TMeta {
-        const thisName = this.name;
+        const thisName = this._name;
         const superMeta = Object.getPrototypeOf(this).meta;
         const superProps = superMeta.props;
         const thisProps = this.props;
