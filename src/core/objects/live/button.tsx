@@ -46,8 +46,7 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
             focusBorderColor,
             value
         } = this.state;
-        const width = this.box.rect[2];
-        const height = this.box.rect[3];
+        const { width, height } = this.box;
         const ctx = this.ctx;
         const borderWidth = 1;
 

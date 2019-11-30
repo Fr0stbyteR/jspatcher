@@ -145,17 +145,6 @@ export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [ke
         if (type === "float") return Math.min(Number.MAX_SAFE_INTEGER, Math.floor((max - min) / step));
         return Math.min(Math.floor((max - min) / (Math.round(step) || 1)), max - min);
     }
-    /**
-     * Pixels for each step
-     *
-     * @readonly
-     * @memberof LiveUI
-     */
-    get stepPixels() {
-        const full = 100;
-        const stepsCount = this.stepsCount;
-        return full / stepsCount;
-    }
     get displayValue() {
         const { value, type, unitStyle, units, enums } = this.state;
         return getDisplayValue(value, type, unitStyle, units, enums);

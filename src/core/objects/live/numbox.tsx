@@ -65,8 +65,7 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps & LiveNumboxAdditi
             activeSliderColor,
             inputBuffer
         } = this.state;
-        const width = this.box.rect[2];
-        const height = this.box.rect[3];
+        const { width, height } = this.box;
         const ctx = this.ctx;
         const distance = this.distance;
         const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
@@ -109,12 +108,12 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps & LiveNumboxAdditi
     getValueFromDelta(e: PointerDragEvent) {
         const { type, min, max, enums, exponent } = this.state;
         const step = type === "enum" ? 1 : (this.state.step || 1);
-        const stepPixels = this.stepPixels;
-        const stepsCount = this.stepsCount;
         const totalPixels = 100;
-        const prevDistance = LiveUI.getDistance({ value: e.prevValue, type, min, max, enums, exponent }) * totalPixels;
-        const distance = prevDistance + e.fromY - e.y;
-        let steps = Math.round(normExp(distance / totalPixels, exponent) * totalPixels / stepPixels);
+        const stepsCount = this.stepsCount;
+        const stepPixels = totalPixels / stepsCount;
+        const prevPixels = LiveUI.getDistance({ value: e.prevValue, type, min, max, enums, exponent }) * totalPixels;
+        const pixels = prevPixels + e.fromY - e.y;
+        let steps = Math.round(normExp(pixels / totalPixels, exponent) * totalPixels / stepPixels);
         steps = Math.min(stepsCount, Math.max(0, steps));
         if (type === "enum") return steps;
         if (type === "int") return Math.round(steps * step + min);
