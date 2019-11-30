@@ -177,7 +177,7 @@ interface BoxEventMap {
     "ioCountChanged": Box;
     "updatedFromObject": { args?: any[]; props?: { [key: string]: any } };
 }
-type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "bang" | "color" | "enum";
+type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "function" | "bang" | "color" | "enum";
 type TInletMeta = {
     isHot: boolean;
     type: TMetaType;

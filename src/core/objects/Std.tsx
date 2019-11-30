@@ -216,8 +216,8 @@ class set extends StdObject<{}, { key: string | number; value: any }, [{ [key: s
         });
     }
 }
-class get extends StdObject<{}, { key: string | number }, [{ [key: string]: any } | any[], string | number], [{ [key: string]: any } | any[]], [string | number]> {
-    static description = "Get a property of incoming object";
+class get extends StdObject<{}, { keys: (string | number)[] }, [{ [key: string]: any } | any[], ...(string | number)[]], any[], (string | number)[]> {
+    static description = "Get properties of incoming object";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "object",
@@ -225,40 +225,48 @@ class get extends StdObject<{}, { key: string | number }, [{ [key: string]: any 
     }, {
         isHot: false,
         type: "string",
+        varLength: true,
         description: "Key / name of the property"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "anything",
-        description: "Object bypass"
+        varLength: true,
+        description: "Value got"
     }];
     static args: TMeta["args"] = [{
         type: "anything",
         optional: false,
+        varLength: true,
         description: "Initial key of the property"
     }];
-    state = { key: undefined as string | number };
+    state = { keys: [] as (string | number)[] };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
-            this.inlets = 2;
-            this.outlets = 1;
+            this.inlets = 1;
+            this.outlets = 0;
         });
         this.on("updateArgs", (args) => {
-            if (typeof args[0] === "string" || typeof args[0] === "number") this.state.key = args[0];
+            if (Array.isArray(args) && args.every(v => typeof v === "number" || typeof v === "string")) {
+                this.state.keys = args.slice();
+                this.inlets = 1 + args.length;
+                this.outlets = args.length;
+            }
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (typeof this.state.key === "string" || typeof this.state.key === "number") {
-                    try {
-                        this.outlet(0, (data as any)[this.state.key]);
-                    } catch (e) {
-                        this.error((e as Error).message);
+                for (let i = this.state.keys.length - 1; i >= 0; i--) {
+                    const key = this.state.keys[i];
+                    if (typeof key === "string" || typeof key === "number") {
+                        try {
+                            this.outlet(i, (data as any)[key]);
+                        } catch (e) {
+                            this.error((e as Error).message);
+                        }
                     }
-                } else {
-                    this.error("Key not defined");
                 }
-            } else if (inlet === 1) {
-                if (typeof data === "string" || typeof data === "number") this.state.key = data;
+            } else {
+                if (typeof data === "string" || typeof data === "number") this.state.keys[inlet - 1] = data;
                 else this.error("Key should be a number or a string");
             }
         });
@@ -352,4 +360,114 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         });
     }
 }
-export default { print, for: For, "for-in": ForIn, if: If, sel, set, get };
+const vVars: { [key: string]: any } = {};
+class v extends StdObject<{}, { name: string | number; map: { [key: string]: any }; value: any }, [Bang | any, any], [any], [string | number, any]> {
+    static description = "Store anything as named sharable variable";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Bang to output stored value, anything to set the value then output it."
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Anything to set the value."
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Set variable name."
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Value"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: true,
+        description: "Variable name"
+    }, {
+        type: "anything",
+        optional: true,
+        description: "Initial value"
+    }];
+    state = { name: undefined as string | number, map: vVars, value: undefined as any };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 3;
+            this.outlets = 1;
+        });
+        this.on("updateArgs", (args) => {
+            if (typeof args[0] === "string" || typeof args[0] === "number") this.state.name = args[0];
+            if (typeof args[1] !== "undefined") {
+                if (typeof this.state.name === "undefined") this.state.value = args[1];
+                this.state.map[this.state.name] = args[1];
+            }
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (!(data instanceof Bang)) {
+                    if (typeof this.state.name === "undefined") this.state.value = data;
+                    else this.state.map[this.state.name] = data;
+                }
+                this.outlet(0, typeof this.state.name === "undefined" ? this.state.value : this.state.map[this.state.name]);
+            } else if (inlet === 1) {
+                if (typeof this.state.name === "undefined") this.state.value = data;
+                else this.state.map[this.state.name] = data;
+            } else if (inlet === 2) {
+                if (typeof data === "string" || typeof data === "number") this.state.name = data;
+            }
+        });
+    }
+}
+class lambda extends StdObject<{}, { argsCount: number }, [Bang], [(...args: any[]) => any, ...any[]], [number]> {
+    static description = "Generate anonymous function, output args when called";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Output anonymous function"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "function",
+        description: "Anonymous function"
+    }, {
+        type: "anything",
+        varLength: true,
+        description: "If no arguments, outlet a bang, else arguments"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        default: 0,
+        description: "Arguments count"
+    }];
+    state = { argsCount: 0 };
+    lambda = (...args: any[]) => {
+        if (this.state.argsCount === 0) {
+            this.outlet(1, new Bang());
+        } else {
+            for (let i = this.outlets - 1; i >= 1; i--) {
+                this.outlet(i, args[i - 1]);
+            }
+        }
+    }
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 2;
+        });
+        this.on("updateArgs", (args) => {
+            if (typeof args[0] === "number" && args[0] >= 0) {
+                this.state.argsCount = ~~args[0];
+                this.outlets = 1 + (this.state.argsCount || 1);
+            }
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (data instanceof Bang) this.outlet(0, this.lambda);
+            }
+        });
+    }
+}
+
+export default { print, for: For, "for-in": ForIn, if: If, sel, set, get, v, lambda };

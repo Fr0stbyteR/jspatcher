@@ -192,7 +192,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         if (typeof className !== "string" || className.length === 0) {
             return Base.EmptyObject.meta;
         }
-        if (this._state.lib[className].meta) {
+        if (this._state.lib[className]) {
             return this._state.lib[className].meta;
         }
         return Base.InvalidObject.meta;

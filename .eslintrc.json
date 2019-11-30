@@ -43,6 +43,7 @@
         "no-continue": "off",
         "no-dupe-class-members": "off",
         "no-empty": "warn",
+        "no-lonely-if": "off",
         "no-loop-func": "off",
         "no-mixed-operators": "off",
         "no-nested-ternary": "off",

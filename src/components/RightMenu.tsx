@@ -307,7 +307,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
                     }
                 }
                 if (!found) {
-                    commonArgs.splice(i, 1);
+                    delete commonArgs[i];
                     break;
                 }
             }
@@ -357,6 +357,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
             </Table.Row>
         );
         meta.args.forEach((argMeta, i) => {
+            if (!argMeta) return;
             const { default: defaultValue, varLength } = argMeta;
             const value = varLength ? args.slice(i) : typeof args[i] === "undefined" ? defaultValue : args[i];
             table.push(

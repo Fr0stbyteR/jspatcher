@@ -33,13 +33,13 @@ export default class Importer {
                 else if (setter) Super = StaticSetter;
                 else if (getter) Super = StaticGetter;
                 else return null;
-            } else { // eslint-disable-next-line no-lonely-if
+            } else {
                 if (setter && getter) Super = SetterGetter;
                 else if (setter) Super = Setter;
                 else if (getter) Super = Getter;
                 else return null;
             }
-        } else { // eslint-disable-next-line no-lonely-if
+        } else {
             if (isStatic) Super = StaticProperty;
             else Super = Property;
         }

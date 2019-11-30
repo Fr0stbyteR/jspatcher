@@ -19,7 +19,7 @@ interface LiveSliderProps extends LiveUIProps {
 }
 type LiveSliderAdditionalState = { inputBuffer: string };
 class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderProps & LiveSliderAdditionalState> {
-    static defaultSize: [number, number] = [30, 90];
+    static defaultSize: [number, number] = [120, 45];
     state: LiveSliderProps & LiveUIState & LiveSliderAdditionalState = {
         ...this.state,
         shortName: this.box.props.shortName || this.object.meta.props.shortName.default,
@@ -324,7 +324,7 @@ export class LiveSlider extends LiveObject<{}, {}, [number | Bang, number], [num
         orientation: {
             type: "enum",
             enums: ["vertical", "horizontal"],
-            default: "vertical",
+            default: "horizontal",
             description: "Slider orientation",
             isUIState: true
         },
