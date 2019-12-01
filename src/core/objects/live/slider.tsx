@@ -359,6 +359,11 @@ export class LiveSlider extends LiveObject<{}, {}, [number | Bang, number], [num
                     this.updateUI({ value: this.state.value });
                 }
                 this.outletAll([this.state.value, this.state.displayValue]);
+            } else if (inlet === 1) {
+                const value = +data;
+                this.state.value = value;
+                this.validateValue();
+                this.updateUI({ value: this.state.value });
             }
         });
         this.on("changeFromUI", ({ value, displayValue }) => {
