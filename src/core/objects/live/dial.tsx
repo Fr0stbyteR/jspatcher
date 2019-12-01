@@ -27,7 +27,6 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalStat
     static defaultSize: [number, number] = [45, 60];
     state: LiveDialProps & LiveUIState & LiveDialAdditionalState = {
         ...this.state,
-        shortName: this.box.props.shortName || this.object.meta.props.shortName.default,
         borderColor: this.box.props.borderColor || this.object.meta.props.borderColor.default,
         focusBorderColor: this.box.props.focusBorderColor || this.object.meta.props.focusBorderColor.default,
         dialColor: this.box.props.dialColor || this.object.meta.props.dialColor.default,
@@ -42,13 +41,9 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalStat
         fontSize: this.box.props.fontSize || this.object.meta.props.fontSize.default,
         fontFace: this.box.props.fontFace || this.object.meta.props.fontFace.default,
         appearance: this.box.props.appearance || this.object.meta.props.appearance.default,
-        showName: this.box.props.showName !== false,
-        showNumber: this.box.props.showNumber !== false,
-        triangle: !!this.box.props.triangle,
-        min: this.box.props.min || this.object.meta.props.min.default,
-        max: typeof this.box.props.max === "number" ? this.box.props.max : this.object.meta.props.max.default,
-        type: this.box.props.type || this.object.meta.props.type.default,
-        unitStyle: this.box.props.unitStyle || this.object.meta.props.unitStyle.default,
+        showName: typeof this.box.props.showName === "boolean" ? this.box.props.showName : this.object.meta.props.showName.default,
+        showNumber: typeof this.box.props.showNumber === "boolean" ? this.box.props.showNumber : this.object.meta.props.showNumber.default,
+        triangle: typeof this.box.props.triangle === "boolean" ? this.box.props.triangle : this.object.meta.props.triangle.default,
         inputBuffer: ""
     }
     className = "live-dial";

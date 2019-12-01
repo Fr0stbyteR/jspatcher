@@ -22,21 +22,21 @@ export type LiveUIState = LiveUIProps & BaseUIState & BaseUIAdditionalState;
 export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [key: string]: any } = {}> extends BaseUI<T, {}, P & LiveUIProps> {
     state: P & LiveUIState = {
         ...this.state,
-        value: this.box.props.value || 0,
-        min: this.box.props.min || 0,
-        max: typeof this.box.props.max === "number" ? this.box.props.max : 127,
-        step: this.box.props.step || 1,
-        type: this.box.props.type || "int",
-        enums: this.box.props.enums || [""],
-        active: typeof this.box.props.active === "boolean" ? this.box.props.active : true,
-        focus: this.box.props.focus || false,
-        shortName: this.box.props.shortName || "",
-        longName: this.box.props.longName || "",
-        unitStyle: this.box.props.unitStyle || "int",
-        units: this.box.props.units || "",
-        exponent: this.box.props.exponent || 0,
-        speedLim: this.box.props.speedLim || 16,
-        frameRate: this.box.props.frameRate || 60
+        value: typeof this.box.props.value === "number" ? this.box.props.value : this.object.meta.props.value.default,
+        min: typeof this.box.props.min === "number" ? this.box.props.min : this.object.meta.props.min.default,
+        max: typeof this.box.props.max === "number" ? this.box.props.max : this.object.meta.props.max.default,
+        step: typeof this.box.props.step === "number" ? this.box.props.step : this.object.meta.props.step.default,
+        type: this.box.props.type || this.object.meta.props.type.default,
+        enums: this.box.props.enums || this.object.meta.props.enums.default,
+        active: typeof this.box.props.active === "boolean" ? this.box.props.active : this.object.meta.props.active.default,
+        focus: typeof this.box.props.focus === "boolean" ? this.box.props.focus : this.object.meta.props.focus.default,
+        shortName: this.box.props.shortName || this.object.meta.props.shortName.default,
+        longName: this.box.props.longName || this.object.meta.props.longName.default,
+        unitStyle: this.box.props.unitStyle || this.object.meta.props.unitStyle.default,
+        units: this.box.props.units || this.object.meta.props.units.default,
+        exponent: typeof this.box.props.exponent === "number" ? this.box.props.exponent : this.object.meta.props.exponent.default,
+        speedLim: typeof this.box.props.speedLim === "number" ? this.box.props.speedLim : this.object.meta.props.speedLim.default,
+        frameRate: typeof this.box.props.frameRate === "number" ? this.box.props.frameRate : this.object.meta.props.frameRate.default
     };
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     refCanvas = React.createRef<HTMLCanvasElement>();
@@ -222,6 +222,12 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
     static version = "1.0.0";
     static description = "Ab**ton Live User ?";
     static props: TMeta["props"] = {
+        value: {
+            type: "number",
+            default: 0,
+            description: "Initial value",
+            isUIState: true
+        },
         min: {
             type: "number",
             default: 0,
@@ -247,7 +253,7 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
             description: "Value type",
             isUIState: true
         },
-        enum: {
+        enums: {
             type: "object",
             default: [""],
             description: "Enum values",

@@ -15,7 +15,6 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
     static defaultSize: [number, number] = [30, 30];
     state: LiveButtonProps & LiveUIState = {
         ...this.state,
-        shortName: this.box.props.shortName || this.object.meta.props.shortName.default,
         bgColor: this.box.props.bgColor || this.object.meta.props.bgColor.default,
         activeBgColor: this.box.props.activeBgColor || this.object.meta.props.activeBgColor.default,
         bgOnColor: this.box.props.bgOnColor || this.object.meta.props.bgOnColor.default,
