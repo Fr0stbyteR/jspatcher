@@ -10,19 +10,19 @@ class FileMenu extends React.Component {
     refOpen = React.createRef<HTMLInputElement>();
     state = { pAsString: "", pName: "patcher.json" };
     handleClickNew = () => {
-        this.props.patcher.load("js", {});
+        this.props.patcher.load({}, "js");
         this.setState({ pName: "patcher.json" });
     };
     handleClickNewMax = () => {
-        this.props.patcher.load("max", {});
+        this.props.patcher.load({}, "max");
         this.setState({ pName: "patcher.maxpat" });
     };
     handleClickNewGen = () => {
-        this.props.patcher.load("gen", {});
+        this.props.patcher.load({}, "gen");
         this.setState({ pName: "patcher.gendsp" });
     };
     handleClickNewFaust = () => {
-        this.props.patcher.load("faust", {});
+        this.props.patcher.load({}, "faust");
         this.setState({ pName: "patcher.dsppat" });
     };
     handleClickOpen = () => {
@@ -39,26 +39,23 @@ class FileMenu extends React.Component {
         if (!file) return;
         const ext = file.name.split(".").pop();
         const extMap: { [key: string]: TPatcherMode } = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
-        if (extMap[ext]) {
-            const reader = new FileReader();
-            reader.readAsText(file, "UTF-8");
-            reader.onload = () => {
-                let parsed = "";
-                try {
-                    parsed = JSON.parse(reader.result.toString());
-                } catch (e) {
-                    this.props.patcher.error(e);
-                }
-                if (parsed) {
-                    this.props.patcher.load(extMap[ext], parsed);
-                    this.setState({ pName: file.name });
-                }
-            };
-            reader.onerror = (e) => {
-                this.props.patcher.error(reader.error.message);
-            };
-            this.refOpen.current.value = "";
-        }
+        if (!extMap[ext]) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            let parsed: TPatcher;
+            try {
+                parsed = JSON.parse(reader.result.toString());
+            } catch (e) {
+                this.props.patcher.error((e as Error).message);
+            }
+            if (parsed) {
+                this.props.patcher.load(parsed, extMap[ext]);
+                this.setState({ pName: file.name });
+            }
+        };
+        reader.onerror = () => this.props.patcher.error(reader.error.message);
+        reader.readAsText(file, "UTF-8");
+        this.refOpen.current.value = "";
     }
     render() {
         const ctrl = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";

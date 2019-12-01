@@ -32,4 +32,7 @@
             visibility: visible;
         }
     }
+    &.filedropping {
+        box-shadow: inset 0px 0px 5px 0px #6dffff;
+    }
 }

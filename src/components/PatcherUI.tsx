@@ -6,17 +6,18 @@ import "./PatcherUI.scss";
 import "./zIndex.scss";
 import BoxUI from "./BoxUI";
 import { LineUI, TempLineUI } from "./LineUI";
-import { TPatcher } from "../core/types";
+import { TPatcher, TPatcherMode } from "../core/types";
 
 type P = { patcher: Patcher };
-type S = { locked: boolean; presentation: boolean; showGrid: boolean; bgcolor: [number, number, number, number]; editing_bgcolor: [number, number, number, number] };
+type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: [number, number, number, number]; editingBgColor: [number, number, number, number] };
 export default class PatcherUI extends React.Component<P, S> {
-    state = {
+    state: S = {
         locked: this.props.patcher.state.locked,
         presentation: this.props.patcher.state.presentation,
         showGrid: this.props.patcher.state.showGrid,
-        bgcolor: this.props.patcher.props.bgcolor,
-        editing_bgcolor: this.props.patcher.props.editing_bgcolor // eslint-disable-line @typescript-eslint/camelcase
+        bgColor: this.props.patcher.props.bgcolor,
+        editingBgColor: this.props.patcher.props.editing_bgcolor,
+        fileDropping: false
     };
     refDiv = React.createRef<HTMLDivElement>();
     refGrid = React.createRef<Grid>();
@@ -24,7 +25,7 @@ export default class PatcherUI extends React.Component<P, S> {
     refLines = React.createRef<Lines>();
     size = { width: 0, height: 0 };
     handleLoaded = () => {
-        this.setState({ bgcolor: this.props.patcher.props.bgcolor, editing_bgcolor: this.props.patcher.props.editing_bgcolor }); // eslint-disable-line @typescript-eslint/camelcase
+        this.setState({ bgColor: this.props.patcher.props.bgcolor, editingBgColor: this.props.patcher.props.editing_bgcolor }); // eslint-disable-line @typescript-eslint/camelcase
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
         const lines = this.refLines.current;
@@ -50,6 +51,42 @@ export default class PatcherUI extends React.Component<P, S> {
         }
         if (shouldUpdate) [grid, boxes, lines].forEach(el => el.setState({ width: this.size.width + "px", height: this.size.height + "px" }));
     }
+    handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const { dataTransfer } = e;
+        if (dataTransfer && dataTransfer.items.length && dataTransfer.items[0].kind === "file") this.setState({ fileDropping: true });
+    };
+    handleDragOver = (e: React.DragEvent<HTMLDivElement>) => this.handleDragEnter(e);
+    handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({ fileDropping: false });
+    };
+    handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({ fileDropping: false });
+        const { dataTransfer } = e;
+        if (dataTransfer && dataTransfer.files.length) {
+            const file = e.dataTransfer.files[0];
+            const ext = file.name.split(".").pop();
+            const extMap: { [key: string]: TPatcherMode } = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+            if (!extMap[ext]) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                let parsed: TPatcher;
+                try {
+                    parsed = JSON.parse(reader.result.toString());
+                } catch (e) {
+                    this.props.patcher.error((e as Error).message);
+                }
+                if (parsed) this.props.patcher.load(parsed, extMap[ext]);
+            };
+            reader.onerror = () => this.props.patcher.error(reader.error.message);
+            reader.readAsText(file, "UTF-8");
+        }
+    };
     componentDidMount() {
         const patcher = this.props.patcher;
         patcher.on("loaded", this.handleLoaded);
@@ -69,9 +106,10 @@ export default class PatcherUI extends React.Component<P, S> {
         classArray.push(this.state.locked ? "locked" : "unlocked");
         if (this.state.presentation) classArray.push("presentation");
         if (this.state.showGrid) classArray.push("show-grid");
-        const bgcolor = this.state.locked ? this.state.bgcolor : this.state.editing_bgcolor;
+        if (this.state.fileDropping) classArray.push("filedropping");
+        const bgcolor = this.state.locked ? this.state.bgColor : this.state.editingBgColor;
         return (
-            <div className={classArray.join(" ")} style={{ backgroundColor: "rgba(" + bgcolor.join(",") + ")" }} onScroll={this.handleScroll} ref={this.refDiv}>
+            <div ref={this.refDiv} className={classArray.join(" ")} style={{ backgroundColor: "rgba(" + bgcolor.join(",") + ")" }} onScroll={this.handleScroll} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
                 <Grid {...this.props} ref={this.refGrid} />
                 <Boxes {...this.props} ref={this.refBoxes} />
                 <Lines {...this.props} ref={this.refLines} />

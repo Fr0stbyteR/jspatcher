@@ -83,15 +83,16 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.props = { mode: "js", bgcolor: [61, 65, 70, 1], editing_bgcolor: [82, 87, 94, 1], grid: [15, 15], boxIndexCount: 0, lineIndexCount: 0 };
         this._state.selected = [];
     }
-    load(modeIn: TPatcherMode, patcherIn: TPatcher | TMaxPatcher | any) {
+    load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode) {
         this._state.isLoading = true;
         this.clear();
         if (!patcherIn) {
             this._state.isLoading = false;
             return this;
         }
-        this.props.mode = modeIn;
-        if (modeIn === "max" || modeIn === "gen") {
+        if (!this.props.mode) this.props.mode = modeIn || "js";
+        const { mode } = this.props;
+        if (mode === "max" || mode === "gen") {
             const rgbaMax2Css = (maxColor: number[]) => {
                 const cssColor = [255, 255, 255, 1] as [number, number, number, number];
                 if (!Array.isArray(maxColor)) return cssColor;
@@ -101,7 +102,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                 if (typeof maxColor[3] === "number") cssColor[3] = maxColor[3];
                 return cssColor;
             };
-            this._state.lib = modeIn === "max" ? this._state.libMax : this._state.libGen;
+            this._state.lib = mode === "max" ? this._state.libMax : this._state.libGen;
             const patcher = (patcherIn as TMaxPatcher).patcher;
             if (!patcher) {
                 this._state.isLoading = false;
@@ -135,8 +136,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                     dest: [lineArgs.destination[0].replace(/obj/, "box"), lineArgs.destination[1]]
                 });
             }
-        } else if (modeIn === "js" || modeIn === "faust") {
-            this._state.lib = modeIn === "js" ? this._state.libJS : this._state.libFaust;
+        } else if (mode === "js" || mode === "faust") {
+            this._state.lib = mode === "js" ? this._state.libJS : this._state.libFaust;
             const patcher = patcherIn;
             if (patcher.props) this.props = { ...this.props, ...patcher.props };
             if (patcher.boxes) { // Boxes & data
