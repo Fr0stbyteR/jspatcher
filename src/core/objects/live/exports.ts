@@ -4,6 +4,7 @@ import { LiveDial } from "./dial";
 import { LiveSlider } from "./slider";
 import { LiveTab } from "./tab";
 import { LiveToggle } from "./toggle";
+import { LiveText } from "./text";
 
 export default {
     numbox: LiveNumbox,
@@ -11,5 +12,6 @@ export default {
     dial: LiveDial,
     slider: LiveSlider,
     tab: LiveTab,
-    toggle: LiveToggle
+    toggle: LiveToggle,
+    text: LiveText
 };

@@ -1,8 +1,9 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta } from "../../types";
 import { Bang } from "../Base";
+import { fillRoundedRect } from "../../../utils";
 
-interface LiveTabProps extends LiveUIProps {
+interface LiveTextProps extends LiveUIProps {
     bgColor: string;
     bgOnColor: string;
     activeBgColor: string;
@@ -16,14 +17,12 @@ interface LiveTabProps extends LiveUIProps {
     fontFamily: string;
     fontSize: number;
     fontFace: "regular" | "bold" | "italic" | "bold italic";
-    mode: "equal" | "proportional";
-    spacingX: number;
-    spacingY: number;
-    multiline: boolean;
+    mode: "button" | "toggle";
+    text: string;
+    textOn: string;
 }
-class LiveTabUI extends LiveUI<LiveTab, LiveTabProps> {
-    static defaultSize: [number, number] = [120, 15];
-    state: LiveTabProps & LiveUIState = {
+class LiveTextUI extends LiveUI<LiveText, LiveTextProps> {
+    state: LiveTextProps & LiveUIState = {
         ...this.state,
         bgColor: this.box.props.bgColor || this.object.meta.props.bgColor.default,
         bgOnColor: this.box.props.bgOnColor || this.object.meta.props.bgOnColor.default,
@@ -39,84 +38,11 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabProps> {
         fontSize: this.box.props.fontSize || this.object.meta.props.fontSize.default,
         fontFace: this.box.props.fontFace || this.object.meta.props.fontFace.default,
         mode: this.box.props.mode || this.object.meta.props.mode.default,
-        spacingX: this.box.props.spacingX || this.object.meta.props.spacingX.default,
-        spacingY: this.box.props.spacingY || this.object.meta.props.spacingY.default,
-        multiline: typeof this.box.props.multiline === "boolean" ? this.box.props.multiline : this.object.meta.props.multiline.default
+        text: this.box.props.text || this.object.meta.props.text.default,
+        textOn: this.box.props.textOn || this.object.meta.props.textOn.default
     }
-    className = "live-tab";
-    tabRects: [number, number, number, number][] = [];
+    className = "live-text";
     inTouch = false;
-    getTabRects() {
-        const {
-            multiline,
-            mode,
-            enums,
-            spacingX: spacingXIn,
-            spacingY: spacingYIn
-        } = this.state;
-        const { width, height } = this.box;
-        const margin = 4;
-        const minHeight = 10;
-        const count = enums.length;
-        let countPerLine = count;
-        let lines = 1;
-        let step = height / lines;
-        let interval = 0;
-        let rectWidth = 0;
-        const spacingX = spacingXIn * 0.5;
-        const spacingY = spacingYIn * 0.5;
-
-        if (multiline && height >= 2 * minHeight) {
-            lines = Math.max(1, Math.min(count, Math.floor(height / minHeight)));
-            countPerLine = Math.ceil(count / lines);
-            // if there's not enough height, increase the number of tabs per row
-            while (lines * countPerLine < count) {
-                countPerLine++;
-                if (lines > 1) lines--;
-            }
-            // if there's extra height, reduce the number of rows
-            while (lines * countPerLine > count && (lines - 1) * countPerLine >= count) {
-                lines--;
-            }
-            step = height / lines;
-        }
-        if (mode === "equal") {
-            interval = width / countPerLine;
-            rectWidth = interval - spacingX;
-            for (let i = 0; i < count; i++) {
-                this.tabRects[i] = [
-                    (i % countPerLine) * interval + spacingX * 0.5,
-                    Math.floor(i / countPerLine) * step + spacingY * 0.5,
-                    rectWidth,
-                    (height / lines) - spacingY
-                ];
-            }
-        } else {
-            const textWidths = [];
-            for (let i = 0; i < lines; i++) {
-                let total = 0;
-                let space = width;
-                for (let j = i * countPerLine; j < Math.min((i + 1) * countPerLine, count); j++) {
-                    const textDimensions = this.ctx.measureText(enums[j]);
-                    textWidths[j] = textDimensions.width;
-                    total += textWidths[j];
-                    space -= 2 * margin + spacingX;
-                }
-                let used = 0;
-                for (let j = i * countPerLine; j < Math.min((i + 1) * countPerLine, count); j++) {
-                    const rectSpace = textWidths[j] / total;
-                    this.tabRects[j] = [
-                        used + spacingX * 0.5,
-                        i * step + spacingY * 0.5,
-                        space * rectSpace + 2 * margin,
-                        height / lines - spacingY
-                    ];
-                    used += this.tabRects[j][2] + spacingX;
-                }
-            }
-        }
-        return this.tabRects;
-    }
     paint() {
         const {
             active,
@@ -134,12 +60,13 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabProps> {
             textOnColor,
             activeTextColor,
             activeTextOnColor,
-            enums,
+            mode,
+            text,
+            textOn,
             value
         } = this.state;
         const { width, height } = this.box;
         const ctx = this.ctx;
-        const tabRects = this.getTabRects();
 
         const borderWidth = 0.5;
 
@@ -147,49 +74,41 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabProps> {
         ctx.canvas.height = height;
         ctx.lineWidth = borderWidth;
 
+        const buttonBgColor = active ? (value ? activeBgOnColor : activeBgColor) : (value ? bgOnColor : bgColor);
         const buttonBorderColor = focus ? focusBorderColor : borderColor;
-        for (let i = 0; i < enums.length; i++) {
-            const buttonBgColor = active ? (value === i ? activeBgOnColor : activeBgColor) : (value === i ? bgOnColor : bgColor);
-            ctx.fillStyle = buttonBgColor;
-            ctx.beginPath();
-            ctx.rect(...tabRects[i]);
-            ctx.fill();
-            ctx.strokeStyle = buttonBorderColor;
-            ctx.stroke();
 
-            ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillStyle = active ? (value === i ? activeTextOnColor : activeTextColor) : (value === i ? textOnColor : textColor);
-            ctx.fillText(enums[i], tabRects[i][0] + tabRects[i][2] * 0.5, tabRects[i][1] + tabRects[i][3] * 0.5);
+        ctx.fillStyle = buttonBgColor;
+        if (mode === "button") {
+            fillRoundedRect(ctx, 0.5, 0.5, width - 1, height - 1, height * 0.5 - 1);
+        } else {
+            ctx.beginPath();
+            ctx.rect(0.5, 0.5, width - 1, height - 1);
+            ctx.fill();
         }
+        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = buttonBorderColor;
+        ctx.stroke();
+
+        ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = active ? (value ? activeTextOnColor : activeTextColor) : (value ? textOnColor : textColor);
+        ctx.fillText(value && mode === "toggle" ? textOn : text, width * 0.5, height * 0.5);
     }
     handlePointerDown = (e: PointerDownEvent) => {
+        const { value, mode } = this.state;
         this.inTouch = true;
-        for (let i = 0; i < this.tabRects.length; i++) {
-            const rect = this.tabRects[i];
-            if (e.x >= rect[0] && e.x <= rect[2] + rect[0] && e.y >= rect[1] && e.y <= rect[3] + rect[1]) {
-                this.setValueToOutput(i);
-                return;
-            }
-        }
+        this.setValueToOutput(mode === "button" ? 1 : 1 - +!!value);
     }
-    handlePointerDrag = (e: PointerDragEvent) => {
-        this.handlePointerDown(e);
-    }
-    handleKeyDown = (e: React.KeyboardEvent) => {
-        let addStep = 0;
-        if (e.key === "ArrowUp" || e.key === "ArrowRight") addStep = 1;
-        if (e.key === "ArrowDown" || e.key === "ArrowLeft") addStep = -1;
-        if (addStep !== 0) {
-            const newValue = this.object.toValidValue(this.state.value + this.state.step * addStep);
-            if (newValue !== this.state.value) this.setValueToOutput(newValue);
-        }
+    handlePointerUp = () => {
+        const { value, mode } = this.state;
+        this.inTouch = false;
+        if (mode === "button") this.setValueToOutput(0);
     }
 }
 
-export class LiveTab extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTabProps> {
-    static description = "Buttons as tab";
+export class LiveText extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTextProps> {
+    static description = "Button or toggle with text";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "number",
@@ -295,37 +214,25 @@ export class LiveTab extends LiveObject<{}, {}, [number | Bang, number], [number
         },
         mode: {
             type: "enum",
-            enums: ["equal", "proportional"],
-            default: "equal",
-            description: "Spacing mode",
+            enums: ["button", "toggle"],
+            default: "toggle",
+            description: "Trigger mode",
             isUIState: true
         },
-        spacingX: {
-            type: "number",
-            default: 6,
-            description: "Tab horizontal spacing",
+        text: {
+            type: "string",
+            default: "A",
+            description: "Text (off)",
             isUIState: true
         },
-        spacingY: {
-            type: "number",
-            default: 6,
-            description: "Tab vertical spacing",
-            isUIState: true
-        },
-        multiline: {
-            type: "boolean",
-            default: true,
-            description: "Multi-line tabs",
-            isUIState: true
-        },
-        enums: {
-            type: "object",
-            default: ["one", "two", "three"],
-            description: "Enum values",
+        textOn: {
+            type: "string",
+            default: "B",
+            description: "Text (off)",
             isUIState: true
         }
     };
-    uiComponent = LiveTabUI;
+    uiComponent = LiveTextUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
