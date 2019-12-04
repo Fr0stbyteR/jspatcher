@@ -1,0 +1,299 @@
+{
+    "ee": {},
+    "lines": {
+        "line-1": {
+            "ee": {},
+            "id": "line-1",
+            "src": [
+                "box-5",
+                0
+            ],
+            "dest": [
+                "box-8",
+                0
+            ],
+            "disabled": false
+        },
+        "line-2": {
+            "ee": {},
+            "id": "line-2",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-1",
+                1
+            ],
+            "disabled": false
+        },
+        "line-3": {
+            "ee": {},
+            "id": "line-3",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-2",
+                0
+            ],
+            "disabled": false
+        },
+        "line-5": {
+            "ee": {},
+            "id": "line-5",
+            "src": [
+                "box-6",
+                0
+            ],
+            "dest": [
+                "box-5",
+                0
+            ],
+            "disabled": false
+        },
+        "line-6": {
+            "ee": {},
+            "id": "line-6",
+            "src": [
+                "box-5",
+                0
+            ],
+            "dest": [
+                "box-5",
+                1
+            ],
+            "disabled": false
+        },
+        "line-7": {
+            "ee": {},
+            "id": "line-7",
+            "src": [
+                "box-5",
+                0
+            ],
+            "dest": [
+                "box-7",
+                1
+            ],
+            "disabled": false
+        },
+        "line-8": {
+            "ee": {},
+            "id": "line-8",
+            "src": [
+                "box-2",
+                0
+            ],
+            "dest": [
+                "box-9",
+                0
+            ],
+            "disabled": false
+        },
+        "line-9": {
+            "ee": {},
+            "id": "line-9",
+            "src": [
+                "box-2",
+                0
+            ],
+            "dest": [
+                "box-9",
+                1
+            ],
+            "disabled": false
+        },
+        "line-11": {
+            "ee": {},
+            "id": "line-11",
+            "src": [
+                "box-9",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-8": {
+            "ee": {},
+            "id": "box-8",
+            "text": "print",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                30,
+                120,
+                45,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-1": {
+            "ee": {},
+            "id": "box-1",
+            "text": "oscillator~",
+            "inlets": 4,
+            "outlets": 2,
+            "rect": [
+                135,
+                105,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-3": {
+            "ee": {},
+            "id": "box-3",
+            "text": "destination~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                135,
+                315,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-2": {
+            "ee": {},
+            "id": "box-2",
+            "text": "splitter~ 3",
+            "inlets": 1,
+            "outlets": 4,
+            "rect": [
+                135,
+                150,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [
+                3
+            ],
+            "props": {}
+        },
+        "box-4": {
+            "ee": {},
+            "id": "box-4",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                180,
+                45,
+                165,
+                22
+            ],
+            "data": {
+                "text": "440, 550 1, 440 2"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-5": {
+            "ee": {},
+            "id": "box-5",
+            "text": "+",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                30,
+                60,
+                45,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-6": {
+            "ee": {},
+            "id": "box-6",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                30,
+                30,
+                30,
+                22
+            ],
+            "data": {
+                "text": "3"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-7": {
+            "ee": {},
+            "id": "box-7",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                30,
+                90,
+                33,
+                22
+            ],
+            "data": {
+                "text": ""
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-9": {
+            "ee": {},
+            "id": "box-9",
+            "text": "merger~ 2",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                135,
+                180,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [
+                2
+            ],
+            "props": {}
+        }
+    },
+    "props": {
+        "mode": "js",
+        "bgcolor": [
+            61,
+            65,
+            70,
+            1
+        ],
+        "editing_bgcolor": [
+            82,
+            87,
+            94,
+            1
+        ],
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 9,
+        "lineIndexCount": 11
+    }
+}
