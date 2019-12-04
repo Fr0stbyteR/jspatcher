@@ -513,7 +513,7 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
                         <Icon name="bars" color={this.state.active === TPanels.Console ? "teal" : "grey"} inverted />
                     </Menu.Item>
                     <Menu.Item name={TPanels.Inspector} active={this.state.active === TPanels.Inspector} onClick={this.handleItemClick}>
-                        <Icon name="info" color={this.state.active === TPanels.Code ? "teal" : "grey"} inverted />
+                        <Icon name="info" color={this.state.active === TPanels.Inspector ? "teal" : "grey"} inverted />
                     </Menu.Item>
                     <Menu.Item name={TPanels.Code} hidden={!this.state.codePanel} active={this.state.active === TPanels.Code} onClick={this.handleItemClick}>
                         <Icon name="code" color={this.state.active === TPanels.Code ? "teal" : "grey"} inverted />

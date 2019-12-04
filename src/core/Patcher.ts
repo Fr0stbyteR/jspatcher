@@ -90,7 +90,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             this._state.isLoading = false;
             return this;
         }
-        this.props.mode = patcherIn.props.mode || modeIn || "js";
+        this.props.mode = (patcherIn.props && patcherIn.props.mode ? patcherIn.props.mode : modeIn) || "js";
         const { mode } = this.props;
         if (mode === "max" || mode === "gen") {
             const rgbaMax2Css = (maxColor: number[]) => {
