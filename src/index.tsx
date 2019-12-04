@@ -11,6 +11,10 @@ const env = new Env();
 window.patcher = patcher;
 window.jspatcherEnv = env;
 
+const urlParams = new URLSearchParams(window.location.search);
+const fileName = urlParams.get("file");
+if (fileName) fetch("../examples/" + fileName).then(r => r.json()).then(json => patcher.load(json));
+
 ReactDOM.render(
     <UI patcher={patcher} />,
     document.getElementById("root")

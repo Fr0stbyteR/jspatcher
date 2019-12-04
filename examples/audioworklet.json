@@ -1,0 +1,343 @@
+{
+    "ee": {},
+    "lines": {
+        "line-1": {
+            "ee": {},
+            "id": "line-1",
+            "src": [
+                "box-3",
+                1
+            ],
+            "dest": [
+                "box-7",
+                0
+            ],
+            "disabled": false
+        },
+        "line-2": {
+            "ee": {},
+            "id": "line-2",
+            "src": [
+                "box-7",
+                0
+            ],
+            "dest": [
+                "box-6",
+                1
+            ],
+            "disabled": false
+        },
+        "line-3": {
+            "ee": {},
+            "id": "line-3",
+            "src": [
+                "box-5",
+                0
+            ],
+            "dest": [
+                "box-2",
+                0
+            ],
+            "disabled": false
+        },
+        "line-4": {
+            "ee": {},
+            "id": "line-4",
+            "src": [
+                "box-2",
+                0
+            ],
+            "dest": [
+                "box-3",
+                1
+            ],
+            "disabled": false
+        },
+        "line-7": {
+            "ee": {},
+            "id": "line-7",
+            "src": [
+                "box-10",
+                0
+            ],
+            "dest": [
+                "box-6",
+                0
+            ],
+            "disabled": false
+        },
+        "line-8": {
+            "ee": {},
+            "id": "line-8",
+            "src": [
+                "box-5",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        },
+        "line-9": {
+            "ee": {},
+            "id": "line-9",
+            "src": [
+                "box-3",
+                1
+            ],
+            "dest": [
+                "box-10",
+                0
+            ],
+            "disabled": false
+        },
+        "line-5": {
+            "ee": {},
+            "id": "line-5",
+            "src": [
+                "box-6",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-11": {
+            "ee": {},
+            "id": "line-11",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-11",
+                0
+            ],
+            "disabled": false
+        },
+        "line-12": {
+            "ee": {},
+            "id": "line-12",
+            "src": [
+                "box-11",
+                0
+            ],
+            "dest": [
+                "box-9",
+                0
+            ],
+            "disabled": false
+        },
+        "line-13": {
+            "ee": {},
+            "id": "line-13",
+            "src": [
+                "box-12",
+                0
+            ],
+            "dest": [
+                "box-11",
+                1
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-7": {
+            "ee": {},
+            "id": "box-7",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                210,
+                345,
+                139,
+                22
+            ],
+            "data": {
+                "text": "white-noise-processor"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-2": {
+            "ee": {},
+            "id": "box-2",
+            "text": "code",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                210,
+                75,
+                400,
+                225
+            ],
+            "data": {
+                "value": "// white-noise-processor.js\r\nclass WhiteNoiseProcessor extends AudioWorkletProcessor {\r\n  process (inputs, outputs, parameters) {\r\n    const output = outputs[0]\r\n    output.forEach(channel => {\r\n      for (let i = 0; i < channel.length; i++) {\r\n        channel[i] = Math.random() * 2 - 1\r\n      }\r\n    })\r\n    return true\r\n  }\r\n}\r\n\r\nregisterProcessor('white-noise-processor', WhiteNoiseProcessor)"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-6": {
+            "ee": {},
+            "id": "box-6",
+            "text": "new AudioWorkletNode",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                45,
+                375,
+                150,
+                22
+            ],
+            "data": {},
+            "args": [
+                "AudioWorkletNode"
+            ],
+            "props": {}
+        },
+        "box-3": {
+            "ee": {},
+            "id": "box-3",
+            "text": "audioWorklet",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                45,
+                315,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-10": {
+            "ee": {},
+            "id": "box-10",
+            "text": "audioContext",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                45,
+                345,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-5": {
+            "ee": {},
+            "id": "box-5",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                45,
+                45,
+                90,
+                22
+            ],
+            "data": {
+                "text": ""
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-1": {
+            "ee": {},
+            "id": "box-1",
+            "text": "node~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                45,
+                405,
+                165,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-9": {
+            "ee": {},
+            "id": "box-9",
+            "text": "destination~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                45,
+                465,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-11": {
+            "ee": {},
+            "id": "box-11",
+            "text": "biquad~",
+            "inlets": 6,
+            "outlets": 2,
+            "rect": [
+                45,
+                435,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-12": {
+            "ee": {},
+            "id": "box-12",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                150,
+                435,
+                120,
+                22
+            ],
+            "data": {
+                "text": "300, 3000 4, 300 4"
+            },
+            "args": [
+                "300, 3000 4, 300 4"
+            ],
+            "props": {}
+        }
+    },
+    "props": {
+        "mode": "js",
+        "bgcolor": [
+            61,
+            65,
+            70,
+            1
+        ],
+        "editing_bgcolor": [
+            82,
+            87,
+            94,
+            1
+        ],
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 12,
+        "lineIndexCount": 13
+    }
+}

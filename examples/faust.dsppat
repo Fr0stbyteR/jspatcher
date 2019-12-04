@@ -1,0 +1,269 @@
+{
+    "lines": {
+        "line-2": {
+            "id": "line-2",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-3": {
+            "id": "line-3",
+            "src": [
+                "box-3",
+                0
+            ],
+            "dest": [
+                "box-4",
+                0
+            ],
+            "disabled": false
+        },
+        "line-4": {
+            "id": "line-4",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-5",
+                0
+            ],
+            "disabled": false
+        },
+        "line-5": {
+            "id": "line-5",
+            "src": [
+                "box-5",
+                0
+            ],
+            "dest": [
+                "box-4",
+                1
+            ],
+            "disabled": false
+        },
+        "line-6": {
+            "id": "line-6",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-7",
+                0
+            ],
+            "disabled": false
+        },
+        "line-7": {
+            "id": "line-7",
+            "src": [
+                "box-7",
+                0
+            ],
+            "dest": [
+                "box-8",
+                0
+            ],
+            "disabled": false
+        },
+        "line-8": {
+            "id": "line-8",
+            "src": [
+                "box-8",
+                0
+            ],
+            "dest": [
+                "box-6",
+                0
+            ],
+            "disabled": false
+        },
+        "line-9": {
+            "id": "line-9",
+            "src": [
+                "box-2",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-1": {
+            "id": "box-1",
+            "text": "fmod 1",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                150,
+                165,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                1
+            ],
+            "props": {}
+        },
+        "box-2": {
+            "id": "box-2",
+            "text": "c 440",
+            "inlets": 0,
+            "outlets": 1,
+            "rect": [
+                150,
+                75,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                440
+            ],
+            "props": {}
+        },
+        "box-3": {
+            "id": "box-3",
+            "text": "/ 44100",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                150,
+                105,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                44100
+            ],
+            "props": {}
+        },
+        "box-4": {
+            "id": "box-4",
+            "text": "+",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                150,
+                135,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-5": {
+            "id": "box-5",
+            "text": "~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                240,
+                135,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-6": {
+            "id": "box-6",
+            "text": "out 1",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                150,
+                285,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                1
+            ],
+            "props": {}
+        },
+        "box-7": {
+            "id": "box-7",
+            "text": "* 6.2831852",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                150,
+                195,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                6.2831852
+            ],
+            "props": {}
+        },
+        "box-8": {
+            "id": "box-8",
+            "text": "sin",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                150,
+                225,
+                30,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        }
+    },
+    "props": {
+        "mode": "faust",
+        "bgcolor": [
+            61,
+            65,
+            70,
+            1
+        ],
+        "editing_bgcolor": [
+            82,
+            87,
+            94,
+            1
+        ],
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 18,
+        "lineIndexCount": 19
+    }
+}
