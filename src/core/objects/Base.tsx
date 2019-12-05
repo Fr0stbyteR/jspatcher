@@ -686,12 +686,8 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     get audioCtx() {
         return this.patcher.env.audioCtx;
     }
-    get dummyAudioNode() {
-        return this.patcher.env.dummyAudioNode;
-    }
     inletConnections: TAudioNodeInletConnection[] = [];
     outletConnections: TAudioNodeOutletConnection[] = [];
-    keepAlive() {}
     subscribe() {
         super.subscribe();
         this.on("connectedInlet", ({ inlet, srcBox, srcOutlet }) => {

@@ -25,7 +25,6 @@ export default class StreamDest extends JSPAudioNode<MediaStreamAudioDestination
             this.outlets = 2;
             this.node.channelInterpretation = "discrete";
             this.node.channelCountMode = "explicit";
-            this.keepAlive();
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {

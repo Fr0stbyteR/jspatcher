@@ -26,7 +26,6 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
             try {
                 if (data instanceof AudioNode) {
                     this.disconnectAll();
-                    this.handleDestroy();
                     this.state.node = data;
                     const inlets = this.node.numberOfInputs || 1;
                     const outlets = this.node.numberOfOutputs;
@@ -51,7 +50,6 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
                     this._meta = factoryMeta;
                     this.inlets = inlets;
                     this.outlets = outlets;
-                    this.keepAlive();
                     this.connectAll();
                 }
             } catch (e) {

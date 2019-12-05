@@ -14,7 +14,6 @@ export default abstract class FaustDynamicNode<D extends {} = {}, S extends Part
     }
     async compile() {
         this.disconnectAll();
-        this.destroy();
         try {
             this.state.node = await this.getFaustNode();
             if (!this.state.node) throw new Error("Cannot compile Faust code");

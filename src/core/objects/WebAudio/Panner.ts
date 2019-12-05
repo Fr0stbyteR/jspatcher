@@ -130,7 +130,6 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
             this.outlets = 2;
             this.node.channelInterpretation = "discrete";
             this.node.channelCountMode = "explicit";
-            this.keepAlive();
         });
         this.on("updateProps", (props) => {
             const paramMap = ["orientationX", "orientationY", "orientationZ", "positionX", "positionY", "positionZ"] as const;

@@ -36,7 +36,6 @@ export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Ba
             this.outlets = 2;
             this.node.channelInterpretation = "discrete";
             this.node.channelCountMode = "explicit";
-            this.keepAlive();
         });
         this.on("updateArgs", (args) => {
             if (typeof args[0] === "number") {

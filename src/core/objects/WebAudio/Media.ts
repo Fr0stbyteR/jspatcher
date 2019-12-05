@@ -38,12 +38,10 @@ export default class Media extends JSPAudioNode<MediaElementAudioSourceNode, { e
     }
     resetNode() {
         this.disconnectAll();
-        this.destroy();
         this.node = this.audioCtx.createMediaElementSource(this.state.element);
         this.node.channelInterpretation = "discrete";
         this.node.channelCountMode = "explicit";
         this.outletConnections[0] = { node: this.node, index: 0 };
-        this.keepAlive();
         this.connectAll();
     }
 }

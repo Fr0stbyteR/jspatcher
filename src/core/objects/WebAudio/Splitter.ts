@@ -48,7 +48,6 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
     }
     resetNode(channelCount: number) {
         this.disconnectAll();
-        this.destroy();
         this.node = this.audioCtx.createChannelSplitter(channelCount);
         this.node.channelInterpretation = "discrete";
         this.node.channelCountMode = "explicit";
@@ -64,7 +63,6 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
         factoryMeta.outlets[channelCount] = nodeOutlet;
         this._meta = factoryMeta;
         this.outlets = channelCount + 1;
-        this.keepAlive();
         this.connectAll();
     }
 }
