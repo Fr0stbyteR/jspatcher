@@ -164,8 +164,8 @@ export default class BoxUI extends React.Component<P, S> {
         this.setState({ rect });
         box.setRect(rect);
     }
-    handleSelected = (id: string) => (id === this.props.id ? this.setState({ selected: true }) : null);
-    handleDeselected = (id: string) => (id === this.props.id ? this.setState({ selected: false }) : null);
+    handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
+    handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.props.patcher.state.locked) return;
         const classList = e.currentTarget.classList;

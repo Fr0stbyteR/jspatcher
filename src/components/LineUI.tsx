@@ -34,8 +34,8 @@ export class LineUI extends React.Component<P, S> {
         this.setState({ destPos: line.destPos, srcPos: line.srcPos }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
         return line;
     }
-    handleSelected = (id: string) => (id === this.props.id ? this.setState({ selected: true }) : null);
-    handleDeselected = (id: string) => (id === this.props.id ? this.setState({ selected: false }) : null);
+    handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
+    handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
     componentDidMount() {
         const { line } = this;
         if (!line) return;

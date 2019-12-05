@@ -349,25 +349,27 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         return this;
     }
     selectAllBoxes() {
-        Object.keys(this.boxes).forEach(id => this.select(id));
+        const ids = Object.keys(this.boxes);
+        this._state.selected = ids;
+        this.emit("selected", ids);
     }
     select(id: string) {
         if (this._state.selected.indexOf(id) >= 0) return;
         if (this.boxes[id] || this.lines[id]) {
             this._state.selected.push(id);
-            this.emit("selected", id);
+            this.emit("selected", [id]);
         }
     }
     deselect(id: string) {
         const i = this._state.selected.indexOf(id);
         if (i === -1) return;
         this._state.selected.splice(i, 1);
-        this.emit("deselected", id);
+        this.emit("deselected", [id]);
     }
     deselectAll() {
         const { selected } = this._state;
         this._state.selected = [];
-        selected.forEach(el => this.emit("deselected", el));
+        this.emit("deselected", selected);
     }
     selectOnly(id: string) {
         this.deselectAll();

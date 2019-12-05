@@ -148,8 +148,8 @@ interface PatcherEventMap {
     "changeLineDest": { line: Line; oldDest: [string, number]; dest: [string, number] };
     "changeLine": { line: Line; isSrc: boolean; oldPort: [string, number]; port: [string, number] };
     "newLog": TPatcherLog;
-    "selected": string;
-    "deselected": string;
+    "selected": string[];
+    "deselected": string[];
     "tempLine": { findSrc: boolean; from: [string, number] };
     "moved": { selected: string[]; delta: { x: number; y: number } };
     "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType };
