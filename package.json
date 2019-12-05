@@ -5,8 +5,10 @@
   "private": true,
   "scripts": {
     "cleanup": "node src/scripts/cleanup.js",
-    "build": "npm run cleanup && webpack --mode development",
-    "dist": "npm run cleanup && webpack --mode production"
+    "deps": "node src/scripts/libfaust.js",
+    "prebuild": "npm run cleanup && npm run deps",
+    "build": "npm run prebuild && webpack --mode development",
+    "dist": "npm run prebuild && webpack --mode production"
   },
   "keywords": [
     "js",

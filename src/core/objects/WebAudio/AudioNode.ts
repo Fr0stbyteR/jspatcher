@@ -20,6 +20,7 @@ export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = 
         return this;
     }
     handleDestroy = () => {
+        this.dummyAudioNode.disconnect();
         if (this.node) this.node.disconnect();
     };
     subscribe() {

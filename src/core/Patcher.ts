@@ -678,10 +678,12 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             this.boxes[id].allLines.forEach(id => map.lines[id] = true);
         });
 
+        const { selected } = this._state;
+        this._state.selected = [];
+        this.emit("deselected", selected);
         const deleted: TPatcher = { boxes: {}, lines: {} };
         Object.keys(map.lines).forEach(id => deleted.lines[id] = this.lines[id].destroy());
         Object.keys(map.boxes).forEach(id => deleted.boxes[id] = this.boxes[id].destroy());
-        this._state.selected = [];
         this.emit("delete", deleted);
         return deleted;
     }
