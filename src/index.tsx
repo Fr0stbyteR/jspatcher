@@ -10,6 +10,9 @@ const init = async () => {
     const { Faust } = await import("faust2webaudio");
     const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
     await faust.ready;
+    const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
+    const faustPrimitiveLib = await faustPrimitiveLibFile.text();
+    faust.fs.writeFile("./libraries/primitives.lib", faustPrimitiveLib);
     const env = new Env();
     env.faust = faust;
     const patcher = new Patcher();
@@ -18,7 +21,11 @@ const init = async () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const fileName = urlParams.get("file");
-    if (fileName) fetch("../examples/" + fileName).then(r => r.json()).then(json => patcher.load(json));
+    if (fileName) {
+        const exampleFile = await fetch("../examples/" + fileName);
+        const example = await exampleFile.json();
+        patcher.load(example);
+    }
 
     ReactDOM.render(
         <UI patcher={patcher} />,

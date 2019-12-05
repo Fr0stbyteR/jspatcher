@@ -7,6 +7,7 @@ import Patcher from "../core/Patcher";
 import "./RightMenu.scss";
 import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta } from "../core/types";
 import Box from "../core/Box";
+import { faustLangRegister } from "../misc/monaco-faust/register";
 
 enum TPanels {
     None = "None",
@@ -404,6 +405,7 @@ class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: b
     state = { editorLoaded: false };
     codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
+    handleCodeEditorWillMount = (monaco: typeof monacoEditor) => faustLangRegister(monaco, this.props.patcher.env.faust);
     handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => {
         this.codeEditor = monaco;
         this.codeEditor.setValue(this.code);
@@ -428,7 +430,7 @@ class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: b
     }
     render() {
         return this.state.editorLoaded
-            ? <MonacoEditor language="javascript" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
+            ? <MonacoEditor language="faust" theme="vs-dark" editorWillMount={this.handleCodeEditorWillMount} editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
             : <Dimmer active><Loader content="Loading" /></Dimmer>;
     }
     get code() {

@@ -6,6 +6,7 @@ import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import { BaseUI, Bang, BaseObject } from "./Base";
 import "./UI.scss";
 import { TMeta, BaseUIState } from "../types";
+import { faustLangRegister } from "../../misc/monaco-faust/register";
 
 type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
 export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
@@ -225,9 +226,13 @@ class CodeUI extends BaseUI<comment, {}, CodeUIState> {
     state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };
     codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
+    handleCodeEditorWillMount = (monaco: typeof monacoEditor) => faustLangRegister(monaco, this.patcher.env.faust);
     handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
-    handleChange = (value: string, event: monacoEditor.editor.IModelContentChangedEvent) => this.object.data.value = value;
+    handleChange = (value: string, event: monacoEditor.editor.IModelContentChangedEvent) => {
+        this.setState({ value });
+        this.object.data.value = value;
+    };
     handleKeyDown = (e: React.KeyboardEvent) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
@@ -252,7 +257,7 @@ class CodeUI extends BaseUI<comment, {}, CodeUIState> {
         return <BaseUI {...this.props} containerProps={{ onKeyDown: this.handleKeyDown, onKeyUp: this.handleKeyUp }}>
             {
                 this.state.editorLoaded
-                    ? <this.editorJSX value={this.state.value} language={this.state.language} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} onChange={this.handleChange} options={{ fontSize: 12 }} />
+                    ? <this.editorJSX value={this.state.value} language={this.state.language} theme="vs-dark" editorWillMount={this.handleCodeEditorWillMount} editorDidMount={this.handleCodeEditorMount} onChange={this.handleChange} options={{ fontSize: 12 }} />
                     : <Dimmer active><Loader content="Loading" /></Dimmer>
             }
         </BaseUI>;
