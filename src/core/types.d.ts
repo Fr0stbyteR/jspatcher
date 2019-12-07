@@ -39,11 +39,11 @@ type TPatcherState = {
     snapToGrid: boolean;
     log: TPatcherLog[];
     history: History;
-    lib: { [key: string]: typeof BaseObject };
-    libJS: { [key: string]: typeof BaseObject };
-    libMax: { [key: string]: typeof BaseObject };
-    libGen: { [key: string]: typeof BaseObject };
-    libFaust: { [key: string]: typeof BaseObject };
+    lib: { [key: string]: typeof AnyObject };
+    libJS: { [key: string]: typeof AnyObject };
+    libMax: { [key: string]: typeof AnyObject };
+    libGen: { [key: string]: typeof AnyObject };
+    libFaust: { [key: string]: typeof AnyObject };
     selected: string[];
 };
 
@@ -162,6 +162,7 @@ interface LineEventMap {
     "destPosChanged": { top: number; left: number };
     "srcPosChanged": { top: number; left: number };
     "posChanged": Line;
+    "typeChanged": TLineType;
 }
 
 interface BoxEventMap {
@@ -262,6 +263,7 @@ type ObjectEventMap<I extends any[], A extends any[], P, U, E> = {
     "disconnectedInlet": { inlet: number; srcBox: Box; srcOutlet: number; lineID: string };
     "disconnectedOutlet": { outlet: number; destBox: Box; destInlet: number; lineID: string };
     "destroy": AnyObject;
+    "metaChanged": TMeta;
 } & E;
 type THistoryElement = {
     [key in keyof PatcherEventMap]?: PatcherEventMap[key][];

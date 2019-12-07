@@ -36,6 +36,10 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
     get meta() {
         return this._meta;
     }
+    set meta(metaIn: TMeta) {
+        this._meta = metaIn;
+        this.emit("metaChanged", this._meta);
+    }
     handleInlet: (e: { data: any; inlet: number }) => void = async ({ data, inlet }) => {
         if (inlet === 0) {
             if (data instanceof Bang) {
@@ -67,14 +71,16 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
         const inletMeta = FaustNode.inlets[1];
         const outletMeta = FaustNode.outlets[0];
         const lastOutletMeta = FaustNode.outlets[1];
-        this._meta.inlets[0] = compiled.inlets ? firstInletSignalMeta : firstInletMeta;
+        const factoryMeta = FaustNode.meta;
+        factoryMeta.inlets[0] = compiled.inlets ? firstInletSignalMeta : firstInletMeta;
         for (let i = 1; i < inlets; i++) {
-            this._meta.inlets[i] = inletMeta;
+            factoryMeta.inlets[i] = inletMeta;
         }
         for (let i = 0; i < outlets; i++) {
-            this._meta.outlets[i] = outletMeta;
+            factoryMeta.outlets[i] = outletMeta;
         }
-        this._meta.outlets[outlets] = lastOutletMeta;
+        factoryMeta.outlets[outlets] = lastOutletMeta;
+        this.meta = factoryMeta;
         for (let i = 0; i < inlets; i++) {
             this.inletConnections[i] = { node: merger, index: i };
         }

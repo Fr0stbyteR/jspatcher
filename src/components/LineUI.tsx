@@ -36,12 +36,14 @@ export class LineUI extends React.Component<P, S> {
     }
     handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
     handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
+    handleTypeChanged = (type: TLineType) => this.setState({ type });
     componentDidMount() {
         const { line } = this;
         if (!line) return;
         line.on("destPosChanged", this.handleDestPosChanged);
         line.on("srcPosChanged", this.handleSrcPosChanged);
         line.on("posChanged", this.handleResetPos);
+        line.on("typeChanged", this.handleTypeChanged);
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleDeselected);
     }
@@ -53,6 +55,7 @@ export class LineUI extends React.Component<P, S> {
         line.off("destPosChanged", this.handleDestPosChanged);
         line.off("srcPosChanged", this.handleSrcPosChanged);
         line.off("posChanged", this.handleResetPos);
+        line.off("typeChanged", this.handleTypeChanged);
     }
     get handlersPos() {
         if (this.refPath.current) {

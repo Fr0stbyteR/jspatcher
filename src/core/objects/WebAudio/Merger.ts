@@ -50,6 +50,10 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | 
     get meta() {
         return this._meta;
     }
+    set meta(metaIn: TMeta) {
+        this._meta = metaIn;
+        this.emit("metaChanged", this._meta);
+    }
     resetNode(channelCount: number) {
         this.disconnectAll();
         this.node = this.audioCtx.createChannelMerger(channelCount);
@@ -65,7 +69,7 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | 
             factoryMeta.inlets[i] = siganlInlet;
             this.inletConnections[i] = { node: this.node, index: i };
         }
-        this._meta = factoryMeta;
+        this.meta = factoryMeta;
         this.inlets = channelCount;
         this.connectAll();
     }

@@ -2,29 +2,19 @@ import { DefaultObject, Bang } from "./Base";
 import { TMeta } from "../types";
 
 abstract class JSOp<S = {}, I extends any[] = [], O extends any[] = [any], A extends any[] = [], P = {}> extends DefaultObject<{}, S, I, O, A, P> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            package: "Op"
-        };
-    }
+    static package = "Op";
 }
 class JSUnaryOp extends JSOp<{ result: any }, [any]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Unary Operation",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "First element"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Result"
-            }]
-        };
-    }
+    static description = "Unary Operation";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "First element"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Result"
+    }];
     state = { result: null as any };
     subscribe() {
         super.subscribe();
@@ -51,31 +41,26 @@ class JSUnaryOp extends JSOp<{ result: any }, [any]> {
 }
 
 class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Binary Operation",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "First element"
-            }, {
-                isHot: false,
-                type: "anything",
-                description: "Second element"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Result"
-            }],
-            args: [{
-                type: "anything",
-                optional: true,
-                default: 0,
-                description: "Initial second element"
-            }]
-        };
-    }
+    static description = "Binary Operation";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "First element"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Second element"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Result"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: true,
+        default: 0,
+        description: "Initial second element"
+    }];
     state = { arg: 0 as any, result: 0 as any };
     subscribe() {
         super.subscribe();
@@ -109,40 +94,35 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any
 }
 
 class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [any], [any, any]> {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            description: "Ternary Operation",
-            inlets: [{
-                isHot: true,
-                type: "anything",
-                description: "Test"
-            }, {
-                isHot: false,
-                type: "anything",
-                description: "True output"
-            }, {
-                isHot: false,
-                type: "anything",
-                description: "False output"
-            }],
-            outlets: [{
-                type: "anything",
-                description: "Result"
-            }],
-            args: [{
-                type: "anything",
-                optional: true,
-                default: true,
-                description: "Initial true output"
-            }, {
-                type: "anything",
-                optional: true,
-                default: false,
-                description: "Initial false output"
-            }]
-        };
-    }
+    static description = "Ternary Operation";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Test"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "True output"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "False output"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Result"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: true,
+        default: true,
+        description: "Initial true output"
+    }, {
+        type: "anything",
+        optional: true,
+        default: false,
+        description: "Initial false output"
+    }];
     state = { args: [true, false] as any[], result: true as any };
     subscribe() {
         super.subscribe();
@@ -214,16 +194,12 @@ for (const key in functions) {
     const f = functions[key];
     if (f.length === 1) {
         Ops[key] = class extends JSUnaryOp {
-            static get meta() {
-                return { ...JSUnaryOp.meta, name: key };
-            }
+            static _name = key;
             execute = f;
         };
     } else if (f.length === 2) {
         Ops[key] = class extends JSBinaryOp {
-            static get meta() {
-                return { ...JSBinaryOp.meta, name: key };
-            }
+            static _name = key;
             execute = f;
         };
     }

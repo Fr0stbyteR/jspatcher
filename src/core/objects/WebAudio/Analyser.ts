@@ -86,7 +86,7 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
         this.on("preInit", () => {
             this.inlets = 6;
             this.outlets = 6;
-            // this.node.channelInterpretation = "discrete";
+            this.node.channelInterpretation = "discrete";
             // this.node.channelCountMode = "explicit";
         });
         this.on("updateProps", (props) => {

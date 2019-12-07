@@ -21,6 +21,10 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
     get meta() {
         return this._meta;
     }
+    set meta(metaIn: TMeta) {
+        this._meta = metaIn;
+        this.emit("metaChanged", this._meta);
+    }
     handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             try {
@@ -47,7 +51,7 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
                     for (let i = 0; i < this.node.numberOfOutputs; i++) {
                         this.outletConnections[i] = { node: this.node, index: i };
                     }
-                    this._meta = factoryMeta;
+                    this.meta = factoryMeta;
                     this.inlets = inlets;
                     this.outlets = outlets;
                     this.connectAll();

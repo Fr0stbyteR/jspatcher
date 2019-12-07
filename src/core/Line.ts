@@ -7,6 +7,7 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
     src: [string, number];
     dest: [string, number];
     disabled = true;
+    private _type: TLineType;
     private readonly _patcher: Patcher;
     constructor(patcherIn: Patcher, lineIn: TLine) {
         super();
@@ -15,14 +16,20 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
         this.dest = lineIn.dest;
         this.disabled = true;
         this._patcher = patcherIn;
+        const { srcBox, destBox } = this;
+        this._type = this.calcType();
+        if (srcBox) srcBox.object.on("metaChanged", this.updateType);
+        if (destBox) destBox.object.on("metaChanged", this.updateType);
     }
     setSrc(src: [string, number]) {
         const srcID = src[0];
         const srcOutlet = src[1];
         if (srcID === this.src[0] && srcOutlet === this.src[1]) return this;
+        this.srcBox.object.off("metaChanged", this.updateType);
         this.disable();
         this.src = [srcID, srcOutlet];
         this.enable();
+        this.srcBox.object.on("metaChanged", this.updateType);
         return this.uiUpdateSrc();
     }
     getSrc() {
@@ -36,9 +43,11 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
         const destID = dest[0];
         const destInlet = dest[1];
         if (destID === this.dest[0] && destInlet === this.dest[1]) return this;
+        this.destBox.object.off("metaChanged", this.updateType);
         this.disable();
         this.dest = [destID, destInlet];
         this.enable();
+        this.destBox.object.on("metaChanged", this.updateType);
         return this.uiUpdateDest();
     }
     getDest() {
@@ -106,7 +115,7 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
     get destBox() {
         return this._patcher.boxes[this.dest[0]];
     }
-    get type(): TLineType {
+    private calcType() {
         const srcMeta = this.srcBox.object.meta.outlets;
         const destMeta = this.destBox.object.meta.inlets;
         let srcType: TMetaType = "anything";
@@ -116,5 +125,15 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
         if (destMeta[this.destInlet]) destType = destMeta[this.destInlet].type;
         else if (destMeta[destMeta.length - 1] && destMeta[destMeta.length - 1].varLength) destType = destMeta[destMeta.length - 1].type;
         return srcType === "signal" && destType === "signal" ? "audio" : "normal";
+    }
+    updateType = () => {
+        const type = this.calcType();
+        if (type !== this._type) {
+            this._type = type;
+            this.emit("typeChanged", type);
+        }
+    }
+    get type(): TLineType {
+        return this._type;
     }
 }

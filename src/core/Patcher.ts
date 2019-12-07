@@ -5,7 +5,7 @@ import History from "./History";
 import Importer from "./objects/importer/Importer";
 import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel } from "./types";
 
-import Base from "./objects/Base";
+import Base, { AnyObject } from "./objects/Base";
 import Std from "./objects/Std";
 import New from "./objects/importer/New";
 import GenOps from "./objects/Gen";
@@ -53,7 +53,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this._packages = Packages;
         this.clear();
     }
-    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof Base.BaseObject }, path?: string) {
+    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject }, path?: string) {
         for (const key in pkg) {
             const el = pkg[key];
             if (typeof el === "object") {

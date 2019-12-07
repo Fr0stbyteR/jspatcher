@@ -654,7 +654,7 @@ export class DefaultObject<
     };
     uiComponent = DefaultUI;
 }
-export class AnyObject extends BaseObject<any, any, any, any, any, any, any, any> {}
+export class AnyObject extends BaseObject<{ [key: string]: any }, { [key: string]: any }, any[], any[], any[], { [key: string]: any }, { [key: string]: any }, { [key: string]: any }> {}
 export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
     static isConnectable(from: any, outlet: number, to: any, inlet: number) {
         if (!(from instanceof BaseAudioObject)) return false;

@@ -148,25 +148,19 @@ class Out extends FaustOp {
     }
 }
 class Split extends FaustOp {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            name: this.name,
-            description: "Split Signal",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "_"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "_"
-            }, {
-                type: "signal",
-                description: "_"
-            }]
-        };
-    }
+    static description = "Split Signal";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_"
+    }, {
+        type: "signal",
+        description: "_"
+    }];
     symbol = ["<:"];
     state = { inlets: 1, outlets: 2, args: [] as (number | string)[] };
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -196,26 +190,20 @@ class Split extends FaustOp {
     }
 }
 class Merge extends FaustOp {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            name: this.name,
-            description: "Merge Signal",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "_"
-            }, {
-                isHot: true,
-                type: "signal",
-                description: "_"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "_"
-            }]
-        };
-    }
+    static description = "Merge Signal";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }, {
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_"
+    }];
     symbol = [":>"];
     state = { inlets: 2, outlets: 1, args: [] as (number | string)[] };
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -245,22 +233,16 @@ class Merge extends FaustOp {
     }
 }
 class Rec extends FaustOp {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            name: this.name,
-            description: "Recursion with 1-sample delay",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "_"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "_'"
-            }]
-        };
-    }
+    static description = "Recursion with 1-sample delay";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_'"
+    }];
     symbol = ["~"];
     state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -277,77 +259,59 @@ class Rec extends FaustOp {
     }
 }
 class Mem extends FaustOp {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            name: this.name,
-            description: "1-sample delay",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "_"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "_'"
-            }]
-        };
-    }
+    static description = "1-sample delay";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_'"
+    }];
     symbol = ["mem", "'"];
     state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
 }
 class Delay extends FaustOp {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            name: this.name,
-            description: "n-sample delay",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "_"
-            }, {
-                isHot: true,
-                type: "signal",
-                description: "number of samples"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "@(_, n)"
-            }],
-            args: [{
-                type: "number",
-                optional: true,
-                description: "number of samples"
-            }]
-        };
-    }
+    static description = "n-sample delay";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }, {
+        isHot: true,
+        type: "signal",
+        description: "number of samples"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "@(_, n)"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        description: "number of samples"
+    }];
     symbol = ["@"];
     state = { inlets: 2, outlets: 1, args: [] as (number | string)[] };
 }
 class Const extends FaustOp {
-    static get meta(): TMeta {
-        return {
-            ...super.meta,
-            name: this.name,
-            description: "Output a constant",
-            inlets: [{
-                isHot: true,
-                type: "signal",
-                description: "_"
-            }],
-            outlets: [{
-                type: "signal",
-                description: "_"
-            }],
-            args: [{
-                type: "signal",
-                optional: true,
-                default: 0,
-                description: "Constant value"
-            }]
-        };
-    }
+    static description = "Output a constant";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_"
+    }];
+    static args: TMeta["args"] = [{
+        type: "signal",
+        optional: true,
+        default: 0,
+        description: "Constant value"
+    }];
     symbol = ["const", "c"];
     state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
     toExpr(lineMap: { [id: string]: string }): string[] {
@@ -448,18 +412,13 @@ for (const className in opMap.mathOps) {
     }));
     const outletDesc = `${op.symbol}(${new Array(op.inlets).fill("_").join(", ")})`;
     const Op = class extends FaustOp {
-        static get meta(): TMeta {
-            return {
-                ...super.meta,
-                name: className,
-                description: op.desc,
-                inlets: inletsMeta,
-                outlets: [{
-                    type: "signal",
-                    description: outletDesc
-                }]
-            };
-        }
+        static _name = className;
+        static description = op.desc;
+        static inlets: TMeta["inlets"] = inletsMeta;
+        static outlets: TMeta["outlets"] = [{
+            type: "signal",
+            description: outletDesc
+        }];
         symbol = typeof op.symbol === "string" ? [op.symbol] : op.symbol;
         state = { inlets: op.inlets, outlets: 1, args: [] as (number | string)[] };
     };
