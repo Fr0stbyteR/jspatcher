@@ -13,18 +13,24 @@ export default abstract class FaustDynamicNode<D extends {} = {}, S extends Part
         let merger: ChannelMergerNode;
         const node = await this.getFaustNode(code, voices);
         if (!node) throw new Error("Cannot compile Faust code");
+        node.channelInterpretation = "discrete";
+        node.channelCountMode = "explicit";
         const { audioCtx } = this.patcher.env;
         const inlets = node.getNumInputs();
         const outlets = node.getNumOutputs();
         if (inlets) {
             if (this.state.merger && this.state.merger.numberOfInputs === inlets) merger = this.state.merger;
             else merger = audioCtx.createChannelMerger(inlets);
+            merger.channelInterpretation = "discrete";
+            merger.channelCountMode = "explicit";
             merger.connect(node, 0, 0);
         }
         if (outlets) {
             if (this.state.splitter && this.state.splitter.numberOfOutputs === outlets) splitter = this.state.splitter;
             else splitter = audioCtx.createChannelSplitter(outlets);
-            node.connect(splitter);
+            splitter.channelInterpretation = "discrete";
+            splitter.channelCountMode = "explicit";
+            node.connect(splitter, 0, 0);
         }
         return { inlets, outlets, node, splitter, merger };
     }

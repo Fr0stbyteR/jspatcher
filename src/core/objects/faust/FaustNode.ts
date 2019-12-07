@@ -12,7 +12,7 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "anything",
-        description: "A bang to output the node, code string to compile, number to set voices, or a param-curve map, or a MIDI event."
+        description: "A bang to output the node, code string to compile, number to set voices, or a param-curve map, or a MIDI event"
     }, {
         isHot: false,
         type: "signal",
@@ -92,6 +92,9 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
     };
     subscribe() {
         super.subscribe();
+        this.on("preInit", async () => {
+            if (this.data.code) await this.newNode(this.data.code, this.state.voices);
+        });
         this.on("inlet", this.handleInlet);
     }
 }

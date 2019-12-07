@@ -710,21 +710,14 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
                 else from.node.disconnect(to.node as AudioNode, from.index, to.index);
             }
         });
+        this.on("destroy", () => this.outletConnections.forEach(con => con.node.disconnect(con.index)));
     }
     connectAll() {
-        const lines = this.box.allLines;
-        for (let i = 0; i < lines.length; i++) {
-            const line = this.patcher.lines[lines[i]];
-            line.enable();
-        }
+        this.box.allLines.forEach(el => this._patcher.lines[el].enable());
         return this;
     }
     disconnectAll() {
-        const lines = this.box.allLines;
-        for (let i = 0; i < lines.length; i++) {
-            const line = this.patcher.lines[lines[i]];
-            line.disable();
-        }
+        this.box.allLines.forEach(el => this._patcher.lines[el].disable());
         return this;
     }
 }

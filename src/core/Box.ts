@@ -177,6 +177,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.text = textIn;
         const lines = this.allLines;
         lines.forEach(el => this._patcher.lines[el].disable());
+        this._object.destroy();
         this.args = [] as Args<T>;
         this.init();
         lines.forEach(el => this._patcher.lines[el].enable());
@@ -256,10 +257,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.emit("highlightPort", { isSrc, i, highlight });
     }
     destroy() {
-        const lineAsDest = this.inletLines;
-        const lineAsSrc = this.outletLines;
-        lineAsDest.forEach(el => el.forEach(el => this._patcher.deleteLine(el)));
-        lineAsSrc.forEach(el => el.forEach(el => this._patcher.deleteLine(el)));
+        this.allLines.forEach(el => this._patcher.deleteLine(el));
         this._object.destroy();
         delete this._patcher.boxes[this.id];
         this._patcher.emit("graphChanged");

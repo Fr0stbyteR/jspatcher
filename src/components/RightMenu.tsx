@@ -307,7 +307,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
                     }
                 }
                 if (!found) {
-                    delete commonArgs[i];
+                    commonArgs.splice(i, 1);
                     break;
                 }
             }
