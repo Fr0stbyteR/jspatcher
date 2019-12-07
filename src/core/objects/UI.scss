@@ -25,9 +25,6 @@
     &.package-ui-code {
         height: 100%;
         width: 100%;
-        & > div {
-            overflow: hidden;
-        }
     }
 }
 .patcher.unlocked div.box.selected > div.box-ui > div.package-ui > span {

@@ -4,41 +4,28 @@ import { DefaultUIState } from "../../types";
 
 export type DefaultFaustDynamicNodeState = { merger: ChannelMergerNode; splitter: ChannelSplitterNode; node: FaustAudioWorkletNode | FaustScriptProcessorNode };
 export default abstract class FaustDynamicNode<D extends {} = {}, S extends Partial<DefaultFaustDynamicNodeState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends DefaultAudioObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
-    get expr(): string {
-        return "";
-    }
-    async getFaustNode() {
-        const { expr } = this;
+    async getFaustNode(code: string, voices: number) {
         const { faust, audioCtx, supportAudioWorklet } = this.patcher.env;
-        return faust.getNode(expr, { audioCtx, useWorklet: supportAudioWorklet, plotHandler: () => undefined });
+        return faust.getNode(code, { audioCtx, useWorklet: supportAudioWorklet, voices, plotHandler: undefined, args: { "-I": ["libraries/", "project/"] } });
     }
-    async compile() {
-        this.disconnectAll();
-        try {
-            this.state.node = await this.getFaustNode();
-            if (!this.state.node) throw new Error("Cannot compile Faust code");
-        } catch (e) {
-            this.error((e as Error).message);
-        }
+    async compile(code: string, voices: number) {
+        let splitter: ChannelSplitterNode;
+        let merger: ChannelMergerNode;
+        const node = await this.getFaustNode(code, voices);
+        if (!node) throw new Error("Cannot compile Faust code");
         const { audioCtx } = this.patcher.env;
-        const inlets = this.state.node.getNumInputs();
-        const outlets = this.state.node.getNumOutputs();
-        if (inlets && !this.state.merger || this.state.merger.numberOfInputs !== inlets) {
-            this.state.merger = audioCtx.createChannelMerger(inlets);
-            this.state.merger.connect(this.state.node, 0, 0);
+        const inlets = node.getNumInputs();
+        const outlets = node.getNumOutputs();
+        if (inlets) {
+            if (this.state.merger && this.state.merger.numberOfInputs === inlets) merger = this.state.merger;
+            else merger = audioCtx.createChannelMerger(inlets);
+            merger.connect(node, 0, 0);
         }
-        if (outlets && !this.state.splitter || this.state.splitter.numberOfOutputs !== outlets) {
-            this.state.splitter = audioCtx.createChannelSplitter(outlets);
-            this.state.node.connect(this.state.splitter);
+        if (outlets) {
+            if (this.state.splitter && this.state.splitter.numberOfOutputs === outlets) splitter = this.state.splitter;
+            else splitter = audioCtx.createChannelSplitter(outlets);
+            node.connect(splitter);
         }
-        this.connectAll();
-    }
-    handleDestroy = () => {
-        if (this.state.merger) this.state.merger.disconnect();
-        if (this.state.node) this.state.node.disconnect();
-    };
-    subscribe() {
-        super.subscribe();
-        this.on("destroy", this.handleDestroy);
+        return { inlets, outlets, node, splitter, merger };
     }
 }

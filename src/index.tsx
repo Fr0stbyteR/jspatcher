@@ -1,10 +1,12 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import "semantic-ui-css/semantic.min.css";
 import "lato-font/css/lato-font.css";
 import Patcher from "./core/Patcher";
 import UI from "./components/UI";
 import Env from "./env";
+import { faustLangRegister } from "./misc/monaco-faust/register";
 
 const init = async () => {
     const { Faust } = await import("faust2webaudio");
@@ -13,6 +15,8 @@ const init = async () => {
     const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
     const faustPrimitiveLib = await faustPrimitiveLibFile.text();
     faust.fs.writeFile("./libraries/primitives.lib", faustPrimitiveLib);
+    faustLangRegister(monacoEditor, faust);
+
     const env = new Env();
     env.faust = faust;
     const patcher = new Patcher();

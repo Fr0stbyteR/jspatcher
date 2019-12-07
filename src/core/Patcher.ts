@@ -16,8 +16,9 @@ import Op from "./objects/Op";
 import Window from "./objects/Window";
 import JSPWebAudio from "./objects/WebAudio/Imports";
 import live from "./objects/live/exports";
+import faust from "./objects/faust/exports";
 
-const Packages: TPackage = { Base, Std, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live };
+const Packages: TPackage = { Base, Std, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live, faust };
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     lines: { [key: string]: Line };

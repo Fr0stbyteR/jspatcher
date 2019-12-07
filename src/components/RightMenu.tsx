@@ -1,13 +1,12 @@
 import * as React from "react";
+import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown, DropdownProps, DropdownItemProps } from "semantic-ui-react";
 import { ChromePicker, ColorResult } from "react-color";
-import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
+import Box from "../core/Box";
 import "./RightMenu.scss";
 import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta } from "../core/types";
-import Box from "../core/Box";
-import { faustLangRegister } from "../misc/monaco-faust/register";
 
 enum TPanels {
     None = "None",
@@ -405,14 +404,13 @@ class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: b
     state = { editorLoaded: false };
     codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    handleCodeEditorWillMount = (monaco: typeof monacoEditor) => faustLangRegister(monaco, this.props.patcher.env.faust);
     handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => {
         this.codeEditor = monaco;
         this.codeEditor.setValue(this.code);
-    }
+    };
     handleGraphChanged = () => {
         if (!this.props.patcher.state.isLoading && this.state.editorLoaded) this.codeEditor.setValue(this.code);
-    }
+    };
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
     componentDidMount() {
         import("react-monaco-editor").then((reactMonacoEditor) => {
@@ -430,7 +428,7 @@ class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: b
     }
     render() {
         return this.state.editorLoaded
-            ? <MonacoEditor language="faust" theme="vs-dark" editorWillMount={this.handleCodeEditorWillMount} editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
+            ? <MonacoEditor language="faust" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
             : <Dimmer active><Loader content="Loading" /></Dimmer>;
     }
     get code() {

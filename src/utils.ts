@@ -1,8 +1,10 @@
 import { inspect } from "util";
 import { EventEmitter } from "events";
+import { TMIDIEvent } from "./core/types";
 
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
+export const isMIDIEvent = (x: any): x is TMIDIEvent => (isNumberArray(x) || x instanceof Uint8Array) && x.length === 3;
 export const stringifyError = (data: any) => {
     if (typeof data === "string") return data;
     if (data instanceof Error) return data.stack;

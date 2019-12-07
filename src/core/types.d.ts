@@ -268,3 +268,4 @@ type THistoryElement = {
 };
 
 type TCurve = string | number | number[] | number[][];
+type TMIDIEvent = [number, number, number] | (Uint8Array & { length: 3 });
