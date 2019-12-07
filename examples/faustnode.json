@@ -1,0 +1,459 @@
+{
+    "lines": {
+        "line-1": {
+            "id": "line-1",
+            "src": [
+                "box-3",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-2": {
+            "id": "line-2",
+            "src": [
+                "box-2",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-3": {
+            "id": "line-3",
+            "src": [
+                "box-2",
+                0
+            ],
+            "dest": [
+                "box-1",
+                1
+            ],
+            "disabled": false
+        },
+        "line-4": {
+            "id": "line-4",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-5",
+                0
+            ],
+            "disabled": false
+        },
+        "line-5": {
+            "id": "line-5",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        },
+        "line-6": {
+            "id": "line-6",
+            "src": [
+                "box-7",
+                0
+            ],
+            "dest": [
+                "box-5",
+                1
+            ],
+            "disabled": false
+        },
+        "line-7": {
+            "id": "line-7",
+            "src": [
+                "box-5",
+                1
+            ],
+            "dest": [
+                "box-10",
+                0
+            ],
+            "disabled": false
+        },
+        "line-8": {
+            "id": "line-8",
+            "src": [
+                "box-8",
+                0
+            ],
+            "dest": [
+                "box-7",
+                0
+            ],
+            "disabled": false
+        },
+        "line-9": {
+            "id": "line-9",
+            "src": [
+                "box-10",
+                0
+            ],
+            "dest": [
+                "box-11",
+                1
+            ],
+            "disabled": false
+        },
+        "line-10": {
+            "id": "line-10",
+            "src": [
+                "box-15",
+                1
+            ],
+            "dest": [
+                "box-13",
+                0
+            ],
+            "disabled": false
+        },
+        "line-11": {
+            "id": "line-11",
+            "src": [
+                "box-13",
+                0
+            ],
+            "dest": [
+                "box-14",
+                1
+            ],
+            "disabled": false
+        },
+        "line-12": {
+            "id": "line-12",
+            "src": [
+                "box-2",
+                0
+            ],
+            "dest": [
+                "box-15",
+                0
+            ],
+            "disabled": false
+        },
+        "line-13": {
+            "id": "line-13",
+            "src": [
+                "box-16",
+                0
+            ],
+            "dest": [
+                "box-15",
+                1
+            ],
+            "disabled": false
+        },
+        "line-14": {
+            "id": "line-14",
+            "src": [
+                "box-17",
+                0
+            ],
+            "dest": [
+                "box-16",
+                0
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-1": {
+            "id": "box-1",
+            "text": "faust.faustnode~",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                342,
+                326.71875,
+                203,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "code": "process = /;"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-3": {
+            "id": "box-3",
+            "text": "code",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                564,
+                191.71875,
+                386,
+                68.28125
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "value": "process = /;"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-4": {
+            "id": "box-4",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                566,
+                137.71875,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": ""
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-5": {
+            "id": "box-5",
+            "text": "analyser~",
+            "inlets": 6,
+            "outlets": 6,
+            "rect": [
+                600,
+                405,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-7": {
+            "id": "box-7",
+            "text": "new Float32Array 2048",
+            "inlets": 3,
+            "outlets": 4,
+            "rect": [
+                600,
+                375,
+                150,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                "Float32Array",
+                2048
+            ],
+            "props": {}
+        },
+        "box-8": {
+            "id": "box-8",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                600,
+                345,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": ""
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-10": {
+            "id": "box-10",
+            "text": "get 0",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                600,
+                435,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                0
+            ],
+            "props": {}
+        },
+        "box-11": {
+            "id": "box-11",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                600,
+                465,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "1"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-13": {
+            "id": "box-13",
+            "text": "get 0",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                165,
+                405,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                0
+            ],
+            "props": {}
+        },
+        "box-14": {
+            "id": "box-14",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                165,
+                435,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "2"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-15": {
+            "id": "box-15",
+            "text": "analyser~",
+            "inlets": 6,
+            "outlets": 6,
+            "rect": [
+                165,
+                375,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-16": {
+            "id": "box-16",
+            "text": "new Float32Array 2048",
+            "inlets": 3,
+            "outlets": 4,
+            "rect": [
+                165,
+                345,
+                150,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                "Float32Array",
+                2048
+            ],
+            "props": {}
+        },
+        "box-17": {
+            "id": "box-17",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                165,
+                315,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": ""
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-2": {
+            "id": "box-2",
+            "text": "constant~ 2",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                350,
+                230,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                2
+            ],
+            "props": {}
+        }
+    },
+    "props": {
+        "mode": "js",
+        "bgcolor": [
+            61,
+            65,
+            70,
+            1
+        ],
+        "editing_bgcolor": [
+            82,
+            87,
+            94,
+            1
+        ],
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 17,
+        "lineIndexCount": 14
+    }
+}

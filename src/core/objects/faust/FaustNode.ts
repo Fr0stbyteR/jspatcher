@@ -102,5 +102,6 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
             if (this.data.code) await this.newNode(this.data.code, this.state.voices);
         });
         this.on("inlet", this.handleInlet);
+        this.on("destroy", this.handleDestroy);
     }
 }

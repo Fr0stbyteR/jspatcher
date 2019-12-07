@@ -76,7 +76,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     clear() {
         for (const id in this.boxes) {
-            this.boxes[id].object.destroy();
+            this.boxes[id].destroy();
         }
         this.lines = {};
         this.boxes = {};

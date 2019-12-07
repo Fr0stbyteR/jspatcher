@@ -419,12 +419,16 @@ class v extends StdObject<{}, { name: string | number; map: { [key: string]: any
         });
     }
 }
-class lambda extends StdObject<{}, { argsCount: number }, [Bang], [(...args: any[]) => any, ...any[]], [number]> {
+class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, any], [(...args: any[]) => any, ...any[]], [number]> {
     static description = "Generate anonymous function, output args when called";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Output anonymous function"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Result of the anonymous function"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "function",
@@ -440,8 +444,9 @@ class lambda extends StdObject<{}, { argsCount: number }, [Bang], [(...args: any
         default: 0,
         description: "Arguments count"
     }];
-    state = { argsCount: 0 };
+    state = { argsCount: 0, result: undefined as any };
     lambda = (...args: any[]) => {
+        this.state.result = undefined;
         if (this.state.argsCount === 0) {
             this.outlet(1, new Bang());
         } else {
@@ -449,11 +454,12 @@ class lambda extends StdObject<{}, { argsCount: number }, [Bang], [(...args: any
                 this.outlet(i, args[i - 1]);
             }
         }
+        return this.state.result;
     }
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
-            this.inlets = 1;
+            this.inlets = 2;
             this.outlets = 2;
         });
         this.on("updateArgs", (args) => {
@@ -465,7 +471,7 @@ class lambda extends StdObject<{}, { argsCount: number }, [Bang], [(...args: any
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 if (data instanceof Bang) this.outlet(0, this.lambda);
-            }
+            } else if (inlet === 1) this.state.result = data;
         });
     }
 }
