@@ -656,17 +656,6 @@ export class DefaultObject<
 }
 export class AnyObject extends BaseObject<{ [key: string]: any }, { [key: string]: any }, any[], any[], any[], { [key: string]: any }, { [key: string]: any }, { [key: string]: any }> {}
 export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
-    static isConnectable(from: any, outlet: number, to: any, inlet: number) {
-        if (!(from instanceof BaseAudioObject)) return false;
-        if (!(to instanceof BaseAudioObject)) return false;
-        const fromConnection = from.outletConnections[outlet];
-        const toConnection = to.inletConnections[inlet];
-        if (!fromConnection) return false;
-        if (!toConnection) return false;
-        if (!fromConnection.node) return false;
-        if (!toConnection.node) return false;
-        return true;
-    }
     static applyCurve(param: AudioParam, curve: number[][], audioCtx: AudioContext) {
         param.cancelScheduledValues(audioCtx.currentTime);
         let t = 0;
@@ -688,30 +677,6 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     }
     inletConnections: TAudioNodeInletConnection[] = [];
     outletConnections: TAudioNodeOutletConnection[] = [];
-    subscribe() {
-        super.subscribe();
-        this.on("connectedInlet", ({ inlet, srcBox, srcOutlet }) => {
-            const srcObj = srcBox.object;
-            if (BaseAudioObject.isConnectable(srcObj, srcOutlet, this, inlet)) {
-                const from = (srcObj as BaseAudioObject).outletConnections[srcOutlet];
-                const to = this.inletConnections[inlet];
-                const isAudioParam = to.node instanceof AudioParam;
-                if (isAudioParam) from.node.connect(to.node as AudioParam, from.index);
-                else from.node.connect(to.node as AudioNode, from.index, to.index);
-            }
-        });
-        this.on("disconnectedInlet", ({ inlet, srcBox, srcOutlet }) => {
-            const srcObj = srcBox.object;
-            if (BaseAudioObject.isConnectable(srcObj, srcOutlet, this, inlet)) {
-                const from = (srcObj as BaseAudioObject).outletConnections[srcOutlet];
-                const to = this.inletConnections[inlet];
-                const isAudioParam = to.node instanceof AudioParam;
-                if (isAudioParam) from.node.disconnect(to.node as AudioParam, from.index);
-                else from.node.disconnect(to.node as AudioNode, from.index, to.index);
-            }
-        });
-        this.on("destroy", () => this.outletConnections.forEach(con => con.node.disconnect(con.index)));
-    }
     connectAll() {
         this.box.allLines.forEach(el => this._patcher.lines[el].enable());
         return this;
