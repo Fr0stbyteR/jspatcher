@@ -112,14 +112,16 @@ class InspectorColorItem extends React.Component<{ itemKey: number | string; val
     render() {
         return (
             <>
-                <span className="inspector-value color" style={{ backgroundColor: this.props.value }} onClick={this.handleClickColorSpan} />
-                {
-                    this.state.showColorPicker
-                        ? <>
-                            <div className="color-picker-fullscreen-cover" onClick={this.handleClickColorSpan} />
-                            <ChromePicker color={this.props.value} onChange={this.handleChangeColor} />
-                        </>
-                        : <></>}
+                <span className="inspector-value color" style={{ backgroundColor: this.props.value }} onClick={this.handleClickColorSpan}>
+                    {
+                        this.state.showColorPicker
+                            ? <>
+                                <div className="color-picker-fullscreen-cover" onClick={this.handleClickColorSpan} />
+                                <ChromePicker color={this.props.value} onChange={this.handleChangeColor} />
+                            </>
+                            : <></>
+                    }
+                </span>
             </>
         );
     }

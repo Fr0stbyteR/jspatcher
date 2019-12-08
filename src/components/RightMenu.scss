@@ -130,9 +130,9 @@
             }
             & div.chrome-picker {
                 position: absolute;
-                right: 0px;
-                bottom: 0px;
-                margin: 10px;
+                left: calc(50% - 60px);
+                bottom: calc(50% - 100px);
+                width: 150px!important;
                 z-index: 2;
             }
             & div.checkbox {

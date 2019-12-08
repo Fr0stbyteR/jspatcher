@@ -3,12 +3,17 @@ import * as ReactDOM from "react-dom";
 import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
 import "semantic-ui-css/semantic.min.css";
 import "lato-font/css/lato-font.css";
+import { Loader, Dimmer } from "semantic-ui-react";
 import Patcher from "./core/Patcher";
 import UI from "./components/UI";
 import Env from "./env";
 import { faustLangRegister } from "./misc/monaco-faust/register";
 
 const init = async () => {
+    ReactDOM.render(
+        <Dimmer active><Loader content="Loading" /></Dimmer>,
+        document.getElementById("root")
+    );
     const { Faust } = await import("faust2webaudio");
     const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
     await faust.ready;
