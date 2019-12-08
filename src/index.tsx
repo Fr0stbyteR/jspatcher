@@ -28,6 +28,11 @@ const init = async () => {
     window.patcher = patcher;
     window.jspatcherEnv = env;
 
+    ReactDOM.render(
+        <UI patcher={patcher} />,
+        document.getElementById("root")
+    );
+
     const urlParams = new URLSearchParams(window.location.search);
     const fileName = urlParams.get("file");
     if (fileName) {
@@ -35,10 +40,5 @@ const init = async () => {
         const example = await exampleFile.json();
         patcher.load(example);
     }
-
-    ReactDOM.render(
-        <UI patcher={patcher} />,
-        document.getElementById("root")
-    );
 };
 init();

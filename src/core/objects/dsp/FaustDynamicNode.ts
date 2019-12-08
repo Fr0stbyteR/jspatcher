@@ -26,8 +26,6 @@ export default abstract class FaustDynamicNode<D extends {} = {}, S extends Part
         }
         if (outlets) {
             splitter = audioCtx.createChannelSplitter(outlets);
-            splitter.channelInterpretation = "discrete";
-            splitter.channelCountMode = "explicit";
             node.connect(splitter, 0, 0);
         }
         return { inlets, outlets, node, splitter, merger };
