@@ -211,7 +211,7 @@ export class TempLineUI extends React.Component<{ patcher: Patcher }, { show: bo
         const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
         const patcherRect = patcherDiv.getBoundingClientRect();
         let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-        const lastPos = { x: pos.left + patcherRect.left, y: pos.top + patcherRect.top };
+        const lastPos = { x: pos.left + patcherRect.left - patcherPrevScroll.left, y: pos.top + patcherRect.top - patcherPrevScroll.top };
         const dragOffset = { x: 0, y: 0 };
         let nearest = [null, null] as [string, number];
         const handleMouseMove = (e: MouseEvent) => {
