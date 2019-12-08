@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Util from "util";
 import { Dimmer, Loader, Icon } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
-import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
+import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { BaseUI, Bang, BaseObject } from "./Base";
 import "./UI.scss";
 import { TMeta, BaseUIState } from "../types";
@@ -223,11 +223,11 @@ class CodeUI extends BaseUI<comment, {}, CodeUIState> {
     static defaultSize: [number, number] = [400, 225];
     editableOnUnlock = false;
     state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: this.box.args[0] || "javascript", editorLoaded: false };
-    codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
+    codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
+    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
-    handleChange = (value: string, event: monacoEditor.editor.IModelContentChangedEvent) => {
+    handleChange = (value: string, event: editor.IModelContentChangedEvent) => {
         this.setState({ value });
         this.object.data.value = value;
     };

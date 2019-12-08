@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
+import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown, DropdownProps, DropdownItemProps } from "semantic-ui-react";
 import { ChromePicker, ColorResult } from "react-color";
 import MonacoEditor from "react-monaco-editor";
@@ -404,9 +404,9 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
 }
 class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: boolean }> {
     state = { editorLoaded: false };
-    codeEditor: monacoEditor.editor.IStandaloneCodeEditor;
+    codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    handleCodeEditorMount = (monaco: monacoEditor.editor.IStandaloneCodeEditor) => {
+    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => {
         this.codeEditor = monaco;
         this.codeEditor.setValue(this.code);
     };
@@ -430,7 +430,7 @@ class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: b
     }
     render() {
         return this.state.editorLoaded
-            ? <MonacoEditor language="faust" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
+            ? <this.editorJSX language="faust" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
             : <Dimmer active><Loader content="Loading" /></Dimmer>;
     }
     get code() {

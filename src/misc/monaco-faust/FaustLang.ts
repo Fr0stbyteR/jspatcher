@@ -1,19 +1,20 @@
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+
+import { languages, editor, Position, Range } from "monaco-editor/esm/vs/editor/editor.api";
 import { Faust } from "faust2webaudio";
 import { Faust2Doc, TFaustDocs, TFaustDoc } from "./Faust2Doc";
 
 export type FaustLanguageProviders = {
-    hoverProvider: monaco.languages.HoverProvider;
-    tokensProvider: monaco.languages.IMonarchLanguage;
-    completionItemProvider: monaco.languages.CompletionItemProvider;
+    hoverProvider: languages.HoverProvider;
+    tokensProvider: languages.IMonarchLanguage;
+    completionItemProvider: languages.CompletionItemProvider;
     docs: TFaustDocs;
 };
-export const language: monaco.languages.ILanguageExtensionPoint = {
+export const language: languages.ILanguageExtensionPoint = {
     id: "faust",
     extensions: ["dsp", "lib"],
     mimetypes: ["application/faust"]
 };
-export const config: monaco.languages.LanguageConfiguration = {
+export const config: languages.LanguageConfiguration = {
     comments: {
         lineComment: "//",
         blockComment: ["/*", "*/"]
@@ -31,7 +32,7 @@ export const config: monaco.languages.LanguageConfiguration = {
         { open: "/*", close: "*/", notIn: ["string"] }
     ]
 };
-export const theme: monaco.editor.IStandaloneThemeData = {
+export const theme: editor.IStandaloneThemeData = {
     base: "vs-dark",
     inherit: true,
     rules: [
@@ -63,16 +64,16 @@ const getFile = async (fileName: string, faust: Faust) => {
     const res = await fetch(libPath + fileName);
     return res.text();
 };
-type TMatchedFaustDoc = { nameArray: string[]; name: string; range: monaco.Range; doc: TFaustDoc };
+type TMatchedFaustDoc = { nameArray: string[]; name: string; range: Range; doc: TFaustDoc };
 /**
  * Match an available doc key from monaco editor
  *
  * @param {TFaustDocs} doc
- * @param {monaco.editor.ITextModel} model
- * @param {monaco.Position} position
+ * @param {editor.ITextModel} model
+ * @param {Position} position
  * @returns {TMatchedFaustDoc} full: [...prefixes, name], range: a monaco range object, doc: a FaustDoc object
  */
-export const matchDocKey = (doc: TFaustDocs, model: monaco.editor.ITextModel, position: monaco.Position): TMatchedFaustDoc => {
+export const matchDocKey = (doc: TFaustDocs, model: editor.ITextModel, position: Position): TMatchedFaustDoc => {
     const line$ = position.lineNumber;
     const line = model.getLineContent(line$);
     const wordAtPosition = model.getWordAtPosition(position);
@@ -82,7 +83,7 @@ export const matchDocKey = (doc: TFaustDocs, model: monaco.editor.ITextModel, po
     const prefixes: string[] = [];
     while (column$ - 2 >= 0 && line[column$ - 1] === ".") {
         column$ -= 2;
-        const prefixWord = model.getWordAtPosition(new monaco.Position(line$, column$));
+        const prefixWord = model.getWordAtPosition(new Position(line$, column$));
         prefixes.splice(0, 0, prefixWord.word);
         column$ = prefixWord.startColumn - 1;
     }
@@ -94,7 +95,7 @@ export const matchDocKey = (doc: TFaustDocs, model: monaco.editor.ITextModel, po
             return {
                 nameArray,
                 name,
-                range: new monaco.Range(line$, column$ + 1, line$, wordAtPosition.endColumn),
+                range: new Range(line$, column$ + 1, line$, wordAtPosition.endColumn),
                 doc: e
             };
         }
@@ -110,7 +111,7 @@ export const getProviders = async (faust: Faust): Promise<FaustLanguageProviders
         primDocs = await Faust2Doc.parse("primitives.lib", async (fileName: string) => getFile(fileName, faust));
     } catch (e) { console.error(e); } // eslint-disable-line no-empty, no-console
     const faustLib = Object.keys(libDocs);
-    const hoverProvider: monaco.languages.HoverProvider = {
+    const hoverProvider: languages.HoverProvider = {
         provideHover: (model, position) => {
             const matched = matchDocKey({ ...primDocs, ...libDocs }, model, position);
             if (matched) {
@@ -129,7 +130,7 @@ export const getProviders = async (faust: Faust): Promise<FaustLanguageProviders
             return null;
         }
     };
-    const tokensProvider: monaco.languages.IMonarchLanguage = ({
+    const tokensProvider: languages.IMonarchLanguage = ({
         faustKeywords,
         faustFunctions,
         faustLib,
@@ -203,13 +204,13 @@ export const getProviders = async (faust: Faust): Promise<FaustLanguageProviders
             ]
         }
     } as any);
-    const completionItemProvider: monaco.languages.CompletionItemProvider = {
+    const completionItemProvider: languages.CompletionItemProvider = {
         provideCompletionItems: () => {
-            const suggestions: monaco.languages.CompletionItem[] = [];
+            const suggestions: languages.CompletionItem[] = [];
             [...faustKeywords, ...faustFunctions, ...faustLib].forEach((e) => {
                 suggestions.push({
                     label: e,
-                    kind: monaco.languages.CompletionItemKind.Text,
+                    kind: languages.CompletionItemKind.Text,
                     insertText: e,
                     range: null
                 });
