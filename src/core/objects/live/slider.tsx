@@ -157,13 +157,13 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderProps & LiveSliderAdditi
         return steps * step + min;
     }
     getValueFromDelta(e: PointerDragEvent) {
-        const { type, min, max, enums, exponent } = this.state;
+        const { type, min, max, enums, exponent, orientation } = this.state;
         const step = type === "enum" ? 1 : (this.state.step || 1);
-        const totalPixels = 100;
+        const totalPixels = orientation === "horizontal" ? this.interactionRect[2] : this.interactionRect[3];
         const stepsCount = this.stepsCount;
         const stepPixels = totalPixels / stepsCount;
         const prevPixels = LiveUI.getDistance({ value: e.prevValue, type, min, max, enums, exponent }) * totalPixels;
-        const pixels = prevPixels + e.fromY - e.y;
+        const pixels = prevPixels + (orientation === "horizontal" ? e.x - e.fromX : e.fromY - e.y);
         let steps = Math.round(normExp(pixels / totalPixels, exponent) * totalPixels / stepPixels);
         steps = Math.min(stepsCount, Math.max(0, steps));
         if (type === "enum") return steps;
@@ -177,13 +177,17 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderProps & LiveSliderAdditi
             || e.y < this.interactionRect[1]
             || e.y > this.interactionRect[1] + this.interactionRect[3]
         ) return;
-        const newValue = this.getValueFromPos(e);
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        if (!this.state.relative) {
+            const newValue = this.getValueFromPos(e);
+            if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        }
         this.inTouch = true;
     }
     handlePointerDrag = (e: PointerDragEvent) => {
         if (!this.inTouch) return;
-        const newValue = this.getValueFromPos(e);
+        let newValue;
+        if (this.state.relative) newValue = this.getValueFromDelta(e);
+        else newValue = this.getValueFromPos(e);
         if (newValue !== this.state.value) this.setValueToOutput(newValue);
     }
     handlePointerUp = () => {
