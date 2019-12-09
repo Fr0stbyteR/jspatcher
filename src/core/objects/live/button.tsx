@@ -75,7 +75,7 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
     }
 }
 
-export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], LiveButtonProps & { transition: "Zero->One" | "One->Zero" | "Both" }> {
+export class LiveButton extends LiveObject<{}, {}, [any], [Bang, number], [number], LiveButtonProps & { transition: "Zero->One" | "One->Zero" | "Both" }> {
     static description = "Button";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -85,6 +85,9 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], Live
     static outlets: TMeta["outlets"] = [{
         type: "bang",
         description: "Bang"
+    }, {
+        type: "number",
+        description: "Current value"
     }];
     static args: TMeta["args"] = [{
         type: "number",
@@ -159,7 +162,7 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], Live
         super.subscribe();
         this.on("preInit", () => {
             this.inlets = 1;
-            this.outlets = 1;
+            this.outlets = 2;
         });
         this.on("updateArgs", (args) => {
             this.state.value = +!!args[0];
@@ -171,6 +174,7 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], Live
                 this.state.value = +!!data;
                 this.validateValue();
                 this.updateUI({ value: this.state.value });
+                this.outlet(1, this.state.value);
                 if (this.state.value && this.box.props.transition !== "One->Zero") this.outlet(0, new Bang());
             }
         });
@@ -178,8 +182,9 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang], [number], Live
             const lastValue = this.state.value;
             this.state.value = value;
             this.validateValue();
+            this.outlet(1, value);
             const b01 = this.box.props.transition !== "One->Zero";
-            const b10 = this.box.props.transition === "One->Zero" || this.box.props.transition === "Both";
+            const b10 = this.box.props.transition === "Zero->One";
             if ((b01 && lastValue < this.state.value) || (b10 && lastValue > this.state.value)) this.outlet(0, new Bang());
         });
     }

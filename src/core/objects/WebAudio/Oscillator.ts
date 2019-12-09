@@ -33,11 +33,13 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
     static args: TMeta["args"] = [{
         type: "number",
         optional: true,
+        default: 440,
         description: "Initial frequency"
     }, {
         type: "enum",
         enums: ["sine", "square", "sawtooth", "triangle", "custom"],
         optional: true,
+        default: "sine",
         description: 'Initial type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
     }];
     static props: TMeta["props"] = {
