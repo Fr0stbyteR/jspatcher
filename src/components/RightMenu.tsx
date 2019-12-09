@@ -404,23 +404,19 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
         );
     }
 }
-class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: boolean }> {
-    state = { editorLoaded: false };
+class CodeEditor extends React.Component<{ patcher: Patcher }, { value: string; editorLoaded: boolean }> {
+    state = { value: this.code, editorLoaded: false };
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => {
-        this.codeEditor = monaco;
-        this.codeEditor.setValue(this.code);
-    };
+    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
     handleGraphChanged = () => {
-        if (!this.props.patcher.state.isLoading && this.state.editorLoaded) this.codeEditor.setValue(this.code);
+        if (!this.props.patcher.state.isLoading && this.state.editorLoaded) this.setState({ value: this.code });
     };
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
-    componentDidMount() {
-        import("react-monaco-editor").then((reactMonacoEditor) => {
-            this.editorJSX = reactMonacoEditor.default;
-            this.setState({ editorLoaded: true });
-        });
+    async componentDidMount() {
+        const reactMonacoEditor = await import("react-monaco-editor");
+        this.editorJSX = reactMonacoEditor.default;
+        this.setState({ editorLoaded: true });
         this.props.patcher.on("loaded", this.handleGraphChanged);
         this.props.patcher.on("graphChanged", this.handleGraphChanged);
         window.addEventListener("resize", this.handleResize);
@@ -432,7 +428,7 @@ class CodeEditor extends React.Component<{ patcher: Patcher }, { editorLoaded: b
     }
     render() {
         return this.state.editorLoaded
-            ? <this.editorJSX language="faust" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
+            ? <this.editorJSX value={this.state.value} language="faust" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
             : <Dimmer active><Loader content="Loading" /></Dimmer>;
     }
     get code() {
@@ -530,7 +526,7 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
                 <div id="right-pane" hidden={this.state.active === TPanels.None} ref={this.refDivPane}>
                     <Header as="h5" inverted color="grey" content={this.state.active} />
                     <div id="right-pane-code-editor" hidden={this.state.active !== TPanels.Code}>
-                        <CodeEditor { ...this.props } ref={this.refCode} />
+                        {this.state.active === TPanels.Code ? <CodeEditor { ...this.props } ref={this.refCode} /> : <></> }
                     </div>
                     <div id="right-pane-inspector" hidden={this.state.active !== TPanels.Inspector}>
                         {this.state.active === TPanels.Inspector ? <Inspector { ...this.props } ref={this.refInspector} /> : <></> }

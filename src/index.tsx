@@ -21,7 +21,7 @@ const init = async () => {
     const faustPrimitiveLib = await faustPrimitiveLibFile.text();
     faust.fs.writeFile("./libraries/primitives.lib", faustPrimitiveLib);
     const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
-    await faustLangRegister(monacoEditor, faust);
+    faustLangRegister(monacoEditor, faust);
 
     const env = new Env();
     env.faust = faust;
