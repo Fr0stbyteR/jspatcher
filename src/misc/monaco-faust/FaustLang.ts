@@ -1,4 +1,3 @@
-
 import { languages, editor, Position, Range } from "monaco-editor/esm/vs/editor/editor.api";
 import { Faust } from "faust2webaudio";
 import { Faust2Doc, TFaustDocs, TFaustDoc } from "./Faust2Doc";

@@ -219,8 +219,8 @@ class InspectorPropItem extends InspectorItem<"prop"> {
 }
 type InspectorState = {
     meta: TMeta;
-    args: any[];
-    props: { [key: string]: any };
+    args: TMeta["args"];
+    props: TMeta["props"];
     rect: [number, number, number, number];
     presentationRect: [number, number, number, number];
 };
@@ -270,7 +270,8 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
                 delete commonProps[key];
                 continue;
             }
-            const value = typeof props[key] === "undefined" ? prop.default : props[key];
+            const useDefault = !(key in props);
+            const value = useDefault ? prop.default : props[key];
             for (let j = 1; j < boxes.length; j++) {
                 let found = false;
                 const $props = boxes[j].props;
@@ -293,7 +294,8 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
         const commonArgs = meta.args.slice();
         for (let i = commonArgs.length - 1; i >= 0; i--) {
             const arg = commonArgs[i];
-            const value = typeof args[i] === "undefined" ? arg.default : args[i];
+            const useDefault = !(i in arg);
+            const value = useDefault ? arg.default : args[i];
             const varLength = !!arg.varLength;
             for (let j = 1; j < boxes.length; j++) {
                 let found = false;

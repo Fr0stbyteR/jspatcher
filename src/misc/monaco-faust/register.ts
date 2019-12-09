@@ -6,9 +6,9 @@ export const faustLangRegister = async (monacoEditor: typeof monaco, faust: Faus
     monacoEditor.languages.register(faustLang.language);
     monacoEditor.languages.setLanguageConfiguration("faust", faustLang.config);
     monacoEditor.editor.defineTheme("vs-dark", faustLang.theme);
-    faustLang.getProviders(faust).then((providers) => {
-        monacoEditor.languages.registerHoverProvider("faust", providers.hoverProvider);
-        monacoEditor.languages.setMonarchTokensProvider("faust", providers.tokensProvider);
-        monacoEditor.languages.registerCompletionItemProvider("faust", providers.completionItemProvider);
-    });
+    const providers = await faustLang.getProviders(faust);
+    monacoEditor.languages.registerHoverProvider("faust", providers.hoverProvider);
+    monacoEditor.languages.setMonarchTokensProvider("faust", providers.tokensProvider);
+    monacoEditor.languages.registerCompletionItemProvider("faust", providers.completionItemProvider);
+    return { providers, faustLang };
 };
