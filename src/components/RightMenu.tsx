@@ -533,7 +533,7 @@ export default class RightMenu extends React.Component<{ patcher: Patcher }, { a
                         <CodeEditor { ...this.props } ref={this.refCode} />
                     </div>
                     <div id="right-pane-inspector" hidden={this.state.active !== TPanels.Inspector}>
-                        <Inspector { ...this.props } ref={this.refInspector} />
+                        {this.state.active === TPanels.Inspector ? <Inspector { ...this.props } ref={this.refInspector} /> : <></> }
                     </div>
                     <div id="right-pane-console" hidden={this.state.active !== TPanels.Console}>
                         <Console { ...this.props } ref={this.refConsole} />

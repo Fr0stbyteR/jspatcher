@@ -296,7 +296,7 @@ class Boxes extends React.Component {
     }
     handleClick = (e: React.MouseEvent) => {
         const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        if (ctrlKey && !this.dragged) this.props.patcher.setLock(!this.props.patcher.state.locked);
+        if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.setLock(!this.props.patcher.state.locked);
     }
     handleDoubleClick = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
