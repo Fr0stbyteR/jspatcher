@@ -2,7 +2,7 @@ import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio"
 import FaustDynamicNode from "../dsp/FaustDynamicNode";
 import { Bang } from "../Base";
 import { TMeta, TCurve, TMIDIEvent, TInletMeta } from "../../types";
-import { isMIDIEvent } from "../../../utils";
+import { isMIDIEvent, decodeCurve } from "../../../utils";
 
 export default class FaustNode extends FaustDynamicNode<{ code: string }, { voices: number }, [Bang | number | string | TMIDIEvent, { [key: string]: TCurve }], (null | FaustAudioWorkletNode | FaustScriptProcessorNode)[], [number]> {
     static package = "Faust";
@@ -50,6 +50,17 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
                 this.state.voices = Math.max(0, ~~data);
             } else if (isMIDIEvent(data)) {
                 if (this.state.node) this.state.node.midiMessage(data);
+            } else if (typeof data === "object") {
+                if (this.state.node) {
+                    for (const key in data) {
+                        try {
+                            const curve = decodeCurve(data[key]);
+                            this.state.node.setParamValue(key, curve[curve.length - 1][0]);
+                        } catch (e) {
+                            this.error(e.message);
+                        }
+                    }
+                }
             }
         }
     }

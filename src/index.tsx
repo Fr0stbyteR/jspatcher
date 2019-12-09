@@ -7,13 +7,14 @@ import Patcher from "./core/Patcher";
 import UI from "./components/UI";
 import Env from "./env";
 import { faustLangRegister } from "./misc/monaco-faust/register";
+import Importer from "./core/objects/importer/Importer";
 
 const init = async () => {
     ReactDOM.render(
         <Dimmer active><Loader content="Loading" /></Dimmer>,
         document.getElementById("root")
     );
-    const { Faust } = await import("faust2webaudio");
+    const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
     const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
     await faust.ready;
     const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
@@ -25,6 +26,7 @@ const init = async () => {
     const env = new Env();
     env.faust = faust;
     const patcher = new Patcher();
+    patcher.packageRegister(Importer.import("faust", { FaustNode: FaustAudioWorkletNode }, true), patcher._state.libJS);
     window.patcher = patcher;
     window.jspatcherEnv = env;
 

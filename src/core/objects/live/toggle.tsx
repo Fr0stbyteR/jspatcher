@@ -84,6 +84,12 @@ export class LiveToggle extends LiveObject<{}, {}, [number | Bang, number], [num
         description: "Initial value"
     }];
     static props: TMeta["props"] = {
+        max: {
+            type: "number",
+            default: 1,
+            description: "Maximum value",
+            isUIState: true
+        },
         bgColor: {
             type: "color",
             default: "rgba(90, 90, 90, 1)",

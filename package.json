@@ -43,7 +43,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^2.3.0",
-    "faust2webaudio": "github:grame-cncm/faust2webaudio",
+    "faust2webaudio": "file:../faust2webaudio",
     "file-loader": "^5.0.2",
     "lato-font": "^3.0.0",
     "monaco-editor": "^0.18.1",
