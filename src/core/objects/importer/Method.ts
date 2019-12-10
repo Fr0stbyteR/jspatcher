@@ -7,7 +7,7 @@ type TAnyFunction = (...args: any[]) => any;
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; inputs: any[]; result: any };
 type I<Static extends boolean> = Static extends true ? [any | Bang, ...any[]] : [any | Bang, any, ...any[]];
 type O<Static extends boolean> = Static extends true ? [any, ...any[]] : [any, any, ...any[]];
-export class Method<Static extends boolean = false> extends ImportedObject<TAnyFunction, S<Static>, I<Static>, O<Static>, any[], { args: number }, { loading: boolean }> {
+export class Method<Static extends boolean = false> extends ImportedObject<TAnyFunction, S<Static>, I<Static>, O<Static>, any[], { args: number; sync: boolean }, { loading: boolean }> {
     static description = "Auto-imported method";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -41,6 +41,11 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
             type: "number",
             default: 0,
             description: "arguments count for method"
+        },
+        sync: {
+            type: "boolean",
+            default: false,
+            description: "If true and in case the result is a Promise, instead of waiting for result, will output the Promise object"
         }
     };
     state: S<Static> = { instance: undefined, inputs: [], result: null };
@@ -51,7 +56,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
             if (!(data instanceof Bang)) this.state.instance = data;
             if (this.execute()) this.output();
         } else {
-            this.state.inputs[inlet] = data;
+            this.state.inputs[inlet - 1] = data;
         }
     };
     subscribe() {
@@ -85,7 +90,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
     }
     callback = () => this.outletAll([this.state.instance, this.state.result, ...this.state.inputs] as O<Static>);
     output() {
-        if (this.state.result instanceof Promise) {
+        if (this.state.result instanceof Promise && !this.box.props.sync) {
             this.loading = true;
             this.state.result.then((r) => {
                 this.loading = false;

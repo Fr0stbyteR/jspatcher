@@ -6,7 +6,7 @@ import { TMeta } from "../../types";
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; result: any };
 type I<Static extends boolean> = Static extends true ? [Bang] : [any | Bang];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
-export class Getter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [], {}, { loading: boolean }> {
+export class Getter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [], { sync: boolean }, { loading: boolean }> {
     static description = "Auto-imported getter";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -20,6 +20,13 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
         type: "anything",
         description: "Value"
     }];
+    static props: TMeta["props"] = {
+        sync: {
+            type: "boolean",
+            default: false,
+            description: "If true and in case the result is a Promise, instead of waiting for result, will output the Promise object"
+        }
+    };
     state: S<Static> = { instance: undefined, result: null };
     handlePreInit = () => {
         this.inlets = 1;
@@ -48,7 +55,7 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
     }
     callback = () => this.outletAll([this.state.instance, this.state.result] as O<Static>);
     output() {
-        if (this.state.result instanceof Promise) {
+        if (this.state.result instanceof Promise && !this.box.props.sync) {
             this.loading = true;
             this.state.result.then((r) => {
                 this.loading = false;

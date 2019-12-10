@@ -269,5 +269,5 @@ type THistoryElement = {
     [key in keyof PatcherEventMap]?: PatcherEventMap[key][];
 };
 
-type TCurve = string | number | number[] | number[][];
+type TBPF = string | number | number[] | number[][];
 type TMIDIEvent = [number, number, number] | (Uint8Array & { length: 3 });

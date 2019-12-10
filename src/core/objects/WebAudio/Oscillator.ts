@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeCurve } from "../../../utils";
-import { TMeta, TCurve } from "../../types";
+import { decodeLine } from "../../../utils";
+import { TMeta, TBPF } from "../../types";
 
-export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, TCurve, TCurve, OscillatorType], [null, OscillatorNode], [number, OscillatorType], { detune: number }> {
+export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, TBPF, TBPF, OscillatorType], [null, OscillatorNode], [number, OscillatorType], { detune: number }> {
     static description = "WebAudio OscillatorNode";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -12,11 +12,11 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
     }, {
         isHot: false,
         type: "signal",
-        description: "frequency: curve or node connection"
+        description: "frequency: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "detune: curve or node connection"
+        description: "detune: bpf or node connection"
     }, {
         isHot: false,
         type: "enum",
@@ -93,11 +93,11 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
             } else {
                 try {
                     if (inlet === 1) {
-                        const curve = decodeCurve(data as TCurve);
-                        JSPAudioNode.applyCurve(this.node.frequency, curve, this.audioCtx);
+                        const bpf = decodeLine(data as TBPF);
+                        this.applyBPF(this.node.frequency, bpf);
                     } else if (inlet === 2) {
-                        const curve = decodeCurve(data as TCurve);
-                        JSPAudioNode.applyCurve(this.node.detune, curve, this.audioCtx);
+                        const bpf = decodeLine(data as TBPF);
+                        this.applyBPF(this.node.detune, bpf);
                     } else if (inlet === 3) {
                         this.node.type = data as OscillatorType;
                     }

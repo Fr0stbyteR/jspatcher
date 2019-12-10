@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeCurve } from "../../../utils";
-import { TMeta, TCurve } from "../../types";
+import { decodeLine } from "../../../utils";
+import { TMeta, TBPF } from "../../types";
 
-export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang, TCurve], [null, ConstantSourceNode], [number]> {
+export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang, TBPF], [null, ConstantSourceNode], [number]> {
     static description = "WebAudio ConstantSourceNode";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -12,7 +12,7 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
     }, {
         isHot: false,
         type: "signal",
-        description: "offset: curve or node connection"
+        description: "offset: bpf or node connection"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "signal",
@@ -52,8 +52,8 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
                 if (data instanceof Bang) this.outlet(1, this.node);
             } else if (inlet === 1) {
                 try {
-                    const curve = decodeCurve(data as TCurve);
-                    JSPAudioNode.applyCurve(this.node.offset, curve, this.audioCtx);
+                    const bpf = decodeLine(data as TBPF);
+                    this.applyBPF(this.node.offset, bpf);
                 } catch (e) {
                     this.error(e.message);
                 }

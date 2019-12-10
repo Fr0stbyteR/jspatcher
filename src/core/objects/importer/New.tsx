@@ -97,18 +97,6 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
     }
     callback = () => this.outletAll([this.state.result, ...this.state.inputs]);
     output() {
-        if (this.state.result instanceof Promise) {
-            this.loading = true;
-            this.state.result.then((r) => {
-                this.loading = false;
-                this.state.result = r;
-                this.callback();
-            }, (r) => {
-                this.loading = false;
-                this.error(r);
-            });
-            return this;
-        }
         return this.callback();
     }
     uiComponent = NewUI;

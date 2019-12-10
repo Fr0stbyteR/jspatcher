@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeCurve } from "../../../utils";
-import { TMeta, TCurve } from "../../types";
+import { decodeLine } from "../../../utils";
+import { TMeta, TBPF } from "../../types";
 
-export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Bang, TCurve], [null, StereoPannerNode], [number]> {
+export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Bang, TBPF], [null, StereoPannerNode], [number]> {
     static description = "WebAudio StereoPannerNode";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -12,7 +12,7 @@ export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Ba
     }, {
         isHot: false,
         type: "signal",
-        description: "pan: curve or node connection"
+        description: "pan: bpf or node connection"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "signal",
@@ -51,8 +51,8 @@ export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Ba
                 if (data instanceof Bang) this.outlet(1, this.node);
             } else if (inlet === 1) {
                 try {
-                    const curve = decodeCurve(data as TCurve);
-                    JSPAudioNode.applyCurve(this.node.pan, curve, this.audioCtx);
+                    const bpf = decodeLine(data as TBPF);
+                    this.applyBPF(this.node.pan, bpf);
                 } catch (e) {
                     this.error(e.message);
                 }

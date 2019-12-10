@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeCurve } from "../../../utils";
-import { TMeta, TCurve } from "../../types";
+import { decodeLine } from "../../../utils";
+import { TMeta, TBPF } from "../../types";
 
-export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, TCurve], [null, DelayNode], [number]> {
+export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, TBPF], [null, DelayNode], [number]> {
     static description = "WebAudio DelayNode";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -12,7 +12,7 @@ export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, TCurve], [
     }, {
         isHot: false,
         type: "signal",
-        description: "delayTime: curve or node connection"
+        description: "delayTime: bpf or node connection"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "signal",
@@ -51,8 +51,8 @@ export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, TCurve], [
                 if (data instanceof Bang) this.outlet(1, this.node);
             } else if (inlet === 1) {
                 try {
-                    const curve = decodeCurve(data as TCurve);
-                    JSPAudioNode.applyCurve(this.node.delayTime, curve, this.audioCtx);
+                    const bpf = decodeLine(data as TBPF);
+                    this.applyBPF(this.node.delayTime, bpf);
                 } catch (e) {
                     this.error(e.message);
                 }

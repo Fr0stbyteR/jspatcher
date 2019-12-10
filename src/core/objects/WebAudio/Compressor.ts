@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeCurve } from "../../../utils";
-import { TMeta, TCurve } from "../../types";
+import { decodeLine } from "../../../utils";
+import { TMeta, TBPF } from "../../types";
 
-type I = [Bang, TCurve, TCurve, TCurve, TCurve, TCurve];
+type I = [Bang, TBPF, TBPF, TBPF, TBPF, TBPF];
 export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {}, I, [null, DynamicsCompressorNode], [], DynamicsCompressorOptions> {
     static description = "WebAudio DynamicsCompressorNode";
     static inlets: TMeta["inlets"] = [{
@@ -13,23 +13,23 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
     }, {
         isHot: false,
         type: "signal",
-        description: "threshold: curve or node connection"
+        description: "threshold: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "knee: curve or node connection"
+        description: "knee: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "ratio: curve or node connection"
+        description: "ratio: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "attack: curve or node connection"
+        description: "attack: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "release: curve or node connection"
+        description: "release: bpf or node connection"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "signal",
@@ -92,8 +92,8 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
                 if (data instanceof Bang) this.outlet(1, this.node);
             } else if (inlet > 0 && inlet < 6) {
                 try {
-                    const curve = decodeCurve(data as TCurve);
-                    JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
+                    const bpf = decodeLine(data as TBPF);
+                    this.applyBPF(this.node[paramMap[inlet - 1]], bpf);
                 } catch (e) {
                     this.error(e.message);
                 }

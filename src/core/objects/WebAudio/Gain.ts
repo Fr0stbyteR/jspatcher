@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeCurve } from "../../../utils";
-import { TMeta, TCurve } from "../../types";
+import { decodeLine } from "../../../utils";
+import { TMeta, TBPF } from "../../types";
 
-export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, TCurve], [null, GainNode], [number]> {
+export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, TBPF], [null, GainNode], [number]> {
     static description = "WebAudio GainNode";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -12,7 +12,7 @@ export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, TCurve], [nu
     }, {
         isHot: false,
         type: "signal",
-        description: "gain: curve or node connection"
+        description: "gain: bpf or node connection"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "signal",
@@ -51,8 +51,8 @@ export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, TCurve], [nu
                 if (data instanceof Bang) this.outlet(1, this.node);
             } else if (inlet === 1) {
                 try {
-                    const curve = decodeCurve(data as TCurve);
-                    JSPAudioNode.applyCurve(this.node.gain, curve, this.audioCtx);
+                    const bpf = decodeLine(data as TBPF);
+                    this.applyBPF(this.node.gain, bpf);
                 } catch (e) {
                     this.error(e.message);
                 }

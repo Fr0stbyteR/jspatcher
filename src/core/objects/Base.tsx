@@ -564,9 +564,9 @@ export class BaseObject<
             author: this.author,
             version: this.version,
             description: this.description,
-            inlets: this.inlets,
-            outlets: this.outlets,
-            args: this.args,
+            inlets: [...this.inlets],
+            outlets: [...this.outlets],
+            args: [...this.args],
             props: {
                 ...superProps,
                 ...thisProps
@@ -656,10 +656,14 @@ export class DefaultObject<
 }
 export class AnyObject extends BaseObject<{ [key: string]: any }, { [key: string]: any }, any[], any[], any[], { [key: string]: any }, { [key: string]: any }, { [key: string]: any }> {}
 export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
-    static applyCurve(param: AudioParam, curve: number[][], audioCtx: AudioContext) {
+    get audioCtx() {
+        return this.patcher.env.audioCtx;
+    }
+    applyBPF(param: AudioParam, bpf: number[][]) {
+        const { audioCtx } = this;
         param.cancelScheduledValues(audioCtx.currentTime);
         let t = 0;
-        curve.forEach((a) => {
+        bpf.forEach((a) => {
             if (a.length === 1) {
                 param.setValueAtTime(a[0], audioCtx.currentTime + t);
             } else if (a.length > 1) {
@@ -671,9 +675,6 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
                 }
             }
         });
-    }
-    get audioCtx() {
-        return this.patcher.env.audioCtx;
     }
     inletConnections: TAudioNodeInletConnection[] = [];
     outletConnections: TAudioNodeOutletConnection[] = [];

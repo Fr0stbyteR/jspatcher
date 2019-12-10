@@ -121,6 +121,8 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
         return this;
     }
     destroy() {
+        this.destBox.object.off("metaChanged", this.updateType);
+        this.srcBox.object.off("metaChanged", this.updateType);
         this.disable();
         delete this._patcher.lines[this.id];
         return this;

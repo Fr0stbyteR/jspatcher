@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeCurve } from "../../../utils";
-import { TMeta, TCurve } from "../../types";
+import { decodeLine } from "../../../utils";
+import { TMeta, TBPF } from "../../types";
 
-type I = [Bang, TCurve, TCurve, TCurve, TCurve, BiquadFilterType];
+type I = [Bang, TBPF, TBPF, TBPF, TBPF, BiquadFilterType];
 export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null, BiquadFilterNode], [], BiquadFilterOptions> {
     static description = "WebAudio BiquadFilterNode";
     static inlets: TMeta["inlets"] = [{
@@ -13,19 +13,19 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
     }, {
         isHot: false,
         type: "signal",
-        description: "frequency: curve or node connection"
+        description: "frequency: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "detune: curve or node connection"
+        description: "detune: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "Q: curve or node connection"
+        description: "Q: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "gain: curve or node connection"
+        description: "gain: bpf or node connection"
     }, {
         isHot: false,
         type: "enum",
@@ -104,8 +104,8 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
                 if (Biquad.isBiquadFilterType(data)) this.node.type = data;
             } else if (inlet > 0 && inlet < 5) {
                 try {
-                    const curve = decodeCurve(data as TCurve);
-                    JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
+                    const bpf = decodeLine(data as TBPF);
+                    this.applyBPF(this.node[paramMap[inlet - 1]], bpf);
                 } catch (e) {
                     this.error(e.message);
                 }

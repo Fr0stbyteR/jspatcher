@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeCurve } from "../../../utils";
-import { TMeta, TCurve } from "../../types";
+import { decodeLine } from "../../../utils";
+import { TMeta, TBPF } from "../../types";
 
-type I = [Bang, TCurve, TCurve, TCurve, TCurve, TCurve, TCurve, PannerOptions];
+type I = [Bang, TBPF, TBPF, TBPF, TBPF, TBPF, TBPF, PannerOptions];
 export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, PannerNode], [], PannerOptions> {
     static description = "WebAudio PannerNode";
     static inlets: TMeta["inlets"] = [{
@@ -13,27 +13,27 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
     }, {
         isHot: false,
         type: "signal",
-        description: "orientationX: curve or node connection"
+        description: "orientationX: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "orientationY: curve or node connection"
+        description: "orientationY: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "orientationZ: curve or node connection"
+        description: "orientationZ: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "positionX: curve or node connection"
+        description: "positionX: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "positionY: curve or node connection"
+        description: "positionY: bpf or node connection"
     }, {
         isHot: false,
         type: "signal",
-        description: "positionZ: curve or node connection"
+        description: "positionZ: bpf or node connection"
     }, {
         isHot: false,
         type: "object",
@@ -154,8 +154,8 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
                 if (data instanceof Bang) this.outlet(1, this.node);
             } else if (inlet > 0 && inlet < 7) {
                 try {
-                    const curve = decodeCurve(data as TCurve);
-                    JSPAudioNode.applyCurve(this.node[paramMap[inlet - 1]], curve, this.audioCtx);
+                    const bpf = decodeLine(data as TBPF);
+                    this.applyBPF(this.node[paramMap[inlet - 1]], bpf);
                 } catch (e) {
                     this.error(e.message);
                 }

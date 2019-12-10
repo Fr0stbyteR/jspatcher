@@ -299,7 +299,7 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
         exponent: {
             type: "number",
             default: 0,
-            description: "UI modulation curve, 0 for linear",
+            description: "UI modulation bpf, 0 for linear",
             isUIState: true
         },
         speedLim: {
