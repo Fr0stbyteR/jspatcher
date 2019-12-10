@@ -46,7 +46,6 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
         this.handleDestroy();
         this.state = { voices, merger, splitter, node };
         this.data.code = code;
-        const audioParams = node.getParams();
         const firstInletMeta = FaustNode.inlets[0];
         const firstInletSignalMeta: TInletMeta = { ...firstInletMeta, type: "signal" };
         const inletMeta: TInletMeta = { isHot: false, type: "signal", description: "Node connection" };
@@ -65,6 +64,8 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
         }
         factoryMeta.outlets[outlets] = lastOutletMeta;
         if (node instanceof AudioWorkletNode) {
+            const audioParams: string[] = [];
+            node.parameters.forEach((v, k) => audioParams.push(k));
             for (let i = inlets || 1; i < (inlets || 1) + audioParams.length; i++) {
                 const path = audioParams[i - (inlets || 1)];
                 const param = node.parameters.get(path);
@@ -74,7 +75,7 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
             }
         }
         this.meta = factoryMeta;
-        this.inlets = (inlets || 1) + (node instanceof AudioWorkletNode ? audioParams.length : 0);
+        this.inlets = (inlets || 1) + (node instanceof AudioWorkletNode ? node.parameters.size : 0);
         this.outlets = outlets + 1;
         this.connectAll();
         this.outlet(this.outlets - 1, this.state.node);
@@ -85,8 +86,11 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
     };
     subscribe() {
         super.subscribe();
-        this.on("preInit", async () => {
+        this.on("postInit", async () => {
             if (this.data.code) await this.newNode(this.data.code, this.state.voices);
+        });
+        this.on("updateArgs", (args) => {
+            if (typeof args[0] === "number") this.state.voices = ~~Math.max(0, args[0]);
         });
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {

@@ -45,7 +45,7 @@
         "import/no-webpack-loader-syntax": "error",
         "import/no-extraneous-dependencies": "off",
         "import/prefer-default-export": "off",
-        "indent": ["error", 4],
+        "indent": ["error", 4, { "SwitchCase": 1 }],
         "jsx-quotes": ["error", "prefer-double"],
         "lines-between-class-members": "off",
         "max-classes-per-file": "off",

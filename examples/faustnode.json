@@ -258,7 +258,7 @@
                 285,
                 360,
                 90,
-                36
+                22
             ],
             "background": false,
             "presentation": false,
@@ -340,20 +340,20 @@
         },
         "box-30": {
             "id": "box-30",
-            "text": "merger~ 3",
-            "inlets": 3,
+            "text": "merger~ 2",
+            "inlets": 2,
             "outlets": 2,
             "rect": [
                 30,
                 375,
-                210,
+                105,
                 22
             ],
             "background": false,
             "presentation": false,
             "data": {},
             "args": [
-                3
+                2
             ],
             "props": {}
         }

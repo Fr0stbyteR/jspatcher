@@ -1,0 +1,481 @@
+{
+    "lines": {
+        "line-38": {
+            "id": "line-38",
+            "src": [
+                "box-3",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-41": {
+            "id": "line-41",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-30",
+                0
+            ],
+            "disabled": false
+        },
+        "line-42": {
+            "id": "line-42",
+            "src": [
+                "box-1",
+                1
+            ],
+            "dest": [
+                "box-30",
+                1
+            ],
+            "disabled": false
+        },
+        "line-43": {
+            "id": "line-43",
+            "src": [
+                "box-29",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        },
+        "line-44": {
+            "id": "line-44",
+            "src": [
+                "box-7",
+                0
+            ],
+            "dest": [
+                "box-5",
+                1
+            ],
+            "disabled": false
+        },
+        "line-45": {
+            "id": "line-45",
+            "src": [
+                "box-5",
+                1
+            ],
+            "dest": [
+                "box-10",
+                0
+            ],
+            "disabled": false
+        },
+        "line-46": {
+            "id": "line-46",
+            "src": [
+                "box-8",
+                0
+            ],
+            "dest": [
+                "box-7",
+                0
+            ],
+            "disabled": false
+        },
+        "line-47": {
+            "id": "line-47",
+            "src": [
+                "box-10",
+                0
+            ],
+            "dest": [
+                "box-11",
+                1
+            ],
+            "disabled": false
+        },
+        "line-48": {
+            "id": "line-48",
+            "src": [
+                "box-30",
+                0
+            ],
+            "dest": [
+                "box-18",
+                0
+            ],
+            "disabled": false
+        },
+        "line-49": {
+            "id": "line-49",
+            "src": [
+                "box-33",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-50": {
+            "id": "line-50",
+            "src": [
+                "box-34",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-51": {
+            "id": "line-51",
+            "src": [
+                "box-27",
+                0
+            ],
+            "dest": [
+                "box-1",
+                2
+            ],
+            "disabled": false
+        },
+        "line-52": {
+            "id": "line-52",
+            "src": [
+                "box-24",
+                0
+            ],
+            "dest": [
+                "box-1",
+                2
+            ],
+            "disabled": false
+        },
+        "line-53": {
+            "id": "line-53",
+            "src": [
+                "box-35",
+                0
+            ],
+            "dest": [
+                "box-1",
+                2
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-1": {
+            "id": "box-1",
+            "text": "faust.faustnode~ 8",
+            "inlets": 5,
+            "outlets": 2,
+            "rect": [
+                90,
+                375,
+                210,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "code": "\r\nimport(\"stdfaust.lib\");\r\nprocess = ba.pulsen(1, ba.hz2midikey(freq) * 1000) : pm.marimba(freq, 0, 7000, 0.5, 0.8) * gate * gain with {\r\nfreq = hslider(\"freq\", 440, 40, 8000, 1);\r\ngain = hslider(\"gain\", 0.5, 0, 1, 0.01);\r\ngate = button(\"gate\");\r\n};\r\neffect = dm.freeverb_demo;"
+            },
+            "args": [
+                8
+            ],
+            "props": {}
+        },
+        "box-3": {
+            "id": "box-3",
+            "text": "code",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                90,
+                135,
+                375,
+                120
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "value": "\r\nimport(\"stdfaust.lib\");\r\nprocess = ba.pulsen(1, ba.hz2midikey(freq) * 1000) : pm.marimba(freq, 0, 7000, 0.5, 0.8) * gate * gain with {\r\nfreq = hslider(\"freq\", 440, 40, 8000, 1);\r\ngain = hslider(\"gain\", 0.5, 0, 1, 0.01);\r\ngate = button(\"gate\");\r\n};\r\neffect = dm.freeverb_demo;"
+            },
+            "args": [
+                "faust"
+            ],
+            "props": {}
+        },
+        "box-5": {
+            "id": "box-5",
+            "text": "analyser~",
+            "inlets": 6,
+            "outlets": 6,
+            "rect": [
+                345,
+                360,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-7": {
+            "id": "box-7",
+            "text": "new Float32Array 2048",
+            "inlets": 3,
+            "outlets": 4,
+            "rect": [
+                345,
+                330,
+                150,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                "Float32Array",
+                2048
+            ],
+            "props": {}
+        },
+        "box-8": {
+            "id": "box-8",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                345,
+                300,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": ""
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-10": {
+            "id": "box-10",
+            "text": "get 0",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                345,
+                390,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                0
+            ],
+            "props": {}
+        },
+        "box-11": {
+            "id": "box-11",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                345,
+                420,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "0"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-18": {
+            "id": "box-18",
+            "text": "destination~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                90,
+                495,
+                105,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-24": {
+            "id": "box-24",
+            "text": "toggle",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                255,
+                270,
+                30,
+                30
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-27": {
+            "id": "box-27",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                293,
+                271.71875,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "1 5 0 5"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-29": {
+            "id": "box-29",
+            "text": "button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                90,
+                90,
+                30,
+                30
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-30": {
+            "id": "box-30",
+            "text": "merger~ 2",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                90,
+                435,
+                105,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                2
+            ],
+            "props": {}
+        },
+        "box-33": {
+            "id": "box-33",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                135,
+                330,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "[144, 60, 120]"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-34": {
+            "id": "box-34",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                135,
+                300,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "[143, 60, 120]"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-35": {
+            "id": "box-35",
+            "text": "dial",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                285,
+                300,
+                45,
+                60
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {
+                "shortName": "Wet",
+                "type": "float",
+                "unitStyle": "float",
+                "max": 1,
+                "step": 0.01
+            }
+        }
+    },
+    "props": {
+        "mode": "js",
+        "bgcolor": [
+            61,
+            65,
+            70,
+            1
+        ],
+        "editing_bgcolor": [
+            82,
+            87,
+            94,
+            1
+        ],
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 35,
+        "lineIndexCount": 53
+    }
+}
