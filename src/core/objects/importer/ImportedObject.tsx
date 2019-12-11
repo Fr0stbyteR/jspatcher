@@ -1,5 +1,6 @@
 import * as React from "react";
-import { DefaultObject, DefaultUI } from "../Base";
+import { DefaultObject } from "../Base";
+import { DefaultUI } from "../BaseUI";
 
 /**
 * ```JavaScript

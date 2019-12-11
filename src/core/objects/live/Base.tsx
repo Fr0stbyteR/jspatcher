@@ -1,7 +1,8 @@
 import * as React from "react";
 import { toMIDI, iNormExp } from "../../../utils";
-import { BaseAudioObject, BaseUI, BaseUIAdditionalState } from "../Base";
+import { BaseAudioObject } from "../Base";
 import { TMeta, BaseUIState } from "../../types";
+import { BaseUIAdditionalState, BaseUI } from "../BaseUI";
 
 export const getDisplayValue = (value: number, type: string, unitstyle: string, units: string, enums: string[]) => {
     if (type === "enum") return enums[value];

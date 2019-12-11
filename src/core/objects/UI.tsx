@@ -3,9 +3,10 @@ import * as Util from "util";
 import { Dimmer, Loader, Icon } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import { BaseUI, Bang, BaseObject } from "./Base";
+import { Bang, BaseObject } from "./Base";
 import "./UI.scss";
 import { TMeta, BaseUIState } from "../types";
+import { BaseUI } from "./BaseUI";
 
 type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
 export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
