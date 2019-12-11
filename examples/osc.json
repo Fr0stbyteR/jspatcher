@@ -1,8 +1,6 @@
 {
-    "ee": {},
     "lines": {
         "line-1": {
-            "ee": {},
             "id": "line-1",
             "src": [
                 "box-5",
@@ -15,7 +13,6 @@
             "disabled": false
         },
         "line-2": {
-            "ee": {},
             "id": "line-2",
             "src": [
                 "box-4",
@@ -28,7 +25,6 @@
             "disabled": false
         },
         "line-3": {
-            "ee": {},
             "id": "line-3",
             "src": [
                 "box-1",
@@ -41,7 +37,6 @@
             "disabled": false
         },
         "line-5": {
-            "ee": {},
             "id": "line-5",
             "src": [
                 "box-6",
@@ -54,7 +49,6 @@
             "disabled": false
         },
         "line-6": {
-            "ee": {},
             "id": "line-6",
             "src": [
                 "box-5",
@@ -67,7 +61,6 @@
             "disabled": false
         },
         "line-7": {
-            "ee": {},
             "id": "line-7",
             "src": [
                 "box-5",
@@ -80,7 +73,6 @@
             "disabled": false
         },
         "line-8": {
-            "ee": {},
             "id": "line-8",
             "src": [
                 "box-2",
@@ -93,7 +85,6 @@
             "disabled": false
         },
         "line-9": {
-            "ee": {},
             "id": "line-9",
             "src": [
                 "box-2",
@@ -106,7 +97,6 @@
             "disabled": false
         },
         "line-11": {
-            "ee": {},
             "id": "line-11",
             "src": [
                 "box-9",
@@ -121,7 +111,6 @@
     },
     "boxes": {
         "box-8": {
-            "ee": {},
             "id": "box-8",
             "text": "print",
             "inlets": 1,
@@ -132,12 +121,13 @@
                 45,
                 22
             ],
+            "background": false,
+            "presentation": false,
             "data": {},
             "args": [],
             "props": {}
         },
         "box-1": {
-            "ee": {},
             "id": "box-1",
             "text": "oscillator~",
             "inlets": 4,
@@ -148,12 +138,13 @@
                 90,
                 22
             ],
+            "background": false,
+            "presentation": false,
             "data": {},
             "args": [],
             "props": {}
         },
         "box-3": {
-            "ee": {},
             "id": "box-3",
             "text": "destination~",
             "inlets": 1,
@@ -162,14 +153,15 @@
                 135,
                 315,
                 90,
-                22
+                36
             ],
+            "background": false,
+            "presentation": false,
             "data": {},
             "args": [],
             "props": {}
         },
         "box-2": {
-            "ee": {},
             "id": "box-2",
             "text": "splitter~ 3",
             "inlets": 1,
@@ -180,6 +172,8 @@
                 90,
                 22
             ],
+            "background": false,
+            "presentation": false,
             "data": {},
             "args": [
                 3
@@ -187,7 +181,6 @@
             "props": {}
         },
         "box-4": {
-            "ee": {},
             "id": "box-4",
             "text": "message",
             "inlets": 2,
@@ -198,14 +191,15 @@
                 165,
                 22
             ],
+            "background": false,
+            "presentation": false,
             "data": {
-                "text": "440, 550 1, 440 2"
+                "text": "440 0 550 1 440 2"
             },
             "args": [],
             "props": {}
         },
         "box-5": {
-            "ee": {},
             "id": "box-5",
             "text": "+",
             "inlets": 2,
@@ -216,12 +210,13 @@
                 45,
                 22
             ],
+            "background": false,
+            "presentation": false,
             "data": {},
             "args": [],
             "props": {}
         },
         "box-6": {
-            "ee": {},
             "id": "box-6",
             "text": "message",
             "inlets": 2,
@@ -232,6 +227,8 @@
                 30,
                 22
             ],
+            "background": false,
+            "presentation": false,
             "data": {
                 "text": "3"
             },
@@ -239,7 +236,6 @@
             "props": {}
         },
         "box-7": {
-            "ee": {},
             "id": "box-7",
             "text": "message",
             "inlets": 2,
@@ -250,6 +246,8 @@
                 33,
                 22
             ],
+            "background": false,
+            "presentation": false,
             "data": {
                 "text": ""
             },
@@ -257,7 +255,6 @@
             "props": {}
         },
         "box-9": {
-            "ee": {},
             "id": "box-9",
             "text": "merger~ 2",
             "inlets": 2,
@@ -268,6 +265,8 @@
                 90,
                 22
             ],
+            "background": false,
+            "presentation": false,
             "data": {},
             "args": [
                 2

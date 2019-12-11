@@ -15,6 +15,7 @@ class JSUnaryOp extends JSOp<{ result: any }, [any]> {
         type: "anything",
         description: "Result"
     }];
+    static execute: (a: any) => any;
     state = { result: null as any };
     subscribe() {
         super.subscribe();
@@ -27,7 +28,7 @@ class JSUnaryOp extends JSOp<{ result: any }, [any]> {
             if (inlet === 0) {
                 if (!(data instanceof Bang)) {
                     try {
-                        this.state.result = this.execute(data);
+                        this.state.result = (this.constructor as typeof JSUnaryOp).execute(data);
                     } catch (e) {
                         this.error(e);
                         return;
@@ -37,7 +38,6 @@ class JSUnaryOp extends JSOp<{ result: any }, [any]> {
             }
         });
     }
-    execute(a: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
 
 class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any]> {
@@ -61,6 +61,7 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any
         default: 0,
         description: "Initial second element"
     }];
+    static execute: (a: any, b: any) => any;
     state = { arg: 0 as any, result: 0 as any };
     subscribe() {
         super.subscribe();
@@ -78,7 +79,7 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any
             if (inlet === 0) {
                 if (!(data instanceof Bang)) {
                     try {
-                        this.state.result = this.execute(data, this.state.arg);
+                        this.state.result = (this.constructor as typeof JSBinaryOp).execute(data, this.state.arg);
                     } catch (e) {
                         this.error(e);
                         return;
@@ -90,7 +91,6 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any
             }
         });
     }
-    execute(a: any, b: any) {} // eslint-disable-line @typescript-eslint/no-unused-vars
 }
 
 class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [any], [any, any]> {
@@ -195,12 +195,12 @@ for (const key in functions) {
     if (f.length === 1) {
         Ops[key] = class extends JSUnaryOp {
             static _name = key;
-            execute = f;
+            static execute = f;
         };
     } else if (f.length === 2) {
         Ops[key] = class extends JSBinaryOp {
             static _name = key;
-            execute = f;
+            static execute = f;
         };
     }
 }
