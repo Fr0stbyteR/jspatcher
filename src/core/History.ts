@@ -17,7 +17,7 @@ export default class History {
         this.newTimestamp();
     }
     newTimestamp() {
-        if (this.capture) this.timestamp = new Date().getTime();
+        if (this.capture) this.timestamp = performance.now();
         return this;
     }
     did<K extends keyof PatcherEventMap>(type: K, e: PatcherEventMap[K]) {

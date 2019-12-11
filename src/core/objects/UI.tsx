@@ -6,46 +6,45 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Bang, BaseObject } from "./Base";
 import "./UI.scss";
 import { TMeta, BaseUIState } from "../types";
-import { BaseUI } from "./BaseUI";
+import { BaseUI, BaseUIProps } from "./BaseUI";
+import { selectElementRange } from "../../utils";
 
-type ButtonUIState = { editing: boolean; text: string; loading: boolean } & BaseUIState;
+type ButtonUIState = { text: string; loading: boolean } & BaseUIState;
 export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
     editableOnUnlock = true;
-    state: ButtonUIState = { ...this.state, editing: false, loading: false, text: this.props.object.data.text };
+    state: ButtonUIState = { ...this.state, loading: false, text: this.props.object.data.text };
     refSpan = React.createRef<HTMLSpanElement>();
+    componentDidMount() {
+        super.componentDidMount();
+        this.toggleEdit(this.props.editing);
+    }
+    componentDidUpdate(prevProps: Readonly<BaseUIProps>) {
+        if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
+    }
     handleChanged = (text: string) => {};
-    toggleEdit = (bool?: boolean) => {
+    toggleEdit(toggle: boolean) {
         const { patcher, box } = this;
-        if (bool === this.state.editing) return this.state.editing;
-        if (patcher.state.locked) return this.state.editing;
-        if (!this.refSpan.current) return this.state.editing;
-        const toggle = !this.state.editing;
+        if (patcher.state.locked) return;
+        if (!this.refSpan.current) return;
         const span = this.refSpan.current;
         if (toggle) {
             patcher.selectOnly(box.id);
-            this.setState({ editing: true, text: span.innerText });
-            this.props.object.state.editing = true;
-            span.contentEditable = "true";
-            span.focus();
-            const range = document.createRange();
-            const selection = window.getSelection();
-            range.selectNodeContents(span);
-            selection.removeAllRanges();
-            selection.addRange(range);
+            this.setState({ text: span.textContent }, () => {
+                span.focus();
+                selectElementRange(span);
+            });
         } else {
-            this.setState({ editing: false, text: span.innerText });
-            this.props.object.state.editing = false;
-            span.contentEditable = "false";
             window.getSelection().removeAllRanges();
+            span.blur();
+            this.setState({ text: span.textContent });
             this.handleChanged(span.textContent);
         }
-        return toggle;
     }
-    handleMouseDown = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
-    handleClickSpan = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
+    handleMouseDown = (e: React.MouseEvent) => (this.props.editing ? e.stopPropagation() : null);
+    handleClickSpan = (e: React.MouseEvent) => (this.props.editing ? e.stopPropagation() : null);
     handleClick = (e: React.MouseEvent) => {};
     handleKeyDown = (e: React.KeyboardEvent) => { // propagate for parent for focus on boxUI
-        if (!this.state.editing) return;
+        if (!this.props.editing) return;
         if (e.key === "Enter") {
             e.preventDefault();
             return;
@@ -54,13 +53,9 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
         e.nativeEvent.stopImmediatePropagation();
     }
     handlePaste = (e: React.ClipboardEvent) => {
-        if (!this.state.editing) return;
+        if (!this.props.editing) return;
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
-    }
-    componentDidMount() {
-        super.componentDidMount();
-        if (this.object.state.editing) this.toggleEdit(true);
     }
     render() {
         const { object } = this;
@@ -69,7 +64,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
             <BaseUI {...this.props} additionalClassName={classArray.join(" ")} containerProps={{ onClick: this.handleClick }}>
                 <div className="box-ui-text-container">
                     {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
-                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClickSpan} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
+                    <span contentEditable={this.props.editing} className={"editable" + (this.props.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClickSpan} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onBlur={this.props.onEditEnd} suppressContentEditableWarning={true}>
                         {this.state.text}
                     </span>
                 </div>
@@ -116,7 +111,6 @@ class message extends BaseObject<{ text: string }, { buffer: any; editing: boole
         this.on("preInit", () => {
             this.inlets = 2;
             this.outlets = 1;
-            this.state.editing = this.box._editing;
             const args = this.box.args;
             if (typeof this.data.text === "string") this.state.buffer = this.parse(this.data.text);
             else if (typeof args[0] !== "undefined") {
@@ -152,38 +146,35 @@ class message extends BaseObject<{ text: string }, { buffer: any; editing: boole
     }
     uiComponent: typeof BaseUI = MessageUI;
 }
-type CommentUIState = { editing: boolean } & BaseUIState;
-class CommentUI extends BaseUI<comment, {}, CommentUIState> {
+class CommentUI extends BaseUI<comment> {
     editableOnUnlock = true;
-    state: CommentUIState = { ...this.state, editing: false };
     refSpan = React.createRef<HTMLSpanElement>();
-    toggleEdit = (bool?: boolean) => {
-        if (bool === this.state.editing) return this.state.editing;
-        if (this.props.object.patcher.state.locked) return this.state.editing;
-        if (!this.refSpan.current) return this.state.editing;
-        const toggle = !this.state.editing;
+    componentDidMount() {
+        super.componentDidMount();
+        this.toggleEdit(this.props.editing);
+    }
+    componentDidUpdate(prevProps: Readonly<BaseUIProps>) {
+        if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
+    }
+    toggleEdit(toggle: boolean) {
+        const { patcher, box } = this;
+        if (patcher.state.locked) return;
+        if (!this.refSpan.current) return;
         const span = this.refSpan.current;
         if (toggle) {
-            this.setState({ editing: true });
-            span.contentEditable = "true";
+            patcher.selectOnly(box.id);
             span.focus();
-            const range = document.createRange();
-            const selection = window.getSelection();
-            range.selectNodeContents(span);
-            selection.removeAllRanges();
-            selection.addRange(range);
+            selectElementRange(span);
         } else {
-            this.setState({ editing: false });
-            span.contentEditable = "false";
             window.getSelection().removeAllRanges();
+            span.blur();
             this.props.object.data.value = span.textContent;
         }
-        return toggle;
     }
-    handleMouseDown = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
-    handleClick = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
+    handleMouseDown = (e: React.MouseEvent) => (this.props.editing ? e.stopPropagation() : null);
+    handleClick = (e: React.MouseEvent) => (this.props.editing ? e.stopPropagation() : null);
     handleKeyDown = (e: React.KeyboardEvent) => { // propagate for parent for focus on boxUI
-        if (!this.state.editing) return;
+        if (!this.props.editing) return;
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
     }
@@ -195,7 +186,7 @@ class CommentUI extends BaseUI<comment, {}, CommentUIState> {
         const object = this.props.object;
         return (
             <BaseUI {...this.props}>
-                <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} suppressContentEditableWarning={true}>
+                <span contentEditable={this.props.editing} className={"editable" + (this.props.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onBlur={this.props.onEditEnd} suppressContentEditableWarning={true}>
                     {object.data.value}
                 </span>
             </BaseUI>
@@ -214,6 +205,10 @@ export class comment extends BaseObject<{ value: string }, {}, [], [], [string]>
     }];
     subscribe() {
         super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 0;
+            this.outlets = 0;
+        });
         this.on("updateArgs", (args) => {
             if (!this.data.hasOwnProperty("text")) this.data.value = args.join(" ");
         });

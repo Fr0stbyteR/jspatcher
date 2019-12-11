@@ -15,7 +15,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     data: Data<T>;
     args: Args<T>;
     props: Props<T>;
-    _editing = false;
+    _editing: boolean;
     private _parsed: { class: string; args: Args<T>; props: Props<T> };
     private _object: T;
     private _patcher: Patcher;
@@ -46,7 +46,6 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         if (this._parsed.args.length) this.args = this._parsed.args;
         Object.assign(this.props, this._parsed.props);
         this._object = this._patcher.createObject(this._parsed, this) as T;
-        this._editing = false;
     }
     /**
      * Main function when receive data from a inlet (base 0)
@@ -60,12 +59,6 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     fn<I extends keyof Pick<Inputs<T>, number>>(data: Inputs<T>[I], inlet: I) {
         this._object.fn(data, inlet);
         return this;
-    }
-    get ui() {
-        return this._object.ui;
-    }
-    get uiRef() {
-        return this._object.uiRef;
     }
     get uiComponent() {
         return this._object.uiComponent;

@@ -5,8 +5,18 @@ import "./Default.scss";
 import "./Base.scss";
 import { BaseUIState, DefaultUIState } from "../types";
 import { AbstractObject, BaseObject, AnyObject, DefaultObject } from "./Base";
+import { selectElementPos, selectElementRange } from "../../utils";
 
-export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P extends Partial<{ object: T }> & { [key: string]: any } = {}, S extends { [key: string]: any } = {}> extends React.Component<{ object: T } & P, S> {
+export type AbstractUIProps<T extends AbstractObject = AbstractObject> = {
+    object: T;
+    editing: boolean;
+    onEditEnd: () => any;
+}
+export abstract class AbstractUI<
+        T extends AbstractObject = AbstractObject,
+        P extends Partial<AbstractUIProps<T>> & { [key: string]: any } = {},
+        S extends { [key: string]: any } = {}
+> extends React.Component<AbstractUIProps<T> & P, S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
     static defaultSize: [number, number];
     state = {} as Readonly<S>;
@@ -20,6 +30,7 @@ export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P ex
         return this.props.object.box;
     }
     componentDidMount() {
+        delete this.box._editing;
         this.object.on("uiUpdate", e => this.setState(e));
     }
     componentWillUnmount() {
@@ -32,21 +43,18 @@ export abstract class AbstractUI<T extends AbstractObject = AbstractObject, P ex
 export type BaseUIProps = {
     containerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     additionalClassName?: string;
-};
-export type BaseUIAdditionalState = { editing: boolean };
-export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState & BaseUIAdditionalState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIAdditionalState & BaseUIState> {
-    state: S & BaseUIAdditionalState & BaseUIState = {
+} & AbstractUIProps;
+export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIState> {
+    state: S & BaseUIState = {
         ...this.state,
         hidden: this.box.props.hidden || false,
         background: this.box.background || false,
         presentation: this.box.presentation || false,
         ignoreClick: this.box.props.ignoreClick || false,
-        hint: this.box.props.hint || "",
-        editing: false
+        hint: this.box.props.hint || ""
     };
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     editableOnUnlock = false;
-    toggleEdit = (bool: boolean) => false;
     handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
         if ((this.props.object as T).patcher.state.locked) e.currentTarget.title = this.state.hint;
     }
@@ -71,7 +79,7 @@ export type DefaultUIProps = {
     spanProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement>;
     appendProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
 } & BaseUIProps;
-export type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number } & BaseUIAdditionalState;
+export type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number };
 export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState & DefaultUIAdditionalState> {
     editableOnUnlock = true;
     state: S & DefaultUIState & DefaultUIAdditionalState = {
@@ -84,7 +92,6 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         fontStyle: this.box.props.fontStyle || "normal",
         fontWeight: this.box.props.fontWeight || "normal",
         textAlign: this.box.props.textAlign || "left",
-        editing: false,
         text: this.box.text || "",
         loading: false,
         dropdown$: -1
@@ -92,39 +99,38 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
     refSpan = React.createRef<HTMLSpanElement>();
     refDropdown = React.createRef<HTMLTableSectionElement>();
     dropdownOptions: { key: string; value: string; text: string; icon: SemanticICONS; description: string }[] = [];
-    toggleEdit = (bool?: boolean) => {
+    componentDidMount() {
+        super.componentDidMount();
+        this.toggleEdit(this.props.editing);
+    }
+    componentDidUpdate(prevProps: Readonly<P & DefaultUIProps>) {
+        if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
+    }
+    toggleEdit(toggle: boolean) {
         const { patcher, box } = this;
-        if (bool === this.state.editing) return this.state.editing;
-        if (patcher.state.locked) return this.state.editing;
-        if (!this.refSpan.current) return this.state.editing;
-        const toggle = !this.state.editing;
+        if (patcher.state.locked) return;
+        if (!this.refSpan.current) return;
         const span = this.refSpan.current;
         if (toggle) {
             patcher.selectOnly(box.id);
-            this.setState({ editing: true, text: span.innerText });
-            span.contentEditable = "true";
-            span.focus();
-            const range = document.createRange();
-            const selection = window.getSelection();
-            range.selectNodeContents(span);
-            selection.removeAllRanges();
-            selection.addRange(range);
+            this.setState({ text: span.textContent }, () => {
+                span.focus();
+                selectElementRange(span);
+            });
         } else {
-            this.setState({ editing: false, text: span.innerText });
-            span.contentEditable = "false";
             window.getSelection().removeAllRanges();
             patcher.changeBoxText(box.id, span.textContent);
+            this.setState({ text: span.textContent });
         }
-        return toggle;
     }
-    handleMouseDown = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
-    handleClick = (e: React.MouseEvent) => (this.state.editing ? e.stopPropagation() : null);
+    handleMouseDown = (e: React.MouseEvent) => (this.props.editing ? e.stopPropagation() : null);
+    handleClick = (e: React.MouseEvent) => (this.props.editing ? e.stopPropagation() : null);
     handleKeyDown = (e: React.KeyboardEvent) => { // propagate for parent for focus on boxUI
-        if (!this.state.editing) return;
+        if (!this.props.editing) return;
         if (e.key === "Enter") {
             e.preventDefault();
             if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$] && this.refSpan.current) {
-                this.refSpan.current.innerText = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[this.state.dropdown$].key).join(" ");
+                this.refSpan.current.textContent = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[this.state.dropdown$].key).join(" ");
             }
             return;
         }
@@ -132,13 +138,8 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
             if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$]) {
                 const span = this.refSpan.current;
                 const text = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[this.state.dropdown$].key).join(" ") + " ";
-                span.innerText = text;
-                const range = document.createRange();
-                const selection = window.getSelection();
-                range.setStart(span.childNodes[0], text.length);
-                range.collapse(true);
-                selection.removeAllRanges();
-                selection.addRange(range);
+                span.textContent = text;
+                selectElementPos(span, text.length);
                 this.setState({ text, dropdown$: -1 });
             }
         }
@@ -157,10 +158,10 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
     }
     handleKeyUp = () => {
         if (!this.refSpan.current) return;
-        if (this.refSpan.current.innerText === this.state.text) return;
+        if (this.refSpan.current.textContent === this.state.text) return;
         const { patcher } = this;
         this.dropdownOptions = [];
-        const splitted = this.refSpan.current.innerText.split(" ");
+        const splitted = this.refSpan.current.textContent.split(" ");
         if (splitted.length === 1) {
             const keys = Object.keys(patcher.state.lib).sort();
             for (let i = 0; i < keys.length; i++) {
@@ -184,7 +185,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
                 }
             }
         }
-        this.setState({ text: this.refSpan.current.innerText });
+        this.setState({ text: this.refSpan.current.textContent });
     }
     handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
@@ -195,13 +196,8 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         if (i >= 0 && this.dropdownOptions[i] && this.refSpan.current) {
             const span = this.refSpan.current;
             const text = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[i].key).join(" ");
-            span.innerText = text;
-            const range = document.createRange();
-            const selection = window.getSelection();
-            range.setStart(span.childNodes[0], text.length);
-            range.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(range);
+            span.textContent = text;
+            selectElementPos(span, text.length);
             this.setState({ text, dropdown$: i });
         }
     }
@@ -222,11 +218,11 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
                     <div className="box-ui-text-container-prepend" {...this.props.prependProps}>
                         {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
                     </div>
-                    <span contentEditable={false} className={"editable" + (this.state.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} suppressContentEditableWarning={true} {...this.props.spanProps}>
+                    <span contentEditable={this.props.editing} className={"editable" + (this.props.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} onBlur={this.props.onEditEnd} suppressContentEditableWarning={true} {...this.props.spanProps}>
                         {object.box.text}
                     </span>
                     {
-                        this.state.editing && this.state.text.length
+                        this.props.editing && this.state.text.length
                             ? <div className="box-ui-text-dropdown">
                                 <table className="ui small inverted selectable striped unstackable very compact table box-ui-text-autocomplete">
                                     <tbody ref={this.refDropdown}>

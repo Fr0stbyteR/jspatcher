@@ -27,7 +27,6 @@ import { DefaultUI } from "../BaseUI";
 export class ImportedObjectUI<T extends DefaultObject> extends DefaultUI<T> {
     prependColor: string;
     refDefaultUI = React.createRef<DefaultUI>();
-    toggleEdit = (bool?: boolean) => this.refDefaultUI && this.refDefaultUI.current && this.refDefaultUI.current.toggleEdit(bool);
     render() {
         return <DefaultUI {...this.props} prependProps={{ style: { backgroundColor: this.prependColor } }} ref={this.refDefaultUI} />;
     }

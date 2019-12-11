@@ -144,3 +144,32 @@ export const fillRoundedRect = (ctx: CanvasRenderingContext2D, x: number, y: num
     ctx.closePath();
     ctx.fill();
 };
+export const selectElementRange = (e: HTMLElement) => {
+    const elementIsEditable = (e: HTMLElement): e is HTMLInputElement | HTMLTextAreaElement => !!e.nodeName.match(/^(INPUT|TEXTAREA)$/i);
+    const selection = window.getSelection();
+    if (elementIsEditable(e)) {
+        e.focus();
+        e.select();
+        return;
+    }
+    if (selection.setBaseAndExtent) {
+        // Safari
+        selection.setBaseAndExtent(e, 0, e, e.hasChildNodes() ? 1 : 0);
+        return;
+    }
+    if (selection.addRange && selection.removeAllRanges && document.createRange) {
+        // Mozilla or Opera 10.5+
+        const range = document.createRange();
+        range.selectNodeContents(e);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+};
+export const selectElementPos = (e: HTMLElement, pos: number) => {
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.setStart(e.childNodes[0], pos);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+};

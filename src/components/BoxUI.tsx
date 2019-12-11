@@ -4,19 +4,16 @@ import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import "./BoxUI.scss";
 import { TResizeHandlerType, BoxEventMap } from "../core/types";
+import { BaseUI } from "../core/objects/BaseUI";
 
 type P = { patcher: Patcher; id: string };
-type S = { selected: boolean; rect: [number, number, number, number]; innerUI: JSX.Element; sizing: "horizontal" | "vertical" | "both" | "ratio" };
+type S = { selected: boolean; rect: [number, number, number, number]; component: typeof BaseUI; editing: boolean };
 export default class BoxUI extends React.Component<P, S> {
     refDiv = React.createRef<HTMLDivElement>();
-    editing = false;
     handlingToggleEditOnClick = false;
     dragging = false;
     dragged = false;
-    state = (() => {
-        const box = this.props.patcher.boxes[this.props.id];
-        return { selected: false, rect: box.rect.slice(), innerUI: box.ui, sizing: box.uiComponent.sizing };
-    })() as S;
+    state: S = { selected: false, rect: this.box.rect.slice() as [number, number, number, number], component: this.box.uiComponent, editing: this.box._editing };
     get box() {
         return this.props.patcher.boxes[this.props.id];
     }
@@ -30,19 +27,20 @@ export default class BoxUI extends React.Component<P, S> {
     handleTextChanged = () => {
         const { box } = this;
         if (!box) return null;
-        this.setState({ rect: box.rect.slice() as [number, number, number, number], innerUI: box.ui, sizing: box.uiComponent.sizing }, () => this.inspectRectChange());
+        this.setState({ rect: box.rect.slice() as [number, number, number, number], component: this.box.uiComponent }, this.inspectRectChange);
         return box;
     }
     handleRectChanged = () => {
         const { box } = this;
         if (!box) return null;
         if (box.rect.every((v, i) => v === this.state.rect[i])) return box;
-        this.setState({ rect: box.rect.slice() as [number, number, number, number] }, () => this.inspectRectChange());
+        this.setState({ rect: box.rect.slice() as [number, number, number, number] }, this.inspectRectChange);
         return box;
     }
     handleBlur = () => {
         this.handlingToggleEditOnClick = false;
-        this.tryToggleEdit(false);
+        this.setState({ editing: false });
+        this.inspectRectChange();
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
@@ -65,7 +63,7 @@ export default class BoxUI extends React.Component<P, S> {
                 const movementY = e.pageY - lastPos.y;
                 lastPos.x = e.pageX;
                 lastPos.y = e.pageY;
-                if (this.dragging && !this.editing && (movementX | movementY)) {
+                if (this.dragging && !this.state.editing && (movementX | movementY)) {
                     if (!this.dragged) this.dragged = true;
                     dragOffset.x += movementX;
                     dragOffset.y += movementY;
@@ -84,7 +82,7 @@ export default class BoxUI extends React.Component<P, S> {
                 dragOffset.x += movementX;
                 dragOffset.y += movementY;
                 patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-                if (this.dragging && !this.editing && (movementX || movementY)) {
+                if (this.dragging && !this.state.editing && (movementX || movementY)) {
                     if (!this.dragged) this.dragged = true;
                     dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
                 }
@@ -120,7 +118,7 @@ export default class BoxUI extends React.Component<P, S> {
                 handleDraggable();
             }
         } else if (this.state.selected) {
-            if (!this.editing) this.handlingToggleEditOnClick = true; // Handle edit
+            if (!this.state.editing) this.handlingToggleEditOnClick = true; // Handle edit
             handleDraggable();
         } else {
             this.props.patcher.selectOnly(this.props.id);
@@ -129,25 +127,19 @@ export default class BoxUI extends React.Component<P, S> {
         e.stopPropagation();
     }
     handleClick = (e: React.MouseEvent) => {
-        if (this.handlingToggleEditOnClick && this.state.selected && !this.editing && !this.dragged) this.tryToggleEdit(true);
+        if (this.handlingToggleEditOnClick && this.state.selected && !this.state.editing && !this.dragged) this.setState({ editing: true });
         e.stopPropagation();
     }
     handleKeyDown = (e: React.KeyboardEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.key === "Enter") {
-            if (this.tryToggleEdit()) e.preventDefault();
-            else this.refDiv.current.focus();
+            if (this.state.editing) {
+                this.refDiv.current.focus();
+            } else {
+                e.preventDefault();
+                this.setState({ editing: !this.state.editing });
+            }
         }
-    }
-    tryToggleEdit = (bool?: boolean) => {
-        const { box } = this;
-        if (box.uiRef.current && box.uiRef.current.editableOnUnlock) {
-            const toggled = box.uiRef.current.toggleEdit(bool);
-            this.editing = toggled;
-            return toggled;
-        }
-        this.editing = false;
-        return false;
     }
     /**
      * if calculated width and height is different from expected, update rect
@@ -222,7 +214,7 @@ export default class BoxUI extends React.Component<P, S> {
             dragOffset.x += movementX;
             dragOffset.y += movementY;
             patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-            if (this.dragging && !this.editing && (movementX || movementY)) {
+            if (this.dragging && !this.state.editing && (movementX || movementY)) {
                 if (!this.dragged) this.dragged = true;
                 dragOffset = this.props.patcher.resizeSelectedBox(this.props.id, dragOffset, type);
             }
@@ -276,17 +268,18 @@ export default class BoxUI extends React.Component<P, S> {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
         const rect = this.state.rect;
+        const InnerUI = this.state.component;
         const divStyle = {
             left: rect[0],
             top: rect[1],
-            width: this.state.sizing === "vertical" ? undefined : rect[2],
-            height: this.state.sizing === "horizontal" ? undefined : rect[3]
+            width: InnerUI.sizing === "vertical" ? undefined : rect[2],
+            height: InnerUI.sizing === "horizontal" ? undefined : rect[3]
         };
         return (
-            <div className={"box box-default" + (this.state.selected ? " selected" : "")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onBlur={this.handleBlur} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
+            <div className={"box box-default" + (this.state.selected ? " selected" : "")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
                 <Inlets patcher={this.props.patcher} box={box} />
                 <Outlets patcher={this.props.patcher} box={box} />
-                <div className={"resize-handlers resize-handlers-" + this.state.sizing}>
+                <div className={"resize-handlers resize-handlers-" + InnerUI.sizing}>
                     <div className="resize-handler resize-handler-n" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-s" onMouseDown={this.handleResizeMouseDown}></div>
@@ -297,7 +290,7 @@ export default class BoxUI extends React.Component<P, S> {
                     <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
                 </div>
                 <div className="box-ui">
-                    {this.state.innerUI}
+                    <InnerUI object={box.object} editing={this.state.editing} onEditEnd={this.handleBlur} key={box.id} />
                 </div>
             </div>
         );

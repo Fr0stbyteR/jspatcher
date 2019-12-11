@@ -1,4 +1,3 @@
-import * as React from "react";
 import { SemanticICONS } from "semantic-ui-react";
 import { stringifyError, MappedEventEmitter } from "../../utils";
 import Patcher from "../Patcher";
@@ -65,10 +64,6 @@ export abstract class AbstractObject<
      * @memberof AbstractObject
      */
     init() {
-        // build UI
-        this.uiRef = React.createRef();
-        this.uiProps = { object: this, ref: this.uiRef, key: this.box.id };
-        this.ui = <this.uiComponent {...this.uiProps} key={new Date().getTime()} />;
         // process args and props
         this.subscribe();
         this.emit("preInit");
@@ -90,26 +85,6 @@ export abstract class AbstractObject<
      * @memberof AbstractObject
      */
     uiComponent: typeof BaseUI = BaseUI;
-    /**
-     * React ref of UI
-     *
-     * @memberof AbstractObject
-     */
-    uiRef: React.RefObject<BaseUI<AnyObject>>;
-    /**
-     * Props give to Component
-     *
-     * @memberof AbstractObject
-     */
-    uiProps: JSX.IntrinsicClassAttributes<BaseUI<AnyObject>> & { object: AnyObject };
-    /**
-     * Build new ui on page, return a React Component, override this
-     *
-     * @readonly
-     * @type {JSX.Element}
-     * @memberof AbstractObject
-     */
-    ui: JSX.Element;
     /**
      * Update UI's React State
      *
@@ -450,12 +425,7 @@ export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends 
     static props = DefaultObject.props;
     uiComponent = DefaultUI;
 }
-class EmptyObjectUI extends DefaultUI<EmptyObject> {
-    componentDidMount() {
-        super.componentDidMount();
-        if (this.object.state.editing) this.toggleEdit(true);
-    }
-}
+class EmptyObjectUI extends DefaultUI<EmptyObject> {}
 class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
     static author = "Fr0stbyteR";
     static version = "1.0.0";
@@ -475,10 +445,8 @@ class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> 
         this.on("preInit", () => {
             this.outlets = 1;
             this.inlets = 1;
-            this.state.editing = !!this.box._editing;
-            delete this.box._editing;
         });
-        this.on("inlet", ({ data, inlet }) => this.outlet(0, data));
+        this.on("inlet", ({ data }) => this.outlet(0, data));
     }
     uiComponent: typeof DefaultUI = EmptyObjectUI;
 }
