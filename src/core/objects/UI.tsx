@@ -25,6 +25,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
             this.setState({ editing: true, text: span.innerText });
             this.props.object.state.editing = true;
             span.contentEditable = "true";
+            span.focus();
             const range = document.createRange();
             const selection = window.getSelection();
             range.selectNodeContents(span);
@@ -164,6 +165,7 @@ class CommentUI extends BaseUI<comment, {}, CommentUIState> {
         if (toggle) {
             this.setState({ editing: true });
             span.contentEditable = "true";
+            span.focus();
             const range = document.createRange();
             const selection = window.getSelection();
             range.selectNodeContents(span);

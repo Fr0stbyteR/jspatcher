@@ -104,6 +104,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
             patcher.selectOnly(box.id);
             this.setState({ editing: true, text: span.innerText });
             span.contentEditable = "true";
+            span.focus();
             const range = document.createRange();
             const selection = window.getSelection();
             range.selectNodeContents(span);

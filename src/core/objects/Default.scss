@@ -19,6 +19,7 @@
         overflow-wrap: break-word;
         cursor: default;
         user-select: none;
+        -webkit-user-select: none;
         border: rgb(125, 126, 132) solid;
         border-width: 0px;
         &:first-child {
@@ -40,6 +41,7 @@
                 pointer-events: auto;
                 cursor: text;
                 user-select: auto;
+                -webkit-user-select: auto;
             }
             &:empty::before {
                 content: "\200b";
@@ -77,7 +79,7 @@
         }
         i.icon {
             line-height: 14px;
-            margin: 0px 2px;
+            margin: 0px 3px;
         }
     }
     & > .box-ui-dropdown-container {

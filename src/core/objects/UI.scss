@@ -8,6 +8,7 @@
         line-height: 14px;
         font-weight: normal;
         user-select: none;
+        -webkit-user-select: none;
         cursor: default;
         & span {
             width: 100%;
@@ -16,6 +17,7 @@
                 pointer-events: auto;
                 cursor: text;
                 user-select: auto;
+                -webkit-user-select: auto;
             }
             &:empty::before {
                 content: "\200b";
@@ -26,7 +28,71 @@
         height: 100%;
         width: 100%;
     }
+    &.box-ui-button {
+        &.box-ui-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: auto;
+            padding: 0px;
+            margin: 0px;
+        }
+        & > .box-ui-text-container {
+            display: flex;
+            flex: 0 0 auto;
+            padding: 4px 5px;
+            width: 100%;
+            font-family: Lato, Tahoma, sans-serif;
+            font-size: 12px;
+            text-align: left;
+            margin: 0px;
+            overflow-wrap: break-word;
+            cursor: default;
+            user-select: none;
+            -webkit-user-select: none;
+            &:first-child {
+                border-top-width: 4px;
+            }
+            &:last-child {
+                border-bottom-width: 4px;
+            }
+            & > span {
+                position: relative;
+                word-break: break-all;
+                width: 100%;
+                line-height: 14px;
+                font-weight: normal;
+                color: black;
+                &.editing {
+                    pointer-events: auto;
+                    cursor: text;
+                    user-select: auto;
+                    -webkit-user-select: auto;
+                }
+                &:empty::before {
+                    content: "\200b";
+                }
+                &::selection {
+                    background-color: #004eff;
+                    color: white;
+                }
+            }
+            i.icon {
+                line-height: 14px;
+            }
+        }
+    }
 }
-.patcher.unlocked div.box.selected > div.box-ui > div.package-ui > span {
-    pointer-events: auto;
+.patcher.unlocked div.box.selected > div.box-ui > div.package-ui {
+    &.box-ui-button {
+        &:hover, &:active {
+            background-color: #e0e1e2;
+        }
+        & > .box-ui-text-container {
+            pointer-events: auto;
+        }
+    }
+    & > span {
+        pointer-events: auto;
+    }
 }

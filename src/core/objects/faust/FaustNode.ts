@@ -4,6 +4,7 @@ import { Bang } from "../Base";
 import { TMeta, TBPF, TMIDIEvent, TInletMeta, TOutletMeta } from "../../types";
 import { isMIDIEvent, decodeLine } from "../../../utils";
 
+const AWN = window.AudioWorkletNode ? AudioWorkletNode : class {};
 export default class FaustNode extends FaustDynamicNode<{ code: string }, { voices: number }, [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]], (null | FaustAudioWorkletNode | FaustScriptProcessorNode)[], [number]> {
     static package = "Faust";
     static author = "Fr0stbyteR";
@@ -63,7 +64,7 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
             this.outletConnections[i] = { node: splitter, index: i };
         }
         factoryMeta.outlets[outlets] = lastOutletMeta;
-        if (node instanceof AudioWorkletNode) {
+        if (node instanceof AWN) {
             const audioParams: string[] = [];
             node.parameters.forEach((v, k) => audioParams.push(k));
             for (let i = inlets || 1; i < (inlets || 1) + audioParams.length; i++) {
@@ -75,7 +76,7 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
             }
         }
         this.meta = factoryMeta;
-        this.inlets = (inlets || 1) + (node instanceof AudioWorkletNode ? node.parameters.size : 0);
+        this.inlets = (inlets || 1) + (node instanceof AWN ? node.parameters.size : 0);
         this.outlets = outlets + 1;
         this.connectAll();
         this.outlet(this.outlets - 1, this.state.node);
@@ -107,7 +108,7 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
                         for (const key in data) {
                             try {
                                 const bpf = decodeLine((data as { [key: string]: TBPF })[key]);
-                                if (this.state.node instanceof AudioWorkletNode) this.applyBPF(this.state.node.parameters.get(key), bpf);
+                                if (this.state.node instanceof AWN) this.applyBPF(this.state.node.parameters.get(key), bpf);
                                 else this.state.node.setParamValue(key, bpf[bpf.length - 1][0]);
                             } catch (e) {
                                 this.error(e.message);
@@ -115,7 +116,7 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
                         }
                     }
                 }
-            } else if (this.state.node instanceof AudioWorkletNode) {
+            } else if (this.state.node instanceof AWN) {
                 const con = this.inletConnections[inlet].node;
                 if (con instanceof AudioParam) {
                     try {
