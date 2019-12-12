@@ -33,7 +33,10 @@ export default class PatcherUI extends React.Component<P, S> {
         div.scrollLeft = 0;
         div.scrollTop = 0;
         this.size = { width: 0, height: 0 };
-        [grid, boxes, lines].forEach(el => el.setState({ width: "unset", height: "unset" }));
+        const newState = { width: "unset", height: "unset" };
+        grid.setState(newState);
+        boxes.setState(newState);
+        lines.setState(newState);
     }
     handleLockedChange = (e: boolean) => this.setState({ locked: e });
     handlePresentationChange = (e: boolean) => this.setState({ presentation: e });
@@ -49,7 +52,12 @@ export default class PatcherUI extends React.Component<P, S> {
             this.size.width = div.scrollWidth;
             this.size.height = div.scrollHeight;
         }
-        if (shouldUpdate) [grid, boxes, lines].forEach(el => el.setState({ width: this.size.width + "px", height: this.size.height + "px" }));
+        if (shouldUpdate) {
+            const newState = { width: this.size.width + "px", height: this.size.height + "px" };
+            grid.setState(newState);
+            boxes.setState(newState);
+            lines.setState(newState);
+        }
     }
     handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -118,8 +126,7 @@ export default class PatcherUI extends React.Component<P, S> {
     }
 }
 
-class Lines extends React.Component {
-    props: { patcher: Patcher };
+class Lines extends React.Component<{ patcher: Patcher }, { width: string; height: string }> {
     state = { width: "100%", height: "100%" };
     lines: { [key: string]: JSX.Element } = {};
     componentDidMount() {
@@ -180,10 +187,9 @@ class Lines extends React.Component {
         );
     }
 }
-
-class Boxes extends React.Component {
-    props: { patcher: Patcher };
-    state = { width: "100%", height: "100%", selectionRect: [0, 0, 0, 0] };
+type BoxesState = { width: string; height: string; selectionRect: [number, number, number, number] };
+class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
+    state: BoxesState = { width: "100%", height: "100%", selectionRect: [0, 0, 0, 0] };
     boxes: { [key: string]: JSX.Element } = {};
     refDiv = React.createRef<HTMLDivElement>();
     dragged = false;
@@ -250,7 +256,7 @@ class Boxes extends React.Component {
             const patcherRect = patcherDiv.getBoundingClientRect();
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             const selectedBefore = this.props.patcher.state.selected.slice();
-            const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0];
+            const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as [number, number, number, number];
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -345,8 +351,7 @@ class Boxes extends React.Component {
     }
 }
 
-class Grid extends React.Component {
-    props: { patcher: Patcher };
+class Grid extends React.Component<{ patcher: Patcher }, { width: string; height: string }> {
     state = { width: "100%", height: "100%" };
     render() {
         const patcher = this.props.patcher;
