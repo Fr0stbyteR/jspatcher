@@ -6,7 +6,7 @@ export type DefaultFaustDynamicNodeState = { merger: ChannelMergerNode; splitter
 export default abstract class FaustDynamicNode<D extends {} = {}, S extends Partial<DefaultFaustDynamicNodeState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends DefaultAudioObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
     async getFaustNode(code: string, voices: number) {
         const { faust, audioCtx, supportAudioWorklet } = this.patcher.env;
-        return faust.getNode(code, { audioCtx, useWorklet: supportAudioWorklet, voices, plotHandler: undefined, args: { "-I": ["libraries/", "project/"] } });
+        return faust.getNode(code, { audioCtx, useWorklet: supportAudioWorklet, voices, args: { "-I": ["libraries/", "project/"] } });
     }
     async compile(code: string, voices: number) {
         let splitter: ChannelSplitterNode;

@@ -192,7 +192,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         if (!rect.every(v => typeof v === "number")) return this;
         if (rect.length !== 4) return this;
         this.rect = rect;
-        this.allLines.forEach(id => this._patcher.lines[id].uiUpdateDest());
+        this.inletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateDest()));
+        this.outletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateSrc()));
         this.emit("rectChanged", this);
         return this;
     }
