@@ -67,6 +67,7 @@ class LiveTextUI extends LiveUI<LiveText, LiveTextProps> {
         } = this.state;
         const { width, height } = this.box;
         const ctx = this.ctx;
+        if (!ctx) return;
 
         const borderWidth = 0.5;
 

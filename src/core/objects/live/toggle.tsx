@@ -37,6 +37,7 @@ class LiveToggleUI extends LiveUI<LiveToggle, LiveToggleProps> {
         } = this.state;
         const { width, height } = this.box;
         const ctx = this.ctx;
+        if (!ctx) return;
         const borderWidth = 1;
 
         ctx.canvas.width = width;

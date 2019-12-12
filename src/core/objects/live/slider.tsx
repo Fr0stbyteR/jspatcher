@@ -57,6 +57,7 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderProps & LiveSliderAdditi
         } = this.state;
         const { width, height } = this.box;
         const ctx = this.ctx;
+        if (!ctx) return;
         const lineWidth = 0.5;
         const padding = 8;
         const distance = this.distance;

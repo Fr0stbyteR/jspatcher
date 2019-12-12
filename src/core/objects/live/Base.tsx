@@ -2,7 +2,7 @@ import * as React from "react";
 import { toMIDI, iNormExp } from "../../../utils";
 import { BaseAudioObject } from "../Base";
 import { TMeta, BaseUIState } from "../../types";
-import { BaseUIAdditionalState, BaseUI } from "../BaseUI";
+import { BaseUI } from "../BaseUI";
 
 export const getDisplayValue = (value: number, type: string, unitstyle: string, units: string, enums: string[]) => {
     if (type === "enum") return enums[value];
@@ -19,7 +19,7 @@ export const getDisplayValue = (value: number, type: string, unitstyle: string, 
     if (unitstyle === "native") return value.toFixed(type === "int" ? 0 : 2);
     return "N/A";
 };
-export type LiveUIState = LiveUIProps & BaseUIState & BaseUIAdditionalState;
+export type LiveUIState = LiveUIProps & BaseUIState;
 export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [key: string]: any } = {}> extends BaseUI<T, {}, P & LiveUIProps> {
     state: P & LiveUIState = {
         ...this.state,
@@ -49,7 +49,7 @@ export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [ke
         return this.refCanvas.current;
     }
     get ctx() {
-        return this.refCanvas.current.getContext("2d");
+        return this.refCanvas.current ? this.refCanvas.current.getContext("2d") : null;
     }
     handleKeyDown = (e: React.KeyboardEvent) => {};
     handleKeyUp = (e: React.KeyboardEvent) => {};

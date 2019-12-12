@@ -75,6 +75,7 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalStat
         } = this.state;
         const { width, height } = this.box;
         const ctx = this.ctx;
+        if (!ctx) return;
         const distance = this.distance;
         const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
 

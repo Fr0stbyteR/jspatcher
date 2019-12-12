@@ -139,6 +139,7 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabProps> {
         } = this.state;
         const { width, height } = this.box;
         const ctx = this.ctx;
+        if (!ctx) return;
         const tabRects = this.getTabRects();
 
         const borderWidth = 0.5;
