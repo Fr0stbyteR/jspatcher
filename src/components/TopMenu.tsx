@@ -34,7 +34,7 @@ class FileMenu extends React.Component {
             pAsString: "data:application/json;charset=utf-8," + encodeURIComponent(p)
         }, () => this.refDownload.current.click());
     };
-    onInput = () => {
+    onChange = () => {
         const file = this.refOpen.current.files[0];
         if (!file) return;
         const ext = file.name.split(".").pop();
@@ -72,7 +72,7 @@ class FileMenu extends React.Component {
                     </Dropdown.Menu>
                 </Dropdown>
                 <a ref={this.refDownload} target="_blank" rel="noopener noreferrer" href={this.state.pAsString} download={this.state.pName}> </a>
-                <input ref={this.refOpen} type="file" hidden={true} onInput={this.onInput} />
+                <input ref={this.refOpen} type="file" hidden={true} onChange={this.onChange} />
             </>
         );
     }
