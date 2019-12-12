@@ -4,7 +4,7 @@ import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
-import { BaseUIState, DefaultUIState, TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap } from "../types";
+import { BaseUIState, DefaultUIState, TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect } from "../types";
 import { BaseUI, DefaultUI } from "./BaseUI";
 
 export abstract class AbstractObject<
@@ -234,8 +234,8 @@ export abstract class AbstractObject<
 type BaseAdditionalProps = {
     background: boolean;
     presentation: boolean;
-    rect: [number, number, number, number];
-    presentationRect: [number, number, number, number];
+    rect: TRect;
+    presentationRect: TRect;
 };
 export class BaseObject<
     D extends {} = {}, S extends {} = {},

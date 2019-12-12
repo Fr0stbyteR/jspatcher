@@ -29,12 +29,14 @@ export abstract class AbstractUI<
     get box(): Box<T> {
         return this.props.object.box;
     }
+    handleUIUpdate = (e: Pick<S, keyof S>) => this.setState(e);
     componentDidMount() {
         delete this.box._editing;
-        this.object.on("uiUpdate", e => this.setState(e));
+        this.object.removeAllListeners("uiUpdate");
+        this.object.on("uiUpdate", this.handleUIUpdate);
     }
     componentWillUnmount() {
-        this.object.off("uiUpdate", e => this.setState(e));
+        this.object.off("uiUpdate", this.handleUIUpdate);
     }
     render() {
         return <></>;

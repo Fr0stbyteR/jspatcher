@@ -6,7 +6,7 @@ import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import "./RightMenu.scss";
-import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta } from "../core/types";
+import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta, TRect } from "../core/types";
 
 enum TPanels {
     None = "None",
@@ -221,8 +221,8 @@ type InspectorState = {
     meta: TMeta;
     args: TMeta["args"];
     props: TMeta["props"];
-    rect: [number, number, number, number];
-    presentationRect: [number, number, number, number];
+    rect: TRect;
+    presentationRect: TRect;
 };
 class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
     state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null };

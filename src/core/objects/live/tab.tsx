@@ -1,5 +1,5 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
-import { TMeta } from "../../types";
+import { TMeta, TRect } from "../../types";
 import { Bang } from "../Base";
 
 interface LiveTabProps extends LiveUIProps {
@@ -44,7 +44,7 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabProps> {
         multiline: typeof this.box.props.multiline === "boolean" ? this.box.props.multiline : this.object.meta.props.multiline.default
     }
     className = "live-tab";
-    tabRects: [number, number, number, number][] = [];
+    tabRects: TRect[] = [];
     inTouch = false;
     getTabRects() {
         const {

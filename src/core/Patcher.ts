@@ -3,7 +3,7 @@ import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
 import Importer from "./objects/importer/Importer";
-import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel } from "./types";
+import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect } from "./types";
 
 import Base, { AnyObject } from "./objects/Base";
 import Std from "./objects/Std";
@@ -95,7 +95,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const { mode } = this.props;
         if (mode === "max" || mode === "gen") {
             const rgbaMax2Css = (maxColor: number[]) => {
-                const cssColor = [255, 255, 255, 1] as [number, number, number, number];
+                const cssColor = [255, 255, 255, 1] as TRect;
                 if (!Array.isArray(maxColor)) return cssColor;
                 for (let i = 0; i < 3; i++) {
                     if (typeof maxColor[i] === "number") cssColor[i] = Math.floor(maxColor[i] * 255);

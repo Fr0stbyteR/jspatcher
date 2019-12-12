@@ -24,8 +24,8 @@ type TPatcher = {
 
 type TPatcherProps = {
     mode: TPatcherMode;
-    bgcolor: [number, number, number, number];
-    editing_bgcolor: [number, number, number, number];
+    bgcolor: TRect;
+    editing_bgcolor: TRect;
     grid: [number, number];
     boxIndexCount: number;
     lineIndexCount: number;
@@ -61,8 +61,8 @@ type TMaxPatcher = {
         lines: TMaxLine[];
         boxes: TMaxBox[];
         rect: number[];
-        bgcolor: [number, number, number, number];
-        editing_bgcolor: [number, number, number, number];
+        bgcolor: TRect;
+        editing_bgcolor: TRect;
         gridsize: [number, number];
         [key: string]: any;
     };
@@ -74,8 +74,8 @@ type TMaxBox = {
         text?: string;
         numinlets: number;
         numoutlets: number;
-        patching_rect: [number, number, number, number];
-        presentation_rect?: [number, number, number, number];
+        patching_rect: TRect;
+        presentation_rect?: TRect;
         background?: number;
         presentation?: number;
     };
@@ -118,15 +118,17 @@ type TBox = {
     text: string;
     inlets: number;
     outlets: number;
-    rect: [number, number, number, number];
+    rect: TRect;
     background?: boolean;
     presentation?: boolean;
-    presentationRect?: [number, number, number, number];
+    presentationRect?: TRect;
     args?: any[];
     props?: { [key: string]: any };
     data?: { [key: string]: any };
     _editing?: boolean;
 };
+
+type TRect = [number, number, number, number];
 
 type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
 

@@ -6,10 +6,10 @@ import "./PatcherUI.scss";
 import "./zIndex.scss";
 import BoxUI from "./BoxUI";
 import { LineUI, TempLineUI } from "./LineUI";
-import { TPatcher, TPatcherMode } from "../core/types";
+import { TPatcher, TPatcherMode, TRect } from "../core/types";
 
 type P = { patcher: Patcher };
-type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: [number, number, number, number]; editingBgColor: [number, number, number, number] };
+type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: TRect; editingBgColor: TRect };
 export default class PatcherUI extends React.Component<P, S> {
     state: S = {
         locked: this.props.patcher.state.locked,
@@ -187,7 +187,7 @@ class Lines extends React.Component<{ patcher: Patcher }, { width: string; heigh
         );
     }
 }
-type BoxesState = { width: string; height: string; selectionRect: [number, number, number, number] };
+type BoxesState = { width: string; height: string; selectionRect: TRect };
 class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
     state: BoxesState = { width: "100%", height: "100%", selectionRect: [0, 0, 0, 0] };
     boxes: { [key: string]: JSX.Element } = {};
@@ -256,7 +256,7 @@ class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
             const patcherRect = patcherDiv.getBoundingClientRect();
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             const selectedBefore = this.props.patcher.state.selected.slice();
-            const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as [number, number, number, number];
+            const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as TRect;
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();

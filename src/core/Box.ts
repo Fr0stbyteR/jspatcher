@@ -1,17 +1,17 @@
 import { MappedEventEmitter } from "../utils";
 import Patcher from "./Patcher";
 import { AnyObject } from "./objects/Base";
-import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs } from "./types";
+import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect } from "./types";
 
 export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmitter<BoxEventMap> {
     id: string;
     text = "";
     inlets = 0;
     outlets = 0;
-    rect: [number, number, number, number];
+    rect: TRect;
     background: boolean;
     presentation: boolean;
-    presentationRect: [number, number, number, number];
+    presentationRect: TRect;
     data: Data<T>;
     args: Args<T>;
     props: Props<T>;
@@ -187,7 +187,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.emit("updatedFromObject", { args, props });
         return this;
     }
-    setRect(rect: [number, number, number, number]) {
+    setRect(rect: TRect) {
         if (rect.every((v, i) => v === this.rect[i])) return this;
         if (!rect.every(v => typeof v === "number")) return this;
         if (rect.length !== 4) return this;
@@ -198,11 +198,11 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     }
     set position([leftIn, topIn]: [number, number]) {
         const [left, top, width, height] = this.rect;
-        this.setRect([leftIn || left, topIn || top, width, height] as [number, number, number, number]);
+        this.setRect([leftIn || left, topIn || top, width, height] as TRect);
     }
     set size([widthIn, heightIn]: [number, number]) {
         const [left, top, width, height] = this.rect;
-        this.setRect([left, top, widthIn || width, heightIn || height] as [number, number, number, number]);
+        this.setRect([left, top, widthIn || width, heightIn || height] as TRect);
     }
     get left() {
         return this.rect[0];
@@ -240,7 +240,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.emit("presentationChanged", this);
         return this;
     }
-    setPresentationRect(rect: [number, number, number, number]) {
+    setPresentationRect(rect: TRect) {
         if (rect.every((v, i) => v === this.presentationRect[i])) return this;
         this.presentationRect = rect;
         this.emit("presentationRectChanged", this);

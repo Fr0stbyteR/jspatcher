@@ -3,17 +3,17 @@ import { Popup } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import "./BoxUI.scss";
-import { TResizeHandlerType, BoxEventMap } from "../core/types";
+import { TResizeHandlerType, BoxEventMap, TRect } from "../core/types";
 import { BaseUI } from "../core/objects/BaseUI";
 
 type P = { patcher: Patcher; id: string };
-type S = { selected: boolean; rect: [number, number, number, number]; component: typeof BaseUI; editing: boolean };
+type S = { selected: boolean; rect: TRect; component: typeof BaseUI; editing: boolean; key: string };
 export default class BoxUI extends React.Component<P, S> {
     refDiv = React.createRef<HTMLDivElement>();
     handlingToggleEditOnClick = false;
     dragging = false;
     dragged = false;
-    state: S = { selected: false, rect: this.box.rect.slice() as [number, number, number, number], component: this.box.uiComponent, editing: this.box._editing };
+    state: S = { selected: false, rect: this.box.rect.slice() as TRect, component: this.box.uiComponent, editing: this.box._editing, key: performance.now().toString() };
     get box() {
         return this.props.patcher.boxes[this.props.id];
     }
@@ -21,20 +21,20 @@ export default class BoxUI extends React.Component<P, S> {
         const { box } = this;
         if (!box) return null;
         if (this.state && box.rect.every((v, i) => v === this.state.rect[i])) return null;
-        this.setState({ rect: box.rect.slice() as [number, number, number, number] });
+        this.setState({ rect: box.rect.slice() as TRect });
         return box;
     }
     handleTextChanged = () => {
         const { box } = this;
         if (!box) return null;
-        this.setState({ rect: box.rect.slice() as [number, number, number, number], component: this.box.uiComponent }, this.inspectRectChange);
+        this.setState({ rect: box.rect.slice() as TRect, component: this.box.uiComponent, key: performance.now().toString() }, this.inspectRectChange);
         return box;
     }
     handleRectChanged = () => {
         const { box } = this;
         if (!box) return null;
         if (box.rect.every((v, i) => v === this.state.rect[i])) return box;
-        this.setState({ rect: box.rect.slice() as [number, number, number, number] }, this.inspectRectChange);
+        this.setState({ rect: box.rect.slice() as TRect }, this.inspectRectChange);
         return box;
     }
     handleBlur = () => {
@@ -152,7 +152,7 @@ export default class BoxUI extends React.Component<P, S> {
         const divRect = div.getBoundingClientRect();
         const box = this.props.patcher.boxes[this.props.id];
         if (divRect.width === box.rect[2] && divRect.height === box.rect[3]) return;
-        const rect = [box.rect[0], box.rect[1], divRect.width, divRect.height] as [number, number, number, number];
+        const rect = [box.rect[0], box.rect[1], divRect.width, divRect.height] as TRect;
         this.setState({ rect });
         box.setRect(rect);
     }
@@ -290,7 +290,7 @@ export default class BoxUI extends React.Component<P, S> {
                     <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
                 </div>
                 <div className="box-ui">
-                    <InnerUI object={box.object} editing={this.state.editing} onEditEnd={this.handleBlur} key={box.id} />
+                    <InnerUI object={box.object} editing={this.state.editing} onEditEnd={this.handleBlur} key={this.state.key} />
                 </div>
             </div>
         );
