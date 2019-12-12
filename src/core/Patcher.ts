@@ -361,11 +361,26 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             this.emit("selected", [id]);
         }
     }
+    selects(ids: string[]) {
+        ids.forEach((id) => {
+            if (this._state.selected.indexOf(id) >= 0) return;
+            if (this.boxes[id] || this.lines[id]) this._state.selected.push(id);
+        });
+        this.emit("selected", ids);
+    }
     deselect(id: string) {
         const i = this._state.selected.indexOf(id);
         if (i === -1) return;
         this._state.selected.splice(i, 1);
         this.emit("deselected", [id]);
+    }
+    deselects(ids: string[]) {
+        ids.forEach((id) => {
+            const i = this._state.selected.indexOf(id);
+            if (i === -1) return;
+            this._state.selected.splice(i, 1);
+        });
+        this.emit("deselected", ids);
     }
     deselectAll() {
         const { selected } = this._state;
@@ -579,11 +594,11 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     paste(clipboard: TPatcher | TMaxClipboard) {
         const idMap: { [key: string]: string } = {};
-        const pasted = { boxes: [] as TBox[], lines: [] as TLine[] };
+        const pasted: TPatcher = { boxes: {}, lines: {} };
         if (!clipboard || !clipboard.boxes) return pasted;
-        this.deselectAll();
         this.newTimestamp();
         if (Array.isArray(clipboard.boxes)) { // Max Patcher
+            this.state.isLoading = true;
             const maxBoxes = clipboard.boxes;
             for (let i = 0; i < maxBoxes.length; i++) {
                 const maxBox = maxBoxes[i].box;
@@ -603,9 +618,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                     rect: maxBox.patching_rect,
                     text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
                 };
-                this.createBox(box);
-                pasted.boxes.push(box);
-                this.select(box.id);
+                const createdBox = this.createBox(box);
+                pasted.boxes[createdBox.id] = createdBox;
             }
             if (Array.isArray(clipboard.lines)) {
                 const maxLines = clipboard.lines;
@@ -618,13 +632,18 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                         src: [idMap[lineArgs.source[0].replace(/obj/, "box")], lineArgs.source[1]],
                         dest: [idMap[lineArgs.destination[0].replace(/obj/, "box")], lineArgs.destination[1]]
                     };
-                    this.createLine(line);
-                    pasted.lines.push(line);
+                    const createLine = this.createLine(line);
+                    pasted.lines[createLine.id] = line;
                 }
             }
+            this.state.isLoading = false;
+            this.deselectAll();
+            this.selects(Object.keys(pasted.boxes));
+            this.emit("create", pasted);
             return pasted;
         }
         if (Array.isArray(clipboard.boxes) || Array.isArray(clipboard.lines)) return pasted;
+        this.state.isLoading = true;
         for (const boxID in clipboard.boxes) {
             const box = clipboard.boxes[boxID];
             if (this.boxes[box.id]) {
@@ -636,18 +655,21 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                 if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
             }
             box.rect = [box.rect[0] + 20, box.rect[1] + 20, box.rect[2], box.rect[3]];
-            this.createBox(box);
-            pasted.boxes.push(box);
-            this.select(box.id);
+            const createdBox = this.createBox(box);
+            pasted.boxes[createdBox.id] = createdBox;
         }
         for (const lineID in clipboard.lines) {
             const line = clipboard.lines[lineID];
             line.id = "line-" + ++this.props.lineIndexCount;
             line.src[0] = idMap[line.src[0]];
             line.dest[0] = idMap[line.dest[0]];
-            this.createLine(line);
-            pasted.lines.push(line);
+            const createLine = this.createLine(line);
+            pasted.lines[createLine.id] = line;
         }
+        this.state.isLoading = false;
+        this.deselectAll();
+        this.selects(Object.keys(pasted.boxes));
+        this.emit("create", pasted);
         return pasted;
     }
     create(objects: TPatcher) {
@@ -659,7 +681,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             this.boxes[box.id] = box;
             created.boxes[box.id] = box;
             box.init();
-            this.select(box.id);
         }
         for (const lineID in objects.lines) {
             const lineIn = objects.lines[lineID];
@@ -668,6 +689,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             created.lines[line.id] = line;
             line.enable();
         }
+        this.deselectAll();
+        this.selects(Object.keys(objects.boxes));
         this.emit("create", created);
     }
     deleteSelected() {
@@ -678,13 +701,11 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             map.boxes[id] = true;
             this.boxes[id].allLines.forEach(id => map.lines[id] = true);
         });
-
-        const { selected } = this._state;
         this._state.selected = [];
-        this.emit("deselected", selected);
         const deleted: TPatcher = { boxes: {}, lines: {} };
         Object.keys(map.lines).forEach(id => deleted.lines[id] = this.lines[id].destroy());
         Object.keys(map.boxes).forEach(id => deleted.boxes[id] = this.boxes[id].destroy());
+        this.emit("deselected", Object.keys(deleted.lines));
         this.emit("delete", deleted);
         return deleted;
     }
@@ -697,6 +718,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         for (const id in objects.boxes) {
             deleted.boxes[id] = this.boxes[id].destroy();
         }
+        const deselected = Object.keys(deleted.boxes).concat(Object.keys(deleted.lines));
+        this.emit("deselected", deselected);
         this.emit("delete", deleted);
     }
     undo() {
