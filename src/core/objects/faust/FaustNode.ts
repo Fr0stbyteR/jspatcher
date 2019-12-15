@@ -10,7 +10,10 @@ class FaustNodeUI extends CodePopupUI<FaustNode> {
     get code() {
         return this.object.data.code;
     }
-    handleSave = (code: string) => this.object.newNode(code, this.object.state.voices);
+    handleSave = (code: string) => {
+        this.object.data.code = code;
+        this.object.newNode(code, this.object.state.voices);
+    }
 }
 const AWN = window.AudioWorkletNode ? AudioWorkletNode : class {};
 export default class FaustNode extends FaustDynamicNode<{ code: string }, { voices: number }, [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]], (null | FaustAudioWorkletNode | FaustScriptProcessorNode)[], [number]> {

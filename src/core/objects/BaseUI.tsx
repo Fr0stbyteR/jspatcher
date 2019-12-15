@@ -259,6 +259,10 @@ export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends P
         if (this.patcher.state.locked) this.setState({ modalOpen: true });
     }
     handleClose = () => this.setState({ modalOpen: false });
+    handleKeyDown = (e: React.KeyboardEvent) => {
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+    }
     render() {
         const containerProps = { ...this.props.containerProps };
         if (!containerProps.onDoubleClick) containerProps.onDoubleClick = this.handleDoubleClick;
@@ -268,7 +272,7 @@ export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends P
         return (
             <>
                 <DefaultUI {...this.props} containerProps={containerProps} />
-                <Modal {...modalProps} />
+                <Modal {...modalProps} onKeyDown={this.handleKeyDown} />
             </>
         );
     }
