@@ -26,9 +26,8 @@ import { DefaultUI } from "../BaseUI";
 */
 export class ImportedObjectUI<T extends DefaultObject> extends DefaultUI<T> {
     prependColor: string;
-    refDefaultUI = React.createRef<DefaultUI>();
     render() {
-        return <DefaultUI {...this.props} prependProps={{ style: { backgroundColor: this.prependColor } }} ref={this.refDefaultUI} />;
+        return <DefaultUI {...this.props} prependProps={{ style: { backgroundColor: this.prependColor } }} />;
     }
 }
 export abstract class ImportedObject<T, S, I extends any[], O extends any[], A extends any[], P, U> extends DefaultObject<{}, S, I, O, A, P, U> {

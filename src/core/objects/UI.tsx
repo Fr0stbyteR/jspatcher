@@ -11,12 +11,11 @@ import { selectElementRange } from "../../utils";
 
 type ButtonUIState = { text: string; loading: boolean } & BaseUIState;
 export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
-    editableOnUnlock = true;
     state: ButtonUIState = { ...this.state, loading: false, text: this.props.object.data.text };
     refSpan = React.createRef<HTMLSpanElement>();
     componentDidMount() {
         super.componentDidMount();
-        this.toggleEdit(this.props.editing);
+        if (this.props.editing) this.toggleEdit(this.props.editing);
     }
     componentDidUpdate(prevProps: Readonly<BaseUIProps>) {
         if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
@@ -147,11 +146,10 @@ class message extends BaseObject<{ text: string }, { buffer: any; editing: boole
     uiComponent: typeof BaseUI = MessageUI;
 }
 class CommentUI extends BaseUI<comment> {
-    editableOnUnlock = true;
     refSpan = React.createRef<HTMLSpanElement>();
     componentDidMount() {
         super.componentDidMount();
-        this.toggleEdit(this.props.editing);
+        if (this.props.editing) this.toggleEdit(this.props.editing);
     }
     componentDidUpdate(prevProps: Readonly<BaseUIProps>) {
         if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
@@ -219,7 +217,6 @@ type CodeUIState = { language: string; value: string; editorLoaded: boolean; edi
 class CodeUI extends BaseUI<comment, {}, CodeUIState> {
     static sizing = "both" as const;
     static defaultSize: [number, number] = [400, 225];
-    editableOnUnlock = false;
     state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: this.box.args[0] || "javascript", editorLoaded: false };
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;

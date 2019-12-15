@@ -32,7 +32,6 @@ export abstract class AbstractUI<
     handleUIUpdate = (e: Pick<S, keyof S>) => this.setState(e);
     componentDidMount() {
         delete this.box._editing;
-        this.object.removeAllListeners("uiUpdate");
         this.object.on("uiUpdate", this.handleUIUpdate);
     }
     componentWillUnmount() {
@@ -56,7 +55,6 @@ export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIPr
         hint: this.box.props.hint || ""
     };
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
-    editableOnUnlock = false;
     handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
         if ((this.props.object as T).patcher.state.locked) e.currentTarget.title = this.state.hint;
     }
@@ -83,7 +81,6 @@ export type DefaultUIProps = {
 } & BaseUIProps;
 export type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number };
 export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState & DefaultUIAdditionalState> {
-    editableOnUnlock = true;
     state: S & DefaultUIState & DefaultUIAdditionalState = {
         ...this.state,
         bgColor: this.box.props.bgColor || "rgb(51, 51, 51)",
@@ -103,7 +100,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
     dropdownOptions: { key: string; value: string; text: string; icon: SemanticICONS; description: string }[] = [];
     componentDidMount() {
         super.componentDidMount();
-        this.toggleEdit(this.props.editing);
+        if (this.props.editing) this.toggleEdit(this.props.editing);
     }
     componentDidUpdate(prevProps: Readonly<P & DefaultUIProps>) {
         if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
