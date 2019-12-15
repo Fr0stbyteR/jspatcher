@@ -37,6 +37,12 @@ const config = {
             }
           }
         ]
+      },
+      {
+        test: /\.js$/,
+        use: ["source-map-loader"],
+        include: /faust2webaudio/,
+        enforce: "pre"
       }
     ]
   },

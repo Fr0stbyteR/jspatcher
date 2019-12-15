@@ -1,5 +1,7 @@
 import * as React from "react";
-import { Icon, SemanticICONS } from "semantic-ui-react";
+import { Icon, SemanticICONS, StrictModalProps, Modal, Dimmer, Loader, Button } from "semantic-ui-react";
+import MonacoEditor from "react-monaco-editor";
+import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
@@ -211,8 +213,10 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
             fontStyle: this.state.fontStyle,
             textAlign: this.state.textAlign
         };
+        const containerProps = { ...this.props.containerProps };
+        containerProps.style = { ...containerProps.style, ...textContainerStyle };
         return (
-            <BaseUI {...this.props} additionalClassName="box-ui-default" containerProps={{ style: { backgroundColor: this.state.bgColor } }}>
+            <BaseUI {...this.props} additionalClassName="box-ui-default" containerProps={containerProps}>
                 <div className="box-ui-text-container" {...this.props.textContainerProps} style={textContainerStyle}>
                     <div className="box-ui-text-container-prepend" {...this.props.prependProps}>
                         {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
@@ -242,5 +246,90 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
                 </div>
             </BaseUI>
         );
+    }
+}
+export type DefaultPopupUIProps = { modalProps: StrictModalProps } & DefaultUIProps;
+export type DefaultPopupUIState = { modalOpen: boolean } & DefaultUIState & DefaultUIAdditionalState;
+export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultPopupUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultPopupUIState> & { [key: string]: any } = {}> extends DefaultUI<T, P & DefaultPopupUIProps, S & DefaultPopupUIState> {
+    state: S & DefaultPopupUIState = {
+        ...this.state,
+        modalOpen: false
+    };
+    handleDoubleClick = () => {
+        if (this.patcher.state.locked) this.setState({ modalOpen: true });
+    }
+    handleClose = () => this.setState({ modalOpen: false });
+    render() {
+        const containerProps = { ...this.props.containerProps };
+        if (!containerProps.onDoubleClick) containerProps.onDoubleClick = this.handleDoubleClick;
+        const modalProps = { ...this.props.modalProps };
+        if (typeof modalProps.open === "undefined") modalProps.open = this.state.modalOpen;
+        if (!modalProps.onClose) modalProps.onClose = this.handleClose;
+        return (
+            <>
+                <DefaultUI {...this.props} containerProps={containerProps} />
+                <Modal {...modalProps} />
+            </>
+        );
+    }
+}
+export type CodePopupUIState = { editorLoaded: boolean } & DefaultPopupUIState;
+export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultPopupUIProps> & { [key: string]: any } = {}, S extends Partial<CodePopupUIState> & { [key: string]: any } = {}> extends DefaultPopupUI<T, P, S & CodePopupUIState> {
+    state: S & CodePopupUIState = {
+        ...this.state,
+        editorLoaded: false
+    }
+    codeEditor: editor.IStandaloneCodeEditor;
+    editorJSX: typeof MonacoEditor;
+    get editorLanguage() {
+        return "javascript";
+    }
+    get code() {
+        return "";
+    }
+    handleSave: (code: string) => any = (code: string) => undefined;
+    handleCloseAndSave = () => {
+        this.setState({ modalOpen: false });
+        this.handleSave(this.codeEditor.getValue());
+    }
+    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
+    handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
+    async componentDidMount() {
+        super.componentDidMount();
+        window.addEventListener("resize", this.handleResize);
+        const reactMonacoEditor = await import("react-monaco-editor");
+        this.editorJSX = reactMonacoEditor.default;
+        this.setState({ editorLoaded: true });
+    }
+    componentWillUnmount() {
+        super.componentWillUnmount();
+        window.removeEventListener("resize", this.handleResize);
+    }
+    render() {
+        const children = (
+            <>
+                <Modal.Content>
+                    <div style={{ height: window.innerHeight * 0.8 }}>
+                        {
+                            this.state.editorLoaded
+                                ? <this.editorJSX value={this.code} language={this.editorLanguage} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
+                                : <Dimmer active><Loader content="Loading" /></Dimmer>
+                        }
+                    </div>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button basic color="red" onClick={this.handleClose} inverted>
+                        <Icon name="remove" /> Cancel
+                    </Button>
+                    <Button color="green" onClick={this.handleCloseAndSave} inverted>
+                        <Icon name="checkmark" /> OK
+                    </Button>
+                </Modal.Actions>
+            </>
+        );
+        const containerProps = { ...this.props.containerProps };
+        if (!containerProps.onDoubleClick) containerProps.onDoubleClick = this.handleDoubleClick;
+        const modalProps: StrictModalProps = { ...this.props.modalProps, children, open: this.state.modalOpen, onClose: this.handleClose, basic: true, size: "fullscreen" };
+        return <DefaultPopupUI {...this.props} modalProps={modalProps} containerProps={containerProps} />;
     }
 }

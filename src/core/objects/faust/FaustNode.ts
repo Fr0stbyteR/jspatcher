@@ -3,7 +3,15 @@ import FaustDynamicNode from "../dsp/FaustDynamicNode";
 import { Bang } from "../Base";
 import { TMeta, TBPF, TMIDIEvent, TInletMeta, TOutletMeta } from "../../types";
 import { isMIDIEvent, decodeLine } from "../../../utils";
+import { CodePopupUI } from "../BaseUI";
 
+class FaustNodeUI extends CodePopupUI<FaustNode> {
+    editorLanguage = "faust";
+    get code() {
+        return this.object.data.code;
+    }
+    handleSave = (code: string) => this.object.newNode(code, this.object.state.voices);
+}
 const AWN = window.AudioWorkletNode ? AudioWorkletNode : class {};
 export default class FaustNode extends FaustDynamicNode<{ code: string }, { voices: number }, [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]], (null | FaustAudioWorkletNode | FaustScriptProcessorNode)[], [number]> {
     static package = "Faust";
@@ -25,6 +33,7 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
         default: 0,
         description: "Polyphonic instrument voices count"
     }]
+    uiComponent = FaustNodeUI;
     state = { merger: undefined as ChannelMergerNode, splitter: undefined as ChannelSplitterNode, node: undefined as FaustAudioWorkletNode | FaustScriptProcessorNode, voices: 0 };
     _meta: TMeta = FaustNode.meta;
     get meta() {
@@ -82,8 +91,12 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
         this.outlet(this.outlets - 1, this.state.node);
     }
     handleDestroy = () => {
-        if (this.state.merger) this.state.merger.disconnect();
-        if (this.state.node) this.state.node.disconnect();
+        const { merger, node } = this.state;
+        if (merger) merger.disconnect();
+        if (node) {
+            node.disconnect();
+            node.destroy();
+        }
     };
     subscribe() {
         super.subscribe();
