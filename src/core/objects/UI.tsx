@@ -72,6 +72,7 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
     }
 }
 class MessageUI extends ButtonUI<message> {
+    static editableOnUnlock = true;
     handleChanged = (text: string) => this.object.handleUpdateArgs([text]);
     handleClick = (e: React.MouseEvent) => {
         if (this.patcher.state.locked) this.object.outlet(0, this.object.state.buffer);
@@ -146,6 +147,7 @@ class message extends BaseObject<{ text: string }, { buffer: any; editing: boole
     uiComponent: typeof BaseUI = MessageUI;
 }
 class CommentUI extends BaseUI<comment> {
+    static editableOnUnlock = true;
     refSpan = React.createRef<HTMLSpanElement>();
     componentDidMount() {
         super.componentDidMount();

@@ -231,8 +231,8 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
     handleBoxUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => this.setState({ args: e.args || [], props: e.props || {} });
     handleBoxRectChanged = (box: Box) => this.setState({ rect: box.rect });
     handleBoxPresentationRectChanged = (box: Box) => this.setState({ presentationRect: box.presentationRect });
-    unSubscribeBox = () => {
-        if (this.box && this.boxes.indexOf(this.box) === -1) {
+    unSubscribeBox = (force?: boolean) => {
+        if (this.box && (force || this.boxes.indexOf(this.box) === -1)) {
             this.box.off("updatedFromObject", this.handleBoxUpdate);
             this.box.off("rectChanged", this.handleBoxRectChanged);
             this.box.off("presentationRectChanged", this.handleBoxPresentationRectChanged);
@@ -325,7 +325,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
         this.props.patcher.on("deselected", this.handleSelected);
     }
     componentWillUnmount() {
-        this.unSubscribeBox();
+        this.unSubscribeBox(true);
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleSelected);
     }

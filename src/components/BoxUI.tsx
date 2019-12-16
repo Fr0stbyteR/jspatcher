@@ -13,7 +13,7 @@ export default class BoxUI extends React.Component<P, S> {
     handlingToggleEditOnClick = false;
     dragging = false;
     dragged = false;
-    state: S = { selected: false, rect: this.box.rect.slice() as TRect, component: this.box.uiComponent, editing: this.box._editing, key: performance.now().toString() };
+    state: S = { selected: false, rect: this.box.rect.slice() as TRect, component: this.box.uiComponent, editing: this.box.uiComponent.editableOnUnlock && this.box._editing, key: performance.now().toString() };
     get box() {
         return this.props.patcher.boxes[this.props.id];
     }

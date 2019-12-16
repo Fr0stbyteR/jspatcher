@@ -21,6 +21,14 @@ export abstract class AbstractUI<
 > extends React.Component<AbstractUIProps<T> & P, S> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
     static defaultSize: [number, number];
+    /**
+     * If set to true, call this.props.onEditEnd at some point
+     *
+     * @static
+     * @type {boolean}
+     * @memberof AbstractUI
+     */
+    static editableOnUnlock: boolean;
     state = {} as Readonly<S>;
     get object(): T {
         return this.props.object;
@@ -57,6 +65,7 @@ export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIPr
         hint: this.box.props.hint || ""
     };
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
+    static editableOnUnlock = false;
     handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
         if ((this.props.object as T).patcher.state.locked) e.currentTarget.title = this.state.hint;
     }
@@ -83,6 +92,7 @@ export type DefaultUIProps = {
 } & BaseUIProps;
 export type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number };
 export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState & DefaultUIAdditionalState> {
+    static editableOnUnlock = true;
     state: S & DefaultUIState & DefaultUIAdditionalState = {
         ...this.state,
         bgColor: this.box.props.bgColor || "rgb(51, 51, 51)",
