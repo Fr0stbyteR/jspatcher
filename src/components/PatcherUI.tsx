@@ -317,16 +317,23 @@ class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
     }
     handleKeyDown = (e: KeyboardEvent) => {
         if (this.props.patcher.state.locked) return;
-        if ((e.key === "n" || e.key === "m") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+        if ((e.key === "n" || e.key === "m" || e.key === "b" || e.key === "c") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
             e.stopPropagation();
             e.preventDefault();
             const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
             const patcherRect = patcherDiv.getBoundingClientRect();
-            const x = this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft;
-            const y = this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop;
+            const x = Math.max(0, this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft);
+            const y = Math.max(0, this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop);
+            let w = 90;
+            const h = 20;
             let text = "";
             if (e.key === "m") text = "message";
-            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 90, 20], _editing: true });
+            else if (e.key === "c") text = "comment";
+            else if (e.key === "b") {
+                text = "live.button";
+                w = 20;
+            }
+            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, w, h], _editing: true });
         }
     }
     handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };

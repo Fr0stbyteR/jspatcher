@@ -3,7 +3,7 @@
 		display: block;
 		position: absolute;
 		pointer-events: auto;
-		min-width: 30px;
+		min-width: 15px;
         &.selected {
             box-shadow: 0 0 2px 2px rgb(0, 162, 255);
             & > .resize-handlers {

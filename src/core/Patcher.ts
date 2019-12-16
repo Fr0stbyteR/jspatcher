@@ -497,54 +497,38 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType) {
         selected.forEach(id => this.select(id));
-        const linesConcerned: { [id: string]: true } = {};
+        const linesAffected: { [id: string]: true } = {};
         const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
         if (boxes.length === 0) return;
-        const leftMost = boxes.sort((a, b) => a.rect[0] - b.rect[0])[0];
-        const topMost = boxes.sort((a, b) => a.rect[1] - b.rect[1])[0];
-        const widthLeast = boxes.sort((a, b) => a.rect[2] - b.rect[2])[0];
-        const heightLeast = boxes.sort((a, b) => a.rect[3] - b.rect[3])[0];
-        if (type === "ne" || type === "e" || type === "se") {
-            if (widthLeast.rect[2] + delta.x < 15) delta.x = 0;
-            else {
-                boxes.forEach((box) => {
-                    box.rect[2] += delta.x;
-                });
+        const leftMost = boxes.sort((a, b) => a.left - b.left)[0];
+        const topMost = boxes.sort((a, b) => a.top - b.top)[0];
+        const widthLeast = boxes.sort((a, b) => a.width - b.width)[0];
+        const heightLeast = boxes.sort((a, b) => a.height - b.height)[0];
+        // Not allowing resize out of bound
+        delta.x = Math.max(delta.x, -leftMost.left);
+        delta.y = Math.max(delta.y, -topMost.top);
+        // Not allowing resize below 15px width or height
+        delta.x = Math.max(delta.x, 15 - widthLeast.width);
+        delta.y = Math.max(delta.y, 15 - heightLeast.height);
+        boxes.forEach((box) => {
+            if (type === "ne" || type === "e" || type === "se") box.rect[2] += delta.x;
+            if (type === "se" || type === "s" || type === "sw") box.rect[3] += delta.y;
+            if (type === "sw" || type === "w" || type === "nw") {
+                box.rect[2] -= delta.x;
+                box.rect[0] += delta.x;
             }
-        }
-        if (type === "se" || type === "s" || type === "sw") {
-            if (heightLeast.rect[3] + delta.y < 15) delta.y = 0;
-            else {
-                boxes.forEach((box) => {
-                    box.rect[3] += delta.y;
-                });
+            if (type === "nw" || type === "n" || type === "ne") {
+                box.rect[3] -= delta.y;
+                box.rect[1] += delta.y;
             }
-        }
-        if (type === "sw" || type === "w" || type === "nw") {
-            if (leftMost.rect[0] + delta.x < 0 || widthLeast.rect[2] - delta.x < 15) delta.x = 0;
-            else {
-                boxes.forEach((box) => {
-                    box.rect[2] -= delta.x;
-                    box.rect[0] += delta.x;
-                });
-            }
-        }
-        if (type === "nw" || type === "n" || type === "ne") {
-            if (topMost.rect[1] + delta.y < 0 || heightLeast.rect[3] - delta.y < 15) delta.y = 0;
-            else {
-                boxes.forEach((box) => {
-                    box.rect[3] -= delta.y;
-                    box.rect[1] += delta.y;
-                });
-            }
-        }
+        });
         if (!delta.x && !delta.y) return;
         boxes.forEach((box) => {
-            box.allLines.forEach(id => linesConcerned[id] = true);
+            box.allLines.forEach(id => linesAffected[id] = true);
             box.emit("rectChanged", box);
             box.emit("resized", box);
         });
-        Object.keys(linesConcerned).forEach((lineID) => {
+        Object.keys(linesAffected).forEach((lineID) => {
             const line = this.lines[lineID];
             if (!line) return;
             line.emit("posChanged", line);
