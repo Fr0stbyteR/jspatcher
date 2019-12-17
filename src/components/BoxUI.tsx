@@ -7,27 +7,43 @@ import { TResizeHandlerType, BoxEventMap, TRect } from "../core/types";
 import { BaseUI } from "../core/objects/BaseUI";
 
 type P = { patcher: Patcher; id: string };
-type S = { selected: boolean; rect: TRect; component: typeof BaseUI; editing: boolean; key: string };
+type S = { selected: boolean; rect: TRect; presentationRect: TRect; presentation: boolean; inPresentationMode: boolean; uiComponent: typeof BaseUI; editing: boolean; key: string };
 export default class BoxUI extends React.Component<P, S> {
     refDiv = React.createRef<HTMLDivElement>();
     handlingToggleEditOnClick = false;
     dragging = false;
     dragged = false;
-    state: S = { selected: false, rect: this.box.rect.slice() as TRect, component: this.box.uiComponent, editing: this.box.uiComponent.editableOnUnlock && this.box._editing, key: performance.now().toString() };
+    state: S = {
+        selected: false,
+        rect: this.box.rect.slice() as TRect,
+        presentationRect: this.box.presentationRect.slice() as TRect,
+        presentation: this.box.presentation,
+        inPresentationMode: this.props.patcher.state.presentation,
+        uiComponent: this.box.uiComponent,
+        editing: this.box.uiComponent.editableOnUnlock && this.box._editing,
+        key: performance.now().toString()
+    };
     get box() {
         return this.props.patcher.boxes[this.props.id];
     }
     handleResetPos = () => {
         const { box } = this;
-        if (!box) return null;
-        if (this.state && box.rect.every((v, i) => v === this.state.rect[i])) return null;
-        this.setState({ rect: box.rect.slice() as TRect });
-        return box;
+        if (!box) return;
+        let { rect, presentationRect } = box;
+        rect = rect.slice() as TRect;
+        presentationRect = presentationRect.slice() as TRect;
+        this.setState({ rect, presentationRect });
     }
     handleTextChanged = () => {
         const { box } = this;
         if (!box) return null;
-        this.setState({ rect: box.rect.slice() as TRect, component: this.box.uiComponent, key: performance.now().toString() }, this.inspectRectChange);
+        const { uiComponent, presentation, _editing } = box;
+        let { rect, presentationRect } = box;
+        rect = rect.slice() as TRect;
+        presentationRect = presentationRect.slice() as TRect;
+        const key = performance.now().toString();
+        const editing = uiComponent.editableOnUnlock && _editing;
+        this.setState({ rect, presentationRect, presentation, uiComponent, key, editing }, this.inspectRectChange);
         return box;
     }
     handleRectChanged = () => {
@@ -35,6 +51,13 @@ export default class BoxUI extends React.Component<P, S> {
         if (!box) return null;
         if (box.rect.every((v, i) => v === this.state.rect[i])) return box;
         this.setState({ rect: box.rect.slice() as TRect }, this.inspectRectChange);
+        return box;
+    }
+    handlePresentationRectChanged = () => {
+        const { box } = this;
+        if (!box) return null;
+        if (box.presentationRect.every((v, i) => v === this.state.presentationRect[i])) return box;
+        this.setState({ presentationRect: box.presentationRect.slice() as TRect }, this.inspectRectChange);
         return box;
     }
     handleBlur = () => {
@@ -45,7 +68,7 @@ export default class BoxUI extends React.Component<P, S> {
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
-        const { box } = this;
+        const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
         // Handle Draggable
         const handleDraggable = () => {
             this.dragged = false;
@@ -55,7 +78,7 @@ export default class BoxUI extends React.Component<P, S> {
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             const lastPos = { x: e.pageX, y: e.pageY };
             let dragOffset = { x: 0, y: 0 };
-            const origOffset = box.rect.slice(0, 2);
+            const origOffset = this.state[rectKey].slice(0, 2);
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -95,7 +118,8 @@ export default class BoxUI extends React.Component<P, S> {
                 e.stopPropagation();
                 e.preventDefault();
                 this.dragging = false;
-                const totalOffset = { x: box.rect[0] - origOffset[0], y: box.rect[1] - origOffset[1] };
+                const curOffset = this.state[rectKey];
+                const totalOffset = { x: curOffset[0] - origOffset[0], y: curOffset[1] - origOffset[1] };
                 if (this.dragged) this.props.patcher.moveEnd(totalOffset);
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
@@ -151,13 +175,21 @@ export default class BoxUI extends React.Component<P, S> {
         const div = this.refDiv.current;
         const divRect = div.getBoundingClientRect();
         const box = this.props.patcher.boxes[this.props.id];
-        if (divRect.width === box.rect[2] && divRect.height === box.rect[3]) return;
-        const rect = [box.rect[0], box.rect[1], divRect.width, divRect.height] as TRect;
-        this.setState({ rect });
-        box.setRect(rect);
+        const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
+        if (divRect.width === box[rectKey][2] && divRect.height === box[rectKey][3]) return;
+        const rect = [box[rectKey][0], box[rectKey][1], divRect.width, divRect.height] as TRect;
+        if (this.state.inPresentationMode) {
+            this.setState({ presentationRect: rect });
+            box.setPresentationRect(rect);
+        } else {
+            this.setState({ rect });
+            box.setRect(rect);
+        }
     }
     handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
     handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
+    handlePatcherPresentationChanged = (inPresentationMode: boolean) => this.setState({ inPresentationMode });
+    handlePresentationChanged = () => this.setState({ presentation: this.box.presentation });
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.props.patcher.state.locked) return;
         const classList = e.currentTarget.classList;
@@ -251,34 +283,47 @@ export default class BoxUI extends React.Component<P, S> {
         this.setState({ selected: this.props.patcher.state.selected.indexOf(box.id) !== -1 });
         box.on("textChanged", this.handleTextChanged);
         box.on("rectChanged", this.handleRectChanged);
+        box.on("presentationRectChanged", this.handlePresentationRectChanged);
+        box.on("presentationChanged", this.handlePresentationChanged);
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleDeselected);
+        this.props.patcher.on("presentation", this.handlePatcherPresentationChanged);
         this.inspectRectChange();
     }
     componentWillUnmount() {
         this.props.patcher.deselect(this.props.id);
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleDeselected);
+        this.props.patcher.off("presentation", this.handlePatcherPresentationChanged);
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return;
         box.off("textChanged", this.handleTextChanged);
         box.off("rectChanged", this.handleRectChanged);
+        box.off("presentationRectChanged", this.handlePresentationRectChanged);
+        box.off("presentationChanged", this.handlePresentationChanged);
     }
     render() {
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return null;
-        const rect = this.state.rect;
-        const InnerUI = this.state.component;
+        const rect = this.state.inPresentationMode ? this.state.presentationRect : this.state.rect;
+        const InnerUI = this.state.uiComponent;
         const divStyle = {
             left: rect[0],
             top: rect[1],
             width: InnerUI.sizing === "vertical" ? undefined : rect[2],
             height: InnerUI.sizing === "horizontal" ? undefined : rect[3]
         };
+        const classArray = ["box", "box-default"];
+        if (this.state.selected) classArray.push("selected");
+        if (this.state.presentation) classArray.push("presentation");
         return (
-            <div className={"box box-default" + (this.state.selected ? " selected" : "")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
-                <Inlets patcher={this.props.patcher} box={box} />
-                <Outlets patcher={this.props.patcher} box={box} />
+            <div className={classArray.join(" ")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
+                {
+                    this.state.inPresentationMode ? <></> : <>
+                        <Inlets patcher={this.props.patcher} box={box} />
+                        <Outlets patcher={this.props.patcher} box={box} />
+                    </>
+                }
                 <div className={"resize-handlers resize-handlers-" + InnerUI.sizing}>
                     <div className="resize-handler resize-handler-n" onMouseDown={this.handleResizeMouseDown}></div>
                     <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown}></div>

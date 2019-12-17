@@ -153,8 +153,8 @@ interface PatcherEventMap {
     "selected": string[];
     "deselected": string[];
     "tempLine": { findSrc: boolean; from: [string, number] };
-    "moved": { selected: string[]; delta: { x: number; y: number } };
-    "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType };
+    "moved": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
+    "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType; presentation: boolean };
     "generateCode": string;
     "graphChanged": any;
 }
@@ -171,6 +171,7 @@ interface BoxEventMap {
     "rectChanged": Box;
     "resized": Box;
     "presentationRectChanged": Box;
+    "presentationResized": Box;
     "backgroundChanged": Box;
     "presentationChanged": Box;
     "textChanged": Box;

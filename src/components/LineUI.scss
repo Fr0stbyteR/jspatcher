@@ -70,4 +70,7 @@
     &.locked > div.lines > div.line > svg > path {
         pointer-events: none;
     }
+    &.presentation > div.lines {
+        display: none;
+    }
 }

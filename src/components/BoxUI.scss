@@ -230,5 +230,15 @@
         > div.resize-handlers {
             display: block;
         }
-	}
+    }
+    &.presentation > div.boxes {
+        & > div.box {
+            & > div.box-ports {
+                display: none;
+            }
+            &:not(.presentation) {
+                display: none;
+            }
+        }
+    }
 }

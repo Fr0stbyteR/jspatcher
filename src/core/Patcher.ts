@@ -330,24 +330,22 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this._state.history.newTimestamp();
         return this;
     }
-    setLock(bool: boolean): Patcher {
-        if (this._state.locked === bool) return this;
+    set lock(bool: boolean) {
+        if (this._state.locked === bool) return;
         this.deselectAll();
         this._state.locked = bool;
         this.emit("locked", bool);
-        return this;
     }
-    setPresentation(bool: boolean) {
-        if (this._state.presentation === bool) return this;
+    set presentation(bool: boolean) {
+        if (this._state.presentation === bool) return;
+        this.deselectAll();
         this._state.presentation = bool;
         this.emit("presentation", bool);
-        return this;
     }
-    setShowGrid(bool: boolean) {
-        if (this._state.showGrid === bool) return this;
+    set showGrid(bool: boolean) {
+        if (this._state.showGrid === bool) return;
         this._state.showGrid = bool;
         this.emit("showGrid", bool);
-        return this;
     }
     selectAllBoxes() {
         const ids = Object.keys(this.boxes);
@@ -395,11 +393,14 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         let [left, top, right, bottom] = selectionRect;
         if (left > right) [left, right] = [right, left];
         if (top > bottom) [top, bottom] = [bottom, top];
+        const { presentation } = this._state;
+        const rectKey = presentation ? "presentationRect" : "rect";
         const select = selectedBefore.slice();
         for (const boxID in this.boxes) {
             const box = this.boxes[boxID];
-            const [boxLeft, boxTop] = box.rect;
-            const [boxRight, boxBottom] = [boxLeft + box.rect[2], boxTop + box.rect[3]];
+            if (presentation && !box.presentation) continue;
+            const [boxLeft, boxTop] = box[rectKey];
+            const [boxRight, boxBottom] = [boxLeft + box[rectKey][2], boxTop + box[rectKey][3]];
             if (boxLeft < right && boxTop < bottom && boxRight > left && boxBottom > top) {
                 const i = select.indexOf(boxID);
                 if (i === -1) select.push(boxID);
@@ -427,112 +428,137 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         });
         return JSON.stringify(patcher, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
     }
-    moveBox(boxID: string, deltaX: number, deltaY: number) {
+    moveBox(boxID: string, deltaXIn: number, deltaYIn: number) {
+        if (!deltaXIn && !deltaYIn) return this;
+        const { presentation } = this._state;
+        const rectKey = presentation ? "presentationRect" : "rect";
         const box = this.boxes[boxID];
         if (!box) return this;
-        box.rect[0] += deltaX;
-        box.rect[1] += deltaY;
-        if (box.rect[0] < 0) box.rect[0] = 0;
-        if (box.rect[1] < 0) box.rect[1] = 0;
-        box.setRect(box.rect);
+        const rect = box[rectKey];
+        // Not allowing resize out of bound
+        const deltaX = Math.max(deltaXIn, -rect[0]);
+        const deltaY = Math.max(deltaYIn, -rect[1]);
+        if (!deltaX && !deltaY) return this;
+        rect[0] += deltaX;
+        rect[1] += deltaY;
+        if (presentation) box.setPresentationRect(box[rectKey]);
+        else box.setRect(box.rect);
         return this;
     }
     moveSelectedBox(boxID: string, dragOffset: { x: number; y: number }) {
-        const rect = this.boxes[boxID].rect;
+        const { presentation, snapToGrid, selected } = this._state;
+        const rectKey = presentation ? "presentationRect" : "rect";
+        const rect = this.boxes[boxID][rectKey];
         const delta = { x: 0, y: 0 };
-        delta.x = this._state.snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
-        delta.y = this._state.snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
+        delta.x = snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
+        delta.y = snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
         if (!delta.x && !delta.y) return dragOffset;
-        this.move(this._state.selected, delta);
+        this.move(selected, delta, presentation);
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
     moveEnd(delta: { x: number; y: number }) {
         this.newTimestamp();
-        this.emit("moved", { delta, selected: this._state.selected });
+        this.emit("moved", { delta, selected: this._state.selected, presentation: this._state.presentation });
     }
-    move(selected: string[], delta: { x: number; y: number }) {
+    move(selected: string[], delta: { x: number; y: number }, presentation: boolean) {
         selected.forEach(id => this.select(id));
-        const linesConcerned: { [id: string]: true } = {};
+        const rectKey = presentation ? "presentationRect" : "rect";
         const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
         if (boxes.length === 0) return;
-        const leftMost = boxes.sort((a, b) => a.rect[0] - b.rect[0])[0];
-        const topMost = boxes.sort((a, b) => a.rect[1] - b.rect[1])[0];
-        if (leftMost.rect[0] + delta.x < 0) delta.x = 0;
-        else boxes.forEach(box => box.rect[0] += delta.x);
-        if (topMost.rect[1] + delta.y < 0) delta.y = 0;
-        else boxes.forEach(box => box.rect[1] += delta.y);
+        const leftMost = boxes.sort((a, b) => a[rectKey][0] - b[rectKey][0])[0];
+        const topMost = boxes.sort((a, b) => a[rectKey][1] - b[rectKey][1])[0];
+        // Not allowing resize out of bound
+        delta.x = Math.max(delta.x, -leftMost[rectKey][0]);
+        delta.y = Math.max(delta.y, -topMost[rectKey][1]);
+        if (delta.x) boxes.forEach(box => box[rectKey][0] += delta.x);
+        if (delta.y) boxes.forEach(box => box[rectKey][1] += delta.y);
+        // Emit events
         if (!delta.x && !delta.y) return;
+        if (presentation !== this._state.presentation) return;
+        const linesAffected: { [id: string]: true } = {};
         boxes.forEach((box) => {
-            box.allLines.forEach(id => linesConcerned[id] = true);
-            box.emit("rectChanged", box);
+            box.emit(this._state.presentation ? "presentationRectChanged" : "rectChanged", box);
+            if (!presentation) box.allLines.forEach(id => linesAffected[id] = true);
         });
-        Object.keys(linesConcerned).forEach((lineID) => {
+        if (presentation) return;
+        for (const lineID in linesAffected) {
             const line = this.lines[lineID];
-            if (!line) return;
+            if (!line) continue;
             line.emit("posChanged", line);
-        });
+        }
     }
     resizeSelectedBox(boxID: string, dragOffset: { x: number; y: number }, type: TResizeHandlerType) {
-        const rect = this.boxes[boxID].rect;
+        const { presentation, snapToGrid, selected } = this._state;
+        const rectKey = presentation ? "presentationRect" : "rect";
+        const rect = this.boxes[boxID][rectKey];
         const delta = { x: 0, y: 0 };
         if (type === "e" || type === "se") {
-            delta.x = this._state.snapToGrid ? Math.round((rect[0] + rect[2] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] - rect[2] : dragOffset.x;
+            delta.x = snapToGrid ? Math.round((rect[0] + rect[2] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] - rect[2] : dragOffset.x;
         }
         if (type === "s" || type === "se") {
-            delta.y = this._state.snapToGrid ? Math.round((rect[1] + rect[3] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] - rect[3] : dragOffset.y;
+            delta.y = snapToGrid ? Math.round((rect[1] + rect[3] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] - rect[3] : dragOffset.y;
         }
         if (type === "w" || type === "nw") {
-            delta.x = this._state.snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
+            delta.x = snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
         }
         if (type === "n" || type === "nw") {
-            delta.y = this._state.snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
+            delta.y = snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
         }
         if (!delta.x && !delta.y) return dragOffset;
-        this.resize(this._state.selected, delta, type);
+        this.resize(selected, delta, type, presentation);
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
     resizeEnd(delta: { x: number; y: number }, type: TResizeHandlerType) {
         this.newTimestamp();
-        this.emit("resized", { delta, type, selected: this._state.selected });
+        const { selected, presentation } = this._state;
+        this.emit("resized", { delta, type, selected, presentation });
     }
-    resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType) {
+    resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType, presentation: boolean) {
         selected.forEach(id => this.select(id));
-        const linesAffected: { [id: string]: true } = {};
+        const rectKey = presentation ? "presentationRect" : "rect";
         const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
         if (boxes.length === 0) return;
-        const leftMost = boxes.sort((a, b) => a.left - b.left)[0];
-        const topMost = boxes.sort((a, b) => a.top - b.top)[0];
-        const widthLeast = boxes.sort((a, b) => a.width - b.width)[0];
-        const heightLeast = boxes.sort((a, b) => a.height - b.height)[0];
+        const leftMost = boxes.sort((a, b) => a[rectKey][0] - b[rectKey][0])[0];
+        const topMost = boxes.sort((a, b) => a[rectKey][1] - b[rectKey][1])[0];
+        const widthLeast = boxes.sort((a, b) => a[rectKey][2] - b[rectKey][2])[0];
+        const heightLeast = boxes.sort((a, b) => a[rectKey][3] - b[rectKey][3])[0];
         // Not allowing resize out of bound
-        delta.x = Math.max(delta.x, -leftMost.left);
-        delta.y = Math.max(delta.y, -topMost.top);
+        delta.x = Math.max(delta.x, -leftMost[rectKey][0]);
+        delta.y = Math.max(delta.y, -topMost[rectKey][1]);
         // Not allowing resize below 15px width or height
-        delta.x = Math.max(delta.x, 15 - widthLeast.width);
-        delta.y = Math.max(delta.y, 15 - heightLeast.height);
+        delta.x = Math.max(delta.x, 15 - widthLeast[rectKey][2]);
+        delta.y = Math.max(delta.y, 15 - heightLeast[rectKey][3]);
         boxes.forEach((box) => {
-            if (type === "ne" || type === "e" || type === "se") box.rect[2] += delta.x;
-            if (type === "se" || type === "s" || type === "sw") box.rect[3] += delta.y;
-            if (type === "sw" || type === "w" || type === "nw") {
-                box.rect[2] -= delta.x;
-                box.rect[0] += delta.x;
+            if (delta.x) {
+                if (type === "ne" || type === "e" || type === "se") box[rectKey][2] += delta.x;
+                if (type === "sw" || type === "w" || type === "nw") {
+                    box[rectKey][2] -= delta.x;
+                    box[rectKey][0] += delta.x;
+                }
             }
-            if (type === "nw" || type === "n" || type === "ne") {
-                box.rect[3] -= delta.y;
-                box.rect[1] += delta.y;
+            if (delta.y) {
+                if (type === "se" || type === "s" || type === "sw") box[rectKey][3] += delta.y;
+                if (type === "nw" || type === "n" || type === "ne") {
+                    box[rectKey][3] -= delta.y;
+                    box[rectKey][1] += delta.y;
+                }
             }
         });
+        // Emit events
         if (!delta.x && !delta.y) return;
+        if (presentation !== this._state.presentation) return;
+        const linesAffected: { [id: string]: true } = {};
         boxes.forEach((box) => {
-            box.allLines.forEach(id => linesAffected[id] = true);
-            box.emit("rectChanged", box);
-            box.emit("resized", box);
+            box.emit(this._state.presentation ? "presentationRectChanged" : "rectChanged", box);
+            box.emit(this._state.presentation ? "presentationResized" : "resized", box);
+            if (!presentation) box.allLines.forEach(id => linesAffected[id] = true);
         });
-        Object.keys(linesAffected).forEach((lineID) => {
+        if (presentation) return;
+        for (const lineID in linesAffected) {
             const line = this.lines[lineID];
-            if (!line) return;
+            if (!line) continue;
             line.emit("posChanged", line);
-        });
+        }
     }
     findNearestPort(findSrc: boolean, left: number, top: number, from: [string, number], to?: [string, number]) {
         let nearest: [string, number] = [null, null];

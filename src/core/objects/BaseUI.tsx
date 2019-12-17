@@ -307,7 +307,7 @@ export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Part
         this.handleSave(this.codeEditor.getValue());
     }
     handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
-    handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
+    handleResize = () => ((this.state.editorLoaded && this.codeEditor) ? this.codeEditor.layout() : undefined);
     async componentDidMount() {
         super.componentDidMount();
         window.addEventListener("resize", this.handleResize);

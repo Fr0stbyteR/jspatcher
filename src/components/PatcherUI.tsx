@@ -120,7 +120,7 @@ export default class PatcherUI extends React.Component<P, S> {
             <div ref={this.refDiv} className={classArray.join(" ")} style={{ backgroundColor: "rgba(" + bgcolor.join(",") + ")" }} onScroll={this.handleScroll} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
                 <Grid {...this.props} ref={this.refGrid} />
                 <Boxes {...this.props} ref={this.refBoxes} />
-                <Lines {...this.props} ref={this.refLines} />
+                {this.state.presentation ? <></> : <Lines {...this.props} ref={this.refLines} />}
             </div>
         );
     }
@@ -130,6 +130,7 @@ class Lines extends React.Component<{ patcher: Patcher }, { width: string; heigh
     state = { width: "100%", height: "100%" };
     lines: { [key: string]: JSX.Element } = {};
     componentDidMount() {
+        this.onLoaded();
         this.props.patcher.on("loaded", this.onLoaded);
         this.props.patcher.on("createLine", this.onCreateLine);
         this.props.patcher.on("create", this.onCreate);
@@ -195,6 +196,7 @@ class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
     dragged = false;
     cachedMousePos = { x: 0, y: 0 };
     componentDidMount() {
+        this.onLoaded();
         this.props.patcher.on("loaded", this.onLoaded);
         this.props.patcher.on("createBox", this.onCreateBox);
         this.props.patcher.on("create", this.onCreate);
@@ -302,7 +304,7 @@ class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
     }
     handleClick = (e: React.MouseEvent) => {
         const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.setLock(!this.props.patcher.state.locked);
+        if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.lock = !this.props.patcher.state.locked;
     }
     handleDoubleClick = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
