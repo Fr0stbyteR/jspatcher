@@ -15,8 +15,8 @@ export default class PatcherUI extends React.Component<P, S> {
         locked: this.props.patcher.state.locked,
         presentation: this.props.patcher.state.presentation,
         showGrid: this.props.patcher.state.showGrid,
-        bgColor: this.props.patcher.props.bgcolor,
-        editingBgColor: this.props.patcher.props.editing_bgcolor,
+        bgColor: this.props.patcher.props.bgColor,
+        editingBgColor: this.props.patcher.props.editingBgColor,
         fileDropping: false
     };
     refDiv = React.createRef<HTMLDivElement>();
@@ -25,7 +25,7 @@ export default class PatcherUI extends React.Component<P, S> {
     refLines = React.createRef<Lines>();
     size = { width: 0, height: 0 };
     handleLoaded = () => {
-        this.setState({ bgColor: this.props.patcher.props.bgcolor, editingBgColor: this.props.patcher.props.editing_bgcolor }); // eslint-disable-line @typescript-eslint/camelcase
+        this.setState({ bgColor: this.props.patcher.props.bgColor, editingBgColor: this.props.patcher.props.editingBgColor });
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
         const lines = this.refLines.current;
@@ -307,19 +307,30 @@ class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
         if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.lock = !this.props.patcher.state.locked;
     }
     handleDoubleClick = (e: React.MouseEvent) => {
-        if (this.props.patcher.state.locked) return;
+        const { patcher } = this.props;
+        if (patcher.state.locked) return;
         if (e.target !== this.refDiv.current) return;
-        const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        const ctrlKey = patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         if (ctrlKey || e.shiftKey) return;
         const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
         const patcherRect = patcherDiv.getBoundingClientRect();
-        const x = e.pageX - patcherRect.left + patcherDiv.scrollLeft;
-        const y = e.pageY - patcherRect.top + patcherDiv.scrollTop;
-        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 90, 20], _editing: true });
+        const x = Math.max(0, e.pageX - patcherRect.left + patcherDiv.scrollLeft);
+        const y = Math.max(0, e.pageY - patcherRect.top + patcherDiv.scrollTop);
+        const { presentation } = patcher._state;
+        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 90, 20], presentation, _editing: true });
     }
     handleKeyDown = (e: KeyboardEvent) => {
-        if (this.props.patcher.state.locked) return;
-        if ((e.key === "n" || e.key === "m" || e.key === "b" || e.key === "c") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+        const { patcher } = this.props;
+        if (patcher.state.locked) return;
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
+            let x = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0;
+            let y = e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0;
+            if (!e.shiftKey && patcher._state.snapToGrid) {
+                x *= patcher.props.grid[0];
+                y *= patcher.props.grid[1];
+            }
+            patcher.moveSelectedBox({ x, y });
+        } else if ((e.key === "n" || e.key === "m" || e.key === "b" || e.key === "c") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
             e.stopPropagation();
             e.preventDefault();
             const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
@@ -335,7 +346,8 @@ class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
                 text = "live.button";
                 w = 20;
             }
-            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, w, h], _editing: true });
+            const { presentation } = patcher._state;
+            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, w, h], presentation, _editing: true });
         }
     }
     handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };
@@ -365,7 +377,7 @@ class Grid extends React.Component<{ patcher: Patcher }, { width: string; height
     render() {
         const patcher = this.props.patcher;
         const grid = patcher.props.grid;
-        const bgcolor = patcher.props.bgcolor;
+        const bgcolor = patcher.props.bgColor;
         const isWhite = bgcolor[0] + bgcolor[1] + bgcolor[2] < 128 * 3;
         const gridColor = isWhite ? "#FFFFFF1A" : "#0000001A";
         const pxx = grid[0] + "px";

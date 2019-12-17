@@ -90,7 +90,7 @@ export default class BoxUI extends React.Component<P, S> {
                     if (!this.dragged) this.dragged = true;
                     dragOffset.x += movementX;
                     dragOffset.y += movementY;
-                    dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
+                    dragOffset = this.props.patcher.moveSelectedBox(dragOffset, this.props.id);
                 }
                 const x = e.pageX - patcherRect.left;
                 const y = e.pageY - patcherRect.top;
@@ -107,7 +107,7 @@ export default class BoxUI extends React.Component<P, S> {
                 patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
                 if (this.dragging && !this.state.editing && (movementX || movementY)) {
                     if (!this.dragged) this.dragged = true;
-                    dragOffset = this.props.patcher.moveSelectedBox(this.props.id, dragOffset);
+                    dragOffset = this.props.patcher.moveSelectedBox(dragOffset, this.props.id);
                 }
             };
             const handleKey = (e: KeyboardEvent) => {

@@ -81,7 +81,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.lines = {};
         this.boxes = {};
         // eslint-disable-next-line @typescript-eslint/camelcase
-        this.props = { mode: "js", bgcolor: [61, 65, 70, 1], editing_bgcolor: [82, 87, 94, 1], grid: [15, 15], boxIndexCount: 0, lineIndexCount: 0 };
+        this.props = { mode: "js", bgColor: [61, 65, 70, 1], editingBgColor: [82, 87, 94, 1], grid: [15, 15], boxIndexCount: 0, lineIndexCount: 0 };
         this._state.selected = [];
     }
     load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode) {
@@ -110,9 +110,9 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                 this.emit("loaded", this);
                 return this;
             }
-            this.props.bgcolor = rgbaMax2Css(patcher.bgcolor);
+            this.props.bgColor = rgbaMax2Css(patcher.bgcolor);
             // eslint-disable-next-line @typescript-eslint/camelcase
-            this.props.editing_bgcolor = rgbaMax2Css(patcher.editing_bgcolor);
+            this.props.editingBgColor = rgbaMax2Css(patcher.editing_bgcolor);
             const maxBoxes = patcher.boxes;
             const maxLines = patcher.lines;
             for (let i = 0; i < maxBoxes.length; i++) {
@@ -445,13 +445,15 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         else box.setRect(box.rect);
         return this;
     }
-    moveSelectedBox(boxID: string, dragOffset: { x: number; y: number }) {
+    moveSelectedBox(dragOffset: { x: number; y: number }, refBoxID?: string) {
         const { presentation, snapToGrid, selected } = this._state;
         const rectKey = presentation ? "presentationRect" : "rect";
-        const rect = this.boxes[boxID][rectKey];
-        const delta = { x: 0, y: 0 };
-        delta.x = snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
-        delta.y = snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
+        const delta = { ...dragOffset };
+        if (refBoxID) {
+            const rect = this.boxes[refBoxID][rectKey];
+            delta.x = snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
+            delta.y = snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
+        }
         if (!delta.x && !delta.y) return dragOffset;
         this.move(selected, delta, presentation);
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };

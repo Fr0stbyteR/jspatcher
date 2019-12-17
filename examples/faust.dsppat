@@ -247,13 +247,13 @@
     },
     "props": {
         "mode": "faust",
-        "bgcolor": [
+        "bgColor": [
             61,
             65,
             70,
             1
         ],
-        "editing_bgcolor": [
+        "editingBgColor": [
             82,
             87,
             94,

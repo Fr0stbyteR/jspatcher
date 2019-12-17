@@ -1,8 +1,6 @@
 {
-    "ee": {},
     "lines": {
         "line-1": {
-            "ee": {},
             "id": "line-1",
             "src": [
                 "box-3",
@@ -15,7 +13,6 @@
             "disabled": false
         },
         "line-2": {
-            "ee": {},
             "id": "line-2",
             "src": [
                 "box-7",
@@ -28,7 +25,6 @@
             "disabled": false
         },
         "line-3": {
-            "ee": {},
             "id": "line-3",
             "src": [
                 "box-5",
@@ -41,7 +37,6 @@
             "disabled": false
         },
         "line-4": {
-            "ee": {},
             "id": "line-4",
             "src": [
                 "box-2",
@@ -54,7 +49,6 @@
             "disabled": false
         },
         "line-7": {
-            "ee": {},
             "id": "line-7",
             "src": [
                 "box-10",
@@ -67,7 +61,6 @@
             "disabled": false
         },
         "line-8": {
-            "ee": {},
             "id": "line-8",
             "src": [
                 "box-5",
@@ -80,7 +73,6 @@
             "disabled": false
         },
         "line-9": {
-            "ee": {},
             "id": "line-9",
             "src": [
                 "box-3",
@@ -93,7 +85,6 @@
             "disabled": false
         },
         "line-5": {
-            "ee": {},
             "id": "line-5",
             "src": [
                 "box-6",
@@ -106,7 +97,6 @@
             "disabled": false
         },
         "line-11": {
-            "ee": {},
             "id": "line-11",
             "src": [
                 "box-1",
@@ -119,7 +109,6 @@
             "disabled": false
         },
         "line-12": {
-            "ee": {},
             "id": "line-12",
             "src": [
                 "box-11",
@@ -132,7 +121,6 @@
             "disabled": false
         },
         "line-13": {
-            "ee": {},
             "id": "line-13",
             "src": [
                 "box-12",
@@ -147,7 +135,6 @@
     },
     "boxes": {
         "box-7": {
-            "ee": {},
             "id": "box-7",
             "text": "message",
             "inlets": 2,
@@ -165,7 +152,6 @@
             "props": {}
         },
         "box-2": {
-            "ee": {},
             "id": "box-2",
             "text": "code",
             "inlets": 2,
@@ -183,7 +169,6 @@
             "props": {}
         },
         "box-6": {
-            "ee": {},
             "id": "box-6",
             "text": "new AudioWorkletNode",
             "inlets": 2,
@@ -201,7 +186,6 @@
             "props": {}
         },
         "box-3": {
-            "ee": {},
             "id": "box-3",
             "text": "audioWorklet",
             "inlets": 2,
@@ -217,7 +201,6 @@
             "props": {}
         },
         "box-10": {
-            "ee": {},
             "id": "box-10",
             "text": "audioContext",
             "inlets": 1,
@@ -233,7 +216,6 @@
             "props": {}
         },
         "box-5": {
-            "ee": {},
             "id": "box-5",
             "text": "message",
             "inlets": 2,
@@ -251,7 +233,6 @@
             "props": {}
         },
         "box-1": {
-            "ee": {},
             "id": "box-1",
             "text": "node~",
             "inlets": 1,
@@ -267,7 +248,6 @@
             "props": {}
         },
         "box-9": {
-            "ee": {},
             "id": "box-9",
             "text": "destination~",
             "inlets": 1,
@@ -283,7 +263,6 @@
             "props": {}
         },
         "box-11": {
-            "ee": {},
             "id": "box-11",
             "text": "biquad~",
             "inlets": 6,
@@ -299,7 +278,6 @@
             "props": {}
         },
         "box-12": {
-            "ee": {},
             "id": "box-12",
             "text": "message",
             "inlets": 2,
@@ -321,13 +299,13 @@
     },
     "props": {
         "mode": "js",
-        "bgcolor": [
+        "bgColor": [
             61,
             65,
             70,
             1
         ],
-        "editing_bgcolor": [
+        "editingBgColor": [
             82,
             87,
             94,
