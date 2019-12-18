@@ -169,7 +169,6 @@ interface LineEventMap {
 
 interface BoxEventMap {
     "rectChanged": Box;
-    "resized": Box;
     "presentationRectChanged": Box;
     "presentationResized": Box;
     "backgroundChanged": Box;

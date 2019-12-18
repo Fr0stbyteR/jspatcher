@@ -102,7 +102,7 @@ class LiveTextUI extends LiveUI<LiveText, LiveTextProps> {
         this.setValueToOutput(mode === "button" ? 1 : 1 - +!!value);
     }
     handlePointerUp = () => {
-        const { value, mode } = this.state;
+        const { mode } = this.state;
         this.inTouch = false;
         if (mode === "button") this.setValueToOutput(0);
     }

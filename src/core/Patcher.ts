@@ -434,15 +434,15 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const rectKey = presentation ? "presentationRect" : "rect";
         const box = this.boxes[boxID];
         if (!box) return this;
-        const rect = box[rectKey];
+        const rect = box[rectKey].slice() as TRect;
         // Not allowing resize out of bound
         const deltaX = Math.max(deltaXIn, -rect[0]);
         const deltaY = Math.max(deltaYIn, -rect[1]);
         if (!deltaX && !deltaY) return this;
         rect[0] += deltaX;
         rect[1] += deltaY;
-        if (presentation) box.setPresentationRect(box[rectKey]);
-        else box.setRect(box.rect);
+        if (presentation) box.setPresentationRect(rect);
+        else box.setRect(rect);
         return this;
     }
     moveSelectedBox(dragOffset: { x: number; y: number }, refBoxID?: string) {
@@ -494,16 +494,17 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const rectKey = presentation ? "presentationRect" : "rect";
         const rect = this.boxes[boxID][rectKey];
         const delta = { x: 0, y: 0 };
-        if (type === "e" || type === "se") {
+        // Round delta to grid
+        if (type === "e" || type === "se" || type === "ne") {
             delta.x = snapToGrid ? Math.round((rect[0] + rect[2] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] - rect[2] : dragOffset.x;
         }
-        if (type === "s" || type === "se") {
+        if (type === "s" || type === "se" || type === "sw") {
             delta.y = snapToGrid ? Math.round((rect[1] + rect[3] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] - rect[3] : dragOffset.y;
         }
-        if (type === "w" || type === "nw") {
+        if (type === "w" || type === "nw" || type === "sw") {
             delta.x = snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
         }
-        if (type === "n" || type === "nw") {
+        if (type === "n" || type === "nw" || type === "ne") {
             delta.y = snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
         }
         if (!delta.x && !delta.y) return dragOffset;
@@ -552,7 +553,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const linesAffected: { [id: string]: true } = {};
         boxes.forEach((box) => {
             box.emit(this._state.presentation ? "presentationRectChanged" : "rectChanged", box);
-            box.emit(this._state.presentation ? "presentationResized" : "resized", box);
             if (!presentation) box.allLines.forEach(id => linesAffected[id] = true);
         });
         if (presentation) return;

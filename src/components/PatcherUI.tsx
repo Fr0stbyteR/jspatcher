@@ -36,7 +36,7 @@ export default class PatcherUI extends React.Component<P, S> {
         const newState = { width: "unset", height: "unset" };
         grid.setState(newState);
         boxes.setState(newState);
-        lines.setState(newState);
+        if (lines) lines.setState(newState);
     }
     handleLockedChange = (e: boolean) => this.setState({ locked: e });
     handlePresentationChange = (e: boolean) => this.setState({ presentation: e });
@@ -56,7 +56,7 @@ export default class PatcherUI extends React.Component<P, S> {
             const newState = { width: this.size.width + "px", height: this.size.height + "px" };
             grid.setState(newState);
             boxes.setState(newState);
-            lines.setState(newState);
+            if (lines) lines.setState(newState);
         }
     }
     handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {

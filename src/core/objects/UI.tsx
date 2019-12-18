@@ -238,14 +238,12 @@ class CodeUI extends BaseUI<comment, {}, CodeUIState> {
     }
     async componentDidMount() {
         super.componentDidMount();
-        this.box.on("resized", this.handleResize);
         const reactMonacoEditor = await import("react-monaco-editor");
         this.editorJSX = reactMonacoEditor.default;
         this.setState({ editorLoaded: true });
     }
-    componentWillUnmount() {
-        super.componentWillUnmount();
-        this.box.off("resized", this.handleResize);
+    componentDidUpdate() { // But super.componentDidUpdate is not a function
+        this.handleResize();
     }
     render() {
         return <BaseUI {...this.props} containerProps={{ onKeyDown: this.handleKeyDown, onKeyUp: this.handleKeyUp }}>

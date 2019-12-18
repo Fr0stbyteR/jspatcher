@@ -142,7 +142,7 @@ export default class BoxUI extends React.Component<P, S> {
                 handleDraggable();
             }
         } else if (this.state.selected) {
-            if (!this.state.editing) this.handlingToggleEditOnClick = true; // Handle edit
+            if (!this.state.editing && this.state.uiComponent.editableOnUnlock) this.handlingToggleEditOnClick = true; // Handle edit
             handleDraggable();
         } else {
             this.props.patcher.selectOnly(this.props.id);
@@ -159,7 +159,7 @@ export default class BoxUI extends React.Component<P, S> {
         if (e.key === "Enter") {
             if (this.state.editing) {
                 this.refDiv.current.focus();
-            } else {
+            } else if (this.state.uiComponent.editableOnUnlock) {
                 e.preventDefault();
                 this.setState({ editing: !this.state.editing });
             }
@@ -180,16 +180,16 @@ export default class BoxUI extends React.Component<P, S> {
         const rect = [box[rectKey][0], box[rectKey][1], divRect.width, divRect.height] as TRect;
         if (this.state.inPresentationMode) {
             this.setState({ presentationRect: rect });
-            box.setPresentationRect(rect);
+            box.setPresentationRect(rect.slice() as TRect);
         } else {
             this.setState({ rect });
-            box.setRect(rect);
+            box.setRect(rect.slice() as TRect);
         }
     }
     handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
     handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
     handlePatcherPresentationChanged = (inPresentationMode: boolean) => this.setState({ inPresentationMode });
-    handlePresentationChanged = () => this.setState({ presentation: this.box.presentation });
+    handlePresentationChanged = () => this.setState({ presentation: this.box.presentation, presentationRect: this.box.presentationRect.slice() as TRect });
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.props.patcher.state.locked) return;
         const classList = e.currentTarget.classList;

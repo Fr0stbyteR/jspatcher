@@ -20,8 +20,8 @@ export const getDisplayValue = (value: number, type: string, unitstyle: string, 
     return "N/A";
 };
 export type LiveUIState = LiveUIProps & BaseUIState;
-export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [key: string]: any } = {}> extends BaseUI<T, {}, P & LiveUIProps> {
-    state: P & LiveUIState = {
+export class LiveUI<T extends LiveObject, S extends Partial<LiveUIProps> & { [key: string]: any } = {}> extends BaseUI<T, {}, S & LiveUIProps> {
+    state: S & LiveUIState = {
         ...this.state,
         value: typeof this.box.props.value === "number" ? this.box.props.value : this.object.meta.props.value.default,
         min: typeof this.box.props.min === "number" ? this.box.props.min : this.object.meta.props.min.default,
@@ -177,17 +177,11 @@ export class LiveUI<T extends LiveObject, P extends Partial<LiveUIProps> & { [ke
         else if (this.$paintRaf < -1) requestAnimationFrame(this.noPaintCallback);
         this.paintScheduled = true;
     }
-    handleResize = () => this.schedulePaint();
     componentDidMount() {
         super.componentDidMount();
         this.schedulePaint();
-        this.box.on("resized", this.handleResize);
     }
-    componentWillUnmount() {
-        super.componentWillUnmount();
-        this.box.off("resized", this.handleResize);
-    }
-    componentDidUpdate() {
+    componentDidUpdate() { // But super.componentDidUpdate is not a function
         this.schedulePaint();
     }
     paint() {}

@@ -208,28 +208,36 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.setPresentationRect([left, top, widthIn || width, heightIn || height] as TRect);
     }
     get left() {
-        return this.rect[0];
+        const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
+        return this[rectKey][0];
     }
     set left(leftIn: number) {
-        this.position = [leftIn, undefined];
+        const positionKey = this._patcher._state.presentation ? "presentationPosition" : "position";
+        this[positionKey] = [leftIn, undefined];
     }
     get top() {
-        return this.rect[1];
+        const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
+        return this[rectKey][1];
     }
     set top(topIn: number) {
-        this.position = [undefined, topIn];
+        const positionKey = this._patcher._state.presentation ? "presentationPosition" : "position";
+        this[positionKey] = [undefined, topIn];
     }
     get width() {
-        return this.rect[2];
+        const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
+        return this[rectKey][2];
     }
     set width(widthIn: number) {
-        this.size = [widthIn, undefined];
+        const sizeKey = this._patcher._state.presentation ? "presentationSize" : "size";
+        this[sizeKey] = [widthIn, undefined];
     }
     get height() {
-        return this.rect[3];
+        const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
+        return this[rectKey][3];
     }
     set height(heightIn: number) {
-        this.size = [undefined, heightIn];
+        const sizeKey = this._patcher._state.presentation ? "presentationSize" : "size";
+        this[sizeKey] = [undefined, heightIn];
     }
     setBackground(bool: boolean) {
         if (!!this.background === !!bool) return this;
@@ -259,7 +267,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         return this;
     }
     setPresentationRect(rect: TRect) {
-        if (rect.every((v, i) => v === this.rect[i])) return this;
+        if (rect.every((v, i) => v === this.presentationRect[i])) return this;
         if (!rect.every(v => typeof v === "number")) return this;
         if (rect.length !== 4) return this;
         rect[0] = Math.max(0, rect[0]);
