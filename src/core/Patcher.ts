@@ -17,18 +17,21 @@ import Window from "./objects/Window";
 import JSPWebAudio from "./objects/WebAudio/Imports";
 import live from "./objects/live/exports";
 import faust from "./objects/faust/exports";
+import Env from "../env";
 
 const Packages: TPackage = { Base, Std, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live, faust };
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
+    _env: Env;
     lines: { [key: string]: Line };
     boxes: { [key: string]: Box };
     props: TPatcherProps;
     _state: TPatcherState;
     private _packages: TPackage;
-    constructor() {
+    constructor(envIn: Env) {
         super();
         this.setMaxListeners(4096);
+        this._env = envIn;
         this.observeHistory();
         this._state = {
             isLoading: false,
@@ -752,6 +755,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         return this._state;
     }
     get env() {
-        return window.jspatcherEnv;
+        return this._env;
     }
 }
