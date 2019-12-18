@@ -45,6 +45,8 @@ class LiveTextUI extends LiveUI<LiveText, LiveTextProps> {
     inTouch = false;
     paint() {
         const {
+            width,
+            height,
             active,
             focus,
             fontFamily,
@@ -65,7 +67,6 @@ class LiveTextUI extends LiveUI<LiveText, LiveTextProps> {
             textOn,
             value
         } = this.state;
-        const { width, height } = this.box;
         const ctx = this.ctx;
         if (!ctx) return;
 

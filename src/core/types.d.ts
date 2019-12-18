@@ -227,22 +227,6 @@ type TMeta = {
     props: TPropsMeta;
 };
 
-type BaseUIState = {
-    hidden: boolean;
-    ignoreClick: boolean;
-    hint: string;
-};
-type DefaultUIState = {
-    bgColor: string;
-    borderColor: string;
-    textColor: string;
-    fontFamily: string;
-    fontSize: number;
-    fontStyle: "normal" | "italic" | "oblique";
-    fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
-    textAlign: "center" | "left" | "right";
-} & BaseUIState;
-
 type Data<T> = T extends AbstractObject<infer D, any, any, any, any, any, any, any> ? D : never;
 type State<T> = T extends AbstractObject<any, infer S, any, any, any, any, any, any> ? S : never;
 type Inputs<T> = T extends AbstractObject<any, any, infer I, any, any, any, any, any> ? I : never;

@@ -41,6 +41,8 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderProps & LiveSliderAdditi
     inTouch = false;
     paint() {
         const {
+            width,
+            height,
             fontFamily,
             fontSize,
             fontFace,
@@ -55,7 +57,6 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderProps & LiveSliderAdditi
             shortName,
             inputBuffer
         } = this.state;
-        const { width, height } = this.box;
         const ctx = this.ctx;
         if (!ctx) return;
         const lineWidth = 0.5;

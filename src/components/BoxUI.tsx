@@ -8,7 +8,7 @@ import { BaseUI } from "../core/objects/BaseUI";
 
 type P = { patcher: Patcher; id: string };
 type S = { selected: boolean; rect: TRect; presentationRect: TRect; presentation: boolean; inPresentationMode: boolean; uiComponent: typeof BaseUI; editing: boolean; key: string };
-export default class BoxUI extends React.Component<P, S> {
+export default class BoxUI extends React.PureComponent<P, S> {
     refDiv = React.createRef<HTMLDivElement>();
     handlingToggleEditOnClick = false;
     dragging = false;
@@ -341,7 +341,7 @@ export default class BoxUI extends React.Component<P, S> {
         );
     }
 }
-class Inlets extends React.Component<{ patcher: Patcher; box: Box }, { ports: JSX.Element[] }> {
+class Inlets extends React.PureComponent<{ patcher: Patcher; box: Box }, { ports: JSX.Element[] }> {
     get ports() {
         const ports: JSX.Element[] = [];
         for (let i = 0; i < this.props.box.inlets; i++) {
@@ -370,7 +370,7 @@ class Inlets extends React.Component<{ patcher: Patcher; box: Box }, { ports: JS
         );
     }
 }
-class Outlets extends React.Component<{ patcher: Patcher; box: Box }, { ports: JSX.Element[] }> {
+class Outlets extends React.PureComponent<{ patcher: Patcher; box: Box }, { ports: JSX.Element[] }> {
     get ports() {
         const ports: JSX.Element[] = [];
         for (let i = 0; i < this.props.box.outlets; i++) {
@@ -399,7 +399,7 @@ class Outlets extends React.Component<{ patcher: Patcher; box: Box }, { ports: J
         );
     }
 }
-class Inlet extends React.Component<{ patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
+class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.inletLines[this.props.index].length > 0, highlight: false };
     dragged = false;
     componentDidMount() {
@@ -462,7 +462,7 @@ class Inlet extends React.Component<{ patcher: Patcher; box: Box; index: number 
         );
     }
 }
-class Outlet extends React.Component< { patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
+class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false };
     dragged = false;
     componentDidMount() {

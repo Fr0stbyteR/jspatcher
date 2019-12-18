@@ -4,8 +4,8 @@ import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
-import { BaseUIState, DefaultUIState, TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect } from "../types";
-import { BaseUI, DefaultUI } from "./BaseUI";
+import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect } from "../types";
+import { BaseUI, DefaultUI, BaseUIState, DefaultUIState } from "./BaseUI";
 
 export abstract class AbstractObject<
     D extends {} = {}, S extends {} = {},

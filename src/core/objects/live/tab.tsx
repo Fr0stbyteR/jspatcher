@@ -48,13 +48,14 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabProps> {
     inTouch = false;
     getTabRects() {
         const {
+            width,
+            height,
             multiline,
             mode,
             enums,
             spacingX: spacingXIn,
             spacingY: spacingYIn
         } = this.state;
-        const { width, height } = this.box;
         const margin = 4;
         const minHeight = 10;
         const count = enums.length;

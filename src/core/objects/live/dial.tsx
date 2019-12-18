@@ -51,6 +51,8 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalStat
     inTouch = false;
     paint() {
         const {
+            width,
+            height,
             active,
             focus,
             fontFamily,
@@ -73,7 +75,6 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalStat
             shortName,
             inputBuffer
         } = this.state;
-        const { width, height } = this.box;
         const ctx = this.ctx;
         if (!ctx) return;
         const distance = this.distance;

@@ -1,6 +1,6 @@
 import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
 import { DefaultAudioObject } from "../Base";
-import { DefaultUIState } from "../../types";
+import { DefaultUIState } from "../BaseUI";
 
 export type DefaultFaustDynamicNodeState = { merger: ChannelMergerNode; splitter: ChannelSplitterNode; node: FaustAudioWorkletNode | FaustScriptProcessorNode };
 export default abstract class FaustDynamicNode<D extends {} = {}, S extends Partial<DefaultFaustDynamicNodeState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends DefaultAudioObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {

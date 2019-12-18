@@ -5,7 +5,6 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
-import { BaseUIState, DefaultUIState } from "../types";
 import { AbstractObject, BaseObject, AnyObject, DefaultObject } from "./Base";
 import { selectElementPos, selectElementRange } from "../../utils";
 
@@ -14,11 +13,15 @@ export type AbstractUIProps<T extends AbstractObject = AbstractObject> = {
     editing: boolean;
     onEditEnd: () => any;
 }
+export type AbstractUIAdditionalState = {
+    width: number;
+    height: number;
+}
 export abstract class AbstractUI<
         T extends AbstractObject = AbstractObject,
         P extends Partial<AbstractUIProps<T>> & { [key: string]: any } = {},
-        S extends { [key: string]: any } = {}
-> extends React.Component<AbstractUIProps<T> & P, S> {
+        S extends Partial<AbstractUIAdditionalState> & { [key: string]: any } = {}
+> extends React.PureComponent<AbstractUIProps<T> & P, S & AbstractUIAdditionalState> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
     static defaultSize: [number, number];
     /**
@@ -29,7 +32,11 @@ export abstract class AbstractUI<
      * @memberof AbstractUI
      */
     static editableOnUnlock: boolean;
-    state = {} as Readonly<S>;
+    state: S & AbstractUIAdditionalState = {
+        ...this.state,
+        width: this.box.width,
+        height: this.box.height
+    };
     get object(): T {
         return this.props.object;
     }
@@ -39,13 +46,23 @@ export abstract class AbstractUI<
     get box(): Box<T> {
         return this.props.object.box;
     }
-    handleUIUpdate = (e: Pick<S, keyof S>) => this.setState(e);
+    private _handleUIUpdate = (e: Pick<S & AbstractUIAdditionalState, keyof (S & AbstractUIAdditionalState)>) => this.setState(e);
+    private _handleResized = () => {
+        const { width, height } = this.box;
+        if (width !== this.state.width || height !== this.state.height) this.setState({ width, height });
+    }
     componentDidMount() {
         delete this.box._editing;
-        this.object.on("uiUpdate", this.handleUIUpdate);
+        this.object.on("uiUpdate", this._handleUIUpdate);
+        this.box.on("rectChanged", this._handleResized);
+        this.box.on("presentationRectChanged", this._handleResized);
+        this.patcher.on("presentation", this._handleResized);
     }
     componentWillUnmount() {
-        this.object.off("uiUpdate", this.handleUIUpdate);
+        this.object.off("uiUpdate", this._handleUIUpdate);
+        this.box.off("rectChanged", this._handleResized);
+        this.box.off("presentationRectChanged", this._handleResized);
+        this.patcher.off("presentation", this._handleResized);
     }
     render() {
         return <></>;
@@ -55,6 +72,11 @@ export type BaseUIProps = {
     containerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     additionalClassName?: string;
 } & AbstractUIProps;
+export type BaseUIState = {
+    hidden: boolean;
+    ignoreClick: boolean;
+    hint: string;
+} & AbstractUIAdditionalState;
 export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIState> {
     state: S & BaseUIState = {
         ...this.state,
@@ -90,6 +112,16 @@ export type DefaultUIProps = {
     spanProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement>;
     appendProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
 } & BaseUIProps;
+export type DefaultUIState = {
+    bgColor: string;
+    borderColor: string;
+    textColor: string;
+    fontFamily: string;
+    fontSize: number;
+    fontStyle: "normal" | "italic" | "oblique";
+    fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
+    textAlign: "center" | "left" | "right";
+} & BaseUIState;
 export type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number };
 export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState & DefaultUIAdditionalState> {
     static editableOnUnlock = true;

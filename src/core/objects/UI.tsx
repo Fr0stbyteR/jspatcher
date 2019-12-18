@@ -5,8 +5,8 @@ import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Bang, BaseObject } from "./Base";
 import "./UI.scss";
-import { TMeta, BaseUIState } from "../types";
-import { BaseUI, BaseUIProps } from "./BaseUI";
+import { TMeta } from "../types";
+import { BaseUI, BaseUIProps, BaseUIState } from "./BaseUI";
 import { selectElementRange } from "../../utils";
 
 type ButtonUIState = { text: string; loading: boolean } & BaseUIState;
@@ -242,14 +242,11 @@ class CodeUI extends BaseUI<comment, {}, CodeUIState> {
         this.editorJSX = reactMonacoEditor.default;
         this.setState({ editorLoaded: true });
     }
-    componentDidUpdate() { // But super.componentDidUpdate is not a function
-        this.handleResize();
-    }
     render() {
         return <BaseUI {...this.props} containerProps={{ onKeyDown: this.handleKeyDown, onKeyUp: this.handleKeyUp }}>
             {
                 this.state.editorLoaded
-                    ? <this.editorJSX value={this.state.value} language={this.state.language} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} onChange={this.handleChange} options={{ fontSize: 12 }} />
+                    ? <this.editorJSX value={this.state.value} language={this.state.language} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} onChange={this.handleChange} options={{ fontSize: 12 }} width={this.state.width} height={this.state.height} />
                     : <Dimmer active><Loader content="Loading" /></Dimmer>
             }
         </BaseUI>;

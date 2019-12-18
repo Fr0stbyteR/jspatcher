@@ -41,6 +41,8 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps & LiveNumboxAdditi
     className = "live-numbox";
     paint() {
         const {
+            width,
+            height,
             active,
             focus,
             fontFamily,
@@ -59,7 +61,6 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps & LiveNumboxAdditi
             activeSliderColor,
             inputBuffer
         } = this.state;
-        const { width, height } = this.box;
         const ctx = this.ctx;
         if (!ctx) return;
         const distance = this.distance;

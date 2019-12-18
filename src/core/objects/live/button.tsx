@@ -35,6 +35,8 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
             this.resetCallback();
         }
         const {
+            width,
+            height,
             active,
             focus,
             bgColor,
@@ -45,7 +47,6 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
             focusBorderColor,
             value
         } = this.state;
-        const { width, height } = this.box;
         const ctx = this.ctx;
         if (!ctx) return;
         const borderWidth = 1;
