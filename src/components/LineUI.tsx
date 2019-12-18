@@ -6,7 +6,7 @@ import { TLineType } from "../core/types";
 type TPosition = { left: number; top: number };
 type P = { patcher: Patcher; id: string };
 type S = { type: TLineType; selected: boolean; dragging: boolean; destPos: TPosition; srcPos: TPosition; srcHandlerPos: TPosition; destHandlerPos: TPosition };
-export class LineUI extends React.Component<P, S> {
+export class LineUI extends React.PureComponent<P, S> {
     line = this.props.patcher.lines[this.props.id];
     state = { type: this.line.type, selected: false, dragging: false, destPos: this.line.destPos, srcPos: this.line.srcPos, srcHandlerPos: { left: 0, top: 0 }, destHandlerPos: { left: 0, top: 0 } };
     refDiv = React.createRef<HTMLDivElement>();
@@ -176,7 +176,7 @@ export class LineUI extends React.Component<P, S> {
     }
 }
 
-export class TempLineUI extends React.Component<{ patcher: Patcher }, { show: boolean; srcPos: TPosition; destPos: TPosition }> {
+export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show: boolean; srcPos: TPosition; destPos: TPosition }> {
     state = { show: false, srcPos: { left: 0, top: 0 }, destPos: { left: 0, top: 0 } };
     refDiv = React.createRef<HTMLDivElement>();
     refPath = React.createRef<SVGPathElement>();

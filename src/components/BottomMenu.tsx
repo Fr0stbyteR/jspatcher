@@ -5,7 +5,7 @@ import "./BottomMenu.scss";
 
 type P = { patcher: Patcher };
 type S = { locked: boolean; presentation: boolean; showGrid: boolean };
-export default class BottomMenu extends React.Component<P, S> {
+export default class BottomMenu extends React.PureComponent<P, S> {
     state = {
         locked: this.props.patcher.state.locked,
         presentation: this.props.patcher.state.presentation,

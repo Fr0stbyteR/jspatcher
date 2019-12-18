@@ -10,7 +10,7 @@ import { TPatcher, TPatcherMode, TRect } from "../core/types";
 
 type P = { patcher: Patcher };
 type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: TRect; editingBgColor: TRect };
-export default class PatcherUI extends React.Component<P, S> {
+export default class PatcherUI extends React.PureComponent<P, S> {
     state: S = {
         locked: this.props.patcher.state.locked,
         presentation: this.props.patcher.state.presentation,
@@ -126,7 +126,7 @@ export default class PatcherUI extends React.Component<P, S> {
     }
 }
 
-class Lines extends React.Component<{ patcher: Patcher }, { width: string; height: string }> {
+class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; height: string }> {
     state = { width: "100%", height: "100%" };
     lines: { [key: string]: JSX.Element } = {};
     componentDidMount() {
@@ -189,7 +189,7 @@ class Lines extends React.Component<{ patcher: Patcher }, { width: string; heigh
     }
 }
 type BoxesState = { width: string; height: string; selectionRect: TRect };
-class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
+class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
     state: BoxesState = { width: "100%", height: "100%", selectionRect: [0, 0, 0, 0] };
     boxes: { [key: string]: JSX.Element } = {};
     refDiv = React.createRef<HTMLDivElement>();
@@ -266,7 +266,7 @@ class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
                     if (!this.dragged) this.dragged = true;
                     selectionRect[2] = e.pageX - patcherRect.left + patcherDiv.scrollLeft;
                     selectionRect[3] = e.pageY - patcherRect.top + patcherDiv.scrollTop;
-                    this.setState({ selectionRect });
+                    this.setState({ selectionRect: selectionRect.slice() as TRect });
                     this.props.patcher.selectRegion(selectionRect, selectedBefore);
                 }
                 const x = e.pageX - patcherRect.left;
@@ -284,7 +284,7 @@ class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
                 patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
                 if (movementX || movementY) {
                     if (!this.dragged) this.dragged = true;
-                    this.setState({ selectionRect });
+                    this.setState({ selectionRect: selectionRect.slice() as TRect });
                     this.props.patcher.selectRegion(selectionRect, selectedBefore);
                 }
             };
@@ -372,7 +372,7 @@ class Boxes extends React.Component<{ patcher: Patcher }, BoxesState> {
     }
 }
 
-class Grid extends React.Component<{ patcher: Patcher }, { width: string; height: string }> {
+class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; height: string }> {
     state = { width: "100%", height: "100%" };
     render() {
         const patcher = this.props.patcher;

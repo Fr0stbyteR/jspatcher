@@ -14,7 +14,7 @@ enum TPanels {
     Inspector = "Inspector",
     Code = "Code"
 }
-class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLog[] }> {
+class Console extends React.PureComponent<{ patcher: Patcher }, { cached: TPatcherLog[] }> {
     state = { cached: this.props.patcher.state.log.slice() };
     refTable = React.createRef<HTMLTableElement>();
     logDuringLoading: TPatcherLog[] = [];
@@ -63,13 +63,13 @@ class Console extends React.Component<{ patcher: Patcher }, { cached: TPatcherLo
         );
     }
 }
-class InspectorBooleanItem extends React.Component<{ itemKey: number | string; value: boolean; onChange: (value: boolean, key: number | string) => any }> {
+class InspectorBooleanItem extends React.PureComponent<{ itemKey: number | string; value: boolean; onChange: (value: boolean, key: number | string) => any }> {
     handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.itemKey);
     render() {
         return <Checkbox className="inspector-value boolean" fitted checked={this.props.value} onChange={this.handleChangeCheckbox} />;
     }
 }
-class InspectorNumberItem extends React.Component<{ itemKey: number | string; value: number; onChange: (value: number, key: number | string) => any }, { inputEditing: boolean }> {
+class InspectorNumberItem extends React.PureComponent<{ itemKey: number | string; value: number; onChange: (value: number, key: number | string) => any }, { inputEditing: boolean }> {
     state = { inputEditing: false };
     refInput = React.createRef<HTMLInputElement>();
     handleClickInput = () => this.setState({ inputEditing: true }, () => (this.refInput.current ? this.refInput.current.focus() : undefined));
@@ -87,7 +87,7 @@ class InspectorNumberItem extends React.Component<{ itemKey: number | string; va
             : <span className="inspector-value number" onClick={this.handleClickInput}>{this.props.value}</span>;
     }
 }
-class InspectorStringItem extends React.Component<{ itemKey: number | string; value: string; onChange: (value: string, key: number | string) => any }, { inputEditing: boolean }> {
+class InspectorStringItem extends React.PureComponent<{ itemKey: number | string; value: string; onChange: (value: string, key: number | string) => any }, { inputEditing: boolean }> {
     state = { inputEditing: false };
     refInput = React.createRef<HTMLInputElement>();
     handleClickInput = () => this.setState({ inputEditing: true }, () => (this.refInput.current ? this.refInput.current.focus() : undefined));
@@ -105,7 +105,7 @@ class InspectorStringItem extends React.Component<{ itemKey: number | string; va
             : <span className="inspector-value string" onClick={this.handleClickInput}>{this.props.value}</span>;
     }
 }
-class InspectorColorItem extends React.Component<{ itemKey: number | string; value: string; onChange: (value: string, key: number | string) => any }, { showColorPicker: boolean }> {
+class InspectorColorItem extends React.PureComponent<{ itemKey: number | string; value: string; onChange: (value: string, key: number | string) => any }, { showColorPicker: boolean }> {
     state = { showColorPicker: false };
     handleClickColorSpan = () => this.setState({ showColorPicker: !this.state.showColorPicker });
     handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.itemKey);
@@ -126,13 +126,13 @@ class InspectorColorItem extends React.Component<{ itemKey: number | string; val
         );
     }
 }
-class InspectorEnumItem extends React.Component<{ itemKey: number | string; value: string | number | boolean; onChange: (value: string | number | boolean, key: number | string) => any; options: DropdownItemProps[] }> {
+class InspectorEnumItem extends React.PureComponent<{ itemKey: number | string; value: string | number | boolean; onChange: (value: string | number | boolean, key: number | string) => any; options: DropdownItemProps[] }> {
     handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value as string | number | boolean, this.props.itemKey);
     render() {
         return <Dropdown className="inspector-value enum" size="mini" options={this.props.options} value={this.props.value} onChange={this.handleChangeDropdown} />;
     }
 }
-class InspectorObjectItem extends React.Component<{ itemKey: number | string; value: any; onChange: (value: any, key: number | string) => any }, { inputEditing: boolean }> {
+class InspectorObjectItem extends React.PureComponent<{ itemKey: number | string; value: any; onChange: (value: any, key: number | string) => any }, { inputEditing: boolean }> {
     state = { inputEditing: false };
     refInput = React.createRef<HTMLInputElement>();
     handleClickInput = () => this.setState({ inputEditing: true }, () => (this.refInput.current ? this.refInput.current.focus() : undefined));
@@ -169,7 +169,7 @@ type InspectorItemProps<MetaType extends "arg" | "prop"> = {
     itemKey: MetaType extends "arg" ? number : string;
     onChange: (value: any, key: MetaType extends "arg" ? number : string) => any;
 };
-class InspectorItem<MetaType extends "arg" | "prop"> extends React.Component<InspectorItemProps<MetaType>, { showColorPicker: boolean; inputEditing: boolean }> {
+class InspectorItem<MetaType extends "arg" | "prop"> extends React.PureComponent<InspectorItemProps<MetaType>, { showColorPicker: boolean; inputEditing: boolean }> {
     state = { showColorPicker: false, inputEditing: false };
     refInput = React.createRef<HTMLInputElement>();
     key: MetaType extends "arg" ? number : string;
@@ -224,13 +224,13 @@ type InspectorState = {
     rect: TRect;
     presentationRect: TRect;
 };
-class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
+class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState> {
     state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null };
     boxes: Box[];
     box: Box;
     handleBoxUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => this.setState({ args: e.args || [], props: e.props || {} });
-    handleBoxRectChanged = (box: Box) => this.setState({ rect: box.rect });
-    handleBoxPresentationRectChanged = (box: Box) => this.setState({ presentationRect: box.presentationRect });
+    handleBoxRectChanged = (box: Box) => this.setState({ rect: box.rect.slice() as TRect });
+    handleBoxPresentationRectChanged = (box: Box) => this.setState({ presentationRect: box.presentationRect.slice() as TRect });
     unSubscribeBox = (force?: boolean) => {
         if (this.box && (force || this.boxes.indexOf(this.box) === -1)) {
             this.box.off("updatedFromObject", this.handleBoxUpdate);
@@ -404,7 +404,7 @@ class Inspector extends React.Component<{ patcher: Patcher }, InspectorState> {
         );
     }
 }
-class CodeEditor extends React.Component<{ patcher: Patcher }, { value: string; editorLoaded: boolean }> {
+class CodeEditor extends React.PureComponent<{ patcher: Patcher }, { value: string; editorLoaded: boolean }> {
     state = { value: this.code, editorLoaded: false };
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
@@ -435,7 +435,7 @@ class CodeEditor extends React.Component<{ patcher: Patcher }, { value: string; 
         return this.props.patcher.props.mode === "faust" ? this.props.patcher.toFaustDspCode() : "";
     }
 }
-export default class RightMenu extends React.Component<{ patcher: Patcher }, { active: TPanels; codePanel: boolean; audioOn: boolean }> {
+export default class RightMenu extends React.PureComponent<{ patcher: Patcher }, { active: TPanels; codePanel: boolean; audioOn: boolean }> {
     state = { active: TPanels.None, codePanel: false, audioOn: false };
     refDivPane = React.createRef<HTMLDivElement>();
     refCode = React.createRef<CodeEditor>();

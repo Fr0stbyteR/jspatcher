@@ -6,7 +6,7 @@ import BottomMenu from "./BottomMenu";
 import "./UI.scss";
 import RightMenu from "./RightMenu";
 
-export default class UI extends React.Component {
+export default class UI extends React.PureComponent {
     props: { patcher: Patcher };
     handleKeyDown = (e: React.KeyboardEvent) => {
         e.stopPropagation();

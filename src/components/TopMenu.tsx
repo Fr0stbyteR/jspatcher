@@ -4,7 +4,7 @@ import Patcher from "../core/Patcher";
 import "./TopMenu.scss";
 import { TPatcher, TMaxClipboard, TPatcherMode } from "../core/types";
 
-class FileMenu extends React.Component {
+class FileMenu extends React.PureComponent {
     props: { patcher: Patcher };
     refDownload = React.createRef<HTMLAnchorElement>();
     refOpen = React.createRef<HTMLInputElement>();
@@ -83,7 +83,7 @@ declare global {
         writeText(data: string): Promise<void>;
     }
 }
-class EditMenu extends React.Component {
+class EditMenu extends React.PureComponent {
     props: { patcher: Patcher };
     handleClickUndo = () => {
         if (this.props.patcher.state.locked) return;
@@ -150,7 +150,7 @@ class EditMenu extends React.Component {
         );
     }
 }
-export default class TopMenu extends React.Component {
+export default class TopMenu extends React.PureComponent {
     props: { patcher: Patcher };
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();

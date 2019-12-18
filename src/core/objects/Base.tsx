@@ -81,7 +81,7 @@ export abstract class AbstractObject<
      */
     subscribe(): void {}
     /**
-     * React.Component related
+     * React.PureComponent related
      *
      * @type {typeof BaseUI}
      * @memberof AbstractObject
