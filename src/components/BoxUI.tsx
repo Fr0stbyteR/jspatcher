@@ -9,6 +9,7 @@ import { BaseUI } from "../core/objects/BaseUI";
 type P = { patcher: Patcher; id: string };
 type S = { selected: boolean; rect: TRect; presentationRect: TRect; presentation: boolean; inPresentationMode: boolean; uiComponent: typeof BaseUI; editing: boolean; key: string };
 export default class BoxUI extends React.PureComponent<P, S> {
+    box = this.props.patcher.boxes[this.props.id];
     refDiv = React.createRef<HTMLDivElement>();
     handlingToggleEditOnClick = false;
     dragging = false;
@@ -23,9 +24,6 @@ export default class BoxUI extends React.PureComponent<P, S> {
         editing: this.box.uiComponent.editableOnUnlock && this.box._editing,
         key: performance.now().toString()
     };
-    get box() {
-        return this.props.patcher.boxes[this.props.id];
-    }
     handleResetPos = () => {
         const { box } = this;
         if (!box) return;
@@ -36,7 +34,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
     }
     handleTextChanged = () => {
         const { box } = this;
-        if (!box) return null;
+        if (!box) return;
         const { uiComponent, presentation, _editing } = box;
         let { rect, presentationRect } = box;
         rect = rect.slice() as TRect;
@@ -44,26 +42,12 @@ export default class BoxUI extends React.PureComponent<P, S> {
         const key = performance.now().toString();
         const editing = uiComponent.editableOnUnlock && _editing;
         this.setState({ rect, presentationRect, presentation, uiComponent, key, editing }, this.inspectRectChange);
-        return box;
     }
-    handleRectChanged = () => {
-        const { box } = this;
-        if (!box) return null;
-        if (box.rect.every((v, i) => v === this.state.rect[i])) return box;
-        this.setState({ rect: box.rect.slice() as TRect }, this.inspectRectChange);
-        return box;
-    }
-    handlePresentationRectChanged = () => {
-        const { box } = this;
-        if (!box) return null;
-        if (box.presentationRect.every((v, i) => v === this.state.presentationRect[i])) return box;
-        this.setState({ presentationRect: box.presentationRect.slice() as TRect }, this.inspectRectChange);
-        return box;
-    }
+    handleRectChanged = () => this.setState({ rect: this.box.rect.slice() as TRect });
+    handlePresentationRectChanged = () => this.setState({ presentationRect: this.box.presentationRect.slice() as TRect });
     handleBlur = () => {
         this.handlingToggleEditOnClick = false;
         this.setState({ editing: false });
-        this.inspectRectChange();
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
@@ -278,8 +262,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         e.stopPropagation();
     };
     componentDidMount() {
-        const box = this.props.patcher.boxes[this.props.id];
-        if (!box) return;
+        const { box } = this;
         this.setState({ selected: this.props.patcher.state.selected.indexOf(box.id) !== -1 });
         box.on("textChanged", this.handleTextChanged);
         box.on("rectChanged", this.handleRectChanged);
@@ -303,8 +286,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         box.off("presentationChanged", this.handlePresentationChanged);
     }
     render() {
-        const box = this.props.patcher.boxes[this.props.id];
-        if (!box) return null;
+        const { box } = this;
         const rect = this.state.inPresentationMode ? this.state.presentationRect : this.state.rect;
         const InnerUI = this.state.uiComponent;
         const divStyle = {
@@ -319,7 +301,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         return (
             <div className={classArray.join(" ")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
                 {
-                    this.state.inPresentationMode ? <></> : <>
+                    this.state.inPresentationMode ? undefined : <>
                         <Inlets patcher={this.props.patcher} box={box} />
                         <Outlets patcher={this.props.patcher} box={box} />
                     </>

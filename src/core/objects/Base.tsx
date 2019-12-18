@@ -53,6 +53,8 @@ export abstract class AbstractObject<
     protected readonly _box: Box<this>;
     constructor(box: Box, patcher: Patcher) {
         super();
+        // line connected = metaChange event subscribed
+        this.setMaxListeners(64);
         // patcher object outside, use _ for prevent recursive stringify
         this._patcher = patcher;
         // the box which create this instance, use _ for prevent recursive stringify
