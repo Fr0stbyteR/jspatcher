@@ -285,6 +285,10 @@ export default class BoxUI extends React.PureComponent<P, S> {
         box.off("presentationRectChanged", this.handlePresentationRectChanged);
         box.off("presentationChanged", this.handlePresentationChanged);
     }
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+        this.box.object.error(error);
+        this.box.object.error(errorInfo.componentStack);
+    }
     render() {
         const { box } = this;
         const rect = this.state.inPresentationMode ? this.state.presentationRect : this.state.rect;
