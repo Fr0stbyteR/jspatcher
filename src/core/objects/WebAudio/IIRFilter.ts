@@ -62,12 +62,12 @@ export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward
         });
     }
     resetNode() {
-        this.disconnectAll();
+        this.disconnectAudio();
         this.node = this.audioCtx.createIIRFilter(this.state.feedforward, this.state.feedback);
         this.node.channelInterpretation = "discrete";
         this.node.channelCountMode = "explicit";
         this.inletConnections[0] = { node: this.node, index: 0 };
         this.outletConnections[0] = { node: this.node, index: 0 };
-        this.connectAll();
+        this.connectAudio();
     }
 }

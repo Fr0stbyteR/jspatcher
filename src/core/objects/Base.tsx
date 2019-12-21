@@ -414,12 +414,36 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     }
     inletConnections: TAudioNodeInletConnection[] = [];
     outletConnections: TAudioNodeOutletConnection[] = [];
-    connectAll() {
+    connectAudio() {
         this.box.allLines.forEach(el => this._patcher.lines[el].enable());
         return this;
     }
-    disconnectAll() {
+    connectAudioInlet(portIn?: number) {
+        this.box.inletLines.forEach((lines, port) => {
+            if (port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].enable());
+        });
+        return this;
+    }
+    connectAudioOutlet(portIn?: number) {
+        this.box.outletLines.forEach((lines, port) => {
+            if (port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].enable());
+        });
+        return this;
+    }
+    disconnectAudio() {
         this.box.allLines.forEach(el => this._patcher.lines[el].disable());
+        return this;
+    }
+    disconnectAudioInlet(portIn?: number) {
+        this.box.inletLines.forEach((lines, port) => {
+            if (port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].disable());
+        });
+        return this;
+    }
+    disconnectAudioOutlet(portIn?: number) {
+        this.box.outletLines.forEach((lines, port) => {
+            if (port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].disable());
+        });
         return this;
     }
 }

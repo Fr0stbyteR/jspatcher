@@ -29,6 +29,11 @@ type TPatcherProps = {
     grid: [number, number];
     boxIndexCount: number;
     lineIndexCount: number;
+    package?: string;
+    name?: string;
+    author?: string;
+    version?: string;
+    description?: string;
 };
 
 type TPatcherState = {
@@ -104,6 +109,7 @@ type TMaxClipboard = {
 type TPackage = { [key: string]: typeof AnyObject | TPackage };
 type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };
 type TAudioNodeOutletConnection = { node: AudioNode; index: number };
+type TPatcherAudioConnection = { node: GainNode; index: number };
 
 declare type TLine = {
     id?: string;
@@ -157,6 +163,13 @@ interface PatcherEventMap {
     "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType; presentation: boolean };
     "generateCode": string;
     "graphChanged": any;
+    "inlet": TInletEvent<any[]>;
+    "outlet": TOutletEvent<any[]>;
+    "disconnectAudioInlet": number;
+    "disconnectAudioOutlet": number;
+    "connectAudioInlet": number;
+    "connectAudioOutlet": number;
+    "ioChanged": TMeta;
 }
 
 interface LineEventMap {
@@ -236,6 +249,7 @@ type Props<T> = T extends AbstractObject<any, any, any, any, any, infer P, any, 
 type UIState<T> = T extends AbstractObject<any, any, any, any, any, any, infer U, any> ? U : never;
 type EventMap<T> = T extends AbstractObject<any, any, any, any, any, any, any, infer E> ? E : never;
 type TInletEvent<I extends any[] = [], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
+type TOutletEvent<O extends any[] = [], $ extends keyof Pick<O, number> = keyof Pick<O, number>> = { outlet: $; data: O[$] };
 type ObjectEventMap<I extends any[], A extends any[], P, U, E> = {
     "preInit": null;
     "update": { args?: Partial<A>; props?: Partial<P> };

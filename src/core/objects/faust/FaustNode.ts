@@ -55,7 +55,7 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
             return;
         }
         const { inlets, outlets, merger, splitter, node } = compiled;
-        this.disconnectAll();
+        this.disconnectAudio();
         this.handleDestroy();
         this.state = { voices, merger, splitter, node };
         this.data.code = code;
@@ -90,7 +90,7 @@ export default class FaustNode extends FaustDynamicNode<{ code: string }, { voic
         this.meta = factoryMeta;
         this.inlets = (inlets || 1) + (node instanceof AWN ? node.parameters.size : 0);
         this.outlets = outlets + 1;
-        this.connectAll();
+        this.connectAudio();
         this.outlet(this.outlets - 1, this.state.node);
     }
     handleDestroy = () => {

@@ -260,7 +260,7 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
         }
         const { meta, args, props, rect, presentationRect } = boxes[0];
         if (boxes.length === 1) {
-            this.setState({ meta, args, props, rect, presentationRect });
+            this.setState({ meta, args: args.slice(), props: { ...props }, rect, presentationRect });
             return;
         }
         const commonProps = { ...meta.props };
@@ -436,7 +436,7 @@ class CodeEditor extends React.PureComponent<{ patcher: Patcher }, { value: stri
     }
 }
 export default class RightMenu extends React.PureComponent<{ patcher: Patcher }, { active: TPanels; codePanel: boolean; audioOn: boolean }> {
-    state = { active: TPanels.None, codePanel: false, audioOn: false };
+    state = { active: TPanels.None, codePanel: false, audioOn: this.props.patcher.env.audioCtx.state === "running" };
     refDivPane = React.createRef<HTMLDivElement>();
     refCode = React.createRef<CodeEditor>();
     refConsole = React.createRef<Console>();

@@ -288,6 +288,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
         this.box.object.error(error);
         this.box.object.error(errorInfo.componentStack);
+        console.error(error); // eslint-disable-line no-console
+        console.error(errorInfo.componentStack); // eslint-disable-line no-console
     }
     render() {
         const { box } = this;

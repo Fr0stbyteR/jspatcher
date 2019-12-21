@@ -210,7 +210,7 @@ export class comment extends BaseObject<{ value: string }, {}, [], [], [string]>
             this.outlets = 0;
         });
         this.on("updateArgs", (args) => {
-            if (!this.data.hasOwnProperty("text")) this.data.value = args.join(" ");
+            if (!this.data.hasOwnProperty("value")) this.data.value = args.join(" ");
         });
     }
     uiComponent: typeof BaseUI = CommentUI;

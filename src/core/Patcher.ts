@@ -3,7 +3,7 @@ import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
 import Importer from "./objects/importer/Importer";
-import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect } from "./types";
+import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta } from "./types";
 
 import Base, { AnyObject } from "./objects/Base";
 import Std from "./objects/Std";
@@ -18,8 +18,9 @@ import JSPWebAudio from "./objects/WebAudio/Imports";
 import live from "./objects/live/exports";
 import faust from "./objects/faust/exports";
 import Env from "../env";
+import SubPatcher, { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 
-const Packages: TPackage = { Base, Std, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live, faust };
+const Packages: TPackage = { Base, Std, SubPatcher, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live, faust };
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     _env: Env;
@@ -27,7 +28,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     boxes: { [key: string]: Box };
     props: TPatcherProps;
     _state: TPatcherState;
-    private _packages: TPackage;
+    _inletAudioConnections: TPatcherAudioConnection[] = [];
+    _outletAudioConnections: TPatcherAudioConnection[] = [];
     constructor(envIn: Env) {
         super();
         this.setMaxListeners(4096);
@@ -53,7 +55,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this._state.libGen = this.packageRegister(GenOps, {});
         this._state.libFaust = this.packageRegister(FaustOps, {});
         this._state.lib = this._state.libJS;
-        this._packages = Packages;
         this.clear();
     }
     packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject }, path?: string) {
@@ -310,6 +311,91 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         if (!srcOuts || !destIns) return result;
         srcOuts.forEach(idOut => destIns.forEach(idIn => (idIn === idOut ? result.push(idIn) : undefined)));
         return result;
+    }
+    fn(data: any, inlet: number) {
+        this.emit("inlet", { data, inlet });
+    }
+    outlet(outlet: number, data: any) {
+        this.emit("outlet", { data, outlet });
+    }
+    get inletAudioConnections() {
+        return this._inletAudioConnections;
+    }
+    get outletAudioConnections() {
+        return this._outletAudioConnections;
+    }
+    connectAudioInlet(index: number) {
+        this.emit("connectAudioInlet", index);
+    }
+    connectAudioOutlet(index: number) {
+        this.emit("connectAudioOutlet", index);
+    }
+    disconnectAudioInlet(index: number) {
+        this.emit("disconnectAudioInlet", index);
+    }
+    disconnectAudioOutlet(index: number) {
+        this.emit("disconnectAudioOutlet", index);
+    }
+    changeIO() {
+        this.emit("ioChanged", this.meta);
+    }
+    inspectAudioIO() {
+        const iMap: boolean[] = [];
+        const oMap: boolean[] = [];
+        for (const boxID in this.boxes) {
+            const box = this.boxes[boxID];
+            if (box.object instanceof AudioIn) iMap[box.object.state.index - 1] = true;
+            else if (box.object instanceof AudioOut) oMap[box.object.state.index - 1] = true;
+        }
+        for (let i = 0; i < this._inletAudioConnections.length; i++) {
+            if (!iMap[i]) delete this._inletAudioConnections[i];
+        }
+        for (let i = 0; i < this._outletAudioConnections.length; i++) {
+            if (!oMap[i]) delete this._outletAudioConnections[i];
+        }
+    }
+    get meta(): TMeta {
+        const { metaFromPatcher } = this;
+        return {
+            package: this.props.package || "",
+            name: this.props.name || "",
+            icon: null,
+            author: this.props.author || "",
+            version: this.props.version || "",
+            description: this.props.description || "",
+            ...metaFromPatcher
+        };
+    }
+    get metaFromPatcher(): { inlets: TMeta["inlets"]; outlets: TMeta["outlets"]; args: TMeta["args"]; props: TMeta["props"] } {
+        const inlets: TMeta["inlets"] = [];
+        const outlets: TMeta["outlets"] = [];
+        for (const boxID in this.boxes) {
+            const box = this.boxes[boxID];
+            if (box.object instanceof In) {
+                inlets[box.object.state.index - 1] = {
+                    isHot: true,
+                    type: (box as Box<In>).props.type || "anything",
+                    description: (box as Box<In>).props.description || ""
+                };
+            } else if (box.object instanceof AudioIn) {
+                inlets[box.object.state.index - 1] = {
+                    isHot: true,
+                    type: "signal",
+                    description: (box as Box<AudioIn>).props.description || ""
+                };
+            } else if (box.object instanceof Out) {
+                outlets[box.object.state.index - 1] = {
+                    type: (box as Box<Out>).props.type || "anything",
+                    description: (box as Box<Out>).props.description || ""
+                };
+            } else if (box.object instanceof AudioOut) {
+                outlets[box.object.state.index - 1] = {
+                    type: "signal",
+                    description: (box as Box<AudioOut>).props.description || ""
+                };
+            }
+        }
+        return { inlets, outlets, args: [], props: {} };
     }
     log(message: string) {
         this.newLog("none", "Patcher", message, this);
