@@ -1,17 +1,11 @@
 *:focus {
     outline: none;
 }
-#left {
+.ui-left {
     display: flex;
     position: relative;
     flex-direction: column;
     flex: 1 1 100%;
-    & > #topmenu {
-        position: relative;
-        flex: 0 0 auto;
-        width: auto;
-        /*overload semantic 100% width*/
-    }
     & > .patcher-container {
         position: relative;
         overflow: auto;
@@ -19,7 +13,7 @@
         display: block;
     }
 }
-#right {
+.ui-right {
     display: flex;
     position: relative;
     flex-direction: row;

@@ -164,7 +164,7 @@ export class LineUI extends React.PureComponent<P, S> {
         const dBezierT = Math.min(divStyle.height, dStartT + Math.max(5, (divStyle.height - 20) * 0.2));
         const d = "M " + dStartL + " " + dStartT + " Q " + dStartL + " " + dBezierT + " " + dMidL + " " + dMidT + " T " + dEndL + " " + dEndT; // Faster
         return (
-            <div className={className} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
+            <div className={className} tabIndex={0} style={divStyle} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
                     <path className="normal" d={d} ref={this.refPath} />
                     {this.state.type === "audio" ? <path className="audio" d={d} /> : undefined}
@@ -187,7 +187,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
         this.props.patcher.on("tempLine", this.handleNewLine);
     }
     componentWillUnmount() {
-        this.props.patcher.on("tempLine", this.handleNewLine);
+        this.props.patcher.off("tempLine", this.handleNewLine);
     }
     handleNewLine = (e: { findSrc: boolean; from: [string, number] }) => {
         const { findSrc, from } = e;
@@ -279,7 +279,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
     render() {
         if (!this.state.show) {
             return (
-                <div className="line" id="line-temp" ref={this.refDiv} />
+                <div className="line" ref={this.refDiv} />
             );
         }
         const start = this.state.srcPos;
@@ -298,7 +298,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
         const d = ["M", dStart[0], dStart[1], "Q", dBezier[0], dBezier[1], ",", dMid[0], dMid[1], "T", dEnd[0], dEnd[1]];
         const dJoined = d.join(" ");
         return (
-            <div className="line dragging" id="line-temp" tabIndex={0} style={divStyle} ref={this.refDiv}>
+            <div className="line dragging" tabIndex={0} style={divStyle} ref={this.refDiv}>
                 <svg width={divStyle.width} height={divStyle.height}>
                     <path className="normal" d={dJoined} ref={this.refPath} />
                 </svg>

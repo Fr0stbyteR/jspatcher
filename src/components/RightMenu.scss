@@ -1,4 +1,4 @@
-#right {
+.ui-right {
     & > div.resize-handler-w {
         position: absolute;
         display: block;
@@ -8,13 +8,18 @@
         cursor: w-resize;
         z-index: 1;
     }
-    & > #right-menu {
+    & > .right-menu {
         position: relative;
-        width: auto;
+        width: auto !important;
         z-index: 0;
-        display: flex;
+        display: flex !important;
+        margin: 0px !important;
+        border-radius: 0px !important;
+        & > .item:first-child, .item:last-child {
+            border-radius: 0px !important;
+        }
     }
-    & > #right-pane {
+    & > .right-pane {
         position: relative;
         display: flex;
         flex-direction: column;
@@ -24,7 +29,7 @@
         min-width: 200px;
         background-color: #1b1c1d;
         & > h5 {
-            margin: 8px;
+            margin: 8px !important;
             display: block;
             position: relative;
             flex: 0 0 auto;
@@ -41,6 +46,7 @@
                 overflow: auto;
                 display: block;
                 margin: 0px;
+                border-radius: 0px;
                 & tbody {
                     display: table;
                     width: 100%;
@@ -54,9 +60,13 @@
             }
             & > .menu {
                 margin: 0px;
+                border-radius: 0px !important;
+                & > .item:first-child, .item:last-child {
+                    border-radius: 0px !important;
+                }
             }
         }
-        & > div#right-pane-inspector {
+        & > div.right-pane-inspector {
             & .division-name {
                 font-weight: bold;
                 padding-left: 30px;

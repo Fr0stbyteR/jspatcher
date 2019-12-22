@@ -1,6 +1,5 @@
 import * as Util from "util";
 import { DefaultObject, Bang } from "./Base";
-import "./Std.scss";
 import { TMeta } from "../types";
 
 class StdObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {

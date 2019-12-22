@@ -47,6 +47,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         if (this._parsed.args.length) this.args = this._parsed.args;
         Object.assign(this.props, this._parsed.props);
         this._object = this._patcher.createObject(this._parsed, this) as T;
+        this._object.postInit();
     }
     /**
      * Main function when receive data from a inlet (base 0)
@@ -181,6 +182,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
             this.presentationSize = defaultSize;
         }
         this.emit("textChanged", this);
+        this._object.emit("metaChanged", this._object.meta);
         this._patcher.emit("graphChanged");
         return this;
     }

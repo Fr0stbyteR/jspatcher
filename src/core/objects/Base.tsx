@@ -70,8 +70,15 @@ export abstract class AbstractObject<
         this.subscribe();
         this.emit("preInit");
         this.update(this.box.args, this.box.props);
-        this.emit("postInit");
         return this;
+    }
+    /**
+     * Will be called after the object attached to box
+     *
+     * @memberof AbstractObject
+     */
+    postInit() {
+        this.emit("postInit");
     }
     /**
      * Do everything here

@@ -183,7 +183,7 @@ export default class TopMenu extends React.PureComponent {
     }
     render() {
         return (
-            <Menu inverted size="mini" fixed={"top"} id="top-menu">
+            <Menu inverted size="mini" className="top-menu">
                 <FileMenu {...this.props} ref={this.refFileMenu} />
                 <EditMenu {...this.props} ref={this.refEditMenu} />
             </Menu>

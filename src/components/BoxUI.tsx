@@ -305,7 +305,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         if (this.state.selected) classArray.push("selected");
         if (this.state.presentation) classArray.push("presentation");
         return (
-            <div className={classArray.join(" ")} id={this.props.id} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
+            <div className={classArray.join(" ")} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
                 {
                     this.state.inPresentationMode ? undefined : <>
                         <Inlets patcher={this.props.patcher} box={box} />

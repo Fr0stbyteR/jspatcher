@@ -508,7 +508,7 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
     render() {
         return (
             <>
-                <Menu icon vertical inverted size="mini" fixed={"left"} id="right-menu">
+                <Menu icon vertical inverted size="mini" className="right-menu">
                     <Menu.Item name={TPanels.Console} active={this.state.active === TPanels.Console} onClick={this.handleItemClick}>
                         <Icon name="bars" color={this.state.active === TPanels.Console ? "teal" : "grey"} inverted />
                     </Menu.Item>
@@ -523,15 +523,15 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
                         <Icon name={this.state.audioOn ? "volume up" : "volume off"} color={this.state.audioOn ? "teal" : "grey"} inverted />
                     </Menu.Item>
                 </Menu>
-                <div id="right-pane" hidden={this.state.active === TPanels.None} ref={this.refDivPane}>
+                <div className="right-pane" hidden={this.state.active === TPanels.None} ref={this.refDivPane}>
                     <Header as="h5" inverted color="grey" content={this.state.active} />
-                    <div id="right-pane-code-editor" hidden={this.state.active !== TPanels.Code}>
+                    <div className="right-pane-code-editor" hidden={this.state.active !== TPanels.Code}>
                         {this.state.active === TPanels.Code ? <CodeEditor { ...this.props } ref={this.refCode} /> : <></> }
                     </div>
-                    <div id="right-pane-inspector" hidden={this.state.active !== TPanels.Inspector}>
+                    <div className="right-pane-inspector" hidden={this.state.active !== TPanels.Inspector}>
                         {this.state.active === TPanels.Inspector ? <Inspector { ...this.props } ref={this.refInspector} /> : <></> }
                     </div>
-                    <div id="right-pane-console" hidden={this.state.active !== TPanels.Console}>
+                    <div className="right-pane-console" hidden={this.state.active !== TPanels.Console}>
                         <Console { ...this.props } ref={this.refConsole} />
                     </div>
                 </div>

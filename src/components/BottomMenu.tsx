@@ -29,7 +29,7 @@ export default class BottomMenu extends React.PureComponent<P, S> {
     handleClickPresentation = () => this.props.patcher.presentation = !this.state.presentation;
     render() {
         return (
-            <Menu inverted icon size="mini" fixed={"bottom"} id="bottom-menu">
+            <Menu inverted icon size="mini" className="bottom-menu">
                 <Menu.Item name="lock" onClick={this.handleClickLock}>
                     <Icon name={this.state.locked ? "lock" : "unlock"} color="grey" size="small" inverted />
                 </Menu.Item>

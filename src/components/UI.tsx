@@ -15,14 +15,14 @@ export default class UI extends React.PureComponent {
     render() {
         return (
             <>
-                <div id="left">
+                <div className="ui-left">
                     <TopMenu {...this.props} />
                     <div className="patcher-container">
                         <PatcherUI {...this.props} />
                     </div>
                     <BottomMenu {...this.props} />
                 </div>
-                <div id="right" onKeyDown={this.handleKeyDown}>
+                <div className="ui-right" onKeyDown={this.handleKeyDown}>
                     <RightMenu {...this.props} />
                 </div>
             </>
