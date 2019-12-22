@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Menu, Dropdown } from "semantic-ui-react";
+import { Menu, Dropdown, Ref } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import "./TopMenu.scss";
 import { TPatcher, TMaxClipboard, TPatcherMode } from "../core/types";
@@ -152,6 +152,7 @@ class EditMenu extends React.PureComponent {
 }
 export default class TopMenu extends React.PureComponent {
     props: { patcher: Patcher };
+    ref = React.createRef<HTMLDivElement>();
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();
     handleKeyDown = (e: KeyboardEvent) => {
@@ -183,10 +184,12 @@ export default class TopMenu extends React.PureComponent {
     }
     render() {
         return (
-            <Menu inverted size="mini" className="top-menu">
-                <FileMenu {...this.props} ref={this.refFileMenu} />
-                <EditMenu {...this.props} ref={this.refEditMenu} />
-            </Menu>
+            <Ref innerRef={this.ref}>
+                <Menu inverted size="mini" className="top-menu">
+                    <FileMenu {...this.props} ref={this.refFileMenu} />
+                    <EditMenu {...this.props} ref={this.refEditMenu} />
+                </Menu>
+            </Ref>
         );
     }
 }

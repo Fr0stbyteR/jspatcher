@@ -314,7 +314,7 @@ export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends P
         return (
             <>
                 <DefaultUI {...this.props} containerProps={containerProps} />
-                <Modal {...modalProps} onKeyDown={this.handleKeyDown} />
+                <Modal onKeyDown={this.handleKeyDown} {...modalProps} />
             </>
         );
     }

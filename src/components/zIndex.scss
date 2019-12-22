@@ -42,3 +42,8 @@
         z-index: 10;
     }
 }
+.ui-left {
+    & > .ui.menu {
+        z-index: 100;
+    }
+}

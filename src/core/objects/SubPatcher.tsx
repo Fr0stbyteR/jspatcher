@@ -315,7 +315,7 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
         );
         const containerProps = { ...this.props.containerProps };
         if (!containerProps.onDoubleClick) containerProps.onDoubleClick = this.handleDoubleClick;
-        const modalProps: StrictModalProps = { ...this.props.modalProps, children, className: "subpatcher", open: this.state.modalOpen, onClose: this.handleClose, basic: true, size: "fullscreen", closeIcon: true };
+        const modalProps: StrictModalProps & { onKeyDown: any } = { ...this.props.modalProps, children, className: "subpatcher", open: this.state.modalOpen, onClose: this.handleClose, onKeyDown: undefined, basic: true, size: "fullscreen", closeIcon: true };
         return <DefaultPopupUI {...this.props} modalProps={modalProps} containerProps={containerProps} />;
     }
 }
@@ -327,7 +327,7 @@ export class patcher extends DefaultAudioObject<Patcher, TSubPatcherState, any[]
         optional: true,
         default: "",
         description: "Name of the subpatcher"
-    }, {
+    }, { // TODO Separate other modes
         type: "enum",
         enums: ["js", "max", "gen", "faust"],
         optional: true,
@@ -335,7 +335,7 @@ export class patcher extends DefaultAudioObject<Patcher, TSubPatcherState, any[]
         description: "Mode of the subpatcher"
     }];
     state: TSubPatcherState = { map: subPatchersMap, key: "", mode: "js" };
-    _meta: TMeta = AudioOut.meta;
+    _meta: TMeta = patcher.meta;
     get meta() {
         return this._meta;
     }
@@ -370,7 +370,7 @@ export class patcher extends DefaultAudioObject<Patcher, TSubPatcherState, any[]
         };
         const unsubscribePatcher = () => {
             const patcher = this.data;
-            if (!patcher) return;
+            if (!(this.data instanceof Patcher)) return;
             patcher.off("outlet", handlePatcherOutlet);
             patcher.off("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
             patcher.off("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
