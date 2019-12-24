@@ -25,7 +25,7 @@ class Console extends React.PureComponent<{ patcher: Patcher }, { cached: TPatch
             table = this.refTable.current;
             if (table.scrollTop + table.clientHeight !== table.scrollHeight) bottom = false;
         }
-        const cached = this.state.cached;
+        const cached = this.state.cached.slice();
         cached.push(log);
         this.setState({ cached }, () => (table && bottom ? table.scrollTop = table.scrollHeight : undefined));
     }

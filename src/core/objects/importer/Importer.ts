@@ -47,7 +47,7 @@ export default class Importer {
             static package = pkgName;
             static root = root;
             static path = path;
-            static _name = path[path.length - 1];
+            static get _name() { return path[path.length - 1]; }
         };
     }
     static async importFrom(address: string, pkgName: string) {

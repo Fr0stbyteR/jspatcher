@@ -327,9 +327,7 @@ export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Part
     }
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    get editorLanguage() {
-        return "javascript";
-    }
+    editorLanguage = "javascript";
     get code() {
         return "";
     }

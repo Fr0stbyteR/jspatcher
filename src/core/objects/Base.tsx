@@ -215,6 +215,17 @@ export abstract class AbstractObject<
     set data(dataIn: D) {
         this._box.data = dataIn as any;
     }
+    /**
+     * Get props value from box, if not defined, get from metadata
+     *
+     * @template K
+     * @param {K} key
+     * @returns {P[K]}
+     * @memberof AbstractObject
+     */
+    getProp<K extends keyof P>(key: K): P[K] {
+        return typeof this.box.props[key] === "undefined" ? this.meta.props[key as string].default : this.box.props[key];
+    }
     get box() {
         return this._box;
     }
@@ -427,13 +438,13 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     }
     connectAudioInlet(portIn?: number) {
         this.box.inletLines.forEach((lines, port) => {
-            if (port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].enable());
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].enable());
         });
         return this;
     }
     connectAudioOutlet(portIn?: number) {
         this.box.outletLines.forEach((lines, port) => {
-            if (port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].enable());
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].enable());
         });
         return this;
     }
@@ -443,13 +454,13 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     }
     disconnectAudioInlet(portIn?: number) {
         this.box.inletLines.forEach((lines, port) => {
-            if (port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].disable());
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].disable());
         });
         return this;
     }
     disconnectAudioOutlet(portIn?: number) {
         this.box.outletLines.forEach((lines, port) => {
-            if (port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].disable());
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].disable());
         });
         return this;
     }

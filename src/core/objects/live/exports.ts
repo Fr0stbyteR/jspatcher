@@ -5,6 +5,7 @@ import { LiveSlider } from "./slider";
 import { LiveTab } from "./tab";
 import { LiveToggle } from "./toggle";
 import { LiveText } from "./text";
+import { LiveMeter } from "./meter";
 
 export default {
     numbox: LiveNumbox,
@@ -13,5 +14,6 @@ export default {
     slider: LiveSlider,
     tab: LiveTab,
     toggle: LiveToggle,
-    text: LiveText
+    text: LiveText,
+    "meter~": LiveMeter
 };

@@ -412,7 +412,7 @@ for (const className in opMap.mathOps) {
     }));
     const outletDesc = `${op.symbol}(${new Array(op.inlets).fill("_").join(", ")})`;
     const Op = class extends FaustOp {
-        static _name = className;
+        static get _name() { return className; }
         static description = op.desc;
         static inlets: TMeta["inlets"] = inletsMeta;
         static outlets: TMeta["outlets"] = [{

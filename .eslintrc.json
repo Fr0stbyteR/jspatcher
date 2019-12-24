@@ -27,6 +27,7 @@
         "jsx": true,
         "useJSXTextNode": true
     },
+    "ignorePatterns": ["lib.*.d.ts"],
     "rules": {
         "array-callback-return": "warn",
         "arrow-parens": ["warn", "as-needed", { "requireForBlockBody": true }],

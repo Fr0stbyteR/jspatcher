@@ -194,12 +194,12 @@ for (const key in functions) {
     const f = functions[key];
     if (f.length === 1) {
         Ops[key] = class extends JSUnaryOp {
-            static _name = key;
+            static get _name() { return key; }
             static execute = f;
         };
     } else if (f.length === 2) {
         Ops[key] = class extends JSBinaryOp {
-            static _name = key;
+            static get _name() { return key; }
             static execute = f;
         };
     }
