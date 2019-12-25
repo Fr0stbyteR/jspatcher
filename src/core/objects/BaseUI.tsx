@@ -34,6 +34,7 @@ export abstract class AbstractUI<
     static editableOnUnlock: boolean;
     state: S & AbstractUIAdditionalState = {
         ...this.state,
+        ...this.objectProps,
         width: this.box.width,
         height: this.box.height
     };
@@ -45,6 +46,13 @@ export abstract class AbstractUI<
     }
     get box(): Box<T> {
         return this.props.object.box;
+    }
+    get objectProps() {
+        const props: Partial<S & BaseUIState> = {};
+        for (const key in this.object.meta.props) {
+            if (this.object.meta.props[key].isUIState) props[key as keyof (S & BaseUIState)] = (this.object as AnyObject).getProp(key);
+        }
+        return props as S & BaseUIState;
     }
     private _handleUIUpdate = (e: Pick<S & AbstractUIAdditionalState, keyof (S & AbstractUIAdditionalState)>) => this.setState(e);
     private _handleResized = () => {
@@ -80,11 +88,8 @@ export type BaseUIState = {
 export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIState> {
     state: S & BaseUIState = {
         ...this.state,
-        hidden: this.box.props.hidden || false,
         background: this.box.background || false,
-        presentation: this.box.presentation || false,
-        ignoreClick: this.box.props.ignoreClick || false,
-        hint: this.box.props.hint || ""
+        presentation: this.box.presentation || false
     };
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     static editableOnUnlock = false;
@@ -127,14 +132,6 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
     static editableOnUnlock = true;
     state: S & DefaultUIState & DefaultUIAdditionalState = {
         ...this.state,
-        bgColor: this.box.props.bgColor || "rgb(51, 51, 51)",
-        borderColor: this.box.props.borderColor || "rgb(125, 126, 132)",
-        textColor: this.box.props.textColor || "rgb(255, 255, 255)",
-        fontFamily: this.box.props.fontFamily || "Lato",
-        fontSize: this.box.props.fontSize || 12,
-        fontStyle: this.box.props.fontStyle || "normal",
-        fontWeight: this.box.props.fontWeight || "normal",
-        textAlign: this.box.props.textAlign || "left",
         text: this.box.text || "",
         loading: false,
         dropdown$: -1

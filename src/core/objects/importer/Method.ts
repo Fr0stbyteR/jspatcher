@@ -90,7 +90,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
     }
     callback = () => this.outletAll([this.state.instance, this.state.result, ...this.state.inputs] as O<Static>);
     output() {
-        if (this.state.result instanceof Promise && !this.box.props.sync) {
+        if (this.state.result instanceof Promise && !this.getProp("sync")) {
             this.loading = true;
             this.state.result.then((r) => {
                 this.loading = false;

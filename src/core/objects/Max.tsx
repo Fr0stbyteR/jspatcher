@@ -34,7 +34,7 @@ class mtof extends DefaultMaxObject<{}, {}, [number | number[]], [number | numbe
             this.outlets = 1;
         });
         this.on("inlet", ({ data, inlet }) => {
-            const base = this.box.props.base || 440;
+            const base = this.getProp("base");
             if (inlet === 0) {
                 if (typeof data === "number") {
                     this.outlet(0, base * 2 ** ((data - 69) / 12));
@@ -70,7 +70,7 @@ class ftom extends DefaultMaxObject<{}, {}, [number | number[]], [number | numbe
             this.outlets = 1;
         });
         this.on("inlet", ({ data, inlet }) => {
-            const base = this.box.props.base || 440;
+            const base = this.getProp("base");
             if (inlet === 0) {
                 if (typeof data === "number") {
                     this.outlet(0, Math.log(data / base) / Math.log(2) * 12 + 69);

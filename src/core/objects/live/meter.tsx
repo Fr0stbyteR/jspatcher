@@ -1,8 +1,10 @@
+import * as React from "react";
 import { LiveObject } from "./Base";
 import { BaseAudioObject } from "../Base";
 import { TMeta } from "../../types";
 import { RMSRegister } from "../dsp/AudioWorklet/RMS";
 import { atodb } from "../../../utils";
+import { BaseUI, BaseUIState } from "../BaseUI";
 
 interface LiveMeterProps {
     orientation: "vertical" | "horizontal";
@@ -22,7 +24,54 @@ interface LiveMeterProps {
     hotColor: string;
     overloadColor: string;
 }
-type LiveMeterUIState = Exclude<LiveMeterProps, "thresholdLinear" | "thresholdDB" | "windowSize" | "speedLim"> & { value: number[] };
+type LiveMeterUIState = Exclude<LiveMeterProps, "thresholdLinear" | "thresholdDB" | "windowSize" | "speedLim"> & { value: number[] } & BaseUIState;
+export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
+    state: LiveMeterUIState = {
+        ...this.state,
+        value: []
+    };
+    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
+    refCanvas = React.createRef<HTMLCanvasElement>();
+    className = "live-meter";
+    paintScheduled = false;
+    $paintRaf = -1;
+    paintCallback = () => {
+        this.paint();
+        this.$paintRaf = (-1 * Math.round(Math.abs(60 / this.state.frameRate))) || -1;
+        this.paintScheduled = false;
+    }
+    noPaintCallback = () => {
+        this.$paintRaf++;
+        this.paintScheduled = false;
+        this.schedulePaint();
+    }
+    schedulePaint() {
+        if (this.paintScheduled) return;
+        if (this.$paintRaf === -1) this.$paintRaf = requestAnimationFrame(this.paintCallback);
+        else if (this.$paintRaf < -1) requestAnimationFrame(this.noPaintCallback);
+        this.paintScheduled = true;
+    }
+    componentDidMount() {
+        super.componentDidMount();
+        this.schedulePaint();
+    }
+    componentDidUpdate() { // But super.componentDidUpdate is not a function
+        this.schedulePaint();
+    }
+    paint() {
+    }
+    render() {
+        return (
+            <BaseUI {...this.props}>
+                <canvas
+                    ref={this.refCanvas}
+                    className={["live-component", this.className].join(" ")}
+                    style={{ position: "absolute", display: "inline-block", width: "100%", height: "100%" }}
+                />
+            </BaseUI>
+        );
+    }
+}
 export class LiveMeter extends BaseAudioObject<{}, {}, [], [number[]], [], LiveMeterProps, LiveMeterUIState> {
     static package = LiveObject.package;
     static author = LiveObject.author;
@@ -141,8 +190,10 @@ export class LiveMeter extends BaseAudioObject<{}, {}, [], [number[]], [], LiveM
         const request = async () => {
             if (this.node && !this.node.destroyed) {
                 const rms = await this.node.getRMS();
-                if (!lastRMS.every((v, i) => v === rms[i]) || lastRMS.length !== rms.length) {
-                    const result = this.getProp("mode") === "deciBel" ? rms.map(v => atodb(v)) : rms;
+                const mode = this.getProp("mode");
+                const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
+                if (!lastRMS.every((v, i) => Math.abs(v - rms[i]) < thresh) || lastRMS.length !== rms.length) {
+                    const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
                     this.outlet(0, result);
                     this.updateUI({ value: result });
                     lastRMS = rms;

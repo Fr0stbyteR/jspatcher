@@ -21,24 +21,6 @@ export const getDisplayValue = (value: number, type: string, unitstyle: string, 
 };
 export type LiveUIState = LiveUIProps & BaseUIState;
 export class LiveUI<T extends LiveObject, S extends Partial<LiveUIProps> & { [key: string]: any } = {}> extends BaseUI<T, {}, S & LiveUIProps> {
-    state: S & LiveUIState = {
-        ...this.state,
-        value: typeof this.box.props.value === "number" ? this.box.props.value : this.object.meta.props.value.default,
-        min: typeof this.box.props.min === "number" ? this.box.props.min : this.object.meta.props.min.default,
-        max: typeof this.box.props.max === "number" ? this.box.props.max : this.object.meta.props.max.default,
-        step: typeof this.box.props.step === "number" ? this.box.props.step : this.object.meta.props.step.default,
-        type: this.box.props.type || this.object.meta.props.type.default,
-        enums: this.box.props.enums || this.object.meta.props.enums.default,
-        active: typeof this.box.props.active === "boolean" ? this.box.props.active : this.object.meta.props.active.default,
-        focus: typeof this.box.props.focus === "boolean" ? this.box.props.focus : this.object.meta.props.focus.default,
-        shortName: this.box.props.shortName || this.object.meta.props.shortName.default,
-        longName: this.box.props.longName || this.object.meta.props.longName.default,
-        unitStyle: this.box.props.unitStyle || this.object.meta.props.unitStyle.default,
-        units: this.box.props.units || this.object.meta.props.units.default,
-        exponent: typeof this.box.props.exponent === "number" ? this.box.props.exponent : this.object.meta.props.exponent.default,
-        speedLim: typeof this.box.props.speedLim === "number" ? this.box.props.speedLim : this.object.meta.props.speedLim.default,
-        frameRate: typeof this.box.props.frameRate === "number" ? this.box.props.frameRate : this.object.meta.props.frameRate.default
-    };
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     refCanvas = React.createRef<HTMLCanvasElement>();
     className: string;
@@ -319,15 +301,15 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
      * @memberof LiveObject
      */
     toValidValue(value: number): number {
-        const min = this.box.props.min || 0;
-        const max = this.box.props.max || 127;
-        const step = this.box.props.step || 1;
+        const min = this.getProp("min");
+        const max = this.getProp("max");
+        const step = this.getProp("step");
         const v = Math.min(max, Math.max(min, value));
         return min + Math.floor((v - min) / step) * step;
     }
     toDisplayValue(value: number): string {
-        const { type, unitStyle, units, enums } = this.box.props;
-        return getDisplayValue(value || 0, type || "int", unitStyle || "int", units || "", enums || [""]);
+        const { type, unitStyle, units, enums } = this.props;
+        return getDisplayValue(value, type, unitStyle, units, enums);
     }
     validateValue() {
         this.state.value = this.toValidValue(this.state.value);

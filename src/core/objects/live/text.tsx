@@ -1,4 +1,4 @@
-import { LiveUI, LiveObject, LiveUIState } from "./Base";
+import { LiveUI, LiveObject } from "./Base";
 import { TMeta } from "../../types";
 import { Bang } from "../Base";
 import { fillRoundedRect } from "../../../utils";
@@ -22,25 +22,6 @@ interface LiveTextProps extends LiveUIProps {
     textOn: string;
 }
 class LiveTextUI extends LiveUI<LiveText, LiveTextProps> {
-    state: LiveTextProps & LiveUIState = {
-        ...this.state,
-        bgColor: this.box.props.bgColor || this.object.meta.props.bgColor.default,
-        bgOnColor: this.box.props.bgOnColor || this.object.meta.props.bgOnColor.default,
-        activeBgColor: this.box.props.activeBgColor || this.object.meta.props.activeBgColor.default,
-        activeBgOnColor: this.box.props.activeBgOnColor || this.object.meta.props.activeBgOnColor.default,
-        borderColor: this.box.props.borderColor || this.object.meta.props.borderColor.default,
-        focusBorderColor: this.box.props.focusBorderColor || this.object.meta.props.focusBorderColor.default,
-        textColor: this.box.props.textColor || this.object.meta.props.textColor.default,
-        textOnColor: this.box.props.textOnColor || this.object.meta.props.textOnColor.default,
-        activeTextColor: this.box.props.activeTextColor || this.object.meta.props.activeTextColor.default,
-        activeTextOnColor: this.box.props.activeTextOnColor || this.object.meta.props.activeTextOnColor.default,
-        fontFamily: this.box.props.fontFamily || this.object.meta.props.fontFamily.default,
-        fontSize: this.box.props.fontSize || this.object.meta.props.fontSize.default,
-        fontFace: this.box.props.fontFace || this.object.meta.props.fontFace.default,
-        mode: this.box.props.mode || this.object.meta.props.mode.default,
-        text: this.box.props.text || this.object.meta.props.text.default,
-        textOn: this.box.props.textOn || this.object.meta.props.textOn.default
-    }
     className = "live-text";
     inTouch = false;
     paint() {

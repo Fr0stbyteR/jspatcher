@@ -55,7 +55,7 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
     }
     callback = () => this.outletAll([this.state.instance, this.state.result] as O<Static>);
     output() {
-        if (this.state.result instanceof Promise && !this.box.props.sync) {
+        if (this.state.result instanceof Promise && !this.getProp("sync")) {
             this.loading = true;
             this.state.result.then((r) => {
                 this.loading = false;

@@ -216,15 +216,28 @@ export abstract class AbstractObject<
         this._box.data = dataIn as any;
     }
     /**
-     * Get props value from box, if not defined, get from metadata
+     * Get prop value from box, if not defined, get from metadata default
      *
      * @template K
      * @param {K} key
      * @returns {P[K]}
      * @memberof AbstractObject
      */
-    getProp<K extends keyof P>(key: K): P[K] {
+    getProp<K extends keyof P = keyof P>(key: K): P[K] {
         return typeof this.box.props[key] === "undefined" ? this.meta.props[key as string].default : this.box.props[key];
+    }
+    /**
+     * Get all props from box, if not defined, get from metadata default
+     *
+     * @readonly
+     * @memberof AbstractObject
+     */
+    get props(): Partial<P> {
+        const props: Partial<P> = {};
+        for (const key in this.meta.props) {
+            props[key as keyof P] = this.getProp(key as keyof P);
+        }
+        return props;
     }
     get box() {
         return this._box;

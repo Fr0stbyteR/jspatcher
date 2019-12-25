@@ -22,18 +22,6 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderProps & LiveSliderAdditi
     static defaultSize: [number, number] = [120, 45];
     state: LiveSliderProps & LiveUIState & LiveSliderAdditionalState = {
         ...this.state,
-        relative: this.box.props.relative || this.object.meta.props.relative.default,
-        sliderColor: this.box.props.sliderColor || this.object.meta.props.sliderColor.default,
-        triBorderColor: this.box.props.triBorderColor || this.object.meta.props.triBorderColor.default,
-        triColor: this.box.props.triColor || this.object.meta.props.triColor.default,
-        triOnColor: this.box.props.triOnColor || this.object.meta.props.triOnColor.default,
-        textColor: this.box.props.textColor || this.object.meta.props.textColor.default,
-        fontFamily: this.box.props.fontFamily || this.object.meta.props.fontFamily.default,
-        fontSize: this.box.props.fontSize || this.object.meta.props.fontSize.default,
-        fontFace: this.box.props.fontFace || this.object.meta.props.fontFace.default,
-        orientation: this.box.props.orientation || this.object.meta.props.orientation.default,
-        showName: typeof this.box.props.showName === "boolean" ? this.box.props.showName : this.object.meta.props.showName.default,
-        showNumber: typeof this.box.props.showNumber === "boolean" ? this.box.props.showNumber : this.object.meta.props.showNumber.default,
         inputBuffer: ""
     }
     className = "live-slider";

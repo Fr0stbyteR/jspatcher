@@ -23,19 +23,6 @@ type LiveNumboxAdditionalState = { inputBuffer: string };
 class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps & LiveNumboxAdditionalState> {
     state: LiveNumboxProps & LiveUIState & LiveNumboxAdditionalState = {
         ...this.state,
-        bgColor: this.box.props.bgColor || this.object.meta.props.bgColor.default,
-        activeBgColor: this.box.props.activeBgColor || this.object.meta.props.activeBgColor.default,
-        borderColor: this.box.props.borderColor || this.object.meta.props.borderColor.default,
-        focusBorderColor: this.box.props.focusBorderColor || this.object.meta.props.focusBorderColor.default,
-        textColor: this.box.props.textColor || this.object.meta.props.textColor.default,
-        fontFamily: this.box.props.fontFamily || this.object.meta.props.fontFamily.default,
-        fontSize: this.box.props.fontSize || this.object.meta.props.fontSize.default,
-        fontFace: this.box.props.fontFace || this.object.meta.props.fontFace.default,
-        appearance: this.box.props.appearance || this.object.meta.props.appearance.default,
-        triColor: this.box.props.triColor || this.object.meta.props.triColor.default,
-        activeTriColor: this.box.props.activeTriColor || this.object.meta.props.activeTriColor.default,
-        triColor2: this.box.props.triColor2 || this.object.meta.props.triColor2.default,
-        activeTriColor2: this.box.props.activeTriColor2 || this.object.meta.props.activeTriColor2.default,
         inputBuffer: ""
     }
     className = "live-numbox";

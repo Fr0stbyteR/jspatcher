@@ -1,5 +1,6 @@
 const path = require('path');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const config = {
   entry: './src/index.tsx',
@@ -50,7 +51,8 @@ const config = {
     new MonacoWebpackPlugin({
       output: 'monaco',
       languages: ['javascript']
-    })
+    }),
+    // new BundleAnalyzerPlugin()
   ]
 };
 module.exports = (env, argv) => {

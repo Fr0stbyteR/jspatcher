@@ -1,4 +1,4 @@
-import { LiveUI, LiveObject, LiveUIState } from "./Base";
+import { LiveUI, LiveObject } from "./Base";
 import { TMeta } from "../../types";
 import { Bang } from "../Base";
 
@@ -13,15 +13,6 @@ interface LiveToggleProps extends LiveUIProps {
 
 class LiveToggleUI extends LiveUI<LiveToggle, LiveToggleProps> {
     static defaultSize: [number, number] = [30, 30];
-    state: LiveToggleProps & LiveUIState = {
-        ...this.state,
-        bgColor: this.box.props.bgColor || this.object.meta.props.bgColor.default,
-        activeBgColor: this.box.props.activeBgColor || this.object.meta.props.activeBgColor.default,
-        bgOnColor: this.box.props.bgOnColor || this.object.meta.props.bgOnColor.default,
-        activeBgOnColor: this.box.props.activeBgOnColor || this.object.meta.props.activeBgOnColor.default,
-        borderColor: this.box.props.borderColor || this.object.meta.props.borderColor.default,
-        focusBorderColor: this.box.props.focusBorderColor || this.object.meta.props.focusBorderColor.default
-    }
     className = "live-toggle";
     paint() {
         const {
