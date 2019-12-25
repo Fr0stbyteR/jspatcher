@@ -21,7 +21,6 @@ export default class Destination extends JSPAudioNode<AudioDestinationNode, {}, 
             this.inlets = 1;
             this.outlets = 1;
             this.node.channelInterpretation = "discrete";
-            this.node.channelCountMode = "explicit";
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {

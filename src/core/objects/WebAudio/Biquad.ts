@@ -77,7 +77,6 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
             this.inlets = 6;
             this.outlets = 2;
             this.node.channelInterpretation = "discrete";
-            this.node.channelCountMode = "explicit";
         });
         this.on("updateProps", (props) => {
             const paramMap = ["frequency", "detune", "Q", "gain"] as const;

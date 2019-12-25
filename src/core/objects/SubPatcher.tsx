@@ -192,7 +192,6 @@ export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any]
                 if (!this.patcher.inletAudioConnections[$ - 1]) {
                     const node = this.audioCtx.createGain();
                     node.channelInterpretation = "discrete";
-                    node.channelCountMode = "explicit";
                     this.patcher.inletAudioConnections[$ - 1] = { node, index: 0 };
                 }
                 const { node } = this.patcher.inletAudioConnections[$ - 1];
@@ -271,7 +270,6 @@ export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [
                 if (!this.patcher.outletAudioConnections[$ - 1]) {
                     const node = this.audioCtx.createGain();
                     node.channelInterpretation = "discrete";
-                    node.channelCountMode = "explicit";
                     this.patcher.outletAudioConnections[$ - 1] = { node, index: 0 };
                 }
                 const { node } = this.patcher.outletAudioConnections[$ - 1];

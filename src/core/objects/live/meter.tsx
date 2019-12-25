@@ -7,6 +7,7 @@ import { atodb } from "../../../utils";
 import { BaseUI, BaseUIState } from "../BaseUI";
 
 interface LiveMeterProps {
+    active: boolean;
     orientation: "vertical" | "horizontal";
     mode: "deciBel" | "linear";
     clipSize: "normal" | "extended";
@@ -35,6 +36,15 @@ export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
     className = "live-meter";
     paintScheduled = false;
     $paintRaf = -1;
+    normValues: number[] = [];
+    maxValues: number[] = [];
+    maxTimer: number;
+    get canvas() {
+        return this.refCanvas.current;
+    }
+    get ctx() {
+        return this.refCanvas.current ? this.refCanvas.current.getContext("2d") : null;
+    }
     paintCallback = () => {
         this.paint();
         this.$paintRaf = (-1 * Math.round(Math.abs(60 / this.state.frameRate))) || -1;
@@ -59,6 +69,118 @@ export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
         this.schedulePaint();
     }
     paint() {
+        const {
+            width,
+            height,
+            active,
+            mode,
+            value,
+            displayRange,
+            orientation,
+            clipSize,
+            bgColor,
+            coldColor,
+            warmColor,
+            hotColor,
+            overloadColor,
+            inactiveColdColor,
+            inactiveWarmColor
+        } = this.state;
+        const ctx = this.ctx;
+        if (!ctx) return;
+
+        ctx.canvas.width = width;
+        ctx.canvas.height = height;
+
+        this.normValues = value.map((v) => {
+            if (mode === "deciBel") {
+                const [min, max] = displayRange;
+                if (v <= 0) return Math.max(0, (v - min) / -min);
+                return 1 + Math.min(1, v / max);
+            }
+            return v <= 1 ? Math.max(0, v) : 2;
+        });
+        if (this.normValues.length === 0) this.normValues = [0];
+        if (this.normValues.find((v, i) => typeof this.maxValues[i] === "undefined" || v > this.maxValues[i])) {
+            this.maxValues = [...this.normValues];
+            if (this.maxTimer) window.clearTimeout(this.maxTimer);
+            this.maxTimer = window.setTimeout(() => {
+                this.maxValues = [...this.normValues];
+                this.maxTimer = undefined;
+                this.schedulePaint();
+            }, 1000);
+        } else if (this.normValues.find((v, i) => v < this.maxValues[i]) && typeof this.maxTimer === "undefined") {
+            this.maxTimer = window.setTimeout(() => {
+                this.maxValues = [...this.normValues];
+                this.maxTimer = undefined;
+                this.schedulePaint();
+            }, 1000);
+        }
+        const channels = this.normValues.length;
+        const clip = clipSize === "normal" ? 10 : 20;
+        if (orientation === "horizontal") {
+            const warmStop = width - clip - 1;
+            const hotStop = width - clip;
+            const gradient = ctx.createLinearGradient(0, 0, width, 0);
+            gradient.addColorStop(0, active ? coldColor : inactiveColdColor);
+            gradient.addColorStop(warmStop / width, active ? warmColor : inactiveWarmColor);
+            gradient.addColorStop(hotStop / width, active ? hotColor : inactiveWarmColor);
+            gradient.addColorStop(1, active ? overloadColor : inactiveWarmColor);
+            const $height = (height - channels - 1) / this.normValues.length;
+            ctx.fillStyle = bgColor;
+            let $top = 0;
+            this.normValues.forEach((v) => {
+                if (v < 1) ctx.fillRect(0, $top, warmStop, $height);
+                if (v < 2) ctx.fillRect(hotStop, $top, clip, $height);
+                $top += $height + 1;
+            });
+            $top = 0;
+            ctx.fillStyle = gradient;
+            this.normValues.forEach((v, i) => {
+                if (v > 0) ctx.fillRect(0, $top, Math.min(1, v) * warmStop, $height);
+                if (v > 1) ctx.fillRect(hotStop, $top, Math.min(1, (v - 1)) * clip, $height);
+                const histMax = this.maxValues[i];
+                if (typeof histMax === "number" && histMax > v) {
+                    if (histMax <= 1) ctx.fillRect(Math.min(warmStop - 1, histMax * warmStop), $top, 1, $height);
+                    else ctx.fillRect(Math.min(width - 1, hotStop + (histMax - 1) * clip), $top, 1, $height);
+                }
+                $top += $height + 1;
+            });
+        } else {
+            const warmStop = clip + 1;
+            const hotStop = clip;
+            const gradient = ctx.createLinearGradient(0, height, 0, 0);
+            gradient.addColorStop(0, active ? coldColor : inactiveColdColor);
+            gradient.addColorStop((height - warmStop) / height, active ? warmColor : inactiveWarmColor);
+            gradient.addColorStop((height - hotStop) / height, active ? hotColor : inactiveWarmColor);
+            gradient.addColorStop(1, active ? overloadColor : inactiveWarmColor);
+            const $width = (width - channels - 1) / this.normValues.length;
+            ctx.fillStyle = bgColor;
+            let $left = 0;
+            this.normValues.forEach((v) => {
+                if (v < 1) ctx.fillRect($left, warmStop, $width, height - warmStop);
+                if (v < 2) ctx.fillRect($left, 0, $width, hotStop);
+                $left += $width + 1;
+            });
+            $left = 0;
+            ctx.fillStyle = gradient;
+            this.normValues.forEach((v, i) => {
+                if (v > 0) {
+                    const drawHeight = Math.min(1, v) * (height - warmStop);
+                    ctx.fillRect($left, height - drawHeight, $width, drawHeight);
+                }
+                if (v > 1) {
+                    const drawHeight = Math.min(1, (v - 1)) * clip;
+                    ctx.fillRect($left, hotStop - drawHeight, $width, drawHeight);
+                }
+                const histMax = this.maxValues[i];
+                if (typeof histMax === "number" && histMax > v) {
+                    if (histMax <= 1) ctx.fillRect($left, height - histMax * (height - warmStop), $width, 1);
+                    else ctx.fillRect($left, Math.max(0, hotStop - (histMax - 1) * clip), $width, 1);
+                }
+                $left += $width + 1;
+            });
+        }
     }
     render() {
         return (
@@ -87,6 +209,12 @@ export class LiveMeter extends BaseAudioObject<{}, {}, [], [number[]], [], LiveM
         description: "Amplitude value: number[]"
     }]
     static props: TMeta["props"] = {
+        active: {
+            type: "boolean",
+            default: true,
+            description: "Active state",
+            isUIState: true
+        },
         bgColor: {
             type: "color",
             default: "rgb(40, 40, 40)",
@@ -183,20 +311,21 @@ export class LiveMeter extends BaseAudioObject<{}, {}, [], [number[]], [], LiveM
             description: "Redraw Threshold in Linear"
         }
     }
+    uiComponent = LiveMeterUI;
     node: InstanceType<typeof RMSRegister["Node"]>;
     $requestTimer = -1;
     startRequest = () => {
-        let lastRMS: number[] = [];
+        let lastResult: number[] = [];
         const request = async () => {
             if (this.node && !this.node.destroyed) {
                 const rms = await this.node.getRMS();
                 const mode = this.getProp("mode");
                 const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
-                if (!lastRMS.every((v, i) => Math.abs(v - rms[i]) < thresh) || lastRMS.length !== rms.length) {
-                    const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
+                const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
+                if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
                     this.outlet(0, result);
                     this.updateUI({ value: result });
-                    lastRMS = rms;
+                    lastResult = result;
                 }
             }
             scheduleRequest();

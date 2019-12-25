@@ -42,7 +42,6 @@ export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [],
             this.inlets = 3;
             this.outlets = 2;
             this.node.channelInterpretation = "discrete";
-            this.node.channelCountMode = "explicit";
         });
         this.on("updateProps", (props) => {
             try {

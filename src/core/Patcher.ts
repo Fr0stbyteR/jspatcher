@@ -621,14 +621,16 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         delta.x = Math.max(delta.x, 15 - widthLeast[rectKey][2]);
         delta.y = Math.max(delta.y, 15 - heightLeast[rectKey][3]);
         boxes.forEach((box) => {
-            if (delta.x) {
+            const sizingX = box.uiComponent.sizing === "horizontal" || box.uiComponent.sizing === "both";
+            const sizingY = box.uiComponent.sizing === "vertical" || box.uiComponent.sizing === "both";
+            if (delta.x && sizingX) {
                 if (type === "ne" || type === "e" || type === "se") box[rectKey][2] += delta.x;
                 if (type === "sw" || type === "w" || type === "nw") {
                     box[rectKey][2] -= delta.x;
                     box[rectKey][0] += delta.x;
                 }
             }
-            if (delta.y) {
+            if (delta.y && sizingY) {
                 if (type === "se" || type === "s" || type === "sw") box[rectKey][3] += delta.y;
                 if (type === "nw" || type === "n" || type === "ne") {
                     box[rectKey][3] -= delta.y;

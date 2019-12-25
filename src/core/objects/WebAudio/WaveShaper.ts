@@ -43,7 +43,6 @@ export default class WaveShaper extends JSPAudioNode<WaveShaperNode, {}, I, [nul
             this.inlets = 3;
             this.outlets = 2;
             this.node.channelInterpretation = "discrete";
-            this.node.channelCountMode = "explicit";
         });
         this.on("updateProps", (props) => {
             try {

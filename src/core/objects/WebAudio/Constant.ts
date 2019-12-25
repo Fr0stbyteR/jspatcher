@@ -35,7 +35,6 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
             this.inlets = 2;
             this.outlets = 2;
             this.node.channelInterpretation = "discrete";
-            // this.node.channelCountMode = "explicit";
             this.node.start();
         });
         this.on("updateArgs", (args) => {

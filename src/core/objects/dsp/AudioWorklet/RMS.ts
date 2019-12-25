@@ -47,9 +47,11 @@ export class RMSRegister extends AudioWorkletRegister {
                 const input = inputs[0];
                 const windowSize = ~~parameters.windowSize[0] || 1024;
                 this.$ %= windowSize;
+                if (this.window.length > input.length) this.window.splice(input.length);
                 for (let i = 0; i < input.length; i++) {
-                    const channel = input[i];
-                    const bufferSize = channel.length;
+                    let channel = input[i];
+                    const bufferSize = channel.length || 128;
+                    if (!channel.length) channel = new Float32Array(bufferSize);
                     if (!this.window[i]) this.window[i] = new Float32Array(windowSize);
                     else if (this.window[i].length !== windowSize) {
                         const oldBuffer = this.window[i];
@@ -57,18 +59,20 @@ export class RMSRegister extends AudioWorkletRegister {
                         this.window[i] = new Float32Array(oldBuffer, 0, oldWindowSize > windowSize ? windowSize : oldWindowSize);
                     }
                     const window = this.window[i];
+                    let $ = this.$;
                     if (bufferSize > windowSize) {
                         window.set(channel.subarray(bufferSize - windowSize));
-                        this.$ = 0;
+                        $ = 0;
                     } else if (this.$ + bufferSize > windowSize) {
-                        const split = windowSize - this.$;
+                        const split = windowSize - $;
                         window.set(channel.subarray(0, split), this.$);
-                        this.$ = bufferSize - split;
+                        $ = bufferSize - split;
                         window.set(channel.subarray(0, this.$));
                     } else {
-                        window.set(channel, this.$);
-                        this.$ += bufferSize;
+                        window.set(channel, $);
+                        $ += bufferSize;
                     }
+                    if (i === input.length - 1) this.$ = $;
                 }
                 return true;
             }
@@ -83,20 +87,19 @@ export class RMSRegister extends AudioWorkletRegister {
     static get Node() {
         const { id } = this;
         return class RMSNode extends DisposableAudioWorkletNode {
-            rmsResolve: (rms: number[]) => any = () => undefined;
-            rmsReject: (reason: any) => any = () => undefined;
+            rmsResolves: ((rms?: number[] | PromiseLike<number[]>) => any)[] = [];
             constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
                 super(context, id, { numberOfInputs: 1, numberOfOutputs: 0 });
                 this.port.onmessage = (e: MessageEvent) => {
-                    if (e.data.rms && this.rmsResolve) this.rmsResolve(e.data.rms);
+                    if (e.data.rms) {
+                        this.rmsResolves.forEach(f => f(e.data.rms));
+                        this.rmsResolves = [];
+                    }
                 };
             }
             getRMS() {
                 if (this.destroyed) throw Error("The Node is destroyed.");
-                const promise = new Promise<number[]>((resolve, reject) => {
-                    this.rmsResolve = resolve;
-                    this.rmsReject = reject;
-                });
+                const promise = new Promise<number[]>(resolve => this.rmsResolves.push(resolve));
                 this.port.postMessage({ get: true });
                 return promise;
             }

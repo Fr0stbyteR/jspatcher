@@ -74,7 +74,6 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
             this.inlets = 6;
             this.outlets = 2;
             this.node.channelInterpretation = "discrete";
-            this.node.channelCountMode = "explicit";
         });
         this.on("updateProps", (props) => {
             const paramMap = ["threshold", "knee", "ratio", "attack", "release"] as const;
