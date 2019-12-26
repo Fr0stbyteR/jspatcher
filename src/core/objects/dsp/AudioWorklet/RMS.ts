@@ -54,9 +54,10 @@ export class RMSRegister extends AudioWorkletRegister {
                     if (!channel.length) channel = new Float32Array(bufferSize);
                     if (!this.window[i]) this.window[i] = new Float32Array(windowSize);
                     else if (this.window[i].length !== windowSize) {
-                        const oldBuffer = this.window[i];
-                        const oldWindowSize = oldBuffer.length;
-                        this.window[i] = new Float32Array(oldBuffer, 0, oldWindowSize > windowSize ? windowSize : oldWindowSize);
+                        const oldWindow = this.window[i];
+                        const oldWindowSize = oldWindow.length;
+                        this.window[i] = new Float32Array(windowSize);
+                        this.window[i].set(oldWindowSize > windowSize ? oldWindow.subarray(0, windowSize) : oldWindow);
                     }
                     const window = this.window[i];
                     let $ = this.$;
