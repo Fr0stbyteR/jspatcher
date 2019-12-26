@@ -3,7 +3,7 @@ import { TMeta } from "../../types";
 import { Bang } from "../Base";
 import { normExp } from "../../../utils";
 
-interface LiveSliderProps extends LiveUIProps {
+export interface LiveSliderProps extends LiveUIProps {
     relative: boolean;
     sliderColor: string;
     triBorderColor: string;
@@ -17,10 +17,12 @@ interface LiveSliderProps extends LiveUIProps {
     showName: boolean;
     showNumber: boolean;
 }
-type LiveSliderAdditionalState = { inputBuffer: string };
-class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderProps & LiveSliderAdditionalState> {
+interface LiveSliderUIState extends LiveSliderProps, LiveUIState {
+    inputBuffer: string;
+}
+class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderUIState> {
     static defaultSize: [number, number] = [120, 45];
-    state: LiveSliderProps & LiveUIState & LiveSliderAdditionalState = {
+    state: LiveSliderUIState = {
         ...this.state,
         inputBuffer: ""
     }
@@ -217,7 +219,7 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderProps & LiveSliderAdditi
     }
 }
 
-export class LiveSlider extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveSliderProps> {
+export class LiveSlider extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveSliderProps, LiveSliderUIState> {
     static description = "Slider";
     static inlets: TMeta["inlets"] = [{
         isHot: true,

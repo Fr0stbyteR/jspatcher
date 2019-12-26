@@ -6,12 +6,13 @@ import { RMSRegister } from "../dsp/AudioWorklet/RMS";
 import { atodb } from "../../../utils";
 import { BaseUI, BaseUIState } from "../BaseUI";
 
-interface LiveMeterProps {
+export interface LiveMeterProps {
     active: boolean;
     orientation: "vertical" | "horizontal";
     mode: "deciBel" | "linear";
     clipSize: "normal" | "extended";
-    displayRange: [number, number];
+    min: number;
+    max: number;
     thresholdLinear: number;
     thresholdDB: number;
     speedLim: number;
@@ -25,7 +26,9 @@ interface LiveMeterProps {
     hotColor: string;
     overloadColor: string;
 }
-type LiveMeterUIState = Exclude<LiveMeterProps, "thresholdLinear" | "thresholdDB" | "windowSize" | "speedLim"> & { value: number[] } & BaseUIState;
+interface LiveMeterUIState extends Omit<LiveMeterProps, "thresholdLinear" | "thresholdDB" | "windowSize" | "speedLim">, BaseUIState {
+    value: number[];
+}
 export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
     state: LiveMeterUIState = {
         ...this.state,
@@ -75,7 +78,8 @@ export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
             active,
             mode,
             value,
-            displayRange,
+            min,
+            max,
             orientation,
             clipSize,
             bgColor,
@@ -94,7 +98,6 @@ export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
 
         this.normValues = value.map((v) => {
             if (mode === "deciBel") {
-                const [min, max] = displayRange;
                 if (v <= 0) return Math.max(0, (v - min) / -min);
                 return 1 + Math.min(1, v / max);
             }
@@ -194,7 +197,8 @@ export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
         );
     }
 }
-export class LiveMeter extends BaseAudioObject<{}, {}, [], [number[]], [], LiveMeterProps, LiveMeterUIState> {
+export type LiveMeterState = { node: InstanceType<typeof RMSRegister["Node"]>; $requestTimer: number };
+export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]], [], LiveMeterProps, LiveMeterUIState> {
     static package = LiveObject.package;
     static author = LiveObject.author;
     static version = LiveObject.version;
@@ -209,6 +213,18 @@ export class LiveMeter extends BaseAudioObject<{}, {}, [], [number[]], [], LiveM
         description: "Amplitude value: number[]"
     }]
     static props: TMeta["props"] = {
+        min: {
+            type: "number",
+            default: -70,
+            description: "Minimum value (dB)",
+            isUIState: true
+        },
+        max: {
+            type: "number",
+            default: 6,
+            description: "Maximum value (dB)",
+            isUIState: true
+        },
         active: {
             type: "boolean",
             default: true,
@@ -294,12 +310,6 @@ export class LiveMeter extends BaseAudioObject<{}, {}, [], [number[]], [], LiveM
             default: 1024,
             description: "RMS window size"
         },
-        displayRange: {
-            type: "object",
-            default: [-70, 6],
-            description: "Display Range in dB",
-            isUIState: true
-        },
         thresholdDB: {
             type: "number",
             default: 1,
@@ -312,50 +322,49 @@ export class LiveMeter extends BaseAudioObject<{}, {}, [], [number[]], [], LiveM
         }
     }
     uiComponent = LiveMeterUI;
-    node: InstanceType<typeof RMSRegister["Node"]>;
-    $requestTimer = -1;
-    startRequest = () => {
-        let lastResult: number[] = [];
-        const request = async () => {
-            if (this.node && !this.node.destroyed) {
-                const rms = await this.node.getRMS();
-                const mode = this.getProp("mode");
-                const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
-                const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
-                if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
-                    this.outlet(0, result);
-                    this.updateUI({ value: result });
-                    lastResult = result;
-                }
-            }
-            scheduleRequest();
-        };
-        const scheduleRequest = () => {
-            this.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
-        };
-        scheduleRequest();
-    };
+    state: LiveMeterState = { node: undefined, $requestTimer: -1 };
     subscribe() {
         super.subscribe();
+        const startRequest = () => {
+            let lastResult: number[] = [];
+            const request = async () => {
+                if (this.state.node && !this.state.node.destroyed) {
+                    const rms = await this.state.node.getRMS();
+                    const mode = this.getProp("mode");
+                    const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
+                    const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
+                    if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
+                        this.outlet(0, result);
+                        this.updateUI({ value: result });
+                        lastResult = result;
+                    }
+                }
+                scheduleRequest();
+            };
+            const scheduleRequest = () => {
+                this.state.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
+            };
+            scheduleRequest();
+        };
         this.on("preInit", async () => {
             this.inlets = 1;
             this.outlets = 1;
         });
+        this.on("updateProps", (props) => {
+            if (props.windowSize && this.state.node) this.applyBPF(this.state.node.parameters.get("windowSize"), [[props.windowSize]]);
+        });
         this.on("postInit", async () => {
             await RMSRegister.register(this.audioCtx.audioWorklet);
-            this.node = new RMSRegister.Node(this.audioCtx);
-            this.applyBPF(this.node.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
+            this.state.node = new RMSRegister.Node(this.audioCtx);
+            this.applyBPF(this.state.node.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
-            this.inletConnections[0] = { node: this.node, index: 0 };
+            this.inletConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();
-            this.startRequest();
-        });
-        this.on("updateProps", (props) => {
-            if (props.windowSize && this.node) this.applyBPF(this.node.parameters.get("windowSize"), [[props.windowSize]]);
+            startRequest();
         });
         this.on("destroy", () => {
-            window.clearTimeout(this.$requestTimer);
-            if (this.node) this.node.destroy();
+            window.clearTimeout(this.state.$requestTimer);
+            if (this.state.node) this.state.node.destroy();
         });
     }
 }

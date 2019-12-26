@@ -1,4 +1,4 @@
-import { LiveUI, LiveObject } from "./Base";
+import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta } from "../../types";
 import { Bang } from "../Base";
 import { fillRoundedRect } from "../../../utils";
@@ -21,7 +21,8 @@ interface LiveTextProps extends LiveUIProps {
     text: string;
     textOn: string;
 }
-class LiveTextUI extends LiveUI<LiveText, LiveTextProps> {
+interface LiveTextUIState extends LiveTextProps, LiveUIState {}
+class LiveTextUI extends LiveUI<LiveText, LiveTextUIState> {
     className = "live-text";
     inTouch = false;
     paint() {
@@ -90,7 +91,7 @@ class LiveTextUI extends LiveUI<LiveText, LiveTextProps> {
     }
 }
 
-export class LiveText extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTextProps> {
+export class LiveText extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTextProps, LiveTextUIState> {
     static description = "Button or toggle with text";
     static inlets: TMeta["inlets"] = [{
         isHot: true,

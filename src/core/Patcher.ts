@@ -189,6 +189,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                 obj = new Base.InvalidObject(boxIn, this);
             }
         }
+        boxIn.object = obj;
         obj.init();
         this.emit("createObject", obj);
         return obj;

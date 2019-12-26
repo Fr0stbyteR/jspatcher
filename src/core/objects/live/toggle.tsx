@@ -1,4 +1,4 @@
-import { LiveUI, LiveObject } from "./Base";
+import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta } from "../../types";
 import { Bang } from "../Base";
 
@@ -11,7 +11,8 @@ interface LiveToggleProps extends LiveUIProps {
     focusBorderColor: string;
 }
 
-class LiveToggleUI extends LiveUI<LiveToggle, LiveToggleProps> {
+interface LiveToggleUIState extends LiveToggleProps, LiveUIState {}
+class LiveToggleUI extends LiveUI<LiveToggle, LiveToggleUIState> {
     static defaultSize: [number, number] = [30, 30];
     className = "live-toggle";
     paint() {
@@ -52,7 +53,7 @@ class LiveToggleUI extends LiveUI<LiveToggle, LiveToggleProps> {
     }
 }
 
-export class LiveToggle extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveToggleProps> {
+export class LiveToggle extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveToggleProps, LiveToggleUIState> {
     static description = "Toggle";
     static inlets: TMeta["inlets"] = [{
         isHot: true,

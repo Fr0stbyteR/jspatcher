@@ -22,10 +22,12 @@ interface LiveDialProps extends LiveUIProps {
     showNumber: boolean;
     triangle: boolean;
 }
-type LiveDialAdditionalState = { inputBuffer: string };
-class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalState> {
+interface LiveDialUIState extends LiveDialProps, LiveUIState {
+    inputBuffer: string;
+}
+class LiveDialUI extends LiveUI<LiveDial, LiveDialUIState> {
     static defaultSize: [number, number] = [45, 60];
-    state: LiveDialProps & LiveUIState & LiveDialAdditionalState = {
+    state: LiveDialUIState = {
         ...this.state,
         inputBuffer: ""
     }
@@ -283,7 +285,7 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialProps & LiveDialAdditionalStat
     }
 }
 
-export class LiveDial extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveDialProps> {
+export class LiveDial extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveDialProps, LiveDialUIState> {
     static description = "Dial knob";
     static inlets: TMeta["inlets"] = [{
         isHot: true,

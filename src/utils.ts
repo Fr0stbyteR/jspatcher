@@ -22,8 +22,8 @@ export const stringifyError = (data: any) => {
 };
 /**
  * A BPF can be described as a succesion of three number tuples.
- * i.e. `1 1000 0.5 2 1000 1` curve mode means go to 0 immediately then go to 1 in 1000ms with a curve of e^0.5, then go to 2 in 1000ms linear.
- * The function transform the string to number[][], i.e. `[[1, 1000, 0.5], [2, 1000, 1]]`
+ * i.e. `1 1 0.5 2 1 1` curve mode means go to 0 immediately then go to 1 in 1s with a curve of e^0.5, then go to 2 in 1s linear.
+ * The function transform the string to number[][], i.e. `[[1, 1, 0.5], [2, 1, 1]]`
  *
  * @param {TBPF} sIn
  * @returns {number[][]}

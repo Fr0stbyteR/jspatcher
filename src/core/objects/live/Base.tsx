@@ -20,13 +20,17 @@ export const getDisplayValue = (value: number, type: string, unitstyle: string, 
     return "N/A";
 };
 export type LiveUIState = LiveUIProps & BaseUIState;
-export class LiveUI<T extends LiveObject, S extends Partial<LiveUIProps> & { [key: string]: any } = {}> extends BaseUI<T, {}, S & LiveUIProps> {
+export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseUI<T, {}, S & LiveUIState> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     refCanvas = React.createRef<HTMLCanvasElement>();
     className: string;
     paintScheduled = false;
     $paintRaf = -1;
     $changeTimer = -1;
+    state: S & LiveUIState = {
+        ...this.state,
+        value: this.object.state.value
+    };
     get canvas() {
         return this.refCanvas.current;
     }
@@ -191,20 +195,20 @@ export class LiveUI<T extends LiveObject, S extends Partial<LiveUIProps> & { [ke
         );
     }
 }
-type LiveObjectState = { value: number; displayValue: string };
-type LiveObjectEventMap = { "changeFromUI": { value: number; displayValue: string } };
-export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<Exclude<LiveUIState, "value">> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & Exclude<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
+export type LiveObjectState = { value: number; displayValue: string };
+export type LiveObjectEventMap = { "changeFromUI": { value: number; displayValue: string } };
+export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<Omit<LiveUIState, "value">> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & Omit<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
     static package = "live";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Ab**ton Live User ?";
-    static props: TMeta["props"] = {
+    static props: TMeta["props"] = { /*
         value: {
             type: "number",
             default: 0,
             description: "Initial value",
             isUIState: true
-        },
+        },*/
         min: {
             type: "number",
             default: 0,

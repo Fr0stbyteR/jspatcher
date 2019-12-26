@@ -6,6 +6,7 @@ import { LiveTab } from "./tab";
 import { LiveToggle } from "./toggle";
 import { LiveText } from "./text";
 import { LiveMeter } from "./meter";
+import { LiveGain } from "./gain";
 
 export default {
     numbox: LiveNumbox,
@@ -15,5 +16,6 @@ export default {
     tab: LiveTab,
     toggle: LiveToggle,
     text: LiveText,
-    "meter~": LiveMeter
+    "meter~": LiveMeter,
+    "gain~": LiveGain
 };

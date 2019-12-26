@@ -21,7 +21,6 @@ interface PointerUpEvent {
     originalEvent: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent;
 }
 
-
 declare interface LiveUIProps {
     value: number;
     min: number;

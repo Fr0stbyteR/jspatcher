@@ -1,4 +1,4 @@
-import { LiveUI, LiveObject } from "./Base";
+import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta } from "../../types";
 import { Bang } from "../Base";
 
@@ -9,9 +9,11 @@ interface LiveButtonProps extends LiveUIProps {
     activeBgOnColor: string;
     borderColor: string;
     focusBorderColor: string;
+    transition: "Zero->One" | "One->Zero" | "Both";
 }
+interface LiveButtonUIState extends Omit<LiveButtonProps, "transition">, LiveUIState {}
 
-class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
+class LiveButtonUI extends LiveUI<LiveButton, LiveButtonUIState> {
     static defaultSize: [number, number] = [30, 30];
     className = "live-button";
     inTouch = false;
@@ -68,7 +70,7 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonProps> {
     }
 }
 
-export class LiveButton extends LiveObject<{}, {}, [any], [Bang, number], [number], LiveButtonProps & { transition: "Zero->One" | "One->Zero" | "Both" }> {
+export class LiveButton extends LiveObject<{}, {}, [any], [Bang, number], [number], LiveButtonProps, LiveButtonUIState> {
     static description = "Button";
     static inlets: TMeta["inlets"] = [{
         isHot: true,

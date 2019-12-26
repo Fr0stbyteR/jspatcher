@@ -19,9 +19,11 @@ interface LiveNumboxProps extends LiveUIProps {
     activeTriColor2: string;
     activeSliderColor: string;
 }
-type LiveNumboxAdditionalState = { inputBuffer: string };
-class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps & LiveNumboxAdditionalState> {
-    state: LiveNumboxProps & LiveUIState & LiveNumboxAdditionalState = {
+interface LiveNumboxUIState extends LiveNumboxProps, LiveUIState {
+    inputBuffer: string;
+}
+class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxUIState> {
+    state: LiveNumboxUIState = {
         ...this.state,
         inputBuffer: ""
     }
@@ -140,7 +142,7 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxProps & LiveNumboxAdditi
     }
 }
 
-export class LiveNumbox extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveNumboxProps> {
+export class LiveNumbox extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveNumboxProps, LiveNumboxUIState> {
     static description = "Number box";
     static inlets: TMeta["inlets"] = [{
         isHot: true,

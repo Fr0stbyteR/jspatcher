@@ -1,4 +1,4 @@
-import { LiveUI, LiveObject } from "./Base";
+import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta, TRect } from "../../types";
 import { Bang } from "../Base";
 
@@ -21,7 +21,8 @@ interface LiveTabProps extends LiveUIProps {
     spacingY: number;
     multiline: boolean;
 }
-class LiveTabUI extends LiveUI<LiveTab, LiveTabProps> {
+interface LiveTabUIState extends LiveTabProps, LiveUIState {}
+class LiveTabUI extends LiveUI<LiveTab, LiveTabUIState> {
     static defaultSize: [number, number] = [120, 15];
     className = "live-tab";
     tabRects: TRect[] = [];
@@ -170,7 +171,7 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabProps> {
     }
 }
 
-export class LiveTab extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTabProps> {
+export class LiveTab extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTabProps, LiveTabUIState> {
     static description = "Buttons as tab";
     static inlets: TMeta["inlets"] = [{
         isHot: true,

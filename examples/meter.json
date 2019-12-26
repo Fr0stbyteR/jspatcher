@@ -1,17 +1,5 @@
 {
     "lines": {
-        "line-1": {
-            "id": "line-1",
-            "src": [
-                "box-7",
-                0
-            ],
-            "dest": [
-                "box-6",
-                1
-            ],
-            "disabled": false
-        },
         "line-2": {
             "id": "line-2",
             "src": [
@@ -95,6 +83,18 @@
                 5
             ],
             "disabled": false
+        },
+        "line-10": {
+            "id": "line-10",
+            "src": [
+                "box-7",
+                0
+            ],
+            "dest": [
+                "box-6",
+                0
+            ],
+            "disabled": false
         }
     },
     "boxes": {
@@ -105,7 +105,7 @@
             "outlets": 2,
             "rect": [
                 240,
-                240,
+                210,
                 75,
                 75
             ],
@@ -123,7 +123,8 @@
                 "max": 6,
                 "step": 0.01,
                 "type": "float",
-                "unitStyle": "float"
+                "unitStyle": "float",
+                "min": -70
             }
         },
         "box-9": {
@@ -132,10 +133,10 @@
             "inlets": 1,
             "outlets": 1,
             "rect": [
-                340,
-                415,
-                105,
-                195
+                345,
+                435,
+                45,
+                150
             ],
             "background": false,
             "presentation": false,
@@ -158,10 +159,10 @@
             "inlets": 1,
             "outlets": 1,
             "rect": [
-                15,
-                480,
-                275,
-                115
+                60,
+                435,
+                225,
+                45
             ],
             "background": false,
             "presentation": false,
@@ -186,7 +187,7 @@
                 15,
                 15,
                 188,
-                23
+                22
             ],
             "background": false,
             "presentation": false,
@@ -202,22 +203,22 @@
         },
         "box-6": {
             "id": "box-6",
-            "text": "gain~",
-            "inlets": 2,
-            "outlets": 2,
+            "text": "live.gain~",
+            "inlets": 1,
+            "outlets": 4,
             "rect": [
                 15,
-                330,
-                160,
-                23
+                255,
+                195,
+                165
             ],
             "background": false,
             "presentation": false,
             "presentationRect": [
                 120,
                 239.578125,
-                90,
-                20
+                120,
+                45
             ],
             "data": {},
             "args": [],
@@ -229,8 +230,8 @@
             "inlets": 2,
             "outlets": 1,
             "rect": [
-                15,
-                630,
+                165,
+                600,
                 570,
                 22
             ],
@@ -243,7 +244,7 @@
                 20
             ],
             "data": {
-                "text": "[ -3.6135671994811953,\n  -3.6135671994811953,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -3.6135671994811953 ]"
+                "text": "[ -35.26851245592947,\n  -35.26851245592947,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -35.26851245592947 ]"
             },
             "args": [],
             "props": {}
@@ -257,13 +258,36 @@
                 15,
                 210,
                 90,
-                23
+                22
             ],
             "background": false,
             "presentation": false,
             "presentationRect": [
                 252,
                 169.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-15": {
+            "id": "box-15",
+            "text": "destination~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                15,
+                600,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                427,
+                719.578125,
                 90,
                 20
             ],
@@ -290,7 +314,7 @@
             15,
             15
         ],
-        "boxIndexCount": 14,
-        "lineIndexCount": 9
+        "boxIndexCount": 15,
+        "lineIndexCount": 11
     }
 }

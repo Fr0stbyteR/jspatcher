@@ -46,7 +46,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         }
         if (this._parsed.args.length) this.args = this._parsed.args;
         Object.assign(this.props, this._parsed.props);
-        this._object = this._patcher.createObject(this._parsed, this) as T;
+        this._patcher.createObject(this._parsed, this);
         this._object.postInit();
     }
     /**
@@ -76,6 +76,9 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     }
     get object() {
         return this._object;
+    }
+    set object(oIn: T) {
+        this._object = oIn;
     }
     get parsed() {
         return this._parsed;
@@ -169,13 +172,12 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     }
     changeText(textIn: string) {
         if (textIn === this.text) return this;
-        this.text = textIn;
-        const lines = this.allLines;
-        lines.forEach(el => this._patcher.lines[el].disable());
+        this.allLines.forEach(el => this._patcher.lines[el].disable());
         this._object.destroy();
+        this.text = textIn;
         this.args = [] as Args<T>;
         this.init();
-        lines.forEach(el => this._patcher.lines[el].enable());
+        this.allLines.forEach(el => this._patcher.lines[el].enable());
         const { defaultSize } = this._object.uiComponent;
         if (defaultSize && defaultSize.every(v => typeof v === "number" && v > 15) && defaultSize.length === 2) {
             this.size = defaultSize;
