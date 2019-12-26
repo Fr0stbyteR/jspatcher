@@ -107,7 +107,11 @@ class InspectorStringItem extends React.PureComponent<{ itemKey: number | string
 }
 class InspectorColorItem extends React.PureComponent<{ itemKey: number | string; value: string; onChange: (value: string, key: number | string) => any }, { showColorPicker: boolean }> {
     state = { showColorPicker: false };
-    handleClickColorSpan = () => this.setState({ showColorPicker: !this.state.showColorPicker });
+    handleClickColorSpan = () => this.setState({ showColorPicker: true });
+    handleClickCover = (e: React.MouseEvent) => {
+        this.setState({ showColorPicker: false });
+        e.stopPropagation();
+    }
     handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.itemKey);
     render() {
         return (
@@ -116,7 +120,7 @@ class InspectorColorItem extends React.PureComponent<{ itemKey: number | string;
                     {
                         this.state.showColorPicker
                             ? <>
-                                <div className="color-picker-fullscreen-cover" onClick={this.handleClickColorSpan} />
+                                <div className="color-picker-fullscreen-cover" onClick={this.handleClickCover} />
                                 <ChromePicker color={this.props.value} onChange={this.handleChangeColor} />
                             </>
                             : <></>
