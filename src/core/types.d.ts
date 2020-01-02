@@ -22,9 +22,11 @@ type TPatcher = {
     props?: {};
 };
 
+type TDependencies = { [name: string]: string };
+
 type TPatcherProps = {
     mode: TPatcherMode;
-    dependencies: { address: string; name: string }[];
+    dependencies: TDependencies;
     bgColor: string;
     editingBgColor: string;
     grid: [number, number];
@@ -36,6 +38,7 @@ type TPatcherProps = {
     version?: string;
     description?: string;
 };
+type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid">;
 
 type TPatcherState = {
     isLoading: boolean;
@@ -52,6 +55,7 @@ type TPatcherState = {
     libFaust: { [key: string]: typeof AnyObject };
     selected: string[];
 };
+type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid">;
 
 type TErrorLevel = "error" | "warn" | "info" | "none"
 
@@ -67,8 +71,8 @@ type TMaxPatcher = {
         lines: TMaxLine[];
         boxes: TMaxBox[];
         rect: number[];
-        bgcolor: TRect;
-        editing_bgcolor: TRect;
+        bgcolor: [number, number, number, number];
+        editing_bgcolor: [number, number, number, number];
         gridsize: [number, number];
         [key: string]: any;
     };
@@ -139,7 +143,7 @@ type TRect = [number, number, number, number];
 
 type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
 
-interface PatcherEventMap {
+interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "loaded": Patcher;
     "locked": boolean;
     "presentation": boolean;
@@ -171,6 +175,8 @@ interface PatcherEventMap {
     "connectAudioInlet": number;
     "connectAudioOutlet": number;
     "ioChanged": TMeta;
+    "stateChanged": Partial<TPublicPatcherState>;
+    "propsChanged": Partial<TPublicPatcherProps>;
 }
 
 interface LineEventMap {
@@ -219,15 +225,15 @@ type TArgMeta = {
     description: string;
 };
 type TArgsMeta = TArgMeta[];
-type TPropMeta = {
+type TPropMeta<T extends any = any> = {
     type: TMetaType;
     enums?: string[];
-    default: any;
+    default: T;
     group?: string;
     description: string;
     isUIState?: boolean;
 };
-type TPropsMeta = { [key: string]: TPropMeta };
+type TPropsMeta<T extends { [key: string]: any } = { [key: string]: any }> = { [K in keyof T]: TPropMeta<T[K]> };
 type TMeta = {
     package: string; // div will have class "package-name" "package-name-objectname"
     name: string;

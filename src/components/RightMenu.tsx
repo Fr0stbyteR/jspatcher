@@ -6,7 +6,7 @@ import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import "./RightMenu.scss";
-import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta, TRect } from "../core/types";
+import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta, TRect, TPatcherProps, TPublicPatcherProps } from "../core/types";
 
 enum TPanels {
     None = "None",
@@ -225,11 +225,12 @@ type InspectorState = {
     meta: TMeta;
     args: TMeta["args"];
     props: TMeta["props"];
+    patcherProps: TPublicPatcherProps;
     rect: TRect;
     presentationRect: TRect;
 };
 class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState> {
-    state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null };
+    state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null, patcherProps: this.props.patcher.publicProps };
     boxes: Box[];
     box: Box;
     handleBoxUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => this.setState({ args: e.args || [], props: e.props || {} });
@@ -323,15 +324,18 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
         meta.args = commonArgs;
         this.setState({ meta, args, props, rect: null, presentationRect: null });
     };
+    handlePatcherPropsChanged = () => this.setState({ patcherProps: this.props.patcher.publicProps });
     componentDidMount() {
         this.handleSelected();
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleSelected);
+        this.props.patcher.on("propsChanged", this.handlePatcherPropsChanged);
     }
     componentWillUnmount() {
         this.unSubscribeBox(true);
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleSelected);
+        this.props.patcher.off("propsChanged", this.handlePatcherPropsChanged);
     }
     handleChange = (value: any, key: number | string) => {
         if (!this.box) return;
@@ -350,51 +354,61 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
         }
         this.handleSelected();
     };
+    handlePatcherChange = (value: any, key: keyof TPatcherProps) => this.props.patcher.setProps({ [key]: value });
     render() {
         const { meta, args, props } = this.state;
-        if (!meta) {
-            return (
-                <Menu icon inverted size="mini">
-                </Menu>
-            );
-        }
         const table: JSX.Element[] = [];
-        table.push(
-            <Table.Row key={"__division_args"} active>
-                <Table.Cell colSpan={2} width={16} className="division-name">Arguments</Table.Cell>
-            </Table.Row>
-        );
-        meta.args.forEach((argMeta, i) => {
-            if (!argMeta) return;
-            const { default: defaultValue, varLength } = argMeta;
-            const value = varLength ? args.slice(i) : typeof args[i] === "undefined" ? defaultValue : args[i];
+        if (!meta) { // Patcher Inspector
             table.push(
-                <InspectorArgItem {...this.props} key={i} itemKey={i} meta={argMeta} value={value} onChange={this.handleChange} />
+                <Table.Row key={"__division_patcher_props"} active>
+                    <Table.Cell colSpan={2} width={16} className="division-name">Patcher</Table.Cell>
+                </Table.Row>
             );
-        });
-        table.push(
-            <Table.Row key={"__division_props"} active>
-                <Table.Cell colSpan={2} width={16} className="division-name">Properties</Table.Cell>
-            </Table.Row>
-        );
-        let lastGroup: string;
-        Object.keys(meta.props).forEach((name) => {
-            const propMeta = meta.props[name];
-            const { default: defaultValue, group } = propMeta;
-            const value = name === "rect" ? this.state.rect
-                : name === "presentationRect" ? this.state.presentationRect
-                    : typeof props[name] === "undefined" ? defaultValue : props[name];
-            const item = <InspectorPropItem {...this.props} key={name} itemKey={name} meta={propMeta} value={value} onChange={this.handleChange} />;
-            if (group !== lastGroup) {
-                lastGroup = group;
+            Object.keys(Patcher.props).forEach((nameIn) => {
+                const name = nameIn as keyof typeof Patcher["props"];
+                const propMeta = Patcher.props[name];
+                const value = this.state.patcherProps[name];
+                const item = <InspectorPropItem {...this.props} key={name} itemKey={name} meta={propMeta} value={value} onChange={this.handlePatcherChange} />;
+                table.push(item);
+            });
+        } else {
+            table.push(
+                <Table.Row key={"__division_args"} active>
+                    <Table.Cell colSpan={2} width={16} className="division-name">Arguments</Table.Cell>
+                </Table.Row>
+            );
+            meta.args.forEach((argMeta, i) => {
+                if (!argMeta) return;
+                const { default: defaultValue, varLength } = argMeta;
+                const value = varLength ? args.slice(i) : typeof args[i] === "undefined" ? defaultValue : args[i];
                 table.push(
-                    <Table.Row key={"__division_" + group} active>
-                        <Table.Cell colSpan={2} width={16} className="group-name">{group}</Table.Cell>
-                    </Table.Row>
+                    <InspectorArgItem {...this.props} key={i} itemKey={i} meta={argMeta} value={value} onChange={this.handleChange} />
                 );
-            }
-            table.push(item);
-        });
+            });
+            table.push(
+                <Table.Row key={"__division_props"} active>
+                    <Table.Cell colSpan={2} width={16} className="division-name">Properties</Table.Cell>
+                </Table.Row>
+            );
+            let lastGroup: string;
+            Object.keys(meta.props).forEach((name) => {
+                const propMeta = meta.props[name];
+                const { default: defaultValue, group } = propMeta;
+                const value = name === "rect" ? this.state.rect
+                    : name === "presentationRect" ? this.state.presentationRect
+                        : typeof props[name] === "undefined" ? defaultValue : props[name];
+                const item = <InspectorPropItem {...this.props} key={name} itemKey={name} meta={propMeta} value={value} onChange={this.handleChange} />;
+                if (group !== lastGroup) {
+                    lastGroup = group;
+                    table.push(
+                        <Table.Row key={"__division_" + group} active>
+                            <Table.Cell colSpan={2} width={16} className="group-name">{group}</Table.Cell>
+                        </Table.Row>
+                    );
+                }
+                table.push(item);
+            });
+        }
         return (
             <>
                 <Table className="last-table" inverted celled striped selectable unstackable size="small" compact="very">

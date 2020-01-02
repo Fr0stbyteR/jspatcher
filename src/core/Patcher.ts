@@ -3,7 +3,7 @@ import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
 import Importer from "./objects/importer/Importer";
-import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta } from "./types";
+import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState } from "./types";
 
 import Base, { AnyObject } from "./objects/Base";
 import Std from "./objects/Std";
@@ -23,6 +23,28 @@ import SubPatcher, { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 const JSOps: TPackage = { Base, Std, SubPatcher, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live, faust };
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
+    static props: TPropsMeta<TPublicPatcherProps> = {
+        dependencies: {
+            type: "object",
+            description: "Patcher dependencies",
+            default: {}
+        },
+        bgColor: {
+            type: "color",
+            description: "Background color",
+            default: "rgba(61, 65, 70, 1)"
+        },
+        editingBgColor: {
+            type: "color",
+            description: "Background color while unlocked",
+            default: "rgba(82, 87, 94, 1)"
+        },
+        grid: {
+            type: "object",
+            description: "Grid size",
+            default: [15, 15]
+        }
+    };
     _env: Env;
     lines: { [key: string]: Line };
     boxes: { [key: string]: Box };
@@ -89,7 +111,15 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         }
         this.lines = {};
         this.boxes = {};
-        this.props = { mode: "js", dependencies: [], bgColor: "rgba(61, 65, 70, 1)", editingBgColor: "rgba(82, 87, 94, 1)", grid: [15, 15], boxIndexCount: 0, lineIndexCount: 0 };
+        this.props = {
+            mode: "js",
+            dependencies: Patcher.props.dependencies.default,
+            bgColor: Patcher.props.bgColor.default,
+            editingBgColor: Patcher.props.editingBgColor.default,
+            grid: Patcher.props.grid.default,
+            boxIndexCount: 0,
+            lineIndexCount: 0
+        };
         this._state.selected = [];
     }
     async load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode) {
@@ -110,7 +140,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                 return this;
             }
             this.props.bgColor = rgbaMax2Css(patcher.bgcolor);
-            // eslint-disable-next-line @typescript-eslint/camelcase
             this.props.editingBgColor = rgbaMax2Css(patcher.editing_bgcolor);
             const maxBoxes = patcher.boxes;
             const maxLines = patcher.lines;
@@ -141,7 +170,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             const patcher = patcherIn;
             if (patcher.props) this.props = { ...this.props, ...patcher.props };
             if (this.props.dependencies) {
-                const promises = this.props.dependencies.map(({ address, name }) => this.dynamicImportPackage(address, name));
+                const promises = Object.keys(this.props.dependencies).map(name => this.dynamicImportPackage(this.props.dependencies[name], name));
                 await Promise.all(promises);
             }
             if (patcher.boxes) { // Boxes & data
@@ -418,22 +447,32 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this._state.history.newTimestamp();
         return this;
     }
-    set lock(bool: boolean) {
-        if (this._state.locked === bool) return;
-        this.deselectAll();
-        this._state.locked = bool;
-        this.emit("locked", bool);
+    setState(state: Partial<TPublicPatcherState>) {
+        let changed = false;
+        for (const keyIn in state) {
+            const key = keyIn as keyof TPublicPatcherState;
+            if (this._state[key] === state[key]) continue;
+            changed = true;
+            if (key === "locked" || key === "presentation") this.deselectAll();
+            this._state[key] = state[key] as any;
+            this.emit(key, state[key]);
+        }
+        if (changed) this.emit("stateChanged", state);
     }
-    set presentation(bool: boolean) {
-        if (this._state.presentation === bool) return;
-        this.deselectAll();
-        this._state.presentation = bool;
-        this.emit("presentation", bool);
+    setProps(props: Partial<TPublicPatcherProps>) {
+        let changed = false;
+        for (const keyIn in props) {
+            const key = keyIn as keyof TPublicPatcherProps;
+            if (this.props[key] === props[key]) continue;
+            changed = true;
+            this.props[key] = props[key] as any;
+            this.emit(key, props[key]);
+        }
+        if (changed) this.emit("propsChanged", props);
     }
-    set showGrid(bool: boolean) {
-        if (this._state.showGrid === bool) return;
-        this._state.showGrid = bool;
-        this.emit("showGrid", bool);
+    get publicProps() {
+        const { dependencies, bgColor, editingBgColor, grid } = this.props;
+        return { dependencies, bgColor, editingBgColor, grid } as TPublicPatcherProps;
     }
     selectAllBoxes() {
         const ids = Object.keys(this.boxes);

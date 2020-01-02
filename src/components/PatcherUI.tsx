@@ -39,9 +39,11 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         boxes.setState(newState);
         if (lines) lines.setState(newState);
     }
-    handleLockedChange = (e: boolean) => this.setState({ locked: e });
-    handlePresentationChange = (e: boolean) => this.setState({ presentation: e });
-    handleShowGridChange = (e: boolean) => this.setState({ showGrid: e });
+    handleLockedChange = (locked: boolean) => this.setState({ locked });
+    handlePresentationChange = (presentation: boolean) => this.setState({ presentation });
+    handleShowGridChange = (showGrid: boolean) => this.setState({ showGrid });
+    handleBgColorChange = (bgColor: string) => this.setState({ bgColor });
+    handleEditingBgColorChange = (editingBgColor: string) => this.setState({ editingBgColor });
     handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
@@ -102,6 +104,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         patcher.on("locked", this.handleLockedChange);
         patcher.on("presentation", this.handlePresentationChange);
         patcher.on("showGrid", this.handleShowGridChange);
+        patcher.on("bgColor", this.handleBgColorChange);
+        patcher.on("editingBgColor", this.handleEditingBgColorChange);
     }
     componentWillUnmount() {
         const patcher = this.props.patcher;
@@ -109,6 +113,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         patcher.off("locked", this.handleLockedChange);
         patcher.off("presentation", this.handlePresentationChange);
         patcher.off("showGrid", this.handleShowGridChange);
+        patcher.off("bgColor", this.handleBgColorChange);
+        patcher.off("editingBgColor", this.handleEditingBgColorChange);
     }
     render() {
         const classArray = ["patcher"];
@@ -132,18 +138,20 @@ class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; h
     lines: { [key: string]: JSX.Element } = {};
     componentDidMount() {
         this.onLoaded();
-        this.props.patcher.on("loaded", this.onLoaded);
-        this.props.patcher.on("createLine", this.onCreateLine);
-        this.props.patcher.on("create", this.onCreate);
-        this.props.patcher.on("deleteLine", this.onDeleteLine);
-        this.props.patcher.on("delete", this.onDelete);
+        const patcher = this.props.patcher;
+        patcher.on("loaded", this.onLoaded);
+        patcher.on("createLine", this.onCreateLine);
+        patcher.on("create", this.onCreate);
+        patcher.on("deleteLine", this.onDeleteLine);
+        patcher.on("delete", this.onDelete);
     }
     componentWillUnmount() {
-        this.props.patcher.off("loaded", this.onLoaded);
-        this.props.patcher.off("createLine", this.onCreateLine);
-        this.props.patcher.off("create", this.onCreate);
-        this.props.patcher.off("deleteLine", this.onDeleteLine);
-        this.props.patcher.off("delete", this.onDelete);
+        const patcher = this.props.patcher;
+        patcher.off("loaded", this.onLoaded);
+        patcher.off("createLine", this.onCreateLine);
+        patcher.off("create", this.onCreate);
+        patcher.off("deleteLine", this.onDeleteLine);
+        patcher.off("delete", this.onDelete);
     }
     onCreateLine = (line: Line) => {
         if (this.props.patcher.state.isLoading) return;
@@ -198,19 +206,21 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
     cachedMousePos = { x: 0, y: 0 };
     componentDidMount() {
         this.onLoaded();
-        this.props.patcher.on("loaded", this.onLoaded);
-        this.props.patcher.on("createBox", this.onCreateBox);
-        this.props.patcher.on("create", this.onCreate);
-        this.props.patcher.on("deleteBox", this.onDeleteBox);
-        this.props.patcher.on("delete", this.onDelete);
+        const patcher = this.props.patcher;
+        patcher.on("loaded", this.onLoaded);
+        patcher.on("createBox", this.onCreateBox);
+        patcher.on("create", this.onCreate);
+        patcher.on("deleteBox", this.onDeleteBox);
+        patcher.on("delete", this.onDelete);
         document.addEventListener("keydown", this.handleKeyDown);
     }
     componentWillUnmount() {
-        this.props.patcher.off("loaded", this.onLoaded);
-        this.props.patcher.off("createBox", this.onCreateBox);
-        this.props.patcher.off("create", this.onCreate);
-        this.props.patcher.off("deleteBox", this.onDeleteBox);
-        this.props.patcher.off("delete", this.onDelete);
+        const patcher = this.props.patcher;
+        patcher.off("loaded", this.onLoaded);
+        patcher.off("createBox", this.onCreateBox);
+        patcher.off("create", this.onCreate);
+        patcher.off("deleteBox", this.onDeleteBox);
+        patcher.off("delete", this.onDelete);
         document.removeEventListener("keydown", this.handleKeyDown);
     }
     onCreateBox = (box: Box) => {
@@ -305,7 +315,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
     }
     handleClick = (e: React.MouseEvent) => {
         const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.lock = !this.props.patcher.state.locked;
+        if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.setState({ locked: !this.props.patcher.state.locked });
     }
     handleDoubleClick = (e: React.MouseEvent) => {
         const { patcher } = this.props;
@@ -373,21 +383,29 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
     }
 }
 
-class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; height: string }> {
-    state = { width: "100%", height: "100%" };
+class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; height: string; grid: [number, number]; editingBgColor: string }> {
+    state = { width: "100%", height: "100%", grid: this.props.patcher.props.grid, editingBgColor: this.props.patcher.props.editingBgColor };
+    handleGridChange = (grid: [number, number]) => this.setState({ grid: grid.slice() as [number, number] });
+    handleEditingBgColorChange = (editingBgColor: string) => this.setState({ editingBgColor });
+    componentDidMount() {
+        this.props.patcher.on("grid", this.handleGridChange);
+        this.props.patcher.on("editingBgColor", this.handleEditingBgColorChange);
+    }
+    componentWillUnmount() {
+        this.props.patcher.off("grid", this.handleGridChange);
+        this.props.patcher.off("editingBgColor", this.handleEditingBgColorChange);
+    }
     render() {
-        const patcher = this.props.patcher;
-        const grid = patcher.props.grid;
-        const bgColor = patcher.props.bgColor;
-        const isWhite = Color(bgColor).getLightness() < 0.5;
+        const { grid, editingBgColor, width, height } = this.state;
+        const isWhite = Color(editingBgColor).getLightness() < 0.5;
         const gridColor = isWhite ? "#FFFFFF1A" : "#0000001A";
         const pxx = grid[0] + "px";
         const pxx1 = (grid[0] - 1) + "px";
         const pxy = grid[1] + "px";
         const pxy1 = (grid[1] - 1) + "px";
-        const sBGImageX = "repeating-linear-gradient(" + ["0deg, transparent, transparent " + pxx1, gridColor + " " + pxx1, gridColor + " " + pxx].join(", ") + ")";
-        const sBGImageY = "repeating-linear-gradient(" + ["-90deg, transparent, transparent " + pxy1, gridColor + " " + pxy1, gridColor + " " + pxy].join(", ") + ")";
-        const style = { backgroundImage: sBGImageX + ", " + sBGImageY, backgroundSize: pxx + " " + pxy, ...this.state };
+        const sBGImageX = "repeating-linear-gradient(" + ["-90deg, transparent, transparent " + pxx1, gridColor + " " + pxx1, gridColor + " " + pxx].join(", ") + ")";
+        const sBGImageY = "repeating-linear-gradient(" + ["0deg, transparent, transparent " + pxy1, gridColor + " " + pxy1, gridColor + " " + pxy].join(", ") + ")";
+        const style = { backgroundImage: sBGImageX + ", " + sBGImageY, backgroundSize: pxx + " " + pxy, width, height };
         return (
             <div className="grid-background" style={style}/>
         );

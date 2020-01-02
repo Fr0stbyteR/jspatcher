@@ -24,9 +24,9 @@ export default class BottomMenu extends React.PureComponent<P, S> {
     handleLockedChange = (locked: boolean) => this.setState({ locked });
     handleShowGridChange = (showGrid: boolean) => this.setState({ showGrid });
     handlePresentationChange = (presentation: boolean) => this.setState({ presentation });
-    handleClickLock = () => this.props.patcher.lock = !this.state.locked;
-    handleClickGrid = () => this.props.patcher.showGrid = !this.state.showGrid;
-    handleClickPresentation = () => this.props.patcher.presentation = !this.state.presentation;
+    handleClickLock = () => this.props.patcher.setState({ locked: !this.state.locked });
+    handleClickGrid = () => this.props.patcher.setState({ showGrid: !this.state.showGrid });
+    handleClickPresentation = () => this.props.patcher.setState({ presentation: !this.state.presentation });
     render() {
         return (
             <Menu inverted icon size="mini" className="bottom-menu">
