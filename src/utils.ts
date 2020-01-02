@@ -20,6 +20,16 @@ export const stringifyError = (data: any) => {
     if (typeof data === "object") return inspect(data);
     return `${data}`;
 };
+export const rgbaMax2Css = (maxColor: number[]) => {
+    const cssColor = [255, 255, 255, 1] as TRect;
+    if (Array.isArray(maxColor)) {
+        for (let i = 0; i < 3; i++) {
+            if (typeof maxColor[i] === "number") cssColor[i] = Math.floor(maxColor[i] * 255);
+        }
+        if (typeof maxColor[3] === "number") cssColor[3] = maxColor[3];
+    }
+    return "rgba(" + cssColor.join(",") + ")";
+};
 /**
  * A BPF can be described as a succesion of three number tuples.
  * i.e. `1 1 0.5 2 1 1` curve mode means go to 0 immediately then go to 1 in 1s with a curve of e^0.5, then go to 2 in 1s linear.

@@ -170,8 +170,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         }
         return false;
     }
-    changeText(textIn: string) {
-        if (textIn === this.text) return this;
+    changeText(textIn: string, force?: boolean) {
+        if (!force && textIn === this.text) return this;
         this.allLines.forEach(el => this._patcher.lines[el].disable());
         this._object.destroy();
         this.text = textIn;

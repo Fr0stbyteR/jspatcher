@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Color from "color-js";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import Line from "../core/Line";
@@ -9,7 +10,7 @@ import { LineUI, TempLineUI } from "./LineUI";
 import { TPatcher, TPatcherMode, TRect } from "../core/types";
 
 type P = { patcher: Patcher };
-type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: TRect; editingBgColor: TRect };
+type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: string; editingBgColor: string };
 export default class PatcherUI extends React.PureComponent<P, S> {
     state: S = {
         locked: this.props.patcher.state.locked,
@@ -115,9 +116,9 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (this.state.presentation) classArray.push("presentation");
         if (this.state.showGrid) classArray.push("show-grid");
         if (this.state.fileDropping) classArray.push("filedropping");
-        const bgcolor = this.state.locked ? this.state.bgColor : this.state.editingBgColor;
+        const backgroundColor = this.state.locked ? this.state.bgColor : this.state.editingBgColor;
         return (
-            <div ref={this.refDiv} className={classArray.join(" ")} style={{ backgroundColor: "rgba(" + bgcolor.join(",") + ")" }} onScroll={this.handleScroll} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
+            <div ref={this.refDiv} className={classArray.join(" ")} style={{ backgroundColor }} onScroll={this.handleScroll} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
                 <Grid {...this.props} ref={this.refGrid} />
                 <Boxes {...this.props} ref={this.refBoxes} />
                 {this.state.presentation ? <></> : <Lines {...this.props} ref={this.refLines} />}
@@ -377,8 +378,8 @@ class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; he
     render() {
         const patcher = this.props.patcher;
         const grid = patcher.props.grid;
-        const bgcolor = patcher.props.bgColor;
-        const isWhite = bgcolor[0] + bgcolor[1] + bgcolor[2] < 128 * 3;
+        const bgColor = patcher.props.bgColor;
+        const isWhite = Color(bgColor).getLightness() < 0.5;
         const gridColor = isWhite ? "#FFFFFF1A" : "#0000001A";
         const pxx = grid[0] + "px";
         const pxx1 = (grid[0] - 1) + "px";

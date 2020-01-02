@@ -24,8 +24,9 @@ type TPatcher = {
 
 type TPatcherProps = {
     mode: TPatcherMode;
-    bgColor: TRect;
-    editingBgColor: TRect;
+    dependencies: { address: string; name: string }[];
+    bgColor: string;
+    editingBgColor: string;
     grid: [number, number];
     boxIndexCount: number;
     lineIndexCount: number;

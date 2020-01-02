@@ -385,15 +385,15 @@ export class patcher extends DefaultAudioObject<Patcher, TSubPatcherState, any[]
             this.outlets = 0;
             if (this.data.boxes) {
                 const patcher = new Patcher(this.patcher.env);
-                patcher.load(this.data);
                 this.data = patcher;
+                patcher.load(this.data);
             }
         });
-        this.on("postInit", () => {
+        this.on("postInit", async () => {
             if (!(this.data instanceof Patcher)) {
                 const patcher = new Patcher(this.patcher.env);
-                patcher.load({}, this.state.mode);
                 this.data = patcher;
+                await patcher.load({}, this.state.mode);
             }
             handlePatcherReset();
             subscribePatcher();

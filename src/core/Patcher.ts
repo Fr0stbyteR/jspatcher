@@ -1,4 +1,4 @@
-import { MappedEventEmitter } from "../utils";
+import { MappedEventEmitter, rgbaMax2Css } from "../utils";
 import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
@@ -20,7 +20,7 @@ import faust from "./objects/faust/exports";
 import Env from "../env";
 import SubPatcher, { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 
-const Packages: TPackage = { Base, Std, SubPatcher, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live, faust };
+const JSOps: TPackage = { Base, Std, SubPatcher, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live, faust };
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     _env: Env;
@@ -50,7 +50,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             libFaust: {},
             selected: []
         };
-        this._state.libJS = this.packageRegister(Packages, {});
+        this._state.libJS = this.packageRegister(JSOps, {});
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
         this._state.libGen = this.packageRegister(GenOps, {});
         this._state.libFaust = this.packageRegister(FaustOps, {});
@@ -75,8 +75,13 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     async dynamicImportPackage(address: string, pkgName?: string) {
         const pkg = await Importer.importFrom(address, pkgName);
-        Packages[pkgName || name] = pkg;
+        JSOps[pkgName || name] = pkg;
         this.packageRegister(pkg, this._state.libJS, pkgName || name);
+        // Check box availability for new object
+        for (const id in this.boxes) {
+            const box = this.boxes[id];
+            if (box instanceof Base.InvalidObject) box.changeText(box.text, true);
+        }
     }
     clear() {
         for (const id in this.boxes) {
@@ -84,11 +89,10 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         }
         this.lines = {};
         this.boxes = {};
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        this.props = { mode: "js", bgColor: [61, 65, 70, 1], editingBgColor: [82, 87, 94, 1], grid: [15, 15], boxIndexCount: 0, lineIndexCount: 0 };
+        this.props = { mode: "js", dependencies: [], bgColor: "rgba(61, 65, 70, 1)", editingBgColor: "rgba(82, 87, 94, 1)", grid: [15, 15], boxIndexCount: 0, lineIndexCount: 0 };
         this._state.selected = [];
     }
-    load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode) {
+    async load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode) {
         this._state.isLoading = true;
         this.clear();
         if (!patcherIn) {
@@ -98,15 +102,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.props.mode = (patcherIn.props && patcherIn.props.mode ? patcherIn.props.mode : modeIn) || "js";
         const { mode } = this.props;
         if (mode === "max" || mode === "gen") {
-            const rgbaMax2Css = (maxColor: number[]) => {
-                const cssColor = [255, 255, 255, 1] as TRect;
-                if (!Array.isArray(maxColor)) return cssColor;
-                for (let i = 0; i < 3; i++) {
-                    if (typeof maxColor[i] === "number") cssColor[i] = Math.floor(maxColor[i] * 255);
-                }
-                if (typeof maxColor[3] === "number") cssColor[3] = maxColor[3];
-                return cssColor;
-            };
             this._state.lib = mode === "max" ? this._state.libMax : this._state.libGen;
             const patcher = (patcherIn as TMaxPatcher).patcher;
             if (!patcher) {
@@ -145,6 +140,10 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             this._state.lib = mode === "js" ? this._state.libJS : this._state.libFaust;
             const patcher = patcherIn;
             if (patcher.props) this.props = { ...this.props, ...patcher.props };
+            if (this.props.dependencies) {
+                const promises = this.props.dependencies.map(({ address, name }) => this.dynamicImportPackage(address, name));
+                await Promise.all(promises);
+            }
             if (patcher.boxes) { // Boxes & data
                 for (const id in patcher.boxes) {
                     this.createBox(patcher.boxes[id]);
@@ -191,7 +190,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         }
         boxIn.object = obj;
         obj.init();
-        this.emit("createObject", obj);
         return obj;
     }
     getObjectMeta(parsed: { class: string; args: any[]; props: { [key: string]: any } }) {
