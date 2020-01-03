@@ -135,7 +135,7 @@
         "no-self-compare": "warn",
         "no-sequences": "warn",
         "no-shadow-restricted-names": "warn",
-        "no-sparse-arrays": "warn",
+        "no-sparse-arrays": "off",
         "no-template-curly-in-string": "warn",
         "no-this-before-super": "warn",
         "no-throw-literal": "warn",

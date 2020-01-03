@@ -432,10 +432,13 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
     static outlets: TMeta["outlets"] = [{
         type: "function",
         description: "Anonymous function"
-    }, { // TODO for varLength args
+    }, {
+        type: "bang",
+        description: "bang while lambda is called"
+    }, {
         type: "anything",
         varLength: true,
-        description: "If no arguments, outlet a bang, else arguments"
+        description: "If args=0, outlet args as array, else argument of current index"
     }];
     static args: TMeta["args"] = [{
         type: "number",
@@ -447,24 +450,22 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
     lambda = (...args: any[]) => {
         this.state.result = undefined;
         if (this.state.argsCount === 0) {
-            this.outlet(1, new Bang());
+            this.outletAll([, new Bang(), args]);
         } else {
-            for (let i = this.outlets - 1; i >= 1; i--) {
-                this.outlet(i, args[i - 1]);
-            }
+            this.outletAll([, new Bang(), ...args]);
         }
-        return this.state.result;
+        return this.state.result; // After outlet, result will be received.
     }
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
             this.inlets = 2;
-            this.outlets = 2;
+            this.outlets = 3;
         });
         this.on("updateArgs", (args) => {
             if (typeof args[0] === "number" && args[0] >= 0) {
                 this.state.argsCount = ~~args[0];
-                this.outlets = 1 + (this.state.argsCount || 1);
+                this.outlets = 2 + this.state.argsCount;
             }
         });
         this.on("inlet", ({ data, inlet }) => {

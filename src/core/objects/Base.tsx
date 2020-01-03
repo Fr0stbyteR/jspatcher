@@ -144,8 +144,16 @@ export abstract class AbstractObject<
         this.emit("inlet", { data, inlet });
         return this;
     }
-    // use this function to output data with ith outlet.
-    outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]) {
+    /**
+     * Output data with ith outlet.
+     *
+     * @template $
+     * @param {$} outlet
+     * @param {O[$]} data
+     * @returns {this}
+     * @memberof AbstractObject
+     */
+    outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]): this {
         if (outlet >= this.outlets) return this;
         const outletLines = this.outletLines[outlet].sort((id1, id2) => { // eslint-disable-line arrow-body-style
             return this._patcher.lines[id2].positionHash - this._patcher.lines[id1].positionHash;
@@ -156,14 +164,29 @@ export abstract class AbstractObject<
         }
         return this;
     }
-    outletAll(outputs: Partial<O>) {
+    /**
+     * Outlet all values in an array with corresponding index,
+     * use sparse array to omit an outlet,
+     * `[, 1]` will outlet 1 on second outlet,
+     * but `[undefined, 1]` will also outlet undefined on first outlet
+     *
+     * @param {Partial<O>} outputs
+     * @returns {this}
+     * @memberof AbstractObject
+     */
+    outletAll(outputs: Partial<O>): this {
         for (let i = outputs.length - 1; i >= 0; i--) {
-            const e = outputs[i];
-            if (typeof e !== "undefined") this.outlet(i, e);
+            if (i in outputs) this.outlet(i, outputs[i]);
         }
         return this;
     }
-    destroy() {
+    /**
+     * Called when object will be destroyed
+     *
+     * @returns {this}
+     * @memberof AbstractObject
+     */
+    destroy(): this {
         this.emit("destroy", this);
         return this;
     }

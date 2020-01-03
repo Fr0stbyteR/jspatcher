@@ -197,6 +197,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const box = new Box(this, boxIn);
         this.boxes[box.id] = box;
         box.init();
+        this.newTimestamp();
         if (!this._state.isLoading) this.emit("createBox", box);
         return box;
     }
@@ -243,6 +244,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const box = this.boxes[boxID];
         box.destroy();
         this.deselect(boxID);
+        this.newTimestamp();
         this.emit("deleteBox", box);
         return box;
     }
@@ -252,6 +254,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const line = new Line(this, lineIn);
         this.lines[line.id] = line;
         line.enable();
+        this.newTimestamp();
         if (!this._state.isLoading) this.emit("createLine", line);
         return line;
     }
@@ -265,6 +268,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const line = this.lines[lineID];
         line.destroy();
         this.deselect(lineID);
+        this.newTimestamp();
         this.emit("deleteLine", line);
         return line;
     }

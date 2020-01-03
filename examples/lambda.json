@@ -4,7 +4,7 @@
             "id": "line-1",
             "src": [
                 "box-3",
-                1
+                2
             ],
             "dest": [
                 "box-11",
@@ -71,6 +71,66 @@
                 0
             ],
             "disabled": false
+        },
+        "line-8": {
+            "id": "line-8",
+            "src": [
+                "box-14",
+                0
+            ],
+            "dest": [
+                "box-13",
+                0
+            ],
+            "disabled": false
+        },
+        "line-9": {
+            "id": "line-9",
+            "src": [
+                "box-13",
+                2
+            ],
+            "dest": [
+                "box-11",
+                0
+            ],
+            "disabled": false
+        },
+        "line-10": {
+            "id": "line-10",
+            "src": [
+                "box-13",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-11": {
+            "id": "line-11",
+            "src": [
+                "box-13",
+                1
+            ],
+            "dest": [
+                "box-11",
+                0
+            ],
+            "disabled": false
+        },
+        "line-12": {
+            "id": "line-12",
+            "src": [
+                "box-3",
+                1
+            ],
+            "dest": [
+                "box-11",
+                0
+            ],
+            "disabled": false
         }
     },
     "boxes": {
@@ -80,13 +140,19 @@
             "inlets": 1,
             "outlets": 0,
             "rect": [
-                185,
-                110,
+                120,
+                135,
                 90,
                 22
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                185,
+                110,
+                90,
+                22
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -97,13 +163,19 @@
             "inlets": 3,
             "outlets": 4,
             "rect": [
-                65,
-                260,
+                45,
+                180,
                 190,
                 22
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                65,
+                260,
+                190,
+                22
+            ],
             "data": {},
             "args": [],
             "props": {
@@ -116,13 +188,19 @@
             "inlets": 2,
             "outlets": 2,
             "rect": [
-                275,
-                260,
+                255,
+                180,
                 45,
                 60
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                275,
+                260,
+                45,
+                60
+            ],
             "data": {},
             "args": [],
             "props": {
@@ -132,16 +210,22 @@
         "box-3": {
             "id": "box-3",
             "text": "lambda 1",
-            "inlets": 1,
-            "outlets": 2,
+            "inlets": 2,
+            "outlets": 3,
             "rect": [
-                65,
-                110,
+                45,
+                90,
                 90,
                 22
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                65,
+                110,
+                90,
+                22
+            ],
             "data": {},
             "args": [
                 1
@@ -154,15 +238,21 @@
             "inlets": 2,
             "outlets": 1,
             "rect": [
-                65,
-                320,
+                45,
+                225,
                 90,
                 22
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                65,
+                320,
+                90,
+                22
+            ],
             "data": {
-                "text": "163"
+                "text": "214"
             },
             "args": [],
             "props": {}
@@ -171,15 +261,67 @@
             "id": "box-4",
             "text": "button",
             "inlets": 1,
-            "outlets": 1,
+            "outlets": 2,
             "rect": [
-                65,
-                50,
+                45,
+                45,
                 30,
                 30
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                65,
+                50,
+                30,
+                30
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-13": {
+            "id": "box-13",
+            "text": "lambda",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                150,
+                90,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                65,
+                110,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-14": {
+            "id": "box-14",
+            "text": "button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                150,
+                45,
+                30,
+                30
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                65,
+                50,
+                30,
+                30
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -187,6 +329,7 @@
     },
     "props": {
         "mode": "js",
+        "dependencies": {},
         "bgColor": [
             61,
             65,
@@ -203,7 +346,7 @@
             15,
             15
         ],
-        "boxIndexCount": 11,
-        "lineIndexCount": 6
+        "boxIndexCount": 14,
+        "lineIndexCount": 12
     }
 }

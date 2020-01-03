@@ -180,7 +180,7 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang, number], [numbe
             this.outlet(1, value);
             const transition = this.getProp("transition");
             const b01 = transition !== "One->Zero";
-            const b10 = transition === "Zero->One";
+            const b10 = transition !== "Zero->One";
             if ((b01 && lastValue < this.state.value) || (b10 && lastValue > this.state.value)) this.outlet(0, new Bang());
         });
     }

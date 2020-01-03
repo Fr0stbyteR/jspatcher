@@ -456,35 +456,11 @@
             ],
             "disabled": false
         },
-        "line-47": {
-            "id": "line-47",
-            "src": [
-                "box-37",
-                1
-            ],
-            "dest": [
-                "box-40",
-                0
-            ],
-            "disabled": false
-        },
-        "line-48": {
-            "id": "line-48",
-            "src": [
-                "box-40",
-                0
-            ],
-            "dest": [
-                "box-38",
-                0
-            ],
-            "disabled": false
-        },
         "line-49": {
             "id": "line-49",
             "src": [
                 "box-37",
-                1
+                2
             ],
             "dest": [
                 "box-7",
@@ -496,7 +472,7 @@
             "id": "line-50",
             "src": [
                 "box-37",
-                2
+                3
             ],
             "dest": [
                 "box-7",
@@ -508,7 +484,7 @@
             "id": "line-51",
             "src": [
                 "box-37",
-                3
+                4
             ],
             "dest": [
                 "box-7",
@@ -588,23 +564,11 @@
             ],
             "disabled": false
         },
-        "line-70": {
-            "id": "line-70",
-            "src": [
-                "box-50",
-                1
-            ],
-            "dest": [
-                "box-52",
-                0
-            ],
-            "disabled": false
-        },
         "line-71": {
             "id": "line-71",
             "src": [
                 "box-50",
-                1
+                2
             ],
             "dest": [
                 "box-53",
@@ -616,7 +580,7 @@
             "id": "line-72",
             "src": [
                 "box-50",
-                2
+                3
             ],
             "dest": [
                 "box-53",
@@ -628,23 +592,11 @@
             "id": "line-73",
             "src": [
                 "box-50",
-                3
+                4
             ],
             "dest": [
                 "box-53",
                 5
-            ],
-            "disabled": false
-        },
-        "line-74": {
-            "id": "line-74",
-            "src": [
-                "box-52",
-                0
-            ],
-            "dest": [
-                "box-51",
-                0
             ],
             "disabled": false
         },
@@ -660,23 +612,11 @@
             ],
             "disabled": false
         },
-        "line-76": {
-            "id": "line-76",
-            "src": [
-                "box-54",
-                1
-            ],
-            "dest": [
-                "box-57",
-                0
-            ],
-            "disabled": false
-        },
         "line-77": {
             "id": "line-77",
             "src": [
                 "box-54",
-                1
+                2
             ],
             "dest": [
                 "box-56",
@@ -688,7 +628,7 @@
             "id": "line-78",
             "src": [
                 "box-54",
-                2
+                3
             ],
             "dest": [
                 "box-56",
@@ -700,23 +640,11 @@
             "id": "line-79",
             "src": [
                 "box-54",
-                3
+                4
             ],
             "dest": [
                 "box-56",
                 5
-            ],
-            "disabled": false
-        },
-        "line-80": {
-            "id": "line-80",
-            "src": [
-                "box-57",
-                0
-            ],
-            "dest": [
-                "box-55",
-                0
             ],
             "disabled": false
         },
@@ -803,6 +731,66 @@
                 1
             ],
             "disabled": false
+        },
+        "line-89": {
+            "id": "line-89",
+            "src": [
+                "box-41",
+                0
+            ],
+            "dest": [
+                "box-50",
+                0
+            ],
+            "disabled": false
+        },
+        "line-90": {
+            "id": "line-90",
+            "src": [
+                "box-41",
+                0
+            ],
+            "dest": [
+                "box-54",
+                0
+            ],
+            "disabled": false
+        },
+        "line-91": {
+            "id": "line-91",
+            "src": [
+                "box-54",
+                1
+            ],
+            "dest": [
+                "box-55",
+                0
+            ],
+            "disabled": false
+        },
+        "line-92": {
+            "id": "line-92",
+            "src": [
+                "box-50",
+                1
+            ],
+            "dest": [
+                "box-51",
+                0
+            ],
+            "disabled": false
+        },
+        "line-93": {
+            "id": "line-93",
+            "src": [
+                "box-37",
+                1
+            ],
+            "dest": [
+                "box-38",
+                0
+            ],
+            "disabled": false
         }
     },
     "boxes": {
@@ -812,7 +800,7 @@
             "inlets": 1,
             "outlets": 2,
             "rect": [
-                300,
+                45,
                 30,
                 30,
                 30
@@ -1652,11 +1640,11 @@
             "id": "box-37",
             "text": "lambda 3",
             "inlets": 2,
-            "outlets": 4,
+            "outlets": 5,
             "rect": [
                 45,
-                285,
-                90,
+                315,
+                135,
                 22
             ],
             "background": false,
@@ -1698,29 +1686,6 @@
             ],
             "props": {}
         },
-        "box-40": {
-            "id": "box-40",
-            "text": "live.button",
-            "inlets": 1,
-            "outlets": 2,
-            "rect": [
-                75,
-                315,
-                20,
-                20
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                178,
-                382.578125,
-                20,
-                20
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        },
         "box-41": {
             "id": "box-41",
             "text": "live.button",
@@ -1729,8 +1694,8 @@
             "rect": [
                 45,
                 165,
-                20,
-                20
+                30,
+                30
             ],
             "background": false,
             "presentation": false,
@@ -1748,11 +1713,11 @@
             "id": "box-50",
             "text": "lambda 3",
             "inlets": 2,
-            "outlets": 4,
+            "outlets": 5,
             "rect": [
                 225,
-                285,
-                90,
+                315,
+                135,
                 22
             ],
             "background": false,
@@ -1794,29 +1759,6 @@
             ],
             "props": {}
         },
-        "box-52": {
-            "id": "box-52",
-            "text": "live.button",
-            "inlets": 1,
-            "outlets": 2,
-            "rect": [
-                255,
-                315,
-                20,
-                20
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                178,
-                382.578125,
-                20,
-                20
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        },
         "box-53": {
             "id": "box-53",
             "text": "tf.basicLSTMCell @args 6",
@@ -1846,11 +1788,11 @@
             "id": "box-54",
             "text": "lambda 3",
             "inlets": 2,
-            "outlets": 4,
+            "outlets": 5,
             "rect": [
                 405,
-                285,
-                90,
+                315,
+                135,
                 22
             ],
             "background": false,
@@ -1916,29 +1858,6 @@
             "props": {
                 "args": 6
             }
-        },
-        "box-57": {
-            "id": "box-57",
-            "text": "live.button",
-            "inlets": 1,
-            "outlets": 2,
-            "rect": [
-                435,
-                315,
-                20,
-                20
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                178,
-                382.578125,
-                20,
-                20
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
         }
     },
     "props": {
@@ -1953,6 +1872,6 @@
             15
         ],
         "boxIndexCount": 57,
-        "lineIndexCount": 87
+        "lineIndexCount": 93
     }
 }

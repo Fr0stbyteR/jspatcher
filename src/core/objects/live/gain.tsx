@@ -636,7 +636,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
                     this.applyBPF(this.state.gainNode.gain, [[dbtoa(this.state.value), this.getProp("interp")]]);
                     this.updateUI({ value: this.state.value });
                 }
-                this.outletAll([undefined, this.state.value, this.state.displayValue]);
+                this.outletAll([, this.state.value, this.state.displayValue]);
             } else if (inlet === 1) {
                 const value = +data;
                 this.state.value = value;
@@ -649,7 +649,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             this.state.value = value;
             this.state.displayValue = displayValue;
             this.applyBPF(this.state.gainNode.gain, [[dbtoa(this.state.value), this.getProp("interp")]]);
-            this.outletAll([undefined, this.state.value, this.state.displayValue]);
+            this.outletAll([, this.state.value, this.state.displayValue]);
         });
         this.on("destroy", () => {
             this.state.bypassNode.disconnect();
