@@ -348,11 +348,7 @@ export class BaseObject<
             if (props) {
                 const uiState: Partial<U & BaseUIState> = {};
                 for (const key in props) {
-                    if (key === "rect") this.box.setRect(props[key]);
-                    else if (key === "presentationRect") this.box.setPresentationRect(props[key]);
-                    else if (key === "presentation") this.box.setPresentation(props[key]);
-                    else if (key === "background") this.box.setBackground(props[key]);
-                    else if (isUIStateKey(key)) uiState[key as keyof (U & BaseUIState)] = props[key] as any;
+                    if (isUIStateKey(key)) uiState[key as keyof (U & BaseUIState)] = props[key] as any;
                 }
                 this.updateUI(uiState);
             }

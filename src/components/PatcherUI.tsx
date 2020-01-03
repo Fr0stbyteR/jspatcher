@@ -385,13 +385,16 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
 
 class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; height: string; grid: [number, number]; editingBgColor: string }> {
     state = { width: "100%", height: "100%", grid: this.props.patcher.props.grid, editingBgColor: this.props.patcher.props.editingBgColor };
+    handleLoaded = (e: Patcher) => this.setState({ grid: e.props.grid.slice() as [number, number], editingBgColor: e.props.editingBgColor });
     handleGridChange = (grid: [number, number]) => this.setState({ grid: grid.slice() as [number, number] });
     handleEditingBgColorChange = (editingBgColor: string) => this.setState({ editingBgColor });
     componentDidMount() {
+        this.props.patcher.on("loaded", this.handleLoaded);
         this.props.patcher.on("grid", this.handleGridChange);
         this.props.patcher.on("editingBgColor", this.handleEditingBgColorChange);
     }
     componentWillUnmount() {
+        this.props.patcher.off("loaded", this.handleLoaded);
         this.props.patcher.off("grid", this.handleGridChange);
         this.props.patcher.off("editingBgColor", this.handleEditingBgColorChange);
     }

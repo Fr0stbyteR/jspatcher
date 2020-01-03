@@ -432,7 +432,7 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
     static outlets: TMeta["outlets"] = [{
         type: "function",
         description: "Anonymous function"
-    }, {
+    }, { // TODO for varLength args
         type: "anything",
         varLength: true,
         description: "If no arguments, outlet a bang, else arguments"

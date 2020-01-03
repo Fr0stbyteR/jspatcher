@@ -1,0 +1,1958 @@
+{
+    "lines": {
+        "line-1": {
+            "id": "line-1",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-2",
+                0
+            ],
+            "disabled": false
+        },
+        "line-2": {
+            "id": "line-2",
+            "src": [
+                "box-2",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        },
+        "line-3": {
+            "id": "line-3",
+            "src": [
+                "box-3",
+                1
+            ],
+            "dest": [
+                "box-4",
+                0
+            ],
+            "disabled": false
+        },
+        "line-5": {
+            "id": "line-5",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-6",
+                0
+            ],
+            "disabled": false
+        },
+        "line-6": {
+            "id": "line-6",
+            "src": [
+                "box-9",
+                0
+            ],
+            "dest": [
+                "box-8",
+                0
+            ],
+            "disabled": false
+        },
+        "line-7": {
+            "id": "line-7",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-10",
+                0
+            ],
+            "disabled": false
+        },
+        "line-8": {
+            "id": "line-8",
+            "src": [
+                "box-10",
+                0
+            ],
+            "dest": [
+                "box-11",
+                0
+            ],
+            "disabled": false
+        },
+        "line-9": {
+            "id": "line-9",
+            "src": [
+                "box-10",
+                1
+            ],
+            "dest": [
+                "box-12",
+                0
+            ],
+            "disabled": false
+        },
+        "line-10": {
+            "id": "line-10",
+            "src": [
+                "box-10",
+                2
+            ],
+            "dest": [
+                "box-13",
+                0
+            ],
+            "disabled": false
+        },
+        "line-12": {
+            "id": "line-12",
+            "src": [
+                "box-11",
+                0
+            ],
+            "dest": [
+                "box-14",
+                0
+            ],
+            "disabled": false
+        },
+        "line-13": {
+            "id": "line-13",
+            "src": [
+                "box-12",
+                0
+            ],
+            "dest": [
+                "box-15",
+                0
+            ],
+            "disabled": false
+        },
+        "line-14": {
+            "id": "line-14",
+            "src": [
+                "box-13",
+                0
+            ],
+            "dest": [
+                "box-16",
+                0
+            ],
+            "disabled": false
+        },
+        "line-15": {
+            "id": "line-15",
+            "src": [
+                "box-14",
+                0
+            ],
+            "dest": [
+                "box-17",
+                0
+            ],
+            "disabled": false
+        },
+        "line-16": {
+            "id": "line-16",
+            "src": [
+                "box-15",
+                0
+            ],
+            "dest": [
+                "box-18",
+                0
+            ],
+            "disabled": false
+        },
+        "line-17": {
+            "id": "line-17",
+            "src": [
+                "box-16",
+                0
+            ],
+            "dest": [
+                "box-19",
+                0
+            ],
+            "disabled": false
+        },
+        "line-18": {
+            "id": "line-18",
+            "src": [
+                "box-17",
+                0
+            ],
+            "dest": [
+                "box-21",
+                0
+            ],
+            "disabled": false
+        },
+        "line-19": {
+            "id": "line-19",
+            "src": [
+                "box-21",
+                0
+            ],
+            "dest": [
+                "box-20",
+                0
+            ],
+            "disabled": false
+        },
+        "line-20": {
+            "id": "line-20",
+            "src": [
+                "box-17",
+                0
+            ],
+            "dest": [
+                "box-20",
+                2
+            ],
+            "disabled": false
+        },
+        "line-21": {
+            "id": "line-21",
+            "src": [
+                "box-23",
+                0
+            ],
+            "dest": [
+                "box-22",
+                0
+            ],
+            "disabled": false
+        },
+        "line-22": {
+            "id": "line-22",
+            "src": [
+                "box-18",
+                0
+            ],
+            "dest": [
+                "box-23",
+                0
+            ],
+            "disabled": false
+        },
+        "line-23": {
+            "id": "line-23",
+            "src": [
+                "box-18",
+                0
+            ],
+            "dest": [
+                "box-22",
+                2
+            ],
+            "disabled": false
+        },
+        "line-24": {
+            "id": "line-24",
+            "src": [
+                "box-24",
+                0
+            ],
+            "dest": [
+                "box-25",
+                0
+            ],
+            "disabled": false
+        },
+        "line-25": {
+            "id": "line-25",
+            "src": [
+                "box-19",
+                0
+            ],
+            "dest": [
+                "box-24",
+                0
+            ],
+            "disabled": false
+        },
+        "line-26": {
+            "id": "line-26",
+            "src": [
+                "box-19",
+                0
+            ],
+            "dest": [
+                "box-25",
+                2
+            ],
+            "disabled": false
+        },
+        "line-27": {
+            "id": "line-27",
+            "src": [
+                "box-20",
+                0
+            ],
+            "dest": [
+                "box-26",
+                0
+            ],
+            "disabled": false
+        },
+        "line-28": {
+            "id": "line-28",
+            "src": [
+                "box-22",
+                0
+            ],
+            "dest": [
+                "box-27",
+                0
+            ],
+            "disabled": false
+        },
+        "line-29": {
+            "id": "line-29",
+            "src": [
+                "box-25",
+                0
+            ],
+            "dest": [
+                "box-28",
+                0
+            ],
+            "disabled": false
+        },
+        "line-30": {
+            "id": "line-30",
+            "src": [
+                "box-20",
+                0
+            ],
+            "dest": [
+                "box-31",
+                0
+            ],
+            "disabled": false
+        },
+        "line-32": {
+            "id": "line-32",
+            "src": [
+                "box-22",
+                0
+            ],
+            "dest": [
+                "box-29",
+                0
+            ],
+            "disabled": false
+        },
+        "line-33": {
+            "id": "line-33",
+            "src": [
+                "box-25",
+                0
+            ],
+            "dest": [
+                "box-30",
+                0
+            ],
+            "disabled": false
+        },
+        "line-34": {
+            "id": "line-34",
+            "src": [
+                "box-26",
+                0
+            ],
+            "dest": [
+                "box-32",
+                0
+            ],
+            "disabled": false
+        },
+        "line-37": {
+            "id": "line-37",
+            "src": [
+                "box-31",
+                0
+            ],
+            "dest": [
+                "box-33",
+                0
+            ],
+            "disabled": false
+        },
+        "line-40": {
+            "id": "line-40",
+            "src": [
+                "box-32",
+                0
+            ],
+            "dest": [
+                "box-34",
+                0
+            ],
+            "disabled": false
+        },
+        "line-41": {
+            "id": "line-41",
+            "src": [
+                "box-33",
+                0
+            ],
+            "dest": [
+                "box-35",
+                0
+            ],
+            "disabled": false
+        },
+        "line-43": {
+            "id": "line-43",
+            "src": [
+                "box-27",
+                0
+            ],
+            "dest": [
+                "box-32",
+                1
+            ],
+            "disabled": false
+        },
+        "line-44": {
+            "id": "line-44",
+            "src": [
+                "box-28",
+                0
+            ],
+            "dest": [
+                "box-32",
+                2
+            ],
+            "disabled": false
+        },
+        "line-45": {
+            "id": "line-45",
+            "src": [
+                "box-29",
+                0
+            ],
+            "dest": [
+                "box-33",
+                1
+            ],
+            "disabled": false
+        },
+        "line-46": {
+            "id": "line-46",
+            "src": [
+                "box-30",
+                0
+            ],
+            "dest": [
+                "box-33",
+                2
+            ],
+            "disabled": false
+        },
+        "line-47": {
+            "id": "line-47",
+            "src": [
+                "box-37",
+                1
+            ],
+            "dest": [
+                "box-40",
+                0
+            ],
+            "disabled": false
+        },
+        "line-48": {
+            "id": "line-48",
+            "src": [
+                "box-40",
+                0
+            ],
+            "dest": [
+                "box-38",
+                0
+            ],
+            "disabled": false
+        },
+        "line-49": {
+            "id": "line-49",
+            "src": [
+                "box-37",
+                1
+            ],
+            "dest": [
+                "box-7",
+                3
+            ],
+            "disabled": false
+        },
+        "line-50": {
+            "id": "line-50",
+            "src": [
+                "box-37",
+                2
+            ],
+            "dest": [
+                "box-7",
+                4
+            ],
+            "disabled": false
+        },
+        "line-51": {
+            "id": "line-51",
+            "src": [
+                "box-37",
+                3
+            ],
+            "dest": [
+                "box-7",
+                5
+            ],
+            "disabled": false
+        },
+        "line-52": {
+            "id": "line-52",
+            "src": [
+                "box-6",
+                0
+            ],
+            "dest": [
+                "box-7",
+                1
+            ],
+            "disabled": false
+        },
+        "line-53": {
+            "id": "line-53",
+            "src": [
+                "box-10",
+                0
+            ],
+            "dest": [
+                "box-7",
+                2
+            ],
+            "disabled": false
+        },
+        "line-54": {
+            "id": "line-54",
+            "src": [
+                "box-38",
+                0
+            ],
+            "dest": [
+                "box-7",
+                0
+            ],
+            "disabled": false
+        },
+        "line-55": {
+            "id": "line-55",
+            "src": [
+                "box-37",
+                0
+            ],
+            "dest": [
+                "box-9",
+                0
+            ],
+            "disabled": false
+        },
+        "line-56": {
+            "id": "line-56",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-41",
+                0
+            ],
+            "disabled": false
+        },
+        "line-57": {
+            "id": "line-57",
+            "src": [
+                "box-41",
+                0
+            ],
+            "dest": [
+                "box-37",
+                0
+            ],
+            "disabled": false
+        },
+        "line-70": {
+            "id": "line-70",
+            "src": [
+                "box-50",
+                1
+            ],
+            "dest": [
+                "box-52",
+                0
+            ],
+            "disabled": false
+        },
+        "line-71": {
+            "id": "line-71",
+            "src": [
+                "box-50",
+                1
+            ],
+            "dest": [
+                "box-53",
+                3
+            ],
+            "disabled": false
+        },
+        "line-72": {
+            "id": "line-72",
+            "src": [
+                "box-50",
+                2
+            ],
+            "dest": [
+                "box-53",
+                4
+            ],
+            "disabled": false
+        },
+        "line-73": {
+            "id": "line-73",
+            "src": [
+                "box-50",
+                3
+            ],
+            "dest": [
+                "box-53",
+                5
+            ],
+            "disabled": false
+        },
+        "line-74": {
+            "id": "line-74",
+            "src": [
+                "box-52",
+                0
+            ],
+            "dest": [
+                "box-51",
+                0
+            ],
+            "disabled": false
+        },
+        "line-75": {
+            "id": "line-75",
+            "src": [
+                "box-51",
+                0
+            ],
+            "dest": [
+                "box-53",
+                0
+            ],
+            "disabled": false
+        },
+        "line-76": {
+            "id": "line-76",
+            "src": [
+                "box-54",
+                1
+            ],
+            "dest": [
+                "box-57",
+                0
+            ],
+            "disabled": false
+        },
+        "line-77": {
+            "id": "line-77",
+            "src": [
+                "box-54",
+                1
+            ],
+            "dest": [
+                "box-56",
+                3
+            ],
+            "disabled": false
+        },
+        "line-78": {
+            "id": "line-78",
+            "src": [
+                "box-54",
+                2
+            ],
+            "dest": [
+                "box-56",
+                4
+            ],
+            "disabled": false
+        },
+        "line-79": {
+            "id": "line-79",
+            "src": [
+                "box-54",
+                3
+            ],
+            "dest": [
+                "box-56",
+                5
+            ],
+            "disabled": false
+        },
+        "line-80": {
+            "id": "line-80",
+            "src": [
+                "box-57",
+                0
+            ],
+            "dest": [
+                "box-55",
+                0
+            ],
+            "disabled": false
+        },
+        "line-81": {
+            "id": "line-81",
+            "src": [
+                "box-55",
+                0
+            ],
+            "dest": [
+                "box-56",
+                0
+            ],
+            "disabled": false
+        },
+        "line-82": {
+            "id": "line-82",
+            "src": [
+                "box-50",
+                0
+            ],
+            "dest": [
+                "box-9",
+                1
+            ],
+            "disabled": false
+        },
+        "line-83": {
+            "id": "line-83",
+            "src": [
+                "box-54",
+                0
+            ],
+            "dest": [
+                "box-9",
+                2
+            ],
+            "disabled": false
+        },
+        "line-84": {
+            "id": "line-84",
+            "src": [
+                "box-6",
+                1
+            ],
+            "dest": [
+                "box-53",
+                1
+            ],
+            "disabled": false
+        },
+        "line-85": {
+            "id": "line-85",
+            "src": [
+                "box-10",
+                1
+            ],
+            "dest": [
+                "box-53",
+                2
+            ],
+            "disabled": false
+        },
+        "line-86": {
+            "id": "line-86",
+            "src": [
+                "box-10",
+                2
+            ],
+            "dest": [
+                "box-56",
+                2
+            ],
+            "disabled": false
+        },
+        "line-87": {
+            "id": "line-87",
+            "src": [
+                "box-6",
+                2
+            ],
+            "dest": [
+                "box-56",
+                1
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-1": {
+            "id": "box-1",
+            "text": "button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                300,
+                30,
+                30,
+                30
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                651,
+                93.578125,
+                30,
+                30
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-2": {
+            "id": "box-2",
+            "text": "fetch \"http://download.magenta.tensorflow.org/models/performance_rnn/tfjs/weights_manifest.json\"",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                45,
+                75,
+                555,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                622,
+                135.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "http://download.magenta.tensorflow.org/models/performance_rnn/tfjs/weights_manifest.json"
+            ],
+            "props": {}
+        },
+        "box-3": {
+            "id": "box-3",
+            "text": "Response..json",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                45,
+                105,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                687,
+                175.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-4": {
+            "id": "box-4",
+            "text": "tf.io.loadWeights null http://download.magenta.tensorflow.org/models/performance_rnn/tfjs/",
+            "inlets": 4,
+            "outlets": 5,
+            "rect": [
+                45,
+                135,
+                555,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                127,
+                151.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                null,
+                "http://download.magenta.tensorflow.org/models/performance_rnn/tfjs/"
+            ],
+            "props": {}
+        },
+        "box-6": {
+            "id": "box-6",
+            "text": "get rnn/multi_rnn_cell/cell_0/basic_lstm_cell/kernel rnn/multi_rnn_cell/cell_1/basic_lstm_cell/kernel rnn/multi_rnn_cell/cell_2/basic_lstm_cell/kernel",
+            "inlets": 4,
+            "outlets": 3,
+            "rect": [
+                300,
+                165,
+                285,
+                50
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                61,
+                190.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "rnn/multi_rnn_cell/cell_0/basic_lstm_cell/kernel",
+                "rnn/multi_rnn_cell/cell_1/basic_lstm_cell/kernel",
+                "rnn/multi_rnn_cell/cell_2/basic_lstm_cell/kernel"
+            ],
+            "props": {}
+        },
+        "box-7": {
+            "id": "box-7",
+            "text": "tf.basicLSTMCell @args 6",
+            "inlets": 6,
+            "outlets": 7,
+            "rect": [
+                75,
+                375,
+                150,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                366,
+                396.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "args": 6
+            }
+        },
+        "box-8": {
+            "id": "box-8",
+            "text": "v lstm",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                45,
+                435,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                497,
+                655.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "lstm"
+            ],
+            "props": {}
+        },
+        "box-9": {
+            "id": "box-9",
+            "text": "Array.of @args 3",
+            "inlets": 3,
+            "outlets": 4,
+            "rect": [
+                45,
+                405,
+                390,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                229,
+                533.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "args": 3
+            }
+        },
+        "box-10": {
+            "id": "box-10",
+            "text": "get rnn/multi_rnn_cell/cell_0/basic_lstm_cell/bias rnn/multi_rnn_cell/cell_1/basic_lstm_cell/bias rnn/multi_rnn_cell/cell_2/basic_lstm_cell/bias",
+            "inlets": 4,
+            "outlets": 3,
+            "rect": [
+                600,
+                165,
+                270,
+                50
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                367,
+                239.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "rnn/multi_rnn_cell/cell_0/basic_lstm_cell/bias",
+                "rnn/multi_rnn_cell/cell_1/basic_lstm_cell/bias",
+                "rnn/multi_rnn_cell/cell_2/basic_lstm_cell/bias"
+            ],
+            "props": {}
+        },
+        "box-11": {
+            "id": "box-11",
+            "text": "get shape",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                600,
+                225,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                311,
+                287.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "shape"
+            ],
+            "props": {}
+        },
+        "box-12": {
+            "id": "box-12",
+            "text": "get shape",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                675,
+                225,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                311,
+                287.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "shape"
+            ],
+            "props": {}
+        },
+        "box-13": {
+            "id": "box-13",
+            "text": "get shape",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                750,
+                225,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                311,
+                287.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "shape"
+            ],
+            "props": {}
+        },
+        "box-14": {
+            "id": "box-14",
+            "text": "get 0",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                600,
+                255,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                361,
+                283.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                0
+            ],
+            "props": {}
+        },
+        "box-15": {
+            "id": "box-15",
+            "text": "get 0",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                675,
+                255,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                361,
+                283.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                0
+            ],
+            "props": {}
+        },
+        "box-16": {
+            "id": "box-16",
+            "text": "get 0",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                750,
+                255,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                361,
+                283.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                0
+            ],
+            "props": {}
+        },
+        "box-17": {
+            "id": "box-17",
+            "text": "/ 4",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                600,
+                285,
+                27,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                243,
+                308.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                4
+            ],
+            "props": {}
+        },
+        "box-18": {
+            "id": "box-18",
+            "text": "/ 4",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                675,
+                285,
+                27,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                243,
+                308.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                4
+            ],
+            "props": {}
+        },
+        "box-19": {
+            "id": "box-19",
+            "text": "/ 4",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                750,
+                285,
+                27,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                243,
+                308.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                4
+            ],
+            "props": {}
+        },
+        "box-20": {
+            "id": "box-20",
+            "text": "set 1 0",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                600,
+                345,
+                55,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                470,
+                419.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                1,
+                0
+            ],
+            "props": {}
+        },
+        "box-21": {
+            "id": "box-21",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                600,
+                315,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                246,
+                313.578125,
+                90,
+                20
+            ],
+            "data": {
+                "text": "[1, 0]"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-22": {
+            "id": "box-22",
+            "text": "set 1 0",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                675,
+                345,
+                55,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                470,
+                419.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                1,
+                0
+            ],
+            "props": {}
+        },
+        "box-23": {
+            "id": "box-23",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                675,
+                315,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                246,
+                313.578125,
+                90,
+                20
+            ],
+            "data": {
+                "text": "[1, 0]"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-24": {
+            "id": "box-24",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                750,
+                315,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                246,
+                313.578125,
+                90,
+                20
+            ],
+            "data": {
+                "text": "[1, 0]"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-25": {
+            "id": "box-25",
+            "text": "set 1 0",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                750,
+                345,
+                55,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                470,
+                419.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                1,
+                0
+            ],
+            "props": {}
+        },
+        "box-26": {
+            "id": "box-26",
+            "text": "tf.zeros",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                600,
+                375,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                443,
+                407.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-27": {
+            "id": "box-27",
+            "text": "tf.zeros",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                675,
+                375,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                443,
+                407.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-28": {
+            "id": "box-28",
+            "text": "tf.zeros",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                750,
+                375,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                443,
+                407.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-29": {
+            "id": "box-29",
+            "text": "tf.zeros",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                900,
+                375,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                443,
+                407.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-30": {
+            "id": "box-30",
+            "text": "tf.zeros",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                975,
+                375,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                443,
+                407.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-31": {
+            "id": "box-31",
+            "text": "tf.zeros",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                825,
+                375,
+                60,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                443,
+                407.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-32": {
+            "id": "box-32",
+            "text": "Array.of @args 3",
+            "inlets": 3,
+            "outlets": 4,
+            "rect": [
+                600,
+                405,
+                120,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                229,
+                533.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "args": 3
+            }
+        },
+        "box-33": {
+            "id": "box-33",
+            "text": "Array.of @args 3",
+            "inlets": 3,
+            "outlets": 4,
+            "rect": [
+                825,
+                405,
+                120,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                229,
+                533.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "args": 3
+            }
+        },
+        "box-34": {
+            "id": "box-34",
+            "text": "v c",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                600,
+                435,
+                30,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                257,
+                447.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "c"
+            ],
+            "props": {}
+        },
+        "box-35": {
+            "id": "box-35",
+            "text": "v h",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                825,
+                435,
+                30,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                257,
+                447.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "h"
+            ],
+            "props": {}
+        },
+        "box-37": {
+            "id": "box-37",
+            "text": "lambda 3",
+            "inlets": 2,
+            "outlets": 4,
+            "rect": [
+                45,
+                285,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                109,
+                407.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                3
+            ],
+            "props": {}
+        },
+        "box-38": {
+            "id": "box-38",
+            "text": "tf.scalar 1.0",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                75,
+                345,
+                75,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                116,
+                389.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                1
+            ],
+            "props": {}
+        },
+        "box-40": {
+            "id": "box-40",
+            "text": "live.button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                75,
+                315,
+                20,
+                20
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                178,
+                382.578125,
+                20,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-41": {
+            "id": "box-41",
+            "text": "live.button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                45,
+                165,
+                20,
+                20
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                178,
+                382.578125,
+                20,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-50": {
+            "id": "box-50",
+            "text": "lambda 3",
+            "inlets": 2,
+            "outlets": 4,
+            "rect": [
+                225,
+                285,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                109,
+                407.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                3
+            ],
+            "props": {}
+        },
+        "box-51": {
+            "id": "box-51",
+            "text": "tf.scalar 1.0",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                255,
+                345,
+                75,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                116,
+                389.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                1
+            ],
+            "props": {}
+        },
+        "box-52": {
+            "id": "box-52",
+            "text": "live.button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                255,
+                315,
+                20,
+                20
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                178,
+                382.578125,
+                20,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-53": {
+            "id": "box-53",
+            "text": "tf.basicLSTMCell @args 6",
+            "inlets": 6,
+            "outlets": 7,
+            "rect": [
+                255,
+                375,
+                150,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                366,
+                396.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "args": 6
+            }
+        },
+        "box-54": {
+            "id": "box-54",
+            "text": "lambda 3",
+            "inlets": 2,
+            "outlets": 4,
+            "rect": [
+                405,
+                285,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                109,
+                407.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                3
+            ],
+            "props": {}
+        },
+        "box-55": {
+            "id": "box-55",
+            "text": "tf.scalar 1.0",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                435,
+                345,
+                75,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                116,
+                389.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                1
+            ],
+            "props": {}
+        },
+        "box-56": {
+            "id": "box-56",
+            "text": "tf.basicLSTMCell @args 6",
+            "inlets": 6,
+            "outlets": 7,
+            "rect": [
+                435,
+                375,
+                150,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                366,
+                396.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "args": 6
+            }
+        },
+        "box-57": {
+            "id": "box-57",
+            "text": "live.button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                435,
+                315,
+                20,
+                20
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                178,
+                382.578125,
+                20,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        }
+    },
+    "props": {
+        "mode": "js",
+        "dependencies": {
+            "tf": "https://unpkg.com/@tensorflow/tfjs"
+        },
+        "bgColor": "rgba(61, 65, 70, 1)",
+        "editingBgColor": "rgba(82, 87, 94, 1)",
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 57,
+        "lineIndexCount": 87
+    }
+}

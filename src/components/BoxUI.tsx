@@ -3,7 +3,7 @@ import { Popup } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import "./BoxUI.scss";
-import { TResizeHandlerType, BoxEventMap, TRect } from "../core/types";
+import { TResizeHandlerType, BoxEventMap, TRect, PatcherEventMap } from "../core/types";
 import { BaseUI } from "../core/objects/BaseUI";
 
 type P = { patcher: Patcher; id: string };
@@ -174,6 +174,9 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
     handlePatcherPresentationChanged = (inPresentationMode: boolean) => this.setState({ inPresentationMode });
     handlePresentationChanged = () => this.setState({ presentation: this.box.presentation, presentationRect: this.box.presentationRect.slice() as TRect });
+    handleResized = ({ selected }: PatcherEventMap["resized"]) => {
+        if (selected.indexOf(this.props.id) !== -1) this.inspectRectChange();
+    };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.props.patcher.state.locked) return;
         const classList = e.currentTarget.classList;
@@ -271,6 +274,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleDeselected);
         this.props.patcher.on("presentation", this.handlePatcherPresentationChanged);
+        this.props.patcher.on("resized", this.handleResized);
         this.inspectRectChange();
     }
     componentWillUnmount() {
@@ -278,6 +282,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleDeselected);
         this.props.patcher.off("presentation", this.handlePatcherPresentationChanged);
+        this.props.patcher.off("resized", this.handleResized);
         const box = this.props.patcher.boxes[this.props.id];
         if (!box) return;
         box.off("textChanged", this.handleTextChanged);

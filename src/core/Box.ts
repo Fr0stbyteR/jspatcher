@@ -1,4 +1,4 @@
-import { MappedEventEmitter } from "../utils";
+import { MappedEventEmitter, isTRect } from "../utils";
 import Patcher from "./Patcher";
 import { AnyObject } from "./objects/Base";
 import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect } from "./types";
@@ -191,7 +191,25 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     update(e: { args?: any[]; props?: { [key: string]: any } }) {
         const { args, props } = e;
         if (args) this.args = Object.assign(this.args, args);
-        if (props) this.props = Object.assign(this.props, props);
+        if (props) {
+            if (isTRect(props.rect)) {
+                this.setRect(props.rect);
+                delete props.rect;
+            }
+            if (isTRect(props.presentationRect)) {
+                this.setPresentationRect(props.presentationRect);
+                delete props.presentationRect;
+            }
+            if (typeof props.presentation === "boolean") {
+                this.setPresentation(props.presentation);
+                delete props.presentation;
+            }
+            if (typeof props.background === "boolean") {
+                this.setBackground(props.background);
+                delete props.background;
+            }
+            this.props = Object.assign(this.props, props);
+        }
         this.emit("updatedFromObject", { args, props });
         return this;
     }

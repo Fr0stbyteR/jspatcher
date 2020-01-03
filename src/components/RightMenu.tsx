@@ -347,10 +347,10 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
                 state[key] = value;
             }
             this.boxes.forEach(box => box.object.update(state));
+        } else if (key === "rect") {
+            this.boxes.forEach(box => box.setRect(value));
         } else {
-            const state: { [key: string]: any } = {};
-            state[key] = value;
-            this.boxes.forEach(box => box.object.update(undefined, state));
+            this.boxes.forEach(box => box.object.update(undefined, { [key]: value }));
         }
         this.handleSelected();
     };
