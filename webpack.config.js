@@ -15,6 +15,14 @@ const config = {
   },
   module: {
     rules: [{
+        test: /\.worklet\.(ts|js)$/,
+        use: [{
+          loader: 'worklet-loader',
+          options: {
+            name: 'js/[hash].worklet.js'
+          }
+        }]
+      }, {
         test: /\.(ts|js)x?$/,
         use: "babel-loader",
         exclude: /node_modules/,
@@ -29,15 +37,13 @@ const config = {
       },
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        use: [ 
-          {
-            loader: 'file-loader',
-            options: {
-              outputPath: 'assets/',
-              publicPath: 'assets/'
-            }
+        use: [{
+          loader: 'file-loader',
+          options: {
+            outputPath: 'assets/',
+            publicPath: 'assets/'
           }
-        ]
+        }]
       },
       {
         test: /\.js$/,
@@ -49,7 +55,7 @@ const config = {
   },
   plugins: [
     new MonacoWebpackPlugin({
-      output: 'monaco',
+      filename : 'js/[hash].worker.js',
       languages: ['javascript']
     }),
     // new BundleAnalyzerPlugin()

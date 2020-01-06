@@ -1,4 +1,5 @@
 import { AudioWorkletRegister, DisposableAudioWorkletNode } from "./Base";
+import AnalyserProcessorURL from "./Analyser.worklet.ts"; // eslint-disable-line import/extensions
 
 export interface DataToProcessor extends DisposableAudioWorkletMessageEventDataToProcessor {
     get?: "rms" | "buffer";
@@ -11,6 +12,7 @@ export type Parameters = "windowSize";
 export class RMSRegister extends AudioWorkletRegister {
     static registered = false;
     static id = "__JSPatcher_RMS";
+    static processorURL = AnalyserProcessorURL;
     static processor = () => {
         /* eslint-disable no-undef */
         class RMSProcessor extends AudioWorkletProcessor<DataToProcessor, DataFromProcessor, Parameters> {

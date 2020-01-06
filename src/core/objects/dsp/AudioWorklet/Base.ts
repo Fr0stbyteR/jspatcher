@@ -18,6 +18,7 @@ export class DisposableAudioWorkletNode<F extends { [key: string]: any } = { [ke
 
 export abstract class AudioWorkletRegister {
     static id: string;
+    static processorURL: string;
     static registeredProcessorsMap = registeredProcessorsMap;
     static registering = false;
     static get registered() {
@@ -33,8 +34,7 @@ export abstract class AudioWorkletRegister {
     private static async registerProcessor(audioWorklet: AudioWorklet) {
         this.registering = true;
         try {
-            const awpString = `(${this.processor.toString()})();`;
-            const url = window.URL.createObjectURL(new Blob([awpString], { type: "text/javascript" }));
+            const url = this.processorURL || window.URL.createObjectURL(new Blob([`(${this.processor.toString()})();`], { type: "text/javascript" }));
             await audioWorklet.addModule(url);
             this.resolves.forEach(f => f());
             this.registering = false;
