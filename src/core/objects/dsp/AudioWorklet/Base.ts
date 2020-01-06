@@ -1,7 +1,7 @@
 export const registeredProcessorsMap: { [key: string]: boolean } = {};
 
 type DataToProcessor = DisposableAudioWorkletMessageEventDataToProcessor;
-export class DisposableAudioWorkletNode<F extends { [key: string]: any } = { [key: string]: any }, T extends DataToProcessor = DataToProcessor, P extends string = undefined> extends AudioWorkletNode {
+export class DisposableAudioWorkletNode<F extends { [key: string]: any } = { [key: string]: any }, T extends DataToProcessor = DataToProcessor, P extends string = string> extends AudioWorkletNode {
     get port(): AudioWorkletMessagePort<F, T> {
         return super.port;
     }
@@ -17,15 +17,15 @@ export class DisposableAudioWorkletNode<F extends { [key: string]: any } = { [ke
 }
 
 export abstract class AudioWorkletRegister {
-    static id: string;
+    static processorID: string;
     static processorURL: string;
     static registeredProcessorsMap = registeredProcessorsMap;
     static registering = false;
     static get registered() {
-        return this.registeredProcessorsMap[this.id];
+        return this.registeredProcessorsMap[this.processorID];
     }
     static set registered(b: boolean) {
-        this.registeredProcessorsMap[this.id] = b;
+        this.registeredProcessorsMap[this.processorID] = b;
     }
     static processor: () => void;
     static Node: new (context: AudioContext, options?: AudioWorkletNodeOptions) => DisposableAudioWorkletNode;

@@ -2,7 +2,7 @@ import { LiveSliderProps } from "./slider";
 import { LiveMeterProps } from "./meter";
 import { LiveUIState, LiveUI, LiveObject, LiveObjectState } from "./Base";
 import { TMeta } from "../../types";
-import { RMSRegister } from "../dsp/AudioWorklet/RMS";
+import { AnalyserRegister } from "../dsp/AudioWorklet/Analyser";
 import { atodb, dbtoa, normExp } from "../../../utils";
 import { Bang } from "../Base";
 
@@ -315,7 +315,7 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
     }
 }
 
-export type LiveGainState = { rmsNode: InstanceType<typeof RMSRegister["Node"]>; bypassNode: GainNode; gainNode: GainNode; $requestTimer: number } & LiveObjectState;
+export type LiveGainState = { rmsNode: InstanceType<typeof AnalyserRegister["Node"]>; bypassNode: GainNode; gainNode: GainNode; $requestTimer: number } & LiveObjectState;
 export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undefined, number, string, number[]], [number], LiveGainProps, LiveGainUIState> {
     static description = "Gain slider and monitor";
     static inlets: TMeta["inlets"] = [{
@@ -620,8 +620,8 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
         this.on("postInit", async () => {
             this.applyBPF(this.state.gainNode.gain, [[dbtoa(this.state.value)]]);
             this.state.bypassNode.connect(this.state.gainNode);
-            await RMSRegister.register(this.audioCtx.audioWorklet);
-            this.state.rmsNode = new RMSRegister.Node(this.audioCtx);
+            await AnalyserRegister.register(this.audioCtx.audioWorklet);
+            this.state.rmsNode = new AnalyserRegister.Node(this.audioCtx);
             this.applyBPF(this.state.rmsNode.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             if (this.getProp("metering") === "preFader") this.state.bypassNode.connect(this.state.rmsNode, 0, 0);
             else this.state.gainNode.connect(this.state.rmsNode, 0, 0);

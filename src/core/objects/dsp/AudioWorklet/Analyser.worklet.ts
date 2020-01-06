@@ -1,11 +1,7 @@
-export interface DataToProcessor extends DisposableAudioWorkletMessageEventDataToProcessor {
-    get?: "rms" | "buffer";
-}
-export interface DataFromProcessor {
-    rms?: number[];
-    buffer?: { startPointer: number; data: Float32Array[] };
-}
-export type Parameters = "windowSize";
+// import { RFFT } from "fftw-js";
+import { DataToProcessor, DataFromProcessor, Parameters } from "./Analyser";
+import { rms } from "../utils";
+
 declare const currentFrame: number;
 declare const currentTime: number;
 declare const sampleRate: number;
@@ -34,19 +30,7 @@ class RMSProcessor extends AudioWorkletProcessor<DataToProcessor, DataFromProces
         };
     }
     get rms() {
-        const rms: number[] = [];
-        for (let i = 0; i < this.window.length; i++) {
-            const channel = this.window[i];
-            let sum = 0;
-            let sample = 0;
-            const length = channel.length;
-            for (let j = 0; j < length; j++) {
-                sample = channel[j];
-                sum += sample * sample;
-            }
-            rms[i] = Math.sqrt(sum / length);
-        }
-        return rms;
+        return this.window.map(rms);
     }
     get buffer() {
         return { startPointer: this.$, data: this.window };
@@ -92,4 +76,4 @@ class RMSProcessor extends AudioWorkletProcessor<DataToProcessor, DataFromProces
         this.window = [];
     }
 }
-registerProcessor("__JSPatcher_RMS", RMSProcessor);
+registerProcessor("__JSPatcher_Analyser", RMSProcessor);

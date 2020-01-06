@@ -7,6 +7,9 @@ const config = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
+  node: {
+    fs: 'empty'
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     library: 'JSPatcher',

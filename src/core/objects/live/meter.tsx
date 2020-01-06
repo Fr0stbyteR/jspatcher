@@ -2,7 +2,7 @@ import * as React from "react";
 import { LiveObject } from "./Base";
 import { BaseAudioObject } from "../Base";
 import { TMeta } from "../../types";
-import { RMSRegister } from "../dsp/AudioWorklet/RMS";
+import { AnalyserRegister } from "../dsp/AudioWorklet/Analyser";
 import { atodb } from "../../../utils";
 import { BaseUI, BaseUIState } from "../BaseUI";
 
@@ -197,7 +197,7 @@ export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
         );
     }
 }
-export type LiveMeterState = { node: InstanceType<typeof RMSRegister["Node"]>; $requestTimer: number };
+export type LiveMeterState = { node: InstanceType<typeof AnalyserRegister["Node"]>; $requestTimer: number };
 export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]], [], LiveMeterProps, LiveMeterUIState> {
     static package = LiveObject.package;
     static author = LiveObject.author;
@@ -354,8 +354,8 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             if (props.windowSize && this.state.node) this.applyBPF(this.state.node.parameters.get("windowSize"), [[props.windowSize]]);
         });
         this.on("postInit", async () => {
-            await RMSRegister.register(this.audioCtx.audioWorklet);
-            this.state.node = new RMSRegister.Node(this.audioCtx);
+            await AnalyserRegister.register(this.audioCtx.audioWorklet);
+            this.state.node = new AnalyserRegister.Node(this.audioCtx);
             this.applyBPF(this.state.node.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
             this.inletConnections[0] = { node: this.state.node, index: 0 };
