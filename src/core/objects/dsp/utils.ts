@@ -8,3 +8,14 @@ export const energy = (signal: Float32Array) => {
     return sum;
 };
 export const rms = (signal: Float32Array) => Math.sqrt(energy(signal) / signal.length);
+export const zcr = (signal: Float32Array) => {
+    let zcr = 0;
+    let lastPositive = true;
+    let positive = true;
+    for (let i = 0; i < signal.length; i++) {
+        positive = signal[i] >= 0;
+        if (positive !== lastPositive) zcr++;
+        lastPositive = positive;
+    }
+    return zcr;
+};

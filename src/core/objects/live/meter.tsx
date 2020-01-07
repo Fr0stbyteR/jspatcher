@@ -2,7 +2,7 @@ import * as React from "react";
 import { LiveObject } from "./Base";
 import { BaseAudioObject } from "../Base";
 import { TMeta } from "../../types";
-import { AnalyserRegister } from "../dsp/AudioWorklet/Analyser";
+import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
 import { atodb } from "../../../utils";
 import { BaseUI, BaseUIState } from "../BaseUI";
 
@@ -197,7 +197,7 @@ export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
         );
     }
 }
-export type LiveMeterState = { node: InstanceType<typeof AnalyserRegister["Node"]>; $requestTimer: number };
+export type LiveMeterState = { node: InstanceType<typeof TemporalAnalyserRegister["Node"]>; $requestTimer: number };
 export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]], [], LiveMeterProps, LiveMeterUIState> {
     static package = LiveObject.package;
     static author = LiveObject.author;
@@ -329,7 +329,7 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             let lastResult: number[] = [];
             const request = async () => {
                 if (this.state.node && !this.state.node.destroyed) {
-                    const rms = await this.state.node.getRMS();
+                    const { rms } = await this.state.node.getRMS();
                     const mode = this.getProp("mode");
                     const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
                     const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
@@ -354,8 +354,8 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             if (props.windowSize && this.state.node) this.applyBPF(this.state.node.parameters.get("windowSize"), [[props.windowSize]]);
         });
         this.on("postInit", async () => {
-            await AnalyserRegister.register(this.audioCtx.audioWorklet);
-            this.state.node = new AnalyserRegister.Node(this.audioCtx);
+            await TemporalAnalyserRegister.register(this.audioCtx.audioWorklet);
+            this.state.node = new TemporalAnalyserRegister.Node(this.audioCtx);
             this.applyBPF(this.state.node.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
             this.inletConnections[0] = { node: this.state.node, index: 0 };
