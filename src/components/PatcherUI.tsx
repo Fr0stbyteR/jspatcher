@@ -406,9 +406,9 @@ class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; he
         const pxx1 = (grid[0] - 1) + "px";
         const pxy = grid[1] + "px";
         const pxy1 = (grid[1] - 1) + "px";
-        const sBGImageX = "repeating-linear-gradient(" + ["-90deg, transparent, transparent " + pxx1, gridColor + " " + pxx1, gridColor + " " + pxx].join(", ") + ")";
-        const sBGImageY = "repeating-linear-gradient(" + ["0deg, transparent, transparent " + pxy1, gridColor + " " + pxy1, gridColor + " " + pxy].join(", ") + ")";
-        const style = { backgroundImage: sBGImageX + ", " + sBGImageY, backgroundSize: pxx + " " + pxy, width, height };
+        const sBGImageX = `repeating-linear-gradient(-90deg, transparent, transparent ${pxx1}, ${gridColor} ${pxx1}, ${gridColor} ${pxx})`;
+        const sBGImageY = `repeating-linear-gradient(0deg, transparent, transparent ${pxy1}, ${gridColor} ${pxy1}, ${gridColor} ${pxy})`;
+        const style = { backgroundImage: `${sBGImageX}, ${sBGImageY}`, backgroundSize: `${pxx} ${pxy}`, width, height };
         return (
             <div className="grid-background" style={style}/>
         );

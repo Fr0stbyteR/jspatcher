@@ -2,29 +2,27 @@
 import { DataToProcessor, DataFromProcessor, Parameters } from "./TemporalAnalyser";
 import { rms, zcr } from "../utils";
 
-declare const currentFrame: number;
-declare const currentTime: number;
-declare const sampleRate: number;
-
 const processorID = "__JSPatcher_TemporalAnalyser";
 
 class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, DataFromProcessor, Parameters> {
     static get parameterDescriptors(): AudioWorkletAudioParamDescriptor<Parameters>[] {
         return [{
             defaultValue: 1024,
-            maxValue: sampleRate * 16,
+            maxValue: 2 ** 32,
             minValue: 128,
             name: "windowSize"
         }];
     }
-    destroyed: boolean;
-    window: Float32Array[];
-    $: number;
+    destroyed = false;
+    window: Float32Array[] = [];
+    /**
+     * Starting point index of current buffer
+     *
+     * @memberof TemporalAnalyserProcessor
+     */
+    $ = 0;
     constructor(options: AudioWorkletNodeOptions) {
         super(options);
-        this.destroyed = false;
-        this.window = [];
-        this.$ = 0;
         this.port.onmessage = (e) => {
             const { id } = e.data;
             if (e.data.destroy) this.destroy();
@@ -48,9 +46,10 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         const windowSize = ~~parameters.windowSize[0] || 1024;
         this.$ %= windowSize;
         if (this.window.length > input.length) this.window.splice(input.length);
+        if (input.length === 0) return true;
+        const bufferSize = input[0].length || 128;
         for (let i = 0; i < input.length; i++) {
             let channel = input[i];
-            const bufferSize = channel.length || 128;
             if (!channel.length) channel = new Float32Array(bufferSize);
             if (!this.window[i]) this.window[i] = new Float32Array(windowSize);
             else if (this.window[i].length !== windowSize) {

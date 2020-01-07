@@ -1,14 +1,11 @@
 import { AudioWorkletRegister, DisposableAudioWorkletNode } from "./Base";
-import AnalyserProcessorURL from "./TemporalAnalyser.worklet.ts"; // eslint-disable-line import/extensions
+import processorURL from "./TemporalAnalyser.worklet.ts"; // eslint-disable-line import/extensions
 
-type TWindowFunction = "blackman" | "hamming" | "hann" | "triangular";
 export interface DataToProcessor extends DisposableAudioWorkletMessageEventDataToProcessor {
     id: number;
     rms?: boolean;
     zcr?: boolean;
     buffer?: boolean;
-    spectrum?: { windowFunction: TWindowFunction };
-    spectra?: { windowFunction: TWindowFunction; windowSize: number; overlap: number };
 }
 export interface DataFromProcessor {
     id: number;
@@ -21,7 +18,7 @@ export const processorID = "__JSPatcher_TemporalAnalyser";
 export class TemporalAnalyserRegister extends AudioWorkletRegister {
     static registered = false;
     static processorID = processorID;
-    static processorURL = AnalyserProcessorURL;
+    static processorURL = processorURL;
     static get Node() {
         const { processorID } = this;
         return class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters> {

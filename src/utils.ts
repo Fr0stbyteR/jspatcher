@@ -2,6 +2,38 @@ import { inspect } from "util";
 import { EventEmitter } from "events";
 import { TMIDIEvent, TBPF, TRect } from "./core/types";
 
+/**
+ * Mod support wrapping with negative numbers
+ *
+ * @param {number} x
+ * @param {number} y
+ */
+export const mod = (x: number, y: number) => (x % y + y) % y;
+/**
+ * Round a number to multiple of another
+ *
+ * @param {number} x
+ * @param {number} to
+ * @returns
+ */
+export const round = (x: number, to: number) => Math.round(x / to) * to;
+/**
+ * Floor a number to multiple of another
+ *
+ * @param {number} x
+ * @param {number} to
+ * @returns
+ */
+export const floor = (x: number, to: number) => Math.floor(x / to) * to;
+/**
+ * Ceil a number to multiple of another
+ *
+ * @param {number} x
+ * @param {number} to
+ * @returns
+ */
+export const ceil = (x: number, to: number) => Math.ceil(x / to) * to;
+
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
 export const isTRect = (x: any): x is TRect => {

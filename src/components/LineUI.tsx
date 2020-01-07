@@ -162,7 +162,7 @@ export class LineUI extends React.PureComponent<P, S> {
         const dEndL = end.left - divStyle.left;
         const dEndT = end.top - divStyle.top;
         const dBezierT = Math.min(divStyle.height, dStartT + Math.max(5, (divStyle.height - 20) * 0.2));
-        const d = "M " + dStartL + " " + dStartT + " Q " + dStartL + " " + dBezierT + " " + dMidL + " " + dMidT + " T " + dEndL + " " + dEndT; // Faster
+        const d = `M ${dStartL} ${dStartT} Q ${dStartL} ${dBezierT} ${dMidL} ${dMidT} T ${dEndL} ${dEndT}`;
         return (
             <div className={className} tabIndex={0} style={divStyle} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
