@@ -1,4 +1,5 @@
-import { MappedEventEmitter, isTRect } from "../utils/utils";
+import { isTRect } from "../utils/utils";
+import { MappedEventEmitter } from "../utils/MappedEventEmitter";
 import Patcher from "./Patcher";
 import { AnyObject } from "./objects/Base";
 import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect } from "./types";

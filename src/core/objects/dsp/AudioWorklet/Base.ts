@@ -29,26 +29,28 @@ export abstract class AudioWorkletRegister {
     }
     static processor: () => void;
     static Node: new (context: AudioContext, options?: AudioWorkletNodeOptions) => DisposableAudioWorkletNode;
-    private static resolves: ((value?: void | PromiseLike<void>) => void)[] = [];
-    private static rejects: ((reason?: any) => void)[] = [];
+    private static resolves: { [id: string]: ((value?: void | PromiseLike<void>) => void)[]} = {};
+    private static rejects: { [id: string]: ((reason?: any) => void)[] } = {};
     private static async registerProcessor(audioWorklet: AudioWorklet) {
         this.registering = true;
         try {
             const url = this.processorURL || window.URL.createObjectURL(new Blob([`(${this.processor.toString()})();`], { type: "text/javascript" }));
             await audioWorklet.addModule(url);
-            this.resolves.forEach(f => f());
+            this.resolves[this.processorID].forEach(f => f());
             this.registering = false;
             this.registered = true;
         } catch (e) {
-            this.rejects.forEach(f => f(e));
+            this.rejects[this.processorID].forEach(f => f(e));
         }
-        this.rejects = [];
-        this.resolves = [];
+        this.rejects[this.processorID] = [];
+        this.resolves[this.processorID] = [];
     }
     static async register(audioWorklet: AudioWorklet): Promise<void> {
+        if (!this.resolves[this.processorID]) this.resolves[this.processorID] = [];
+        if (!this.rejects[this.processorID]) this.rejects[this.processorID] = [];
         const promise = new Promise<void>((resolve, reject) => {
-            this.resolves.push(resolve);
-            this.rejects.push(reject);
+            this.resolves[this.processorID].push(resolve);
+            this.rejects[this.processorID].push(reject);
         });
         if (this.registered) return new Promise<void>(resolve => resolve());
         if (this.registering) return promise;

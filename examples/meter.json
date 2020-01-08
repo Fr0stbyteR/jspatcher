@@ -75,7 +75,7 @@
         "line-8": {
             "id": "line-8",
             "src": [
-                "box-1",
+                "box-19",
                 0
             ],
             "dest": [
@@ -93,6 +93,42 @@
             "dest": [
                 "box-6",
                 0
+            ],
+            "disabled": false
+        },
+        "line-12": {
+            "id": "line-12",
+            "src": [
+                "box-18",
+                0
+            ],
+            "dest": [
+                "box-16",
+                0
+            ],
+            "disabled": false
+        },
+        "line-14": {
+            "id": "line-14",
+            "src": [
+                "box-13",
+                0
+            ],
+            "dest": [
+                "box-16",
+                0
+            ],
+            "disabled": false
+        },
+        "line-13": {
+            "id": "line-13",
+            "src": [
+                "box-16",
+                0
+            ],
+            "dest": [
+                "box-17",
+                1
             ],
             "disabled": false
         }
@@ -186,7 +222,7 @@
             "rect": [
                 15,
                 15,
-                188,
+                90,
                 22
             ],
             "background": false,
@@ -244,7 +280,7 @@
                 20
             ],
             "data": {
-                "text": "[ -35.26851245592947,\n  -35.26851245592947,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -35.26851245592947 ]"
+                "text": "[ -3.0587107381254492,\n  -3.0587107381254492,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -2.9933648145712515 ]"
             },
             "args": [],
             "props": {}
@@ -294,10 +330,112 @@
             "data": {},
             "args": [],
             "props": {}
+        },
+        "box-18": {
+            "id": "box-18",
+            "text": "live.button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                255,
+                15,
+                30,
+                30
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                438,
+                122.578125,
+                20,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-17": {
+            "id": "box-17",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                255,
+                90,
+                225,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                460,
+                291.578125,
+                90,
+                20
+            ],
+            "data": {
+                "text": "[ 12515.625, 12515.625, 0, 0, 0, 562.5 ]"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-19": {
+            "id": "box-19",
+            "text": "oscillator~  20",
+            "inlets": 4,
+            "outlets": 2,
+            "rect": [
+                120,
+                15,
+                120,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                271,
+                167.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                20
+            ],
+            "props": {}
+        },
+        "box-16": {
+            "id": "box-16",
+            "text": "f0",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                255,
+                60,
+                85,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                419,
+                242.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "continuous": true,
+                "windowSize": 1024,
+                "windowFunction": "blackman",
+                "fftSize": 1024
+            }
         }
     },
     "props": {
         "mode": "js",
+        "dependencies": {},
         "bgColor": [
             61,
             65,
@@ -314,7 +452,7 @@
             15,
             15
         ],
-        "boxIndexCount": 15,
-        "lineIndexCount": 11
+        "boxIndexCount": 19,
+        "lineIndexCount": 14
     }
 }

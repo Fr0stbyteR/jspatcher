@@ -1,4 +1,5 @@
-import { MappedEventEmitter, rgbaMax2Css } from "../utils/utils";
+import { rgbaMax2Css } from "../utils/utils";
+import { MappedEventEmitter } from "../utils/MappedEventEmitter";
 import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
@@ -15,12 +16,13 @@ import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
 import JSPWebAudio from "./objects/WebAudio/Imports";
+import DSP from "./objects/dsp/exports";
 import live from "./objects/live/exports";
 import faust from "./objects/faust/exports";
 import Env from "../env";
 import SubPatcher, { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 
-const JSOps: TPackage = { Base, Std, SubPatcher, Max, UI, Op, Window, WebAudio: JSPWebAudio, new: New, live, faust };
+const JSOps: TPackage = { Base, Std, SubPatcher, Max, UI, Op, Window, WebAudio: JSPWebAudio, DSP, new: New, live, faust };
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     static props: TPropsMeta<TPublicPatcherProps> = {

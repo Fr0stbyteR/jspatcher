@@ -1,6 +1,6 @@
 // import { RFFT } from "fftw-js";
 import { DataToProcessor, DataFromProcessor, Parameters } from "./TemporalAnalyser";
-import { rms, zcr, setBuffer } from "../utils";
+import { rms, zcr, setBuffer } from "../../../../utils/buffer";
 
 const processorID = "__JSPatcher_TemporalAnalyser";
 

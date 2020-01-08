@@ -591,7 +591,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             const scheduleRequest = () => {
                 this.state.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
             };
-            scheduleRequest();
+            request();
         };
         this.on("preInit", async () => {
             this.inlets = 1;

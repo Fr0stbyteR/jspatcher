@@ -16,7 +16,6 @@ export interface DataFromProcessor {
 export type Parameters = "windowSize";
 export const processorID = "__JSPatcher_TemporalAnalyser";
 export class TemporalAnalyserRegister extends AudioWorkletRegister {
-    static registered = false;
     static processorID = processorID;
     static processorURL = processorURL;
     static get Node() {

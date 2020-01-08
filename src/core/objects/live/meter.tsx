@@ -211,7 +211,7 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
     static outlets: TMeta["outlets"] = [{
         type: "object",
         description: "Amplitude value: number[]"
-    }]
+    }];
     static props: TMeta["props"] = {
         min: {
             type: "number",
@@ -320,7 +320,7 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             default: 0.01,
             description: "Redraw Threshold in Linear"
         }
-    }
+    };
     uiComponent = LiveMeterUI;
     state: LiveMeterState = { node: undefined, $requestTimer: -1 };
     subscribe() {
@@ -344,7 +344,7 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             const scheduleRequest = () => {
                 this.state.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
             };
-            scheduleRequest();
+            request();
         };
         this.on("preInit", async () => {
             this.inlets = 1;

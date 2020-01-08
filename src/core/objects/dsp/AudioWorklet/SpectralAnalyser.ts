@@ -1,21 +1,22 @@
 import { AudioWorkletRegister, DisposableAudioWorkletNode } from "./Base";
 import processorURL from "./SpectralAnalyser.worklet.ts"; // eslint-disable-line import/extensions
 
-type TWindowFunction = "blackman" | "hamming" | "hann" | "triangular";
+export type TWindowFunction = "blackman" | "hamming" | "hann" | "triangular";
 export interface DataToProcessor extends DisposableAudioWorkletMessageEventDataToProcessor {
     id: number;
     buffer?: boolean;
+    estimatedFreq?: boolean;
     spectrum?: { windowFunction: TWindowFunction };
     spectra?: { windowFunction: TWindowFunction; windowSize: number; overlap: number };
 }
 export interface DataFromProcessor {
     id: number;
     buffer?: { startPointer: number; data: Float32Array[] };
+    estimatedFreq?: number[];
 }
 export type Parameters = "windowSize" | "fftSize" | "fftOverlap" | "windowFunction";
 export const processorID = "__JSPatcher_SpectralAnalyser";
 export class SpectralAnalyserRegister extends AudioWorkletRegister {
-    static registered = false;
     static processorID = processorID;
     static processorURL = processorURL;
     static get Node() {
@@ -33,6 +34,9 @@ export class SpectralAnalyserRegister extends AudioWorkletRegister {
             }
             getBuffer() {
                 return this.gets({ buffer: true });
+            }
+            getFreq() {
+                return this.gets({ estimatedFreq: true });
             }
             gets(options: Omit<DataToProcessor, "id">) {
                 if (this.destroyed) throw Error("The Node is already destroyed.");
