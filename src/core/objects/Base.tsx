@@ -1,5 +1,5 @@
 import { SemanticICONS } from "semantic-ui-react";
-import { stringifyError, MappedEventEmitter } from "../../utils";
+import { stringifyError, MappedEventEmitter } from "../../utils/utils";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import "./Default.scss";

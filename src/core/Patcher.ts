@@ -1,4 +1,4 @@
-import { MappedEventEmitter, rgbaMax2Css } from "../utils";
+import { MappedEventEmitter, rgbaMax2Css } from "../utils/utils";
 import Line from "./Line";
 import Box from "./Box";
 import History from "./History";

@@ -3,7 +3,7 @@ import { LiveObject } from "./Base";
 import { BaseAudioObject } from "../Base";
 import { TMeta } from "../../types";
 import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
-import { atodb } from "../../../utils";
+import { atodb } from "../../../utils/math";
 import { BaseUI, BaseUIState } from "../BaseUI";
 
 export interface LiveMeterProps {

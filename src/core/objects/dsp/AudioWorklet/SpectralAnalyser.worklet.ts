@@ -1,5 +1,9 @@
 import { RFFT } from "fftw-js";
+import apply from "window-function/apply";
+import { blackman } from "window-function";
 import { DataToProcessor, DataFromProcessor, Parameters } from "./SpectralAnalyser";
+import { setBuffer, getSubBuffer, fftw2Amp } from "../utils";
+import { ceil } from "../../../../utils/math";
 
 const processorID = "__JSPatcher_SpectralAnalyser";
 
@@ -62,6 +66,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
     $frame = 0;
     /**
      * Frames of FFT buffered
+     * windowSize = (frames - 1) * fftHopSize + fftSize
      *
      * @memberof SpectralAnalyserProcessor
      */
@@ -90,42 +95,82 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         if (this.destroyed) return false;
         const input = inputs[0];
         const windowSize = ~~parameters.windowSize[0] || 1024;
-        const fftSize = ~~parameters.fftSize[0] || 1024;
+        const fftSize = ceil(Math.min(windowSize, ~~parameters.fftSize[0] || 1024), 2);
         const fftOverlap = ~~parameters.fftOverlap[0] || 2;
-        if (fftSize !== this.fftSize) this.fftw = new RFFT(fftSize);
+        if (fftSize !== this.fftSize) {
+            this.fftw.dispose();
+            this.fftw = new RFFT(fftSize);
+        }
         this.fftSize = fftSize;
         this.fftHopSize = (~~fftSize / fftOverlap) || 1;
+        const frames = ~~((windowSize - fftSize) / this.fftHopSize) + 1;
+        const fftWindowSize = frames * fftSize / 2;
+        this.frames = frames;
         this.$ %= windowSize;
+        this.$frame %= frames;
         if (input.length === 0) return true;
         const bufferSize = input[0].length || 128;
         this.$total += bufferSize;
         for (let i = 0; i < input.length; i++) {
             let channel = input[i];
             if (!channel.length) channel = new Float32Array(bufferSize);
-            if (!this.window[i]) this.window[i] = new Float32Array(windowSize);
-            else if (this.window[i].length !== windowSize) {
-                const oldWindow = this.window[i];
-                const oldWindowSize = oldWindow.length;
+            if (!this.window[i]) {
                 this.window[i] = new Float32Array(windowSize);
-                this.window[i].set(oldWindowSize > windowSize ? oldWindow.subarray(0, windowSize) : oldWindow);
+                this.fftWindow[i] = new Float32Array(fftWindowSize);
+            } else {
+                if (this.window[i].length !== windowSize) {
+                    const oldWindow = this.window[i];
+                    const oldWindowSize = oldWindow.length;
+                    const window = new Float32Array(windowSize);
+                    if (oldWindowSize > windowSize) {
+                        window.set(oldWindow.subarray(oldWindowSize - windowSize));
+                        this.$ = 0;
+                    } else {
+                        window.set(oldWindow);
+                    }
+                    this.window[i] = window;
+                }
+                if (this.fftWindow[i].length !== fftWindowSize) {
+                    const oldWindow = this.fftWindow[i];
+                    const oldWindowSize = oldWindow.length;
+                    const window = new Float32Array(fftWindowSize);
+                    if (oldWindowSize > windowSize) {
+                        window.set(oldWindow.subarray(oldWindowSize - windowSize));
+                        this.$ = 0;
+                    } else {
+                        window.set(oldWindow);
+                    }
+                    this.fftWindow[i] = window;
+                }
             }
             const window = this.window[i];
             let $ = this.$;
+            let samplesWaiting = this.samplesWaiting;
             if (bufferSize > windowSize) {
                 window.set(channel.subarray(bufferSize - windowSize));
                 $ = 0;
-            } else if (this.$ + bufferSize > windowSize) {
-                const split = windowSize - $;
-                window.set(channel.subarray(0, split), this.$);
-                $ = bufferSize - split;
-                window.set(channel.subarray(0, this.$));
+                samplesWaiting = windowSize;
             } else {
-                window.set(channel, $);
-                $ += bufferSize;
+                setBuffer(window, channel, $);
+                $ = ($ + bufferSize) % windowSize;
+                samplesWaiting += bufferSize;
             }
-            if (i === input.length - 1) this.$ = $;
+            let $frame = this.$frame;
+            while (samplesWaiting > this.fftHopSize) {
+                const trunc = getSubBuffer(window, fftSize, $ - samplesWaiting);
+                apply(trunc, blackman);
+                const ffted = this.fftw.forward(trunc);
+                const amps = fftw2Amp(ffted);
+                this.fftWindow[i].set(amps, $frame * fftSize / 2);
+                $frame = ($frame + 1) % this.frames;
+                samplesWaiting -= this.fftHopSize;
+            }
+            if (i === input.length - 1) {
+                this.$ = $;
+                this.$frame = $frame;
+                this.samplesWaiting = samplesWaiting;
+            }
         }
-        this.samplesWaiting += bufferSize;
         return true;
     }
     destroy() {

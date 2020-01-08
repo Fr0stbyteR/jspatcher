@@ -1,7 +1,7 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta } from "../../types";
 import { Bang } from "../Base";
-import { fillRoundedRect } from "../../../utils";
+import { fillRoundedRect } from "../../../utils/utils";
 
 interface LiveTextProps extends LiveUIProps {
     bgColor: string;

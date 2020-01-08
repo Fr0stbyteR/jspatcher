@@ -2,7 +2,7 @@ import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio"
 import FaustDynamicNode from "../dsp/FaustDynamicNode";
 import { Bang } from "../Base";
 import { TMeta, TBPF, TMIDIEvent, TInletMeta, TOutletMeta } from "../../types";
-import { isMIDIEvent, decodeLine } from "../../../utils";
+import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 import { CodePopupUI } from "../BaseUI";
 
 class FaustNodeUI extends CodePopupUI<FaustNode> {

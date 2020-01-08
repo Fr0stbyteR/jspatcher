@@ -1,7 +1,7 @@
 import "./Max.scss";
 import { TMeta } from "../types";
 import { DefaultObject } from "./Base";
-import { isNumberArray } from "../../utils";
+import { isNumberArray } from "../../utils/utils";
 
 class DefaultMaxObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}, E = {}> extends DefaultObject<D, S, I, O, A, P, U, E> {
     static package = "Max";

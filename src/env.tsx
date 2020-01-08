@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Dimmer, Loader } from "semantic-ui-react";
 import { Faust } from "faust2webaudio";
-import { detectOS } from "./utils";
+import { detectOS } from "./utils/utils";
 import { faustLangRegister } from "./misc/monaco-faust/register";
 import Patcher from "./core/Patcher";
 import Importer from "./core/objects/importer/Importer";

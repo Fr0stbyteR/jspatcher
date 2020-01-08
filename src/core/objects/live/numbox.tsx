@@ -1,7 +1,7 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta } from "../../types";
 import { Bang } from "../Base";
-import { normExp } from "../../../utils";
+import { normExp } from "../../../utils/math";
 
 interface LiveNumboxProps extends LiveUIProps {
     bgColor: string;

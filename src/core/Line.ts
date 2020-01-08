@@ -1,5 +1,5 @@
 import Patcher from "./Patcher";
-import { MappedEventEmitter } from "../utils";
+import { MappedEventEmitter } from "../utils/utils";
 import { LineEventMap, TLine, TLineType, TMetaType } from "./types";
 import { BaseAudioObject, AnyObject } from "./objects/Base";
 

@@ -3,7 +3,7 @@ import { LiveMeterProps } from "./meter";
 import { LiveUIState, LiveUI, LiveObject, LiveObjectState } from "./Base";
 import { TMeta } from "../../types";
 import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
-import { atodb, dbtoa, normExp } from "../../../utils";
+import { atodb, dbtoa, normExp } from "../../../utils/math";
 import { Bang } from "../Base";
 
 interface LiveGainProps extends Omit<LiveSliderProps, "sliderColor">, LiveMeterProps {

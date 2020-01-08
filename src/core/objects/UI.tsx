@@ -7,7 +7,7 @@ import { Bang, BaseObject } from "./Base";
 import "./UI.scss";
 import { TMeta } from "../types";
 import { BaseUI, BaseUIProps, BaseUIState } from "./BaseUI";
-import { selectElementRange } from "../../utils";
+import { selectElementRange } from "../../utils/utils";
 
 type ButtonUIState = { text: string; loading: boolean } & BaseUIState;
 export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {

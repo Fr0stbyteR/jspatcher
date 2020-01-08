@@ -1,6 +1,6 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { isNumberArray } from "../../../utils";
+import { isNumberArray } from "../../../utils/utils";
 import { TMeta } from "../../types";
 
 type I = [Bang, number[], number[]];

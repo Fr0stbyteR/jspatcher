@@ -1,7 +1,8 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta } from "../../types";
 import { Bang } from "../Base";
-import { normExp, toRad, roundedRect, fillRoundedRect } from "../../../utils";
+import { roundedRect, fillRoundedRect } from "../../../utils/utils";
+import { normExp, toRad } from "../../../utils/math";
 
 interface LiveDialProps extends LiveUIProps {
     borderColor: string;

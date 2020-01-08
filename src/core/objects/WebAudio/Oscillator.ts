@@ -1,6 +1,6 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang } from "../Base";
-import { decodeLine } from "../../../utils";
+import { decodeLine } from "../../../utils/utils";
 import { TMeta, TBPF } from "../../types";
 
 export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, TBPF, TBPF, OscillatorType], [null, OscillatorNode], [number, OscillatorType], { detune: number }> {

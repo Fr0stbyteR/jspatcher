@@ -1,5 +1,5 @@
 import * as React from "react";
-import { toMIDI, iNormExp } from "../../../utils";
+import { toMIDI, iNormExp } from "../../../utils/math";
 import { BaseAudioObject } from "../Base";
 import { TMeta } from "../../types";
 import { BaseUI, BaseUIState } from "../BaseUI";

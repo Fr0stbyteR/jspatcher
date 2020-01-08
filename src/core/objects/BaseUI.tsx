@@ -6,7 +6,7 @@ import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
 import { AbstractObject, BaseObject, AnyObject, DefaultObject } from "./Base";
-import { selectElementPos, selectElementRange } from "../../utils";
+import { selectElementPos, selectElementRange } from "../../utils/utils";
 
 export type AbstractUIProps<T extends AbstractObject = AbstractObject> = {
     object: T;

@@ -1,6 +1,6 @@
 // import { RFFT } from "fftw-js";
 import { DataToProcessor, DataFromProcessor, Parameters } from "./TemporalAnalyser";
-import { rms, zcr } from "../utils";
+import { rms, zcr, setBuffer } from "../utils";
 
 const processorID = "__JSPatcher_TemporalAnalyser";
 
@@ -51,26 +51,28 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         for (let i = 0; i < input.length; i++) {
             let channel = input[i];
             if (!channel.length) channel = new Float32Array(bufferSize);
-            if (!this.window[i]) this.window[i] = new Float32Array(windowSize);
-            else if (this.window[i].length !== windowSize) {
+            if (!this.window[i]) {
+                this.window[i] = new Float32Array(windowSize);
+            } else if (this.window[i].length !== windowSize) {
                 const oldWindow = this.window[i];
                 const oldWindowSize = oldWindow.length;
-                this.window[i] = new Float32Array(windowSize);
-                this.window[i].set(oldWindowSize > windowSize ? oldWindow.subarray(0, windowSize) : oldWindow);
+                const window = new Float32Array(windowSize);
+                if (oldWindowSize > windowSize) {
+                    window.set(oldWindow.subarray(oldWindowSize - windowSize));
+                    this.$ = 0;
+                } else {
+                    window.set(oldWindow);
+                }
+                this.window[i] = window;
             }
             const window = this.window[i];
             let $ = this.$;
             if (bufferSize > windowSize) {
                 window.set(channel.subarray(bufferSize - windowSize));
                 $ = 0;
-            } else if (this.$ + bufferSize > windowSize) {
-                const split = windowSize - $;
-                window.set(channel.subarray(0, split), this.$);
-                $ = bufferSize - split;
-                window.set(channel.subarray(0, this.$));
             } else {
-                window.set(channel, $);
-                $ += bufferSize;
+                setBuffer(window, channel, $);
+                $ = ($ + bufferSize) % windowSize;
             }
             if (i === input.length - 1) this.$ = $;
         }
