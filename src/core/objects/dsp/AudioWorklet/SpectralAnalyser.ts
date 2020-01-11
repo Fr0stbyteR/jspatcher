@@ -5,14 +5,32 @@ export type TWindowFunction = "blackman" | "hamming" | "hann" | "triangular";
 export interface DataToProcessor extends DisposableAudioWorkletMessageEventDataToProcessor {
     id: number;
     buffer?: boolean;
+    lastAmplitudes?: boolean;
+    allAmplitudes?: boolean;
     estimatedFreq?: boolean;
-    spectrum?: { windowFunction: TWindowFunction };
-    spectra?: { windowFunction: TWindowFunction; windowSize: number; overlap: number };
+    centroid?: boolean;
+    flatness?: boolean;
+    flux?: boolean;
+    kurtosis?: boolean;
+    skewness?: boolean;
+    rolloff?: boolean;
+    slope?: boolean;
+    spread?: boolean;
 }
 export interface DataFromProcessor {
     id: number;
     buffer?: { startPointer: number; data: Float32Array[] };
+    lastAmplitudes?: { startPointer: number; data: Float32Array[] };
+    allAmplitudes?: { startPointer: number; data: Float32Array[]; frames: number; bins: number; hopSize: number };
     estimatedFreq?: number[];
+    centroid?: number[];
+    flatness?: number[];
+    flux?: number[];
+    kurtosis?: number[];
+    skewness?: number[];
+    rolloff?: number[];
+    slope?: number[];
+    spread?: number[];
 }
 export type Parameters = "windowSize" | "fftSize" | "fftOverlap" | "windowFunction";
 export const processorID = "__JSPatcher_SpectralAnalyser";
@@ -31,12 +49,6 @@ export class SpectralAnalyserRegister extends AudioWorkletRegister {
                     if (f) f(e.data);
                     delete this.resolves[e.data.id];
                 };
-            }
-            getBuffer() {
-                return this.gets({ buffer: true });
-            }
-            getFreq() {
-                return this.gets({ estimatedFreq: true });
             }
             gets(options: Omit<DataToProcessor, "id">) {
                 if (this.destroyed) throw Error("The Node is already destroyed.");

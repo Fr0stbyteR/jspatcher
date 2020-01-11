@@ -3,7 +3,7 @@ import apply from "window-function/apply";
 import { blackman } from "window-function";
 import { RFFT } from "fftw-js";
 import { DataToProcessor, DataFromProcessor, Parameters } from "./SpectralAnalyser";
-import { setBuffer, getSubBuffer, fftw2Amp, estimateFreq } from "../../../../utils/buffer";
+import { setBuffer, getSubBuffer, fftw2Amp, estimateFreq, centroid, flatness, flux, kurtosis, skewness, rolloff, slope, indexToFreq, spread } from "../../../../utils/buffer";
 import { ceil } from "../../../../utils/math";
 import { windowEnergyFactor } from "../../../../utils/windowEnergy";
 
@@ -90,19 +90,71 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         this.port.onmessage = (e) => {
             const { id } = e.data;
             if (e.data.destroy) this.destroy();
-            if (e.data.buffer) this.port.postMessage({ id, buffer: this.buffer });
-            if (e.data.estimatedFreq) this.port.postMessage({ id, estimatedFreq: this.estimatedFreq });
+            const message = {} as DataFromProcessor;
+            if (e.data.buffer) message.buffer = this.buffer;
+            if (e.data.lastAmplitudes) message.lastAmplitudes = this.lastAmplitudes;
+            if (e.data.allAmplitudes) message.allAmplitudes = this.allAmplitudes;
+            if (e.data.estimatedFreq) message.estimatedFreq = this.estimatedFreq;
+            if (e.data.centroid) message.centroid = this.centroid;
+            if (e.data.flatness) message.flatness = this.flatness;
+            if (e.data.flux) message.flux = this.flux;
+            if (e.data.kurtosis) message.kurtosis = this.kurtosis;
+            if (e.data.skewness) message.skewness = this.skewness;
+            if (e.data.rolloff) message.rolloff = this.rolloff;
+            if (e.data.slope) message.slope = this.slope;
+            if (e.data.spread) message.spread = this.spread;
+            this.port.postMessage({ id, ...message });
         };
     }
     get buffer() {
         return { startPointer: this.$, data: this.window };
     }
+    get lastAmplitudes() {
+        return { startPointer: this.$frame * this.fftBins, data: this.lastFrame };
+    }
+    get allAmplitudes() {
+        return {
+            startPointer: this.$frame * this.fftBins,
+            data: this.fftWindow,
+            frames: this.frames,
+            bins: this.fftBins,
+            hopSize: this.fftHopSize
+        };
+    }
     get estimatedFreq() {
+        return this.lastFrame.map(channel => estimateFreq(channel, sampleRate));
+    }
+    get centroid() {
+        return this.lastFrame.map(channel => indexToFreq(centroid(channel), this.fftBins, sampleRate));
+    }
+    get flatness() {
+        return this.lastFrame.map(channel => flatness(channel));
+    }
+    get flux() {
+        const secondLastFrame = this.getLastFrame(2);
+        return this.lastFrame.map((channel, i) => flux(channel, secondLastFrame[i]));
+    }
+    get kurtosis() {
+        return this.lastFrame.map(channel => kurtosis(channel));
+    }
+    get skewness() {
+        return this.lastFrame.map(channel => skewness(channel));
+    }
+    get rolloff() {
+        return this.lastFrame.map(channel => indexToFreq(rolloff(channel), this.fftBins, sampleRate));
+    }
+    get slope() {
+        return this.lastFrame.map(channel => slope(channel)/* / (sampleRate / 2 / this.fftBins)*/);
+    }
+    get spread() {
+        return this.lastFrame.map(channel => spread(channel));
+    }
+    get lastFrame() {
+        return this.getLastFrame(1);
+    }
+    getLastFrame(offset: number) {
         const { fftWindow, fftBins, $frame } = this;
-        return fftWindow.map((window) => {
-            const lastFrame = getSubBuffer<Float32Array>(window, fftBins, ($frame - 1) * fftBins);
-            return estimateFreq(lastFrame, sampleRate);
-        });
+        return fftWindow.map(window => getSubBuffer<Float32Array>(window, fftBins, ($frame - offset) * fftBins));
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: { [key in Parameters]: Float32Array }) {
         if (this.destroyed) return false;

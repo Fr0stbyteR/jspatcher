@@ -120,8 +120,8 @@
             ],
             "disabled": false
         },
-        "line-13": {
-            "id": "line-13",
+        "line-15": {
+            "id": "line-15",
             "src": [
                 "box-16",
                 0
@@ -280,7 +280,7 @@
                 20
             ],
             "data": {
-                "text": "[ -3.0587107381254492,\n  -3.0587107381254492,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -2.9933648145712515 ]"
+                "text": "[ -2.968684177253216,\n  -2.968684177253216,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -2.993364814571253 ]"
             },
             "args": [],
             "props": {}
@@ -361,8 +361,8 @@
             "outlets": 1,
             "rect": [
                 255,
-                90,
-                225,
+                105,
+                630,
                 22
             ],
             "background": false,
@@ -374,7 +374,7 @@
                 20
             ],
             "data": {
-                "text": "[ 12515.625, 12515.625, 0, 0, 0, 562.5 ]"
+                "text": "{ centroid: \n   [ 440.12484646398565,\n     440.12484646398565,\n     0,\n     0,\n     0,\n     44.19120532933818 ] }"
             },
             "args": [],
             "props": {}
@@ -406,13 +406,13 @@
         },
         "box-16": {
             "id": "box-16",
-            "text": "f0",
+            "text": "spectralAnalyser~",
             "inlets": 1,
             "outlets": 1,
             "rect": [
                 255,
                 60,
-                85,
+                195,
                 22
             ],
             "background": false,
@@ -426,10 +426,17 @@
             "data": {},
             "args": [],
             "props": {
-                "continuous": true,
-                "windowSize": 1024,
-                "windowFunction": "blackman",
-                "fftSize": 1024
+                "continuous": false,
+                "lastAmplitudes": false,
+                "estimatedFreq": false,
+                "centroid": true,
+                "flatness": false,
+                "flux": false,
+                "kurtosis": false,
+                "skewness": false,
+                "rolloff": false,
+                "slope": false,
+                "spread": false
             }
         }
     },
@@ -453,6 +460,6 @@
             15
         ],
         "boxIndexCount": 19,
-        "lineIndexCount": 14
+        "lineIndexCount": 15
     }
 }

@@ -1,5 +1,7 @@
-import { f0 } from "./f0";
+import { SpectralAnalyser } from "./SpectralAnalyser";
+import { TemporalAnalyser } from "./TemporalAnalyser";
 
 export default {
-    f0
+    "temporalAnalyser~": TemporalAnalyser,
+    "spectralAnalyser~": SpectralAnalyser
 };

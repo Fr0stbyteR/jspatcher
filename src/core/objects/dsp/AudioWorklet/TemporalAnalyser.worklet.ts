@@ -26,9 +26,11 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         this.port.onmessage = (e) => {
             const { id } = e.data;
             if (e.data.destroy) this.destroy();
-            if (e.data.rms) this.port.postMessage({ id, rms: this.rms });
-            if (e.data.zcr) this.port.postMessage({ id, zcr: this.zcr });
-            if (e.data.buffer) this.port.postMessage({ id, buffer: this.buffer });
+            const message = {} as DataFromProcessor;
+            if (e.data.rms) message.rms = this.rms;
+            if (e.data.zcr) message.zcr = this.zcr;
+            if (e.data.buffer) message.buffer = this.buffer;
+            this.port.postMessage({ id, ...message });
         };
     }
     get rms() {
