@@ -21,6 +21,12 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
      * @memberof TemporalAnalyserProcessor
      */
     $ = 0;
+    /**
+     * Total samples received
+     *
+     * @memberof TemporalAnalyserProcessor
+     */
+    $total = 0;
     constructor(options: AudioWorkletNodeOptions) {
         super(options);
         this.port.onmessage = (e) => {
@@ -40,7 +46,8 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         return this.window.map(zcr);
     }
     get buffer() {
-        return { startPointer: this.$, data: this.window };
+        const data = this.window;
+        return { data, startPointer: this.$, sampleIndex: data.length ? this.$total - data[0].length : 0 };
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: { [key in Parameters]: Float32Array }) {
         if (this.destroyed) return false;
@@ -50,6 +57,7 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         if (this.window.length > input.length) this.window.splice(input.length);
         if (input.length === 0) return true;
         const bufferSize = input[0].length || 128;
+        this.$total += bufferSize;
         for (let i = 0; i < input.length; i++) {
             let channel = input[i];
             if (!channel.length) channel = new Float32Array(bufferSize);

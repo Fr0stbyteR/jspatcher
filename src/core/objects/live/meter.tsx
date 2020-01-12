@@ -1,10 +1,9 @@
-import * as React from "react";
 import { LiveObject } from "./Base";
 import { BaseAudioObject } from "../Base";
 import { TMeta } from "../../types";
 import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
 import { atodb } from "../../../utils/math";
-import { BaseUI, BaseUIState } from "../BaseUI";
+import { CanvasUI, CanvasUIState } from "../BaseUI";
 
 export interface LiveMeterProps {
     active: boolean;
@@ -26,51 +25,17 @@ export interface LiveMeterProps {
     hotColor: string;
     overloadColor: string;
 }
-interface LiveMeterUIState extends Omit<LiveMeterProps, "thresholdLinear" | "thresholdDB" | "windowSize" | "speedLim">, BaseUIState {
+interface LiveMeterUIState extends Omit<LiveMeterProps, "thresholdLinear" | "thresholdDB" | "windowSize" | "speedLim">, CanvasUIState {
     value: number[];
 }
-export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
+export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
     state: LiveMeterUIState = {
         ...this.state,
         value: []
     };
-    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
-    refCanvas = React.createRef<HTMLCanvasElement>();
-    className = "live-meter";
-    paintScheduled = false;
-    $paintRaf = -1;
     normValues: number[] = [];
     maxValues: number[] = [];
     maxTimer: number;
-    get canvas() {
-        return this.refCanvas.current;
-    }
-    get ctx() {
-        return this.refCanvas.current ? this.refCanvas.current.getContext("2d") : null;
-    }
-    paintCallback = () => {
-        this.paint();
-        this.$paintRaf = (-1 * Math.round(Math.abs(60 / this.state.frameRate))) || -1;
-        this.paintScheduled = false;
-    }
-    noPaintCallback = () => {
-        this.$paintRaf++;
-        this.paintScheduled = false;
-        this.schedulePaint();
-    }
-    schedulePaint() {
-        if (this.paintScheduled) return;
-        if (this.$paintRaf === -1) this.$paintRaf = requestAnimationFrame(this.paintCallback);
-        else if (this.$paintRaf < -1) requestAnimationFrame(this.noPaintCallback);
-        this.paintScheduled = true;
-    }
-    componentDidMount() {
-        super.componentDidMount();
-        this.schedulePaint();
-    }
-    componentDidUpdate() { // But super.componentDidUpdate is not a function
-        this.schedulePaint();
-    }
     paint() {
         const {
             width,
@@ -184,17 +149,6 @@ export class LiveMeterUI extends BaseUI<LiveMeter, {}, LiveMeterUIState> {
                 $left += $width + 1;
             });
         }
-    }
-    render() {
-        return (
-            <BaseUI {...this.props}>
-                <canvas
-                    ref={this.refCanvas}
-                    className={["live-component", this.className].join(" ")}
-                    style={{ position: "absolute", display: "inline-block", width: "100%", height: "100%" }}
-                />
-            </BaseUI>
-        );
     }
 }
 export type LiveMeterState = { node: InstanceType<typeof TemporalAnalyserRegister["Node"]>; $requestTimer: number };

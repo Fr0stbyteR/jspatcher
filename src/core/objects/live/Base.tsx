@@ -2,7 +2,7 @@ import * as React from "react";
 import { toMIDI, iNormExp } from "../../../utils/math";
 import { BaseAudioObject } from "../Base";
 import { TMeta } from "../../types";
-import { BaseUI, BaseUIState } from "../BaseUI";
+import { BaseUI, BaseUIState, CanvasUI } from "../BaseUI";
 
 export const getDisplayValue = (value: number, type: string, unitstyle: string, units: string, enums: string[]) => {
     if (type === "enum") return enums[value];
@@ -20,23 +20,13 @@ export const getDisplayValue = (value: number, type: string, unitstyle: string, 
     return "N/A";
 };
 export type LiveUIState = LiveUIProps & BaseUIState;
-export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseUI<T, {}, S & LiveUIState> {
-    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
-    refCanvas = React.createRef<HTMLCanvasElement>();
+export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [key: string]: any } = {}> extends CanvasUI<T, {}, S & LiveUIState> {
     className: string;
-    paintScheduled = false;
-    $paintRaf = -1;
     $changeTimer = -1;
     state: S & LiveUIState = {
         ...this.state,
         value: this.object.state.value
     };
-    get canvas() {
-        return this.refCanvas.current;
-    }
-    get ctx() {
-        return this.refCanvas.current ? this.refCanvas.current.getContext("2d") : null;
-    }
     handleKeyDown = (e: React.KeyboardEvent) => {};
     handleKeyUp = (e: React.KeyboardEvent) => {};
     private handleTouchStart = (e: React.TouchEvent) => {
@@ -147,29 +137,6 @@ export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [ke
     scheduleChangeHandler() {
         if (this.$changeTimer === -1) this.$changeTimer = window.setTimeout(this.changeCallback, this.state.speedLim);
     }
-    paintCallback = () => {
-        this.paint();
-        this.$paintRaf = (-1 * Math.round(Math.abs(60 / this.state.frameRate))) || -1;
-        this.paintScheduled = false;
-    }
-    noPaintCallback = () => {
-        this.$paintRaf++;
-        this.paintScheduled = false;
-        this.schedulePaint();
-    }
-    schedulePaint() {
-        if (this.paintScheduled) return;
-        if (this.$paintRaf === -1) this.$paintRaf = requestAnimationFrame(this.paintCallback);
-        else if (this.$paintRaf < -1) requestAnimationFrame(this.noPaintCallback);
-        this.paintScheduled = true;
-    }
-    componentDidMount() {
-        super.componentDidMount();
-        this.schedulePaint();
-    }
-    componentDidUpdate() { // But super.componentDidUpdate is not a function
-        this.schedulePaint();
-    }
     paint() {}
     render() {
         return (
@@ -190,6 +157,7 @@ export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [ke
                     onContextMenu={this.handleContextMenu}
                     onFocus={this.handleFocusIn}
                     onBlur={this.handleFocusOut}
+                    {...this.props.canvasProps}
                 />
             </BaseUI>
         );

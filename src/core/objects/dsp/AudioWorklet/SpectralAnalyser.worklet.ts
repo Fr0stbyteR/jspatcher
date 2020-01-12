@@ -45,7 +45,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
     /**
      * Starting point index of current buffer
      *
-     * @memberof TemporalAnalyserProcessor
+     * @memberof SpectralAnalyserProcessor
      */
     $ = 0;
     /**
@@ -59,7 +59,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
      *
      * @memberof SpectralAnalyserProcessor
      */
-    $frames = 0;
+    $totalFrames = 0;
     /**
      * Starting point index of current FFT frames
      *
@@ -107,10 +107,11 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         };
     }
     get buffer() {
-        return { startPointer: this.$, data: this.window };
+        const data = this.window;
+        return { data, startPointer: this.$, sampleIndex: data.length ? this.$total - data[0].length : 0 };
     }
     get lastAmplitudes() {
-        return { startPointer: this.$frame * this.fftBins, data: this.lastFrame };
+        return { startPointer: this.$frame * this.fftBins, data: this.lastFrame, frameIndex: this.$totalFrames - 1 };
     }
     get allAmplitudes() {
         return {
@@ -118,7 +119,8 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             data: this.fftWindow,
             frames: this.frames,
             bins: this.fftBins,
-            hopSize: this.fftHopSize
+            hopSize: this.fftHopSize,
+            frameIndex: this.$frame - this.frames
         };
     }
     get estimatedFreq() {
@@ -223,7 +225,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
                 $ = ($ + bufferSize) % windowSize;
                 samplesWaiting += bufferSize;
             }
-            let $frame = this.$frame;
+            let { $frame, $totalFrames } = this;
             while (samplesWaiting >= fftHopSize) {
                 if (samplesWaiting / fftHopSize < frames + 1) {
                     const trunc = getSubBuffer(window, fftSize, $ - samplesWaiting + fftHopSize - fftSize);
@@ -233,11 +235,13 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
                     this.fftWindow[i].set(amps, $frame * fftBins);
                     $frame = ($frame + 1) % this.frames;
                 }
+                $totalFrames++;
                 samplesWaiting -= this.fftHopSize;
             }
             if (i === input.length - 1) {
                 this.$ = $;
                 this.$frame = $frame;
+                this.$totalFrames = $totalFrames;
                 this.samplesWaiting = samplesWaiting;
             }
         }

@@ -8,20 +8,20 @@ import "./Base.scss";
 import { AbstractObject, BaseObject, AnyObject, DefaultObject } from "./Base";
 import { selectElementPos, selectElementRange } from "../../utils/utils";
 
-export type AbstractUIProps<T extends AbstractObject = AbstractObject> = {
+export interface AbstractUIProps<T extends AbstractObject = AbstractObject> {
     object: T;
     editing: boolean;
     onEditEnd: () => any;
 }
-export type AbstractUIAdditionalState = {
+export interface AbstractUIState {
     width: number;
     height: number;
 }
 export abstract class AbstractUI<
         T extends AbstractObject = AbstractObject,
         P extends Partial<AbstractUIProps<T>> & { [key: string]: any } = {},
-        S extends Partial<AbstractUIAdditionalState> & { [key: string]: any } = {}
-> extends React.PureComponent<AbstractUIProps<T> & P, S & AbstractUIAdditionalState> {
+        S extends Partial<AbstractUIState> & { [key: string]: any } = {}
+> extends React.PureComponent<AbstractUIProps<T> & P, S & AbstractUIState> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
     static defaultSize: [number, number];
     /**
@@ -32,7 +32,7 @@ export abstract class AbstractUI<
      * @memberof AbstractUI
      */
     static editableOnUnlock: boolean;
-    state: S & AbstractUIAdditionalState = {
+    state: S & AbstractUIState = {
         ...this.state,
         ...this.objectProps,
         width: this.box.width,
@@ -54,7 +54,7 @@ export abstract class AbstractUI<
         }
         return props as S & BaseUIState;
     }
-    private _handleUIUpdate = (e: Pick<S & AbstractUIAdditionalState, keyof (S & AbstractUIAdditionalState)>) => this.setState(e);
+    private _handleUIUpdate = (e: Pick<S & AbstractUIState, keyof (S & AbstractUIState)>) => this.setState(e);
     private _handleResized = () => {
         const { width, height } = this.box;
         if (width !== this.state.width || height !== this.state.height) this.setState({ width, height });
@@ -76,15 +76,15 @@ export abstract class AbstractUI<
         return <></>;
     }
 }
-export type BaseUIProps = {
+export interface BaseUIProps extends AbstractUIProps {
     containerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     additionalClassName?: string;
-} & AbstractUIProps;
-export type BaseUIState = {
+}
+export interface BaseUIState extends AbstractUIState {
     hidden: boolean;
     ignoreClick: boolean;
     hint: string;
-} & AbstractUIAdditionalState;
+}
 export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIState> {
     state: S & BaseUIState = {
         ...this.state,
@@ -111,13 +111,13 @@ export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIPr
         );
     }
 }
-export type DefaultUIProps = {
+export interface DefaultUIProps extends BaseUIProps {
     textContainerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     prependProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     spanProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement>;
     appendProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
-} & BaseUIProps;
-export type DefaultUIState = {
+}
+export interface DefaultUIState extends BaseUIState {
     bgColor: string;
     borderColor: string;
     textColor: string;
@@ -126,11 +126,13 @@ export type DefaultUIState = {
     fontStyle: "normal" | "italic" | "oblique";
     fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
     textAlign: "center" | "left" | "right";
-} & BaseUIState;
-export type DefaultUIAdditionalState = { text: string; loading: boolean; dropdown$: number };
-export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState & DefaultUIAdditionalState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState & DefaultUIAdditionalState> {
+    text: string;
+    loading: boolean;
+    dropdown$: number;
+}
+export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState> {
     static editableOnUnlock = true;
-    state: S & DefaultUIState & DefaultUIAdditionalState = {
+    state: S & DefaultUIState = {
         ...this.state,
         text: this.box.text || "",
         loading: false,
@@ -245,6 +247,9 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         const { object } = this;
         const textContainerStyle: React.CSSProperties = {
             borderColor: this.state.borderColor,
+            backgroundColor: this.state.bgColor
+        };
+        const spanStyle: React.CSSProperties = {
             color: this.state.textColor,
             fontFamily: `${this.state.fontFamily}, Tahoma, sans-serif`,
             fontSize: this.state.fontSize,
@@ -252,15 +257,17 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
             fontStyle: this.state.fontStyle,
             textAlign: this.state.textAlign
         };
-        const containerProps = { ...this.props.containerProps };
-        containerProps.style = { ...containerProps.style, ...textContainerStyle };
+        const textContainerProps = { ...this.props.textContainerProps };
+        textContainerProps.style = { ...textContainerProps.style, ...textContainerStyle };
+        const spanProps = { ...this.props.spanProps };
+        spanProps.style = { ...spanProps.style, ...spanStyle };
         return (
-            <BaseUI {...this.props} additionalClassName="box-ui-default" containerProps={containerProps}>
-                <div className="box-ui-text-container" {...this.props.textContainerProps} style={textContainerStyle}>
+            <BaseUI additionalClassName="box-ui-default" {...this.props}>
+                <div className="box-ui-text-container" {...textContainerProps}>
                     <div className="box-ui-text-container-prepend" {...this.props.prependProps}>
                         {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
                     </div>
-                    <span contentEditable={this.props.editing} className={"editable" + (this.props.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} onBlur={this.props.onEditEnd} suppressContentEditableWarning={true} {...this.props.spanProps}>
+                    <span contentEditable={this.props.editing} className={"editable" + (this.props.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} onBlur={this.props.onEditEnd} suppressContentEditableWarning={true} {...spanProps}>
                         {object.box.text}
                     </span>
                     {
@@ -287,8 +294,70 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         );
     }
 }
-export type DefaultPopupUIProps = { modalProps: StrictModalProps } & DefaultUIProps;
-export type DefaultPopupUIState = { modalOpen: boolean } & DefaultUIState & DefaultUIAdditionalState;
+export interface CanvasUIProps extends BaseUIProps {
+    canvasProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasElement> & React.HTMLAttributes<HTMLCanvasElement>;
+    onPaint?: <S extends CanvasUIState = CanvasUIState>(ctx: CanvasRenderingContext2D, state: S) => void;
+}
+export interface CanvasUIState extends BaseUIState {
+    frameRate: number;
+}
+export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<CanvasUIProps> & { [key: string]: any } = {}, S extends Partial<CanvasUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & CanvasUIProps, S & CanvasUIState> {
+    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
+    refCanvas = React.createRef<HTMLCanvasElement>();
+    paintScheduled = false;
+    $paintRaf = -1;
+    get canvas() {
+        return this.refCanvas.current;
+    }
+    get ctx() {
+        return this.refCanvas.current ? this.refCanvas.current.getContext("2d") : null;
+    }
+    paintCallback = () => {
+        this.paint();
+        this.$paintRaf = (-1 * Math.round(Math.abs(60 / this.state.frameRate))) || -1;
+        this.paintScheduled = false;
+    }
+    noPaintCallback = () => {
+        this.$paintRaf++;
+        this.paintScheduled = false;
+        this.schedulePaint();
+    }
+    schedulePaint() {
+        if (this.paintScheduled) return;
+        if (this.$paintRaf === -1) this.$paintRaf = requestAnimationFrame(this.paintCallback);
+        else if (this.$paintRaf < -1) requestAnimationFrame(this.noPaintCallback);
+        this.paintScheduled = true;
+    }
+    componentDidMount() {
+        super.componentDidMount();
+        this.schedulePaint();
+    }
+    componentDidUpdate() { // But super.componentDidUpdate is not a function
+        this.schedulePaint();
+    }
+    paint() {
+        if (this.props.onPaint) this.props.onPaint(this.ctx, this.state);
+    }
+    render() {
+        const canvasProps = { ...this.props.canvasProps };
+        const defaultCanvasStyle: React.CSSProperties = { position: "absolute", display: "inline-block", width: "100%", height: "100%" };
+        canvasProps.style = { ...defaultCanvasStyle, ...canvasProps.style };
+        return (
+            <BaseUI {...this.props}>
+                <canvas
+                    ref={this.refCanvas}
+                    {...this.props.canvasProps}
+                />
+            </BaseUI>
+        );
+    }
+}
+export interface DefaultPopupUIProps extends DefaultUIProps {
+    modalProps: StrictModalProps;
+}
+export interface DefaultPopupUIState extends DefaultUIState {
+    modalOpen: boolean;
+}
 export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultPopupUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultPopupUIState> & { [key: string]: any } = {}> extends DefaultUI<T, P & DefaultPopupUIProps, S & DefaultPopupUIState> {
     state: S & DefaultPopupUIState = {
         ...this.state,
@@ -316,7 +385,9 @@ export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends P
         );
     }
 }
-export type CodePopupUIState = { editorLoaded: boolean } & DefaultPopupUIState;
+export interface CodePopupUIState extends DefaultPopupUIState {
+    editorLoaded: boolean;
+}
 export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultPopupUIProps> & { [key: string]: any } = {}, S extends Partial<CodePopupUIState> & { [key: string]: any } = {}> extends DefaultPopupUI<T, P, S & CodePopupUIState> {
     state: S & CodePopupUIState = {
         ...this.state,

@@ -19,9 +19,9 @@ export interface DataToProcessor extends DisposableAudioWorkletMessageEventDataT
 }
 export interface DataFromProcessor {
     id: number;
-    buffer?: { startPointer: number; data: Float32Array[] };
-    lastAmplitudes?: { startPointer: number; data: Float32Array[] };
-    allAmplitudes?: { startPointer: number; data: Float32Array[]; frames: number; bins: number; hopSize: number };
+    buffer?: { startPointer: number; data: Float32Array[]; sampleIndex: number };
+    lastAmplitudes?: { startPointer: number; data: Float32Array[]; frameIndex: number };
+    allAmplitudes?: { startPointer: number; data: Float32Array[]; frames: number; bins: number; hopSize: number; frameIndex: number };
     estimatedFreq?: number[];
     centroid?: number[];
     flatness?: number[];

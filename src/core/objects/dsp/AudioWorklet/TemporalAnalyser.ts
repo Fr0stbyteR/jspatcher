@@ -11,7 +11,7 @@ export interface DataFromProcessor {
     id: number;
     rms?: number[];
     zcr?: number[];
-    buffer?: { startPointer: number; data: Float32Array[] };
+    buffer?: { startPointer: number; data: Float32Array[]; sampleIndex: number };
 }
 export type Parameters = "windowSize";
 export const processorID = "__JSPatcher_TemporalAnalyser";
