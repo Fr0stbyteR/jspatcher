@@ -1,5 +1,5 @@
 import { DefaultDSP } from "./Base";
-import { TWindowFunction, SpectralAnalyserRegister, DataToProcessor, DataFromProcessor } from "./AudioWorklet/SpectralAnalyser";
+import { TWindowFunction, SpectralAnalyserRegister, DataToProcessor, DataFromProcessor, SpectralAnalyserNode } from "./AudioWorklet/SpectralAnalyser";
 import { TMeta, TPropsMeta } from "../../types";
 import { Bang } from "../Base";
 
@@ -12,7 +12,7 @@ export interface Props extends Omit<DataToProcessor, "id"> {
     continuous: boolean;
 }
 export interface State {
-    node: InstanceType<typeof SpectralAnalyserRegister["Node"]>;
+    node: SpectralAnalyserNode;
     $requestTimer: number;
 }
 type Outlet0 = Omit<DataFromProcessor, "id">;

@@ -313,9 +313,9 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
         return this.refCanvas.current ? this.refCanvas.current.getContext("2d") : null;
     }
     paintCallback = () => {
-        this.paint();
         this.$paintRaf = (-1 * Math.round(Math.abs(60 / this.state.frameRate))) || -1;
         this.paintScheduled = false;
+        this.paint();
     }
     noPaintCallback = () => {
         this.$paintRaf++;
@@ -334,6 +334,9 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
     }
     componentDidUpdate() { // But super.componentDidUpdate is not a function
         this.schedulePaint();
+    }
+    componentWillUnmount() {
+        if (this.paintScheduled) cancelAnimationFrame(this.$paintRaf);
     }
     paint() {
         if (this.props.onPaint) this.props.onPaint(this.ctx, this.state);

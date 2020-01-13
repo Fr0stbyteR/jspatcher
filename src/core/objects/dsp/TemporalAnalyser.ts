@@ -1,5 +1,5 @@
 import { DefaultDSP } from "./Base";
-import { TemporalAnalyserRegister, DataToProcessor, DataFromProcessor } from "./AudioWorklet/TemporalAnalyser";
+import { TemporalAnalyserRegister, DataToProcessor, DataFromProcessor, TemporalAnalyserNode } from "./AudioWorklet/TemporalAnalyser";
 import { TMeta, TPropsMeta } from "../../types";
 import { Bang } from "../Base";
 
@@ -9,7 +9,7 @@ export interface Props extends Omit<DataToProcessor, "id"> {
     continuous: boolean;
 }
 export interface State {
-    node: InstanceType<typeof TemporalAnalyserRegister["Node"]>;
+    node: TemporalAnalyserNode;
     $requestTimer: number;
 }
 type Outlet0 = Omit<DataFromProcessor, "id">;

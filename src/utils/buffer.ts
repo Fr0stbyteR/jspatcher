@@ -2,24 +2,25 @@ import { mod } from "./math";
 
 type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array;
 type TypedArrayConstructor = typeof Int8Array | typeof Uint8Array | typeof Int16Array | typeof Uint16Array | typeof Int32Array | typeof Uint32Array | typeof Uint8ClampedArray | typeof Float32Array | typeof Float64Array;
-export const sum = (array: TypedArray) => {
+export const sum = (array: TypedArray | number[]) => {
     let sum = 0;
     for (let i = 0; i < array.length; i++) {
         sum += array[i];
     }
     return sum;
 };
-export const mean = (array: TypedArray) => sum(array) / array.length;
-export const median = (array: TypedArray) => {
+export const mean = (array: TypedArray | number[]) => sum(array) / array.length;
+export const median = (array: TypedArray | number[]) => {
     const length = array.length;
     if (length === 0) throw new Error("trying to calculate median of empty array");
     const sortedArray = array.slice().sort();
     if (length % 2 === 0) return (sortedArray[length / 2 - 1] + sortedArray[length / 2]) / 2;
     return sortedArray[~~(length / 2)];
 };
-export const maxIndex = (array: TypedArray) => {
+export const maxIndex = (array: TypedArray | number[]) => {
+    if (!array.length) return 0;
     let index = 0;
-    let max = 0;
+    let max = array[0];
     let i = array.length;
     while (i-- > 1) {
         const cur = array[i];
@@ -29,7 +30,7 @@ export const maxIndex = (array: TypedArray) => {
     }
     return index;
 };
-export const energy = (signal: TypedArray) => {
+export const energy = (signal: TypedArray | number[]) => {
     let sum = 0;
     let sample = 0;
     for (let i = 0; i < signal.length; i++) {
@@ -38,8 +39,8 @@ export const energy = (signal: TypedArray) => {
     }
     return sum;
 };
-export const rms = (signal: TypedArray) => Math.sqrt(energy(signal) / signal.length);
-export const zcr = (signal: TypedArray) => {
+export const rms = (signal: TypedArray | number[]) => Math.sqrt(energy(signal) / signal.length);
+export const zcr = (signal: TypedArray | number[]) => {
     let zcr = 0;
     let lastPositive = true;
     let positive = true;
@@ -50,7 +51,7 @@ export const zcr = (signal: TypedArray) => {
     }
     return zcr;
 };
-export const centroid = (array: TypedArray) => {
+export const centroid = (array: TypedArray | number[]) => {
     let weightedSum = 0;
     let weight = 0;
     for (let i = 0; i < array.length; i++) {
@@ -59,7 +60,7 @@ export const centroid = (array: TypedArray) => {
     }
     return weight === 0 ? 0 : weightedSum / weight;
 };
-export const conjugatedCentroid = (array: TypedArray, factor: number) => {
+export const conjugatedCentroid = (array: TypedArray | number[], factor: number) => {
     let weightedSum = 0;
     let weight = 0;
     for (let i = 0; i < array.length; i++) {
@@ -68,7 +69,7 @@ export const conjugatedCentroid = (array: TypedArray, factor: number) => {
     }
     return weight === 0 ? 0 : weightedSum / weight;
 };
-export const geometricMean = (array: TypedArray) => {
+export const geometricMean = (array: TypedArray | number[]) => {
     const length = array.length;
     let sum = 0;
     let sample = 0;
@@ -79,7 +80,7 @@ export const geometricMean = (array: TypedArray) => {
     }
     return Math.exp(sum / length);
 };
-export const flatness = (array: TypedArray) => geometricMean(array) / mean(array);
+export const flatness = (array: TypedArray | number[]) => geometricMean(array) / mean(array);
 /**
  * https://essentia.upf.edu/reference/std_Flux.html
  *
@@ -89,7 +90,7 @@ export const flatness = (array: TypedArray) => geometricMean(array) / mean(array
  * @param {boolean} [halfRectify]
  * @returns
  */
-export const flux = (cur: TypedArray, prev: TypedArray, norm?: "L1" | "L2", halfRectify?: boolean) => {
+export const flux = (cur: TypedArray | number[], prev: TypedArray | number[], norm?: "L1" | "L2", halfRectify?: boolean) => {
     let flux = 0;
     if (norm === "L2") {
         if (halfRectify === true) { // L2 + halfRectify
@@ -125,7 +126,7 @@ export const flux = (cur: TypedArray, prev: TypedArray, norm?: "L1" | "L2", half
  *
  * @param {TypedArray} array
  */
-export const kurtosis = (array: TypedArray) => {
+export const kurtosis = (array: TypedArray | number[]) => {
     const c1 = centroid(array);
     const c2 = conjugatedCentroid(array, 2);
     const c3 = conjugatedCentroid(array, 3);
@@ -139,7 +140,7 @@ export const kurtosis = (array: TypedArray) => {
  *
  * @param {TypedArray} array
  */
-export const skewness = (array: TypedArray) => {
+export const skewness = (array: TypedArray | number[]) => {
     const c1 = centroid(array);
     const c2 = conjugatedCentroid(array, 2);
     const c3 = conjugatedCentroid(array, 3);
@@ -154,7 +155,7 @@ export const skewness = (array: TypedArray) => {
  * @param {number} [cutoff] Between 0 - 1
  * @returns
  */
-export const rolloff = (array: TypedArray, cutoff?: number) => {
+export const rolloff = (array: TypedArray | number[], cutoff?: number) => {
     const length = array.length;
     let e = energy(array);
     const threshold = (cutoff || 0.99) * e;
@@ -166,7 +167,7 @@ export const rolloff = (array: TypedArray, cutoff?: number) => {
     }
     return n + 1;
 };
-export const slope = (array: TypedArray) => {
+export const slope = (array: TypedArray | number[]) => {
     const n = array.length;
     const xSum = n * n / 2;
     const x2Sum = (n - 1) * n * (2 * n - 1) / 6;
@@ -179,7 +180,7 @@ export const slope = (array: TypedArray) => {
     }
     return (n * xySum - xSum * ySum) / (n * x2Sum - xSum * xSum);
 };
-export const spread = (array: TypedArray) => Math.sqrt(conjugatedCentroid(array, 2)) - centroid(array) ** 2;
+export const spread = (array: TypedArray | number[]) => Math.sqrt(conjugatedCentroid(array, 2)) - centroid(array) ** 2;
 // eslint-disable-next-line arrow-parens
 export const setBuffer = <T extends TypedArray = TypedArray>(to: T, from: T, offsetTo?: number, offsetFrom?: number) => {
     const toLength = to.length;
@@ -205,6 +206,15 @@ export const getSubBuffer = <T extends TypedArray = TypedArray>(from: T, length:
     const $ = mod(offset, fromLength) || 0;
     if ($ === 0 && length === fromLength) return from;
     if ($ + length < fromLength) return from.subarray($, $ + length) as T;
+    const to = new (from.constructor as TypedArrayConstructor)(length);
+    return setBuffer(to, from, 0, $) as T;
+};
+// eslint-disable-next-line arrow-parens
+export const sliceBuffer = <T extends TypedArray = TypedArray>(from: T, length: number, offset?: number) => {
+    const fromLength = from.length;
+    const $ = mod(offset, fromLength) || 0;
+    if ($ === 0 && length === fromLength) return from.slice();
+    if ($ + length < fromLength) return from.slice($, $ + length) as T;
     const to = new (from.constructor as TypedArrayConstructor)(length);
     return setBuffer(to, from, 0, $) as T;
 };

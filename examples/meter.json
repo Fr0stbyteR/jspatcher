@@ -108,6 +108,18 @@
             ],
             "disabled": false
         },
+        "line-15": {
+            "id": "line-15",
+            "src": [
+                "box-16",
+                0
+            ],
+            "dest": [
+                "box-17",
+                1
+            ],
+            "disabled": false
+        },
         "line-14": {
             "id": "line-14",
             "src": [
@@ -120,15 +132,15 @@
             ],
             "disabled": false
         },
-        "line-15": {
-            "id": "line-15",
+        "line-19": {
+            "id": "line-19",
             "src": [
-                "box-16",
+                "box-6",
                 0
             ],
             "dest": [
-                "box-17",
-                1
+                "box-20",
+                0
             ],
             "disabled": false
         }
@@ -280,7 +292,7 @@
                 20
             ],
             "data": {
-                "text": "[ -2.968684177253216,\n  -2.968684177253216,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -2.993364814571253 ]"
+                "text": "[ -12.143354957537131,\n  -12.143354957537131,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -12.58963583938898 ]"
             },
             "args": [],
             "props": {}
@@ -374,7 +386,7 @@
                 20
             ],
             "data": {
-                "text": "{ centroid: \n   [ 440.12484646398565,\n     440.12484646398565,\n     0,\n     0,\n     0,\n     44.19120532933818 ] }"
+                "text": "{ centroid: \n   [ 3925.9529775760107,\n     3925.9529775760107,\n     0,\n     0,\n     0,\n     2119.5785179691175 ] }"
             },
             "args": [],
             "props": {}
@@ -426,7 +438,7 @@
             "data": {},
             "args": [],
             "props": {
-                "continuous": false,
+                "continuous": true,
                 "lastAmplitudes": false,
                 "estimatedFreq": false,
                 "centroid": true,
@@ -437,6 +449,32 @@
                 "rolloff": false,
                 "slope": false,
                 "spread": false
+            }
+        },
+        "box-20": {
+            "id": "box-20",
+            "text": "scope~",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                345,
+                210,
+                265,
+                115
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                571,
+                236.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "windowSize": 1024,
+                "stablize": true
             }
         }
     },
@@ -459,7 +497,7 @@
             15,
             15
         ],
-        "boxIndexCount": 19,
-        "lineIndexCount": 15
+        "boxIndexCount": 20,
+        "lineIndexCount": 20
     }
 }

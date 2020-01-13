@@ -3,7 +3,7 @@ import apply from "window-function/apply";
 import { blackman } from "window-function";
 import { RFFT } from "fftw-js";
 import { DataToProcessor, DataFromProcessor, Parameters } from "./SpectralAnalyser";
-import { setBuffer, getSubBuffer, fftw2Amp, estimateFreq, centroid, flatness, flux, kurtosis, skewness, rolloff, slope, indexToFreq, spread } from "../../../../utils/buffer";
+import { setBuffer, getSubBuffer, fftw2Amp, estimateFreq, centroid, flatness, flux, kurtosis, skewness, rolloff, slope, indexToFreq, spread, sliceBuffer } from "../../../../utils/buffer";
 import { ceil } from "../../../../utils/math";
 import { windowEnergyFactor } from "../../../../utils/windowEnergy";
 
@@ -178,6 +178,10 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         this.frames = frames;
         this.$ %= windowSize;
         this.$frame %= frames;
+        if (this.window.length > input.length) {
+            this.window.splice(input.length);
+            this.fftWindow.splice(input.length);
+        }
         if (input.length === 0) return true;
         const bufferSize = input[0].length || 128;
         this.$total += bufferSize;
@@ -228,7 +232,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             let { $frame, $totalFrames } = this;
             while (samplesWaiting >= fftHopSize) {
                 if (samplesWaiting / fftHopSize < frames + 1) {
-                    const trunc = getSubBuffer(window, fftSize, $ - samplesWaiting + fftHopSize - fftSize);
+                    const trunc = sliceBuffer(window, fftSize, $ - samplesWaiting + fftHopSize - fftSize);
                     apply(trunc, blackman);
                     const ffted = this.fftw.forward(trunc);
                     const amps = fftw2Amp(ffted, windowEnergyFactor.blackman);
