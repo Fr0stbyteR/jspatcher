@@ -13,6 +13,7 @@ export interface OscilloscopeUIState {
     zoomOffset: number;
     range: number;
     autoRange: boolean;
+    showStats: boolean;
     bgColor: string;
     phosphorColor: string;
     hueOffset: number;
@@ -40,6 +41,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         if (!buffer) return;
         const { startPointer: $, data: t } = buffer;
         if (!t || !t.length || !t[0].length) return;
+        const l = t[0].length;
         const {
             width,
             height,
@@ -51,9 +53,9 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             autoRange,
             bgColor,
             phosphorColor,
-            hueOffset: channelColorHueOffset
-            // textColor,
-            // gridColor
+            hueOffset: channelColorHueOffset,
+            textColor,
+            gridColor
         } = this.state;
         const ctx = this.ctx;
         if (!ctx) return;
@@ -65,7 +67,8 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, width, height);
 
-        const l = t[0].length;
+        const left = 0;
+        const bottom = 0;
 
         // Vertical Range
         let min = -range;
@@ -85,6 +88,27 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             }
             yFactor = Math.max(1, Math.abs(min), Math.abs(max))/* * vzoom*/;
         }
+        // Grids
+        ctx.strokeStyle = gridColor;
+        let vStep = 0.25;
+        while (yFactor / 2 / vStep > 2) vStep *= 2; // Maximum horizontal grids in channel one side = 2
+        ctx.beginPath();
+        const gridChannels = 1;
+        const channelHeight = (height - bottom) / gridChannels;
+        for (let i = 0; i < gridChannels; i++) {
+            let y = (i + 0.5) * channelHeight;
+            ctx.moveTo(left, y);
+            ctx.lineTo(width, y);
+            for (let j = vStep; j < yFactor; j += vStep) {
+                y = (i + 0.5 + j / yFactor / 2) * channelHeight;
+                ctx.moveTo(left, y);
+                ctx.lineTo(width, y);
+                y = (i + 0.5 - j / yFactor / 2) * channelHeight;
+                ctx.moveTo(left, y);
+                ctx.lineTo(width, y);
+            }
+        }
+        ctx.stroke();
 
         // Horizontal Range
         let $0 = 0; // Draw start
@@ -101,7 +125,8 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
                 $zerox = 0;
             } else {
                 while ($zerox < l && t[i][($ + $zerox++) % l] < thresh); // Find first drop
-                if ($zerox >= l - 1) {
+                $zerox--;
+                if ($zerox >= l - 1 || $zerox < 0) {
                     $zerox = 0;
                 }
             }
@@ -109,14 +134,14 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         }
         $0 = Math.round($zerox/* + drawL * zoomOffset*/);
         $1 = Math.round($zerox + drawL/* / zoom + drawL * zoomOffset*/);
-        const left = 0;
-        const bottom = 0;
         const gridX = (width - left) / ($1 - $0 - 1);
         const step = Math.max(1, Math.round(1 / gridX));
         ctx.lineWidth = 2;
+        const channelColor: string[] = [];
         for (let i = 0; i < t.length; i++) {
             ctx.beginPath();
-            ctx.strokeStyle = Color(phosphorColor).shiftHue(i * channelColorHueOffset).toHSL();
+            channelColor[i] = Color(phosphorColor).shiftHue(i * channelColorHueOffset).toHSL();
+            ctx.strokeStyle = channelColor[i];
             let maxInStep;
             let minInStep;
             for (let j = $0; j < $1; j++) {
@@ -144,6 +169,21 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
                 }
             }
             ctx.stroke();
+        }
+        // Stats
+        ctx.font = "bold 12px Consolas, monospace";
+        ctx.fillStyle = textColor;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillText(yFactor.toFixed(2), 2, 2);
+        ctx.textBaseline = "bottom";
+        ctx.fillText((-yFactor).toFixed(2), 2, height - 2);
+        ctx.textAlign = "right";
+        const freqStatY = height - 2 - (estimatedFreq.length - 1) * 14;
+        for (let i = 0; i < estimatedFreq.length; i++) {
+            const freq = estimatedFreq[i];
+            ctx.fillStyle = channelColor[i];
+            ctx.fillText(freq.toFixed(2) + "Hz", width - 2, freqStatY + 14 * i);
         }
     }
 }
@@ -188,6 +228,12 @@ export class Oscilloscope extends BaseDSP<{}, State, [], [], [], Props, Oscillos
             type: "boolean",
             default: true,
             description: "Auto adjust range if > 1",
+            isUIState: true
+        },
+        showStats: {
+            type: "boolean",
+            default: true,
+            description: "Show stats texts",
             isUIState: true
         },
         bgColor: {

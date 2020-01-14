@@ -74,6 +74,11 @@ export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
             default: false,
             description: "Getting all the amplitudes frame"
         },
+        amplitude: {
+            type: "boolean",
+            default: false,
+            description: "Getting the sum of the last amplitude frame"
+        },
         estimatedFreq: {
             type: "boolean",
             default: false,
@@ -130,6 +135,7 @@ export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
                         "buffer",
                         "lastAmplitudes",
                         "allAmplitudes",
+                        "amplitude",
                         "estimatedFreq",
                         "centroid",
                         "flatness",

@@ -193,9 +193,9 @@ export const setBuffer = <T extends TypedArray = TypedArray>(to: T, from: T, off
         const $spillLength = Math.min(spillLength - spilled, toLength - $to, fromLength - $from);
         const $fromEnd = $from + $spillLength;
         if ($from === 0 && $fromEnd === fromLength) to.set(from, $to);
-        to.set(from.subarray($from, $fromEnd), $to);
-        $to %= $to + $spillLength;
-        $from %= $fromEnd;
+        else to.set(from.subarray($from, $fromEnd), $to);
+        $to = ($to + $spillLength) % toLength;
+        $from = $fromEnd % fromLength;
         spilled += $spillLength;
     }
     return to;

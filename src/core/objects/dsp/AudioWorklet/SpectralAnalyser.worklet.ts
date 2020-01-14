@@ -3,7 +3,7 @@ import apply from "window-function/apply";
 import { blackman } from "window-function";
 import { RFFT } from "fftw-js";
 import { DataToProcessor, DataFromProcessor, Parameters } from "./SpectralAnalyser";
-import { setBuffer, getSubBuffer, fftw2Amp, estimateFreq, centroid, flatness, flux, kurtosis, skewness, rolloff, slope, indexToFreq, spread, sliceBuffer } from "../../../../utils/buffer";
+import { setBuffer, getSubBuffer, fftw2Amp, estimateFreq, centroid, flatness, flux, kurtosis, skewness, rolloff, slope, indexToFreq, spread, sliceBuffer, sum } from "../../../../utils/buffer";
 import { ceil } from "../../../../utils/math";
 import { windowEnergyFactor } from "../../../../utils/windowEnergy";
 
@@ -94,6 +94,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             if (e.data.buffer) message.buffer = this.buffer;
             if (e.data.lastAmplitudes) message.lastAmplitudes = this.lastAmplitudes;
             if (e.data.allAmplitudes) message.allAmplitudes = this.allAmplitudes;
+            if (e.data.amplitude) message.amplitude = this.amplitude;
             if (e.data.estimatedFreq) message.estimatedFreq = this.estimatedFreq;
             if (e.data.centroid) message.centroid = this.centroid;
             if (e.data.flatness) message.flatness = this.flatness;
@@ -122,6 +123,9 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             hopSize: this.fftHopSize,
             frameIndex: this.$frame - this.frames
         };
+    }
+    get amplitude() {
+        return this.lastFrame.map(channel => sum(channel));
     }
     get estimatedFreq() {
         return this.lastFrame.map(channel => estimateFreq(channel, sampleRate));
