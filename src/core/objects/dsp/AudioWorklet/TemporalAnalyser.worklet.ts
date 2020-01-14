@@ -1,4 +1,3 @@
-// import { RFFT } from "fftw-js";
 import { DataToProcessor, DataFromProcessor, Parameters } from "./TemporalAnalyser";
 import { rms, zcr, setBuffer } from "../../../../utils/buffer";
 

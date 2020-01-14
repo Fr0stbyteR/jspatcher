@@ -1,7 +1,7 @@
 import { LiveObject } from "./Base";
 import { BaseAudioObject } from "../Base";
 import { TMeta } from "../../types";
-import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
+import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyserMain";
 import { atodb } from "../../../utils/math";
 import { CanvasUI, CanvasUIState } from "../BaseUI";
 
@@ -283,7 +283,7 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             let lastResult: number[] = [];
             const request = async () => {
                 if (this.state.node && !this.state.node.destroyed) {
-                    const { rms } = await this.state.node.getRMS();
+                    const { rms } = this.state.node.gets({ rms: true });
                     const mode = this.getProp("mode");
                     const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
                     const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;

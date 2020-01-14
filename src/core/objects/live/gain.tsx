@@ -2,7 +2,7 @@ import { LiveSliderProps } from "./slider";
 import { LiveMeterProps } from "./meter";
 import { LiveUIState, LiveUI, LiveObject, LiveObjectState } from "./Base";
 import { TMeta } from "../../types";
-import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
+import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyserMain";
 import { atodb, dbtoa, normExp } from "../../../utils/math";
 import { Bang } from "../Base";
 
@@ -576,7 +576,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             let lastResult: number[] = [];
             const request = async () => {
                 if (this.state.rmsNode && !this.state.rmsNode.destroyed) {
-                    const { rms } = await this.state.rmsNode.getRMS();
+                    const { rms } = this.state.rmsNode.gets({ rms: true });
                     const mode = this.getProp("mode");
                     const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
                     const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
