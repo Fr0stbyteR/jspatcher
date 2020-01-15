@@ -1,9 +1,9 @@
 import { DefaultDSP } from "./Base";
-import { TWindowFunction, SpectralAnalyserRegister, DataToProcessor, DataFromProcessor, SpectralAnalyserNode } from "./AudioWorklet/SpectralAnalyser";
+import { TWindowFunction, SpectralAnalyserRegister, SpectralAnalyserNode, DataGot, DataToGet } from "./AudioWorklet/SpectralAnalyserMain";
 import { TMeta, TPropsMeta } from "../../types";
 import { Bang } from "../Base";
 
-export interface Props extends Omit<DataToProcessor, "id"> {
+export interface Props extends DataToGet {
     speedLim: number;
     windowSize: number;
     fftSize: number;
@@ -15,7 +15,7 @@ export interface State {
     node: SpectralAnalyserNode;
     $requestTimer: number;
 }
-type Outlet0 = Omit<DataFromProcessor, "id">;
+type Outlet0 = DataGot;
 export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [], Props> {
     static description = "Spectral feature extractor"
     static inlets: TMeta["inlets"] = [{
@@ -129,7 +129,7 @@ export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
     subscribe() {
         super.subscribe();
         const startRequest = () => {
-            const request = async () => {
+            const request = () => {
                 if (this.state.node && !this.state.node.destroyed) {
                     const extractorKeys = [
                         "buffer",
@@ -145,11 +145,10 @@ export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
                         "rolloff",
                         "slope",
                         "spread"
-                    ] as (keyof Omit<DataToProcessor, "id">)[];
-                    const gets: Omit<DataToProcessor, "id"> = {};
+                    ] as (keyof Omit<DataToGet, "id">)[];
+                    const gets: Omit<DataToGet, "id"> = {};
                     extractorKeys.forEach(key => gets[key] = this.getProp(key));
-                    const got = await this.state.node.gets(gets);
-                    delete got.id;
+                    const got = this.state.node.gets(gets);
                     this.outlet(0, got);
                 }
                 if (this.getProp("continuous")) scheduleRequest();
@@ -159,26 +158,26 @@ export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
             };
             request();
         };
-        this.on("preInit", async () => {
+        this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 1;
         });
         this.on("updateProps", (props) => {
             if (this.state.node) {
                 if (props.continuous) startRequest();
-                if (props.windowFunction) this.applyBPF(this.state.node.parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
-                if (props.fftSize) this.applyBPF(this.state.node.parameters.get("fftSize"), [[props.fftSize]]);
-                if (props.fftOverlap) this.applyBPF(this.state.node.parameters.get("fftOverlap"), [[props.fftOverlap]]);
-                if (props.windowSize) this.applyBPF(this.state.node.parameters.get("windowSize"), [[props.windowSize]]);
+                if (props.windowFunction) this.state.node.windowFunction = props.windowFunction;
+                if (props.fftSize) this.state.node.fftSize = props.fftSize;
+                if (props.fftOverlap) this.state.node.fftOverlap = props.fftOverlap;
+                if (props.windowSize) this.state.node.windowSize = props.windowSize;
             }
         });
         this.on("postInit", async () => {
             await SpectralAnalyserRegister.register(this.audioCtx.audioWorklet);
             this.state.node = new SpectralAnalyserRegister.Node(this.audioCtx);
-            this.applyBPF(this.state.node.parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
-            this.applyBPF(this.state.node.parameters.get("fftSize"), [[this.getProp("fftSize")]]);
-            this.applyBPF(this.state.node.parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
-            this.applyBPF(this.state.node.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
+            this.state.node.windowFunction = this.getProp("windowFunction");
+            this.state.node.fftSize = this.getProp("fftSize");
+            this.state.node.fftOverlap = this.getProp("fftOverlap");
+            this.state.node.windowSize = this.getProp("windowSize");
             this.disconnectAudioInlet();
             this.inletConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();
