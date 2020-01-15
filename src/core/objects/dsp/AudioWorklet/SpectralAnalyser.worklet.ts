@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import apply from "window-function/apply";
-import { blackman } from "window-function";
+import { blackman, hamming, hann, triangular } from "window-function";
 import { RFFT } from "fftw-js";
 import { DataToProcessor, DataFromProcessor, Parameters } from "./SpectralAnalyser";
 import { setBuffer, getSubBuffer, fftw2Amp, estimateFreq, centroid, flatness, flux, kurtosis, skewness, rolloff, slope, indexToFreq, spread, sliceBuffer, sum } from "../../../../utils/buffer";
@@ -169,6 +169,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         const fftSize = ceil(Math.min(windowSize, ~~parameters.fftSize[0] || 1024), 2);
         const fftBins = fftSize / 2;
         const fftOverlap = ~~parameters.fftOverlap[0] || 2;
+        const windowFunction = [blackman, hamming, hann, triangular][~~parameters.windowFunction] || blackman;
         if (fftSize !== this.fftSize) {
             this.fftw.dispose();
             this.fftw = new RFFT(fftSize);
@@ -237,7 +238,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             while (samplesWaiting >= fftHopSize) {
                 if (samplesWaiting / fftHopSize < frames + 1) {
                     const trunc = sliceBuffer(window, fftSize, $ - samplesWaiting + fftHopSize - fftSize);
-                    apply(trunc, blackman);
+                    apply(trunc, windowFunction);
                     const ffted = this.fftw.forward(trunc);
                     const amps = fftw2Amp(ffted, windowEnergyFactor.blackman);
                     this.fftWindow[i].set(amps, $frame * fftBins);

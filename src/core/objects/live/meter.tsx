@@ -305,12 +305,12 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             this.outlets = 1;
         });
         this.on("updateProps", (props) => {
-            if (props.windowSize && this.state.node) this.applyBPF(this.state.node.parameters.get("windowSize"), [[props.windowSize]]);
+            if (props.windowSize && this.state.node) this.state.node.windowSize = props.windowSize;
         });
         this.on("postInit", async () => {
             await TemporalAnalyserRegister.register(this.audioCtx.audioWorklet);
             this.state.node = new TemporalAnalyserRegister.Node(this.audioCtx);
-            this.applyBPF(this.state.node.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
+            this.state.node.windowSize = this.getProp("windowSize");
             this.disconnectAudioInlet();
             this.inletConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();

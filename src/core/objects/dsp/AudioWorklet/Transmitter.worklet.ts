@@ -3,14 +3,6 @@ import { DataToProcessor, DataFromProcessor, Parameters } from "./Transmitter";
 const processorID = "__JSPatcher_Transmitter";
 
 class TransmitterProcessor extends AudioWorkletProcessor<DataToProcessor, DataFromProcessor, Parameters> {
-    static get parameterDescriptors(): AudioWorkletAudioParamDescriptor<Parameters>[] {
-        return [{
-            defaultValue: 1024,
-            maxValue: 2 ** 32,
-            minValue: 128,
-            name: "windowSize"
-        }];
-    }
     destroyed = false;
     $ = 0;
     constructor(options: AudioWorkletNodeOptions) {
