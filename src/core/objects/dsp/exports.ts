@@ -1,9 +1,11 @@
 import { SpectralAnalyser } from "./SpectralAnalyser";
 import { TemporalAnalyser } from "./TemporalAnalyser";
 import { Oscilloscope } from "./Oscilloscopes";
+import { Spectroscope } from "./Spectroscope";
 
 export default {
     "temporalAnalyser~": TemporalAnalyser,
     "spectralAnalyser~": SpectralAnalyser,
-    "scope~": Oscilloscope
+    "scope~": Oscilloscope,
+    "spectroscope~": Spectroscope
 };

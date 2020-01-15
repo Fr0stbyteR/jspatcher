@@ -1,6 +1,6 @@
 import * as Color from "color-js";
 import { CanvasUI } from "../BaseUI";
-import { SpectralAnalyserRegister, SpectralAnalyserNode } from "./AudioWorklet/SpectralAnalyserMain";
+import { SpectralAnalyserRegister, SpectralAnalyserNode, TWindowFunction } from "./AudioWorklet/SpectralAnalyserMain";
 import { TMeta, TPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
 import { Bang } from "../Base";
@@ -40,12 +40,6 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         if (this.state.continuous) this.schedulePaint();
         if (!this.object.state.node) return;
         if (this.object.state.node.destroyed) return;
-        const { estimatedFreq, buffer } = this.object.state.node.gets({ estimatedFreq: true, buffer: true });
-        const { sampleRate } = this.object.audioCtx;
-        if (!buffer) return;
-        const { startPointer: $, data: t } = buffer;
-        if (!t || !t.length || !t[0].length) return;
-        const l = t[0].length;
         const {
             width,
             height,
@@ -77,13 +71,21 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         const left = 0;
         const bottom = 0;
 
+        const { estimatedFreq, buffer } = this.object.state.node.gets({ estimatedFreq: true, buffer: true });
+        const { sampleRate } = this.object.audioCtx;
+        if (!buffer) return;
+        const { startPointer: $, data: t } = buffer;
+        if (!t || !t.length || !t[0].length) return;
+        const channels = t.length;
+        const l = t[0].length;
+
         // Vertical Range
         let min = -range;
         let max = range;
         let yFactor = range;
         if (autoRange) {
             // Fastest way to get min and max to have: 1. max abs value for y scaling, 2. mean value for zero-crossing
-            let i = t.length;
+            let i = channels;
             let s = 0;
             while (i--) {
                 let j = l;
@@ -101,7 +103,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         while (yFactor / 2 / vStep > 2) vStep *= 2; // Minimum horizontal grids in channel one side = 2
         ctx.beginPath();
         ctx.setLineDash([]);
-        const gridChannels = interleaved ? t.length : 1;
+        const gridChannels = interleaved ? channels : 1;
         const channelHeight = (height - bottom) / gridChannels;
         for (let i = 0; i < gridChannels; i++) {
             let y = (i + 0.5) * channelHeight;
@@ -129,10 +131,10 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         ctx.setLineDash([]);
         ctx.lineWidth = 2;
         const channelColor: string[] = [];
-        for (let i = 0; i < t.length; i++) {
+        for (let i = 0; i < channels; i++) {
             // Horizontal Range
             let $0 = 0; // Draw start
-            let $1 = l - 1; // Draw End
+            let $1 = l; // Draw End
             let $zerox = 0; // First Zero-crossing
             let drawL = l; // Length to draw
             if (stablize) { // Stablization
@@ -153,7 +155,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             }
             $0 = Math.round($zerox/* + drawL * zoomOffset*/);
             $1 = Math.round($zerox + drawL/* / zoom + drawL * zoomOffset*/);
-            const gridX = (width - left) / ($1 - $0 - 1);
+            const gridX = (width - left) / ($1 - $0);
             const step = Math.max(1, Math.round(1 / gridX));
 
             ctx.beginPath();
@@ -212,6 +214,9 @@ export interface State {
 }
 export interface Props extends Omit<OscilloscopeUIState, "$cursor" | "zoom" | "zoomOffset" | "paint"> {
     windowSize: number;
+    fftSize: number;
+    fftOverlap: number;
+    windowFunction: TWindowFunction;
 }
 export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, OscilloscopeUIState> {
     static description = "Oscilloscope"
@@ -225,6 +230,22 @@ export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, Osci
             type: "number",
             default: 1024,
             description: "Signal window size"
+        },
+        fftSize: {
+            type: "number",
+            default: 1024,
+            description: "FFT Size for analysis"
+        },
+        fftOverlap: {
+            type: "number",
+            default: 2,
+            description: "FFT overlap count (integer)"
+        },
+        windowFunction: {
+            type: "enum",
+            enums: ["blackman", "hamming", "hann", "triangular"],
+            default: "blackman",
+            description: "Window Function aoolied for FFT analysis window"
         },
         continuous: {
             type: "boolean",
@@ -314,11 +335,19 @@ export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, Osci
             this.outlets = 0;
         });
         this.on("updateProps", (props) => {
-            if (props.windowSize && this.state.node) this.state.node.windowSize = props.windowSize;
+            if (this.state.node) {
+                if (props.windowFunction) this.state.node.windowFunction = props.windowFunction;
+                if (props.fftSize) this.state.node.fftSize = props.fftSize;
+                if (props.fftOverlap) this.state.node.fftOverlap = props.fftOverlap;
+                if (props.windowSize) this.state.node.windowSize = props.windowSize;
+            }
         });
         this.on("postInit", async () => {
             await SpectralAnalyserRegister.register(this.audioCtx.audioWorklet);
             this.state.node = new SpectralAnalyserRegister.Node(this.audioCtx);
+            this.state.node.windowFunction = this.getProp("windowFunction");
+            this.state.node.fftSize = this.getProp("fftSize");
+            this.state.node.fftOverlap = this.getProp("fftOverlap");
             this.state.node.windowSize = this.getProp("windowSize");
             this.disconnectAudioInlet();
             this.inletConnections[0] = { node: this.state.node, index: 0 };

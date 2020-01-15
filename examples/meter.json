@@ -143,6 +143,18 @@
                 0
             ],
             "disabled": false
+        },
+        "line-21": {
+            "id": "line-21",
+            "src": [
+                "box-6",
+                0
+            ],
+            "dest": [
+                "box-22",
+                0
+            ],
+            "disabled": false
         }
     },
     "boxes": {
@@ -152,7 +164,7 @@
             "inlets": 2,
             "outlets": 2,
             "rect": [
-                240,
+                150,
                 210,
                 75,
                 75
@@ -181,7 +193,7 @@
             "inlets": 1,
             "outlets": 1,
             "rect": [
-                345,
+                300,
                 435,
                 45,
                 150
@@ -292,7 +304,7 @@
                 20
             ],
             "data": {
-                "text": "[ -12.143354957537131,\n  -12.143354957537131,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -12.58963583938898 ]"
+                "text": "[ -7.037720781041676,\n  -7.037720781041676,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -7.159964218105884 ]"
             },
             "args": [],
             "props": {}
@@ -372,9 +384,9 @@
             "inlets": 2,
             "outlets": 1,
             "rect": [
-                255,
-                105,
-                630,
+                375,
+                60,
+                525,
                 22
             ],
             "background": false,
@@ -386,14 +398,14 @@
                 20
             ],
             "data": {
-                "text": "{ centroid: \n   [ 3925.9529775760107,\n     3925.9529775760107,\n     0,\n     0,\n     0,\n     2119.5785179691175 ] }"
+                "text": "{ centroid: \n   [ 440.33948147279256,\n     440.33948147279256,\n     0,\n     0,\n     0,\n     101.87718702060835 ] }"
             },
             "args": [],
             "props": {}
         },
         "box-19": {
             "id": "box-19",
-            "text": "oscillator~  20",
+            "text": "oscillator~  100",
             "inlets": 4,
             "outlets": 2,
             "rect": [
@@ -412,7 +424,7 @@
             ],
             "data": {},
             "args": [
-                20
+                100
             ],
             "props": {}
         },
@@ -424,7 +436,7 @@
             "rect": [
                 255,
                 60,
-                195,
+                105,
                 22
             ],
             "background": false,
@@ -457,10 +469,10 @@
             "inlets": 1,
             "outlets": 0,
             "rect": [
-                345,
-                210,
-                265,
-                115
+                375,
+                90,
+                525,
+                270
             ],
             "background": false,
             "presentation": false,
@@ -476,6 +488,29 @@
                 "windowSize": 1024,
                 "stablize": true
             }
+        },
+        "box-22": {
+            "id": "box-22",
+            "text": "spectroscope~",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                375,
+                375,
+                525,
+                210
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                568,
+                581.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
         }
     },
     "props": {
@@ -497,7 +532,7 @@
             15,
             15
         ],
-        "boxIndexCount": 20,
-        "lineIndexCount": 20
+        "boxIndexCount": 23,
+        "lineIndexCount": 22
     }
 }
