@@ -1,7 +1,6 @@
 import * as Color from "color-js";
 import { CanvasUI } from "../BaseUI";
 import { SpectralAnalyserRegister, SpectralAnalyserNode } from "./AudioWorklet/SpectralAnalyserMain";
-import { maxIndex } from "../../../utils/buffer";
 import { TMeta, TPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
 import { Bang } from "../Base";
@@ -9,6 +8,7 @@ import { Bang } from "../Base";
 export interface OscilloscopeUIState {
     continuous: boolean;
     frameRate: number;
+    interleaved: boolean;
     stablize: boolean;
     $cursor: number;
     zoom: number;
@@ -21,7 +21,8 @@ export interface OscilloscopeUIState {
     hueOffset: number;
     textColor: string;
     gridColor: string;
-    paint: any;
+    seperatorColor: string;
+    paint: {};
 }
 export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUIState> {
     componentDidMount() {
@@ -51,6 +52,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             // zoom,
             // zoomOffset,
             stablize,
+            interleaved,
             // $cursor,
             range,
             autoRange,
@@ -59,7 +61,8 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             phosphorColor,
             hueOffset: channelColorHueOffset,
             textColor,
-            gridColor
+            gridColor,
+            seperatorColor
         } = this.state;
         const ctx = this.ctx;
         if (!ctx) return;
@@ -95,54 +98,64 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         // Grids
         ctx.strokeStyle = gridColor;
         let vStep = 0.25;
-        while (yFactor / 2 / vStep > 2) vStep *= 2; // Maximum horizontal grids in channel one side = 2
+        while (yFactor / 2 / vStep > 2) vStep *= 2; // Minimum horizontal grids in channel one side = 2
         ctx.beginPath();
-        const gridChannels = 1;
+        ctx.setLineDash([]);
+        const gridChannels = interleaved ? t.length : 1;
         const channelHeight = (height - bottom) / gridChannels;
         for (let i = 0; i < gridChannels; i++) {
             let y = (i + 0.5) * channelHeight;
             ctx.moveTo(left, y);
-            ctx.lineTo(width, y);
+            ctx.lineTo(width, y); // 0-line
             for (let j = vStep; j < yFactor; j += vStep) {
                 y = (i + 0.5 + j / yFactor / 2) * channelHeight;
                 ctx.moveTo(left, y);
-                ctx.lineTo(width, y);
+                ctx.lineTo(width, y); // below 0
                 y = (i + 0.5 - j / yFactor / 2) * channelHeight;
                 ctx.moveTo(left, y);
-                ctx.lineTo(width, y);
+                ctx.lineTo(width, y); // above 0
             }
         }
         ctx.stroke();
 
-        // Horizontal Range
-        let $0 = 0; // Draw start
-        let $1 = l - 1; // Draw End
-        let $zerox = 0; // First Zero-crossing
-        let drawL = l; // Length to draw
-        if (stablize) { // Stablization
-            const thresh = (min + max) * 0.5 + 0.001; // the zero-crossing with "offset"
-            const i = maxIndex(estimatedFreq);
-            const period = sampleRate / estimatedFreq[i];
-            const times = Math.floor(l / period) - 1;
-            while ($zerox < l && t[i][($ + $zerox++) % l] > thresh); // Find first raise
-            if ($zerox >= l - 1) { // Found nothing, no stablization
-                $zerox = 0;
-            } else {
-                while ($zerox < l && t[i][($ + $zerox++) % l] < thresh); // Find first drop
-                $zerox--;
-                if ($zerox >= l - 1 || $zerox < 0) {
-                    $zerox = 0;
-                }
-            }
-            drawL = times > 0 && isFinite(period) ? ~~Math.min(period * times, l - $zerox) : l - $zerox; // length to draw
+        ctx.beginPath();
+        ctx.setLineDash([4, 2]);
+        ctx.strokeStyle = seperatorColor;
+        for (let i = 1; i < gridChannels; i++) {
+            ctx.moveTo(left, i * channelHeight);
+            ctx.lineTo(width, i * channelHeight);
         }
-        $0 = Math.round($zerox/* + drawL * zoomOffset*/);
-        $1 = Math.round($zerox + drawL/* / zoom + drawL * zoomOffset*/);
-        const gridX = (width - left) / ($1 - $0 - 1);
-        const step = Math.max(1, Math.round(1 / gridX));
+        ctx.stroke();
+        ctx.setLineDash([]);
         ctx.lineWidth = 2;
         const channelColor: string[] = [];
         for (let i = 0; i < t.length; i++) {
+            // Horizontal Range
+            let $0 = 0; // Draw start
+            let $1 = l - 1; // Draw End
+            let $zerox = 0; // First Zero-crossing
+            let drawL = l; // Length to draw
+            if (stablize) { // Stablization
+                const thresh = (min + max) * 0.5 + 0.001; // the zero-crossing with "offset"
+                const period = sampleRate / estimatedFreq[i];
+                const times = Math.floor(l / period) - 1;
+                while ($zerox < l && t[i][($ + $zerox++) % l] > thresh); // Find first raise
+                if ($zerox >= l - 1) { // Found nothing, no stablization
+                    $zerox = 0;
+                } else {
+                    while ($zerox < l && t[i][($ + $zerox++) % l] < thresh); // Find first drop
+                    $zerox--;
+                    if ($zerox >= l - 1 || $zerox < 0) {
+                        $zerox = 0;
+                    }
+                }
+                drawL = times > 0 && isFinite(period) ? ~~Math.min(period * times, l - $zerox) : l - $zerox; // length to draw
+            }
+            $0 = Math.round($zerox/* + drawL * zoomOffset*/);
+            $1 = Math.round($zerox + drawL/* / zoom + drawL * zoomOffset*/);
+            const gridX = (width - left) / ($1 - $0 - 1);
+            const step = Math.max(1, Math.round(1 / gridX));
+
             ctx.beginPath();
             channelColor[i] = Color(phosphorColor).shiftHue(i * channelColorHueOffset).toHSL();
             ctx.strokeStyle = channelColor[i];
@@ -164,11 +177,11 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
                     continue;
                 }
                 const x = (j - $0) * gridX + left;
-                let y = (height - bottom) * (0.5 - maxInStep / yFactor * 0.5);
+                let y = channelHeight * (+interleaved * i + 0.5 - maxInStep / yFactor * 0.5);
                 if (j === $0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
                 if (minInStep !== maxInStep) {
-                    y = (height - bottom) * (0.5 - minInStep / yFactor * 0.5);
+                    y = channelHeight * (+interleaved * i + 0.5 - minInStep / yFactor * 0.5);
                     ctx.lineTo(x, y);
                 }
             }
@@ -188,7 +201,8 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             for (let i = 0; i < estimatedFreq.length; i++) {
                 const freq = estimatedFreq[i];
                 ctx.fillStyle = channelColor[i];
-                ctx.fillText(freq.toFixed(2) + "Hz", width - 2, freqStatY + 14 * i);
+                const y = interleaved ? channelHeight * (i + 1) - 2 : freqStatY + 14 * i;
+                ctx.fillText(freq.toFixed(2) + "Hz", width - 2, y);
             }
         }
     }
@@ -222,6 +236,12 @@ export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, Osci
             type: "number",
             default: 60,
             description: "UI refresh rate",
+            isUIState: true
+        },
+        interleaved: {
+            type: "boolean",
+            default: false,
+            description: "Draw channels seperately",
             isUIState: true
         },
         stablize: {
@@ -276,6 +296,12 @@ export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, Osci
             type: "color",
             default: "#404040",
             description: "Grid color",
+            isUIState: true
+        },
+        seperatorColor: {
+            type: "color",
+            default: "white",
+            description: "Channel seperator color",
             isUIState: true
         }
     };
