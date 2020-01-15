@@ -4,8 +4,10 @@ import { SpectralAnalyserRegister, SpectralAnalyserNode } from "./AudioWorklet/S
 import { maxIndex } from "../../../utils/buffer";
 import { TMeta, TPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
+import { Bang } from "../Base";
 
 export interface OscilloscopeUIState {
+    continuous: boolean;
     frameRate: number;
     stablize: boolean;
     $cursor: number;
@@ -19,6 +21,7 @@ export interface OscilloscopeUIState {
     hueOffset: number;
     textColor: string;
     gridColor: string;
+    paint: any;
 }
 export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUIState> {
     componentDidMount() {
@@ -33,7 +36,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         super.componentDidMount();
     }
     async paint() {
-        this.schedulePaint();
+        if (this.state.continuous) this.schedulePaint();
         if (!this.object.state.node) return;
         if (this.object.state.node.destroyed) return;
         const { estimatedFreq, buffer } = this.object.state.node.gets({ estimatedFreq: true, buffer: true });
@@ -51,6 +54,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             // $cursor,
             range,
             autoRange,
+            showStats,
             bgColor,
             phosphorColor,
             hueOffset: channelColorHueOffset,
@@ -171,29 +175,31 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             ctx.stroke();
         }
         // Stats
-        ctx.font = "bold 12px Consolas, monospace";
-        ctx.fillStyle = textColor;
-        ctx.textAlign = "left";
-        ctx.textBaseline = "top";
-        ctx.fillText(yFactor.toFixed(2), 2, 2);
-        ctx.textBaseline = "bottom";
-        ctx.fillText((-yFactor).toFixed(2), 2, height - 2);
-        ctx.textAlign = "right";
-        const freqStatY = height - 2 - (estimatedFreq.length - 1) * 14;
-        for (let i = 0; i < estimatedFreq.length; i++) {
-            const freq = estimatedFreq[i];
-            ctx.fillStyle = channelColor[i];
-            ctx.fillText(freq.toFixed(2) + "Hz", width - 2, freqStatY + 14 * i);
+        if (showStats) {
+            ctx.font = "bold 12px Consolas, monospace";
+            ctx.fillStyle = textColor;
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+            ctx.fillText(yFactor.toFixed(2), 2, 2);
+            ctx.textBaseline = "bottom";
+            ctx.fillText((-yFactor).toFixed(2), 2, height - 2);
+            ctx.textAlign = "right";
+            const freqStatY = height - 2 - (estimatedFreq.length - 1) * 14;
+            for (let i = 0; i < estimatedFreq.length; i++) {
+                const freq = estimatedFreq[i];
+                ctx.fillStyle = channelColor[i];
+                ctx.fillText(freq.toFixed(2) + "Hz", width - 2, freqStatY + 14 * i);
+            }
         }
     }
 }
 export interface State {
     node: SpectralAnalyserNode;
 }
-export interface Props extends Omit<OscilloscopeUIState, "$cursor" | "zoom" | "zoomOffset"> {
+export interface Props extends Omit<OscilloscopeUIState, "$cursor" | "zoom" | "zoomOffset" | "paint"> {
     windowSize: number;
 }
-export class Oscilloscope extends BaseDSP<{}, State, [], [], [], Props, OscilloscopeUIState> {
+export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, OscilloscopeUIState> {
     static description = "Oscilloscope"
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -205,6 +211,12 @@ export class Oscilloscope extends BaseDSP<{}, State, [], [], [], Props, Oscillos
             type: "number",
             default: 1024,
             description: "Signal window size"
+        },
+        continuous: {
+            type: "boolean",
+            default: true,
+            description: "Continuous drawing",
+            isUIState: true
         },
         frameRate: {
             type: "number",
@@ -285,6 +297,11 @@ export class Oscilloscope extends BaseDSP<{}, State, [], [], [], Props, Oscillos
             this.disconnectAudioInlet();
             this.inletConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (data instanceof Bang) this.updateUI({ paint: {} });
+            }
         });
         this.on("destroy", () => {
             if (this.state.node) this.state.node.destroy();
