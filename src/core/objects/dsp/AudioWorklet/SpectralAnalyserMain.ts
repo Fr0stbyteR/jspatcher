@@ -161,7 +161,7 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
             frames: this.frames,
             bins: this.fftBins,
             hopSize: this._fftHopSize,
-            frameIndex: this.$frame - this.frames
+            frameIndex: this.$totalFrames - this.frames
         };
     }
     get amplitude() {

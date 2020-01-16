@@ -155,6 +155,30 @@
                 0
             ],
             "disabled": false
+        },
+        "line-24": {
+            "id": "line-24",
+            "src": [
+                "box-19",
+                0
+            ],
+            "dest": [
+                "box-25",
+                0
+            ],
+            "disabled": false
+        },
+        "line-25": {
+            "id": "line-25",
+            "src": [
+                "box-26",
+                0
+            ],
+            "dest": [
+                "box-19",
+                1
+            ],
+            "disabled": false
         }
     },
     "boxes": {
@@ -227,10 +251,10 @@
             "background": false,
             "presentation": false,
             "presentationRect": [
-                78,
-                302.578125,
-                90,
-                20
+                60,
+                435,
+                225,
+                45
             ],
             "data": {},
             "args": [],
@@ -275,10 +299,10 @@
             "background": false,
             "presentation": false,
             "presentationRect": [
-                120,
-                239.578125,
-                120,
-                45
+                15,
+                255,
+                195,
+                165
             ],
             "data": {},
             "args": [],
@@ -304,7 +328,7 @@
                 20
             ],
             "data": {
-                "text": "[ -7.037720781041676,\n  -7.037720781041676,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -7.159964218105884 ]"
+                "text": "[ -3.0570099522270033,\n  -3.0570099522270033,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -2.9954853004157327 ]"
             },
             "args": [],
             "props": {}
@@ -398,7 +422,7 @@
                 20
             ],
             "data": {
-                "text": "{ centroid: \n   [ 440.33948147279256,\n     440.33948147279256,\n     0,\n     0,\n     0,\n     101.87718702060835 ] }"
+                "text": "{ centroid: \n   [ 440.1756236038841,\n     440.1756236038841,\n     0,\n     0,\n     0,\n     4816.0110122662345 ] }"
             },
             "args": [],
             "props": {}
@@ -475,18 +499,19 @@
                 270
             ],
             "background": false,
-            "presentation": false,
+            "presentation": true,
             "presentationRect": [
-                571,
-                236.578125,
-                90,
-                20
+                0,
+                60,
+                525,
+                270
             ],
             "data": {},
             "args": [],
             "props": {
                 "windowSize": 1024,
-                "stablize": true
+                "stablize": true,
+                "showStats": false
             }
         },
         "box-22": {
@@ -501,16 +526,72 @@
                 210
             ],
             "background": false,
-            "presentation": false,
+            "presentation": true,
             "presentationRect": [
-                568,
-                581.578125,
-                90,
-                20
+                0,
+                345,
+                525,
+                210
             ],
             "data": {},
             "args": [],
             "props": {}
+        },
+        "box-25": {
+            "id": "box-25",
+            "text": "spectrogram~",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                930,
+                90,
+                210,
+                495
+            ],
+            "background": false,
+            "presentation": true,
+            "presentationRect": [
+                525,
+                60,
+                210,
+                495
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "windowSize": 40960
+            }
+        },
+        "box-26": {
+            "id": "box-26",
+            "text": "live.dial",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                120,
+                45,
+                45,
+                60
+            ],
+            "background": false,
+            "presentation": true,
+            "presentationRect": [
+                0,
+                0,
+                45,
+                60
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "max": 24000,
+                "step": 0.01,
+                "type": "float",
+                "unitStyle": "hertz",
+                "min": 20,
+                "shortName": "Freq",
+                "longName": "Freq"
+            }
         }
     },
     "props": {
@@ -532,7 +613,7 @@
             15,
             15
         ],
-        "boxIndexCount": 23,
-        "lineIndexCount": 22
+        "boxIndexCount": 26,
+        "lineIndexCount": 25
     }
 }

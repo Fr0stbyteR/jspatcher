@@ -121,7 +121,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             frames: this.frames,
             bins: this.fftBins,
             hopSize: this.fftHopSize,
-            frameIndex: this.$frame - this.frames
+            frameIndex: this.$totalFrames - this.frames
         };
     }
     get amplitude() {

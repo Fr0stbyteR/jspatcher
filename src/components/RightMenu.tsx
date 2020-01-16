@@ -223,8 +223,8 @@ class InspectorPropItem extends InspectorItem<"prop"> {
 }
 type InspectorState = {
     meta: TMeta;
-    args: TMeta["args"];
-    props: TMeta["props"];
+    args: any[];
+    props: { [key: string]: any };
     patcherProps: TPublicPatcherProps;
     rect: TRect;
     presentationRect: TRect;
@@ -263,9 +263,9 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
             this.setState({ meta: null, args: [], props: {}, rect: null, presentationRect: null });
             return;
         }
-        const { meta, args, props, rect, presentationRect } = boxes[0];
+        const { meta, args, props, rect, presentationRect, presentation, background } = boxes[0];
         if (boxes.length === 1) {
-            this.setState({ meta, args: args.slice(), props: { ...props }, rect, presentationRect });
+            this.setState({ meta, args: args.slice(), props: { ...props, presentation, background }, rect, presentationRect });
             return;
         }
         const commonProps = { ...meta.props };
@@ -276,14 +276,22 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
                 continue;
             }
             const useDefault = !(key in props);
-            const value = useDefault ? prop.default : props[key];
+            const value = key === "presentation" ? presentation
+                : key === "background" ? background
+                    : useDefault ? prop.default : props[key];
             for (let j = 1; j < boxes.length; j++) {
                 let found = false;
-                const $props = boxes[j].props;
-                const $metaProps = boxes[j].meta.props;
+                const $box = boxes[j];
+                const $props = $box.props;
+                const $metaProps = $box.meta.props;
+                const $presentation = $box.presentation;
+                const $background = $box.background;
                 for (const $key in $metaProps) {
                     const $prop = $metaProps[$key];
-                    const $value = typeof $props[$key] === "undefined" ? $prop.default : $props[$key];
+                    const $useDefault = !($key in $props);
+                    const $value = $key === "presentation" ? $presentation
+                        : $key === "background" ? $background
+                            : $useDefault ? $prop.default : $props[$key];
                     if (key === $key && value === $value) {
                         found = true;
                         break;
@@ -322,7 +330,10 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
             }
         }
         meta.args = commonArgs;
-        this.setState({ meta, args, props, rect: null, presentationRect: null });
+        const additionalProps: { [key: string]: any } = {};
+        if ("presentation" in commonProps) additionalProps.presentation = presentation;
+        if ("background" in commonProps) additionalProps.background = background;
+        this.setState({ meta, args, props: { ...props, ...additionalProps }, rect: null, presentationRect: null });
     };
     handlePatcherPropsChanged = () => this.setState({ patcherProps: this.props.patcher.publicProps });
     componentDidMount() {

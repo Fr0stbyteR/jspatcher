@@ -46,6 +46,7 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
         this.src = [srcID, srcOutlet];
         this.enable();
         this.srcBox.object.on("metaChanged", this.updateType);
+        this.updateType();
         return this.uiUpdateSrc();
     }
     getSrc() {
@@ -64,6 +65,7 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
         this.dest = [destID, destInlet];
         this.enable();
         this.destBox.object.on("metaChanged", this.updateType);
+        this.updateType();
         return this.uiUpdateDest();
     }
     getDest() {

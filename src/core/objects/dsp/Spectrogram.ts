@@ -1,0 +1,265 @@
+// import * as Color from "color-js";
+import { CanvasUI } from "../BaseUI";
+import { SpectralAnalyserRegister, SpectralAnalyserNode, TWindowFunction } from "./AudioWorklet/SpectralAnalyserMain";
+import { TMeta, TPropsMeta } from "../../types";
+import { BaseDSP } from "./Base";
+import { Bang } from "../Base";
+import { atodb } from "../../../utils/math";
+
+export interface SpectrogramUIState {
+    continuous: boolean;
+    frameRate: number;
+    cursorX: number;
+    cursorY: number;
+    zoom: number;
+    zoomOffset: number;
+    bgColor: string;
+    // textColor: string;
+    gridColor: string;
+    seperatorColor: string;
+    paint: {};
+}
+export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState> {
+    static defaultSize = [120, 60] as [number, number];
+    $lastFrame = -1;
+    frames = 1;
+    offscreenCtx = document.createElement("canvas").getContext("2d");
+    offscreenVRes = 1024;
+    componentDidMount() {
+        const { width, height, bgColor } = this.state;
+        const { ctx, offscreenCtx, frames } = this;
+        if (!ctx) return;
+        ctx.canvas.width = width;
+        ctx.canvas.height = height;
+        offscreenCtx.canvas.width = frames;
+        offscreenCtx.canvas.height = this.offscreenVRes;
+        // Background
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+        super.componentDidMount();
+    }
+    paint() {
+        if (this.state.continuous) this.schedulePaint();
+        if (!this.object.state.node) return;
+        if (this.object.state.node.destroyed) return;
+        const {
+            width,
+            height,
+            // zoom,
+            // zoomOffset,
+            // $cursor,
+            bgColor,
+            gridColor,
+            seperatorColor
+        } = this.state;
+        const { ctx, offscreenCtx, offscreenVRes } = this;
+        if (!ctx || !offscreenCtx) return;
+
+        ctx.canvas.width = width;
+        ctx.canvas.height = height;
+
+        // Background
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+
+        const left = 0;
+        const bottom = 0;
+
+        const { allAmplitudes } = this.object.state.node.gets({ allAmplitudes: true });
+        if (!allAmplitudes) return;
+        const { data: f, frameIndex, bins, frames: framesIn, startPointer: $ } = allAmplitudes;
+        if (!f || !f.length || !f[0].length) return;
+        const l = f[0].length;
+        const channels = f.length;
+
+        // Draw to offscreen canvas
+        let frames = this.frames;
+        const $lastFrame = frameIndex + framesIn - 1;
+        let $frame0 = ~~($ / bins);
+        const $frame1 = $frame0 + framesIn;
+        if (frames !== framesIn) {
+            offscreenCtx.canvas.width = framesIn;
+            this.frames = framesIn;
+            frames = framesIn;
+        } else if ($lastFrame >= this.$lastFrame) {
+            $frame0 = Math.max($frame0, $frame1 - ($lastFrame - this.$lastFrame));
+        }
+        this.$lastFrame = $lastFrame;
+        const osChannelHeight = offscreenVRes / channels;
+        const step = Math.max(1, Math.round(bins / osChannelHeight));
+        const vGrid = osChannelHeight / bins;
+        for (let i = 0; i < f.length; i++) {
+            for (let j = $frame0; j < $frame1; j++) {
+                let maxInStep;
+                offscreenCtx.fillStyle = "black";
+                offscreenCtx.fillRect(j % frames, i * osChannelHeight, 1, osChannelHeight);
+                for (let k = 0; k < bins; k++) {
+                    const samp = atodb(f[i][(k + j * bins) % l]);
+                    const $step = k % step;
+                    if ($step === 0) maxInStep = samp;
+                    if ($step !== step - 1) {
+                        if ($step !== 0 && samp > maxInStep) maxInStep = samp;
+                        continue;
+                    }
+                    const normalized = Math.min(1, Math.max(0, (maxInStep + 10) / 100 + 1));
+                    if (normalized === 0) continue;
+                    const hue = (normalized * 180 + 240) % 360;
+                    const lum = normalized * 50;
+                    offscreenCtx.fillStyle = `hsl(${hue}, 100%, ${lum}%)`;
+                    offscreenCtx.fillRect(j % frames, (bins - k - 1) * vGrid + i * osChannelHeight, 1, Math.max(1, vGrid));
+                }
+            }
+        }
+        // Grids
+        ctx.strokeStyle = gridColor;
+        const vStep = 0.25;
+        const hStep = 0.25;
+        ctx.beginPath();
+        ctx.setLineDash([]);
+        const gridChannels = channels;
+        const channelHeight = (height - bottom) / gridChannels;
+        for (let i = 0; i < gridChannels; i++) {
+            for (let j = vStep; j < 1; j += vStep) { // Horizontal lines
+                const y = (i + j) * channelHeight;
+                ctx.moveTo(left, y);
+                ctx.lineTo(width, y);
+            }
+        }
+        for (let i = hStep; i < 1; i += hStep) {
+            const x = left + (width - left) * i;
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, bottom);
+        }
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.setLineDash([4, 2]);
+        ctx.strokeStyle = seperatorColor;
+        for (let i = 1; i < gridChannels; i++) {
+            ctx.moveTo(left, i * channelHeight);
+            ctx.lineTo(width, i * channelHeight);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // Horizontal Range
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.imageSmoothingEnabled = false;
+        $frame0 = $ / bins;
+        if ($frame1 === frames) {
+            ctx.drawImage(offscreenCtx.canvas, 0, 0, frames, offscreenVRes, left, 0, width - left, height - bottom);
+        } else {
+            const sSplit = frames - $frame0;
+            const dSplit = sSplit / frames * (width - left);
+            ctx.drawImage(offscreenCtx.canvas, $frame0, 0, sSplit, offscreenVRes, left, 0, dSplit, height - bottom);
+            ctx.drawImage(offscreenCtx.canvas, 0, 0, $frame1 - frames - 0.01, offscreenVRes, dSplit + left, 0, width - left - dSplit, height - bottom);
+        }
+        ctx.restore();
+    }
+}
+export interface State {
+    node: SpectralAnalyserNode;
+}
+export interface Props extends Omit<SpectrogramUIState, "cursorX" | "cursorY" | "zoom" | "zoomOffset" | "paint"> {
+    windowSize: number;
+    fftSize: number;
+    fftOverlap: number;
+    windowFunction: TWindowFunction;
+}
+export class Spectrogram extends BaseDSP<{}, State, [Bang], [], [], Props, SpectrogramUIState> {
+    static description = "Spectroscope"
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Signal"
+    }];
+    static props: TPropsMeta<Props> = {
+        windowSize: {
+            type: "number",
+            default: 1024,
+            description: "Signal window size"
+        },
+        fftSize: {
+            type: "number",
+            default: 1024,
+            description: "FFT Size for analysis"
+        },
+        fftOverlap: {
+            type: "number",
+            default: 2,
+            description: "FFT overlap count (integer)"
+        },
+        windowFunction: {
+            type: "enum",
+            enums: ["blackman", "hamming", "hann", "triangular"],
+            default: "blackman",
+            description: "Window Function aoolied for FFT analysis window"
+        },
+        continuous: {
+            type: "boolean",
+            default: true,
+            description: "Continuous drawing",
+            isUIState: true
+        },
+        frameRate: {
+            type: "number",
+            default: 60,
+            description: "UI refresh rate",
+            isUIState: true
+        },
+        bgColor: {
+            type: "color",
+            default: "rgb(40, 40, 40)",
+            description: "Background color",
+            isUIState: true
+        },
+        gridColor: {
+            type: "color",
+            default: "#404040",
+            description: "Grid color",
+            isUIState: true
+        },
+        seperatorColor: {
+            type: "color",
+            default: "white",
+            description: "Channel seperator color",
+            isUIState: true
+        }
+    };
+    uiComponent = SpectrogramUI;
+    state: State = { node: undefined };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 0;
+        });
+        this.on("updateProps", (props) => {
+            if (this.state.node) {
+                if (props.windowFunction) this.state.node.windowFunction = props.windowFunction;
+                if (props.fftSize) this.state.node.fftSize = props.fftSize;
+                if (props.fftOverlap) this.state.node.fftOverlap = props.fftOverlap;
+                if (props.windowSize) this.state.node.windowSize = props.windowSize;
+            }
+        });
+        this.on("postInit", async () => {
+            await SpectralAnalyserRegister.register(this.audioCtx.audioWorklet);
+            this.state.node = new SpectralAnalyserRegister.Node(this.audioCtx);
+            this.state.node.windowFunction = this.getProp("windowFunction");
+            this.state.node.fftSize = this.getProp("fftSize");
+            this.state.node.fftOverlap = this.getProp("fftOverlap");
+            this.state.node.windowSize = this.getProp("windowSize");
+            this.disconnectAudioInlet();
+            this.inletConnections[0] = { node: this.state.node, index: 0 };
+            this.connectAudioInlet();
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (data instanceof Bang) this.updateUI({ paint: {} });
+            }
+        });
+        this.on("destroy", () => {
+            if (this.state.node) this.state.node.destroy();
+        });
+    }
+}
