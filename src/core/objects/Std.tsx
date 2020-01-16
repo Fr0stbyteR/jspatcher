@@ -21,7 +21,7 @@ class print extends StdObject<{}, { title: string }, [any], [], [string]> {
         optional: true,
         default: "Print",
         description: "Title"
-    }]
+    }];
     state = { title: "Print" };
     subscribe() {
         super.subscribe();
@@ -40,6 +40,48 @@ class print extends StdObject<{}, { title: string }, [any], [], [string]> {
                     this.patcher.newLog("none", this.state.title, typeof data === "string" ? data : Util.inspect(data));
                 }
             }
+        });
+    }
+}
+class bang extends StdObject<{}, {}, [any], [Bang], []> {
+    static description = "Transform to bang";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Anything to transform to a bang"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "bang",
+        description: "Bang when inlet"
+    }];
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 1;
+        });
+        this.on("inlet", ({ inlet }) => {
+            if (inlet === 0) this.outlet(0, new Bang());
+        });
+    }
+}
+class loadbang extends StdObject<{}, {}, [], [Bang], []> {
+    static description = "Bang when patcher is loaded";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Anything to transform to a bang"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "bang",
+        description: "Bang when inlet"
+    }];
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 0;
+            this.outlets = 1;
+            this.patcher.on("loaded", () => this.outlet(0, new Bang()));
         });
     }
 }
@@ -476,4 +518,4 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
     }
 }
 
-export default { print, for: For, "for-in": ForIn, if: If, sel, set, get, v, lambda };
+export default { print, for: For, "for-in": ForIn, if: If, sel, set, get, v, lambda, bang, loadbang };
