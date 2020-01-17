@@ -174,8 +174,9 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             this.fftw.dispose();
             this.fftw = new RFFT(fftSize);
             this.samplesWaiting = 0;
+            this.$frame = 0;
+            this.fftSize = fftSize;
         }
-        this.fftSize = fftSize;
         const fftHopSize = (~~fftSize / fftOverlap) || 1;
         this.fftHopSize = fftHopSize;
         const frames = ~~((windowSize - fftSize) / this.fftHopSize) + 1;

@@ -217,6 +217,8 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
             this.fftw.dispose();
             this.fftw = new RFFT(fftSize);
             this.samplesWaiting = 0;
+            this.$frame = 0;
+            this._fftSize = fftSize;
         }
     }
     get fftOverlap() {
