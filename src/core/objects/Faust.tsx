@@ -11,6 +11,7 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
     state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
     subscribe() {
         super.subscribe();
+        this.on("preInit", this.configureIO);
         this.on("updateArgs", args => this.state.args = args.slice());
         this.on("updateArgs", this.configureIO);
     }
@@ -20,7 +21,7 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
      * @memberof FaustOp
      */
     configureIO = (args: any[]) => {
-        this.inlets = this.state.inlets - Math.min(this.state.inlets, args.length);
+        this.inlets = this.state.inlets - Math.min(this.state.inlets, args ? args.length : 0);
         this.outlets = this.state.outlets;
     }
     /**

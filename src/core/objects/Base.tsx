@@ -540,6 +540,14 @@ class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
         varLength: true,
         description: "nothing"
     }];
+    static props: TMeta["props"] = {
+        bgColor: {
+            type: "color",
+            default: "rgb(128, 64, 64)",
+            description: "Background color",
+            isUIState: true
+        }
+    };
 }
 export class Bang {
     toString() {
