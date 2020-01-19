@@ -1,4 +1,4 @@
-import { DefaultObject } from "./Base";
+import { DefaultObject, EmptyObject, InvalidObject } from "./Base";
 import Box from "../Box";
 import Patcher from "../Patcher";
 import { TPackage, TMeta } from "../types";
@@ -477,7 +477,9 @@ const faustOps: TPackage = {
     sum: Sum,
     prod: Prod,
     seq: Seq,
-    par: Par
+    par: Par,
+    EmptyObject,
+    InvalidObject
 };
 
 type TOpMap = { [category: string]: {[className: string]: { desc: string; symbol: string | string[]; inlets: number }} };

@@ -102,6 +102,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         JSOps[pkgName || name] = pkg;
         this.packageRegister(pkg, this._state.libJS, pkgName || name);
         // Check box availability for new object
+        if (this.props.mode !== "js") return;
         for (const id in this.boxes) {
             const box = this.boxes[id];
             if (box instanceof Base.InvalidObject) box.changeText(box.text, true);
@@ -207,17 +208,17 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         let obj;
         const className = parsed.class;
         if (typeof className !== "string" || className.length === 0) {
-            obj = new Base.EmptyObject(boxIn, this);
+            obj = new this._state.lib.EmptyObject(boxIn, this);
         } else {
             if (this._state.lib[className]) {
                 obj = new this._state.lib[className](boxIn, this);
             } else {
                 this.newLog("error", "Patcher", "Object " + className + " not found.", this);
-                obj = new Base.InvalidObject(boxIn, this);
+                obj = new this._state.lib.InvalidObject(boxIn, this);
             }
             if (!(obj instanceof Base.BaseObject)) {
                 this.newLog("error", "Patcher", "Object " + className + " is not valid.", this);
-                obj = new Base.InvalidObject(boxIn, this);
+                obj = new this._state.lib.InvalidObject(boxIn, this);
             }
         }
         boxIn.object = obj;

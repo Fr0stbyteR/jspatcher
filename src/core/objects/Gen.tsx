@@ -1,4 +1,4 @@
-import { DefaultObject } from "./Base";
+import { DefaultObject, EmptyObject, InvalidObject } from "./Base";
 import { comment } from "./UI";
 import "./Gen.scss";
 
@@ -51,7 +51,7 @@ export class GenOp extends DefaultObject {
     static version = "1.0.0";
     static description = "Gen Operator";
 }
-const GenOps: { [key: string]: typeof GenOp | typeof comment } = { comment };
+const GenOps: { [key: string]: typeof GenOp | typeof comment | typeof EmptyObject | typeof InvalidObject } = { comment, EmptyObject, InvalidObject };
 for (const key in genOperators) {
     genOperators[key].forEach((name) => {
         GenOps[name] = class extends GenOp {

@@ -503,7 +503,7 @@ export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends 
     uiComponent = DefaultUI;
 }
 class EmptyObjectUI extends DefaultUI<EmptyObject> {}
-class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
+export class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Bypass input";
@@ -527,7 +527,7 @@ class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> 
     }
     uiComponent: typeof DefaultUI = EmptyObjectUI;
 }
-class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
+export class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
     static description = "invalid object";
     static inlets: TMeta["inlets"] = [{
         isHot: false,
