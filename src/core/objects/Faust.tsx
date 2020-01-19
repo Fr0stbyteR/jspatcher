@@ -1,7 +1,12 @@
-import { DefaultObject, EmptyObject, InvalidObject } from "./Base";
+import { DefaultObject } from "./Base";
 import Box from "../Box";
 import Patcher from "../Patcher";
 import { TPackage, TMeta } from "../types";
+
+type TObjectExpr = {
+    exprs?: string[];
+    onces?: string[];
+};
 
 export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number; args: (number | string)[] }, [], [], any[]> {
     static package = "FaustOps";
@@ -35,10 +40,10 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
      * Transform to faust dsp expression using a string map for line IDs.
      *
      * @param {{ [id: string]: string }} lineMap
-     * @returns {string[]}
+     * @returns {TObjectExpr}
      * @memberof FaustOp
      */
-    toExpr(lineMap: { [id: string]: string }): string[] {
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => { // inlets as 0, 1, 2
             if (lines.length === 0) return "0";
@@ -46,11 +51,11 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
         }).concat(...this.state.args as any[]).join(", ");
 
-        if (this.outletLines.length === 0) return [];
+        if (this.outletLines.length === 0) return {};
         if (this.outletLines.length === 1) {
-            if (this.outletLines[0].length === 0) return [];
+            if (this.outletLines[0].length === 0) return {};
             const outlet = lineMap[this.outletLines[0][0]];
-            return outlet ? [`${outlet} = ${this.symbol[0]}(${inlets});`] : [];
+            return outlet ? { exprs: [`${outlet} = ${this.symbol[0]}(${inlets});`] } : {};
         }
 
         const result = `${this.meta.name}_${this.box.id.substr(4)}`;
@@ -64,16 +69,29 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
             pass[i] = "_";
             exprs.push(`${outlet} = ${result} : ${pass.join(", ")};`);
         });
-        return exprs;
+        return { exprs };
     }
-    /**
-     * A faust dsp expression which need to include once in dsp file
-     *
-     * @returns {string[]}
-     * @memberof FaustOp
-     */
-    toOnceExpr(): string[] {
-        return [];
+}
+class EmptyObject extends FaustOp {
+    static description = "No-op";
+    state = { inlets: 0, outlets: 0, args: [] as (number | string)[], editing: false };
+    toExpr(): TObjectExpr {
+        return {};
+    }
+}
+class InvalidObject extends FaustOp {
+    static description = "No-op";
+    static props: TMeta["props"] = {
+        bgColor: {
+            type: "color",
+            default: "rgb(128, 64, 64)",
+            description: "Background color",
+            isUIState: true
+        }
+    };
+    state = { inlets: 0, outlets: 0, args: [] as (number | string)[] };
+    toExpr(): TObjectExpr {
+        return {};
     }
 }
 
@@ -101,13 +119,13 @@ class In extends FaustOp {
         const i = this.state.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
     }
-    toExpr(lineMap: { [id: string]: string }): string[] {
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         if (this.outletLines.length === 1) {
-            if (this.outletLines[0].length === 0) return [];
+            if (this.outletLines[0].length === 0) return {};
             const outlet = lineMap[this.outletLines[0][0]];
-            return outlet ? [`${outlet} = _;`] : [];
+            return outlet ? { exprs: [`${outlet} = _;`] } : {};
         }
-        return [];
+        return {};
     }
 }
 class Out extends FaustOp {
@@ -135,7 +153,7 @@ class Out extends FaustOp {
         const i = this.state.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
     }
-    toExpr(lineMap: { [id: string]: string }): string[] {
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
             if (lines.length === 0) return "0";
@@ -145,7 +163,7 @@ class Out extends FaustOp {
 
         const result = `${this.meta.name}_${this.box.id.substr(4)}`;
         exprs.push(`${result} = ${inlets};`);
-        return exprs;
+        return { exprs };
     }
 }
 class Split extends FaustOp {
@@ -164,7 +182,7 @@ class Split extends FaustOp {
     }];
     symbol = ["<:"];
     state = { inlets: 1, outlets: 2, args: [] as (number | string)[] };
-    toExpr(lineMap: { [id: string]: string }): string[] {
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
             if (lines.length === 0) return "0";
@@ -172,11 +190,11 @@ class Split extends FaustOp {
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
         }).concat(...this.state.args as any[]).join(", ");
 
-        if (this.outletLines.length === 0) return [];
+        if (this.outletLines.length === 0) return {};
         if (this.outletLines.length === 1) {
-            if (this.outletLines[0].length === 0) return [];
+            if (this.outletLines[0].length === 0) return {};
             const outlet = lineMap[this.outletLines[0][0]];
-            return outlet ? [`${outlet} = ${inlets};`] : [];
+            return outlet ? { exprs: [`${outlet} = ${inlets};`] } : {};
         }
 
         const result = `${this.meta.name}_${this.box.id.substr(4)}`;
@@ -187,7 +205,7 @@ class Split extends FaustOp {
             if (!outlet) return;
             exprs.push(`${outlet} = ${result};`);
         });
-        return exprs;
+        return { exprs };
     }
 }
 class Merge extends FaustOp {
@@ -207,7 +225,7 @@ class Merge extends FaustOp {
     }];
     symbol = [":>"];
     state = { inlets: 2, outlets: 1, args: [] as (number | string)[] };
-    toExpr(lineMap: { [id: string]: string }): string[] {
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
             if (lines.length === 0) return "0";
@@ -215,11 +233,11 @@ class Merge extends FaustOp {
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
         }).concat(...this.state.args as any[]).join(", ");
 
-        if (this.outletLines.length === 0) return [];
+        if (this.outletLines.length === 0) return {};
         if (this.outletLines.length === 1) {
-            if (this.outletLines[0].length === 0) return [];
+            if (this.outletLines[0].length === 0) return {};
             const outlet = lineMap[this.outletLines[0][0]];
-            return outlet ? [`${outlet} = ${inlets} :> _;`] : [];
+            return outlet ? { exprs: [`${outlet} = ${inlets} :> _;`] } : {};
         }
 
         const result = `${this.meta.name}_${this.box.id.substr(4)}`;
@@ -230,7 +248,7 @@ class Merge extends FaustOp {
             if (!outlet) return;
             exprs.push(`${outlet} = ${result} :> _;`);
         });
-        return exprs;
+        return { exprs };
     }
 }
 class Rec extends FaustOp {
@@ -246,7 +264,7 @@ class Rec extends FaustOp {
     }];
     symbol = ["~"];
     state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
-    toExpr(lineMap: { [id: string]: string }): string[] {
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
             if (lines.length === 0) return "0";
@@ -256,7 +274,7 @@ class Rec extends FaustOp {
 
         const result = `${this.meta.name}_${this.box.id.substr(4)}`;
         exprs.push(`${result} = ${inlets};`);
-        return exprs;
+        return { exprs };
     }
 }
 class Mem extends FaustOp {
@@ -315,7 +333,7 @@ class Const extends FaustOp {
     }];
     symbol = ["const", "c"];
     state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
-    toExpr(lineMap: { [id: string]: string }): string[] {
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
         const inlets = this.inletLines.map((lines) => {
             if (lines.length === 0) return "0";
@@ -323,11 +341,11 @@ class Const extends FaustOp {
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
         }).concat(...this.state.args as any[]).join(", ");
 
-        if (this.outletLines.length === 0) return [];
+        if (this.outletLines.length === 0) return {};
         if (this.outletLines.length === 1) {
-            if (this.outletLines[0].length === 0) return [];
+            if (this.outletLines[0].length === 0) return {};
             const outlet = lineMap[this.outletLines[0][0]];
-            return outlet ? [`${outlet} = ${inlets};`] : [];
+            return outlet ? { exprs: [`${outlet} = ${inlets};`] } : {};
         }
 
         const result = `${this.meta.name}_${this.box.id.substr(4)}`;
@@ -338,7 +356,37 @@ class Const extends FaustOp {
             if (!outlet) return;
             exprs.push(`${outlet} = ${result};`);
         });
-        return exprs;
+        return { exprs };
+    }
+}
+class SR extends FaustOp {
+    static description = "Sample Rate";
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_"
+    }];
+    symbol = ["ma.SR"];
+    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
+        const exprs: string[] = [];
+        const onces = ['import("stdfaust.lib");'];
+
+        if (this.outletLines.length === 0) return {};
+        if (this.outletLines.length === 1) {
+            if (this.outletLines[0].length === 0) return {};
+            const outlet = lineMap[this.outletLines[0][0]];
+            return outlet ? { exprs: [`${outlet} = ${this.symbol[0]};`], onces } : {};
+        }
+
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
+        exprs.push(`${result} = ${this.symbol[0]};`);
+        this.outletLines.forEach((outletLines, i) => {
+            if (outletLines.length === 0) return;
+            const outlet = lineMap[outletLines[0]];
+            if (!outlet) return;
+            exprs.push(`${outlet} = ${result};`);
+        });
+        return { exprs, onces };
     }
 }
 class Iterator extends FaustOp {
@@ -365,20 +413,22 @@ class Iterator extends FaustOp {
         this.inlets = 1;
         this.outlets = 2;
     }
-    toExpr(lineMap: { [id: string]: string }): string[] {
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
         const inlet0Lines = this.inletLines[0];
+        const { expr, once } = toFaustLambda(this.patcher, [this], "lambda");
+        const onces = [once];
         const lambda = inlet0Lines.length ? `lambda with {
-    ${toFaustLambda(this.patcher, [this], "lambda")}
+    ${expr}
 }` : "0";
         const box = this.box;
         const inlets = `${box.meta.name}_${box.id.substr(4)}_${this.outlets - 1}, ${box.args[0] || 0}, ${lambda}`;
 
-        if (this.outletLines.length === 0) return [];
+        if (this.outletLines.length === 0) return {};
         if (this.outletLines.length === 1) {
-            if (this.outletLines[0].length === 0) return [];
+            if (this.outletLines[0].length === 0) return {};
             const outlet = lineMap[this.outletLines[0][0]];
-            return outlet ? [`${outlet} = ${this.symbol[0]}(${inlets});`] : [];
+            return outlet ? { exprs: [`${outlet} = ${this.symbol[0]}(${inlets});`], onces } : {};
         }
 
         const result = `${this.meta.name}_${this.box.id.substr(4)}`;
@@ -393,9 +443,9 @@ class Iterator extends FaustOp {
             pass[i] = "_";
             exprs.push(`${outlet} = ${result} : ${pass.join(", ")};`);
         });
-        return exprs;
+        return { exprs, onces };
     }
-    toNormalExpr(lineMap: { [id: string]: string }) {
+    toNormalExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
         const lines = this.inletLines[0];
         let inlets;
@@ -403,11 +453,11 @@ class Iterator extends FaustOp {
         if (lines.length === 1) inlets = lineMap[lines[0]] ? `${lineMap[lines[0]]}` : "0";
         inlets = `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
 
-        if (this.outletLines.length === 0) return [];
+        if (this.outletLines.length === 0) return {};
         if (this.outletLines.length === 1) {
-            if (this.outletLines[0].length === 0) return [];
+            if (this.outletLines[0].length === 0) return {};
             const outlet = lineMap[this.outletLines[0][0]];
-            return outlet ? [`${outlet} = ${inlets};`] : [];
+            return outlet ? { exprs: [`${outlet} = ${inlets};`] } : {};
         }
 
         const result = `${this.meta.name}_${this.box.id.substr(4)}`;
@@ -422,7 +472,7 @@ class Iterator extends FaustOp {
             pass[i] = "_";
             exprs.push(`${outlet} = ${result} : ${pass.join(", ")};`);
         });
-        return exprs;
+        return { exprs };
     }
 }
 class Sum extends Iterator {
@@ -474,6 +524,9 @@ const faustOps: TPackage = {
     "@": Delay,
     const: Const,
     c: Const,
+    SR,
+    sr: SR,
+    sampleRate: SR,
     sum: Sum,
     prod: Prod,
     seq: Seq,
@@ -565,6 +618,7 @@ const mapLines = (box: Box, patcher: Patcher, visitedBoxes: Box[], ins: In[], re
 };
 export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: string) => {
     const exprs: string[] = [];
+    const onces: string[] = [];
     const mainIns: string[] = [];
     const mainOuts: string[] = [];
     const recIns: string[] = [];
@@ -580,11 +634,13 @@ export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: str
         if (box.object instanceof Out) return;
         if (box.object instanceof Rec) return;
         if (outs.indexOf(box.object as FaustOp) !== -1) return;
-        exprs.push(...(box.object as FaustOp).toExpr(lineMap));
+        const { onces: o, exprs: e } = (box.object as FaustOp).toExpr(lineMap);
+        if (o) onces.push(...o);
+        if (e) exprs.push(...e);
     });
     // Build rec in/outs
     recs.forEach((rec) => {
-        exprs.push(...rec.toExpr(lineMap));
+        exprs.push(...rec.toExpr(lineMap).exprs || []);
         const recIn = `${rec.meta.name}_${rec.box.id.substr(4)}`;
         const recOut = `${recIn}_0`;
         recIns.push(recIn);
@@ -596,26 +652,29 @@ export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: str
         mainIns.push(`${in_.meta.name}_${in_.box.id.substr(4)}_0`);
     });
     outs.forEach((out) => {
-        if (out instanceof Iterator) exprs.push(...out.toNormalExpr(lineMap));
-        else exprs.push(...out.toExpr(lineMap));
+        if (out instanceof Iterator) exprs.push(...out.toNormalExpr(lineMap).exprs || []);
+        else exprs.push(...out.toExpr(lineMap).exprs || []);
         mainOuts.push(`${out.meta.name}_${out.box.id.substr(4)}`);
     });
+    const once = onces.join("\n");
+    let expr;
     // Generate Final expressions
     if (recIns.length) {
-        return `Main(${[...recOuts, ...mainIns].join(", ")}) = ${[...recIns, ...mainOuts].join(", ")} with {
+        expr = `Main(${[...recOuts, ...mainIns].join(", ")}) = ${[...recIns, ...mainOuts].join(", ")} with {
     ${exprs.join("\n    ")}
 };
 Rec = ${recIns.map(() => "_").join(", ")} : ${recOuts.map(() => "_").join(", ")};
 ${lambdaName} = Main ~ Rec : ${[...recIns.map(() => "!"), ...mainOuts.map(() => "_")].join(", ")};`;
-    }
-    if (mainIns.length) {
-        return `${lambdaName}(${mainIns.join(", ")}) = ${mainOuts.join(", ")} with {
+    } else if (mainIns.length) {
+        expr = `${lambdaName}(${mainIns.join(", ")}) = ${mainOuts.join(", ")} with {
+    ${exprs.join("\n    ")}
+};`;
+    } else {
+        expr = `${lambdaName} = ${mainOuts.join(", ")} with {
     ${exprs.join("\n    ")}
 };`;
     }
-    return `${lambdaName} = ${mainOuts.join(", ")} with {
-    ${exprs.join("\n    ")}
-};`;
+    return { once, expr };
 };
 export const toFaustDspCode = (patcher: Patcher) => {
     let outs: Out[] = [];
@@ -625,6 +684,7 @@ export const toFaustDspCode = (patcher: Patcher) => {
         if (box.object instanceof Out) outs.push(box.object);
     }
     outs = outs.sort((a, b) => a.index - b.index);
-    return toFaustLambda(patcher, outs, "process");
+    const { once, expr } = toFaustLambda(patcher, outs, "process");
+    return `${once}\n${expr}`;
 };
 export default faustOps;
