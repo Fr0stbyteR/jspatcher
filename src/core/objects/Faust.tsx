@@ -342,7 +342,125 @@ class Const extends FaustOp {
     }
 }
 class Iterator extends FaustOp {
-    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "Result of the function to iterate"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "Result of all iterations"
+    }, {
+        type: "signal",
+        description: "An incremental value on each iteration"
+    }];
+    static args: TMeta["args"] = [{
+        type: "signal",
+        optional: true,
+        default: 0,
+        description: "Iterations count"
+    }];
+    state = { inlets: 1, outlets: 2, args: [] as (number | string)[] };
+    configureIO = (args: any[]) => {
+        this.inlets = 1;
+        this.outlets = 2;
+    }
+    toExpr(lineMap: { [id: string]: string }): string[] {
+        const exprs: string[] = [];
+        const inlet0Lines = this.inletLines[0];
+        const lambda = inlet0Lines.length ? `lambda with {
+    ${toFaustLambda(this.patcher, [this], "lambda")}
+}` : "0";
+        const box = this.box;
+        const inlets = `${box.meta.name}_${box.id.substr(4)}_${this.outlets - 1}, ${box.args[0] || 0}, ${lambda}`;
+
+        if (this.outletLines.length === 0) return [];
+        if (this.outletLines.length === 1) {
+            if (this.outletLines[0].length === 0) return [];
+            const outlet = lineMap[this.outletLines[0][0]];
+            return outlet ? [`${outlet} = ${this.symbol[0]}(${inlets});`] : [];
+        }
+
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
+        exprs.push(`${result} = ${this.symbol[0]}(${inlets});`);
+        const allCut = new Array(this.outlets - 1).fill("!");
+        this.outletLines.forEach((outletLines, i) => {
+            if (i === this.outlets - 1) return;
+            if (outletLines.length === 0) return;
+            const outlet = lineMap[outletLines[0]];
+            if (!outlet) return;
+            const pass = allCut.slice();
+            pass[i] = "_";
+            exprs.push(`${outlet} = ${result} : ${pass.join(", ")};`);
+        });
+        return exprs;
+    }
+    toNormalExpr(lineMap: { [id: string]: string }) {
+        const exprs: string[] = [];
+        const lines = this.inletLines[0];
+        let inlets;
+        if (lines.length === 0) inlets = "0";
+        if (lines.length === 1) inlets = lineMap[lines[0]] ? `${lineMap[lines[0]]}` : "0";
+        inlets = `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+
+        if (this.outletLines.length === 0) return [];
+        if (this.outletLines.length === 1) {
+            if (this.outletLines[0].length === 0) return [];
+            const outlet = lineMap[this.outletLines[0][0]];
+            return outlet ? [`${outlet} = ${inlets};`] : [];
+        }
+
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
+        exprs.push(`${result} = ${inlets};`);
+        const allCut = new Array(this.outlets - 1).fill("!");
+        this.outletLines.forEach((outletLines, i) => {
+            if (i === this.outlets - 1) return;
+            if (outletLines.length === 0) return;
+            const outlet = lineMap[outletLines[0]];
+            if (!outlet) return;
+            const pass = allCut.slice();
+            pass[i] = "_";
+            exprs.push(`${outlet} = ${result} : ${pass.join(", ")};`);
+        });
+        return exprs;
+    }
+}
+class Sum extends Iterator {
+    static description = "Sum iterator";
+    symbol = ["sum"];
+}
+class Prod extends Iterator {
+    static description = "Production iterator";
+    symbol = ["prod"];
+}
+class Seq extends Iterator {
+    static description = "Seqential iterator";
+    symbol = ["seq"];
+}
+class Par extends Iterator {
+    static description = "Parallel iterator";
+    _meta = Par.meta;
+    get meta() {
+        return this._meta;
+    }
+    set meta(metaIn: TMeta) {
+        this._meta = metaIn;
+        this.emit("metaChanged", this._meta);
+    }
+    symbol = ["par"];
+    configureIO = (args: any[]) => {
+        this.inlets = 1;
+        const outlets = (args ? ~~args[0] : 0) + 1;
+        if (outlets === this.outlets) return;
+        const outlet0Meta = Par.outlets[0];
+        const outlet1Meta = Par.outlets[1];
+        for (let i = 0; i < outlets - 1; i++) {
+            this._meta.outlets[i] = outlet0Meta;
+        }
+        this._meta.outlets[outlets - 1] = outlet1Meta;
+        this.meta = this._meta;
+        this.outlets = outlets;
+    }
 }
 
 const faustOps: TPackage = {
@@ -355,7 +473,11 @@ const faustOps: TPackage = {
     mem: Mem,
     "@": Delay,
     const: Const,
-    c: Const
+    c: Const,
+    sum: Sum,
+    prod: Prod,
+    seq: Seq,
+    par: Par
 };
 
 type TOpMap = { [category: string]: {[className: string]: { desc: string; symbol: string | string[]; inlets: number }} };
@@ -429,6 +551,7 @@ for (const className in opMap.mathOps) {
 const mapLines = (box: Box, patcher: Patcher, visitedBoxes: Box[], ins: In[], recs: Rec[], lineMap: { [id: string]: string }) => {
     if (visitedBoxes.indexOf(box) >= 0) return;
     visitedBoxes.push(box);
+    if (box.object instanceof Iterator && box !== visitedBoxes[0]) return;
     box.inletLines.forEach(lines => lines.forEach((lineID) => {
         const line = patcher.lines[lineID];
         const srcBox = patcher.lines[lineID].srcBox;
@@ -438,7 +561,7 @@ const mapLines = (box: Box, patcher: Patcher, visitedBoxes: Box[], ins: In[], re
         mapLines(srcBox, patcher, visitedBoxes, ins, recs, lineMap);
     }));
 };
-export const toFaustDspCode = (patcher: Patcher) => {
+export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: string) => {
     const exprs: string[] = [];
     const mainIns: string[] = [];
     const mainOuts: string[] = [];
@@ -446,21 +569,15 @@ export const toFaustDspCode = (patcher: Patcher) => {
     const recOuts: string[] = [];
     const visitedBoxes: Box[] = [];
     let ins: In[] = [];
-    let outs: Out[] = [];
     const recs: Rec[] = [];
     const lineMap: { [id: string]: string } = {};
-    // Find outs
-    for (const boxID in patcher.boxes) {
-        const box = patcher.boxes[boxID];
-        if (box.object instanceof Out) outs.push(box.object);
-    }
-    outs = outs.sort((a, b) => a.index - b.index);
     // Build graph
     outs.forEach(out => mapLines(out.box, patcher, visitedBoxes, ins, recs, lineMap));
     visitedBoxes.forEach((box) => {
         if (box.object instanceof In) return;
         if (box.object instanceof Out) return;
         if (box.object instanceof Rec) return;
+        if (outs.indexOf(box.object as FaustOp) !== -1) return;
         exprs.push(...(box.object as FaustOp).toExpr(lineMap));
     });
     // Build rec in/outs
@@ -477,7 +594,8 @@ export const toFaustDspCode = (patcher: Patcher) => {
         mainIns.push(`${in_.meta.name}_${in_.box.id.substr(4)}_0`);
     });
     outs.forEach((out) => {
-        exprs.push(...out.toExpr(lineMap));
+        if (out instanceof Iterator) exprs.push(...out.toNormalExpr(lineMap));
+        else exprs.push(...out.toExpr(lineMap));
         mainOuts.push(`${out.meta.name}_${out.box.id.substr(4)}`);
     });
     // Generate Final expressions
@@ -486,15 +604,25 @@ export const toFaustDspCode = (patcher: Patcher) => {
     ${exprs.join("\n    ")}
 };
 Rec = ${recIns.map(() => "_").join(", ")} : ${recOuts.map(() => "_").join(", ")};
-process = Main ~ Rec : ${[...recIns.map(() => "!"), ...mainOuts.map(() => "_")].join(", ")};`;
+${lambdaName} = Main ~ Rec : ${[...recIns.map(() => "!"), ...mainOuts.map(() => "_")].join(", ")};`;
     }
     if (mainIns.length) {
-        return `process(${mainIns.join(", ")}) = ${mainOuts.join(", ")} with {
+        return `${lambdaName}(${mainIns.join(", ")}) = ${mainOuts.join(", ")} with {
     ${exprs.join("\n    ")}
 };`;
     }
-    return `process = ${mainOuts.join(", ")} with {
+    return `${lambdaName} = ${mainOuts.join(", ")} with {
     ${exprs.join("\n    ")}
 };`;
+};
+export const toFaustDspCode = (patcher: Patcher) => {
+    let outs: Out[] = [];
+    // Find outs
+    for (const boxID in patcher.boxes) {
+        const box = patcher.boxes[boxID];
+        if (box.object instanceof Out) outs.push(box.object);
+    }
+    outs = outs.sort((a, b) => a.index - b.index);
+    return toFaustLambda(patcher, outs, "process");
 };
 export default faustOps;

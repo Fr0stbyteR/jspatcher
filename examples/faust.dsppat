@@ -72,18 +72,6 @@
             ],
             "disabled": false
         },
-        "line-8": {
-            "id": "line-8",
-            "src": [
-                "box-8",
-                0
-            ],
-            "dest": [
-                "box-6",
-                0
-            ],
-            "disabled": false
-        },
         "line-9": {
             "id": "line-9",
             "src": [
@@ -92,6 +80,90 @@
             ],
             "dest": [
                 "box-3",
+                0
+            ],
+            "disabled": false
+        },
+        "line-21": {
+            "id": "line-21",
+            "src": [
+                "box-8",
+                0
+            ],
+            "dest": [
+                "box-20",
+                0
+            ],
+            "disabled": false
+        },
+        "line-22": {
+            "id": "line-22",
+            "src": [
+                "box-21",
+                0
+            ],
+            "dest": [
+                "box-20",
+                1
+            ],
+            "disabled": false
+        },
+        "line-23": {
+            "id": "line-23",
+            "src": [
+                "box-20",
+                0
+            ],
+            "dest": [
+                "box-19",
+                0
+            ],
+            "disabled": false
+        },
+        "line-24": {
+            "id": "line-24",
+            "src": [
+                "box-19",
+                0
+            ],
+            "dest": [
+                "box-6",
+                0
+            ],
+            "disabled": false
+        },
+        "line-27": {
+            "id": "line-27",
+            "src": [
+                "box-19",
+                6
+            ],
+            "dest": [
+                "box-21",
+                0
+            ],
+            "disabled": false
+        },
+        "line-28": {
+            "id": "line-28",
+            "src": [
+                "box-19",
+                1
+            ],
+            "dest": [
+                "box-22",
+                0
+            ],
+            "disabled": false
+        },
+        "line-30": {
+            "id": "line-30",
+            "src": [
+                "box-19",
+                2
+            ],
+            "dest": [
+                "box-23",
                 0
             ],
             "disabled": false
@@ -111,6 +183,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                150,
+                165,
+                60,
+                22
+            ],
             "data": {},
             "args": [
                 1
@@ -130,6 +208,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                150,
+                75,
+                60,
+                22
+            ],
             "data": {},
             "args": [
                 440
@@ -149,6 +233,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                150,
+                105,
+                60,
+                22
+            ],
             "data": {},
             "args": [
                 44100
@@ -168,6 +258,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                150,
+                135,
+                60,
+                22
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -185,6 +281,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                240,
+                135,
+                60,
+                22
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -196,12 +298,18 @@
             "outlets": 0,
             "rect": [
                 150,
-                285,
+                450,
                 45,
                 22
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                150,
+                285,
+                45,
+                22
+            ],
             "data": {},
             "args": [
                 1
@@ -221,6 +329,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                150,
+                195,
+                90,
+                22
+            ],
             "data": {},
             "args": [
                 6.2831852
@@ -240,13 +354,143 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                150,
+                225,
+                30,
+                22
+            ],
             "data": {},
             "args": [],
+            "props": {}
+        },
+        "box-19": {
+            "id": "box-19",
+            "text": "par 6",
+            "inlets": 1,
+            "outlets": 7,
+            "rect": [
+                150,
+                360,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                228,
+                312.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                6
+            ],
+            "props": {}
+        },
+        "box-20": {
+            "id": "box-20",
+            "text": "/",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                150,
+                270,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                290,
+                304.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-21": {
+            "id": "box-21",
+            "text": "+ 1",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                255,
+                270,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                237,
+                335.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                1
+            ],
+            "props": {}
+        },
+        "box-22": {
+            "id": "box-22",
+            "text": "out 2",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                225,
+                450,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                150,
+                285,
+                45,
+                22
+            ],
+            "data": {},
+            "args": [
+                2
+            ],
+            "props": {}
+        },
+        "box-23": {
+            "id": "box-23",
+            "text": "out 3",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                300,
+                450,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                150,
+                285,
+                45,
+                22
+            ],
+            "data": {},
+            "args": [
+                3
+            ],
             "props": {}
         }
     },
     "props": {
         "mode": "faust",
+        "dependencies": {},
         "bgColor": [
             61,
             65,
@@ -263,7 +507,7 @@
             15,
             15
         ],
-        "boxIndexCount": 18,
-        "lineIndexCount": 19
+        "boxIndexCount": 23,
+        "lineIndexCount": 30
     }
 }
