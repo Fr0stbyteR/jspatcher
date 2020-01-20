@@ -125,6 +125,51 @@ class InvalidObject extends FaustOp {
         return {};
     }
 }
+class Param extends FaustOp {
+    static description = "DSP Parameter"
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: false,
+        description: "Parameter name / descriptor"
+    }, {
+        type: "number",
+        optional: false,
+        description: "Parameter default"
+    }, {
+        type: "number",
+        optional: false,
+        description: "Parameter min"
+    }, {
+        type: "number",
+        optional: false,
+        description: "Parameter max"
+    }, {
+        type: "number",
+        optional: false,
+        description: "Parameter step"
+    }];
+    symbol = ["hslider"];
+    state = { inlets: 0, outlets: 1, args: [] as (number | string)[] };
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
+        const onces = this.toOnceExpr();
+
+        const { outletLines, state } = this;
+        const args = state.args.slice(0, 5);
+        args[0] = args[0] ? `"${args[0]}"` : `"${this.meta.name}_${this.box.id.substr(4)}"`;
+        args[1] = args[1] || 0;
+        args[2] = args[2] || 0;
+        args[3] = args[3] || 1;
+        args[4] = args[4] || 0.01;
+        const inlets = args.join(", ");
+
+        if (outletLines.length === 1) {
+            if (outletLines[0].length === 0) return {};
+            const outlet = findOutletFromLineMap(lineMap, outletLines[0]);
+            return outlet ? { exprs: [this.toMainExpr(outlet, inlets)], onces } : {};
+        }
+        return {};
+    }
+}
 
 class In extends FaustOp {
     static description = "Signal Input";
@@ -475,6 +520,7 @@ const faustOps: TPackage = {
     prod: Prod,
     seq: Seq,
     par: Par,
+    param: Param,
     EmptyObject,
     InvalidObject
 };
@@ -627,6 +673,7 @@ export const toFaustDspCode = (patcher: Patcher) => {
         const box = patcher.boxes[boxID];
         if (box.object instanceof Out) outs.push(box.object);
     }
+    if (outs.length === 0) return "process = 0;";
     outs = outs.sort((a, b) => a.index - b.index);
     const { once, expr } = toFaustLambda(patcher, outs, "process");
     return `${once}\n${expr}`;

@@ -167,6 +167,18 @@
                 1
             ],
             "disabled": false
+        },
+        "line-36": {
+            "id": "line-36",
+            "src": [
+                "box-26",
+                0
+            ],
+            "dest": [
+                "box-24",
+                1
+            ],
+            "disabled": false
         }
     },
     "boxes": {
@@ -439,8 +451,8 @@
         },
         "box-24": {
             "id": "box-24",
-            "text": "* 220",
-            "inlets": 1,
+            "text": "*",
+            "inlets": 2,
             "outlets": 1,
             "rect": [
                 195,
@@ -457,15 +469,13 @@
                 20
             ],
             "data": {},
-            "args": [
-                220
-            ],
+            "args": [],
             "props": {}
         },
         "box-25": {
             "id": "box-25",
             "text": "sr",
-            "inlets": 1,
+            "inlets": 0,
             "outlets": 1,
             "rect": [
                 255,
@@ -483,6 +493,35 @@
             ],
             "data": {},
             "args": [],
+            "props": {}
+        },
+        "box-26": {
+            "id": "box-26",
+            "text": "param freq 440 20 2000 1",
+            "inlets": 0,
+            "outlets": 1,
+            "rect": [
+                255,
+                60,
+                165,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                299,
+                60.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                "freq",
+                440,
+                20,
+                2000,
+                1
+            ],
             "props": {}
         }
     },
@@ -505,7 +544,7 @@
             15,
             15
         ],
-        "boxIndexCount": 25,
-        "lineIndexCount": 35
+        "boxIndexCount": 26,
+        "lineIndexCount": 36
     }
 }

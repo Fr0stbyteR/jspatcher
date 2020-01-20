@@ -430,5 +430,6 @@ export default {
     out: Out,
     "in~": AudioIn,
     "out~": AudioOut,
-    patcher
+    patcher,
+    p: patcher
 };
