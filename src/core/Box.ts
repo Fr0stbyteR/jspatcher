@@ -91,7 +91,6 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         lines.forEach(el => this._patcher.lines[el].enable());
         this.inletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateDest()));
         this.emit("ioCountChanged", this);
-        this._patcher.emit("graphChanged");
     }
     setOutlets(count: number) {
         const lines = this.allLines;
@@ -100,7 +99,6 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         lines.forEach(el => this._patcher.lines[el].enable());
         this.outletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateSrc()));
         this.emit("ioCountChanged", this);
-        this._patcher.emit("graphChanged");
     }
     getInletPos(port: number) {
         return { top: this.rect[1], left: ((this.rect[0] + 10) + (this.rect[2] - 20) * port / (this.inlets > 1 ? this.inlets - 1 : 1)) };
@@ -132,27 +130,23 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
         if (this._object) this._object.connectedOutlet(outlet, destBox, destInlet, lineID);
         this.emit("connectedPort", { isSrc: true, i: outlet });
-        this._patcher.emit("graphChanged");
         return this;
     }
     connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
         if (this._object) this._object.connectedInlet(inlet, srcBox, srcOutlet, lineID);
         this.emit("connectedPort", { isSrc: false, i: inlet });
-        this._patcher.emit("graphChanged");
         return this;
     }
     disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
         if (this._object) this._object.disconnectedOutlet(outlet, destBox, destInlet, lineID);
         const last = this._patcher.getLinesBySrcID(this.id)[outlet].length === 1;
         this.emit("disconnectedPort", { isSrc: true, i: outlet, last });
-        this._patcher.emit("graphChanged");
         return this;
     }
     disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
         if (this._object) this._object.disconnectedInlet(inlet, srcBox, srcOutlet, lineID);
         const last = this._patcher.getLinesByDestID(this.id)[inlet].length === 1;
         this.emit("disconnectedPort", { isSrc: false, i: inlet, last });
-        this._patcher.emit("graphChanged");
         return this;
     }
     isOutletTo(outlet: number, box: Box, inlet: number) {
@@ -186,7 +180,6 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         }
         this.emit("textChanged", this);
         this._object.emit("metaChanged", this._object.meta);
-        this._patcher.emit("graphChanged");
         return this;
     }
     update(e: { args?: any[]; props?: { [key: string]: any } }) {
@@ -308,7 +301,6 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.allLines.forEach(el => this._patcher.deleteLine(el));
         this._object.destroy();
         delete this._patcher.boxes[this.id];
-        this._patcher.emit("graphChanged");
         return this;
     }
     static parseObjText(strIn: string) {

@@ -1,0 +1,718 @@
+{
+    "lines": {
+        "line-1": {
+            "id": "line-1",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        },
+        "line-2": {
+            "id": "line-2",
+            "src": [
+                "box-1",
+                1
+            ],
+            "dest": [
+                "box-3",
+                1
+            ],
+            "disabled": false
+        },
+        "line-3": {
+            "id": "line-3",
+            "src": [
+                "box-1",
+                2
+            ],
+            "dest": [
+                "box-3",
+                2
+            ],
+            "disabled": false
+        },
+        "line-5": {
+            "id": "line-5",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-1",
+                1
+            ],
+            "disabled": false
+        },
+        "line-6": {
+            "id": "line-6",
+            "src": [
+                "box-3",
+                0
+            ],
+            "dest": [
+                "box-5",
+                0
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-1": {
+            "id": "box-1",
+            "text": "pfaust",
+            "inlets": 2,
+            "outlets": 4,
+            "rect": [
+                15,
+                30,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                207,
+                327.578125,
+                90,
+                20
+            ],
+            "data": {
+                "lines": {
+                    "line-3": {
+                        "id": "line-3",
+                        "src": [
+                            "box-4",
+                            0
+                        ],
+                        "dest": [
+                            "box-1",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-4": {
+                        "id": "line-4",
+                        "src": [
+                            "box-1",
+                            0
+                        ],
+                        "dest": [
+                            "box-7",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-5": {
+                        "id": "line-5",
+                        "src": [
+                            "box-24",
+                            0
+                        ],
+                        "dest": [
+                            "box-3",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-6": {
+                        "id": "line-6",
+                        "src": [
+                            "box-25",
+                            0
+                        ],
+                        "dest": [
+                            "box-3",
+                            1
+                        ],
+                        "disabled": false
+                    },
+                    "line-7": {
+                        "id": "line-7",
+                        "src": [
+                            "box-3",
+                            0
+                        ],
+                        "dest": [
+                            "box-4",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-8": {
+                        "id": "line-8",
+                        "src": [
+                            "box-5",
+                            0
+                        ],
+                        "dest": [
+                            "box-4",
+                            1
+                        ],
+                        "disabled": false
+                    },
+                    "line-9": {
+                        "id": "line-9",
+                        "src": [
+                            "box-4",
+                            0
+                        ],
+                        "dest": [
+                            "box-5",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-10": {
+                        "id": "line-10",
+                        "src": [
+                            "box-19",
+                            0
+                        ],
+                        "dest": [
+                            "box-6",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-11": {
+                        "id": "line-11",
+                        "src": [
+                            "box-7",
+                            0
+                        ],
+                        "dest": [
+                            "box-8",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-12": {
+                        "id": "line-12",
+                        "src": [
+                            "box-8",
+                            0
+                        ],
+                        "dest": [
+                            "box-19",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-13": {
+                        "id": "line-13",
+                        "src": [
+                            "box-19",
+                            1
+                        ],
+                        "dest": [
+                            "box-22",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-15": {
+                        "id": "line-15",
+                        "src": [
+                            "box-19",
+                            6
+                        ],
+                        "dest": [
+                            "box-21",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-16": {
+                        "id": "line-16",
+                        "src": [
+                            "box-21",
+                            0
+                        ],
+                        "dest": [
+                            "box-24",
+                            0
+                        ],
+                        "disabled": false
+                    },
+                    "line-17": {
+                        "id": "line-17",
+                        "src": [
+                            "box-26",
+                            0
+                        ],
+                        "dest": [
+                            "box-24",
+                            1
+                        ],
+                        "disabled": false
+                    },
+                    "line-14": {
+                        "id": "line-14",
+                        "src": [
+                            "box-19",
+                            2
+                        ],
+                        "dest": [
+                            "box-23",
+                            0
+                        ],
+                        "disabled": false
+                    }
+                },
+                "boxes": {
+                    "box-1": {
+                        "id": "box-1",
+                        "text": "fmod 1",
+                        "inlets": 1,
+                        "outlets": 1,
+                        "rect": [
+                            235,
+                            220,
+                            60,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            150,
+                            165,
+                            60,
+                            22
+                        ],
+                        "data": {},
+                        "args": [
+                            1
+                        ],
+                        "props": {}
+                    },
+                    "box-3": {
+                        "id": "box-3",
+                        "text": "/",
+                        "inlets": 2,
+                        "outlets": 1,
+                        "rect": [
+                            235,
+                            160,
+                            75,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            150,
+                            105,
+                            60,
+                            22
+                        ],
+                        "data": {},
+                        "args": [],
+                        "props": {}
+                    },
+                    "box-4": {
+                        "id": "box-4",
+                        "text": "+",
+                        "inlets": 2,
+                        "outlets": 1,
+                        "rect": [
+                            235,
+                            190,
+                            60,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            150,
+                            135,
+                            60,
+                            22
+                        ],
+                        "data": {},
+                        "args": [],
+                        "props": {}
+                    },
+                    "box-5": {
+                        "id": "box-5",
+                        "text": "~",
+                        "inlets": 1,
+                        "outlets": 1,
+                        "rect": [
+                            325,
+                            190,
+                            60,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            240,
+                            135,
+                            60,
+                            22
+                        ],
+                        "data": {},
+                        "args": [],
+                        "props": {}
+                    },
+                    "box-6": {
+                        "id": "box-6",
+                        "text": "out 1",
+                        "inlets": 1,
+                        "outlets": 0,
+                        "rect": [
+                            85,
+                            250,
+                            45,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            150,
+                            285,
+                            45,
+                            22
+                        ],
+                        "data": {},
+                        "args": [
+                            1
+                        ],
+                        "props": {}
+                    },
+                    "box-7": {
+                        "id": "box-7",
+                        "text": "* 6.2831852",
+                        "inlets": 1,
+                        "outlets": 1,
+                        "rect": [
+                            235,
+                            250,
+                            90,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            150,
+                            195,
+                            90,
+                            22
+                        ],
+                        "data": {},
+                        "args": [
+                            6.2831852
+                        ],
+                        "props": {}
+                    },
+                    "box-8": {
+                        "id": "box-8",
+                        "text": "sin",
+                        "inlets": 1,
+                        "outlets": 1,
+                        "rect": [
+                            235,
+                            280,
+                            30,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            150,
+                            225,
+                            30,
+                            22
+                        ],
+                        "data": {},
+                        "args": [],
+                        "props": {}
+                    },
+                    "box-19": {
+                        "id": "box-19",
+                        "text": "par 6",
+                        "inlets": 1,
+                        "outlets": 7,
+                        "rect": [
+                            85,
+                            220,
+                            105,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            228,
+                            312.578125,
+                            90,
+                            20
+                        ],
+                        "data": {},
+                        "args": [
+                            6
+                        ],
+                        "props": {}
+                    },
+                    "box-21": {
+                        "id": "box-21",
+                        "text": "+ 1",
+                        "inlets": 1,
+                        "outlets": 1,
+                        "rect": [
+                            235,
+                            100,
+                            45,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            237,
+                            335.578125,
+                            90,
+                            20
+                        ],
+                        "data": {},
+                        "args": [
+                            1
+                        ],
+                        "props": {}
+                    },
+                    "box-22": {
+                        "id": "box-22",
+                        "text": "out 2",
+                        "inlets": 1,
+                        "outlets": 0,
+                        "rect": [
+                            100,
+                            280,
+                            45,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            150,
+                            285,
+                            45,
+                            22
+                        ],
+                        "data": {},
+                        "args": [
+                            2
+                        ],
+                        "props": {}
+                    },
+                    "box-24": {
+                        "id": "box-24",
+                        "text": "*",
+                        "inlets": 2,
+                        "outlets": 1,
+                        "rect": [
+                            235,
+                            130,
+                            45,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            225,
+                            124.578125,
+                            90,
+                            20
+                        ],
+                        "data": {},
+                        "args": [],
+                        "props": {}
+                    },
+                    "box-25": {
+                        "id": "box-25",
+                        "text": "sr",
+                        "inlets": 0,
+                        "outlets": 1,
+                        "rect": [
+                            295,
+                            130,
+                            30,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            336,
+                            86.578125,
+                            90,
+                            20
+                        ],
+                        "data": {},
+                        "args": [],
+                        "props": {}
+                    },
+                    "box-26": {
+                        "id": "box-26",
+                        "text": "param freq 440 20 2000 1",
+                        "inlets": 0,
+                        "outlets": 1,
+                        "rect": [
+                            295,
+                            100,
+                            165,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            299,
+                            60.578125,
+                            90,
+                            20
+                        ],
+                        "data": {},
+                        "args": [
+                            "freq",
+                            440,
+                            20,
+                            2000,
+                            1
+                        ],
+                        "props": {}
+                    },
+                    "box-23": {
+                        "id": "box-23",
+                        "text": "out 3",
+                        "inlets": 1,
+                        "outlets": 0,
+                        "rect": [
+                            115,
+                            310,
+                            45,
+                            22
+                        ],
+                        "background": false,
+                        "presentation": false,
+                        "presentationRect": [
+                            150,
+                            285,
+                            45,
+                            22
+                        ],
+                        "data": {},
+                        "args": [
+                            3
+                        ],
+                        "props": {}
+                    }
+                },
+                "props": {
+                    "mode": "faust",
+                    "dependencies": {},
+                    "bgColor": "rgba(61, 65, 70, 1)",
+                    "editingBgColor": "rgba(82, 87, 94, 1)",
+                    "grid": [
+                        15,
+                        15
+                    ],
+                    "boxIndexCount": 26,
+                    "lineIndexCount": 17
+                }
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-3": {
+            "id": "box-3",
+            "text": "merger~ 3",
+            "inlets": 3,
+            "outlets": 2,
+            "rect": [
+                15,
+                75,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                238,
+                484.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                3
+            ],
+            "props": {}
+        },
+        "box-4": {
+            "id": "box-4",
+            "text": "dial",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                120,
+                30,
+                45,
+                60
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                69,
+                32.578125,
+                45,
+                60
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "shortName": "Freq",
+                "longName": "Freq",
+                "min": 20,
+                "max": 2000,
+                "step": 1,
+                "unitStyle": "hertz"
+            }
+        },
+        "box-5": {
+            "id": "box-5",
+            "text": "spectroscope~",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                15,
+                135,
+                660,
+                120
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                363,
+                247.578125,
+                120,
+                60
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        }
+    },
+    "props": {
+        "mode": "js",
+        "dependencies": {},
+        "bgColor": "rgba(61, 65, 70, 1)",
+        "editingBgColor": "rgba(82, 87, 94, 1)",
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 5,
+        "lineIndexCount": 6
+    }
+}

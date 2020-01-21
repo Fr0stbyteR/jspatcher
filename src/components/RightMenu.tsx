@@ -528,6 +528,7 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.on("loaded", this.handlePatcherLoaded);
+        this.handlePatcherLoaded();
     }
     componentWillUnmount() {
         const audioCtx = this.props.patcher.env.audioCtx;

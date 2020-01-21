@@ -2,10 +2,11 @@ import * as React from "react";
 import { StrictModalProps, Modal } from "semantic-ui-react";
 import { DefaultObject, DefaultAudioObject } from "./Base";
 import Patcher from "../Patcher";
-import { TPatcherMode, TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection } from "../types";
+import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection } from "../types";
 import { DefaultPopupUI, DefaultPopupUIState } from "./BaseUI";
 import UI from "../../components/UI";
 import "./SubPatcher.scss";
+import FaustNode, { FaustNodeState } from "./faust/FaustNode";
 
 export class In extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
     static description = "Patcher inlet (data)";
@@ -229,7 +230,7 @@ export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [
             default: "",
             description: "Description text"
         }
-    }
+    };
     static inlets: TMeta["inlets"] = [{
         type: "signal",
         description: "",
@@ -317,22 +318,19 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
         return <DefaultPopupUI {...this.props} modalProps={modalProps} containerProps={containerProps} />;
     }
 }
-type TSubPatcherState = { map: TSubPatchersMap; key: string; mode: TPatcherMode };
-export class patcher extends DefaultAudioObject<Patcher, TSubPatcherState, any[], any[], [TPatcherMode, string], {}, { patcher: Patcher }> {
+interface SubPatcherState {
+    map: TSubPatchersMap;
+    key: string;
+}
+export class patcher extends DefaultAudioObject<Patcher, SubPatcherState, any[], any[], [string], {}, { patcher: Patcher }> {
     static description = "Sub-patcher";
     static args: TMeta["args"] = [{
         type: "string",
         optional: true,
         default: "",
         description: "Name of the subpatcher"
-    }, { // TODO Separate other modes
-        type: "enum",
-        enums: ["js", "max", "gen", "faust"],
-        optional: true,
-        default: "js",
-        description: "Mode of the subpatcher"
     }];
-    state: TSubPatcherState = { map: subPatchersMap, key: "", mode: "js" };
+    state: SubPatcherState = { map: subPatchersMap, key: "" };
     _meta: TMeta = patcher.meta;
     get meta() {
         return this._meta;
@@ -380,20 +378,20 @@ export class patcher extends DefaultAudioObject<Patcher, TSubPatcherState, any[]
             handlePatcherIOChanged(this.data.meta);
             this.updateUI({ patcher: this.data });
         };
-        this.on("preInit", () => {
+        this.on("preInit", async () => {
             this.inlets = 0;
             this.outlets = 0;
             if (this.data.boxes) {
                 const patcher = new Patcher(this.patcher.env);
+                await patcher.load(this.data);
                 this.data = patcher;
-                patcher.load(this.data);
             }
         });
         this.on("postInit", async () => {
             if (!(this.data instanceof Patcher)) {
                 const patcher = new Patcher(this.patcher.env);
                 this.data = patcher;
-                await patcher.load({}, this.state.mode);
+                await patcher.load({}, "js");
             }
             handlePatcherReset();
             subscribePatcher();
@@ -407,7 +405,7 @@ export class patcher extends DefaultAudioObject<Patcher, TSubPatcherState, any[]
                     this.disconnectAudio();
                     if (!this.state.map[newKey]) {
                         const patcher = new Patcher(this.patcher.env);
-                        patcher.load({}, this.state.mode);
+                        patcher.load({}, "js");
                         if (newKey) this.state.map[newKey] = patcher;
                         this.data = patcher;
                     } else {
@@ -419,10 +417,86 @@ export class patcher extends DefaultAudioObject<Patcher, TSubPatcherState, any[]
                     this.state.key = newKey;
                 }
             }
-            if (["js", "max", "gen", "faust"].indexOf(args[1]) >= 0) this.state.mode = args[1] as TPatcherMode;
         });
         this.on("inlet", ({ data, inlet }) => this.data.fn(data, inlet));
     }
+}
+interface FaustPatcherState extends FaustNodeState, SubPatcherState {}
+export class faustPatcher extends FaustNode<Patcher, FaustPatcherState, [string, number], { patcher: Patcher }> {
+    static description = "Faust Sub-patcher, compiled to AudioNode";
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: true,
+        default: "",
+        description: "Name of the subpatcher"
+    }, {
+        type: "number",
+        optional: true,
+        default: 0,
+        description: "Polyphonic instrument voices count"
+    }];
+    uiComponent = SubPatcherUI;
+    state = { merger: undefined, splitter: undefined, node: undefined, voices: 0, map: subPatchersMap, key: "" } as FaustPatcherState;
+    _meta: TMeta = patcher.meta;
+    subscribePatcher = () => {
+        const patcher = this.data;
+        patcher.on("graphChanged", this.handleGraphChanged);
+    };
+    unsubscribePatcher = () => {
+        const patcher = this.data;
+        if (!(this.data instanceof Patcher)) return;
+        patcher.off("graphChanged", this.handleGraphChanged);
+    };
+    handlePatcherReset = () => {
+        this.updateUI({ patcher: this.data });
+    };
+    handleGraphChanged = async () => {
+        if (!(this.data instanceof Patcher)) return;
+        const code = this.data.toFaustDspCode();
+        if (code) await this.newNode(code, this.state.voices);
+    };
+    handlePreInit = async () => {
+        this.inlets = 1;
+        this.outlets = 1;
+        if (this.data.boxes) {
+            const patcher = new Patcher(this.patcher.env);
+            await patcher.load(this.data);
+            this.data = patcher;
+        }
+    };
+    handlePostInit = async () => {
+        if (!(this.data instanceof Patcher)) {
+            const patcher = new Patcher(this.patcher.env);
+            this.data = patcher;
+            await patcher.load({}, "faust");
+        }
+        this.handlePatcherReset();
+        this.subscribePatcher();
+        await this.handleGraphChanged();
+        this.connectAudio();
+    };
+    handleUpdateArgs = (args: Partial<[string, number]>): void => {
+        if (typeof args[0] === "string") {
+            const newKey = args[0] || "";
+            if (newKey !== this.state.key) {
+                this.unsubscribePatcher();
+                this.disconnectAudio();
+                if (!this.state.map[newKey]) {
+                    const patcher = new Patcher(this.patcher.env);
+                    patcher.load({}, "faust");
+                    if (newKey) this.state.map[newKey] = patcher;
+                    this.data = patcher;
+                } else {
+                    this.data = this.state.map[newKey];
+                }
+                this.handlePatcherReset();
+                this.subscribePatcher();
+                this.connectAudio();
+                this.state.key = newKey;
+            }
+        }
+        if (typeof args[1] === "number") this.state.voices = ~~Math.max(0, args[1]);
+    };
 }
 
 export default {
@@ -431,5 +505,7 @@ export default {
     "in~": AudioIn,
     "out~": AudioOut,
     patcher,
-    p: patcher
+    p: patcher,
+    faustPatcher,
+    pfaust: faustPatcher
 };

@@ -20,6 +20,7 @@ export interface SpectroscopeUIState {
     paint: {};
 }
 export class SpectroscopeUI extends CanvasUI<Spectroscope, {}, SpectroscopeUIState> {
+    static defaultSize = [120, 60] as [number, number];
     componentDidMount() {
         const { width, height, bgColor } = this.state;
         const ctx = this.ctx;

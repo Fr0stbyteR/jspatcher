@@ -59,6 +59,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.setMaxListeners(4096);
         this._env = envIn;
         this.observeHistory();
+        this.observeGraphChange();
         this._state = {
             isLoading: false,
             locked: true,
@@ -172,7 +173,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             this._state.lib = mode === "js" ? this._state.libJS : this._state.libFaust;
             const patcher = patcherIn;
             if (patcher.props) this.props = { ...this.props, ...patcher.props };
-            if (this.props.dependencies) {
+            if (mode === "js" && this.props.dependencies) {
                 const promises = Object.keys(this.props.dependencies).map(name => this.dynamicImportPackage(this.props.dependencies[name], name));
                 await Promise.all(promises);
             }
@@ -767,7 +768,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                     text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
                 };
                 const createdBox = this.createBox(box);
-                pasted.boxes[createdBox.id] = createdBox;
+                if (createdBox) pasted.boxes[createdBox.id] = createdBox;
             }
             if (Array.isArray(clipboard.lines)) {
                 const maxLines = clipboard.lines;
@@ -780,8 +781,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                         src: [idMap[lineArgs.source[0].replace(/obj/, "box")], lineArgs.source[1]],
                         dest: [idMap[lineArgs.destination[0].replace(/obj/, "box")], lineArgs.destination[1]]
                     };
-                    const createLine = this.createLine(line);
-                    pasted.lines[createLine.id] = line;
+                    const createdLine = this.createLine(line);
+                    if (createdLine) pasted.lines[createdLine.id] = line;
                 }
             }
             this.state.isLoading = false;
@@ -804,15 +805,15 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             }
             box.rect = [box.rect[0] + 20, box.rect[1] + 20, box.rect[2], box.rect[3]];
             const createdBox = this.createBox(box);
-            pasted.boxes[createdBox.id] = createdBox;
+            if (createdBox) pasted.boxes[createdBox.id] = createdBox;
         }
         for (const lineID in clipboard.lines) {
             const line = clipboard.lines[lineID];
             line.id = "line-" + ++this.props.lineIndexCount;
             line.src[0] = idMap[line.src[0]];
             line.dest[0] = idMap[line.dest[0]];
-            const createLine = this.createLine(line);
-            pasted.lines[createLine.id] = line;
+            const createdLine = this.createLine(line);
+            if (createdLine) pasted.lines[createdLine.id] = line;
         }
         this.state.isLoading = false;
         this.deselectAll();
@@ -875,6 +876,13 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     redo() {
         this._state.history.redo();
+    }
+    observeGraphChange() {
+        const eventNames = [
+            "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
+            "changeBoxText", "changeLineSrc", "changeLineDest"
+        ] as const;
+        eventNames.forEach(e => this.on(e, () => this.emit("graphChanged")));
     }
     toFaustDspCode() {
         const code = toFaustDspCode(this);
