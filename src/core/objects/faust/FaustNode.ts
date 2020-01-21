@@ -105,10 +105,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string
         this.connectAudio();
         this.outlet(this.outlets - 1, this.state.node);
     }
-    handlePreInit = () => {
-        this.inlets = 1;
-        this.outlets = 1;
-    }
+    handlePreInit = () => undefined as any;
     handlePostInit = async () => {
         if (this.data.code) await this.newNode(this.data.code, this.state.voices);
     };

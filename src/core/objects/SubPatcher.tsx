@@ -379,8 +379,6 @@ export class patcher extends DefaultAudioObject<Patcher, SubPatcherState, any[],
             this.updateUI({ patcher: this.data });
         };
         this.on("preInit", async () => {
-            this.inlets = 0;
-            this.outlets = 0;
             if (this.data.boxes) {
                 const patcher = new Patcher(this.patcher.env);
                 await patcher.load(this.data);
@@ -456,8 +454,6 @@ export class faustPatcher extends FaustNode<Patcher, FaustPatcherState, [string,
         if (code) await this.newNode(code, this.state.voices);
     };
     handlePreInit = async () => {
-        this.inlets = 1;
-        this.outlets = 1;
         if (this.data.boxes) {
             const patcher = new Patcher(this.patcher.env);
             await patcher.load(this.data);
