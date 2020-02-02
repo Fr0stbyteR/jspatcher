@@ -402,7 +402,7 @@ export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Part
     get code() {
         return "";
     }
-    handleSave: (code: string) => any = (code: string) => undefined;
+    handleSave = (code: string): any => undefined;
     handleCloseAndSave = () => {
         this.setState({ modalOpen: false });
         this.handleSave(this.codeEditor.getValue());

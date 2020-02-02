@@ -25,15 +25,18 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
     subscribe() {
         super.subscribe();
         this.on("preInit", this.configureIO);
-        this.on("updateArgs", args => this.state.args = args.slice());
+        this.on("updateArgs", this.handleUpdateArgs);
         this.on("updateArgs", this.configureIO);
+    }
+    handleUpdateArgs = (args: any[]) => {
+        this.state.args = args.slice();
     }
     /**
      * Supress inlet if defined in args
      *
      * @memberof FaustOp
      */
-    configureIO = (args: any[]) => {
+    configureIO = (args?: any[]) => {
         this.inlets = this.state.inlets - Math.min(this.state.inlets, args ? args.length : 0);
         this.outlets = this.state.outlets;
     }
@@ -190,7 +193,7 @@ class In extends FaustOp {
             this.outlets = 1;
         });
     }
-    configureIO = () => {};
+    configureIO = (): any => undefined;
     get index() {
         const i = this.state.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
@@ -219,7 +222,7 @@ class Out extends FaustOp {
             this.outlets = 0;
         });
     }
-    configureIO = () => {};
+    configureIO = (): any => undefined;
     get index() {
         const i = this.state.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
@@ -234,6 +237,129 @@ class Out extends FaustOp {
 
         const result = `${this.meta.name}_${this.box.id.substr(4)}`;
         exprs.push(`${result} = ${inlets};`);
+        return { exprs };
+    }
+}
+class Pass extends FaustOp {
+    static description = "Bypass Signal";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_"
+    }];
+    symbol = ["_"];
+    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
+    handleUpdateArgs = (): void => undefined;
+    configureIO = () => {
+        this.inlets = this.state.inlets;
+        this.outlets = this.state.outlets;
+    }
+    toMainExpr(out: string, inlets: string) {
+        return `${out} = ${inlets};`;
+    }
+}
+const sendMap: { [key: string]: Send[] } = {};
+class Send extends FaustOp {
+    static description = "Send Signal to receive";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        description: "_"
+    }];
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: false,
+        description: "Send / Receive ID"
+    }];
+    symbol = ["s"];
+    state = { inlets: 1, outlets: 0, args: [] as (number | string)[], sendMap };
+    get sendID() {
+        return this.state.args[0];
+    }
+    configureIO = (args?: any[]) => {
+        this.inlets = this.state.inlets;
+        this.outlets = this.state.outlets;
+        if (args && args[0]) {
+            const sendID = args[0];
+            if (!this.state.sendMap[sendID]) this.state.sendMap[sendID] = [];
+            if (this.state.sendMap[sendID].indexOf(this) === -1) this.state.sendMap[sendID].push(this);
+        }
+    }
+    subscribe() {
+        super.subscribe();
+        this.on("destroy", () => {
+            const sendID = this.state.args[0];
+            if (!sendID) return;
+            if (!this.state.sendMap[sendID]) return;
+            const $ = this.state.sendMap[sendID].indexOf(this);
+            if ($ === -1) return;
+            this.state.sendMap[sendID].splice($, 1);
+        });
+    }
+    toMainExpr(out: string, inlets: string) {
+        return `${out} = ${inlets};`;
+    }
+}
+class Receive extends FaustOp {
+    static description = "Receive Signal from send";
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_"
+    }];
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: false,
+        description: "Send / Receive ID"
+    }];
+    symbol = ["r"];
+    state = { inlets: 0, outlets: 1, args: [] as (number | string)[], sendMap };
+    get sendID() {
+        return this.state.args[0];
+    }
+    configureIO = () => {
+        this.inlets = this.state.inlets;
+        this.outlets = this.state.outlets;
+    }
+    toMainExpr(out: string, inlets: string) {
+        if (inlets) return `${out} = ${inlets};`;
+        return `${out} = 0;`;
+    }
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
+        const exprs: string[] = [];
+
+        const { outletLines, state } = this;
+        const inletLines: string[][] = [[]];
+        const sendID = state.args[0];
+        if (sendID && state.sendMap[sendID]) {
+            state.sendMap[sendID].forEach(s => s.inletLines.forEach(lines => inletLines[0].push(...lines)));
+        }
+        const inlets = inletLines.map((lines) => { // inlets as 0, 1, 2
+            if (lines.length === 0) return "0";
+            if (lines.length === 1) return lineMap[lines[0]] || "0";
+            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+        }).join(", ");
+
+        if (outletLines.length === 0) return {};
+        if (outletLines.length === 1) {
+            if (outletLines[0].length === 0) return {};
+            const outlet = findOutletFromLineMap(lineMap, outletLines[0]);
+            return outlet ? { exprs: [this.toMainExpr(outlet, inlets)] } : {};
+        }
+        const result = `${this.meta.name}_${this.box.id.substr(4)}`;
+        exprs.push(this.toMainExpr(result, inlets));
+        const allCut = new Array(this.outlets).fill("!");
+        outletLines.forEach((lines, i) => {
+            if (lines.length === 0) return;
+            const outlet = findOutletFromLineMap(lineMap, lines);
+            if (!outlet) return;
+            const pass = allCut.slice();
+            pass[i] = "_";
+            exprs.push(`${outlet} = ${result} : ${pass.join(", ")};`);
+        });
         return { exprs };
     }
 }
@@ -396,7 +522,7 @@ class Iterator extends FaustOp {
         description: "Iterations count"
     }];
     state = { inlets: 1, outlets: 2, args: [] as (number | string)[] };
-    configureIO = (args: any[]) => {
+    configureIO = () => {
         this.inlets = 1;
         this.outlets = 2;
     }
@@ -404,10 +530,10 @@ class Iterator extends FaustOp {
         const exprs: string[] = [];
         const { inletLines, outletLines } = this;
         const inlet0Lines = inletLines[0];
-        const { expr, once } = toFaustLambda(this.patcher, [this], "lambda");
-        const onces = [once];
+        const { exprs: lExprs, onces } = toFaustLambda(this.patcher, [this], "lambda");
+        lExprs.forEach((s, i) => lExprs[i] = `    ${s}`);
         const lambda = inlet0Lines.length ? `lambda with {
-    ${expr}
+${lExprs.join("\n")}
 }` : "0";
         const box = this.box;
         const inlets = `${box.meta.name}_${box.id.substr(4)}_${this.outlets - 1}, ${box.args[0] || 0}, ${lambda}`;
@@ -439,8 +565,8 @@ class Iterator extends FaustOp {
         const inlet0Lines = inletLines[0];
         let inlets;
         if (inlet0Lines.length === 0) inlets = "0";
-        if (inlet0Lines.length === 1) inlets = lineMap[inlet0Lines[0]] || "0";
-        inlets = `(${inlet0Lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+        else if (inlet0Lines.length === 1) inlets = lineMap[inlet0Lines[0]] || "0";
+        else inlets = `(${inlet0Lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
 
         if (outletLines.length === 0) return {};
         if (outletLines.length === 1) {
@@ -487,7 +613,7 @@ class Par extends Iterator {
         this.emit("metaChanged", this._meta);
     }
     symbol = ["par"];
-    configureIO = (args: any[]) => {
+    configureIO = (args?: any[]) => {
         this.inlets = 1;
         const outlets = (args ? ~~args[0] : 0) + 1;
         if (outlets === this.outlets) return;
@@ -505,6 +631,7 @@ class Par extends Iterator {
 const faustOps: TPackage = {
     in: In,
     out: Out,
+    _: Pass,
     "<:": Split,
     ":>": Merge,
     "~": Rec,
@@ -521,6 +648,10 @@ const faustOps: TPackage = {
     seq: Seq,
     par: Par,
     param: Param,
+    send: Send,
+    s: Send,
+    receive: Receive,
+    r: Receive,
     EmptyObject,
     InvalidObject
 };
@@ -597,7 +728,14 @@ const mapLines = (box: Box, patcher: Patcher, visitedBoxes: Box[], ins: In[], re
     if (visitedBoxes.indexOf(box) >= 0) return;
     visitedBoxes.push(box);
     if (box.object instanceof Iterator && box !== visitedBoxes[0]) return;
-    box.inletLines.forEach(lines => lines.forEach((lineID) => {
+    const { inletLines } = box;
+    if (box.object instanceof Receive) {
+        const { sendID } = box.object;
+        if (sendMap[sendID]) {
+            sendMap[sendID].forEach(s => inletLines.push(...s.inletLines));
+        }
+    }
+    inletLines.forEach(lines => lines.forEach((lineID) => {
         const line = patcher.lines[lineID];
         const srcBox = patcher.lines[lineID].srcBox;
         if (srcBox.object instanceof In && ins.indexOf(srcBox.object) === -1) ins.push(srcBox.object);
@@ -646,25 +784,23 @@ export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: str
         else exprs.push(...out.toExpr(lineMap).exprs || []);
         mainOuts.push(`${out.meta.name}_${out.box.id.substr(4)}`);
     });
-    const once = onces.join("\n");
-    let expr;
     // Generate Final expressions
+    exprs.forEach((s, i) => exprs[i] = `    ${s.replace(/\n/g, "\n    ")}`); // indent
     if (recIns.length) {
-        expr = `Main(${[...recOuts, ...mainIns].join(", ")}) = ${[...recIns, ...mainOuts].join(", ")} with {
-    ${exprs.join("\n    ")}
-};
-Rec = ${recIns.map(() => "_").join(", ")} : ${recOuts.map(() => "_").join(", ")};
-${lambdaName} = Main ~ Rec : ${[...recIns.map(() => "!"), ...mainOuts.map(() => "_")].join(", ")};`;
+        exprs.unshift(`Main(${[...recOuts, ...mainIns].join(", ")}) = ${[...recIns, ...mainOuts].join(", ")} with {`);
+        exprs.push(
+            "};",
+            `Rec = ${recIns.map(() => "_").join(", ")} : ${recOuts.map(() => "_").join(", ")};`,
+            `${lambdaName} = Main ~ Rec : ${[...recIns.map(() => "!"), ...mainOuts.map(() => "_")].join(", ")};`
+        );
     } else if (mainIns.length) {
-        expr = `${lambdaName}(${mainIns.join(", ")}) = ${mainOuts.join(", ")} with {
-    ${exprs.join("\n    ")}
-};`;
+        exprs.unshift(`${lambdaName}(${mainIns.join(", ")}) = ${mainOuts.join(", ")} with {`);
+        exprs.push("};");
     } else {
-        expr = `${lambdaName} = ${mainOuts.join(", ")} with {
-    ${exprs.join("\n    ")}
-};`;
+        exprs.unshift(`${lambdaName} = ${mainOuts.join(", ")} with {`);
+        exprs.push("};");
     }
-    return { once, expr };
+    return { onces, exprs };
 };
 export const toFaustDspCode = (patcher: Patcher) => {
     let outs: Out[] = [];
@@ -675,7 +811,7 @@ export const toFaustDspCode = (patcher: Patcher) => {
     }
     if (outs.length === 0) return "process = 0;";
     outs = outs.sort((a, b) => a.index - b.index);
-    const { once, expr } = toFaustLambda(patcher, outs, "process");
-    return `${once}\n${expr}`;
+    const { onces, exprs } = toFaustLambda(patcher, outs, "process");
+    return `${onces.join("\n")}\n${exprs.join("\n")}\n`;
 };
 export default faustOps;

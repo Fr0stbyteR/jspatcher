@@ -110,9 +110,10 @@ export const getProviders = async (faust: Faust): Promise<FaustLanguageProviders
         primDocs = await Faust2Doc.parse("primitives.lib", async (fileName: string) => getFile(fileName, faust));
     } catch (e) { console.error(e); } // eslint-disable-line no-empty, no-console
     const faustLib = Object.keys(libDocs);
+    const allDocs = { ...primDocs, ...libDocs };
     const hoverProvider: languages.HoverProvider = {
         provideHover: (model, position) => {
-            const matched = matchDocKey({ ...primDocs, ...libDocs }, model, position);
+            const matched = matchDocKey(allDocs, model, position);
             if (matched) {
                 const prefix = matched.nameArray.slice();
                 const name = prefix.pop();
