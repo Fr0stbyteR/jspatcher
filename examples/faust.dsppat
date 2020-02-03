@@ -1,7 +1,7 @@
 {
     "lines": {
-        "line-2": {
-            "id": "line-2",
+        "line-37": {
+            "id": "line-37",
             "src": [
                 "box-4",
                 0
@@ -12,44 +12,8 @@
             ],
             "disabled": false
         },
-        "line-3": {
-            "id": "line-3",
-            "src": [
-                "box-3",
-                0
-            ],
-            "dest": [
-                "box-4",
-                0
-            ],
-            "disabled": false
-        },
-        "line-4": {
-            "id": "line-4",
-            "src": [
-                "box-4",
-                0
-            ],
-            "dest": [
-                "box-5",
-                0
-            ],
-            "disabled": false
-        },
-        "line-5": {
-            "id": "line-5",
-            "src": [
-                "box-5",
-                0
-            ],
-            "dest": [
-                "box-4",
-                1
-            ],
-            "disabled": false
-        },
-        "line-6": {
-            "id": "line-6",
+        "line-38": {
+            "id": "line-38",
             "src": [
                 "box-1",
                 0
@@ -60,82 +24,22 @@
             ],
             "disabled": false
         },
-        "line-7": {
-            "id": "line-7",
+        "line-39": {
+            "id": "line-39",
             "src": [
-                "box-7",
+                "box-1",
                 0
             ],
             "dest": [
-                "box-8",
+                "box-5",
                 0
             ],
             "disabled": false
         },
-        "line-24": {
-            "id": "line-24",
+        "line-40": {
+            "id": "line-40",
             "src": [
-                "box-19",
-                0
-            ],
-            "dest": [
-                "box-6",
-                0
-            ],
-            "disabled": false
-        },
-        "line-27": {
-            "id": "line-27",
-            "src": [
-                "box-19",
-                6
-            ],
-            "dest": [
-                "box-21",
-                0
-            ],
-            "disabled": false
-        },
-        "line-28": {
-            "id": "line-28",
-            "src": [
-                "box-19",
-                1
-            ],
-            "dest": [
-                "box-22",
-                0
-            ],
-            "disabled": false
-        },
-        "line-30": {
-            "id": "line-30",
-            "src": [
-                "box-19",
-                2
-            ],
-            "dest": [
-                "box-23",
-                0
-            ],
-            "disabled": false
-        },
-        "line-31": {
-            "id": "line-31",
-            "src": [
-                "box-21",
-                0
-            ],
-            "dest": [
-                "box-24",
-                0
-            ],
-            "disabled": false
-        },
-        "line-33": {
-            "id": "line-33",
-            "src": [
-                "box-24",
+                "box-28",
                 0
             ],
             "dest": [
@@ -144,20 +48,8 @@
             ],
             "disabled": false
         },
-        "line-34": {
-            "id": "line-34",
-            "src": [
-                "box-8",
-                0
-            ],
-            "dest": [
-                "box-19",
-                0
-            ],
-            "disabled": false
-        },
-        "line-35": {
-            "id": "line-35",
+        "line-41": {
+            "id": "line-41",
             "src": [
                 "box-25",
                 0
@@ -168,15 +60,123 @@
             ],
             "disabled": false
         },
-        "line-36": {
-            "id": "line-36",
+        "line-42": {
+            "id": "line-42",
+            "src": [
+                "box-3",
+                0
+            ],
+            "dest": [
+                "box-4",
+                0
+            ],
+            "disabled": false
+        },
+        "line-43": {
+            "id": "line-43",
+            "src": [
+                "box-5",
+                0
+            ],
+            "dest": [
+                "box-4",
+                1
+            ],
+            "disabled": false
+        },
+        "line-44": {
+            "id": "line-44",
+            "src": [
+                "box-29",
+                0
+            ],
+            "dest": [
+                "box-6",
+                0
+            ],
+            "disabled": false
+        },
+        "line-45": {
+            "id": "line-45",
+            "src": [
+                "box-7",
+                0
+            ],
+            "dest": [
+                "box-8",
+                0
+            ],
+            "disabled": false
+        },
+        "line-46": {
+            "id": "line-46",
+            "src": [
+                "box-8",
+                0
+            ],
+            "dest": [
+                "box-29",
+                0
+            ],
+            "disabled": false
+        },
+        "line-47": {
+            "id": "line-47",
             "src": [
                 "box-26",
                 0
             ],
             "dest": [
-                "box-24",
+                "box-28",
+                0
+            ],
+            "disabled": false
+        },
+        "line-48": {
+            "id": "line-48",
+            "src": [
+                "box-30",
+                0
+            ],
+            "dest": [
+                "box-28",
                 1
+            ],
+            "disabled": false
+        },
+        "line-49": {
+            "id": "line-49",
+            "src": [
+                "box-29",
+                1
+            ],
+            "dest": [
+                "box-31",
+                0
+            ],
+            "disabled": false
+        },
+        "line-50": {
+            "id": "line-50",
+            "src": [
+                "box-29",
+                2
+            ],
+            "dest": [
+                "box-32",
+                0
+            ],
+            "disabled": false
+        },
+        "line-51": {
+            "id": "line-51",
+            "src": [
+                "box-29",
+                3
+            ],
+            "dest": [
+                "box-30",
+                0
             ],
             "disabled": false
         }
@@ -188,8 +188,8 @@
             "inlets": 1,
             "outlets": 1,
             "rect": [
-                195,
-                180,
+                260,
+                185,
                 60,
                 22
             ],
@@ -213,8 +213,8 @@
             "inlets": 2,
             "outlets": 1,
             "rect": [
-                195,
-                120,
+                260,
+                125,
                 75,
                 22
             ],
@@ -236,8 +236,8 @@
             "inlets": 2,
             "outlets": 1,
             "rect": [
-                195,
-                150,
+                260,
+                155,
                 60,
                 22
             ],
@@ -259,8 +259,8 @@
             "inlets": 1,
             "outlets": 1,
             "rect": [
-                285,
-                150,
+                350,
+                155,
                 60,
                 22
             ],
@@ -282,8 +282,8 @@
             "inlets": 1,
             "outlets": 0,
             "rect": [
-                45,
-                210,
+                50,
+                200,
                 45,
                 22
             ],
@@ -307,8 +307,8 @@
             "inlets": 1,
             "outlets": 1,
             "rect": [
-                195,
-                210,
+                260,
+                215,
                 90,
                 22
             ],
@@ -332,8 +332,8 @@
             "inlets": 1,
             "outlets": 1,
             "rect": [
-                195,
-                240,
+                260,
+                245,
                 30,
                 22
             ],
@@ -344,129 +344,6 @@
                 225,
                 30,
                 22
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        },
-        "box-19": {
-            "id": "box-19",
-            "text": "par 6",
-            "inlets": 1,
-            "outlets": 7,
-            "rect": [
-                45,
-                180,
-                105,
-                22
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                228,
-                312.578125,
-                90,
-                20
-            ],
-            "data": {},
-            "args": [
-                6
-            ],
-            "props": {}
-        },
-        "box-21": {
-            "id": "box-21",
-            "text": "+ 1",
-            "inlets": 1,
-            "outlets": 1,
-            "rect": [
-                195,
-                60,
-                45,
-                22
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                237,
-                335.578125,
-                90,
-                20
-            ],
-            "data": {},
-            "args": [
-                1
-            ],
-            "props": {}
-        },
-        "box-22": {
-            "id": "box-22",
-            "text": "out 2",
-            "inlets": 1,
-            "outlets": 0,
-            "rect": [
-                60,
-                240,
-                45,
-                22
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                150,
-                285,
-                45,
-                22
-            ],
-            "data": {},
-            "args": [
-                2
-            ],
-            "props": {}
-        },
-        "box-23": {
-            "id": "box-23",
-            "text": "out 3",
-            "inlets": 1,
-            "outlets": 0,
-            "rect": [
-                75,
-                270,
-                45,
-                22
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                150,
-                285,
-                45,
-                22
-            ],
-            "data": {},
-            "args": [
-                3
-            ],
-            "props": {}
-        },
-        "box-24": {
-            "id": "box-24",
-            "text": "*",
-            "inlets": 2,
-            "outlets": 1,
-            "rect": [
-                195,
-                90,
-                45,
-                22
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                225,
-                124.578125,
-                90,
-                20
             ],
             "data": {},
             "args": [],
@@ -478,8 +355,8 @@
             "inlets": 0,
             "outlets": 1,
             "rect": [
-                255,
-                90,
+                320,
+                95,
                 30,
                 22
             ],
@@ -501,8 +378,8 @@
             "inlets": 0,
             "outlets": 1,
             "rect": [
-                255,
-                60,
+                260,
+                35,
                 165,
                 22
             ],
@@ -521,6 +398,129 @@
                 20,
                 2000,
                 1
+            ],
+            "props": {}
+        },
+        "box-28": {
+            "id": "box-28",
+            "text": "*",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                260,
+                95,
+                30,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                403,
+                94.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-29": {
+            "id": "box-29",
+            "text": "par 3",
+            "inlets": 1,
+            "outlets": 4,
+            "rect": [
+                50,
+                35,
+                65,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                100,
+                126.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                3
+            ],
+            "props": {}
+        },
+        "box-30": {
+            "id": "box-30",
+            "text": "+ 1",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                275,
+                65,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                213,
+                116.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                1
+            ],
+            "props": {}
+        },
+        "box-31": {
+            "id": "box-31",
+            "text": "out 2",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                65,
+                170,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                150,
+                285,
+                45,
+                22
+            ],
+            "data": {},
+            "args": [
+                2
+            ],
+            "props": {}
+        },
+        "box-32": {
+            "id": "box-32",
+            "text": "out 3",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                80,
+                140,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                150,
+                285,
+                45,
+                22
+            ],
+            "data": {},
+            "args": [
+                3
             ],
             "props": {}
         }
@@ -544,7 +544,7 @@
             15,
             15
         ],
-        "boxIndexCount": 26,
-        "lineIndexCount": 36
+        "boxIndexCount": 32,
+        "lineIndexCount": 51
     }
 }

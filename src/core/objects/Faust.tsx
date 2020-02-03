@@ -2,6 +2,7 @@ import { DefaultObject } from "./Base";
 import Box from "../Box";
 import Patcher from "../Patcher";
 import { TPackage, TMeta } from "../types";
+import { subPatchersMap, TSubPatchersMap, SubPatcherUI } from "./SubPatcher";
 
 type TObjectExpr = {
     exprs?: string[];
@@ -15,21 +16,28 @@ const findOutletFromLineMap = (lineMap: { [id: string]: string }, lines: string[
     }
     return undefined;
 };
-
-export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number; args: (number | string)[] }, [], [], any[]> {
+interface FaustOpState {
+    inlets: number;
+    outlets: number;
+    args: (number | string)[];
+}
+export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<FaustOpState> & { [key: string]: any } = FaustOpState, A extends any[] = number[], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}> extends DefaultObject<D, S & FaustOpState, [], [], A, P, U> {
     static package = "FaustOps";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Faust Operator";
-    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] };
-    subscribe() {
-        super.subscribe();
-        this.on("preInit", this.configureIO);
-        this.on("updateArgs", this.handleUpdateArgs);
-        this.on("updateArgs", this.configureIO);
-    }
+    /**
+     * Symbol used to register class
+     *
+     * @type {string[]}
+     * @memberof FaustOp
+     */
+    symbol: string[] = [];
+    state = { inlets: 1, outlets: 1, args: [] as (number | string)[] } as S & FaustOpState;
+    handlePreInit = () => this.configureIO();
     handleUpdateArgs = (args: any[]) => {
         this.state.args = args.slice();
+        this.configureIO(args);
     }
     /**
      * Supress inlet if defined in args
@@ -40,13 +48,11 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
         this.inlets = this.state.inlets - Math.min(this.state.inlets, args ? args.length : 0);
         this.outlets = this.state.outlets;
     }
-    /**
-     * Symbol used to register class
-     *
-     * @type {string[]}
-     * @memberof FaustOp
-     */
-    symbol: string[] = [];
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", this.handlePreInit);
+        this.on("updateArgs", this.handleUpdateArgs);
+    }
     /**
      * Main expresstion format, i.e. `out = func(in1, in2, in3);`
      *
@@ -106,7 +112,7 @@ export class FaustOp extends DefaultObject<{}, { inlets: number; outlets: number
         return { exprs, onces };
     }
 }
-class EmptyObject extends FaustOp {
+class EmptyObject extends FaustOp<{}, { editing: boolean }> {
     static description = "No-op";
     state = { inlets: 0, outlets: 0, args: [] as (number | string)[], editing: false };
     toExpr(): TObjectExpr {
@@ -262,8 +268,9 @@ class Pass extends FaustOp {
         return `${out} = ${inlets};`;
     }
 }
-const sendMap: { [key: string]: Send[] } = {};
-class Send extends FaustOp {
+type TSendMap = { [key: string]: Send[] };
+const sendMap: TSendMap = {};
+class Send extends FaustOp<{}, { sendMap: TSendMap }> {
     static description = "Send Signal to receive";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -304,7 +311,7 @@ class Send extends FaustOp {
         return `${out} = ${inlets};`;
     }
 }
-class Receive extends FaustOp {
+class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
     static description = "Receive Signal from send";
     static outlets: TMeta["outlets"] = [{
         type: "signal",
@@ -531,9 +538,8 @@ class Iterator extends FaustOp {
         const { inletLines, outletLines } = this;
         const inlet0Lines = inletLines[0];
         const { exprs: lExprs, onces } = toFaustLambda(this.patcher, [this], "lambda");
-        lExprs.forEach((s, i) => lExprs[i] = `    ${s}`);
         const lambda = inlet0Lines.length ? `lambda with {
-${lExprs.join("\n")}
+${lExprs.map(s => `    ${s}`).join("\n")}
 }` : "0";
         const box = this.box;
         const inlets = `${box.meta.name}_${box.id.substr(4)}_${this.outlets - 1}, ${box.args[0] || 0}, ${lambda}`;
@@ -627,6 +633,111 @@ class Par extends Iterator {
         this.outlets = outlets;
     }
 }
+interface SubPatcherState extends FaustOpState {
+    map: TSubPatchersMap;
+    key: string;
+    cachedCode: { exprs: string[]; onces: string[]; ins: number; outs: number };
+}
+class SubPatcher extends FaustOp<Patcher, SubPatcherState, [string], {}, { patcher: Patcher }> {
+    static description = "Sub-patcher represents a sub-process";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        varLength: true,
+        description: "Sub-patcher input"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        varLength: true,
+        description: "Sub-patcher output"
+    }];
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: true,
+        default: "",
+        description: "Name of the subpatcher"
+    }];
+    uiComponent = SubPatcherUI;
+    state: SubPatcherState = { inlets: 0, outlets: 0, args: [] as (number | string)[], map: subPatchersMap, key: "", cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
+    subscribePatcher = () => {
+        const patcher = this.data;
+        patcher.on("graphChanged", this.handleGraphChanged);
+    };
+    unsubscribePatcher = () => {
+        const patcher = this.data;
+        if (!(patcher instanceof Patcher)) return;
+        patcher.off("graphChanged", this.handleGraphChanged);
+    };
+    handlePatcherReset = () => {
+        const patcher = this.data;
+        if (!(patcher instanceof Patcher)) return;
+        this.updateUI({ patcher });
+    };
+    handleGraphChanged = () => {
+        const { ins, outs, exprs, onces } = inspectFaustPatcher(this.data);
+        this.inlets = ins.length;
+        this.outlets = outs.length;
+        this.state.cachedCode = { exprs, onces, ins: ins.length, outs: outs.length };
+        this.patcher.emit("graphChanged");
+    };
+    handlePreInit = async () => {
+        if (this.data.boxes) {
+            const patcher = new Patcher(this.patcher.env);
+            await patcher.load(this.data);
+            this.data = patcher;
+        }
+    };
+    handlePostInit = async () => {
+        if (!(this.data instanceof Patcher)) {
+            const patcher = new Patcher(this.patcher.env);
+            this.data = patcher;
+            await patcher.load({}, "faust");
+        }
+        this.handlePatcherReset();
+        this.subscribePatcher();
+        this.handleGraphChanged();
+    };
+    handleUpdateArgs = (args: [string]) => {
+        if (typeof args[0] === "string") {
+            const newKey = args[0] || "";
+            if (newKey !== this.state.key) {
+                this.unsubscribePatcher();
+                if (!this.state.map[newKey]) {
+                    const patcher = new Patcher(this.patcher.env);
+                    patcher.load({}, "faust");
+                    if (newKey) this.state.map[newKey] = patcher;
+                    this.data = patcher;
+                } else {
+                    this.data = this.state.map[newKey];
+                }
+                this.handlePatcherReset();
+                this.handleGraphChanged();
+                this.subscribePatcher();
+                this.state.key = newKey;
+            }
+        }
+    }
+    subscribe() {
+        super.subscribe();
+        this.on("postInit", this.handlePostInit);
+    }
+    toMainExpr(out: string, inlets: string) {
+        const { exprs, outs } = this.state.cachedCode;
+        if (!outs) return `${out} = ${new Array(this.outlets).fill("0").join(", ")};`;
+        const expr = exprs.map(s => `        ${s}`).join("\n");
+        if (inlets) {
+            return `${out} = process(${inlets}) with {
+${expr}
+    };`;
+        }
+        return `${out} = process with {
+${expr}
+    };`;
+    }
+    toOnceExpr() {
+        return this.state.cachedCode.onces;
+    }
+}
 
 const faustOps: TPackage = {
     in: In,
@@ -652,6 +763,7 @@ const faustOps: TPackage = {
     s: Send,
     receive: Receive,
     r: Receive,
+    patcher: SubPatcher,
     EmptyObject,
     InvalidObject
 };
@@ -706,7 +818,7 @@ for (const className in opMap.mathOps) {
     const op = opMap.mathOps[className];
     const inletsMeta = new Array(op.inlets).fill(null).map(() => ({
         isHot: true,
-        type: "signal" as "signal",
+        type: "signal" as const,
         description: "_"
     }));
     const outletDesc = `${op.symbol}(${new Array(op.inlets).fill("_").join(", ")})`;
@@ -796,22 +908,25 @@ export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: str
     } else if (mainIns.length) {
         exprs.unshift(`${lambdaName}(${mainIns.join(", ")}) = ${mainOuts.join(", ")} with {`);
         exprs.push("};");
-    } else {
+    } else if (exprs.length) {
         exprs.unshift(`${lambdaName} = ${mainOuts.join(", ")} with {`);
         exprs.push("};");
+    } else {
+        exprs.push(`${lambdaName} = 0;`);
     }
-    return { onces, exprs };
+    return { onces, exprs, ins, outs };
 };
-export const toFaustDspCode = (patcher: Patcher) => {
+export const toFaustDspCode = (patcher: Patcher) => inspectFaustPatcher(patcher).code;
+export const inspectFaustPatcher = (patcher: Patcher) => {
     let outs: Out[] = [];
     // Find outs
     for (const boxID in patcher.boxes) {
         const box = patcher.boxes[boxID];
         if (box.object instanceof Out) outs.push(box.object);
     }
-    if (outs.length === 0) return "process = 0;";
     outs = outs.sort((a, b) => a.index - b.index);
-    const { onces, exprs } = toFaustLambda(patcher, outs, "process");
-    return `${onces.join("\n")}\n${exprs.join("\n")}\n`;
+    const { onces, exprs, ins } = toFaustLambda(patcher, outs, "process");
+    const code = `${onces.join("\n")}${onces.length ? "\n" : ""}${exprs.join("\n")}\n`;
+    return { code, onces, exprs, ins, outs };
 };
 export default faustOps;

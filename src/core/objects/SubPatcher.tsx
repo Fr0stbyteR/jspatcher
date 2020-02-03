@@ -295,7 +295,7 @@ export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [
 }
 
 export type TSubPatchersMap = { [key: string]: Patcher };
-const subPatchersMap: TSubPatchersMap = {};
+export const subPatchersMap: TSubPatchersMap = {};
 
 export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher }> {
     state: { patcher: Patcher } & DefaultPopupUIState = {
@@ -442,14 +442,15 @@ export class faustPatcher extends FaustNode<Patcher, FaustPatcherState, [string,
     };
     unsubscribePatcher = () => {
         const patcher = this.data;
-        if (!(this.data instanceof Patcher)) return;
+        if (!(patcher instanceof Patcher)) return;
         patcher.off("graphChanged", this.handleGraphChanged);
     };
     handlePatcherReset = () => {
-        this.updateUI({ patcher: this.data });
+        const patcher = this.data;
+        if (!(patcher instanceof Patcher)) return;
+        this.updateUI({ patcher });
     };
     handleGraphChanged = async () => {
-        if (!(this.data instanceof Patcher)) return;
         const code = this.data.toFaustDspCode();
         if (code) await this.newNode(code, this.state.voices);
     };
@@ -486,6 +487,7 @@ export class faustPatcher extends FaustNode<Patcher, FaustPatcherState, [string,
                     this.data = this.state.map[newKey];
                 }
                 this.handlePatcherReset();
+                this.handleGraphChanged();
                 this.subscribePatcher();
                 this.connectAudio();
                 this.state.key = newKey;

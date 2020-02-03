@@ -167,7 +167,7 @@ interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "moved": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
     "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType; presentation: boolean };
     "generateCode": string;
-    "graphChanged": any;
+    "graphChanged": never;
     "inlet": TInletEvent<any[]>;
     "outlet": TOutletEvent<any[]>;
     "disconnectAudioInlet": number;
@@ -258,12 +258,12 @@ type EventMap<T> = T extends AbstractObject<any, any, any, any, any, any, any, i
 type TInletEvent<I extends any[] = [], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
 type TOutletEvent<O extends any[] = [], $ extends keyof Pick<O, number> = keyof Pick<O, number>> = { outlet: $; data: O[$] };
 type ObjectEventMap<I extends any[], A extends any[], P, U, E> = {
-    "preInit": null;
+    "preInit": never;
     "update": { args?: Partial<A>; props?: Partial<P> };
     "updateArgs": Partial<A>;
     "updateProps": Partial<P>;
-    "postInit": null;
-    "uiUpdate": Partial<U> | null;
+    "postInit": never;
+    "uiUpdate": Partial<U> | never;
     "inlet": TInletEvent<I>;
     "connectedInlet": { inlet: number; srcBox: Box; srcOutlet: number; lineID: string };
     "connectedOutlet": { outlet: number; destBox: Box; destInlet: number; lineID: string };
