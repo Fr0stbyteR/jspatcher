@@ -16,9 +16,6 @@
       "@babel/plugin-proposal-class-properties", 
       { "loose": true }
     ],
-    "@babel/proposal-object-rest-spread",
-    "@babel/plugin-syntax-async-generators",
-    "@babel/plugin-transform-runtime",
-    "@babel/plugin-syntax-dynamic-import"
+    "@babel/plugin-transform-runtime"
   ]
 }
