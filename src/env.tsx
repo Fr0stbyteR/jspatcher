@@ -7,30 +7,52 @@ import { faustLangRegister } from "./misc/monaco-faust/register";
 import Patcher from "./core/Patcher";
 import Importer from "./core/objects/importer/Importer";
 import UI from "./components/UI";
+import { MappedEventEmitter } from "./utils/MappedEventEmitter";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
+export class LoaderUI extends React.Component<{ env: Env }, { text: string }> {
+    state = { text: "Loading..." };
+    handleText = (text: string): void => this.setState({ text });
+    componentDidMount() {
+        this.props.env.on("text", this.handleText);
+    }
+    componentWillUnmount() {
+        this.props.env.off("text", this.handleText);
+    }
+    render() {
+        return <Dimmer active><Loader content={this.state.text} /></Dimmer>;
+    }
+}
 /**
  * Should have maximum 1 instance of Env per page.
  *
  * @export
  * @class Env
  */
-export default class Env {
+export default class Env extends MappedEventEmitter<{ text: string }> {
     audioCtx = new AudioContext({ latencyHint: 0.00001 });
     os = detectOS();
     supportAudioWorklet = !!window.AudioWorklet;
     faust: Faust;
     async init() {
         ReactDOM.render(
-            <Dimmer active><Loader content="Loading" /></Dimmer>,
+            <LoaderUI env={this} />,
             document.getElementById("root")
         );
+
+        this.emit("text", "Loading Faust2WebAudio...");
         const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
+
+        this.emit("text", "Loading LibFaust...");
         const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
         await faust.ready;
+
+        this.emit("text", "Fetching Faust Standard Library...");
         const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
         const faustPrimitiveLib = await faustPrimitiveLibFile.text();
         faust.fs.writeFile("./libraries/primitives.lib", faustPrimitiveLib);
+
+        this.emit("text", "Loading Monaco Editor...");
         const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
         faustLangRegister(monacoEditor, faust);
 
@@ -39,17 +61,22 @@ export default class Env {
         patcher.packageRegister(Importer.import("faust", { FaustNode: FaustAudioWorkletNode }, true), patcher._state.libJS);
         window.patcher = patcher;
 
-        ReactDOM.render(
-            <UI patcher={patcher} />,
-            document.getElementById("root")
-        );
+        this.emit("text", "Loading Patcher...");
 
         const urlParams = new URLSearchParams(window.location.search);
         const fileName = urlParams.get("file");
         if (fileName) {
-            const exampleFile = await fetch("../examples/" + fileName);
-            const example = await exampleFile.json();
-            patcher.load(example);
+            try {
+                const exampleFile = await fetch("../examples/" + fileName);
+                const example = await exampleFile.json();
+                patcher.load(example);
+            } catch (e) {
+                patcher.error(`Fetch file ${fileName} failed.`);
+            }
         }
+        ReactDOM.render(
+            <UI patcher={patcher} />,
+            document.getElementById("root")
+        );
     }
 }
