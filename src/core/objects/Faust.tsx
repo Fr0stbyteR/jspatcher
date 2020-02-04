@@ -502,6 +502,40 @@ class Const extends FaustOp {
         return `${out} = ${inlets};`;
     }
 }
+class Group extends FaustOp<{}, {}, number[], { ins: number }> {
+    static description = "Group inlets like (x, x, x)";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        varLength: true,
+        description: "_"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        varLength: true,
+        description: "(...)"
+    }];
+    static props: TPropsMeta<{ ins: number }> = {
+        ins: {
+            type: "number",
+            default: 1,
+            description: "Inputs count"
+        }
+    }
+    state = { inlets: 1, outlets: 1 };
+    symbol = ["()"];
+    handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
+        if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
+        if (e.args || "ins" in e.props) {
+            const { box } = this;
+            this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
+            this.outlets = this.state.outlets;
+        }
+    }
+    toMainExpr(out: string, inlets: string) {
+        return `${out} = (${inlets});`;
+    }
+}
 class SR extends FaustOp {
     static description = "Sample Rate";
     static outlets: TMeta["outlets"] = [{
@@ -675,7 +709,9 @@ class LibOp extends FaustOp<{}, {}, number[], LibOpProps> {
     }
     state = { inlets: undefined as number, outlets: undefined as number };
     handlePostInit = async () => {
-        if (typeof this.state.inlets === "number" && typeof this.state.outlets === "number") return;
+        const inletsDefined = typeof this.state.inlets === "number";
+        const outletsDefined = typeof this.state.outlets === "number";
+        if (inletsDefined && outletsDefined) return;
         const inspectCode = `import("stdfaust.lib"); process = ${this.symbol[0]};`;
         try {
             const { dspMeta } = await this.patcher.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
@@ -683,13 +719,13 @@ class LibOp extends FaustOp<{}, {}, number[], LibOpProps> {
             this.state.outlets = dspMeta.outputs;
         } catch (e) {} // eslint-disable-line no-empty
         const { box } = this;
-        this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
-        this.outlets = this.state.outlets;
+        if (!inletsDefined) this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
+        if (!outletsDefined) this.outlets = this.state.outlets;
     }
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this.state.outlets = ~~+this.getProp("outs");
-        if (e.args) {
+        if (e.args || "ins" in e.props || "outs" in e.props) {
             const { box } = this;
             this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
             this.outlets = this.state.outlets;
@@ -815,6 +851,7 @@ const faustOps: TPackage = {
     _: Pass,
     "<:": Split,
     ":>": Merge,
+    "()": Group,
     "~": Rec,
     "'": Mem,
     mem: Mem,
