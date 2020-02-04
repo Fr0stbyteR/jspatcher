@@ -8,6 +8,8 @@ import Patcher from "./core/Patcher";
 import Importer from "./core/objects/importer/Importer";
 import UI from "./components/UI";
 import { MappedEventEmitter } from "./utils/MappedEventEmitter";
+import { TFaustDocs } from "./misc/monaco-faust/Faust2Doc";
+import { getFaustLibObjects } from "./core/objects/Faust";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 export class LoaderUI extends React.Component<{ env: Env }, { text: string }> {
@@ -34,6 +36,7 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
     os = detectOS();
     supportAudioWorklet = !!window.AudioWorklet;
     faust: Faust;
+    faustDocs: TFaustDocs;
     async init() {
         ReactDOM.render(
             <LoaderUI env={this} />,
@@ -54,11 +57,13 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
 
         this.emit("text", "Loading Monaco Editor...");
         const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
-        faustLangRegister(monacoEditor, faust);
+        const { providers } = await faustLangRegister(monacoEditor, faust);
+        this.faustDocs = providers.docs;
 
         this.faust = faust;
         const patcher = new Patcher(this);
         patcher.packageRegister(Importer.import("faust", { FaustNode: FaustAudioWorkletNode }, true), patcher._state.libJS);
+        patcher.packageRegister(getFaustLibObjects(this.faustDocs), patcher._state.libFaust);
         window.patcher = patcher;
 
         this.emit("text", "Loading Patcher...");

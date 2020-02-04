@@ -173,6 +173,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             this._state.lib = mode === "js" ? this._state.libJS : this._state.libFaust;
             const patcher = patcherIn;
             if (patcher.props) this.props = { ...this.props, ...patcher.props };
+            if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
+            if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
             if (mode === "js" && this.props.dependencies) {
                 const promises = Object.keys(this.props.dependencies).map(name => this.dynamicImportPackage(this.props.dependencies[name], name));
                 await Promise.all(promises);
