@@ -4,6 +4,7 @@ import Patcher from "../Patcher";
 import { TPackage, TMeta, TPropsMeta } from "../types";
 import { subPatchersMap, TSubPatchersMap, SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
+import { CodeUI } from "./UI";
 
 type TObjectExpr = {
     exprs?: string[];
@@ -21,11 +22,17 @@ interface FaustOpState {
     inlets: number;
     outlets: number;
 }
-export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<FaustOpState> & { [key: string]: any } = FaustOpState, A extends any[] = number[], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}> extends DefaultObject<D, S & FaustOpState, [], [], A, P, U> {
+export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<FaustOpState> & { [key: string]: any } = FaustOpState, A extends any[] = number[], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}, E extends { [key: string]: any } = {}> extends DefaultObject<D, S & FaustOpState, [], [], A, P, U, E> {
     static package = "FaustOps";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Faust Operator";
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        varLength: true,
+        description: "Parameters"
+    }];
     /**
      * Symbol used to register class
      *
@@ -844,6 +851,84 @@ ${expr}
         return this.state.cachedCode.onces;
     }
 }
+class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { language: string; value: string }, { editorBlur: string }> {
+    static description = "Code block a sub-process";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "signal",
+        varLength: true,
+        description: "Sub-process input"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        varLength: true,
+        description: "Sub-process output"
+    }];
+    static props: TPropsMeta<LibOpProps> = {
+        ins: {
+            type: "number",
+            default: undefined,
+            description: "Force function inputs count"
+        },
+        outs: {
+            type: "number",
+            default: undefined,
+            description: "Force function outputs count"
+        }
+    }
+    uiComponent = CodeUI as any;
+    state = { inlets: undefined as number, outlets: undefined as number };
+    handlePostInit = async () => {
+        const inletsForced = typeof this.getProp("ins") === "number";
+        const outletsForced = typeof this.getProp("outs") === "number";
+        if (inletsForced && outletsForced) return;
+        const { value: code } = this.data;
+        if (!code) {
+            this.inlets = 0;
+            this.outlets = 0;
+            return;
+        }
+        try {
+            const { dspMeta } = await this.patcher.env.faust.inspect(code, { args: { "-I": "libraries/" } });
+            this.state.inlets = dspMeta.inputs;
+            this.state.outlets = dspMeta.outputs;
+        } catch (e) {} // eslint-disable-line no-empty
+        const { box } = this;
+        if (!inletsForced) this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
+        if (!outletsForced) this.outlets = this.state.outlets;
+    }
+    handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
+        if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
+        if ("outs" in e.props) this.state.outlets = ~~+this.getProp("outs");
+        if (e.args || "ins" in e.props || "outs" in e.props) {
+            const { box } = this;
+            this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
+            this.outlets = this.state.outlets;
+        }
+    }
+    handleBlur = () => {
+        this.patcher.emit("graphChanged");
+        this.handlePostInit();
+    }
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => this.updateUI({ language: "faust" }));
+        this.on("postInit", this.handlePostInit);
+        this.on("editorBlur", this.handleBlur);
+    }
+    toMainExpr(out: string, inlets: string) {
+        const { value } = this.data;
+        const code = value.replace(/\n/g, "\n    ");
+        if (inlets) {
+            return `${out} = environment{
+    ${code}
+}.process(${inlets});`;
+        }
+        return `${out} = environment{
+    ${code}
+}.process;`;
+    }
+}
 
 const faustOps: TPackage = {
     in: In,
@@ -871,6 +956,8 @@ const faustOps: TPackage = {
     receive: Receive,
     r: Receive,
     patcher: SubPatcher,
+    p: SubPatcher,
+    code: Code,
     EmptyObject,
     InvalidObject
 };

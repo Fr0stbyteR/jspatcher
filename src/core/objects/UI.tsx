@@ -3,7 +3,7 @@ import * as Util from "util";
 import { Dimmer, Loader, Icon } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import { Bang, BaseObject } from "./Base";
+import { Bang, BaseObject, AnyObject } from "./Base";
 import "./UI.scss";
 import { TMeta } from "../types";
 import { BaseUI, BaseUIProps, BaseUIState } from "./BaseUI";
@@ -216,13 +216,16 @@ export class comment extends BaseObject<{ value: string }, {}, [], [], [string]>
     uiComponent: typeof BaseUI = CommentUI;
 }
 type CodeUIState = { language: string; value: string; editorLoaded: boolean; editing: boolean } & BaseUIState;
-class CodeUI extends BaseUI<comment, {}, CodeUIState> {
+export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
     static sizing = "both" as const;
     static defaultSize: [number, number] = [400, 225];
     state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: this.box.args[0] || "javascript", editorLoaded: false };
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
+    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => {
+        this.codeEditor = monaco;
+        monaco.onDidBlurEditorText(() => this.object.emit("editorBlur", monaco.getValue()));
+    }
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
     handleChange = (value: string, event: editor.IModelContentChangedEvent) => {
         this.setState({ value });
@@ -252,7 +255,7 @@ class CodeUI extends BaseUI<comment, {}, CodeUIState> {
         </BaseUI>;
     }
 }
-export class code extends BaseObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }> {
+export class code extends BaseObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }, { editorBlur: string }> {
     static package = "UI";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
