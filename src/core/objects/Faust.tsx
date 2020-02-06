@@ -22,13 +22,13 @@ interface FaustOpState {
     inlets: number;
     outlets: number;
 }
-export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<FaustOpState> & { [key: string]: any } = FaustOpState, A extends any[] = number[], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}, E extends { [key: string]: any } = {}> extends DefaultObject<D, S & FaustOpState, [], [], A, P, U, E> {
+export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<FaustOpState> & { [key: string]: any } = FaustOpState, A extends any[] = (number | "_")[], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}, E extends { [key: string]: any } = {}> extends DefaultObject<D, S & FaustOpState, [], [], A, P, U, E> {
     static package = "FaustOps";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Faust Operator";
     static args: TMeta["args"] = [{
-        type: "number",
+        type: "anything",
         optional: true,
         varLength: true,
         description: "Parameters"
@@ -44,6 +44,10 @@ export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<Fa
     get resultID() {
         return `${this.meta.name.replace(".", "_")}_${this.box.id.substr(4)}`;
     }
+    get constArgsCount() {
+        const { args } = this.box;
+        return args.filter(s => s !== "_").length;
+    }
     /**
      * Supress inlet if defined in args
      *
@@ -51,13 +55,40 @@ export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<Fa
      */
     handleUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => {
         if (!e.args) return;
-        const { args } = this.box;
-        this.inlets = this.state.inlets - Math.min(this.state.inlets, args ? args.length : 0);
+        this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
         this.outlets = this.state.outlets;
     }
     subscribe() {
         super.subscribe();
         this.on("update", this.handleUpdate);
+    }
+    /**
+     * Get the parameters' expression "in1, in2, in3"
+     *
+     * @param {{ [id: string]: string }} lineMap
+     * @memberof FaustOp
+     */
+    toInletsExpr(lineMap: { [id: string]: string }) {
+        const { inletLines, box, state } = this;
+        const { args } = box;
+        const { inlets: totalInlets } = state;
+        const inlets = new Array(totalInlets);
+        const incoming = inletLines.map((lines) => {
+            if (lines.length === 0) return "0";
+            if (lines.length === 1) return lineMap[lines[0]] || "0";
+            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+        });
+        for (let i = 0; i < totalInlets; i++) {
+            if (i < args.length) {
+                const arg = args[args.length - 1 - i];
+                if (arg !== "_") {
+                    inlets[totalInlets - 1 - i] = arg;
+                    continue;
+                }
+            }
+            inlets[totalInlets - 1 - i] = incoming.pop() || "0";
+        }
+        return inlets.join(", ");
     }
     /**
      * Main expresstion format, i.e. `out = func(in1, in2, in3);`
@@ -91,12 +122,8 @@ export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<Fa
         const exprs: string[] = [];
         const onces = this.toOnceExpr();
 
-        const { inletLines, outletLines, box, resultID } = this;
-        const inlets = inletLines.map((lines) => { // inlets as 0, 1, 2
-            if (lines.length === 0) return "0";
-            if (lines.length === 1) return lineMap[lines[0]] || "0";
-            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
-        }).concat(...box.args as any[]).join(", ");
+        const { outletLines, resultID } = this;
+        const inlets = this.toInletsExpr(lineMap);
 
         if (outletLines.length === 0) return {};
         if (outletLines.length === 1) {
@@ -140,7 +167,11 @@ class InvalidObject extends FaustOp {
     }
 }
 class Param extends FaustOp<{}, {}, [string, number, number, number, number]> {
-    static description = "DSP Parameter"
+    static description = "DSP Parameter";
+    static outlets: TMeta["outlets"] = [{
+        type: "signal",
+        description: "_"
+    }];
     static args: TMeta["args"] = [{
         type: "string",
         optional: false,
@@ -439,11 +470,7 @@ class Rec extends FaustOp {
     state = { inlets: 1, outlets: 1 };
     toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
-        const inlets = this.inletLines.map((lines) => {
-            if (lines.length === 0) return "0";
-            if (lines.length === 1) return lineMap[lines[0]] || "0";
-            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
-        }).concat(...this.box.args as any[]).join(", ");
+        const inlets = this.toInletsExpr(lineMap);
 
         exprs.push(`${this.resultID} = ${inlets};`);
         return { exprs };
@@ -534,8 +561,7 @@ class Group extends FaustOp<{}, {}, number[], { ins: number }> {
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if (e.args || "ins" in e.props) {
-            const { box } = this;
-            this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
+            this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
             this.outlets = this.state.outlets;
         }
     }
@@ -725,16 +751,15 @@ class LibOp extends FaustOp<{}, {}, number[], LibOpProps> {
             this.state.inlets = dspMeta.inputs;
             this.state.outlets = dspMeta.outputs;
         } catch (e) {} // eslint-disable-line no-empty
-        const { box } = this;
-        if (!inletsDefined) this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
+        if (!inletsDefined) this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
         if (!outletsDefined) this.outlets = this.state.outlets;
+        this.patcher.emit("graphChanged");
     }
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this.state.outlets = ~~+this.getProp("outs");
         if (e.args || "ins" in e.props || "outs" in e.props) {
-            const { box } = this;
-            this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
+            this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
             this.outlets = this.state.outlets;
         }
     }
@@ -893,16 +918,15 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
             this.state.inlets = dspMeta.inputs;
             this.state.outlets = dspMeta.outputs;
         } catch (e) {} // eslint-disable-line no-empty
-        const { box } = this;
-        if (!inletsForced) this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
+        if (!inletsForced) this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
         if (!outletsForced) this.outlets = this.state.outlets;
+        this.patcher.emit("graphChanged");
     }
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this.state.outlets = ~~+this.getProp("outs");
         if (e.args || "ins" in e.props || "outs" in e.props) {
-            const { box } = this;
-            this.inlets = this.state.inlets - Math.min(this.state.inlets, box.args ? box.args.length : 0);
+            this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
             this.outlets = this.state.outlets;
         }
     }
