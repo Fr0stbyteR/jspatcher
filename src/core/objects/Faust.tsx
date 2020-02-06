@@ -560,7 +560,7 @@ class Group extends FaustOp<{}, {}, number[], { ins: number }> {
     symbol = ["()"];
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
-        if (e.args || "ins" in e.props) {
+        if (e.args.length || "ins" in e.props) {
             this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
             this.outlets = this.state.outlets;
         }
@@ -742,25 +742,28 @@ class LibOp extends FaustOp<{}, {}, number[], LibOpProps> {
     }
     state = { inlets: undefined as number, outlets: undefined as number };
     handlePostInit = async () => {
-        const inletsDefined = typeof this.state.inlets === "number";
-        const outletsDefined = typeof this.state.outlets === "number";
-        if (inletsDefined && outletsDefined) return;
+        const inletsForced = typeof this.state.inlets === "number";
+        const outletsForced = typeof this.state.outlets === "number";
+        if (inletsForced && outletsForced) return;
         const inspectCode = `import("stdfaust.lib"); process = ${this.symbol[0]};`;
         try {
             const { dspMeta } = await this.patcher.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
-            this.state.inlets = dspMeta.inputs;
-            this.state.outlets = dspMeta.outputs;
-        } catch (e) {} // eslint-disable-line no-empty
-        if (!inletsDefined) this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
-        if (!outletsDefined) this.outlets = this.state.outlets;
+            if (!inletsForced) this.state.inlets = ~~dspMeta.inputs;
+            if (!outletsForced) this.state.outlets = ~~dspMeta.outputs;
+        } catch (e) {
+            if (!inletsForced) this.state.inlets = 0;
+            if (!outletsForced) this.state.outlets = 0;
+        }
+        if (!inletsForced) this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
+        if (!outletsForced) this.outlets = this.state.outlets;
         this.patcher.emit("graphChanged");
     }
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this.state.outlets = ~~+this.getProp("outs");
-        if (e.args || "ins" in e.props || "outs" in e.props) {
-            this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
-            this.outlets = this.state.outlets;
+        if (e.args.length || "ins" in e.props || "outs" in e.props) {
+            this.inlets = ~~this.state.inlets - Math.min(~~this.state.inlets, this.constArgsCount);
+            this.outlets = ~~this.state.outlets;
         }
     }
     subscribe() {
@@ -904,8 +907,10 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
     uiComponent = CodeUI as any;
     state = { inlets: undefined as number, outlets: undefined as number };
     handlePostInit = async () => {
-        const inletsForced = typeof this.getProp("ins") === "number";
-        const outletsForced = typeof this.getProp("outs") === "number";
+        const definedInlets = this.getProp("ins");
+        const inletsForced = typeof definedInlets === "number";
+        const definedOutlets = this.getProp("outs");
+        const outletsForced = typeof definedOutlets === "number";
         if (inletsForced && outletsForced) return;
         const { value: code } = this.data;
         if (!code) {
@@ -915,9 +920,12 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
         }
         try {
             const { dspMeta } = await this.patcher.env.faust.inspect(code, { args: { "-I": "libraries/" } });
-            this.state.inlets = dspMeta.inputs;
-            this.state.outlets = dspMeta.outputs;
-        } catch (e) {} // eslint-disable-line no-empty
+            if (!inletsForced) this.state.inlets = ~~dspMeta.inputs;
+            if (!outletsForced) this.state.outlets = ~~dspMeta.outputs;
+        } catch (e) {
+            if (!inletsForced) this.state.inlets = 0;
+            if (!outletsForced) this.state.outlets = 0;
+        }
         if (!inletsForced) this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
         if (!outletsForced) this.outlets = this.state.outlets;
         this.patcher.emit("graphChanged");
@@ -925,9 +933,9 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this.state.outlets = ~~+this.getProp("outs");
-        if (e.args || "ins" in e.props || "outs" in e.props) {
-            this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
-            this.outlets = this.state.outlets;
+        if (e.args.length || "ins" in e.props || "outs" in e.props) {
+            this.inlets = ~~this.state.inlets - Math.min(~~this.state.inlets, this.constArgsCount);
+            this.outlets = ~~this.state.outlets;
         }
     }
     handleBlur = () => {
