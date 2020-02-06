@@ -879,7 +879,7 @@ ${expr}
         return this.state.cachedCode.onces;
     }
 }
-class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { language: string; value: string }, { editorBlur: string }> {
+class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { language: string; value: string }, { editorBlur: string; editorLoaded: never }> {
     static description = "Code block a sub-process";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -944,7 +944,7 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
     }
     subscribe() {
         super.subscribe();
-        this.on("preInit", () => this.updateUI({ language: "faust" }));
+        this.on("editorLoaded", () => this.updateUI({ language: "faust" }));
         this.on("postInit", this.handlePostInit);
         this.on("editorBlur", this.handleBlur);
     }

@@ -27,7 +27,7 @@ export default class History {
             this.undoList.push(this.timestamp);
             this.events[this.timestamp] = {};
         }
-        if (!this.events[this.timestamp].hasOwnProperty(type)) this.events[this.timestamp][type] = [];
+        if (!this.events[this.timestamp].hasOwnProperty(type)) this.events[this.timestamp][type] = [] as any;
         (this.events[this.timestamp][type] as PatcherEventMap[K][]).push(e);
         return this;
     }

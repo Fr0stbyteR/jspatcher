@@ -219,11 +219,12 @@ type CodeUIState = { language: string; value: string; editorLoaded: boolean; edi
 export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
     static sizing = "both" as const;
     static defaultSize: [number, number] = [400, 225];
-    state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: this.box.args[0] || "javascript", editorLoaded: false };
+    state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
     handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => {
         this.codeEditor = monaco;
+        this.object.emit("editorLoaded");
         monaco.onDidBlurEditorText(() => this.object.emit("editorBlur", monaco.getValue()));
     }
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
@@ -255,7 +256,7 @@ export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
         </BaseUI>;
     }
 }
-export class code extends BaseObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }, { editorBlur: string }> {
+export class code extends BaseObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }, { editorBlur: string; editorLoaded: never }> {
     static package = "UI";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
@@ -286,6 +287,7 @@ export class code extends BaseObject<{ value: string }, {}, [Bang, string], [str
             this.outlets = 1;
             if (typeof this.box.data.value === "undefined") this.box.data.value = "";
         });
+        this.on("editorLoaded", () => this.updateUI({ language: this.box.args[0] || "javascript" }));
         this.on("updateArgs", (args) => {
             if (args[0]) this.updateUI({ language: args[0] });
         });
