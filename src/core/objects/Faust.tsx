@@ -765,10 +765,11 @@ class LibOp extends FaustOp<{}, {}, number[], LibOpProps> {
         const inletsForced = typeof this.state.inlets === "number";
         const outletsForced = typeof this.state.outlets === "number";
         if (inletsForced && outletsForced) return;
-        const inspectCode = `import("stdfaust.lib"); process = ${this.symbol[0]};`;
+        const { args } = this.box;
+        const inspectCode = `import("stdfaust.lib"); process = ${this.symbol[0]}${args.length ? `(${args.join(", ")})` : ""};`;
         try {
             const { dspMeta } = await this.patcher.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
-            if (!inletsForced) this.state.inlets = ~~dspMeta.inputs;
+            if (!inletsForced) this.state.inlets = ~~dspMeta.inputs + args.length;
             if (!outletsForced) this.state.outlets = ~~dspMeta.outputs;
         } catch (e) {
             if (!inletsForced) this.state.inlets = 0;
