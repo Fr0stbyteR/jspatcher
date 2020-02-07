@@ -762,8 +762,8 @@ class LibOp extends FaustOp<{}, {}, number[], LibOpProps> {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this.state.outlets = ~~+this.getProp("outs");
         if (e.args.length || "ins" in e.props || "outs" in e.props) {
-            this.inlets = ~~this.state.inlets - Math.min(~~this.state.inlets, this.constArgsCount);
-            this.outlets = ~~this.state.outlets;
+            if (typeof this.state.inlets === "number") this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
+            if (typeof this.state.outlets === "number") this.outlets = this.state.outlets;
         }
     }
     subscribe() {
