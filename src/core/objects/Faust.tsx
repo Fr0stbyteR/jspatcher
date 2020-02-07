@@ -395,42 +395,23 @@ class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
             this.outlets = 1;
         });
     }
-    toMainExpr(out: string, inlets: string) {
-        if (inlets) return `${out} = ${inlets};`;
-        return `${out} = 0;`;
-    }
-    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
-        const exprs: string[] = [];
-
-        const { outletLines, state, box, resultID } = this;
+    toInletsExpr(lineMap: { [id: string]: string }) {
+        const { box, state } = this;
+        const { args } = box;
         const inletLines: string[][] = [[]];
-        const sendID = box.args[0];
+        const sendID = args[0];
         if (sendID && state.sendMap[sendID]) {
             state.sendMap[sendID].forEach(s => s.inletLines.forEach(lines => inletLines[0].push(...lines)));
         }
-        const inlets = inletLines.map((lines) => { // inlets as 0, 1, 2
+        return inletLines.map((lines) => { // inlets as 0, 1, 2
             if (lines.length === 0) return "0";
             if (lines.length === 1) return lineMap[lines[0]] || "0";
             return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
         }).join(", ");
-
-        if (outletLines.length === 0) return {};
-        if (outletLines.length === 1) {
-            if (outletLines[0].length === 0) return {};
-            const outlet = findOutletFromLineMap(lineMap, outletLines[0]);
-            return outlet ? { exprs: [this.toMainExpr(outlet, inlets)] } : {};
-        }
-        exprs.push(this.toMainExpr(resultID, inlets));
-        const allCut = new Array(this.outlets).fill("!");
-        outletLines.forEach((lines, i) => {
-            if (lines.length === 0) return;
-            const outlet = findOutletFromLineMap(lineMap, lines);
-            if (!outlet) return;
-            const pass = allCut.slice();
-            pass[i] = "_";
-            exprs.push(`${outlet} = ${resultID} : ${pass.join(", ")};`);
-        });
-        return { exprs };
+    }
+    toMainExpr(out: string, inlets: string) {
+        if (inlets) return `${out} = ${inlets};`;
+        return `${out} = 0;`;
     }
 }
 class Split extends FaustOp {
@@ -881,20 +862,21 @@ class SubPatcher extends FaustOp<Patcher, SubPatcherState, [string], {}, { patch
     }
     subscribe() {
         super.subscribe();
+        this.on("preInit", this.handlePreInit);
         this.on("postInit", this.handlePostInit);
     }
     toMainExpr(out: string, inlets: string) {
         const { exprs, outs } = this.state.cachedCode;
         if (!outs) return `${out} = ${new Array(this.outlets).fill("0").join(", ")};`;
-        const expr = exprs.map(s => `        ${s}`).join("\n");
+        const expr = exprs.map(s => `    ${s}`).join("\n");
         if (inlets) {
             return `${out} = process(${inlets}) with {
 ${expr}
-    };`;
+};`;
         }
         return `${out} = process with {
 ${expr}
-    };`;
+};`;
     }
     toOnceExpr() {
         return this.state.cachedCode.onces;
@@ -1110,7 +1092,8 @@ const mapLines = (box: Box, patcher: Patcher, visitedBoxes: Box[], ins: In[], re
     }
     inletLines.forEach(lines => lines.forEach((lineID) => {
         const line = patcher.lines[lineID];
-        const srcBox = patcher.lines[lineID].srcBox;
+        if (!line) return;
+        const { srcBox } = line;
         if (srcBox.object instanceof In && ins.indexOf(srcBox.object) === -1) ins.push(srcBox.object);
         else if (srcBox.object instanceof Rec && recs.indexOf(srcBox.object) === -1) recs.push(srcBox.object);
         lineMap[lineID] = `${(srcBox.object as FaustOp).resultID}_${line.srcOutlet}`;
