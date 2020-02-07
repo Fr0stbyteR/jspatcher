@@ -556,7 +556,7 @@ class Const extends FaustOp {
         return `${out} = ${inlets};`;
     }
 }
-class Group extends FaustOp<{}, {}, number[], { ins: number }> {
+class Group extends FaustOp<{}, {}, (number | "_")[], { ins: number }> {
     static description = "Group inlets like (x, x, x)";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -736,7 +736,7 @@ interface LibOpProps {
     ins: number;
     outs: number;
 }
-class LibOp extends FaustOp<{}, {}, number[], LibOpProps> {
+class LibOp extends FaustOp<{}, {}, (number | "_")[], LibOpProps> {
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "number",
@@ -766,7 +766,7 @@ class LibOp extends FaustOp<{}, {}, number[], LibOpProps> {
         const outletsForced = typeof this.state.outlets === "number";
         if (inletsForced && outletsForced) return;
         const { args } = this.box;
-        const inspectCode = `import("stdfaust.lib"); process = ${this.symbol[0]}${args.length ? `(${args.join(", ")})` : ""};`;
+        const inspectCode = `import("stdfaust.lib"); process = ${this.symbol[0]}${args.length ? `(${args.map(_ => (_ === "_" ? 0 : _)).join(", ")})` : ""};`;
         try {
             const { dspMeta } = await this.patcher.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
             if (!inletsForced) this.state.inlets = ~~dspMeta.inputs + args.length;
