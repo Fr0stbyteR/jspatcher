@@ -616,7 +616,7 @@ class Iterator extends FaustOp {
         const inlet0Lines = inletLines[0];
         const { exprs: lExprs, onces } = toFaustLambda(this.patcher, [this], "lambda");
         const lambda = inlet0Lines.length ? `lambda with {
-${lExprs.map(s => `    ${s}`).join("\n")}
+${lExprs.map(s => `    ${s.replace(/\n/g, "\n    ")}`).join("\n")}
 }` : "0";
         const inlets = `${resultID}_${this.outlets - 1}, ${box.args[0] || 0}, ${lambda}`;
 
@@ -868,7 +868,7 @@ class SubPatcher extends FaustOp<Patcher, SubPatcherState, [string], {}, { patch
     toMainExpr(out: string, inlets: string) {
         const { exprs, outs } = this.state.cachedCode;
         if (!outs) return `${out} = ${new Array(this.outlets).fill("0").join(", ")};`;
-        const expr = exprs.map(s => `    ${s}`).join("\n");
+        const expr = exprs.map(s => `    ${s.replace(/\n/g, "\n    ")}`).join("\n");
         if (inlets) {
             return `${out} = process(${inlets}) with {
 ${expr}
