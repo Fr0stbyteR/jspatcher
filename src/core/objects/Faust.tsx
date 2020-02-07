@@ -531,6 +531,7 @@ class Delay extends FaustOp {
     }];
     symbol = ["@"];
     state = { inlets: 2, outlets: 1 };
+    reverseApply = true;
 }
 class Const extends FaustOp {
     static description = "Output a constant";
