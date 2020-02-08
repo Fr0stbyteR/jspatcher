@@ -435,12 +435,12 @@ class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: num
         this.setState({ highlight: false });
     }
     render() {
-        const box = this.props.box;
-        const i = this.props.index;
+        const { box, index: i, patcher } = this.props;
+        const forceHot = patcher.props.mode === "gen" || patcher.props.mode === "faust";
         let props = { isHot: false, type: "anything", description: "" };
         const meta = box.meta.inlets;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? (meta[meta.length - 1].varLength ? { ...meta[meta.length - 1], isHot: false } : {}) : meta[i]) };
-        const className = "box-port box-inlet" + (props.isHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
+        const className = "box-port box-inlet" + (props.isHot || forceHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
         return (
             <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
                 <Popup

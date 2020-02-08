@@ -27,6 +27,17 @@ export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<Fa
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Faust Operator";
+    static inlets: TMeta["inlets"] = [{
+        type: "number",
+        isHot: true,
+        varLength: true,
+        description: "_"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "number",
+        varLength: true,
+        description: "_"
+    }];
     static args: TMeta["args"] = [{
         type: "anything",
         optional: true,
@@ -187,10 +198,6 @@ class InvalidObject extends FaustOp {
 }
 class Param extends FaustOp<{}, {}, [string, number, number, number, number]> {
     static description = "DSP Parameter";
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "_"
-    }];
     static args: TMeta["args"] = [{
         type: "string",
         optional: false,
@@ -237,10 +244,6 @@ class Param extends FaustOp<{}, {}, [string, number, number, number, number]> {
 
 class In extends FaustOp {
     static description = "Signal Input";
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "_"
-    }];
     static args: TMeta["args"] = [{
         type: "number",
         optional: false,
@@ -265,11 +268,6 @@ class In extends FaustOp {
 }
 class Out extends FaustOp {
     static description = "Signal Output";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        description: "_"
-    }];
     static args: TMeta["args"] = [{
         type: "number",
         optional: false,
@@ -302,15 +300,6 @@ class Out extends FaustOp {
 }
 class Pass extends FaustOp {
     static description = "Bypass Signal";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        description: "_"
-    }];
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "_"
-    }];
     symbol = ["_"];
     subscribe() {
         super.subscribe();
@@ -328,11 +317,6 @@ type TSendMap = { [key: string]: Send[] };
 const sendMap: TSendMap = {};
 class Send extends FaustOp<{}, { sendMap: TSendMap }> {
     static description = "Send Signal to receive";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        description: "_"
-    }];
     static args: TMeta["args"] = [{
         type: "string",
         optional: false,
@@ -373,10 +357,6 @@ class Send extends FaustOp<{}, { sendMap: TSendMap }> {
 }
 class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
     static description = "Receive Signal from send";
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "_"
-    }];
     static args: TMeta["args"] = [{
         type: "string",
         optional: false,
@@ -416,18 +396,6 @@ class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
 }
 class Split extends FaustOp {
     static description = "Split Signal";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        description: "_"
-    }];
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "_"
-    }, {
-        type: "number",
-        description: "_"
-    }];
     symbol = ["<:"];
     state = { inlets: 1, outlets: 2 };
     toMainExpr(out: string, inlets: string) {
@@ -436,19 +404,6 @@ class Split extends FaustOp {
 }
 class Merge extends FaustOp {
     static description = "Merge Signal";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        description: "_"
-    }, {
-        isHot: true,
-        type: "number",
-        description: "_"
-    }];
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "_"
-    }];
     symbol = [":>"];
     state = { inlets: 2, outlets: 1 };
     toMainExpr(out: string, inlets: string) {
@@ -457,15 +412,6 @@ class Merge extends FaustOp {
 }
 class Rec extends FaustOp {
     static description = "Recursion with 1-sample delay";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        description: "_"
-    }];
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "_'"
-    }];
     symbol = ["~"];
     state = { inlets: 1, outlets: 1 };
     toExpr(lineMap: { [id: string]: string }): TObjectExpr {
@@ -478,53 +424,11 @@ class Rec extends FaustOp {
 }
 class Mem extends FaustOp {
     static description = "1-sample delay";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        description: "_"
-    }];
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "_'"
-    }];
     symbol = ["mem", "'"];
     state = { inlets: 1, outlets: 1 };
 }
-class Delay extends FaustOp {
-    static description = "n-sample delay";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        description: "_"
-    }, {
-        isHot: true,
-        type: "number",
-        description: "number of samples"
-    }];
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "@(_, n)"
-    }];
-    static args: TMeta["args"] = [{
-        type: "number",
-        optional: true,
-        description: "number of samples"
-    }];
-    symbol = ["@"];
-    state = { inlets: 2, outlets: 1 };
-    reverseApply = true;
-}
 class Const extends FaustOp {
     static description = "Output a constant";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        description: "_"
-    }];
-    static outlets: TMeta["outlets"] = [{
-        type: "number",
-        description: "_"
-    }];
     static args: TMeta["args"] = [{
         type: "number",
         optional: true,
@@ -539,12 +443,6 @@ class Const extends FaustOp {
 }
 class Group extends FaustOp<{}, {}, (number | "_")[], { ins: number }> {
     static description = "Group inlets like (x, x, x)";
-    static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "number",
-        varLength: true,
-        description: "_"
-    }];
     static outlets: TMeta["outlets"] = [{
         type: "number",
         varLength: true,
@@ -570,12 +468,27 @@ class Group extends FaustOp<{}, {}, (number | "_")[], { ins: number }> {
         return `${out} = (${inlets});`;
     }
 }
-class SR extends FaustOp {
-    static description = "Sample Rate";
+class Waveform extends FaustOp {
+    static description = "Waveform";
     static outlets: TMeta["outlets"] = [{
         type: "number",
-        description: "_"
+        description: "a constant and indicating the size (as a number of samples) of the period"
+    }, {
+        type: "number",
+        description: "the periodic signal itself"
     }];
+    symbol = ["waveform"];
+    state = { inlets: 0, outlets: 2 };
+    toInletsExpr(lineMap: { [id: string]: string }) {
+        return this.box.args.join(", ");
+    }
+    toMainExpr(out: string, inlets: string) {
+        if (inlets) return `${out} = ${this.symbol[0]}{${inlets}};`;
+        return `${out} = ${this.symbol[0]}{0};`;
+    }
+}
+class SR extends FaustOp {
+    static description = "Sample Rate";
     symbol = ["ma.SR"];
     state = { inlets: 0, outlets: 1 };
     toOnceExpr(): string[] {
@@ -975,7 +888,6 @@ const faustOps: TPackage = {
     "~": Rec,
     "'": Mem,
     mem: Mem,
-    "@": Delay,
     const: Const,
     c: Const,
     SR,
@@ -985,6 +897,7 @@ const faustOps: TPackage = {
     prod: Prod,
     seq: Seq,
     par: Par,
+    waveform: Waveform,
     param: Param,
     send: Send,
     s: Send,
@@ -1003,6 +916,7 @@ const opMap: TOpMap = {
         Int: { symbol: ["int", "i"], inlets: 1, desc: "Force cast to int" },
         Float: { symbol: ["float", "f"], inlets: 1, desc: "Force cast to float" },
 
+        Delay: { symbol: "@", inlets: 2, desc: "n-sample delay" },
         Add: { symbol: "+", inlets: 2, desc: "Add two signals" },
         Sub: { symbol: "-", inlets: 2, desc: "Substract two signals" },
         Mul: { symbol: "*", inlets: 2, desc: "Multiply two signals" },
@@ -1040,21 +954,18 @@ const opMap: TOpMap = {
         Remainder: { symbol: "remainder", inlets: 2, desc: "Float remainder" },
         Floor: { symbol: "floor", inlets: 1, desc: "Largest int" },
         Ceil: { symbol: "ceil", inlets: 1, desc: "Smallest int" },
-        Rint: { symbol: "rint", inlets: 1, desc: "Closest int" }
+        Rint: { symbol: "rint", inlets: 1, desc: "Closest int" },
+
+        RdTable: { symbol: "rdtable", inlets: 3, desc: "Read through a read-only table" },
+        RWTable: { symbol: "rwtable", inlets: 5, desc: "Read/write table" }
     }
 };
 for (const className in opMap.mathOps) {
     const op = opMap.mathOps[className];
-    const inletsMeta = new Array(op.inlets).fill(null).map(() => ({
-        isHot: true,
-        type: "number" as const,
-        description: "_"
-    }));
     const outletDesc = `${op.symbol}(${new Array(op.inlets).fill("_").join(", ")})`;
     const Op = class extends FaustOp {
         static get _name() { return className; }
         static description = op.desc;
-        static inlets: TMeta["inlets"] = inletsMeta;
         static outlets: TMeta["outlets"] = [{
             type: "number",
             description: outletDesc
