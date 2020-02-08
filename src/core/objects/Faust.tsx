@@ -221,25 +221,128 @@ class Param extends FaustOp<{}, {}, [string, number, number, number, number]> {
     }];
     symbol = ["hslider"];
     state = { inlets: 0, outlets: 1 };
-    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
-        const onces = this.toOnceExpr();
-
-        const { outletLines, box, resultID } = this;
+    toInletsExpr(lineMap: { [id: string]: string }) {
+        const { box, resultID } = this;
         const args = box.args.slice(0, 5);
         args[0] = args[0] ? `"${args[0]}"` : `"${resultID}"`;
         args[1] = args[1] || 0;
         args[2] = args[2] || 0;
         args[3] = args[3] || 1;
         args[4] = args[4] || 0.01;
-        const inlets = args.join(", ");
+        return args.join(", ");
+    }
+}
+class HSlider extends Param {}
+class VSlider extends Param {
+    symbol = ["vslider"];
+}
+class Nentry extends Param {
+    symbol = ["nentry"];
+}
+class Checkbox extends Param {
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: false,
+        description: "Parameter name / descriptor"
+    }];
+    symbol = ["checkbox"];
+    toInletsExpr(lineMap: { [id: string]: string }) {
+        const { box, resultID } = this;
+        const { args } = box;
+        return args[0] ? `"${args[0]}"` : `"${resultID}"`;
+    }
+}
+class Button extends Checkbox {
+    symbol = ["button"];
+}
+class HBargraph extends FaustOp<{}, {}, [string, number, number]> {
+    static description = "Bargraph monitor";
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: false,
+        description: "UI name / descriptor"
+    }, {
+        type: "number",
+        optional: false,
+        description: "Parameter min"
+    }, {
+        type: "number",
+        optional: false,
+        description: "Parameter max"
+    }];
+    symbol = ["hbargraph"];
+    state = { inlets: 1, outlets: 1 };
+    subscribe() {
+        super.subscribe();
+        this.off("update", this.handleUpdate);
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 1;
+        });
+    }
+    toInletsExpr(lineMap: { [id: string]: string }) {
+        const { box, resultID } = this;
+        const args = box.args.slice(0, 3);
+        args[0] = args[0] ? `"${args[0]}"` : `"${resultID}"`;
+        args[1] = args[1] || 0;
+        args[2] = args[2] || 1;
+        return args.join(", ");
+    }
+    toExpr(lineMap: { [id: string]: string }): TObjectExpr {
+        const { inletLines, outletLines, symbol } = this;
+        const incoming = inletLines.length ? inletLines.map((lines) => {
+            if (lines.length === 0) return "0";
+            if (lines.length === 1) return lineMap[lines[0]] || "0";
+            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+        }) : ["0"];
+        const inlets = this.toInletsExpr(lineMap);
 
         if (outletLines.length === 1) {
             if (outletLines[0].length === 0) return {};
             const outlet = findOutletFromLineMap(lineMap, outletLines[0]);
-            return outlet ? { exprs: [this.toMainExpr(outlet, inlets)], onces } : {};
+            if (!outlet) return {};
+            const mainExpr = `${outlet} = ${incoming[0]} : ${symbol[0]}(${inlets});`;
+            return outlet ? { exprs: [mainExpr] } : {};
         }
         return {};
     }
+}
+class VBargraph extends HBargraph {
+    symbol = ["vbargraph"];
+}
+class HGroup extends FaustOp<{}, {}, [string]> {
+    static description = "UI group";
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: false,
+        description: "UI name / descriptor"
+    }];
+    symbol = ["hgroup"];
+    state = { inlets: 1, outlets: 1 };
+    subscribe() {
+        super.subscribe();
+        this.off("update", this.handleUpdate);
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 1;
+        });
+    }
+    toInletsExpr(lineMap: { [id: string]: string }) {
+        const { inletLines, box, resultID } = this;
+        const incoming = inletLines.length ? inletLines.map((lines) => {
+            if (lines.length === 0) return "0";
+            if (lines.length === 1) return lineMap[lines[0]] || "0";
+            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+        }) : ["0"];
+        const { args } = box;
+        return [args[0] ? `"${args[0]}"` : `"${resultID}"`, incoming[0]].join(", ");
+    }
+}
+class VGroup extends HGroup {
+    symbol = ["vgroup"];
+}
+class TGroup extends HGroup {
+    symbol = ["tgroup"];
 }
 
 class In extends FaustOp {
@@ -899,6 +1002,16 @@ const faustOps: TPackage = {
     par: Par,
     waveform: Waveform,
     param: Param,
+    hslider: HSlider,
+    vslider: VSlider,
+    nentry: Nentry,
+    checkbox: Checkbox,
+    button: Button,
+    hbargraph: HBargraph,
+    vbargraph: VBargraph,
+    hgroup: HGroup,
+    vgroup: VGroup,
+    tgroup: TGroup,
     send: Send,
     s: Send,
     receive: Receive,
@@ -959,8 +1072,9 @@ const opMap: TOpMap = {
         RdTable: { symbol: "rdtable", inlets: 3, desc: "Read through a read-only table" },
         RWTable: { symbol: "rwtable", inlets: 5, desc: "Read/write table" },
 
-        Select2: { symbol: "select2", inlets: 3, desc: "two-way selector", applyArgsFromStart: true },
-        Select3: { symbol: "select3", inlets: 4, desc: "three-way selector", applyArgsFromStart: true }
+        Select2: { symbol: "select2", inlets: 3, desc: "Two-way selector", applyArgsFromStart: true },
+        Select3: { symbol: "select3", inlets: 4, desc: "Three-way selector", applyArgsFromStart: true },
+        Attach: { symbol: "attach", inlets: 2, desc: "Force its second input signal to be compiled with the first one", applyArgsFromStart: true }
     }
 };
 for (const className in opMap.mathOps) {
@@ -1037,6 +1151,8 @@ export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: str
         if (o) onces.push(...o.filter(v => onces.indexOf(v) === -1));
         if (e) exprs.push(...e);
     });
+    // Reverse order for readibility
+    exprs.reverse();
     // Build rec in/outs
     recs.forEach((rec) => {
         exprs.push(...rec.toExpr(lineMap).exprs || []);
