@@ -910,7 +910,7 @@ const faustOps: TPackage = {
     InvalidObject
 };
 
-type TOpMap = { [category: string]: {[className: string]: { desc: string; symbol: string | string[]; inlets: number }} };
+type TOpMap = { [category: string]: {[className: string]: { desc: string; symbol: string | string[]; inlets: number; applyArgsFromStart?: boolean }} };
 const opMap: TOpMap = {
     mathOps: {
         Int: { symbol: ["int", "i"], inlets: 1, desc: "Force cast to int" },
@@ -957,25 +957,29 @@ const opMap: TOpMap = {
         Rint: { symbol: "rint", inlets: 1, desc: "Closest int" },
 
         RdTable: { symbol: "rdtable", inlets: 3, desc: "Read through a read-only table" },
-        RWTable: { symbol: "rwtable", inlets: 5, desc: "Read/write table" }
+        RWTable: { symbol: "rwtable", inlets: 5, desc: "Read/write table" },
+
+        Select2: { symbol: "select2", inlets: 3, desc: "two-way selector", applyArgsFromStart: true },
+        Select3: { symbol: "select3", inlets: 4, desc: "three-way selector", applyArgsFromStart: true }
     }
 };
 for (const className in opMap.mathOps) {
     const op = opMap.mathOps[className];
-    const outletDesc = `${op.symbol}(${new Array(op.inlets).fill("_").join(", ")})`;
+    const { symbol, inlets, desc, applyArgsFromStart } = op;
+    const outletDesc = `${symbol}(${new Array(inlets).fill("_").join(", ")})`;
     const Op = class extends FaustOp {
         static get _name() { return className; }
-        static description = op.desc;
+        static description = desc;
         static outlets: TMeta["outlets"] = [{
             type: "number",
             description: outletDesc
         }];
-        symbol = typeof op.symbol === "string" ? [op.symbol] : op.symbol;
-        state = { inlets: op.inlets, outlets: 1 };
-        reverseApply = true;
+        symbol = typeof symbol === "string" ? [symbol] : symbol;
+        state = { inlets, outlets: 1 };
+        reverseApply = !applyArgsFromStart;
     };
-    if (typeof op.symbol === "string") faustOps[op.symbol] = Op;
-    else op.symbol.forEach(symbol => faustOps[symbol] = Op);
+    if (typeof symbol === "string") faustOps[symbol] = Op;
+    else symbol.forEach(s => faustOps[s] = Op);
 }
 export const getFaustLibObjects = (docs: TFaustDocs) => {
     const ops: { [key: string]: typeof LibOp } = {};
