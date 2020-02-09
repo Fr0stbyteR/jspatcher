@@ -78,6 +78,11 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
             } catch (e) {
                 patcher.error(`Fetch file ${fileName} failed.`);
             }
+        } else {
+            const mode = urlParams.get("mode");
+            if (mode === "gen" || mode === "faust") {
+                patcher.load({}, mode);
+            }
         }
         ReactDOM.render(
             <UI patcher={patcher} />,

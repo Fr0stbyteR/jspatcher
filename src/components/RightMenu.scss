@@ -40,6 +40,9 @@
             flex: 1 1 auto;
             overflow: auto;
             flex-direction: column;
+            &.right-pane-code-editor {
+                overflow: hidden;
+            }
             & > table {
                 word-break: break-all;
                 flex: 1 1 auto;
