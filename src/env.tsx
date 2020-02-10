@@ -32,16 +32,20 @@ export class LoaderUI extends React.Component<{ env: Env }, { text: string }> {
  * @class Env
  */
 export default class Env extends MappedEventEmitter<{ text: string }> {
+    loaded = false;
     audioCtx = new AudioContext({ latencyHint: 0.00001 });
     os = detectOS();
     supportAudioWorklet = !!window.AudioWorklet;
     faust: Faust;
     faustDocs: TFaustDocs;
+    patcher: Patcher;
+    private _divRoot: HTMLDivElement;
+    constructor(root?: HTMLDivElement) {
+        super();
+        this.divRoot = root;
+    }
     async init() {
-        ReactDOM.render(
-            <LoaderUI env={this} />,
-            document.getElementById("root")
-        );
+        if (this.divRoot) ReactDOM.render(<LoaderUI env={this} />, this.divRoot);
 
         this.emit("text", "Loading Faust2WebAudio...");
         const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
@@ -62,6 +66,7 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
 
         this.faust = faust;
         const patcher = new Patcher(this);
+        this.patcher = patcher;
         patcher.packageRegister(Importer.import("faust", { FaustNode: FaustAudioWorkletNode }, true), patcher._state.libJS);
         patcher.packageRegister(getFaustLibObjects(this.faustDocs), patcher._state.libFaust);
         window.patcher = patcher;
@@ -84,9 +89,16 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
                 patcher.load({}, mode);
             }
         }
-        ReactDOM.render(
-            <UI patcher={patcher} />,
-            document.getElementById("root")
-        );
+        if (this.divRoot) ReactDOM.render(<UI patcher={patcher} />, this.divRoot);
+        this.loaded = true;
+    }
+    get divRoot(): HTMLDivElement {
+        return this._divRoot;
+    }
+    set divRoot(root: HTMLDivElement) {
+        if (root === this._divRoot) return;
+        if (this._divRoot) ReactDOM.unmountComponentAtNode(this._divRoot);
+        this._divRoot = root;
+        if (root) ReactDOM.render(this.loaded ? <UI patcher={this.patcher} /> : <LoaderUI env={this} />, root);
     }
 }

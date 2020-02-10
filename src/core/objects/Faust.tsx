@@ -4,7 +4,7 @@ import Patcher from "../Patcher";
 import { TPackage, TMeta, TPropsMeta } from "../types";
 import { subPatchersMap, TSubPatchersMap, SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
-import { CodeUI } from "./UI";
+import { CodeUI, comment } from "./UI";
 
 type TObjectExpr = {
     exprs?: string[];
@@ -1019,6 +1019,7 @@ const faustOps: TPackage = {
     patcher: SubPatcher,
     p: SubPatcher,
     code: Code,
+    comment,
     EmptyObject,
     InvalidObject
 };
