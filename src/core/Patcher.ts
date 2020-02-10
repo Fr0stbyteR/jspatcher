@@ -11,7 +11,7 @@ import Std from "./objects/Std";
 import New from "./objects/importer/New";
 import GenOps from "./objects/Gen";
 import Max from "./objects/Max";
-import FaustOps, { toFaustDspCode } from "./objects/Faust";
+import FaustOps, { toFaustDspCode, getFaustLibObjects } from "./objects/Faust";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
@@ -79,6 +79,9 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
         this._state.libGen = this.packageRegister(GenOps, {});
         this._state.libFaust = this.packageRegister(FaustOps, {});
+        // Faust stuffs
+        this.packageRegister(Importer.import("faust", { FaustNode: envIn.FaustAudioWorkletNode }, true), this._state.libJS);
+        this.packageRegister(getFaustLibObjects(envIn.faustDocs), this._state.libFaust);
         this._state.lib = this._state.libJS;
         this.clear();
     }

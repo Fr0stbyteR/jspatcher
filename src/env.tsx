@@ -1,15 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Dimmer, Loader } from "semantic-ui-react";
-import { Faust } from "faust2webaudio";
+import { Faust, FaustAudioWorkletNode } from "faust2webaudio";
 import { detectOS } from "./utils/utils";
 import { faustLangRegister } from "./misc/monaco-faust/register";
 import Patcher from "./core/Patcher";
-import Importer from "./core/objects/importer/Importer";
 import UI from "./components/UI";
 import { MappedEventEmitter } from "./utils/MappedEventEmitter";
 import { TFaustDocs } from "./misc/monaco-faust/Faust2Doc";
-import { getFaustLibObjects } from "./core/objects/Faust";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 export class LoaderUI extends React.Component<{ env: Env }, { text: string }> {
@@ -36,6 +34,8 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
     audioCtx = new AudioContext({ latencyHint: 0.00001 });
     os = detectOS();
     supportAudioWorklet = !!window.AudioWorklet;
+    Faust: typeof Faust;
+    FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;
     faustDocs: TFaustDocs;
     patcher: Patcher;
@@ -49,6 +49,8 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
 
         this.emit("text", "Loading Faust2WebAudio...");
         const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
+        this.Faust = Faust;
+        this.FaustAudioWorkletNode = FaustAudioWorkletNode;
 
         this.emit("text", "Loading LibFaust...");
         const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
@@ -67,8 +69,6 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
         this.faust = faust;
         const patcher = new Patcher(this);
         this.patcher = patcher;
-        patcher.packageRegister(Importer.import("faust", { FaustNode: FaustAudioWorkletNode }, true), patcher._state.libJS);
-        patcher.packageRegister(getFaustLibObjects(this.faustDocs), patcher._state.libFaust);
         window.patcher = patcher;
 
         this.emit("text", "Loading Patcher...");
