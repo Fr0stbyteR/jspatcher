@@ -4,8 +4,7 @@ import Patcher from "../core/Patcher";
 import "./TopMenu.scss";
 import { TPatcher, TMaxClipboard, TPatcherMode } from "../core/types";
 
-class FileMenu extends React.PureComponent {
-    props: { patcher: Patcher };
+class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
     refDownload = React.createRef<HTMLAnchorElement>();
     refOpen = React.createRef<HTMLInputElement>();
     state = { pAsString: "", pName: "patcher.json" };
@@ -77,14 +76,8 @@ class FileMenu extends React.PureComponent {
         );
     }
 }
-declare global {
-    interface Clipboard extends EventTarget {
-        readText(): Promise<string>;
-        writeText(data: string): Promise<void>;
-    }
-}
-class EditMenu extends React.PureComponent {
-    props: { patcher: Patcher };
+class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boolean }> {
+    state = { locked: this.props.patcher._state.locked };
     handleClickUndo = () => {
         if (this.props.patcher.state.locked) return;
         this.props.patcher.undo();
@@ -92,6 +85,14 @@ class EditMenu extends React.PureComponent {
     handleClickRedo = () => {
         if (this.props.patcher.state.locked) return;
         this.props.patcher.redo();
+    };
+    handleClickNewBox = () => {
+        const { patcher } = this.props;
+        if (patcher.state.locked) return;
+        const { presentation } = patcher._state;
+        const [gridX, gridY] = patcher.props.grid;
+        const text = "";
+        this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [gridX, gridY, 90, 20], presentation, _editing: true });
     };
     handleClickCut = () => {
         if (this.props.patcher.state.locked) return;
@@ -130,28 +131,36 @@ class EditMenu extends React.PureComponent {
         if (this.props.patcher.state.locked) return;
         this.props.patcher.selectAllBoxes();
     };
+    handleLocked = (locked: boolean) => this.setState({ locked });
+    componentDidMount() {
+        this.props.patcher.on("locked", this.handleLocked);
+    }
+    componentWillUnmount() {
+        this.props.patcher.off("locked", this.handleLocked);
+    }
     render() {
         const ctrl = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";
+        const { locked } = this.state;
         return (
             <Dropdown item={true} icon={false} text="Edit">
                 <Dropdown.Menu style={{ minWidth: "max-content" }}>
-                    <Dropdown.Item onClick={this.handleClickUndo} text="Undo" description={`${ctrl} + Z`} />
-                    <Dropdown.Item onClick={this.handleClickRedo} text="Redo" description={`${ctrl} + Y`} />
+                    <Dropdown.Item onClick={this.handleClickUndo} text="Undo" description={`${ctrl} + Z`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickRedo} text="Redo" description={`${ctrl} + Y`} disabled={locked} />
                     <Dropdown.Divider />
-                    <Dropdown.Item onClick={this.handleClickCut} text="Cut" description={`${ctrl} + X`} />
-                    <Dropdown.Item onClick={this.handleClickCopy} text="Copy" description={`${ctrl} + C`} />
-                    <Dropdown.Item onClick={this.handleClickPaste} text="Paste" description={`${ctrl} + V`} />
-                    <Dropdown.Item onClick={this.handleClickDelete} text="Delete" description="Del" />
+                    <Dropdown.Item onClick={this.handleClickNewBox} text="New Box" description={"N"} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickCut} text="Cut" description={`${ctrl} + X`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickCopy} text="Copy" description={`${ctrl} + C`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickPaste} text="Paste" description={`${ctrl} + V`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickDelete} text="Delete" description="Del" disabled={locked} />
                     <Dropdown.Divider />
-                    <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description={`${ctrl} + D`} />
-                    <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description={`${ctrl} + A`} />
+                    <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description={`${ctrl} + D`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description={`${ctrl} + A`} disabled={locked} />
                 </Dropdown.Menu>
             </Dropdown>
         );
     }
 }
-export default class TopMenu extends React.PureComponent {
-    props: { patcher: Patcher };
+export default class TopMenu extends React.PureComponent<{ patcher: Patcher }> {
     ref = React.createRef<HTMLDivElement>();
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();

@@ -8,6 +8,7 @@ import "./zIndex.scss";
 import BoxUI from "./BoxUI";
 import { LineUI, TempLineUI } from "./LineUI";
 import { TPatcher, TPatcherMode, TRect } from "../core/types";
+import { round } from "../utils/math";
 
 type P = { patcher: Patcher };
 type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: string; editingBgColor: string };
@@ -325,8 +326,9 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
         if (ctrlKey || e.shiftKey) return;
         const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
         const patcherRect = patcherDiv.getBoundingClientRect();
-        const x = Math.max(0, e.pageX - patcherRect.left + patcherDiv.scrollLeft);
-        const y = Math.max(0, e.pageY - patcherRect.top + patcherDiv.scrollTop);
+        const [gridX, gridY] = patcher.props.grid;
+        const x = round(Math.max(0, e.pageX - patcherRect.left + patcherDiv.scrollLeft), gridX);
+        const y = round(Math.max(0, e.pageY - patcherRect.top + patcherDiv.scrollTop), gridY);
         const { presentation } = patcher._state;
         this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 90, 20], presentation, _editing: true });
     }
@@ -346,8 +348,9 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
             e.preventDefault();
             const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
             const patcherRect = patcherDiv.getBoundingClientRect();
-            const x = Math.max(0, this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft);
-            const y = Math.max(0, this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop);
+            const [gridX, gridY] = patcher.props.grid;
+            const x = round(Math.max(0, this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft), gridX);
+            const y = round(Math.max(0, this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop), gridY);
             let w = 90;
             const h = 20;
             let text = "";
