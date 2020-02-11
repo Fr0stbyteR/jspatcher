@@ -448,7 +448,7 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     }
     applyBPF(param: AudioParam, bpf: number[][]) {
         const { audioCtx } = this;
-        param.cancelAndHoldAtTime(audioCtx.currentTime);
+        param.cancelScheduledValues(audioCtx.currentTime);
         param.setValueAtTime(param.value, audioCtx.currentTime);
         let t = 0;
         bpf.forEach((a) => {
