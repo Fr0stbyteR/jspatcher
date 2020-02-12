@@ -85,10 +85,20 @@ export default class Importer {
         const out = outIn || {};
         const path = pathIn ? pathIn.slice() : [];
         const stack = stackIn ? stackIn.slice() : [];
-        const o = path.reduce((acc, cur) => acc[cur], root);
+        let o: any;
+        try {
+            o = path.reduce((acc, cur) => acc[cur], root);
+        } catch (e) {
+            return out;
+        }
         if (typeof o === "undefined" || o === null || stack.indexOf(o) !== -1 || (pkgName !== "window" && o === window)) return out; // cyclic object
         stack[depth] = o;
-        const props = Object.getOwnPropertyDescriptors(o);
+        let props: { [key: string]: TypedPropertyDescriptor<any> | PropertyDescriptor };
+        try { // mitigate opener.location.href error
+            props = Object.getOwnPropertyDescriptors(o);
+        } catch (e) {
+            return out;
+        }
         for (const key in props) {
             if (all) {
                 if (typeof o === "function" && ["arguments", "caller", "length", "name"].indexOf(key) >= 0) continue;
