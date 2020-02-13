@@ -34,28 +34,52 @@
                 }
             }
         }
-        > div.box-ui {
+        & > div.box-ui {
             height: 100%;
             width: 100%;
             overflow: unset;
         }
-        > div.box-inlets {
+        & > div.box-ports {
             position: absolute;
-            top: 0;
             left: 10px;
             right: 10px;
             height: 0;
             display: flex;
+            flex-direction: row;
             justify-content: space-between;
-            > div.box-port {
+            user-select: none;
+            & > div.box-port {
                 position: relative;
                 width: 7px;
                 height: 3.5px;
                 background-color: rgb(192, 194, 196);
                 border-style: solid;
                 border-width: 0;
+                &.box-port-connected {
+                    height: 3.5px;
+                    width: 7px;
+                }
+                &:hover, &.box-port-connected:hover {
+                    background-color: rgb(75, 80, 86);
+                    border-width: 2px !important;
+                    margin: -5.5px !important;
+                    border-radius: 50% !important;
+                    height: 11px !important;
+                    width: 11px !important;
+                }
+                &.box-port-highlight,  &.box-port-connected.box-port-highlight {
+                    background-color: rgb(75, 80, 86);
+                    border-width: 2px !important;
+                    margin: -5.5px !important;
+                    border-radius: 50% !important;
+                    height: 11px !important;
+                    width: 11px !important;
+                }
             }
-            > div.box-inlet {
+        }
+        & > div.box-inlets {
+            top: 0;
+            & > div.box-inlet {
                 border-radius: 0 0 3.5px 3.5px;
                 margin: 0 -3.5px -3.5px -3.5px;
                 &.box-port-connected {
@@ -63,51 +87,18 @@
                     border-width: 0 1px 1px 1px;
                     margin: 0 -3.5px -3.5px -3.5px;
                     border-radius: 0 0 3.5px 3.5px;
-                    height: 3.5px;
-                    width: 7px;
-                }
-                &:hover {
-                    background-color: rgb(75, 80, 86);
-                    border-width: 2px !important;
-                    margin: -5.5px !important;
-                    border-radius: 50%;
-                    height: 11px !important;
-                    width: 11px;
-                }
-                &.box-port-highlight {
-                    background-color: rgb(75, 80, 86);
-                    border-width: 2px !important;
-                    margin: -5.5px !important;
-                    border-radius: 50%;
-                    height: 11px !important;
-                    width: 11px;
                 }
             }
-            > div.box-inlet-hot {
+            & > div.box-inlet-hot {
                 border-color: rgb(255, 141, 121);
             }
-            > div.box-inlet-cold {
+            & > div.box-inlet-cold {
                 border-color: rgb(85, 213, 236);
             }
         }
-        > div.box-outlets {
-            position: absolute;
+        & > div.box-outlets {
             bottom: 0;
-            left: 10px;
-            right: 10px;
-            height: 0;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            > div.box-port {
-                position: relative;
-                width: 7px;
-                height: 3.5px;
-                background-color: rgb(192, 194, 196);
-                border-style: solid;
-                border-width: 0;
-            }
-            > div.box-outlet {
+            & > div.box-outlet {
                 border-radius: 3.5px 3.5px 0 0;
                 margin: -3.5px -3.5px 0 -3.5px;
                 border-color: rgb(211, 255, 0);
@@ -116,24 +107,6 @@
                     border-width: 1px 1px 0 1px;
                     margin: -3.5px -3.5px 0 -3.5px;
                     border-radius: 3.5px 3.5px 0 0;
-                    height: 3.5px;
-                    width: 7px;
-                }
-                &:hover {
-                    background-color: rgb(75, 80, 86);
-                    border-width: 2px !important;
-                    margin: -5.5px !important;
-                    border-radius: 50%;
-                    height: 11px !important;
-                    width: 11px;
-                }
-                &.box-port-highlight {
-                    background-color: rgb(75, 80, 86);
-                    border-width: 2px !important;
-                    margin: -5.5px !important;
-                    border-radius: 50%;
-                    height: 11px !important;
-                    width: 11px;
                 }
             }
 		}
@@ -197,16 +170,16 @@
         }
 	}
 	&.locked > div.boxes > div.box {
-		> div.box-ui {
+		& > div.box-ui {
 			pointer-events: auto;
 		}
-		> div.box-ports > div.box-port {
+		& > div.box-ports > div.box-port {
 			pointer-events: none;
             &:not(.box-port-connected) {
                 visibility: hidden;
             }
         }
-        > div.resize-handlers {
+        & > div.resize-handlers {
             display: none;
         }
 	}
@@ -215,19 +188,19 @@
             pointer-events: none;
         }
 		&:hover {
-			> div.box-ports {
-				> div.box-port {
+			& > div.box-ports {
+				& > div.box-port {
 					margin: -3.5px;
 					border-radius: 50%;
 					height: 7px;
 				}
-				> div.box-port-connected {
+				& > div.box-port-connected {
 					border-width: 1px;
 					height: 7px;
 				}
 			}
 		}
-        > div.resize-handlers {
+        & > div.resize-handlers {
             display: block;
         }
     }
