@@ -1,7 +1,8 @@
 export const registeredProcessorsMap: { [key: string]: boolean } = {};
 
+const AWN = window.AudioWorkletNode ? AudioWorkletNode : class {};
 type DataToProcessor = DisposableAudioWorkletMessageEventDataToProcessor;
-export class DisposableAudioWorkletNode<F extends { [key: string]: any } = { [key: string]: any }, T extends DataToProcessor = DataToProcessor, P extends string = string> extends AudioWorkletNode {
+export class DisposableAudioWorkletNode<F extends { [key: string]: any } = { [key: string]: any }, T extends DataToProcessor = DataToProcessor, P extends string = string> extends AWN {
     get port(): AudioWorkletMessagePort<F, T> {
         return super.port;
     }
