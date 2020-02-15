@@ -10,6 +10,8 @@ import { MappedEventEmitter } from "./utils/MappedEventEmitter";
 import { TFaustDocs } from "./misc/monaco-faust/Faust2Doc";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
+if (!window.AudioWorklet) window.AudioWorklet = null;
+
 export class LoaderUI extends React.Component<{ env: Env }, { text: string }> {
     state = { text: "Loading..." };
     handleText = (text: string): void => this.setState({ text });
