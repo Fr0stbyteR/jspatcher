@@ -37,7 +37,7 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-react": "^7.18.3",
-    "faust2webaudio": "github:fr0stbyter/faust2webaudio",
+    "faust2webaudio": "github:grame-cncm/faust2webaudio",
     "fftw-js": "^0.1.4",
     "file-loader": "^5.0.2",
     "lato-font": "^3.0.0",
