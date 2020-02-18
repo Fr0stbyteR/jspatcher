@@ -15,7 +15,7 @@ class FaustNodeUI extends CodePopupUI<FaustNode> {
         this.object.newNode(code, this.object.state.voices);
     }
 }
-const AWN = window.AudioWorkletNode ? AudioWorkletNode : class {};
+const AWN: typeof AudioWorkletNode = window.AudioWorkletNode ? AudioWorkletNode : null;
 export interface FaustNodeData {
     code: string;
 }

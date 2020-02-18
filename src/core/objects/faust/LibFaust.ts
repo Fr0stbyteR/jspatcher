@@ -11,7 +11,7 @@ export default class libFaust extends DefaultObject<{}, {}, [Bang], [Faust]> {
     }];
     static outlets: TMeta["outlets"] = [{
         type: "object",
-        description: "CLibFaust instance"
+        description: "LibFaust instance"
     }];
     state = {};
     subscribe() {
