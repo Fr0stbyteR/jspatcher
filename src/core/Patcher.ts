@@ -45,6 +45,11 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             type: "object",
             description: "Grid size",
             default: [15, 15]
+        },
+        openInPresentation: {
+            type: "boolean",
+            description: "Open patcher in presentation",
+            default: false
         }
     };
     _env: Env;
@@ -61,7 +66,9 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.observeHistory();
         this.observeGraphChange();
         this._state = {
+            name: "patcher",
             isLoading: false,
+            runtime: false,
             locked: true,
             presentation: false,
             showGrid: true,
@@ -124,6 +131,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             bgColor: Patcher.props.bgColor.default,
             editingBgColor: Patcher.props.editingBgColor.default,
             grid: Patcher.props.grid.default,
+            openInPresentation: Patcher.props.openInPresentation.default,
             boxIndexCount: 0,
             lineIndexCount: 0
         };
@@ -197,9 +205,46 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                 }
             }
         }
+        if (this.props.openInPresentation) this._state.presentation = true;
         this._state.isLoading = false;
         this.emit("loaded", this);
         return this;
+    }
+    async loadFromURL(url: string) {
+        try {
+            const file = await fetch(url);
+            const json = await file.json();
+            return this.load(json);
+        } catch (e) {
+            this.error(`Fetch file ${url} failed.`);
+        }
+        return this;
+    }
+    async loadFromFile(file: File) {
+        const splitName = file.name.split(".");
+        const ext = splitName.pop();
+        const name = splitName.join(".");
+        const extMap: { [key: string]: TPatcherMode } = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+        if (!extMap[ext]) return this;
+        const reader = new FileReader();
+        reader.onload = () => {
+            let parsed: TPatcher;
+            try {
+                parsed = JSON.parse(reader.result.toString());
+            } catch (e) {
+                this.error((e as Error).message);
+            }
+            if (parsed) {
+                this.load(parsed, extMap[ext]);
+                this._state.name = name;
+            }
+        };
+        reader.onerror = () => this.error(reader.error.message);
+        reader.readAsText(file, "UTF-8");
+        return this;
+    }
+    get fileName() {
+        return `${this._state.name}.${{ js: "json", max: "maxpat", gen: "gendsp", faust: "dsppat" }[this.props.mode]}`;
     }
     createBox(boxIn: TBox) {
         if (!boxIn.hasOwnProperty("id")) boxIn.id = "box-" + ++this.props.boxIndexCount;
@@ -466,6 +511,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             const key = keyIn as keyof TPublicPatcherState;
             if (this._state[key] === state[key]) continue;
             changed = true;
+            if (key === "locked" && this._state.runtime) continue;
             if (key === "locked" || key === "presentation") this.deselectAll();
             this._state[key] = state[key] as any;
             this.emit(key, state[key]);
@@ -478,7 +524,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             const key = keyIn as keyof TPublicPatcherProps;
             if (this.props[key] === props[key]) continue;
             changed = true;
-            this.props[key] = props[key] as any;
+            (this.props as any)[key] = props[key];
             this.emit(key, props[key]);
         }
         if (changed) this.emit("propsChanged", props);

@@ -593,7 +593,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             };
             request();
         };
-        this.on("preInit", async () => {
+        this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 4;
         });

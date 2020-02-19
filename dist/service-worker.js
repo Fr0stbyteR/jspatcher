@@ -80,7 +80,7 @@ if (!self.define) {
     });
   };
 }
-define("./service-worker.js",['./workbox-a023eac6'], function (workbox) { 'use strict';
+define("./service-worker.js",['./workbox-aa7ae16e'], function (workbox) { 'use strict';
 
   /**
   * Welcome to your Workbox-powered service worker!
@@ -95,13 +95,10 @@ define("./service-worker.js",['./workbox-a023eac6'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "1582108231299"
+    prefix: "1582124411965"
   });
-  self.addEventListener('message', event => {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-      self.skipWaiting();
-    }
-  });
+  workbox.skipWaiting();
+  workbox.clientsClaim();
   /**
    * The precacheAndRoute() method efficiently caches and responds to
    * requests for URLs in the manifest.
@@ -290,7 +287,7 @@ define("./service-worker.js",['./workbox-a023eac6'], function (workbox) { 'use s
     "revision": "90509a043949258c3c2d90e3e63740d2"
   }, {
     "url": "index.js",
-    "revision": "d439fa2e419c6623d19f54d2eae40f14"
+    "revision": "4facec5e326dd2c3dd4a0efee2fdf246"
   }, {
     "url": "js/395a3f25fb2dfdd94882.worklet.js",
     "revision": "d13cbc26d5d0a945f29142a2077e7699"

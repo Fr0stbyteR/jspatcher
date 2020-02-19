@@ -2,12 +2,12 @@ import * as React from "react";
 import { Menu, Dropdown, Ref } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import "./TopMenu.scss";
-import { TPatcher, TMaxClipboard, TPatcherMode } from "../core/types";
+import { TPatcher, TMaxClipboard } from "../core/types";
 
 class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
     refDownload = React.createRef<HTMLAnchorElement>();
     refOpen = React.createRef<HTMLInputElement>();
-    state = { pAsString: "", pName: "patcher.json" };
+    state = { pAsString: "", pName: this.props.patcher.fileName };
     handleClickNew = () => {
         this.props.patcher.load({}, "js");
         this.setState({ pName: "patcher.json" });
@@ -36,25 +36,19 @@ class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
     onChange = () => {
         const file = this.refOpen.current.files[0];
         if (!file) return;
-        const ext = file.name.split(".").pop();
-        const extMap: { [key: string]: TPatcherMode } = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
-        if (!extMap[ext]) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            let parsed: TPatcher;
-            try {
-                parsed = JSON.parse(reader.result.toString());
-            } catch (e) {
-                this.props.patcher.error((e as Error).message);
-            }
-            if (parsed) {
-                this.props.patcher.load(parsed, extMap[ext]);
-                this.setState({ pName: file.name });
-            }
-        };
-        reader.onerror = () => this.props.patcher.error(reader.error.message);
-        reader.readAsText(file, "UTF-8");
+        const { patcher } = this.props;
+        patcher.loadFromFile(file);
+        this.setState({ pName: patcher.fileName });
         this.refOpen.current.value = "";
+    }
+    handleLoaded = () => {
+        this.setState({ pName: this.props.patcher.fileName });
+    }
+    componentDidMount() {
+        this.props.patcher.on("loaded", this.handleLoaded);
+    }
+    componentWillUnmount() {
+        this.props.patcher.off("loaded", this.handleLoaded);
     }
     render() {
         const ctrl = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";
@@ -71,7 +65,7 @@ class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
                     </Dropdown.Menu>
                 </Dropdown>
                 <a ref={this.refDownload} target="_blank" rel="noopener noreferrer" href={this.state.pAsString} download={this.state.pName}> </a>
-                <input ref={this.refOpen} type="file" hidden={true} onChange={this.onChange} />
+                <input ref={this.refOpen} type="file" hidden={true} onChange={this.onChange} accept=".json, .maxpat, .gendsp, .dsppat, application/json" />
             </>
         );
     }

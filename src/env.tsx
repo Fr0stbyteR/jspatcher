@@ -8,6 +8,7 @@ import Patcher from "./core/Patcher";
 import UI from "./components/UI";
 import { MappedEventEmitter } from "./utils/MappedEventEmitter";
 import { TFaustDocs } from "./misc/monaco-faust/Faust2Doc";
+import PatcherUI from "./components/PatcherUI";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -77,20 +78,16 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
         const urlParams = new URLSearchParams(window.location.search);
         const fileName = urlParams.get("file");
         if (fileName) {
-            try {
-                const exampleFile = await fetch("../examples/" + fileName);
-                const example = await exampleFile.json();
-                patcher.load(example);
-            } catch (e) {
-                patcher.error(`Fetch file ${fileName} failed.`);
-            }
+            patcher.loadFromURL("../examples/" + fileName);
         } else {
             const mode = urlParams.get("mode");
             if (mode === "gen" || mode === "faust") {
                 patcher.load({}, mode);
             }
         }
-        if (this.divRoot) ReactDOM.render(<UI patcher={patcher} />, this.divRoot);
+        const runtime = !!urlParams.get("runtime");
+        if (runtime) patcher.setState({ runtime });
+        if (this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} /> : <UI patcher={patcher} />, this.divRoot);
         this.loaded = true;
     }
     get divRoot(): HTMLDivElement {

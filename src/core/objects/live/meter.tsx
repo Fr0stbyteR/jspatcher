@@ -300,7 +300,7 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             };
             request();
         };
-        this.on("preInit", async () => {
+        this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 1;
         });

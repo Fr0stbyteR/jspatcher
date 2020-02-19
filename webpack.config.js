@@ -72,6 +72,8 @@ const config = {
     }),
     new WorkboxWebpackPlugin.GenerateSW({
       cacheId: new Date().getTime().toString(),
+      clientsClaim: true,
+      skipWaiting: true,
       maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
     })
     // new BundleAnalyzerPlugin()

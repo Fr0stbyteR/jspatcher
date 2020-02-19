@@ -4,10 +4,8 @@
   "description": "patcher js",
   "private": true,
   "scripts": {
-    "cleanup": "node src/scripts/cleanup.js",
-    "deps": "node src/scripts/libfaust.js",
     "build": "webpack --mode development",
-    "dist": "npm run prebuild && webpack --mode production"
+    "dist": "webpack --mode production"
   },
   "keywords": [
     "js",

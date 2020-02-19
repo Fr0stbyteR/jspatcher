@@ -331,7 +331,7 @@ export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, Osci
     state: State = { node: undefined };
     subscribe() {
         super.subscribe();
-        this.on("preInit", async () => {
+        this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 0;
         });

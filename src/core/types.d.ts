@@ -37,11 +37,14 @@ type TPatcherProps = {
     author?: string;
     version?: string;
     description?: string;
+    openInPresentation: boolean;
 };
-type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid">;
+type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid" | "openInPresentation">;
 
 type TPatcherState = {
+    name: string;
     isLoading: boolean;
+    runtime: boolean;
     locked: boolean;
     presentation: boolean;
     showGrid: boolean;
@@ -55,7 +58,7 @@ type TPatcherState = {
     libFaust: { [key: string]: typeof AnyObject };
     selected: string[];
 };
-type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid">;
+type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid" | "runtime">;
 
 type TErrorLevel = "error" | "warn" | "info" | "none"
 
