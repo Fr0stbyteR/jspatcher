@@ -10,12 +10,14 @@ import { Getter } from "./Getter";
 import { Property } from "./Property";
 import { TPackage } from "../../types";
 import { AnyImportedObject } from "./ImportedObject";
+import { BaseObject } from "../Base";
 
 type TImportedModule = { [key: string]: any };
 declare interface Window {
     module: { exports: TImportedModule };
     exports: TImportedModule;
 }
+export const $self = Symbol("JSPatcher.Importer.selfObject");
 
 export default class Importer {
     static getObject(p: PropertyDescriptor, pkgName: string, root: { [key: string]: any }, path: string[]): typeof AnyImportedObject {
@@ -80,6 +82,34 @@ export default class Importer {
         await Importer.importFrom("https://unpkg.com/webmidi", "MIDI").then(console.log);
     }
     */
+    static writeInPath(pkgIn: TPackage, path: string[], object: typeof AnyImportedObject) {
+        if (path.length === 0) {
+            Object.assign(pkgIn, { [$self]: object });
+            return;
+        }
+        let pkg = pkgIn;
+        for (let i = 0; i < path.length - 1; i++) {
+            const key = path[i];
+            if (!pkg[key]) pkg[key] = {};
+            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof BaseObject) pkg[key] = { [$self]: pkg[key] };
+            else pkg = pkg[key] as TPackage;
+        }
+        pkg[path[path.length - 1]] = object;
+    }
+    /**
+     * Recursive transform JavaScript object to JSPatcher Package
+     *
+     * @static
+     * @param {string} pkgName package identifier
+     * @param {{ [key: string]: any }} root imported JavaScript object
+     * @param {boolean} [all] import non-iterables
+     * @param {TPackage} [outIn]
+     * @param {string[]} [pathIn]
+     * @param {any[]} [stackIn]
+     * @param {number} [depthIn]
+     * @returns
+     * @memberof Importer
+     */
     static import(pkgName: string, root: { [key: string]: any }, all?: boolean, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number) {
         const depth = typeof depthIn === "undefined" ? 0 : depthIn;
         const out = outIn || {};
@@ -101,8 +131,8 @@ export default class Importer {
         }
         for (const key in props) {
             if (all) {
-                if (typeof o === "function" && ["arguments", "caller", "length", "name"].indexOf(key) >= 0) continue;
-                if (typeof o === "object" && ["constructor"].indexOf(key) >= 0) continue;
+                if (typeof o === "function" && ["arguments", "caller", "length", "name", "__proto__"].indexOf(key) >= 0) continue;
+                if (typeof o === "object" && ["constructor", "__proto__"].indexOf(key) >= 0) continue;
             }
             const prop = props[key];
             if (key === "prototype") {
@@ -111,7 +141,8 @@ export default class Importer {
             }
             if (!all && !prop.enumerable) continue;
             path[depth] = key;
-            out[path.map(s => (s === "prototype" ? "" : s)).join(".")] = this.getObject(prop, pkgName, root, path.slice());
+            const newObj = this.getObject(prop, pkgName, root, path.slice());
+            if (newObj) this.writeInPath(out, path.map(s => (s === "prototype" ? "" : s)), newObj);
             const value = prop.value;
             if ((typeof value === "object" || typeof value === "function") && value !== null && !Array.isArray(value)) {
                 this.import(pkgName, root, all, out, path, stack, depth + 1);

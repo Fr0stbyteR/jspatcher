@@ -3,7 +3,7 @@ import { MappedEventEmitter } from "../utils/MappedEventEmitter";
 import Line from "./Line";
 import Box from "./Box";
 import History from "./History";
-import Importer from "./objects/importer/Importer";
+import Importer, { $self } from "./objects/importer/Importer";
 import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState } from "./types";
 
 import Base, { AnyObject } from "./objects/Base";
@@ -22,7 +22,7 @@ import faust from "./objects/faust/exports";
 import Env from "../env";
 import SubPatcher, { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 
-const JSOps: TPackage = { Base, Std, SubPatcher, Max, UI, Op, Window, WebAudio: JSPWebAudio, DSP, new: New, live, faust };
+const JSOps: TPackage = { Base, Std, SubPatcher, Max, UI, Op, WebAudio: JSPWebAudio, DSP, new: New, live, faust };
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     static props: TPropsMeta<TPublicPatcherProps> = {
@@ -59,6 +59,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     _state: TPatcherState;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
+    _packages: TPackage;
     constructor(envIn: Env) {
         super();
         this.setMaxListeners(4096);
@@ -82,36 +83,58 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             libFaust: {},
             selected: []
         };
-        this._state.libJS = this.packageRegister(JSOps, {});
+        this._packages = JSOps;
+        this._state.libJS = this.packageRegister(JSOps);
         this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
-        this._state.libGen = this.packageRegister(GenOps, {});
-        this._state.libFaust = this.packageRegister(FaustOps, {});
+        this._state.libGen = this.packageRegister(GenOps);
+        this._state.libFaust = this.packageRegister(FaustOps);
         // Faust stuffs
         this.packageRegister(Importer.import("faust", { FaustNode: envIn.FaustAudioWorkletNode }, true), this._state.libJS);
         this.packageRegister(getFaustLibObjects(envIn.faustDocs), this._state.libFaust);
+        // Window
+        JSOps.Window = Window;
+        this.packageRegister({ Window }, this._state.libJS, 2);
         this._state.lib = this._state.libJS;
         this.clear();
     }
-    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject }, path?: string) {
+    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject } = {}, rootifyDepth = Infinity, pathIn?: string[]) {
+        const path = pathIn ? pathIn.slice() : [];
+        if (path.length && $self in pkg) {
+            const el = pkg[$self as any];
+            if (typeof el === "function" && el.prototype instanceof Base.BaseObject) {
+                const full = path.join(".");
+                if (full in libOut) this.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
+                else libOut[full] = el;
+                const p = path.slice();
+                while (p.length && path.length - p.length < rootifyDepth) {
+                    const k = p.join(".");
+                    if (!(k in libOut)) libOut[k] = el;
+                    p.shift();
+                }
+            }
+        }
         for (const key in pkg) {
             const el = pkg[key];
             if (typeof el === "object") {
-                const full = path ? path + "." + key : key;
-                this.packageRegister(el, libOut, full);
+                this.packageRegister(el, libOut, rootifyDepth, [...path, key]);
             } else if (typeof el === "function" && el.prototype instanceof Base.BaseObject) {
-                const full = path ? path + "." + key : key;
-                if (!libOut.hasOwnProperty(key)) libOut[key] = el;
-                if (!path) continue;
-                if (libOut.hasOwnProperty(full)) this.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
+                const full = [...path, key].join(".");
+                if (full in libOut) this.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
                 else libOut[full] = el;
-            } else continue;
+                const p = [...path, key];
+                while (p.length && path.length + 1 - p.length < rootifyDepth) {
+                    const k = p.join(".");
+                    if (!(k in libOut)) libOut[k] = el;
+                    p.shift();
+                }
+            }
         }
         return libOut;
     }
     async dynamicImportPackage(address: string, pkgName?: string) {
         const pkg = await Importer.importFrom(address, pkgName);
         JSOps[pkgName || name] = pkg;
-        this.packageRegister(pkg, this._state.libJS, pkgName || name);
+        this.packageRegister(pkg, this._state.libJS, 2, [pkgName || name]);
         // Check box availability for new object
         if (this.props.mode !== "js") return;
         for (const id in this.boxes) {
