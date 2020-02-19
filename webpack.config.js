@@ -1,6 +1,9 @@
 const path = require('path');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const config = {
   entry: './src/index.tsx',
@@ -27,12 +30,12 @@ const config = {
         }]
       }, {
         test: /\.(ts|js)x?$/,
-        use: "babel-loader",
+        use: 'babel-loader',
         exclude: /node_modules/,
       },
       {
         test: /\.s[ac]ss$/,
-        use: ["style-loader", "css-loader", "sass-loader"]
+        use: ['style-loader', 'css-loader', 'sass-loader']
       },
       {
         test: /\.css$/,
@@ -50,17 +53,27 @@ const config = {
       },
       {
         test: /\.js$/,
-        use: ["source-map-loader"],
+        use: ['source-map-loader'],
         include: /faust2webaudio/,
-        enforce: "pre"
+        enforce: 'pre'
       }
     ]
   },
   plugins: [
+    new CleanWebpackPlugin(),
+    new CopyWebpackPlugin([
+      { from: './src/html', to: './' },
+      { from: './src/misc/monaco-faust/primitives.lib', to: './deps/' },
+      { from: './node_modules/faust2webaudio/dist/libfaust-wasm.*', to: './deps/', flatten: true }
+    ]),
     new MonacoWebpackPlugin({
       filename : 'js/[hash].worker.js',
       languages: ['javascript']
     }),
+    new WorkboxWebpackPlugin.GenerateSW({
+      cacheId: new Date().getTime().toString(),
+      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+    })
     // new BundleAnalyzerPlugin()
   ]
 };
