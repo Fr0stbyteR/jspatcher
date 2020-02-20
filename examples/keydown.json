@@ -52,7 +52,7 @@
             "id": "line-5",
             "src": [
                 "box-4",
-                1
+                2
             ],
             "dest": [
                 "box-7",
@@ -111,6 +111,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                135,
+                105,
+                90,
+                22
+            ],
             "data": {
                 "text": "keydown"
             },
@@ -121,7 +127,7 @@
             "id": "box-4",
             "text": "lambda 1",
             "inlets": 2,
-            "outlets": 2,
+            "outlets": 3,
             "rect": [
                 240,
                 105,
@@ -130,6 +136,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                240,
+                105,
+                90,
+                22
+            ],
             "data": {},
             "args": [
                 1
@@ -149,6 +161,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                30,
+                150,
+                225,
+                22
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -166,6 +184,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                315,
+                150,
+                90,
+                22
+            ],
             "data": {},
             "args": [
                 "key"
@@ -185,6 +209,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                30,
+                105,
+                90,
+                22
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -202,8 +232,14 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                255,
+                225,
+                90,
+                22
+            ],
             "data": {
-                "text": "Control"
+                "text": ""
             },
             "args": [],
             "props": {}
@@ -221,6 +257,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                30,
+                30,
+                30,
+                30
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -228,23 +270,15 @@
     },
     "props": {
         "mode": "js",
-        "bgColor": [
-            61,
-            65,
-            70,
-            1
-        ],
-        "editingBgColor": [
-            82,
-            87,
-            94,
-            1
-        ],
+        "dependencies": {},
+        "bgColor": "rgba(61, 65, 70, 1)",
+        "editingBgColor": "rgba(82, 87, 94, 1)",
         "grid": [
             15,
             15
         ],
-        "boxIndexCount": 8,
-        "lineIndexCount": 8
+        "openInPresentation": false,
+        "boxIndexCount": 9,
+        "lineIndexCount": 9
     }
 }

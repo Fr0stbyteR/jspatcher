@@ -21,16 +21,15 @@ export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], 
     }];
     state = {};
     audioWorklet: AudioWorklet;
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+    handleInlet: (e: { data: any; inlet: number }) => Promise<void> = async ({ data, inlet }) => {
         if (inlet === 0) {
             if (data instanceof Bang) this.outlet(0, this.audioWorklet);
         } else if (inlet === 1) {
             if (typeof data === "string") {
                 try {
                     const url = window.URL.createObjectURL(new Blob([data], { type: "text/javascript" }));
-                    this.audioWorklet.addModule(url)
-                        .then(() => this.outlet(1, new Bang()))
-                        .catch((e: Error) => this.error(e.message));
+                    await this.audioWorklet.addModule(url);
+                    this.outlet(1, new Bang());
                 } catch (e) {
                     this.error((e as Error).message);
                 }

@@ -2,27 +2,14 @@ import { rgbaMax2Css } from "../utils/utils";
 import { MappedEventEmitter } from "../utils/MappedEventEmitter";
 import Line from "./Line";
 import Box from "./Box";
-import History from "./History";
-import Importer, { $self } from "./objects/importer/Importer";
-import { TLine, TBox, PatcherEventMap, TPackage, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState } from "./types";
-
-import Base, { AnyObject } from "./objects/Base";
-import Std from "./objects/Std";
-import New from "./objects/importer/New";
-import GenOps from "./objects/Gen";
-import Max from "./objects/Max";
-import FaustOps, { toFaustDspCode, getFaustLibObjects } from "./objects/Faust";
-import UI from "./objects/UI";
-import Op from "./objects/Op";
-import Window from "./objects/Window";
-import JSPWebAudio from "./objects/WebAudio/Imports";
-import DSP from "./objects/dsp/exports";
-import live from "./objects/live/exports";
-import faust from "./objects/faust/exports";
 import Env from "../env";
-import SubPatcher, { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
+import History from "./History";
+import PackageManager from "./PkgMgr";
+import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState } from "./types";
 
-const JSOps: TPackage = { Base, Std, SubPatcher, Max, UI, Op, WebAudio: JSPWebAudio, DSP, new: New, live, faust };
+import Base from "./objects/Base";
+import { toFaustDspCode } from "./objects/Faust";
+import { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 
 export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     static props: TPropsMeta<TPublicPatcherProps> = {
@@ -59,7 +46,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     _state: TPatcherState;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
-    _packages: TPackage;
     constructor(envIn: Env) {
         super();
         this.setMaxListeners(4096);
@@ -75,68 +61,18 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             showGrid: true,
             snapToGrid: true,
             log: [],
-            history: new History(this),
-            lib: {},
-            libJS: {},
-            libMax: {},
-            libGen: {},
-            libFaust: {},
-            selected: []
+            history: null,
+            selected: [],
+            pkgMgr: null
         };
-        this._packages = JSOps;
-        this._state.libJS = this.packageRegister(JSOps);
-        this._state.libMax = {}; // this.packageRegister((Packages.Max as TPackage), {});
-        this._state.libGen = this.packageRegister(GenOps);
-        this._state.libFaust = this.packageRegister(FaustOps);
-        // Faust stuffs
-        this.packageRegister(Importer.import("faust", { FaustNode: envIn.FaustAudioWorkletNode }, true), this._state.libJS);
-        this.packageRegister(getFaustLibObjects(envIn.faustDocs), this._state.libFaust);
-        // Window
-        JSOps.Window = Window;
-        this.packageRegister({ Window }, this._state.libJS, 2);
-        this._state.lib = this._state.libJS;
+        this._state.history = new History(this);
+        this._state.pkgMgr = new PackageManager(this);
         this.clear();
     }
-    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject } = {}, rootifyDepth = Infinity, pathIn?: string[]) {
-        const path = pathIn ? pathIn.slice() : [];
-        if (path.length && $self in pkg) {
-            const el = pkg[$self as any];
-            if (typeof el === "function" && el.prototype instanceof Base.BaseObject) {
-                const full = path.join(".");
-                if (full in libOut) this.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
-                else libOut[full] = el;
-                const p = path.slice();
-                while (p.length && path.length - p.length < rootifyDepth) {
-                    const k = p.join(".");
-                    if (!(k in libOut)) libOut[k] = el;
-                    p.shift();
-                }
-            }
-        }
-        for (const key in pkg) {
-            const el = pkg[key];
-            if (typeof el === "object") {
-                this.packageRegister(el, libOut, rootifyDepth, [...path, key]);
-            } else if (typeof el === "function" && el.prototype instanceof Base.BaseObject) {
-                const full = [...path, key].join(".");
-                if (full in libOut) this.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
-                else libOut[full] = el;
-                const p = [...path, key];
-                while (p.length && path.length + 1 - p.length < rootifyDepth) {
-                    const k = p.join(".");
-                    if (!(k in libOut)) libOut[k] = el;
-                    p.shift();
-                }
-            }
-        }
-        return libOut;
+    get activeLib() {
+        return this._state.pkgMgr.activeLib;
     }
-    async dynamicImportPackage(address: string, pkgName?: string) {
-        const pkg = await Importer.importFrom(address, pkgName);
-        JSOps[pkgName || name] = pkg;
-        this.packageRegister(pkg, this._state.libJS, 2, [pkgName || name]);
-        // Check box availability for new object
-        if (this.props.mode !== "js") return;
+    refreshInvalidBoxes() {
         for (const id in this.boxes) {
             const box = this.boxes[id];
             if (box instanceof Base.InvalidObject) box.changeText(box.text, true);
@@ -170,7 +106,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.props.mode = (patcherIn.props && patcherIn.props.mode ? patcherIn.props.mode : modeIn) || "js";
         const { mode } = this.props;
         if (mode === "max" || mode === "gen") {
-            this._state.lib = mode === "max" ? this._state.libMax : this._state.libGen;
             const patcher = (patcherIn as TMaxPatcher).patcher;
             if (!patcher) {
                 this._state.isLoading = false;
@@ -204,13 +139,12 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                 });
             }
         } else if (mode === "js" || mode === "faust") {
-            this._state.lib = mode === "js" ? this._state.libJS : this._state.libFaust;
             const patcher = patcherIn;
             if (patcher.props) this.props = { ...this.props, ...patcher.props };
             if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
             if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
             if (mode === "js" && this.props.dependencies) {
-                const promises = Object.keys(this.props.dependencies).map(name => this.dynamicImportPackage(this.props.dependencies[name], name));
+                const promises = Object.keys(this.props.dependencies).map(name => this._state.pkgMgr.importFromURL(this.props.dependencies[name], name));
                 await Promise.all(promises);
             }
             if (patcher.boxes) { // Boxes & data
@@ -282,17 +216,17 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         let obj;
         const className = parsed.class;
         if (typeof className !== "string" || className.length === 0) {
-            obj = new this._state.lib.EmptyObject(boxIn, this);
+            obj = new this.activeLib.EmptyObject(boxIn, this);
         } else {
-            if (this._state.lib[className]) {
-                obj = new this._state.lib[className](boxIn, this);
+            if (this.activeLib[className]) {
+                obj = new this.activeLib[className](boxIn, this);
             } else {
                 this.newLog("error", "Patcher", "Object " + className + " not found.", this);
-                obj = new this._state.lib.InvalidObject(boxIn, this);
+                obj = new this.activeLib.InvalidObject(boxIn, this);
             }
             if (!(obj instanceof Base.BaseObject)) {
                 this.newLog("error", "Patcher", "Object " + className + " is not valid.", this);
-                obj = new this._state.lib.InvalidObject(boxIn, this);
+                obj = new this.activeLib.InvalidObject(boxIn, this);
             }
         }
         boxIn.object = obj;
@@ -304,8 +238,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         if (typeof className !== "string" || className.length === 0) {
             return Base.EmptyObject.meta;
         }
-        if (this._state.lib[className]) {
-            return this._state.lib[className].meta;
+        if (this.activeLib[className]) {
+            return this.activeLib[className].meta;
         }
         return Base.InvalidObject.meta;
     }

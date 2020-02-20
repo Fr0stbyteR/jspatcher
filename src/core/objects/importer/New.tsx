@@ -55,7 +55,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         });
         this.on("updateArgs", (args) => {
             if (typeof args[0] !== "undefined") {
-                const Wrapper = this.patcher.state.lib[args[0]];
+                const Wrapper = this.patcher.activeLib[args[0]];
                 if (!Wrapper) this.error(`Function ${args[0]} not found.`);
                 else if (Wrapper.prototype instanceof StaticMethod) {
                     this.state.Wrapper = Wrapper as typeof StaticMethod;

@@ -5,6 +5,7 @@ import Box from "./Box";
 import Line from "./Line";
 import History from "./History";
 import Env from "../env";
+import PackageManager from "./PkgMgr";
 
 declare global {
     interface Window {
@@ -51,12 +52,8 @@ type TPatcherState = {
     snapToGrid: boolean;
     log: TPatcherLog[];
     history: History;
-    lib: { [key: string]: typeof AnyObject };
-    libJS: { [key: string]: typeof AnyObject };
-    libMax: { [key: string]: typeof AnyObject };
-    libGen: { [key: string]: typeof AnyObject };
-    libFaust: { [key: string]: typeof AnyObject };
     selected: string[];
+    pkgMgr: PackageManager;
 };
 type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid" | "runtime">;
 
@@ -115,6 +112,7 @@ type TMaxClipboard = {
     };
 };
 type TPackage = { [key: string]: typeof AnyObject | TPackage };
+type TFlatPackage = { [key: string]: typeof AnyObject };
 type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };
 type TAudioNodeOutletConnection = { node: AudioNode; index: number };
 type TPatcherAudioConnection = { node: GainNode; index: number };

@@ -183,6 +183,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                90,
+                375,
+                210,
+                22
+            ],
             "data": {
                 "code": "\r\nimport(\"stdfaust.lib\");\r\nprocess = ba.pulsen(1, ba.hz2midikey(freq) * 1000) : pm.marimba(freq, 0, 7000, 0.5, 0.8) * gate * gain with {\r\nfreq = hslider(\"freq\", 440, 40, 8000, 1);\r\ngain = hslider(\"gain\", 0.5, 0, 1, 0.01);\r\ngate = button(\"gate\");\r\n};\r\neffect = dm.freeverb_demo;"
             },
@@ -204,6 +210,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                90,
+                135,
+                375,
+                120
+            ],
             "data": {
                 "value": "\r\nimport(\"stdfaust.lib\");\r\nprocess = ba.pulsen(1, ba.hz2midikey(freq) * 1000) : pm.marimba(freq, 0, 7000, 0.5, 0.8) * gate * gain with {\r\nfreq = hslider(\"freq\", 440, 40, 8000, 1);\r\ngain = hslider(\"gain\", 0.5, 0, 1, 0.01);\r\ngate = button(\"gate\");\r\n};\r\neffect = dm.freeverb_demo;"
             },
@@ -225,6 +237,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                345,
+                360,
+                90,
+                22
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -242,6 +260,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                345,
+                330,
+                150,
+                22
+            ],
             "data": {},
             "args": [
                 "Float32Array",
@@ -262,6 +286,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                345,
+                300,
+                90,
+                22
+            ],
             "data": {
                 "text": ""
             },
@@ -281,6 +311,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                345,
+                390,
+                90,
+                22
+            ],
             "data": {},
             "args": [
                 0
@@ -300,6 +336,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                345,
+                420,
+                90,
+                22
+            ],
             "data": {
                 "text": "0"
             },
@@ -319,6 +361,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                90,
+                495,
+                105,
+                22
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -336,6 +384,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                255,
+                270,
+                30,
+                30
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -353,6 +407,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                293,
+                271.71875,
+                90,
+                22
+            ],
             "data": {
                 "text": "1 5 0 5"
             },
@@ -372,6 +432,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                90,
+                90,
+                30,
+                30
+            ],
             "data": {},
             "args": [],
             "props": {}
@@ -389,6 +455,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                90,
+                435,
+                105,
+                22
+            ],
             "data": {},
             "args": [
                 2
@@ -408,6 +480,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                135,
+                330,
+                90,
+                22
+            ],
             "data": {
                 "text": "[144, 60, 120]"
             },
@@ -427,8 +505,14 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                135,
+                300,
+                90,
+                22
+            ],
             "data": {
-                "text": "[143, 60, 120]"
+                "text": "[128, 60, 120]"
             },
             "args": [],
             "props": {}
@@ -446,6 +530,12 @@
             ],
             "background": false,
             "presentation": false,
+            "presentationRect": [
+                285,
+                300,
+                45,
+                60
+            ],
             "data": {},
             "args": [],
             "props": {
@@ -459,22 +549,14 @@
     },
     "props": {
         "mode": "js",
-        "bgColor": [
-            61,
-            65,
-            70,
-            1
-        ],
-        "editingBgColor": [
-            82,
-            87,
-            94,
-            1
-        ],
+        "dependencies": {},
+        "bgColor": "rgba(61, 65, 70, 1)",
+        "editingBgColor": "rgba(82, 87, 94, 1)",
         "grid": [
             15,
             15
         ],
+        "openInPresentation": false,
         "boxIndexCount": 35,
         "lineIndexCount": 53
     }

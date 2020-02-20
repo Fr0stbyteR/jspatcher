@@ -5,6 +5,7 @@ import { TPackage, TMeta, TPropsMeta } from "../types";
 import { subPatchersMap, TSubPatchersMap, SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
 import { CodeUI, comment } from "./UI";
+import Importer from "./importer/Importer";
 
 type TObjectExpr = {
     exprs?: string[];
@@ -1097,15 +1098,24 @@ for (const className in opMap.mathOps) {
     else symbol.forEach(s => faustOps[s] = Op);
 }
 export const getFaustLibObjects = (docs: TFaustDocs) => {
-    const ops: { [key: string]: typeof LibOp } = {};
+    const ops: TPackage = {};
     for (const key in docs) {
         const doc = docs[key];
+        const docStr = doc.doc;
         const Op = class extends LibOp {
             static get _name() { return key; }
-            static description = doc.doc.substr(0, doc.doc.indexOf("\n"));
+            static description = docStr.substr(0, docStr.indexOf("\n"));
             symbol = [key];
         };
-        ops[key] = Op;
+        const path = key.split(".");
+        let pkg = ops;
+        while (path.length - 1) {
+            const key = path.shift();
+            if (!pkg[key]) pkg[key] = {};
+            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof LibOp) pkg[key] = { [Importer.$self]: pkg[key] };
+            pkg = pkg[key] as TPackage;
+        }
+        pkg[path[0]] = Op;
     }
     return ops;
 };

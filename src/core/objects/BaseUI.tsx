@@ -205,22 +205,22 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         this.dropdownOptions = [];
         const splitted = this.refSpan.current.textContent.split(" ");
         if (splitted.length === 1) {
-            const keys = Object.keys(patcher.state.lib).sort();
+            const keys = Object.keys(patcher.activeLib).sort();
             for (let i = 0; i < keys.length; i++) {
                 if (this.dropdownOptions.length > 10) break;
                 const key = keys[i];
                 if (key.startsWith(splitted[splitted.length - 1])) {
-                    const o = patcher.state.lib[key];
+                    const o = patcher.activeLib[key];
                     this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
                 }
             }
         } else if (splitted[0] === "new" && splitted.length === 2) {
-            const keys = Object.keys(patcher.state.lib).sort();
+            const keys = Object.keys(patcher.activeLib).sort();
             for (let i = 0; i < keys.length; i++) {
                 if (this.dropdownOptions.length > 10) break;
                 const key = keys[i];
                 if (key.startsWith(splitted[splitted.length - 1])) {
-                    const o = patcher.state.lib[key];
+                    const o = patcher.activeLib[key];
                     if (o.meta.description === "Auto-imported static method") {
                         this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
                     }

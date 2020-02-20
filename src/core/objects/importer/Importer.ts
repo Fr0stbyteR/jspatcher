@@ -20,6 +20,7 @@ declare interface Window {
 export const $self = Symbol("JSPatcher.Importer.selfObject");
 
 export default class Importer {
+    static $self = Symbol("JSPatcher.Importer.selfObject");
     static getObject(p: PropertyDescriptor, pkgName: string, root: { [key: string]: any }, path: string[]): typeof AnyImportedObject {
         const isStatic = path[path.length - 2] !== "prototype";
         let Super: typeof AnyImportedObject;
@@ -52,29 +53,6 @@ export default class Importer {
             static get _name() { return path[path.length - 1]; }
         };
     }
-    static async importFrom(address: string, pkgName: string) {
-        const toExport: TImportedModule = {}; // Original exports, detect if exports is overwritten.
-        window.exports = toExport;
-        window.module = { exports: toExport } as any;
-        return new Promise((resolve: (script: HTMLScriptElement) => void, reject) => {
-            const script = document.createElement("script");
-            script.async = true;
-            script.src = address;
-            script.type = "module";
-            script.addEventListener("load", () => resolve(script));
-            script.addEventListener("error", () => reject(new Error("Error loading script.")));
-            script.addEventListener("abort", () => reject(new Error("Script loading aborted.")));
-            document.head.appendChild(script);
-        }).then(() => {
-            const exported = window.module.exports;
-            delete window.exports;
-            delete window.module;
-            if (toExport === exported) return this.import(pkgName, exported);
-            const o: { [key: string]: any } = {}; // if exports is overwritten, wrap it
-            o[pkgName] = exported;
-            return this.import(pkgName, o);
-        });
-    }
     /*
     static async test() {
         await Importer.importFrom("https://unpkg.com/@tensorflow/tfjs", "tf").then(console.log);
@@ -82,19 +60,20 @@ export default class Importer {
         await Importer.importFrom("https://unpkg.com/webmidi", "MIDI").then(console.log);
     }
     */
-    static writeInPath(pkgIn: TPackage, path: string[], object: typeof AnyImportedObject) {
-        if (path.length === 0) {
-            Object.assign(pkgIn, { [$self]: object });
+    static writeInPath(pkgIn: TPackage, pathIn: string[], object: typeof AnyImportedObject) {
+        if (pathIn.length === 0) {
+            Object.assign(pkgIn, { [this.$self]: object });
             return;
         }
+        const path = pathIn.slice();
         let pkg = pkgIn;
-        for (let i = 0; i < path.length - 1; i++) {
-            const key = path[i];
+        while (path.length > 1) {
+            const key = path.shift();
             if (!pkg[key]) pkg[key] = {};
-            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof BaseObject) pkg[key] = { [$self]: pkg[key] };
-            else pkg = pkg[key] as TPackage;
+            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof BaseObject) pkg[key] = { [this.$self]: pkg[key] };
+            pkg = pkg[key] as TPackage;
         }
-        pkg[path[path.length - 1]] = object;
+        pkg[path[0]] = object;
     }
     /**
      * Recursive transform JavaScript object to JSPatcher Package

@@ -88,25 +88,23 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
         const text = "";
         this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [gridX, gridY, 90, 20], presentation, _editing: true });
     };
-    handleClickCut = () => {
+    handleClickCut = async () => {
         if (this.props.patcher.state.locked) return;
-        navigator.clipboard.writeText(this.props.patcher.selectedToString())
-            .then(() => this.props.patcher.deleteSelected());
+        await navigator.clipboard.writeText(this.props.patcher.selectedToString());
+        this.props.patcher.deleteSelected();
     };
     handleClickCopy = () => {
         if (this.props.patcher.state.locked) return;
         navigator.clipboard.writeText(this.props.patcher.selectedToString());
     };
-    handleClickPaste = () => {
+    handleClickPaste = async () => {
         if (this.props.patcher.state.locked) return;
-        navigator.clipboard.readText()
-            .then((text) => {
-                let parsed: TPatcher | TMaxClipboard;
-                try {
-                    parsed = JSON.parse(text);
-                } catch (e) {} // eslint-disable-line no-empty
-                this.props.patcher.paste(parsed);
-            });
+        const text = await navigator.clipboard.readText();
+        let parsed: TPatcher | TMaxClipboard;
+        try {
+            parsed = JSON.parse(text);
+        } catch (e) {} // eslint-disable-line no-empty
+        this.props.patcher.paste(parsed);
     };
     handleClickDelete = () => {
         if (this.props.patcher.state.locked) return;
