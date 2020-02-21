@@ -178,6 +178,7 @@ interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "ioChanged": TMeta;
     "stateChanged": Partial<TPublicPatcherState>;
     "propsChanged": Partial<TPublicPatcherProps>;
+    "libChanged": { pkg: TPackage; lib: TFlatPackage };
 }
 
 interface LineEventMap {

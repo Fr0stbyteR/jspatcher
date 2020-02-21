@@ -3,8 +3,9 @@ import Patcher from "../core/Patcher";
 import TopMenu from "./TopMenu";
 import PatcherUI from "./PatcherUI";
 import BottomMenu from "./BottomMenu";
-import "./UI.scss";
 import RightMenu from "./RightMenu";
+import LeftMenu from "./LeftMenu";
+import "./UI.scss";
 
 export default class UI extends React.PureComponent {
     props: { patcher: Patcher };
@@ -15,7 +16,10 @@ export default class UI extends React.PureComponent {
     render() {
         return (
             <>
-                <div className="ui-left">
+                <div className="ui-left" onKeyDown={this.handleKeyDown}>
+                    <LeftMenu {...this.props} />
+                </div>
+                <div className="ui-center">
                     <TopMenu {...this.props} />
                     <div className="patcher-container">
                         <PatcherUI {...this.props} />

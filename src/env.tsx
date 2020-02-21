@@ -9,6 +9,9 @@ import UI from "./components/UI";
 import { MappedEventEmitter } from "./utils/MappedEventEmitter";
 import { TFaustDocs } from "./misc/monaco-faust/Faust2Doc";
 import PatcherUI from "./components/PatcherUI";
+import { TPackage } from "./core/types";
+import Importer from "./core/objects/importer/Importer";
+import { getFaustLibObjects } from "./core/objects/Faust";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -40,6 +43,9 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;
     faustDocs: TFaustDocs;
+    faustAdditionalObjects: TPackage;
+    faustLibObjects: TPackage;
+    faustInjected = false;
     patcher: Patcher;
     private _divRoot: HTMLDivElement;
     constructor(root?: HTMLDivElement) {
@@ -57,6 +63,7 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
         this.emit("text", "Loading LibFaust...");
         const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
         await faust.ready;
+        this.faustAdditionalObjects = Importer.import("faust", { FaustNode: this.FaustAudioWorkletNode }, true);
 
         this.emit("text", "Fetching Faust Standard Library...");
         const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
@@ -67,9 +74,11 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
         const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
         const { providers } = await faustLangRegister(monacoEditor, faust);
         this.faustDocs = providers.docs;
+        this.faustLibObjects = getFaustLibObjects(this.faustDocs);
 
         this.faust = faust;
         const patcher = new Patcher(this);
+        this.faustInjected = true;
         this.patcher = patcher;
         window.patcher = patcher;
 

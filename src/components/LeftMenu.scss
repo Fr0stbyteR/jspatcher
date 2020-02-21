@@ -1,0 +1,117 @@
+.ui-left {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    flex: 0 0 auto;
+    & > div.resize-handler-e {
+        position: absolute;
+        display: block;
+        right: 0;
+        width: 4px;
+        height: 100%;
+        cursor: e-resize;
+        z-index: 1;
+    }
+    & > .left-menu {
+        position: relative;
+        width: auto !important;
+        z-index: 0;
+        display: flex !important;
+        margin: 0px !important;
+        border-radius: 0px !important;
+        & > .item:first-child, .item:last-child {
+            border-radius: 0px !important;
+        }
+    }
+    & > .left-pane {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        width: 250px;
+        max-width: 75vw;
+        min-width: 200px;
+        background-color: #1b1c1d;
+        & > h5 {
+            margin: 8px !important;
+            display: block;
+            position: relative;
+            flex: 0 0 auto;
+            font-weight: 600;
+        }
+        & > div {
+            display: flex;
+            position: relative;
+            flex: 1 1 auto;
+            overflow: auto;
+            flex-direction: column;
+            & > table {
+                word-break: break-all;
+                flex: 1 1 auto;
+                overflow: auto;
+                display: block;
+                margin: 0px;
+                border-radius: 0px;
+                & tbody {
+                    display: table;
+                    width: 100%;
+                }
+                & td:empty::before {
+                    content: "\200b";
+                }
+                & tr.tr-placeholder {
+                    overflow: hidden;
+                }
+            }
+            & > .menu {
+                margin: 0px;
+                border-radius: 0px !important;
+                & > .item:first-child, .item:last-child {
+                    border-radius: 0px !important;
+                }
+            }
+        }
+        & > div.left-pane-objects {
+            background-color: #111;
+            user-select: none;
+            -webkit-user-select: none;
+            & > .segment {
+                padding: 0.5em;
+                background-color: transparent;
+            }
+            & .abstract > .content > .header {
+                font-style: italic;
+            }
+            & .content > .header {
+                font-weight: 600;
+            }
+            & .description {
+                padding-top: 4px;
+                font-size: 12px;
+            }
+            & .item, .list {
+                border-radius: 0px !important;
+            }
+            & .item:active {
+                background: rgba(255, 255, 255, 0.02) !important;
+            }
+            & .item.selected {
+                background: rgba(255, 255, 255, 0.1) !important;
+            }
+            & .ui.list .list {
+                padding: 0px;
+            }
+            & .folder-content {
+                padding: 0px 0px 0px 0.2em !important;
+                margin-left: 1em !important;
+                border-left: rgba(255, 255, 255, 0.1) 1px solid;
+            }
+            & .ui.dropdown .menu > .item {
+                font-size: 1em !important;
+            }
+        }
+    }
+    &[hidden], & [hidden] {
+        display: none !important;
+    }
+}

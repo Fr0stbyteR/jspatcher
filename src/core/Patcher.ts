@@ -52,6 +52,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this._env = envIn;
         this.observeHistory();
         this.observeGraphChange();
+        this.observeLibChange();
         this._state = {
             name: "patcher",
             isLoading: false,
@@ -61,16 +62,38 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             showGrid: true,
             snapToGrid: true,
             log: [],
-            history: null,
+            history: undefined,
             selected: [],
-            pkgMgr: null
+            pkgMgr: undefined
         };
-        this._state.history = new History(this);
-        this._state.pkgMgr = new PackageManager(this);
         this.clear();
+    }
+    get activePkg() {
+        return this._state.pkgMgr.activePkg;
     }
     get activeLib() {
         return this._state.pkgMgr.activeLib;
+    }
+    private observeLibChange() {
+        this.on("libChanged", () => this.refreshInvalidBoxes());
+    }
+    private observeGraphChange() {
+        const eventNames = [
+            "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
+            "changeBoxText", "changeLineSrc", "changeLineDest"
+        ] as const;
+        eventNames.forEach(e => this.on(e, () => this.emit("graphChanged")));
+    }
+    private observeHistory() {
+        const eventNames = [
+            "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
+            "changeBoxText", "changeLineSrc", "changeLineDest", "moved", "resized"
+        ] as const;
+        eventNames.forEach(type => this.on(type, e => this._state.history.did(type, e)));
+    }
+    newTimestamp() {
+        this._state.history.newTimestamp();
+        return this;
     }
     refreshInvalidBoxes() {
         for (const id in this.boxes) {
@@ -95,6 +118,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             lineIndexCount: 0
         };
         this._state.selected = [];
+        this._state.history = new History(this);
+        this._state.pkgMgr = new PackageManager(this);
     }
     async load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode) {
         this._state.isLoading = true;
@@ -450,17 +475,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const log = { errorLevel, title, message, emitter };
         this._state.log.push(log);
         this.emit("newLog", log);
-    }
-    observeHistory() {
-        const eventNames = [
-            "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
-            "changeBoxText", "changeLineSrc", "changeLineDest", "moved", "resized"
-        ] as const;
-        eventNames.forEach(type => this.on(type, e => this._state.history.did(type, e)));
-    }
-    newTimestamp() {
-        this._state.history.newTimestamp();
-        return this;
     }
     setState(state: Partial<TPublicPatcherState>) {
         let changed = false;
@@ -884,13 +898,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     redo() {
         this._state.history.redo();
-    }
-    observeGraphChange() {
-        const eventNames = [
-            "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
-            "changeBoxText", "changeLineSrc", "changeLineDest"
-        ] as const;
-        eventNames.forEach(e => this.on(e, () => this.emit("graphChanged")));
     }
     toFaustDspCode() {
         const code = toFaustDspCode(this);

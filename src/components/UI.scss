@@ -1,7 +1,7 @@
 *:focus {
     outline: none;
 }
-.ui-left {
+.ui-center {
     display: flex;
     position: relative;
     flex-direction: column;
@@ -12,12 +12,6 @@
         flex: 1 1 100%;
         display: block;
     }
-}
-.ui-right {
-    display: flex;
-    position: relative;
-    flex-direction: row;
-    flex: 0 0 auto;
 }
 body ::-webkit-scrollbar-corner {
     background-color: rgba(61, 65, 70, 0.1);

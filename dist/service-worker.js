@@ -80,7 +80,7 @@ if (!self.define) {
     });
   };
 }
-define("./service-worker.js",['./workbox-aa7ae16e'], function (workbox) { 'use strict';
+define("./service-worker.js",['./workbox-bce63e3c'], function (workbox) { 'use strict';
 
   /**
   * Welcome to your Workbox-powered service worker!
@@ -95,7 +95,7 @@ define("./service-worker.js",['./workbox-aa7ae16e'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "1582215809963"
+    prefix: "1582309952518"
   });
   workbox.skipWaiting();
   workbox.clientsClaim();
@@ -287,7 +287,7 @@ define("./service-worker.js",['./workbox-aa7ae16e'], function (workbox) { 'use s
     "revision": "90509a043949258c3c2d90e3e63740d2"
   }, {
     "url": "index.js",
-    "revision": "4600a6c57b82131c6d4217bf2168f840"
+    "revision": "c13277238f783c05ce1bf05166b3c4fc"
   }, {
     "url": "js/395a3f25fb2dfdd94882.worklet.js",
     "revision": "d13cbc26d5d0a945f29142a2077e7699"
@@ -313,6 +313,7 @@ define("./service-worker.js",['./workbox-aa7ae16e'], function (workbox) { 'use s
     "url": "manifest.json",
     "revision": "1cbaa3cdd5ba147975aa27bb8a1914f4"
   }], {});
+  workbox.cleanupOutdatedCaches();
 
 });
 //# sourceMappingURL=service-worker.js.map

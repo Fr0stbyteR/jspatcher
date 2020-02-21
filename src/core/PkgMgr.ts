@@ -1,13 +1,12 @@
 import Patcher from "./Patcher";
 import Importer from "./objects/importer/Importer";
-import { MappedEventEmitter } from "../utils/MappedEventEmitter";
 import { TFlatPackage, TPackage, TPatcherMode } from "./types";
 import Base, { AnyObject, BaseObject } from "./objects/Base";
 import Std from "./objects/Std";
 import New from "./objects/importer/New";
 import Gen from "./objects/Gen";
 import Max from "./objects/Max";
-import Faust, { getFaustLibObjects } from "./objects/Faust";
+import Faust from "./objects/Faust";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
@@ -17,7 +16,7 @@ import live from "./objects/live/exports";
 import faust from "./objects/faust/exports";
 import SubPatcher from "./objects/SubPatcher";
 
-export default class PackageManager extends MappedEventEmitter<{ "changed": never }> {
+export default class PackageManager {
     private readonly patcher: Patcher;
     private readonly externals: { [id: string]: string } = {};
     readonly pkgJS: TPackage = {
@@ -37,16 +36,18 @@ export default class PackageManager extends MappedEventEmitter<{ "changed": neve
     readonly pkgFaust: TPackage = Faust;
     readonly pkgMax: TPackage = {};
     readonly pkgGen: TPackage = Gen;
-    private readonly libJS: TFlatPackage = this.packageRegister(this.pkgJS);
-    private readonly libFaust: TFlatPackage = this.packageRegister(this.pkgFaust);
+    private readonly libJS: TFlatPackage = this.packageRegister(this.pkgJS, {});
+    private readonly libFaust: TFlatPackage = this.packageRegister(this.pkgFaust, {});
     private readonly libMax: TFlatPackage = {};
-    private readonly libGen: TFlatPackage = this.packageRegister(this.pkgGen);
+    private readonly libGen: TFlatPackage = this.packageRegister(this.pkgGen, {});
     constructor(patcherIn: Patcher) {
-        super();
         this.patcher = patcherIn;
+        const { env } = patcherIn;
         // Faust stuffs
-        this.add(Importer.import("faust", { FaustNode: patcherIn.env.FaustAudioWorkletNode }, true), "js");
-        this.add(getFaustLibObjects(patcherIn.env.faustDocs), "faust");
+        if (!env.faustInjected) {
+            this.add(patcherIn.env.faustAdditionalObjects, "js", ["faust"]);
+            this.add(patcherIn.env.faustLibObjects, "faust");
+        }
         // Window
         this.add({ Window }, "js");
     }
@@ -125,9 +126,9 @@ export default class PackageManager extends MappedEventEmitter<{ "changed": neve
         }
         Object.assign(pkg, pkgIn);
         this.packageRegister(pkgIn, this.getLib(lib), 2, pathIn);
-        this.patcher.refreshInvalidBoxes();
+        this.patcher.emit("libChanged", { pkg: this.activePkg, lib: this.activeLib });
     }
-    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject } = {}, rootifyDepth = Infinity, pathIn?: string[]) {
+    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject }, rootifyDepth = Infinity, pathIn?: string[]) {
         const path = pathIn ? pathIn.slice() : [];
         if (path.length && Importer.$self in pkg) {
             const el = pkg[Importer.$self as any];

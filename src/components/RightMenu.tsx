@@ -5,8 +5,8 @@ import { ChromePicker, ColorResult } from "react-color";
 import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
-import "./RightMenu.scss";
 import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta, TRect, TPatcherProps, TPublicPatcherProps } from "../core/types";
+import "./RightMenu.scss";
 
 enum TPanels {
     None = "None",
