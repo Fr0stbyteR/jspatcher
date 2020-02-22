@@ -146,6 +146,7 @@ type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
 
 interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "loaded": Patcher;
+    "loadDeps": string[];
     "locked": boolean;
     "presentation": boolean;
     "showGrid": boolean;

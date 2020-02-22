@@ -15,7 +15,7 @@ import { getFaustLibObjects } from "./core/objects/Faust";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-export class LoaderUI extends React.Component<{ env: Env }, { text: string }> {
+export class LoaderUI extends React.PureComponent<{ env: Env }, { text: string }> {
     state = { text: "Loading..." };
     handleText = (text: string): void => this.setState({ text });
     componentDidMount() {

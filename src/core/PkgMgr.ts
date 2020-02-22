@@ -15,6 +15,7 @@ import DSP from "./objects/dsp/exports";
 import live from "./objects/live/exports";
 import faust from "./objects/faust/exports";
 import SubPatcher from "./objects/SubPatcher";
+import { ImporterDirSelfObject } from "../utils/symbols";
 
 export default class PackageManager {
     private readonly patcher: Patcher;
@@ -122,7 +123,7 @@ export default class PackageManager {
         while (path.length) {
             const key = path.shift();
             if (!pkg[key]) pkg[key] = {};
-            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof BaseObject) pkg[key] = { [Importer.$self]: pkg[key] };
+            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof BaseObject) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
             pkg = pkg[key] as TPackage;
         }
         Object.assign(pkg, pkgIn);
@@ -131,8 +132,8 @@ export default class PackageManager {
     }
     packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject }, rootifyDepth = Infinity, pathIn?: string[]) {
         const path = pathIn ? pathIn.slice() : [];
-        if (path.length && Importer.$self in pkg) {
-            const el = pkg[Importer.$self as any];
+        if (path.length && ImporterDirSelfObject in pkg) {
+            const el = pkg[ImporterDirSelfObject as any];
             if (typeof el === "function" && el.prototype instanceof BaseObject) {
                 const full = path.join(".");
                 if (full in libOut) this.patcher.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);

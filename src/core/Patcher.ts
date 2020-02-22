@@ -169,7 +169,12 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
             if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
             if (mode === "js" && this.props.dependencies) {
-                const promises = Object.keys(this.props.dependencies).map(name => this._state.pkgMgr.importFromURL(this.props.dependencies[name], name));
+                let depNames = Object.keys(this.props.dependencies);
+                const promises = depNames.slice().map(async (name, i) => {
+                    await this._state.pkgMgr.importFromURL(this.props.dependencies[name], name);
+                    depNames = depNames.splice(i, 1);
+                    this.emit("loadDeps", depNames);
+                });
                 await Promise.all(promises);
             }
             if (patcher.boxes) { // Boxes & data

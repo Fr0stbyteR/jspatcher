@@ -3,8 +3,8 @@ import { MenuItemProps, Menu, Icon, Header, Segment, List } from "semantic-ui-re
 import Patcher from "../core/Patcher";
 import "./LeftMenu.scss";
 import { TPackage } from "../core/types";
-import Importer from "../core/objects/importer/Importer";
 import { BaseObject } from "../core/objects/Base";
+import { ImporterDirSelfObject } from "../utils/symbols";
 
 enum TPanels {
     None = "None",
@@ -18,10 +18,10 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
         const { pkg, path } = this.props;
         const { selected } = this.state;
         const list = [];
-        if (path.length && Importer.$self in pkg) {
-            const sel = selected === Importer.$self;
-            const props = sel ? { className: "abstract selected", description: this.getDescription(Importer.$self) } : { className: "abstract" };
-            list.push(<List.Item key={0} {...props} icon="window maximize" header={path[path.length - 1]} onClick={() => this.handleSelect(Importer.$self)} onMouseDown={(e: React.MouseEvent) => this.handleMouseDown(e, Importer.$self)} />);
+        if (path.length && ImporterDirSelfObject in pkg) {
+            const sel = selected === ImporterDirSelfObject;
+            const props = sel ? { className: "abstract selected", description: this.getDescription(ImporterDirSelfObject) } : { className: "abstract" };
+            list.push(<List.Item key={0} {...props} icon="window maximize" header={path[path.length - 1]} onClick={() => this.handleSelect(ImporterDirSelfObject)} onMouseDown={(e: React.MouseEvent) => this.handleMouseDown(e, ImporterDirSelfObject)} />);
         }
         for (const key in pkg) {
             if (typeof pkg[key] === "object") {
@@ -55,7 +55,7 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
     getObjText(key: string | symbol) {
         const path = this.props.path.slice();
         const lib = this.props.patcher.activeLib;
-        if (key !== Importer.$self) path.push(key as string);
+        if (key !== ImporterDirSelfObject) path.push(key as string);
         let id = path.join(".");
         const refObj = lib[id];
         if (!refObj) return undefined;

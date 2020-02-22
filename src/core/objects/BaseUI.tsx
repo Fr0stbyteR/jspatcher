@@ -7,6 +7,8 @@ import "./Default.scss";
 import "./Base.scss";
 import { AbstractObject, BaseObject, AnyObject, DefaultObject } from "./Base";
 import { selectElementPos, selectElementRange } from "../../utils/utils";
+import { TFlatPackage } from "../types";
+import { ImporterDirSelfObject } from "../../utils/symbols";
 
 export interface AbstractUIProps<T extends AbstractObject = AbstractObject> {
     object: T;
@@ -129,19 +131,89 @@ export interface DefaultUIState extends BaseUIState {
     textAlign: "center" | "left" | "right";
     text: string;
     loading: boolean;
-    dropdown$: number;
+}
+interface DefaultUIDropdownItem { key: string; icon: SemanticICONS; description: string }
+interface DefaultUIDropdownObjectsProps { lib: TFlatPackage; query: string; staticMethodOnly?: boolean; onSelect: (e: React.MouseEvent<HTMLTableRowElement>, value: string) => void }
+interface DefaultUIDropdownObjectsState { $: number; items: DefaultUIDropdownItem[] }
+class DefaultUIDropdownObjects extends React.Component<DefaultUIDropdownObjectsProps, DefaultUIDropdownObjectsState> {
+    state: DefaultUIDropdownObjectsState = { $: -1, items: [] };
+    refTBody = React.createRef<HTMLTableSectionElement>();
+    next() {
+        const { items, $ } = this.state;
+        this.setState({ $: Math.min(items.length - 1, $ + 1) });
+        if ($ >= 0 && this.refTBody.current && items[$]) {
+            (this.refTBody.current.children[$] as HTMLTableRowElement).scrollIntoView(false);
+        }
+    }
+    prev() {
+        const { items, $ } = this.state;
+        this.setState({ $: Math.max(-1, $ - 1) });
+        if ($ >= 0 && this.refTBody.current && items[$]) {
+            (this.refTBody.current.children[$] as HTMLTableRowElement).scrollIntoView(false);
+        }
+    }
+    get current() {
+        return this.state.items[this.state.$];
+    }
+    static getItems(props: DefaultUIDropdownObjectsProps) {
+        const { lib, query, staticMethodOnly } = props;
+        const keys = Object.keys(lib).sort();
+        const items: DefaultUIDropdownItem[] = [];
+        for (let i = 0; i < keys.length; i++) {
+            if (items.length >= 16) break;
+            const key = keys[i];
+            if (key.startsWith(query)) {
+                const o = lib[key];
+                const { icon, description } = o.meta;
+                if (staticMethodOnly) {
+                    if (o[ImporterDirSelfObject as unknown as keyof typeof AnyObject]) {
+                        items.push({ key, icon, description });
+                    }
+                } else {
+                    items.push({ key, icon, description });
+                }
+            }
+        }
+        return items;
+    }
+    componentDidMount() {
+        this.setState({ items: DefaultUIDropdownObjects.getItems(this.props), $: -1 });
+    }
+    shouldComponentUpdate(nextProps: Readonly<DefaultUIDropdownObjectsProps>, nextState: Readonly<DefaultUIDropdownObjectsState>, context: any) {
+        if (nextProps.query !== this.props.query || nextProps.staticMethodOnly !== this.props.staticMethodOnly) {
+            this.setState({ items: DefaultUIDropdownObjects.getItems(nextProps), $: -1 });
+            return false;
+        }
+        if (nextState.$ !== this.state.$ || nextState.items !== this.state.items) return true;
+        return false;
+    }
+    render() {
+        return (
+            <div className="box-ui-text-dropdown">
+                <table className="ui small inverted selectable striped unstackable very compact table box-ui-text-autocomplete">
+                    <tbody ref={this.refTBody}>
+                        {this.state.items.map((option, i) => (
+                            <tr key={option.key} className={i === this.state.$ ? "focused" : ""} onMouseDown={e => this.props.onSelect(e, option.key)}>
+                                <td>{option.icon ? <Icon inverted={true} size="small" name={option.icon} /> : undefined}</td>
+                                <td>{option.key}</td>
+                                <td>{option.description}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
 }
 export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState> {
     static editableOnUnlock = true;
     state: S & DefaultUIState = {
         ...this.state,
         text: this.box.text || "",
-        loading: false,
-        dropdown$: -1
+        loading: false
     };
     refSpan = React.createRef<HTMLSpanElement>();
-    refDropdown = React.createRef<HTMLTableSectionElement>();
-    dropdownOptions: { key: string; value: string; text: string; icon: SemanticICONS; description: string }[] = [];
+    refDropdown = React.createRef<DefaultUIDropdownObjects>();
     componentDidMount() {
         super.componentDidMount();
         if (this.props.editing) this.toggleEdit(this.props.editing);
@@ -172,28 +244,27 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         if (!this.props.editing) return;
         if (e.key === "Enter") {
             e.preventDefault();
-            if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$] && this.refSpan.current) {
-                this.refSpan.current.textContent = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[this.state.dropdown$].key).join(" ");
+            if (this.refDropdown.current && this.refSpan.current) {
+                const { current } = this.refDropdown.current;
+                this.refSpan.current.textContent = this.getApplied(current.key);
             }
             return;
         }
-        if ((e.key === " " || e.key === "Tab") && this.refSpan.current) {
-            if (this.state.dropdown$ >= 0 && this.dropdownOptions[this.state.dropdown$]) {
+        if (e.key === " " || e.key === "Tab") {
+            if (this.refDropdown.current && this.refSpan.current) {
                 const span = this.refSpan.current;
-                const text = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[this.state.dropdown$].key).join(" ") + " ";
-                span.textContent = text;
+                const { current } = this.refDropdown.current;
+                const text = this.getApplied(current.key);
+                this.refSpan.current.textContent = text;
                 selectElementPos(span, text.length);
-                this.setState({ text, dropdown$: -1 });
+                this.setState({ text });
             }
         }
         if (e.key === "ArrowUp" || e.key === "ArrowDown") {
             e.preventDefault();
-            let dropdown$;
-            if (e.key === "ArrowUp") dropdown$ = Math.max(-1, this.state.dropdown$ - 1);
-            if (e.key === "ArrowDown") dropdown$ = Math.min(this.dropdownOptions.length - 1, this.state.dropdown$ + 1);
-            this.setState({ dropdown$ });
-            if (dropdown$ >= 0 && this.refDropdown.current && this.dropdownOptions[this.state.dropdown$]) {
-                (this.refDropdown.current.children[dropdown$] as HTMLTableRowElement).scrollIntoView(false);
+            if (this.refDropdown.current) {
+                if (e.key === "ArrowUp") this.refDropdown.current.prev();
+                else if (e.key === "ArrowDown") this.refDropdown.current.next();
             }
         }
         e.stopPropagation();
@@ -202,50 +273,47 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
     handleKeyUp = () => {
         if (!this.refSpan.current) return;
         if (this.refSpan.current.textContent === this.state.text) return;
-        const { patcher } = this;
-        this.dropdownOptions = [];
-        const splitted = this.refSpan.current.textContent.split(" ");
-        if (splitted.length === 1) {
-            const keys = Object.keys(patcher.activeLib).sort();
-            for (let i = 0; i < keys.length; i++) {
-                if (this.dropdownOptions.length > 10) break;
-                const key = keys[i];
-                if (key.startsWith(splitted[splitted.length - 1])) {
-                    const o = patcher.activeLib[key];
-                    this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
-                }
-            }
-        } else if (splitted[0] === "new" && splitted.length === 2) {
-            const keys = Object.keys(patcher.activeLib).sort();
-            for (let i = 0; i < keys.length; i++) {
-                if (this.dropdownOptions.length > 10) break;
-                const key = keys[i];
-                if (key.startsWith(splitted[splitted.length - 1])) {
-                    const o = patcher.activeLib[key];
-                    if (o.meta.description === "Auto-imported static method") {
-                        this.dropdownOptions.push({ key, value: key, text: key, icon: o.meta.icon, description: o.meta.description });
-                    }
-                }
-            }
-        }
         this.setState({ text: this.refSpan.current.textContent });
+    }
+    get dropdownQuery() {
+        let { text } = this.state;
+        if (!this.props.editing || !text.length) return { Dropdown: undefined, query: undefined };
+        if (text.startsWith("new ")) text = text.slice(4);
+        const splitted = text.split(" ");
+        if (splitted.length === 1) {
+            return { Dropdown: DefaultUIDropdownObjects, query: splitted[0] };
+        }
+        return { Dropdown: undefined, query: undefined };
+    }
+    getApplied(textIn: string) {
+        let { text } = this.state;
+        let withNew = false;
+        if (text.startsWith("new ")) {
+            withNew = true;
+            text = text.slice(4);
+        }
+        const splitted = text.split(" ");
+        if (splitted.length === 1) {
+            return withNew ? `new ${textIn}` : textIn;
+        }
+        return textIn;
     }
     handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     }
-    handleMouseDownDropdown = (e: React.MouseEvent, key: string, i: number) => {
+    handleSelect = (e: React.MouseEvent<HTMLTableRowElement>, text: string) => {
         e.preventDefault();
-        if (i >= 0 && this.dropdownOptions[i] && this.refSpan.current) {
+        if (this.state.dropdown$ >= 0 && this.refSpan.current) {
             const span = this.refSpan.current;
-            const text = this.state.text.split(" ").slice(0, -1).concat(this.dropdownOptions[i].key).join(" ");
-            span.textContent = text;
-            selectElementPos(span, text.length);
-            this.setState({ text, dropdown$: i });
+            const textContent = this.state.text.split(" ").slice(0, -1).concat(text).join(" ");
+            span.textContent = textContent;
+            selectElementPos(span, textContent.length);
+            this.setState({ text });
         }
     }
     render() {
-        const { object } = this;
+        const { object, dropdownQuery } = this;
         const textContainerStyle: React.CSSProperties = {
             borderColor: this.state.borderColor,
             backgroundColor: this.state.bgColor
@@ -262,6 +330,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         textContainerProps.style = { ...textContainerProps.style, ...textContainerStyle };
         const spanProps = { ...this.props.spanProps };
         spanProps.style = { ...spanProps.style, ...spanStyle };
+        const { Dropdown, query } = dropdownQuery;
         return (
             <BaseUI additionalClassName="box-ui-default" {...this.props}>
                 <div className="box-ui-text-container" {...textContainerProps}>
@@ -272,24 +341,11 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
                         {object.box.text}
                     </span>
                     {
-                        this.props.editing && this.state.text.length
-                            ? <div className="box-ui-text-dropdown">
-                                <table className="ui small inverted selectable striped unstackable very compact table box-ui-text-autocomplete">
-                                    <tbody ref={this.refDropdown}>
-                                        {this.dropdownOptions.map((option, i) => (
-                                            <tr key={option.key} className={i === this.state.dropdown$ ? "focused" : ""} onMouseDown={e => this.handleMouseDownDropdown(e, option.key, i)}>
-                                                <td>{option.icon ? <Icon inverted={true} size="small" name={option.icon} /> : undefined}</td>
-                                                <td>{option.key}</td>
-                                                <td>{option.description}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                        Dropdown
+                            ? <Dropdown lib={this.patcher.activeLib} query={query} onSelect={this.handleSelect} ref={this.refDropdown} />
                             : undefined
                     }
-                    <div className="box-ui-text-container-append" {...this.props.appendProps}>
-                    </div>
+                    <div className="box-ui-text-container-append" {...this.props.appendProps} />
                 </div>
             </BaseUI>
         );

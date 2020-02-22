@@ -11,16 +11,16 @@ import { Property } from "./Property";
 import { TPackage } from "../../types";
 import { AnyImportedObject } from "./ImportedObject";
 import { BaseObject } from "../Base";
+import { ImporterDirSelfObject } from "../../../utils/symbols";
 
 type TImportedModule = { [key: string]: any };
 declare interface Window {
     module: { exports: TImportedModule };
     exports: TImportedModule;
 }
-export const $self = Symbol("JSPatcher.Importer.selfObject");
 
 export default class Importer {
-    static $self = Symbol("JSPatcher.Importer.selfObject");
+    static $self = ImporterDirSelfObject;
     static getObject(p: PropertyDescriptor, pkgName: string, root: { [key: string]: any }, path: string[]): typeof AnyImportedObject {
         const isStatic = path[path.length - 2] !== "prototype";
         let Super: typeof AnyImportedObject;

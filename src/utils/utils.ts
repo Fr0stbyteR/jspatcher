@@ -14,7 +14,7 @@ export const isTRect = (x: any): x is TRect => {
 export const isMIDIEvent = (x: any): x is TMIDIEvent => (isNumberArray(x) || x instanceof Uint8Array) && x.length === 3;
 export const stringifyError = (data: any) => {
     if (typeof data === "string") return data;
-    if (data instanceof Error) return data.stack;
+    if (data instanceof Error) return data.message;
     if (typeof data === "object") return JSON.stringify(data);
     return `${data}`;
 };

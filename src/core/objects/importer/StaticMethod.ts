@@ -2,8 +2,10 @@ import { Bang } from "../Base";
 import { StaticPropertyUI } from "./StaticProperty";
 import { Method } from "./Method";
 import { TMeta } from "../../types";
+import { ImportedStaticMethodObject } from "../../../utils/symbols";
 
 export class StaticMethod extends Method<true> {
+    static [ImportedStaticMethodObject] = true;
     static description = "Auto-imported static method";
     static inlets: TMeta["inlets"] = [{
         isHot: true,

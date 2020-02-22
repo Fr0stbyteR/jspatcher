@@ -99,7 +99,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
     output() {
         return this.callback();
     }
-    static ui = NewUI;
+    uiComponent = NewUI;
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }
@@ -108,7 +108,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         return c.path[c.path.length - 1];
     }
     get imported(): TAnyConstructor {
-        const c = this.state.Wrapper;
+        const c = this.state.Wrapper || this.patcher.activeLib.Object as typeof StaticMethod;
         let r: TAnyConstructor;
         try {
             r = c.path.reduce((acc, cur) => acc[cur], c.root);

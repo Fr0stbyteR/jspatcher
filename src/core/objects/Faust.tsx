@@ -5,7 +5,7 @@ import { TPackage, TMeta, TPropsMeta } from "../types";
 import { subPatchersMap, TSubPatchersMap, SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
 import { CodeUI, comment } from "./UI";
-import Importer from "./importer/Importer";
+import { ImporterDirSelfObject } from "../../utils/symbols";
 
 type TObjectExpr = {
     exprs?: string[];
@@ -1112,7 +1112,7 @@ export const getFaustLibObjects = (docs: TFaustDocs) => {
         while (path.length - 1) {
             const key = path.shift();
             if (!pkg[key]) pkg[key] = {};
-            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof LibOp) pkg[key] = { [Importer.$self]: pkg[key] };
+            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof LibOp) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
             pkg = pkg[key] as TPackage;
         }
         pkg[path[0]] = Op;
