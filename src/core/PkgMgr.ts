@@ -47,6 +47,7 @@ export default class PackageManager {
         if (!env.faustInjected) {
             this.add(patcherIn.env.faustAdditionalObjects, "js", ["faust"]);
             this.add(patcherIn.env.faustLibObjects, "faust");
+            env.faustInjected = true;
         }
         // Window
         this.add({ Window }, "js");

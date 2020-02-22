@@ -19,6 +19,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     _editing: boolean;
     private _parsed: { class: string; args: Args<T>; props: Props<T> };
     private _object: T;
+    private _objectConstructor: typeof AnyObject;
     private _patcher: Patcher;
     constructor(patcherIn: Patcher, boxIn: TBox) {
         super();
@@ -47,7 +48,10 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         }
         if (this._parsed.args.length) this.args = this._parsed.args;
         Object.assign(this.props, this._parsed.props);
-        this._patcher.createObject(this._parsed, this);
+        const Constructor = this._patcher.getObjectConstructor(this._parsed);
+        this._objectConstructor = Constructor;
+        this._object = new Constructor(this, this._patcher) as T;
+        this._object.init();
         this._object.postInit();
     }
     /**
@@ -80,6 +84,9 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     }
     set object(oIn: T) {
         this._object = oIn;
+    }
+    get objectConstructor() {
+        return this._objectConstructor;
     }
     get parsed() {
         return this._parsed;

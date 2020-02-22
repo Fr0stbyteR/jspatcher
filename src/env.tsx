@@ -78,7 +78,6 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
 
         this.faust = faust;
         const patcher = new Patcher(this);
-        this.faustInjected = true;
         this.patcher = patcher;
         window.patcher = patcher;
 

@@ -237,36 +237,15 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         if (!this._state.isLoading) this.emit("createBox", box);
         return box;
     }
-    createObject(parsed: { class: string; args: any[]; props: { [key: string]: any } }, boxIn: Box) {
-        let obj;
+    getObjectConstructor(parsed: { class: string; args: any[]; props: { [key: string]: any } }) {
         const className = parsed.class;
-        if (typeof className !== "string" || className.length === 0) {
-            obj = new this.activeLib.EmptyObject(boxIn, this);
-        } else {
-            if (this.activeLib[className]) {
-                obj = new this.activeLib[className](boxIn, this);
-            } else {
-                this.newLog("error", "Patcher", "Object " + className + " not found.", this);
-                obj = new this.activeLib.InvalidObject(boxIn, this);
-            }
-            if (!(obj instanceof Base.BaseObject)) {
-                this.newLog("error", "Patcher", "Object " + className + " is not valid.", this);
-                obj = new this.activeLib.InvalidObject(boxIn, this);
-            }
-        }
-        boxIn.object = obj;
-        obj.init();
-        return obj;
+        if (typeof className !== "string" || className.length === 0) return this.activeLib.EmptyObject;
+        if (this.activeLib[className]) return this.activeLib[className];
+        this.newLog("error", "Patcher", "Object " + className + " not found.", this);
+        return this.activeLib.InvalidObject;
     }
     getObjectMeta(parsed: { class: string; args: any[]; props: { [key: string]: any } }) {
-        const className = parsed.class;
-        if (typeof className !== "string" || className.length === 0) {
-            return Base.EmptyObject.meta;
-        }
-        if (this.activeLib[className]) {
-            return this.activeLib[className].meta;
-        }
-        return Base.InvalidObject.meta;
+        return this.getObjectConstructor(parsed).meta;
     }
     changeBoxText(boxID: string, text: string) {
         const oldText = this.boxes[boxID].text;
