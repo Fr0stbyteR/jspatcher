@@ -330,7 +330,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
         const x = round(Math.max(0, e.pageX - patcherRect.left + patcherDiv.scrollLeft), gridX);
         const y = round(Math.max(0, e.pageY - patcherRect.top + patcherDiv.scrollTop), gridY);
         const { presentation } = patcher._state;
-        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 90, 20], presentation, _editing: true });
+        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
     }
     handleKeyDown = (e: KeyboardEvent) => {
         const { patcher } = this.props;
@@ -351,17 +351,12 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
             const [gridX, gridY] = patcher.props.grid;
             const x = round(Math.max(0, this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft), gridX);
             const y = round(Math.max(0, this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop), gridY);
-            let w = 90;
-            const h = 20;
             let text = "";
             if (e.key === "m") text = "message";
             else if (e.key === "c") text = "comment";
-            else if (e.key === "b") {
-                text = "live.button";
-                w = 20;
-            }
+            else if (e.key === "b") text = "live.button";
             const { presentation } = patcher._state;
-            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, w, h], presentation, _editing: true });
+            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
         }
     }
     handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };

@@ -275,7 +275,7 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             description: "Redraw Threshold in Linear"
         }
     };
-    uiComponent = LiveMeterUI;
+    static ui = LiveMeterUI;
     state: LiveMeterState = { node: undefined, $requestTimer: -1 };
     subscribe() {
         super.subscribe();

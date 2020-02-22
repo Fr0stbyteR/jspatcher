@@ -817,7 +817,7 @@ class SubPatcher extends FaustOp<Patcher, SubPatcherState, [string], {}, { patch
         default: "",
         description: "Name of the subpatcher"
     }];
-    uiComponent = SubPatcherUI;
+    static ui = SubPatcherUI;
     state: SubPatcherState = { inlets: 0, outlets: 0, map: subPatchersMap, key: "", cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
     subscribePatcher = () => {
         const patcher = this.data;
@@ -924,7 +924,7 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
             description: "Force function outputs count"
         }
     }
-    uiComponent = CodeUI as any;
+    static ui = CodeUI as any;
     state = { inlets: undefined as number, outlets: undefined as number };
     handlePostInit = async () => {
         const definedInlets = this.getProp("ins");

@@ -216,7 +216,7 @@ export class LiveText extends LiveObject<{}, {}, [number | Bang, number], [numbe
             isUIState: true
         }
     };
-    uiComponent = LiveTextUI;
+    static ui = LiveTextUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

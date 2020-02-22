@@ -95,7 +95,7 @@ define("./service-worker.js",['./workbox-bce63e3c'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "1582356511671"
+    prefix: "1582360308950"
   });
   workbox.skipWaiting();
   workbox.clientsClaim();
@@ -287,7 +287,7 @@ define("./service-worker.js",['./workbox-bce63e3c'], function (workbox) { 'use s
     "revision": "90509a043949258c3c2d90e3e63740d2"
   }, {
     "url": "index.js",
-    "revision": "83001d8cd7ca3b7adc47273e036196b4"
+    "revision": "5360131a95e9d2423393cf58b8b34114"
   }, {
     "url": "js/395a3f25fb2dfdd94882.worklet.js",
     "revision": "d13cbc26d5d0a945f29142a2077e7699"

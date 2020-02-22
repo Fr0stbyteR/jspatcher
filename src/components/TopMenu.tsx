@@ -86,7 +86,7 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
         const { presentation } = patcher._state;
         const [gridX, gridY] = patcher.props.grid;
         const text = "";
-        this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [gridX, gridY, 90, 20], presentation, _editing: true });
+        this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [gridX, gridY, 0, 0], presentation, _editing: true });
     };
     handleClickCut = async () => {
         if (this.props.patcher.state.locked) return;

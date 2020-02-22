@@ -265,7 +265,7 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: str
         }
     };
     state = { value: 0, displayValue: "0" } as S & LiveObjectState;
-    uiComponent: typeof LiveUI;
+    static ui: typeof LiveUI;
     /**
      * Get a nearest valid number
      *

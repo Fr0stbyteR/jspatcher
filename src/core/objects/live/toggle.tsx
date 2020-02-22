@@ -121,7 +121,7 @@ export class LiveToggle extends LiveObject<{}, {}, [number | Bang, number], [num
             isUIState: true
         }
     };
-    uiComponent = LiveToggleUI;
+    static ui = LiveToggleUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

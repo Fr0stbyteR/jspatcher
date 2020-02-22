@@ -104,7 +104,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
         }
         return this.callback();
     }
-    uiComponent: typeof ImportedObjectUI = PropertyUI;
+    static ui: typeof ImportedObjectUI = PropertyUI;
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }

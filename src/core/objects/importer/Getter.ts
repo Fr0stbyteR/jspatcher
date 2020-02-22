@@ -69,7 +69,7 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
         }
         return this.callback();
     }
-    uiComponent: typeof ImportedObjectUI = PropertyUI;
+    static ui: typeof ImportedObjectUI = PropertyUI;
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }

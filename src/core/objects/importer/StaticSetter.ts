@@ -19,5 +19,5 @@ export class StaticSetter extends Setter<true> {
     handleUpdateArgs = (args: [any?]) => {
         if (args.length) this.imported = args[0];
     };
-    uiComponent: typeof ImportedObjectUI = StaticPropertyUI;
+    static ui: typeof ImportedObjectUI = StaticPropertyUI;
 }

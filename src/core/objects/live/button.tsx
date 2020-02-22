@@ -152,7 +152,7 @@ export class LiveButton extends LiveObject<{}, {}, [any], [Bang, number], [numbe
             description: "Specifies when a bang message will be sent to the outlet"
         }
     };
-    uiComponent = LiveButtonUI;
+    static ui = LiveButtonUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

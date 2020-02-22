@@ -49,7 +49,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string
         default: 0,
         description: "Polyphonic instrument voices count"
     }];
-    uiComponent: typeof DefaultUI = FaustNodeUI;
+    static ui: typeof DefaultUI = FaustNodeUI;
     state = { merger: undefined, splitter: undefined, node: undefined, voices: 0 } as S;
     _meta: TMeta = FaustNode.meta;
     get meta() {

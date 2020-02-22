@@ -226,7 +226,7 @@ export class Spectrogram extends BaseDSP<{}, State, [Bang], [], [], Props, Spect
             isUIState: true
         }
     };
-    uiComponent = SpectrogramUI;
+    static ui = SpectrogramUI;
     state: State = { node: undefined };
     subscribe() {
         super.subscribe();

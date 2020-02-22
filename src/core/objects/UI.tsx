@@ -144,7 +144,7 @@ class message extends BaseObject<{ text: string }, { buffer: any; editing: boole
         if (typeof o === "string") return o;
         return Util.inspect(o);
     }
-    uiComponent: typeof BaseUI = MessageUI;
+    static ui: typeof BaseUI = MessageUI;
 }
 class CommentUI extends BaseUI<comment> {
     static editableOnUnlock = true;
@@ -213,7 +213,7 @@ export class comment extends BaseObject<{ value: string }, {}, [], [], [string]>
             if (!this.data.hasOwnProperty("value")) this.data.value = args.join(" ");
         });
     }
-    uiComponent: typeof BaseUI = CommentUI;
+    static ui: typeof BaseUI = CommentUI;
 }
 type CodeUIState = { language: string; value: string; editorLoaded: boolean; editing: boolean } & BaseUIState;
 export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
@@ -301,6 +301,6 @@ export class code extends BaseObject<{ value: string }, {}, [Bang, string], [str
             }
         });
     }
-    uiComponent: typeof BaseUI = CodeUI;
+    static ui: typeof BaseUI = CodeUI;
 }
 export default { message, comment, code };

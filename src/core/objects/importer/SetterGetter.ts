@@ -96,5 +96,5 @@ export class SetterGetter<Static extends boolean = false> extends ImportedObject
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }
-    uiComponent: typeof ImportedObjectUI = PropertyUI;
+    static ui: typeof ImportedObjectUI = PropertyUI;
 }

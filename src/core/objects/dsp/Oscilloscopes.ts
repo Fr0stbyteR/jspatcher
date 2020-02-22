@@ -327,7 +327,7 @@ export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, Osci
             isUIState: true
         }
     };
-    uiComponent = OscilloscopeUI;
+    static ui = OscilloscopeUI;
     state: State = { node: undefined };
     subscribe() {
         super.subscribe();

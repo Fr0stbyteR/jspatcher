@@ -560,7 +560,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             description: "Ramp time"
         }
     }
-    uiComponent = LiveGainUI;
+    static ui = LiveGainUI;
     state: LiveGainState = {
         ...this.state,
         rmsNode: undefined,

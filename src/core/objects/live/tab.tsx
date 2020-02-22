@@ -308,7 +308,7 @@ export class LiveTab extends LiveObject<{}, {}, [number | Bang, number], [number
             isUIState: true
         }
     };
-    uiComponent = LiveTabUI;
+    static ui = LiveTabUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

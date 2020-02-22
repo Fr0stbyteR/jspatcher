@@ -429,7 +429,7 @@ export class LiveDial extends LiveObject<{}, {}, [number | Bang, number], [numbe
             isUIState: true
         }
     };
-    uiComponent = LiveDialUI;
+    static ui = LiveDialUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

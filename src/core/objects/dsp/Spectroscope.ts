@@ -212,7 +212,7 @@ export class Spectroscope extends BaseDSP<{}, State, [Bang], [], [], Props, Spec
             isUIState: true
         }
     };
-    uiComponent = SpectroscopeUI;
+    static ui = SpectroscopeUI;
     state: State = { node: undefined };
     subscribe() {
         super.subscribe();

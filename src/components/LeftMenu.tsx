@@ -112,11 +112,9 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
             const { scrollLeft, scrollTop } = patcherDiv;
             const x = pageX - left + scrollLeft;
             const y = pageY - top + scrollTop;
-            const w = 90;
-            const h = 20;
             const { patcher } = this.props;
             const { presentation } = patcher._state;
-            patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, w, h], presentation }).changeText(this.getObjText(key));
+            patcher.createBox({ text: this.getObjText(key), inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
         };
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);

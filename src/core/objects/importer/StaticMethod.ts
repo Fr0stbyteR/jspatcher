@@ -40,5 +40,5 @@ export class StaticMethod extends Method<true> {
         }
     }
     callback = () => this.outletAll([this.state.result, ...this.state.inputs]);
-    uiComponent = StaticPropertyUI;
+    static ui = StaticPropertyUI;
 }

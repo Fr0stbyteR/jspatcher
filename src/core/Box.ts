@@ -50,6 +50,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         Object.assign(this.props, this._parsed.props);
         const Constructor = this._patcher.getObjectConstructor(this._parsed);
         this._objectConstructor = Constructor;
+        if (!this.size.every(v => v > 0)) this.size = this.defaultSize;
         this._object = new Constructor(this, this._patcher) as T;
         this._object.init();
         this._object.postInit();
@@ -68,7 +69,10 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         return this;
     }
     get uiComponent() {
-        return this._object.uiComponent;
+        return this._objectConstructor.ui;
+    }
+    get defaultSize() {
+        return this.uiComponent.defaultSize;
     }
     get meta() {
         return this._object.meta;
@@ -174,14 +178,15 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     }
     changeText(textIn: string, force?: boolean) {
         if (!force && textIn === this.text) return this;
+        const { defaultSize: oldDefaultSize } = this;
         this.allLines.forEach(el => this._patcher.lines[el].disable());
         this._object.destroy();
         this.text = textIn;
         this.args = [] as Args<T>;
         this.init();
         this.allLines.forEach(el => this._patcher.lines[el].enable());
-        const { defaultSize } = this._object.uiComponent;
-        if (defaultSize && defaultSize.every(v => typeof v === "number" && v > 15) && defaultSize.length === 2) {
+        const { defaultSize } = this;
+        if (!defaultSize.every((v, i) => v === oldDefaultSize[i])) {
             this.size = defaultSize;
             this.presentationSize = defaultSize;
         }
@@ -214,17 +219,29 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.emit("updatedFromObject", { args, props });
         return this;
     }
+    get position() {
+        return this.rect.slice(0, 2) as [number, number];
+    }
     set position([leftIn, topIn]: [number, number]) {
         const [left, top, width, height] = this.rect;
         this.setRect([typeof leftIn === "number" ? leftIn : left, typeof topIn === "number" ? topIn : top, width, height] as TRect);
+    }
+    get presentationPosition() {
+        return this.presentationRect.slice(0, 2) as [number, number];
     }
     set presentationPosition([leftIn, topIn]: [number, number]) {
         const [left, top, width, height] = this.presentationRect;
         this.setPresentationRect([typeof leftIn === "number" ? leftIn : left, typeof topIn === "number" ? topIn : top, width, height] as TRect);
     }
+    get size() {
+        return this.rect.slice(2) as [number, number];
+    }
     set size([widthIn, heightIn]: [number, number]) {
         const [left, top, width, height] = this.rect;
         this.setRect([left, top, widthIn || width, heightIn || height] as TRect);
+    }
+    get presentationSize() {
+        return this.presentationRect.slice(2) as [number, number];
     }
     set presentationSize([widthIn, heightIn]: [number, number]) {
         const [left, top, width, height] = this.presentationRect;

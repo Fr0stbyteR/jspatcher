@@ -57,5 +57,5 @@ export class Setter<Static extends boolean = false> extends ImportedObject<any, 
         this.on("updateArgs", this.handleUpdateArgs);
         this.on("inlet", this.handleInlet);
     }
-    uiComponent: typeof ImportedObjectUI = PropertyUI;
+    static ui: typeof ImportedObjectUI = PropertyUI;
 }

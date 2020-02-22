@@ -99,7 +99,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
     output() {
         return this.callback();
     }
-    uiComponent = NewUI;
+    static ui = NewUI;
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }

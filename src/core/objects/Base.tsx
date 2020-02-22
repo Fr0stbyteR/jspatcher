@@ -94,7 +94,7 @@ export abstract class AbstractObject<
      * @type {typeof BaseUI}
      * @memberof AbstractObject
      */
-    uiComponent: typeof BaseUI = BaseUI;
+    static ui: typeof BaseUI = BaseUI;
     /**
      * Update UI's React State
      *
@@ -439,7 +439,7 @@ export class DefaultObject<
             isUIState: true
         }
     };
-    uiComponent = DefaultUI;
+    static ui = DefaultUI;
 }
 export class AnyObject extends BaseObject<{ [key: string]: any }, { [key: string]: any }, any[], any[], any[], { [key: string]: any }, { [key: string]: any }, { [key: string]: any }> {}
 export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
@@ -501,7 +501,7 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
 }
 export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseAudioObject<D, S, I, O, A, P, U & DefaultUIState, E> {
     static props = DefaultObject.props;
-    uiComponent = DefaultUI;
+    static ui = DefaultUI;
 }
 class EmptyObjectUI extends DefaultUI<EmptyObject> {}
 export class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
@@ -526,7 +526,7 @@ export class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], 
         });
         this.on("inlet", ({ data }) => this.outlet(0, data));
     }
-    uiComponent: typeof DefaultUI = EmptyObjectUI;
+    static ui: typeof DefaultUI = EmptyObjectUI;
 }
 export class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
     static description = "invalid object";

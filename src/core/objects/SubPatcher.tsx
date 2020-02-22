@@ -339,7 +339,7 @@ export class patcher extends DefaultAudioObject<Patcher, SubPatcherState, any[],
         this._meta = metaIn;
         this.emit("metaChanged", this._meta);
     }
-    uiComponent = SubPatcherUI;
+    static ui = SubPatcherUI;
     subscribe() {
         super.subscribe();
         const handlePatcherOutlet = ({ outlet, data }: PatcherEventMap["outlet"]) => this.outlet(outlet, data);
@@ -433,7 +433,7 @@ export class faustPatcher extends FaustNode<Patcher, FaustPatcherState, [string,
         default: 0,
         description: "Polyphonic instrument voices count"
     }];
-    uiComponent = SubPatcherUI;
+    static ui = SubPatcherUI;
     state = { merger: undefined, splitter: undefined, node: undefined, voices: 0, map: subPatchersMap, key: "" } as FaustPatcherState;
     _meta: TMeta = patcher.meta;
     subscribePatcher = () => {

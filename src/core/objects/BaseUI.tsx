@@ -92,6 +92,7 @@ export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIPr
         presentation: this.box.presentation || false
     };
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
+    static defaultSize: [number, number] = [90, 20];
     static editableOnUnlock = false;
     handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
         if ((this.props.object as T).patcher.state.locked) e.currentTarget.title = this.state.hint;

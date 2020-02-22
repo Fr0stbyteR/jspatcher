@@ -32,5 +32,5 @@ export class StaticGetter extends Getter<true> {
         }
     }
     callback = () => this.outlet(0, this.state.result);
-    uiComponent = StaticPropertyUI;
+    static ui = StaticPropertyUI;
 }
