@@ -1,4 +1,4 @@
-import { isTRect } from "../utils/utils";
+import { isTRect, parseToPrimitive } from "../utils/utils";
 import { MappedEventEmitter } from "../utils/MappedEventEmitter";
 import Patcher from "./Patcher";
 import { AnyObject } from "./objects/Base";
@@ -328,13 +328,6 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         return this;
     }
     static parseObjText(strIn: string) {
-        const parseToPrimitive = (value: any) => {
-            try {
-                return JSON.parse(value);
-            } catch (e) {
-                return value.toString();
-            }
-        };
         const REGEX = /`([^`]*)`|[^\s]+/gi;
         const strArray = [];
         let match = REGEX.exec(strIn);

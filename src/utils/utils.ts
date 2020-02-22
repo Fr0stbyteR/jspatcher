@@ -18,6 +18,13 @@ export const stringifyError = (data: any) => {
     if (typeof data === "object") return JSON.stringify(data);
     return `${data}`;
 };
+export const parseToPrimitive = (value: any) => {
+    try {
+        return JSON.parse(value);
+    } catch (e) {
+        return value.toString();
+    }
+};
 export const rgbaMax2Css = (maxColor: number[]) => {
     const cssColor = [255, 255, 255, 1] as TRect;
     if (Array.isArray(maxColor)) {

@@ -7,7 +7,7 @@ import "./Default.scss";
 import "./Base.scss";
 import { AbstractObject, BaseObject, AnyObject, DefaultObject } from "./Base";
 import { selectElementPos, selectElementRange } from "../../utils/utils";
-import { TFlatPackage } from "../types";
+import { TFlatPackage, TMetaType } from "../types";
 import { ImporterDirSelfObject } from "../../utils/symbols";
 
 export interface AbstractUIProps<T extends AbstractObject = AbstractObject> {
@@ -132,9 +132,9 @@ export interface DefaultUIState extends BaseUIState {
     text: string;
     loading: boolean;
 }
-interface DefaultUIDropdownItem { key: string; icon: SemanticICONS; description: string }
+interface DefaultUIDropdownObjectsItem { key: string; icon: SemanticICONS; description: string }
 interface DefaultUIDropdownObjectsProps { lib: TFlatPackage; query: string; staticMethodOnly?: boolean; onSelect: (e: React.MouseEvent<HTMLTableRowElement>, value: string) => void }
-interface DefaultUIDropdownObjectsState { $: number; items: DefaultUIDropdownItem[] }
+interface DefaultUIDropdownObjectsState { $: number; items: DefaultUIDropdownObjectsItem[] }
 class DefaultUIDropdownObjects extends React.Component<DefaultUIDropdownObjectsProps, DefaultUIDropdownObjectsState> {
     state: DefaultUIDropdownObjectsState = { $: -1, items: [] };
     refTBody = React.createRef<HTMLTableSectionElement>();
@@ -155,10 +155,10 @@ class DefaultUIDropdownObjects extends React.Component<DefaultUIDropdownObjectsP
     get current() {
         return this.state.items[this.state.$];
     }
-    static getItems(props: DefaultUIDropdownObjectsProps) {
-        const { lib, query, staticMethodOnly } = props;
+    static getItems(propsIn: DefaultUIDropdownObjectsProps) {
+        const { lib, query, staticMethodOnly } = propsIn;
         const keys = Object.keys(lib).sort();
-        const items: DefaultUIDropdownItem[] = [];
+        const items: DefaultUIDropdownObjectsItem[] = [];
         for (let i = 0; i < keys.length; i++) {
             if (items.length >= 16) break;
             const key = keys[i];
@@ -205,6 +205,70 @@ class DefaultUIDropdownObjects extends React.Component<DefaultUIDropdownObjectsP
         );
     }
 }
+interface DefaultUIDropdownArgvItem { key: string | number; type: TMetaType; optional?: boolean; varLength?: boolean; description: string }
+interface DefaultUIDropdownArgvProps { obj: typeof AnyObject; argv: string[]; onSelect: (e: React.MouseEvent<HTMLTableRowElement>, value: string | number) => void }
+interface DefaultUIDropdownArgvState { $: number; items: DefaultUIDropdownArgvItem[] }
+class DefaultUIDropdownArgv extends React.Component<DefaultUIDropdownArgvProps, DefaultUIDropdownArgvState> {
+    state: DefaultUIDropdownArgvState = { $: -1, items: [] };
+    refTBody = React.createRef<HTMLTableSectionElement>();
+    next() {}
+    prev() {}
+    get current() {
+        return this.state.items[this.state.$];
+    }
+    static getItems(propsIn: DefaultUIDropdownArgvProps) {
+        const { obj } = propsIn;
+        const { args, props } = obj.meta;
+        const items: DefaultUIDropdownArgvItem[] = [];
+        for (let i = 0; i < args.length; i++) {
+            const { type, optional, varLength, description } = args[i];
+            items.push({ key: i, type, optional, varLength, description });
+        }
+        for (const key in props) {
+            const { type, description } = props[key];
+            items.push({ key, type, description });
+        }
+        return items;
+    }
+    componentDidMount() {
+        this.setState({ items: DefaultUIDropdownArgv.getItems(this.props), $: -1 });
+    }
+    shouldComponentUpdate(nextProps: Readonly<DefaultUIDropdownArgvProps>, nextState: Readonly<DefaultUIDropdownArgvState>, context: any) {
+        if (nextProps.obj !== this.props.obj || nextProps.argv !== this.props.argv) {
+            this.setState({ items: DefaultUIDropdownArgv.getItems(nextProps), $: -1 });
+            return false;
+        }
+        if (nextState.$ !== this.state.$ || nextState.items !== this.state.items) return true;
+        return false;
+    }
+    render() {
+        return (
+            <div className="box-ui-text-dropdown">
+                <table className="ui small inverted selectable striped unstackable very compact table box-ui-text-autocomplete">
+                    <tbody ref={this.refTBody}>
+                        {this.state.items.map((option, i) => (
+                            <tr key={option.key} className={i === this.state.$ ? "focused" : ""} onMouseDown={e => this.props.onSelect(e, option.key)}>
+                                {
+                                    typeof option.key === "number"
+                                        ? <>
+                                            <td><Icon inverted={true} size="small" name="ellipsis horizontal" /></td>
+                                            <td>{option.optional ? `[${option.varLength ? "..." : ""}arg${option.key}]` : `${option.varLength ? "..." : ""}arg${option.key}`}</td>
+                                        </>
+                                        : <>
+                                            <td><Icon inverted={true} size="small" name="at" /></td>
+                                            <td>{option.key}</td>
+                                        </>
+                                }
+                                <td style={{ color: "#30a0a0" }}>{option.type}</td>
+                                <td>{option.description}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+}
 export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState> {
     static editableOnUnlock = true;
     state: S & DefaultUIState = {
@@ -213,7 +277,8 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         loading: false
     };
     refSpan = React.createRef<HTMLSpanElement>();
-    refDropdown = React.createRef<DefaultUIDropdownObjects>();
+    refDropdownObject = React.createRef<DefaultUIDropdownObjects>();
+    refDropdownArgv = React.createRef<DefaultUIDropdownArgv>();
     componentDidMount() {
         super.componentDidMount();
         if (this.props.editing) this.toggleEdit(this.props.editing);
@@ -244,27 +309,29 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         if (!this.props.editing) return;
         if (e.key === "Enter") {
             e.preventDefault();
-            if (this.refDropdown.current && this.refSpan.current) {
-                const { current } = this.refDropdown.current;
-                this.refSpan.current.textContent = this.getApplied(current.key);
+            if (this.refDropdownObject.current && this.refSpan.current) {
+                const { current } = this.refDropdownObject.current;
+                if (current) this.refSpan.current.textContent = this.getApplied(current.key);
             }
             return;
         }
         if (e.key === " " || e.key === "Tab") {
-            if (this.refDropdown.current && this.refSpan.current) {
+            if (this.refDropdownObject.current && this.refSpan.current) {
                 const span = this.refSpan.current;
-                const { current } = this.refDropdown.current;
-                const text = this.getApplied(current.key);
-                this.refSpan.current.textContent = text;
-                selectElementPos(span, text.length);
-                this.setState({ text });
+                const { current } = this.refDropdownObject.current;
+                if (current) {
+                    const text = this.getApplied(current.key);
+                    this.refSpan.current.textContent = text;
+                    selectElementPos(span, text.length);
+                    this.setState({ text });
+                }
             }
         }
         if (e.key === "ArrowUp" || e.key === "ArrowDown") {
             e.preventDefault();
-            if (this.refDropdown.current) {
-                if (e.key === "ArrowUp") this.refDropdown.current.prev();
-                else if (e.key === "ArrowDown") this.refDropdown.current.next();
+            if (this.refDropdownObject.current) {
+                if (e.key === "ArrowUp") this.refDropdownObject.current.prev();
+                else if (e.key === "ArrowDown") this.refDropdownObject.current.next();
             }
         }
         e.stopPropagation();
@@ -279,11 +346,12 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         let { text } = this.state;
         if (!this.props.editing || !text.length) return { Dropdown: undefined, query: undefined };
         if (text.startsWith("new ")) text = text.slice(4);
-        const splitted = text.split(" ");
-        if (splitted.length === 1) {
-            return { Dropdown: DefaultUIDropdownObjects, query: splitted[0] };
-        }
-        return { Dropdown: undefined, query: undefined };
+        const splitted = text.split(/\s/);
+        if (splitted.length === 1) return { Dropdown: DefaultUIDropdownObjects, query: splitted[0] };
+        const [className, ...argv] = splitted;
+        const obj = this.patcher.activeLib[className];
+        if (!obj) return { Dropdown: undefined, query: undefined };
+        return { Dropdown: DefaultUIDropdownArgv, query: { obj, argv } };
     }
     getApplied(textIn: string) {
         let { text } = this.state;
@@ -292,7 +360,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
             withNew = true;
             text = text.slice(4);
         }
-        const splitted = text.split(" ");
+        const splitted = text.split(/\s/);
         if (splitted.length === 1) {
             return withNew ? `new ${textIn}` : textIn;
         }
@@ -306,7 +374,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         e.preventDefault();
         if (this.state.dropdown$ >= 0 && this.refSpan.current) {
             const span = this.refSpan.current;
-            const textContent = this.state.text.split(" ").slice(0, -1).concat(text).join(" ");
+            const textContent = this.state.text.split(/\s/).slice(0, -1).concat(text).join(" ");
             span.textContent = textContent;
             selectElementPos(span, textContent.length);
             this.setState({ text });
@@ -341,9 +409,11 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
                         {object.box.text}
                     </span>
                     {
-                        Dropdown
-                            ? <Dropdown lib={this.patcher.activeLib} query={query} onSelect={this.handleSelect} ref={this.refDropdown} />
-                            : undefined
+                        Dropdown === DefaultUIDropdownObjects && typeof query === "string"
+                            ? <DefaultUIDropdownObjects lib={this.patcher.activeLib} query={query} onSelect={this.handleSelect} ref={this.refDropdownObject} />
+                            : Dropdown === DefaultUIDropdownArgv && typeof query === "object"
+                                ? <DefaultUIDropdownArgv obj={query.obj} argv={query.argv} onSelect={this.handleSelect} ref={this.refDropdownArgv} />
+                                : undefined
                     }
                     <div className="box-ui-text-container-append" {...this.props.appendProps} />
                 </div>
