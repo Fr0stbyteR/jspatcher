@@ -337,6 +337,7 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
         this.schedulePaint();
     }
     componentWillUnmount() {
+        super.componentWillUnmount();
         if (this.paintScheduled) cancelAnimationFrame(this.$paintRaf);
     }
     paint() {
