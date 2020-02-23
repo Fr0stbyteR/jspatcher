@@ -366,7 +366,10 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         varLength: true,
         description: "Initial value for match"
     }];
-    meta = sel.meta;
+    _meta = sel.meta;
+    get meta() {
+        return this._meta;
+    }
     state = { array: [] as any[] };
     subscribe() {
         super.subscribe();
@@ -376,16 +379,18 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         });
         this.on("updateArgs", (args) => {
             const testsCount = args.length;
-            const inletMeta1 = this.meta.inlets[1];
-            const outletMeta0 = this.meta.outlets[0];
-            const outletMeta1 = this.meta.outlets[1];
+            const [inletMeta0, inletMeta1] = sel.meta.inlets;
+            const [outletMeta0, outletMeta1] = sel.meta.inlets;
+            this._meta.inlets = [inletMeta0];
+            this._meta.outlets = [];
             for (let i = 0; i < testsCount; i++) {
-                this.meta.outlets[i] = { ...outletMeta0 };
-                this.meta.outlets[i].description += ` index ${i}`;
-                this.meta.inlets[i + 1] = { ...inletMeta1 };
-                this.meta.inlets[i + 1].description += ` index ${i}`;
+                this._meta.outlets[i] = { ...outletMeta0 };
+                this._meta.outlets[i].description += ` index ${i}`;
+                this._meta.inlets[i + 1] = { ...inletMeta1 };
+                this._meta.inlets[i + 1].description += ` index ${i}`;
             }
-            this.meta.outlets[testsCount] = outletMeta1;
+            this._meta.outlets[testsCount] = outletMeta1;
+            this.emit("metaChanged");
             this.state.array = args.slice();
             this.inlets = 1 + testsCount;
             this.outlets = testsCount + 1;
