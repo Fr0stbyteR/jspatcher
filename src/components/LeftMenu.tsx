@@ -191,20 +191,21 @@ export default class LeftMenu extends React.PureComponent<{ patcher: Patcher }, 
         const { state } = audioCtx;
         this.setState({ audioOn: state === "running" });
     }
-    handlePatcherLoaded = () => {
+    handlePatcherLoading = (loading?: string[]) => {
+        if (loading) return;
         const codePanel = this.props.patcher.props.mode === "faust" || this.props.patcher.props.mode === "gen";
         this.setState({ active: TPanels.None, codePanel });
     }
     componentDidMount() {
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
-        this.props.patcher.on("loaded", this.handlePatcherLoaded);
-        this.handlePatcherLoaded();
+        this.props.patcher.on("loading", this.handlePatcherLoading);
+        this.handlePatcherLoading();
     }
     componentWillUnmount() {
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleAudioCtxStateChange);
-        this.props.patcher.off("loaded", this.handlePatcherLoaded);
+        this.props.patcher.off("loading", this.handlePatcherLoading);
     }
     render() {
         return (

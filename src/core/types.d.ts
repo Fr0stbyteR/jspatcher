@@ -145,8 +145,7 @@ type TRect = [number, number, number, number];
 type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
 
 interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
-    "loaded": Patcher;
-    "loadDeps": string[];
+    "loading": string[] | undefined;
     "locked": boolean;
     "presentation": boolean;
     "showGrid": boolean;

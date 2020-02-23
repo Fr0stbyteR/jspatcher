@@ -438,20 +438,20 @@ class CodeEditor extends React.PureComponent<{ patcher: Patcher }, { value: stri
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
     handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
-    handleGraphChanged = () => {
-        if (!this.props.patcher.state.isLoading && this.state.editorLoaded) this.setState({ value: this.code });
+    handleGraphChanged = (e?: string[]) => {
+        if (!e && !this.props.patcher.state.isLoading && this.state.editorLoaded) this.setState({ value: this.code });
     };
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
     async componentDidMount() {
         const reactMonacoEditor = await import("react-monaco-editor");
         this.editorJSX = reactMonacoEditor.default;
         this.setState({ editorLoaded: true });
-        this.props.patcher.on("loaded", this.handleGraphChanged);
+        this.props.patcher.on("loading", this.handleGraphChanged);
         this.props.patcher.on("graphChanged", this.handleGraphChanged);
         window.addEventListener("resize", this.handleResize);
     }
     componentWillUnmount() {
-        this.props.patcher.off("loaded", this.handleGraphChanged);
+        this.props.patcher.off("loading", this.handleGraphChanged);
         this.props.patcher.off("graphChanged", this.handleGraphChanged);
         window.removeEventListener("resize", this.handleResize);
     }
@@ -520,20 +520,21 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
         const { state } = audioCtx;
         this.setState({ audioOn: state === "running" });
     }
-    handlePatcherLoaded = () => {
+    handlePatcherLoading = (loading?: string[]) => {
+        if (loading) return;
         const codePanel = this.props.patcher.props.mode === "faust" || this.props.patcher.props.mode === "gen";
         this.setState({ active: TPanels.None, codePanel });
     }
     componentDidMount() {
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
-        this.props.patcher.on("loaded", this.handlePatcherLoaded);
-        this.handlePatcherLoaded();
+        this.props.patcher.on("loading", this.handlePatcherLoading);
+        this.handlePatcherLoading();
     }
     componentWillUnmount() {
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleAudioCtxStateChange);
-        this.props.patcher.off("loaded", this.handlePatcherLoaded);
+        this.props.patcher.off("loading", this.handlePatcherLoading);
     }
     render() {
         return (

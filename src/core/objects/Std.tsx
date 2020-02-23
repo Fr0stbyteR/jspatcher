@@ -81,7 +81,7 @@ class loadbang extends StdObject<{}, {}, [], [Bang], []> {
         this.on("preInit", () => {
             this.inlets = 0;
             this.outlets = 1;
-            this.patcher.on("loaded", () => this.outlet(0, new Bang()));
+            this.patcher.on("loading", () => this.outlet(0, new Bang()));
         });
     }
 }

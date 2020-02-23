@@ -41,14 +41,15 @@ class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
         this.setState({ pName: patcher.fileName });
         this.refOpen.current.value = "";
     }
-    handleLoaded = () => {
+    handleLoading = (loading?: string[]) => {
+        if (loading) return;
         this.setState({ pName: this.props.patcher.fileName });
     }
     componentDidMount() {
-        this.props.patcher.on("loaded", this.handleLoaded);
+        this.props.patcher.on("loading", this.handleLoading);
     }
     componentWillUnmount() {
-        this.props.patcher.off("loaded", this.handleLoaded);
+        this.props.patcher.off("loading", this.handleLoading);
     }
     render() {
         const ctrl = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";

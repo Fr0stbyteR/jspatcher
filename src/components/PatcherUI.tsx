@@ -26,7 +26,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     refBoxes = React.createRef<Boxes>();
     refLines = React.createRef<Lines>();
     size = { width: 0, height: 0 };
-    handleLoaded = () => {
+    handleLoading = (loading?: string[]) => {
+        if (loading) return;
         this.setState({ bgColor: this.props.patcher.props.bgColor, editingBgColor: this.props.patcher.props.editingBgColor });
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
@@ -101,7 +102,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     };
     componentDidMount() {
         const patcher = this.props.patcher;
-        patcher.on("loaded", this.handleLoaded);
+        patcher.on("loading", this.handleLoading);
         patcher.on("locked", this.handleLockedChange);
         patcher.on("presentation", this.handlePresentationChange);
         patcher.on("showGrid", this.handleShowGridChange);
@@ -110,7 +111,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     }
     componentWillUnmount() {
         const patcher = this.props.patcher;
-        patcher.off("loaded", this.handleLoaded);
+        patcher.off("loading", this.handleLoading);
         patcher.off("locked", this.handleLockedChange);
         patcher.off("presentation", this.handlePresentationChange);
         patcher.off("showGrid", this.handleShowGridChange);
@@ -138,28 +139,28 @@ class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; h
     state = { width: "100%", height: "100%" };
     lines: { [key: string]: JSX.Element } = {};
     componentDidMount() {
-        this.onLoaded();
+        this.handleLoading();
         const patcher = this.props.patcher;
-        patcher.on("loaded", this.onLoaded);
-        patcher.on("createLine", this.onCreateLine);
-        patcher.on("create", this.onCreate);
-        patcher.on("deleteLine", this.onDeleteLine);
-        patcher.on("delete", this.onDelete);
+        patcher.on("loading", this.handleLoading);
+        patcher.on("createLine", this.handleCreateLine);
+        patcher.on("create", this.handleCreate);
+        patcher.on("deleteLine", this.handleDeleteLine);
+        patcher.on("delete", this.handleDelete);
     }
     componentWillUnmount() {
         const patcher = this.props.patcher;
-        patcher.off("loaded", this.onLoaded);
-        patcher.off("createLine", this.onCreateLine);
-        patcher.off("create", this.onCreate);
-        patcher.off("deleteLine", this.onDeleteLine);
-        patcher.off("delete", this.onDelete);
+        patcher.off("loading", this.handleLoading);
+        patcher.off("createLine", this.handleCreateLine);
+        patcher.off("create", this.handleCreate);
+        patcher.off("deleteLine", this.handleDeleteLine);
+        patcher.off("delete", this.handleDelete);
     }
-    onCreateLine = (line: Line) => {
+    handleCreateLine = (line: Line) => {
         if (this.props.patcher.state.isLoading) return;
         this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
         this.forceUpdate();
     }
-    onCreate = (created: TPatcher) => {
+    handleCreate = (created: TPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(created.lines).forEach((id) => {
             const line = created.lines[id];
@@ -167,17 +168,18 @@ class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; h
         });
         this.forceUpdate();
     }
-    onDeleteLine = (line: Line) => {
+    handleDeleteLine = (line: Line) => {
         if (this.props.patcher.state.isLoading) return;
         delete this.lines[line.id];
         this.forceUpdate();
     }
-    onDelete = (deleted: TPatcher) => {
+    handleDelete = (deleted: TPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
         this.forceUpdate();
     }
-    onLoaded = () => {
+    handleLoading = (loading?: string[]) => {
+        if (loading) return;
         for (const lineID in this.lines) {
             delete this.lines[lineID];
         }
@@ -206,30 +208,30 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
     dragged = false;
     cachedMousePos = { x: 0, y: 0 };
     componentDidMount() {
-        this.onLoaded();
+        this.handleLoading();
         const patcher = this.props.patcher;
-        patcher.on("loaded", this.onLoaded);
-        patcher.on("createBox", this.onCreateBox);
-        patcher.on("create", this.onCreate);
-        patcher.on("deleteBox", this.onDeleteBox);
-        patcher.on("delete", this.onDelete);
+        patcher.on("loading", this.handleLoading);
+        patcher.on("createBox", this.handleCreateBox);
+        patcher.on("create", this.handleCreate);
+        patcher.on("deleteBox", this.handleDeleteBox);
+        patcher.on("delete", this.handleDelete);
         document.addEventListener("keydown", this.handleKeyDown);
     }
     componentWillUnmount() {
         const patcher = this.props.patcher;
-        patcher.off("loaded", this.onLoaded);
-        patcher.off("createBox", this.onCreateBox);
-        patcher.off("create", this.onCreate);
-        patcher.off("deleteBox", this.onDeleteBox);
-        patcher.off("delete", this.onDelete);
+        patcher.off("loading", this.handleLoading);
+        patcher.off("createBox", this.handleCreateBox);
+        patcher.off("create", this.handleCreate);
+        patcher.off("deleteBox", this.handleDeleteBox);
+        patcher.off("delete", this.handleDelete);
         document.removeEventListener("keydown", this.handleKeyDown);
     }
-    onCreateBox = (box: Box) => {
+    handleCreateBox = (box: Box) => {
         if (this.props.patcher.state.isLoading) return;
         this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
         this.forceUpdate();
     }
-    onCreate = (created: TPatcher) => {
+    handleCreate = (created: TPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(created.boxes).forEach((id) => {
             const box = created.boxes[id];
@@ -237,17 +239,18 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
         });
         this.forceUpdate();
     }
-    onDeleteBox = (box: Box) => {
+    handleDeleteBox = (box: Box) => {
         if (this.props.patcher.state.isLoading) return;
         delete this.boxes[box.id];
         this.forceUpdate();
     }
-    onDelete = (deleted: TPatcher) => {
+    handleDelete = (deleted: TPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(deleted.boxes).forEach(id => delete this.boxes[id]);
         this.forceUpdate();
     }
-    onLoaded = () => {
+    handleLoading = (loading?: string[]) => {
+        if (loading) return;
         for (const boxID in this.boxes) {
             delete this.boxes[boxID];
         }
@@ -383,16 +386,20 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
 
 class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; height: string; grid: [number, number]; editingBgColor: string }> {
     state = { width: "100%", height: "100%", grid: this.props.patcher.props.grid, editingBgColor: this.props.patcher.props.editingBgColor };
-    handleLoaded = (e: Patcher) => this.setState({ grid: e.props.grid.slice() as [number, number], editingBgColor: e.props.editingBgColor });
+    handleLoading = (loading?: string[]) => {
+        if (loading) return;
+        const { grid, editingBgColor } = this.props.patcher.props;
+        this.setState({ grid: grid.slice() as [number, number], editingBgColor });
+    }
     handleGridChange = (grid: [number, number]) => this.setState({ grid: grid.slice() as [number, number] });
     handleEditingBgColorChange = (editingBgColor: string) => this.setState({ editingBgColor });
     componentDidMount() {
-        this.props.patcher.on("loaded", this.handleLoaded);
+        this.props.patcher.on("loading", this.handleLoading);
         this.props.patcher.on("grid", this.handleGridChange);
         this.props.patcher.on("editingBgColor", this.handleEditingBgColorChange);
     }
     componentWillUnmount() {
-        this.props.patcher.off("loaded", this.handleLoaded);
+        this.props.patcher.off("loading", this.handleLoading);
         this.props.patcher.off("grid", this.handleGridChange);
         this.props.patcher.off("editingBgColor", this.handleEditingBgColorChange);
     }

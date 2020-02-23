@@ -123,9 +123,11 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     async load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode) {
         this._state.isLoading = true;
+        this.emit("loading", []);
         this.clear();
         if (!patcherIn) {
             this._state.isLoading = false;
+            this.emit("loading");
             return this;
         }
         this.props.mode = (patcherIn.props && patcherIn.props.mode ? patcherIn.props.mode : modeIn) || "js";
@@ -134,7 +136,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             const patcher = (patcherIn as TMaxPatcher).patcher;
             if (!patcher) {
                 this._state.isLoading = false;
-                this.emit("loaded", this);
+                this.emit("loading");
                 return this;
             }
             this.props.bgColor = rgbaMax2Css(patcher.bgcolor);
@@ -170,10 +172,11 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
             if (mode === "js" && this.props.dependencies) {
                 let depNames = Object.keys(this.props.dependencies);
+                this.emit("loading", depNames);
                 const promises = depNames.slice().map(async (name, i) => {
                     await this._state.pkgMgr.importFromURL(this.props.dependencies[name], name);
                     depNames = depNames.splice(i, 1);
-                    this.emit("loadDeps", depNames);
+                    this.emit("loading", depNames);
                 });
                 await Promise.all(promises);
             }
@@ -194,7 +197,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         }
         if (this.props.openInPresentation) this._state.presentation = true;
         this._state.isLoading = false;
-        this.emit("loaded", this);
+        this.emit("loading");
         return this;
     }
     async loadFromURL(url: string) {
@@ -753,7 +756,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         if (!clipboard || !clipboard.boxes) return pasted;
         this.newTimestamp();
         if (Array.isArray(clipboard.boxes)) { // Max Patcher
-            this.state.isLoading = true;
+            this._state.isLoading = true;
             const maxBoxes = clipboard.boxes;
             for (let i = 0; i < maxBoxes.length; i++) {
                 const maxBox = maxBoxes[i].box;
@@ -791,14 +794,14 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                     if (createdLine) pasted.lines[createdLine.id] = line;
                 }
             }
-            this.state.isLoading = false;
+            this._state.isLoading = false;
             this.deselectAll();
             this.selects(Object.keys(pasted.boxes));
             this.emit("create", pasted);
             return pasted;
         }
         if (Array.isArray(clipboard.boxes) || Array.isArray(clipboard.lines)) return pasted;
-        this.state.isLoading = true;
+        this._state.isLoading = true;
         for (const boxID in clipboard.boxes) {
             const box = clipboard.boxes[boxID];
             if (this.boxes[box.id]) {
@@ -821,7 +824,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             const createdLine = this.createLine(line);
             if (createdLine) pasted.lines[createdLine.id] = line;
         }
-        this.state.isLoading = false;
+        this._state.isLoading = false;
         this.deselectAll();
         this.selects(Object.keys(pasted.boxes));
         this.emit("create", pasted);
