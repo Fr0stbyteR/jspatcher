@@ -12,6 +12,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
     box = this.props.patcher.boxes[this.props.id];
     refDiv = React.createRef<HTMLDivElement>();
     handlingToggleEditOnClick = false;
+    textChanged = false;
     dragging = false;
     dragged = false;
     state: S = {
@@ -35,6 +36,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handleTextChanged = () => {
         const { box } = this;
         if (!box) return;
+        this.textChanged = true;
         const { uiComponent, presentation, _editing } = box;
         let { rect, presentationRect } = box;
         rect = rect.slice() as TRect;
@@ -47,7 +49,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handlePresentationRectChanged = () => this.setState({ presentationRect: this.box.presentationRect.slice() as TRect });
     handleBlur = () => {
         this.handlingToggleEditOnClick = false;
-        this.setState({ editing: false });
+        this.setState({ editing: false }, this.inspectRectChange);
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
@@ -141,7 +143,10 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handleKeyDown = (e: React.KeyboardEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.key === "Enter") {
-            if (this.state.editing) {
+            if (e.ctrlKey) {
+                this.props.patcher.dockUI(this.box);
+                e.preventDefault();
+            } else if (this.state.editing) {
                 this.refDiv.current.focus();
             } else if (this.state.uiComponent.editableOnUnlock) {
                 e.preventDefault();
@@ -156,6 +161,10 @@ export default class BoxUI extends React.PureComponent<P, S> {
      */
     inspectRectChange = () => {
         if (!this.refDiv.current) return;
+        if (this.textChanged) {
+            this.textChanged = false;
+            return;
+        }
         const div = this.refDiv.current;
         const divRect = div.getBoundingClientRect();
         const box = this.props.patcher.boxes[this.props.id];

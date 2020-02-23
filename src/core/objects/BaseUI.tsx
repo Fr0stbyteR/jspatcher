@@ -12,6 +12,7 @@ import { ImporterDirSelfObject } from "../../utils/symbols";
 
 export interface AbstractUIProps<T extends AbstractObject = AbstractObject> {
     object: T;
+    inDock?: boolean;
     editing: boolean;
     onEditEnd: () => any;
 }
@@ -24,7 +25,21 @@ export abstract class AbstractUI<
         P extends Partial<AbstractUIProps<T>> & { [key: string]: any } = {},
         S extends Partial<AbstractUIState> & { [key: string]: any } = {}
 > extends React.PureComponent<AbstractUIProps<T> & P, S & AbstractUIState> {
+    /**
+     * Sizing rule
+     *
+     * @static
+     * @type {("horizontal" | "vertical" | "both" | "ratio")}
+     * @memberof AbstractUI
+     */
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
+    /**
+     * Default Size while object is created.
+     *
+     * @static
+     * @type {[number, number]}
+     * @memberof AbstractUI
+     */
     static defaultSize: [number, number];
     /**
      * If set to true, call this.props.onEditEnd at some point
@@ -34,12 +49,23 @@ export abstract class AbstractUI<
      * @memberof AbstractUI
      */
     static editableOnUnlock: boolean;
+    /**
+     * If this UI can be displayed elsewhere
+     *
+     * @static
+     * @type {boolean}
+     * @memberof AbstractUI
+     */
+    static dockable: boolean;
     state: S & AbstractUIState = {
         ...this.state,
         ...this.objectProps,
         width: this.box.width,
         height: this.box.height
     };
+    get dockable() {
+        return (this.constructor as typeof AbstractUI).dockable;
+    }
     get object(): T {
         return this.props.object;
     }
@@ -64,12 +90,14 @@ export abstract class AbstractUI<
     componentDidMount() {
         delete this.box._editing;
         this.object.on("uiUpdate", this._handleUIUpdate);
+        if (this.dockable && this.props.inDock) return;
         this.box.on("rectChanged", this._handleResized);
         this.box.on("presentationRectChanged", this._handleResized);
         this.patcher.on("presentation", this._handleResized);
     }
     componentWillUnmount() {
         this.object.off("uiUpdate", this._handleUIUpdate);
+        if (this.dockable && this.props.inDock) return;
         this.box.off("rectChanged", this._handleResized);
         this.box.off("presentationRectChanged", this._handleResized);
         this.patcher.off("presentation", this._handleResized);
@@ -88,16 +116,17 @@ export interface BaseUIState extends AbstractUIState {
     hint: string;
 }
 export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIState> {
+    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
+    static defaultSize: [number, number] = [90, 20];
+    static editableOnUnlock = false;
+    static dockable = false;
     state: S & BaseUIState = {
         ...this.state,
         background: this.box.background || false,
         presentation: this.box.presentation || false
     };
-    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
-    static defaultSize: [number, number] = [90, 20];
-    static editableOnUnlock = false;
     handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-        if ((this.props.object as T).patcher.state.locked) e.currentTarget.title = this.state.hint;
+        if (this.object.patcher.state.locked) e.currentTarget.title = this.state.hint;
     }
     handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.title = "";
     render() {
@@ -283,7 +312,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         super.componentDidMount();
         if (this.props.editing) this.toggleEdit(this.props.editing);
     }
-    componentDidUpdate(prevProps: Readonly<P & DefaultUIProps>) {
+    componentDidUpdate(prevProps: Readonly<P & DefaultUIProps>, prevState: Readonly<S & DefaultUIState>) {
         if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
     }
     toggleEdit(toggle: boolean) {
@@ -520,6 +549,7 @@ export interface CodePopupUIState extends DefaultPopupUIState {
     editorLoaded: boolean;
 }
 export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultPopupUIProps> & { [key: string]: any } = {}, S extends Partial<CodePopupUIState> & { [key: string]: any } = {}> extends DefaultPopupUI<T, P, S & CodePopupUIState> {
+    static dockable = true;
     state: S & CodePopupUIState = {
         ...this.state,
         editorLoaded: false
@@ -548,7 +578,25 @@ export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Part
         super.componentWillUnmount();
         window.removeEventListener("resize", this.handleResize);
     }
+    componentDidUpdate(prevProps: Readonly<DefaultPopupUIProps>, prevState: Readonly<S & CodePopupUIState>) {
+        if (this.props.inDock) {
+            if (this.state.width !== prevState.width || this.state.height !== prevState.height) this.handleResize();
+        }
+    }
     render() {
+        if (this.props.inDock) {
+            if (!this.state.editorLoaded) return <Dimmer active><Loader content="Loading" /></Dimmer>;
+            return (
+                <div style={{ display: "flex", flexDirection: "column", flex: "1 1 auto", width: "100%", height: "100%" }}>
+                    <div style={{ flex: "1 1 auto", overflow: "hidden" }}>
+                        <this.editorJSX value={this.code} language={this.editorLanguage} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
+                    </div>
+                    <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "row-reverse", padding: "10px" }}>
+                        <Button icon="checkmark" content="OK" color="green" onClick={this.handleCloseAndSave} inverted />
+                    </div>
+                </div>
+            );
+        }
         const children = (
             <>
                 <Modal.Content>

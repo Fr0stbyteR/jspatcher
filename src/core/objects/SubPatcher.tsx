@@ -302,16 +302,18 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
         ...this.state,
         patcher: this.object.data
     }
+    static dockable = true;
     render() {
         const children = (
             <>
-                <Modal.Content style={{ height: "100%" }}>
+                <Modal.Content style={{ height: "100%", width: "100%" }}>
                     <div style={{ height: "100%", width: "100%", display: "flex" }}>
                         <UI patcher={this.state.patcher} />
                     </div>
                 </Modal.Content>
             </>
         );
+        if (this.props.inDock) return children;
         const containerProps = { ...this.props.containerProps };
         if (!containerProps.onDoubleClick) containerProps.onDoubleClick = this.handleDoubleClick;
         const modalProps: StrictModalProps & { onKeyDown: any } = { ...this.props.modalProps, children, className: "subpatcher", open: this.state.modalOpen, onClose: this.handleClose, onKeyDown: undefined, basic: true, size: "fullscreen", closeIcon: true };

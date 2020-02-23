@@ -46,6 +46,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
             description: "arguments count for method"
         }
     };
+    static ui = NewUI;
     state: S = { Wrapper: null, inputs: [], result: null };
     subscribe() {
         super.subscribe();
@@ -99,7 +100,6 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
     output() {
         return this.callback();
     }
-    uiComponent = NewUI;
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }

@@ -179,6 +179,7 @@ interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "stateChanged": Partial<TPublicPatcherState>;
     "propsChanged": Partial<TPublicPatcherProps>;
     "libChanged": { pkg: TPackage; lib: TFlatPackage };
+    "dockUI": Box;
 }
 
 interface LineEventMap {

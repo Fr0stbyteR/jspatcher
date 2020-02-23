@@ -7,30 +7,34 @@ import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta, TRect, TPatcherProps, TPublicPatcherProps } from "../core/types";
 import "./RightMenu.scss";
+import { BaseUI } from "../core/objects/BaseUI";
 
 enum TPanels {
     None = "None",
     Console = "Console",
     Inspector = "Inspector",
-    Code = "Code"
+    Code = "Code",
+    Dock = "Dock"
 }
-class Console extends React.PureComponent<{ patcher: Patcher }, { cached: TPatcherLog[] }> {
+class Console extends React.PureComponent<{ patcher: Patcher; display: boolean }, { cached: TPatcherLog[] }> {
     state = { cached: this.props.patcher.state.log.slice() };
     refTable = React.createRef<HTMLTableElement>();
     logDuringLoading: TPatcherLog[] = [];
     handleNewLog = (log: TPatcherLog) => {
-        let bottom = true;
-        let table: HTMLTableElement;
-        if (this.refTable.current) {
-            table = this.refTable.current;
-            if (table.scrollTop + table.clientHeight !== table.scrollHeight) bottom = false;
-        }
         const cached = this.state.cached.slice();
         cached.push(log);
-        this.setState({ cached }, () => (table && bottom ? table.scrollTop = table.scrollHeight : undefined));
+        this.setState({ cached }, this.scrollToEnd);
     }
-    handleClear = () => {
-        this.setState({ cached: [] });
+    handleClear = () => this.setState({ cached: [] });
+    scrollToEnd = () => {
+        if (!this.refTable.current) return;
+        let bottom = true;
+        const table = this.refTable.current;
+        if (table.scrollTop + table.clientHeight !== table.scrollHeight) bottom = false;
+        if (bottom) table.scrollTop = table.scrollHeight;
+    }
+    componentDidUpdate(prevProps: Readonly<{ patcher: Patcher; display: boolean }>) {
+        if (this.props.display && this.props.display !== prevProps.display) this.scrollToEnd();
     }
     componentDidMount() {
         this.props.patcher.on("newLog", this.handleNewLog);
@@ -39,6 +43,7 @@ class Console extends React.PureComponent<{ patcher: Patcher }, { cached: TPatch
         this.props.patcher.off("newLog", this.handleNewLog);
     }
     render() {
+        if (!this.props.display) return <></>;
         const logs = this.state.cached.map((log, i) => (
             <Table.Row key={i} negative={log.errorLevel === "error"} warning={log.errorLevel === "warn"} positive={log.errorLevel === "info"}>
                 <Table.Cell width={4}>{log.title}</Table.Cell>
@@ -55,7 +60,7 @@ class Console extends React.PureComponent<{ patcher: Patcher }, { cached: TPatch
                     </Table>
                 </Ref>
                 <Menu icon inverted size="mini">
-                    <Menu.Item onClick={this.handleClear}>
+                    <Menu.Item onClick={this.handleClear} title="Clear">
                         <Icon name="delete" inverted />
                     </Menu.Item>
                 </Menu>
@@ -255,7 +260,7 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
         }
     };
     handleSelected = () => {
-        const boxes = this.props.patcher.state.selected.filter(id => id.includes("box") && this.props.patcher.boxes[id]).map(id => this.props.patcher.boxes[id]);
+        const boxes = this.props.patcher.state.selected.filter(id => id.startsWith("box") && this.props.patcher.boxes[id]).map(id => this.props.patcher.boxes[id]);
         this.boxes = boxes;
         this.unSubscribeBox();
         this.subscribeBox();
@@ -464,12 +469,74 @@ class CodeEditor extends React.PureComponent<{ patcher: Patcher }, { value: stri
         return this.props.patcher.props.mode === "faust" ? this.props.patcher.toFaustDspCode() : "";
     }
 }
+class UIDock extends React.PureComponent<{ patcher: Patcher; display: boolean }, { box: Box }> {
+    state = { box: undefined as Box };
+    refDiv = React.createRef<HTMLDivElement>();
+    refUI = React.createRef<BaseUI>();
+    handleDestroy = () => this.setState({ box: undefined });
+    handleDock = (box: Box) => {
+        if (this.state.box) this.state.box.object.off("destroy", this.handleDestroy);
+        box.object.on("destroy", this.handleDestroy);
+        this.setState({ box });
+    }
+    handlePatcherLoading = () => {
+        if (this.state.box) {
+            this.state.box.object.off("destroy", this.handleDestroy);
+            this.setState({ box: undefined });
+        }
+    }
+    handleResize = () => {
+        if (this.refDiv.current && this.refUI.current) {
+            const { width, height } = this.refDiv.current.getBoundingClientRect();
+            this.refUI.current.setState({ width, height });
+        }
+    }
+    handleClear = () => {
+        if (this.state.box) {
+            this.state.box.object.off("destroy", this.handleDestroy);
+            this.setState({ box: undefined });
+        }
+    }
+    componentDidMount() {
+        this.props.patcher.on("loading", this.handlePatcherLoading);
+        this.props.patcher.on("dockUI", this.handleDock);
+        window.addEventListener("resize", this.handleResize);
+    }
+    componentWillUnmount() {
+        if (this.state.box) this.state.box.object.off("destroy", this.handleDestroy);
+        this.props.patcher.off("loading", this.handlePatcherLoading);
+        this.props.patcher.off("dockUI", this.handleDock);
+        window.removeEventListener("resize", this.handleResize);
+    }
+    render() {
+        if (!this.props.display) return <></>;
+        const { box } = this.state;
+        const ctrlKey = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";
+        return (
+            <>
+                <div className="dock-ui" ref={this.refDiv}>
+                    {
+                        box
+                            ? <box.uiComponent object={box.object} editing={false} onEditEnd={() => undefined} inDock ref={this.refUI} />
+                            : <div className="dock-ui-default">{ctrlKey} + Enter on selected box to dock UI</div>
+                    }
+                </div>
+                <Menu icon inverted size="mini">
+                    <Menu.Item onClick={this.handleClear} title="Clear">
+                        <Icon name="delete" inverted />
+                    </Menu.Item>
+                </Menu>
+            </>
+        );
+    }
+}
 export default class RightMenu extends React.PureComponent<{ patcher: Patcher }, { active: TPanels; codePanel: boolean; audioOn: boolean }> {
     state = { active: TPanels.None, codePanel: false, audioOn: this.props.patcher.env.audioCtx.state === "running" };
     refDivPane = React.createRef<HTMLDivElement>();
     refCode = React.createRef<CodeEditor>();
     refConsole = React.createRef<Console>();
     refInspector = React.createRef<Inspector>();
+    refDock = React.createRef<UIDock>();
     handleItemClick = (e: React.MouseEvent<HTMLAnchorElement>, data: MenuItemProps) => {
         if (this.state.active === data.name) {
             this.setState({ active: TPanels.None });
@@ -483,7 +550,8 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
     };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         const origin = { x: e.pageX, y: e.pageY };
-        const curWidth = this.refDivPane.current.getBoundingClientRect().width;
+        const rect = this.refDivPane.current.getBoundingClientRect();
+        const { width: curWidth } = rect;
         const panel = this.state.active;
         const handleMouseMove = (e: MouseEvent) => {
             e.stopPropagation();
@@ -497,6 +565,9 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
                     this.refDivPane.current.style.width = width + "px";
                     if (this.state.active === TPanels.Code && this.refCode.current && this.refCode.current.codeEditor) {
                         this.refCode.current.codeEditor.layout();
+                    }
+                    if (this.state.active === TPanels.Dock && this.refDock.current) {
+                        this.refDock.current.handleResize();
                     }
                 }
             }
@@ -525,16 +596,19 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
         const codePanel = this.props.patcher.props.mode === "faust" || this.props.patcher.props.mode === "gen";
         this.setState({ active: TPanels.None, codePanel });
     }
+    handleDock = () => this.setState({ active: TPanels.Dock });
     componentDidMount() {
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.on("loading", this.handlePatcherLoading);
+        this.props.patcher.on("dockUI", this.handleDock);
         this.handlePatcherLoading();
     }
     componentWillUnmount() {
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.off("loading", this.handlePatcherLoading);
+        this.props.patcher.off("dockUI", this.handleDock);
     }
     render() {
         return (
@@ -548,6 +622,9 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
                     </Menu.Item>
                     <Menu.Item name={TPanels.Code} hidden={!this.state.codePanel} active={this.state.active === TPanels.Code} onClick={this.handleItemClick}>
                         <Icon name="code" color={this.state.active === TPanels.Code ? "teal" : "grey"} inverted />
+                    </Menu.Item>
+                    <Menu.Item name={TPanels.Dock} hidden={this.state.codePanel} active={this.state.active === TPanels.Dock} onClick={this.handleItemClick}>
+                        <Icon name="edit" color={this.state.active === TPanels.Dock ? "teal" : "grey"} inverted />
                     </Menu.Item>
                     <div style={{ flex: "1 1 auto" }}></div>
                     <Menu.Item name="Audio Switch" active={false} onClick={this.handleAudioSwitch}>
@@ -563,7 +640,10 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
                         {this.state.active === TPanels.Inspector ? <Inspector { ...this.props } ref={this.refInspector} /> : <></> }
                     </div>
                     <div className="right-pane-console" hidden={this.state.active !== TPanels.Console}>
-                        <Console { ...this.props } ref={this.refConsole} />
+                        <Console { ...this.props } ref={this.refConsole} display={this.state.active === TPanels.Console} />
+                    </div>
+                    <div className="right-pane-dock" hidden={this.state.active !== TPanels.Dock}>
+                        <UIDock { ...this.props } ref={this.refDock} display={this.state.active === TPanels.Dock} />
                     </div>
                 </div>
                 <div className="resize-handler resize-handler-w" onMouseDown={this.handleResizeMouseDown} hidden={this.state.active === TPanels.None}></div>

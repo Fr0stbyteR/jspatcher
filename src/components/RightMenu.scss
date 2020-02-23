@@ -74,6 +74,22 @@
                 }
             }
         }
+        & > div.right-pane-dock {
+            & > div.dock-ui {
+                display: flex;
+                position: relative;
+                flex: 1 1 auto;
+                flex-direction: column;
+                overflow: auto;
+                align-items: center;
+                background-color: #333;
+                & > div.dock-ui-default {
+                    flex: 0 1 auto;
+                    margin: auto;
+                    color: white;
+                }
+            }
+        }
         & > div.right-pane-inspector {
             & .division-name {
                 font-weight: 600;

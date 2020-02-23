@@ -68,6 +68,12 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         };
         this.clear();
     }
+    get state() {
+        return this._state;
+    }
+    get env() {
+        return this._env;
+    }
     get activePkg() {
         return this._state.pkgMgr.activePkg;
     }
@@ -559,7 +565,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         const linesConcerned: { [id: string]: true } = {};
         const patcher: TPatcher = { lines: {}, boxes: {} };
         this._state.selected
-            .filter(id => id.includes("box") && this.boxes[id])
+            .filter(id => id.startsWith("box") && this.boxes[id])
             .map(id => this.boxes[id])
             .forEach((box) => {
                 box.allLines.forEach(id => linesConcerned[id] = true);
@@ -609,7 +615,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     move(selected: string[], delta: { x: number; y: number }, presentation: boolean) {
         selected.forEach(id => this.select(id));
         const rectKey = presentation ? "presentationRect" : "rect";
-        const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
+        const boxes = this._state.selected.filter(id => id.startsWith("box") && this.boxes[id]).map(id => this.boxes[id]);
         if (boxes.length === 0) return;
         const leftMost = boxes.sort((a, b) => a[rectKey][0] - b[rectKey][0])[0];
         const topMost = boxes.sort((a, b) => a[rectKey][1] - b[rectKey][1])[0];
@@ -663,7 +669,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType, presentation: boolean) {
         selected.forEach(id => this.select(id));
         const rectKey = presentation ? "presentationRect" : "rect";
-        const boxes = this._state.selected.filter(id => id.includes("box") && this.boxes[id]).map(id => this.boxes[id]);
+        const boxes = this._state.selected.filter(id => id.startsWith("box") && this.boxes[id]).map(id => this.boxes[id]);
         if (boxes.length === 0) return;
         const leftMost = boxes.sort((a, b) => a[rectKey][0] - b[rectKey][0])[0];
         const topMost = boxes.sort((a, b) => a[rectKey][1] - b[rectKey][1])[0];
@@ -854,8 +860,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     deleteSelected() {
         this.newTimestamp();
         const map: { boxes: { [id: string]: true }; lines: { [id: string]: true } } = { boxes: {}, lines: {} };
-        this._state.selected.filter(id => id.includes("line")).forEach(id => map.lines[id] = true);
-        this._state.selected.filter(id => id.includes("box")).forEach((id) => {
+        this._state.selected.filter(id => id.startsWith("line")).forEach(id => map.lines[id] = true);
+        this._state.selected.filter(id => id.startsWith("box")).forEach((id) => {
             map.boxes[id] = true;
             this.boxes[id].allLines.forEach(id => map.lines[id] = true);
         });
@@ -891,13 +897,14 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.emit("generateCode", code);
         return code;
     }
+    dockUI(box?: Box) {
+        if (box && box.uiComponent.dockable) this.emit("dockUI", box);
+        else if (this._state.selected.length) {
+            const found = this._state.selected.find(id => id.startsWith("box"));
+            if (found && this.boxes[found] && this.boxes[found].uiComponent.dockable) this.emit("dockUI", this.boxes[found]);
+        }
+    }
     toString() {
         return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
-    }
-    get state() {
-        return this._state;
-    }
-    get env() {
-        return this._env;
     }
 }

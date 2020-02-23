@@ -124,6 +124,10 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
         if (this.props.patcher.state.locked) return;
         this.props.patcher.selectAllBoxes();
     };
+    handleClickDock = () => {
+        if (this.props.patcher.state.locked) return;
+        this.props.patcher.dockUI();
+    };
     handleLocked = (locked: boolean) => this.setState({ locked });
     componentDidMount() {
         this.props.patcher.on("locked", this.handleLocked);
@@ -132,22 +136,24 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
         this.props.patcher.off("locked", this.handleLocked);
     }
     render() {
-        const ctrl = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";
+        const ctrlKey = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";
         const { locked } = this.state;
         return (
             <Dropdown item={true} icon={false} text="Edit">
                 <Dropdown.Menu style={{ minWidth: "max-content" }}>
-                    <Dropdown.Item onClick={this.handleClickUndo} text="Undo" description={`${ctrl} + Z`} disabled={locked} />
-                    <Dropdown.Item onClick={this.handleClickRedo} text="Redo" description={`${ctrl} + Y`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickUndo} text="Undo" description={`${ctrlKey} + Z`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickRedo} text="Redo" description={`${ctrlKey} + Y`} disabled={locked} />
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={this.handleClickNewBox} text="New Box" description={"N"} disabled={locked} />
-                    <Dropdown.Item onClick={this.handleClickCut} text="Cut" description={`${ctrl} + X`} disabled={locked} />
-                    <Dropdown.Item onClick={this.handleClickCopy} text="Copy" description={`${ctrl} + C`} disabled={locked} />
-                    <Dropdown.Item onClick={this.handleClickPaste} text="Paste" description={`${ctrl} + V`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickCut} text="Cut" description={`${ctrlKey} + X`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickCopy} text="Copy" description={`${ctrlKey} + C`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickPaste} text="Paste" description={`${ctrlKey} + V`} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickDelete} text="Delete" description="Del" disabled={locked} />
                     <Dropdown.Divider />
-                    <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description={`${ctrl} + D`} disabled={locked} />
-                    <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description={`${ctrl} + A`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description={`${ctrlKey} + D`} disabled={locked} />
+                    <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description={`${ctrlKey} + A`} disabled={locked} />
+                    <Dropdown.Divider />
+                    <Dropdown.Item onClick={this.handleClickDock} text="Dock UI" description={`${ctrlKey} + Enter`} disabled={locked} />
                 </Dropdown.Menu>
             </Dropdown>
         );
@@ -166,6 +172,7 @@ export default class TopMenu extends React.PureComponent<{ patcher: Patcher }> {
         if (ctrlKey && e.shiftKey && e.key === "n") fileMenu.handleClickNew();
         else if (ctrlKey && e.key === "o") fileMenu.handleClickOpen();
         else if (ctrlKey && e.key === "s") fileMenu.handleClickSaveAs();
+        else if (this.props.patcher.state.locked) return;
         else if (ctrlKey && e.key === "z") editMenu.handleClickUndo();
         else if (ctrlKey && e.key === "y") editMenu.handleClickRedo();
         else if (ctrlKey && e.key === "x") editMenu.handleClickCut();
