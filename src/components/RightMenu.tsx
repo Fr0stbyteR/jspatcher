@@ -614,20 +614,20 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
         return (
             <>
                 <Menu icon vertical inverted size="mini" className="right-menu">
-                    <Menu.Item name={TPanels.Console} active={this.state.active === TPanels.Console} onClick={this.handleItemClick}>
+                    <Menu.Item name={TPanels.Console} active={this.state.active === TPanels.Console} onClick={this.handleItemClick} title={TPanels.Console}>
                         <Icon name="bars" color={this.state.active === TPanels.Console ? "teal" : "grey"} inverted />
                     </Menu.Item>
-                    <Menu.Item name={TPanels.Inspector} active={this.state.active === TPanels.Inspector} onClick={this.handleItemClick}>
+                    <Menu.Item name={TPanels.Inspector} active={this.state.active === TPanels.Inspector} onClick={this.handleItemClick} title={TPanels.Inspector}>
                         <Icon name="info" color={this.state.active === TPanels.Inspector ? "teal" : "grey"} inverted />
                     </Menu.Item>
-                    <Menu.Item name={TPanels.Code} hidden={!this.state.codePanel} active={this.state.active === TPanels.Code} onClick={this.handleItemClick}>
+                    <Menu.Item name={TPanels.Code} hidden={!this.state.codePanel} active={this.state.active === TPanels.Code} onClick={this.handleItemClick} title={TPanels.Code}>
                         <Icon name="code" color={this.state.active === TPanels.Code ? "teal" : "grey"} inverted />
                     </Menu.Item>
-                    <Menu.Item name={TPanels.Dock} hidden={this.state.codePanel} active={this.state.active === TPanels.Dock} onClick={this.handleItemClick}>
+                    <Menu.Item name={TPanels.Dock} hidden={this.state.codePanel} active={this.state.active === TPanels.Dock} onClick={this.handleItemClick} title={TPanels.Dock}>
                         <Icon name="edit" color={this.state.active === TPanels.Dock ? "teal" : "grey"} inverted />
                     </Menu.Item>
                     <div style={{ flex: "1 1 auto" }}></div>
-                    <Menu.Item name="Audio Switch" active={false} onClick={this.handleAudioSwitch}>
+                    <Menu.Item name="Audio Switch" active={false} onClick={this.handleAudioSwitch} title="Audio Switch">
                         <Icon name={this.state.audioOn ? "volume up" : "volume off"} color={this.state.audioOn ? "teal" : "grey"} inverted />
                     </Menu.Item>
                 </Menu>

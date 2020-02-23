@@ -30,13 +30,13 @@ export default class BottomMenu extends React.PureComponent<P, S> {
     render() {
         return (
             <Menu inverted icon size="mini" className="bottom-menu">
-                <Menu.Item name="lock" onClick={this.handleClickLock}>
+                <Menu.Item name="lock" onClick={this.handleClickLock} title={this.state.locked ? "Unlock" : "Lock"}>
                     <Icon name={this.state.locked ? "lock" : "unlock"} color="grey" size="small" inverted />
                 </Menu.Item>
-                <Menu.Item name="presentation" onClick={this.handleClickPresentation}>
+                <Menu.Item name="presentation" onClick={this.handleClickPresentation} title="Switch Presentation Mode">
                     <Icon name="video" color={this.state.presentation ? "teal" : "grey"} size="small" inverted />
                 </Menu.Item>
-                <Menu.Item name="lock" onClick={this.handleClickGrid}>
+                <Menu.Item name="grid" onClick={this.handleClickGrid} title={this.state.showGrid ? "Hide Grid" : "Show Grid"}>
                     <Icon name="grid layout" color={this.state.showGrid ? "teal" : "grey"} size="small" inverted />
                 </Menu.Item>
             </Menu>

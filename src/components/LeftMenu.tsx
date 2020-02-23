@@ -217,7 +217,7 @@ export default class LeftMenu extends React.PureComponent<{ patcher: Patcher }, 
                     </div>
                 </div>
                 <Menu icon vertical inverted size="mini" className="left-menu">
-                    <Menu.Item name={TPanels.Objects} active={this.state.active === TPanels.Objects} onClick={this.handleItemClick}>
+                    <Menu.Item name={TPanels.Objects} active={this.state.active === TPanels.Objects} onClick={this.handleItemClick} title={TPanels.Objects}>
                         <Icon name="add" color={this.state.active === TPanels.Objects ? "teal" : "grey"} inverted />
                     </Menu.Item>
                     <div style={{ flex: "1 1 auto" }}></div>
