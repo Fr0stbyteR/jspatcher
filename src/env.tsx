@@ -36,9 +36,9 @@ export class LoaderUI extends React.PureComponent<{ env: Env }, { text: string }
  */
 export default class Env extends MappedEventEmitter<{ text: string }> {
     loaded = false;
-    audioCtx = new AudioContext({ latencyHint: 0.00001 });
-    os = detectOS();
-    supportAudioWorklet = !!window.AudioWorklet;
+    readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
+    readonly os = detectOS();
+    readonly supportAudioWorklet = !!window.AudioWorklet;
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;
@@ -47,13 +47,16 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
     faustLibObjects: TPackage;
     faustInjected = false;
     patcher: Patcher;
+    private _noUI: boolean;
     private _divRoot: HTMLDivElement;
     constructor(root?: HTMLDivElement) {
         super();
-        this.divRoot = root;
+        this._divRoot = root;
     }
     async init() {
-        if (this.divRoot) ReactDOM.render(<LoaderUI env={this} />, this.divRoot);
+        const urlParams = new URLSearchParams(window.location.search);
+        this._noUI = !!urlParams.get("min");
+        if (!this._noUI && this.divRoot) ReactDOM.render(<LoaderUI env={this} />, this.divRoot);
 
         this.emit("text", "Loading Faust2WebAudio...");
         const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
@@ -83,7 +86,6 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
 
         this.emit("text", "Loading Patcher...");
 
-        const urlParams = new URLSearchParams(window.location.search);
         const fileName = urlParams.get("file");
         if (fileName) {
             patcher.loadFromURL("../examples/" + fileName);
@@ -95,7 +97,7 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
         }
         const runtime = !!urlParams.get("runtime");
         if (runtime) patcher.setState({ runtime });
-        if (this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} /> : <UI patcher={patcher} />, this.divRoot);
+        if (!this._noUI && this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} /> : <UI patcher={patcher} />, this.divRoot);
         this.loaded = true;
     }
     get divRoot(): HTMLDivElement {
@@ -103,8 +105,8 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
     }
     set divRoot(root: HTMLDivElement) {
         if (root === this._divRoot) return;
-        if (this._divRoot) ReactDOM.unmountComponentAtNode(this._divRoot);
+        if (!this._noUI && this._divRoot) ReactDOM.unmountComponentAtNode(this._divRoot);
         this._divRoot = root;
-        if (root) ReactDOM.render(this.loaded ? <UI patcher={this.patcher} /> : <LoaderUI env={this} />, root);
+        if (!this._noUI && root) ReactDOM.render(this.loaded ? <UI patcher={this.patcher} /> : <LoaderUI env={this} />, root);
     }
 }
