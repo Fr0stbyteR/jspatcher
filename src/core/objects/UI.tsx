@@ -1,13 +1,21 @@
+/* eslint-disable object-property-newline */
 import * as React from "react";
 import * as Util from "util";
-import { Dimmer, Loader, Icon } from "semantic-ui-react";
+import { Dimmer, Loader, Icon, StrictDropdownItemProps, StrictDropdownProps, Dropdown, DropdownProps } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Bang, BaseObject, AnyObject } from "./Base";
 import "./UI.scss";
-import { TMeta } from "../types";
+import { TMeta, TPropsMeta } from "../types";
 import { BaseUI, BaseUIProps, BaseUIState } from "./BaseUI";
 import { selectElementRange } from "../../utils/utils";
+
+class UIObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}, E = {}> extends BaseObject<D, S, I, O, A, P, U, E> {
+    static package = "UI";
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "UI Object"
+}
 
 type ButtonUIState = { text: string; loading: boolean } & BaseUIState;
 export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean }, any, any, any, any, { text: string }>> extends BaseUI<T, {}, ButtonUIState> {
@@ -78,10 +86,7 @@ class MessageUI extends ButtonUI<message> {
         if (this.patcher.state.locked) this.object.outlet(0, this.object.state.buffer);
     }
 }
-class message extends BaseObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], {}, { text: string }> {
-    static package = "UI";
-    static author = "Fr0stbyteR";
-    static version = "1.0.0";
+class message extends UIObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], {}, { text: string }> {
     static description = "Message";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -193,10 +198,7 @@ class CommentUI extends BaseUI<comment> {
         );
     }
 }
-export class comment extends BaseObject<{ value: string }, {}, [], [], [string]> {
-    static package = "UI";
-    static author = "Fr0stbyteR";
-    static version = "1.0.0";
+export class comment extends UIObject<{ value: string }, {}, [], [], [string]> {
     static description = "Text Comment";
     static args: TMeta["args"] = [{
         type: "string",
@@ -247,19 +249,18 @@ export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
         this.setState({ editorLoaded: true });
     }
     render() {
-        return <BaseUI {...this.props} containerProps={{ onKeyDown: this.handleKeyDown, onKeyUp: this.handleKeyUp }}>
-            {
-                this.state.editorLoaded
-                    ? <this.editorJSX value={this.state.value} language={this.state.language} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} onChange={this.handleChange} options={{ fontSize: 12 }} width={this.state.width} height={this.state.height} />
-                    : <Dimmer active><Loader content="Loading" /></Dimmer>
-            }
-        </BaseUI>;
+        return (
+            <BaseUI {...this.props} containerProps={{ onKeyDown: this.handleKeyDown, onKeyUp: this.handleKeyUp }}>
+                {
+                    this.state.editorLoaded
+                        ? <this.editorJSX value={this.state.value} language={this.state.language} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} onChange={this.handleChange} options={{ fontSize: 12 }} width={this.state.width} height={this.state.height} />
+                        : <Dimmer active><Loader content="Loading" /></Dimmer>
+                }
+            </BaseUI>
+        );
     }
 }
-export class code extends BaseObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }, { editorBlur: string; editorLoaded: never }> {
-    static package = "UI";
-    static author = "Fr0stbyteR";
-    static version = "1.0.0";
+export class code extends UIObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }, { editorBlur: string; editorLoaded: never }> {
     static description = "Code Editor";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -303,4 +304,236 @@ export class code extends BaseObject<{ value: string }, {}, [Bang, string], [str
     }
     static ui: typeof BaseUI = CodeUI;
 }
-export default { message, comment, code };
+type MenuProps = Required<Pick<
+    StrictDropdownProps,
+    "clearable" | "closeOnBlur" | "closeOnChange" | "closeOnEscape" | "deburr"
+    | "defaultOpen" | "defaultValue" | "direction" | "disabled" | "error" | "lazyLoad"
+    | "minCharacters" | "multiple" | "noResultsMessage" | "options" | "placeholder"
+    | "scrolling" | "search" | "selectOnBlur" | "selectOnNavigation" | "simple"
+    | "tabIndex" | "text" | "upward" | "wrapSelection"
+>>;
+type MenuUIState = { value: StrictDropdownProps["value"] } & MenuProps;
+class MenuUI extends BaseUI<menu, {}, MenuUIState> {
+    state: MenuUIState & BaseUIState = {
+        ...this.state,
+        value: this.object.getProp("defaultValue")
+    };
+    handleChange = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
+        const { value } = data;
+        this.setState({ value });
+        this.object.outlet(0, value);
+    }
+    render() {
+        const {
+            clearable, closeOnBlur, closeOnChange, closeOnEscape, deburr,
+            defaultOpen, defaultValue, direction, disabled, error, lazyLoad,
+            minCharacters, multiple, noResultsMessage, options, placeholder,
+            scrolling, search, selectOnBlur, selectOnNavigation, simple,
+            tabIndex, text, upward, wrapSelection, value
+        } = this.state;
+        const dropdownProps = {
+            clearable, closeOnBlur, closeOnChange, closeOnEscape, deburr,
+            defaultOpen, defaultValue, direction, disabled, error, lazyLoad,
+            minCharacters, multiple, noResultsMessage, options, placeholder,
+            scrolling, search, selectOnBlur, selectOnNavigation, simple,
+            tabIndex, text, upward, wrapSelection, value
+        };
+        return (
+            <BaseUI {...this.props}>
+                <Dropdown {...dropdownProps} selection fluid onChange={this.handleChange} />
+            </BaseUI>
+        );
+    }
+}
+export class menu extends UIObject<{}, {/* current: StrictDropdownProps["value"] */}, [StrictDropdownProps["value"], StrictDropdownItemProps[]], [any], [], MenuProps, MenuUIState> {
+    static description = "Dropdown Menu";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "number or display text or array to select item(s)"
+    }, {
+        isHot: false,
+        type: "object",
+        description: "Array of DropdownItemProps: { key, icon, text, value, ... }"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Selected value"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        varLength: true,
+        optional: true,
+        default: undefined,
+        description: "Initial value(s)"
+    }];
+    static props: TPropsMeta<MenuProps> = {
+        clearable: {
+            type: "boolean",
+            default: false,
+            description: "Using the clearable setting will let users remove their selection",
+            isUIState: true
+        },
+        closeOnBlur: {
+            type: "boolean",
+            default: true,
+            description: "Whether or not the menu should close when the dropdown is blurred",
+            isUIState: true
+        },
+        closeOnChange: {
+            type: "boolean",
+            default: undefined,
+            description: "Whether or not the menu should close when a value is selected",
+            isUIState: true
+        },
+        closeOnEscape: {
+            type: "boolean",
+            default: true,
+            description: "Whether or not the dropdown should close when the escape key is pressed",
+            isUIState: true
+        },
+        deburr: {
+            type: "boolean",
+            default: false,
+            description: "Whether or not the dropdown should strip diacritics in options and input search",
+            isUIState: true
+        },
+        defaultOpen: {
+            type: "boolean",
+            default: false,
+            description: "Initial value of open",
+            isUIState: true
+        },
+        defaultValue: {
+            type: "anything",
+            default: undefined,
+            description: "Initial value or value array if multiple",
+            isUIState: true
+        },
+        direction: {
+            type: "enum",
+            enums: ["left", "right"],
+            default: "left",
+            description: "A dropdown menu can open to the left or to the right",
+            isUIState: true
+        },
+        disabled: {
+            type: "boolean",
+            default: false,
+            description: " A disabled dropdown menu or item does not allow user interaction",
+            isUIState: true
+        },
+        error: {
+            type: "boolean",
+            default: false,
+            description: "An errored dropdown can alert a user to a problem",
+            isUIState: true
+        },
+        lazyLoad: {
+            type: "boolean",
+            default: false,
+            description: "A dropdown can defer rendering its options until it is open",
+            isUIState: true
+        },
+        minCharacters: {
+            type: "number",
+            default: 1,
+            description: "The minimum characters for a search to begin showing results",
+            isUIState: true
+        },
+        multiple: {
+            type: "boolean",
+            default: false,
+            description: "A selection dropdown can allow multiple selections",
+            isUIState: true
+        },
+        noResultsMessage: {
+            type: "string",
+            default: "No results found",
+            description: "Message to display when there are no results",
+            isUIState: true
+        },
+        options: {
+            type: "anything",
+            default: [],
+            description: "Array of Dropdown.Item props",
+            isUIState: true
+        },
+        placeholder: {
+            type: "string",
+            default: "",
+            description: "Placeholder text",
+            isUIState: true
+        },
+        scrolling: {
+            type: "boolean",
+            default: false,
+            description: "A dropdown can have its menu scroll",
+            isUIState: true
+        },
+        search: {
+            type: "boolean",
+            default: false,
+            description: "A selection dropdown can allow a user to search through a large list of choices",
+            isUIState: true
+        },
+        selectOnBlur: {
+            type: "boolean",
+            default: true,
+            description: "Whether the highlighted item should be selected on blur",
+            isUIState: true
+        },
+        selectOnNavigation: {
+            type: "boolean",
+            default: true,
+            description: "Whether dropdown should select new option when using keyboard shortcuts.",
+            isUIState: true
+        },
+        simple: {
+            type: "boolean",
+            default: false,
+            description: "A dropdown menu can open to the left or to the right",
+            isUIState: true
+        },
+        tabIndex: {
+            type: "anything",
+            default: undefined,
+            description: "A dropdown can receive focus",
+            isUIState: true
+        },
+        text: {
+            type: "string",
+            default: undefined,
+            description: "The text displayed in the dropdown, usually for the active item",
+            isUIState: true
+        },
+        upward: {
+            type: "boolean",
+            default: false,
+            description: "Controls whether the dropdown will open upward",
+            isUIState: true
+        },
+        wrapSelection: {
+            type: "boolean",
+            default: false,
+            description: "Selection will wrap to end or start on press ArrowUp or ArrowDown",
+            isUIState: true
+        }
+    }
+    static ui = MenuUI;
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 2;
+            this.outlets = 1;
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                this.updateUI({ value: data as string | number | boolean | (string | number | boolean)[] });
+            } else {
+                this.update(undefined, { options: data as StrictDropdownItemProps[] });
+            }
+        });
+    }
+}
+export default { message, comment, code, menu };

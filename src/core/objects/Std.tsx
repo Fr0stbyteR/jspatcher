@@ -281,19 +281,16 @@ class get extends StdObject<{}, { keys: (string | number)[] }, [{ [key: string]:
         description: "Initial key of the property"
     }];
     state = { keys: [] as (string | number)[] };
+    resetIO = () => {
+        const { args } = this.box;
+        this.state.keys = args.slice();
+        this.inlets = 1 + args.length;
+        this.outlets = args.length;
+    };
     subscribe() {
         super.subscribe();
-        this.on("preInit", () => {
-            this.inlets = 1;
-            this.outlets = 0;
-        });
-        this.on("updateArgs", (args) => {
-            if (Array.isArray(args) && args.every(v => typeof v === "number" || typeof v === "string")) {
-                this.state.keys = args.slice();
-                this.inlets = 1 + args.length;
-                this.outlets = args.length;
-            }
-        });
+        this.on("postInit", this.resetIO);
+        this.on("updateArgs", this.resetIO);
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 for (let i = this.state.keys.length - 1; i >= 0; i--) {
@@ -371,30 +368,29 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         return this._meta;
     }
     state = { array: [] as any[] };
+    resetIO = () => {
+        const { args } = this.box;
+        const testsCount = args.length;
+        const [inletMeta0, inletMeta1] = sel.meta.inlets;
+        const [outletMeta0, outletMeta1] = sel.meta.inlets;
+        this._meta.inlets = [inletMeta0];
+        this._meta.outlets = [];
+        for (let i = 0; i < testsCount; i++) {
+            this._meta.outlets[i] = { ...outletMeta0 };
+            this._meta.outlets[i].description += ` index ${i}`;
+            this._meta.inlets[i + 1] = { ...inletMeta1 };
+            this._meta.inlets[i + 1].description += ` index ${i}`;
+        }
+        this._meta.outlets[testsCount] = outletMeta1;
+        this.emit("metaChanged");
+        this.state.array = args.slice();
+        this.inlets = 1 + testsCount;
+        this.outlets = testsCount + 1;
+    };
     subscribe() {
         super.subscribe();
-        this.on("preInit", () => {
-            this.inlets = 1;
-            this.outlets = 1;
-        });
-        this.on("updateArgs", (args) => {
-            const testsCount = args.length;
-            const [inletMeta0, inletMeta1] = sel.meta.inlets;
-            const [outletMeta0, outletMeta1] = sel.meta.inlets;
-            this._meta.inlets = [inletMeta0];
-            this._meta.outlets = [];
-            for (let i = 0; i < testsCount; i++) {
-                this._meta.outlets[i] = { ...outletMeta0 };
-                this._meta.outlets[i].description += ` index ${i}`;
-                this._meta.inlets[i + 1] = { ...inletMeta1 };
-                this._meta.inlets[i + 1].description += ` index ${i}`;
-            }
-            this._meta.outlets[testsCount] = outletMeta1;
-            this.emit("metaChanged");
-            this.state.array = args.slice();
-            this.inlets = 1 + testsCount;
-            this.outlets = testsCount + 1;
-        });
+        this.on("postInit", this.resetIO);
+        this.on("updateArgs", this.resetIO);
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 const foundIndex = this.state.array.indexOf(data);
@@ -509,7 +505,8 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
             this.inlets = 2;
             this.outlets = 3;
         });
-        this.on("updateArgs", (args) => {
+        this.on("updateArgs", () => {
+            const { args } = this.box;
             if (typeof args[0] === "number" && args[0] >= 0) {
                 this.state.argsCount = ~~args[0];
                 this.outlets = 2 + this.state.argsCount;

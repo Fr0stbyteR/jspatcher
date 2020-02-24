@@ -10,7 +10,8 @@ import Faust from "./objects/Faust";
 import UI from "./objects/UI";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
-import WebAudio from "./objects/WebAudio/Imports";
+import WebAudio from "./objects/WebAudio/exports";
+import WebRTC from "./objects/WebRTC/exports";
 import DSP from "./objects/dsp/exports";
 import live from "./objects/live/exports";
 import faust from "./objects/faust/exports";
@@ -28,6 +29,7 @@ export default class PackageManager {
         UI,
         Op,
         WebAudio,
+        WebRTC,
         DSP,
         new:
         New,

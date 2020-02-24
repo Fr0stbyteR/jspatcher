@@ -253,10 +253,10 @@ class DefaultUIDropdownArgv extends React.Component<DefaultUIDropdownArgvProps, 
             const { type, optional, varLength, description } = args[i];
             items.push({ key: i, type, optional, varLength, description });
         }
-        for (const key in props) {
+        Object.keys(props).reverse().forEach((key) => {
             const { type, description } = props[key];
             items.push({ key, type, description });
-        }
+        });
         return items;
     }
     componentDidMount() {

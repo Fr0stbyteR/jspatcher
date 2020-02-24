@@ -26,13 +26,11 @@ export default class StreamSrc extends JSPAudioNode<MediaStreamAudioSourceNode, 
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) {
-                    if (this.node) this.outlet(1, this.node);
-                } else if (data instanceof MediaStream) {
+                if (!(data instanceof Bang)) {
                     this.state.stream = data;
                     this.resetNode();
-                    this.outlet(1, this.node);
                 }
+                if (this.node) this.outlet(1, this.node);
             }
         });
     }
