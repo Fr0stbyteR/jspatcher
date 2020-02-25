@@ -340,7 +340,11 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
             e.preventDefault();
             if (this.refDropdownObject.current && this.refSpan.current) {
                 const { current } = this.refDropdownObject.current;
-                if (current) this.refSpan.current.textContent = this.getApplied(current.key);
+                if (current) {
+                    const text = this.getApplied(current.key);
+                    this.refSpan.current.textContent = text;
+                    this.setState({ text });
+                }
             }
             return;
         }
@@ -399,13 +403,13 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     }
-    handleSelect = (e: React.MouseEvent<HTMLTableRowElement>, text: string) => {
+    handleSelect = (e: React.MouseEvent<HTMLTableRowElement>, textIn: string) => {
         e.preventDefault();
-        if (this.state.dropdown$ >= 0 && this.refSpan.current) {
+        if (this.refSpan.current) {
             const span = this.refSpan.current;
-            const textContent = this.state.text.split(/\s/).slice(0, -1).concat(text).join(" ");
-            span.textContent = textContent;
-            selectElementPos(span, textContent.length);
+            const text = this.getApplied(textIn);
+            this.refSpan.current.textContent = text;
+            selectElementPos(span, text.length);
             this.setState({ text });
         }
     }

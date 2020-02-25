@@ -8,7 +8,7 @@ import { Bang, BaseObject, AnyObject } from "./Base";
 import "./UI.scss";
 import { TMeta, TPropsMeta } from "../types";
 import { BaseUI, BaseUIProps, BaseUIState } from "./BaseUI";
-import { selectElementRange } from "../../utils/utils";
+import { selectElementRange, isNumberArray } from "../../utils/utils";
 
 class UIObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}, E = {}> extends BaseObject<D, S, I, O, A, P, U, E> {
     static package = "UI";
@@ -322,6 +322,36 @@ class MenuUI extends BaseUI<menu, {}, MenuUIState> {
         const { value } = data;
         this.setState({ value });
         this.object.outlet(0, value);
+    };
+    handleQuery = (query: number | string | number[] | string[]) => {
+        const { options } = this.state;
+        let value;
+        if (typeof query === "number") {
+            if (options[query]) {
+                value = options[query].value;
+            }
+        } else if (typeof query === "string") {
+            const found = options.find(o => o.text === query);
+            if (found) {
+                value = found.value;
+            }
+        } else if (isNumberArray(query)) {
+            value = query.filter(i => !!options[i]).map(i => options[i].value);
+        } else {
+            value = options.filter(o => query.indexOf(o.text as string) !== -1).map(o => o.value);
+        }
+        if (value) {
+            this.setState({ value });
+            this.object.outlet(0, value);
+        }
+    };
+    componentDidMount() {
+        super.componentDidMount();
+        this.object.on("query", this.handleQuery);
+    }
+    componentWillUnmount() {
+        super.componentWillUnmount();
+        this.object.off("query", this.handleQuery);
     }
     render() {
         const {
@@ -345,7 +375,7 @@ class MenuUI extends BaseUI<menu, {}, MenuUIState> {
         );
     }
 }
-export class menu extends UIObject<{}, {/* current: StrictDropdownProps["value"] */}, [StrictDropdownProps["value"], StrictDropdownItemProps[]], [any], [], MenuProps, MenuUIState> {
+export class menu extends UIObject<{}, {}, [number | string | number[] | string[], StrictDropdownItemProps[]], [any], [], MenuProps, MenuUIState, { query: number | string | number[] | string[] }> {
     static description = "Dropdown Menu";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -529,9 +559,10 @@ export class menu extends UIObject<{}, {/* current: StrictDropdownProps["value"]
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                this.updateUI({ value: data as string | number | boolean | (string | number | boolean)[] });
+                this.emit("query", data as number | string | number[] | string[]);
             } else {
-                this.update(undefined, { options: data as StrictDropdownItemProps[] });
+                const options = data as StrictDropdownItemProps[];
+                this.update(undefined, { options });
             }
         });
     }

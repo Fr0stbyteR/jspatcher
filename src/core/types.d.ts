@@ -13,6 +13,10 @@ declare global {
         webkitAudioContext?: typeof AudioContext;
         jspatcherEnv: Env;
     }
+    interface HTMLMediaElement extends HTMLElement {
+        sinkId: string;
+        setSinkId?(sinkId: string): Promise<undefined>;
+    }
 }
 
 type TPatcherMode = "max" | "gen" | "faust" | "js";

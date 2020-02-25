@@ -84,6 +84,8 @@
     }
     &.package-ui-menu {
         & > .dropdown {
+            user-select: none;
+            -webkit-user-select: none;
             font-size: 12px;
             padding: 4px 15px 4px 5px;
             min-height: auto;
@@ -91,6 +93,8 @@
                 padding: 5px 5px;
             }
             & > .menu > .item {
+                user-select: none;
+                -webkit-user-select: none;
                 font-size: 12px;
                 padding: 4px 5px!important;
                 &.active {

@@ -19,7 +19,7 @@ import StreamSrc from "./StreamSource";
 import Panner from "./Panner";
 import StereoPanner from "./StereoPanner";
 import WaveShaper from "./WaveShaper";
-import { AudioIn } from "./AudioIO";
+import { AudioIn, AudioOut } from "./AudioIO";
 /*
 const {
     BaseAudioContext,
@@ -72,5 +72,6 @@ export default {
     "panner~": Panner,
     "pan~": StereoPanner,
     "waveshaper~": WaveShaper,
-    "audioIn~": AudioIn
+    "audioIn~": AudioIn,
+    "audioOut~": AudioOut
 };
