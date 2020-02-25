@@ -40,7 +40,10 @@ export class mediaDevices extends DefaultWebRTCObject<{}, {}, [Bang | MediaDevic
                     filters = data.slice();
                 }
                 const devices = await navigator.mediaDevices.enumerateDevices();
-                const options = devices.filter(d => filters.indexOf(d.kind) !== -1).map((d, key) => ({ key, icon: { audioinput: "microphone", audiooutput: "volume up", videoinput: "camera" }[d.kind], text: d.label, value: d.deviceId }));
+                const options = devices.filter(d => filters.indexOf(d.kind) !== -1).map((d, key) => {
+                    const { kind, deviceId, label } = d;
+                    return { key, icon: { audioinput: "microphone", audiooutput: "volume up", videoinput: "camera" }[kind], text: label || deviceId, value: deviceId };
+                });
                 this.outletAll([devices, options]);
             }
         });

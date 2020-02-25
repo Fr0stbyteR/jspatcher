@@ -82,6 +82,23 @@
             }
         }
     }
+    &.package-ui-menu {
+        & > .dropdown {
+            font-size: 12px;
+            padding: 4px 15px 4px 5px;
+            min-height: auto;
+            & > .dropdown.icon {
+                padding: 5px 5px;
+            }
+            & > .menu > .item {
+                font-size: 12px;
+                padding: 4px 5px!important;
+                &.active {
+                    font-weight: 600;
+                }
+            }
+        }
+    }
 }
 .patcher.unlocked div.box.selected > div.box-ui > div.package-ui {
     &.box-ui-button {

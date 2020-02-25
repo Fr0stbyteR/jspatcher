@@ -21,7 +21,7 @@
             }
         }
     }
-    & div.selection {
+    & > div.boxes > div.selection {
         z-index: 50;
     }
     & > div.grid-background {
