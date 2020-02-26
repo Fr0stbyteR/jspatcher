@@ -68,5 +68,8 @@ export class mediaDevices extends DefaultWebRTCObject<{}, {}, [Bang | MediaDevic
                 this.outletAll([devices, options]);
             }
         });
+        this.on("destroy", () => {
+            navigator.mediaDevices.removeEventListener("devicechange", this.handleDeviceChange);
+        });
     }
 }
