@@ -181,6 +181,16 @@ export const slope = (array: TypedArray | number[]) => {
     return (n * xySum - xSum * ySum) / (n * x2Sum - xSum * xSum);
 };
 export const spread = (array: TypedArray | number[]) => Math.sqrt(conjugatedCentroid(array, 2)) - centroid(array) ** 2;
+/**
+ * Copy buffer to another, support negative offset index
+ *
+ * @template T
+ * @param {T} to
+ * @param {T} from
+ * @param {number} [offsetTo]
+ * @param {number} [offsetFrom]
+ * @returns
+ */
 // eslint-disable-next-line arrow-parens
 export const setBuffer = <T extends TypedArray = TypedArray>(to: T, from: T, offsetTo?: number, offsetFrom?: number) => {
     const toLength = to.length;
@@ -198,7 +208,7 @@ export const setBuffer = <T extends TypedArray = TypedArray>(to: T, from: T, off
         $from = $fromEnd % fromLength;
         spilled += $spillLength;
     }
-    return to;
+    return $to;
 };
 // eslint-disable-next-line arrow-parens
 export const getSubBuffer = <T extends TypedArray = TypedArray>(from: T, length: number, offset?: number) => {
@@ -206,8 +216,9 @@ export const getSubBuffer = <T extends TypedArray = TypedArray>(from: T, length:
     const $ = mod(offset, fromLength) || 0;
     if ($ === 0 && length === fromLength) return from;
     if ($ + length < fromLength) return from.subarray($, $ + length) as T;
-    const to = new (from.constructor as TypedArrayConstructor)(length);
-    return setBuffer(to, from, 0, $) as T;
+    const to = new (from.constructor as TypedArrayConstructor)(length) as T;
+    setBuffer(to, from, 0, $);
+    return to;
 };
 // eslint-disable-next-line arrow-parens
 export const sliceBuffer = <T extends TypedArray = TypedArray>(from: T, length: number, offset?: number) => {
@@ -215,8 +226,9 @@ export const sliceBuffer = <T extends TypedArray = TypedArray>(from: T, length: 
     const $ = mod(offset, fromLength) || 0;
     if ($ === 0 && length === fromLength) return from.slice();
     if ($ + length < fromLength) return from.slice($, $ + length) as T;
-    const to = new (from.constructor as TypedArrayConstructor)(length);
-    return setBuffer(to, from, 0, $) as T;
+    const to = new (from.constructor as TypedArrayConstructor)(length) as T;
+    setBuffer(to, from, 0, $);
+    return to;
 };
 /**
  * http://www.fftw.org/fftw3_doc/The-Halfcomplex_002dformat-DFT.html

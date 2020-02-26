@@ -15,50 +15,69 @@ export interface DataGot {
 }
 export type Parameters = null;
 export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters> {
-    window: Float32Array[] = [];
-    $ = 0;
-    $total = 0;
-    _windowSize = 1024;
+    /**
+     * Concatenated audio data, array of channels
+     *
+     * @type {Float32Array[]}
+     * @memberof TemporalAnalyserNode
+     */
+    private window: Float32Array[] = [];
+    /**
+     * Next audio sample index to write into window
+     *
+     * @memberof TemporalAnalyserNode
+     */
+    private $ = 0;
+    /**
+     * Total samples written counter
+     *
+     * @memberof TemporalAnalyserNode
+     */
+    private $total = 0;
+    private _windowSize = 1024;
     constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
             const { buffer } = e.data;
-            if (buffer) {
-                const windowSize = this.windowSize;
-                this.$ %= windowSize;
-                if (this.window.length > buffer.length) this.window.splice(buffer.length);
-                if (buffer.length === 0) return;
-                const bufferSize = buffer[0].length;
-                this.$total += bufferSize;
-                let $ = this.$;
-                for (let i = 0; i < buffer.length; i++) {
-                    const channel = buffer[i];
-                    if (!this.window[i]) {
-                        this.window[i] = new Float32Array(windowSize);
-                    } else if (this.window[i].length !== windowSize) {
+            if (!buffer) return;
+            const { windowSize } = this;
+            this.$ %= windowSize;
+            if (this.window.length > buffer.length) { // Too much channels ?
+                this.window.splice(buffer.length);
+            }
+            if (buffer.length === 0) return;
+            const bufferSize = Math.max(...buffer.map(c => c.length)) || 128;
+            this.$total += bufferSize;
+            let { $ } = this;
+            // Init windows
+            for (let i = 0; i < buffer.length; i++) {
+                $ = this.$;
+                if (!this.window[i]) { // Initialise channel if not exist
+                    this.window[i] = new Float32Array(windowSize);
+                } else {
+                    if (this.window[i].length !== windowSize) { // adjust window size if not corresponded
                         const oldWindow = this.window[i];
                         const oldWindowSize = oldWindow.length;
                         const window = new Float32Array(windowSize);
-                        if (oldWindowSize > windowSize) {
-                            window.set(oldWindow.subarray(oldWindowSize - windowSize));
-                            this.$ = 0;
-                        } else {
-                            window.set(oldWindow);
-                        }
+                        $ = setBuffer(window, oldWindow, 0, $ - Math.min(windowSize, oldWindowSize));
                         this.window[i] = window;
                     }
-                    const window = this.window[i];
-                    $ = this.$;
-                    if (bufferSize > windowSize) {
-                        window.set(channel.subarray(bufferSize - windowSize));
-                        $ = 0;
-                    } else {
-                        setBuffer(window, channel, $);
-                        $ = ($ + bufferSize) % windowSize;
-                    }
                 }
-                this.$ = $;
             }
+            this.$ = $;
+            // Write
+            for (let i = 0; i < buffer.length; i++) {
+                const window = this.window[i];
+                const channel = buffer[i].length ? buffer[i] : new Float32Array(bufferSize);
+                $ = this.$;
+                if (bufferSize > windowSize) {
+                    window.set(channel.subarray(bufferSize - windowSize));
+                    $ = 0;
+                } else {
+                    $ = setBuffer(window, channel, $);
+                }
+            }
+            this.$ = $;
         };
     }
     get rms() {

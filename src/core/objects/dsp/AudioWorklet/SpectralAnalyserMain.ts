@@ -40,111 +40,176 @@ export interface DataGot {
     spread?: number[];
 }
 export type Parameters = null;
+/**
+ * Analyse spectral features of audio (concatenated from transmitter audio worklet processor)
+ *
+ * @export
+ * @class SpectralAnalyserNode
+ * @extends {DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters>}
+ */
 export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters> {
-    window: Float32Array[] = [];
-    $ = 0;
-    $total = 0;
-    fftWindow: Float32Array[] = [];
-    $totalFrames = 0;
-    $frame = 0;
-    frames = 0;
-    samplesWaiting = 0;
-    fftw = new RFFT(1024);
-    sampleRate = 48000;
-    _windowSize = 1024;
-    _fftHopSize = 512;
-    _fftSize = 1024;
-    _windowFunction = blackman;
+    private sampleRate: number;
+    /**
+     * Concatenated audio data, array of channels
+     *
+     * @private
+     * @type {Float32Array[]}
+     * @memberof SpectralAnalyserNode
+     */
+    private window: Float32Array[] = [];
+    /**
+     * Next audio sample index to write into window
+     *
+     * @private
+     * @memberof SpectralAnalyserNode
+     */
+    private $ = 0;
+    /**
+     * Total samples written counter
+     *
+     * @private
+     * @memberof SpectralAnalyserNode
+     */
+    private $total = 0;
+    /**
+     * Concatenated FFT amplitude data, array of channels.
+     *
+     * @private
+     * @type {Float32Array[]}
+     * @memberof SpectralAnalyserNode
+     */
+    private fftWindow: Float32Array[] = [];
+    /**
+     * Total FFT frames written counter
+     *
+     * @private
+     * @memberof SpectralAnalyserNode
+     */
+    private $totalFrames = 0;
+    /**
+     * Next FFT frame index to write into fftWindow
+     *
+     * @private
+     * @memberof SpectralAnalyserNode
+     */
+    private $frame = 0;
+    /**
+     * Total FFT frames in fftWindow
+     *
+     * @private
+     * @memberof SpectralAnalyserNode
+     */
+    private frames = 0;
+    /**
+     * Samples that already written into window, but not analysed by FFT yet
+     *
+     * @private
+     * @memberof SpectralAnalyserNode
+     */
+    private samplesWaiting = 0;
+    /**
+     * FFTW.js instance
+     *
+     * @private
+     * @memberof SpectralAnalyserNode
+     */
+    private fftw = new RFFT(1024);
+    private _windowSize = 1024;
+    private _fftHopSize = 512;
+    private _fftSize = 1024;
+    private _windowFunction = blackman;
     get fftBins() {
         return this._fftSize / 2;
+    }
+    /**
+     * Next FFT value index to write into fftWindow
+     *
+     * @readonly
+     * @memberof SpectralAnalyserNode
+     */
+    get $fft() {
+        return this.$frame * this.fftBins;
     }
     constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.sampleRate = context.sampleRate;
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
             const { buffer } = e.data;
-            if (buffer) {
-                const windowSize = this.windowSize;
-                const fftSize = this.fftSize;
-                const fftBins = fftSize / 2;
-                const fftHopSize = this.fftHopSize;
-                const frames = ~~((windowSize - fftSize) / this._fftHopSize) + 1;
-                const fftWindowSize = frames * fftBins;
-                this.frames = frames;
-                this.$ %= windowSize;
-                this.$frame %= frames;
-                if (this.window.length > buffer.length) {
-                    this.window.splice(buffer.length);
-                    this.fftWindow.splice(buffer.length);
-                }
-                if (buffer.length === 0) return;
-                const bufferSize = buffer[0].length || 128;
-                this.$total += bufferSize;
-                let { $, samplesWaiting, $frame, $totalFrames } = this;
-                for (let i = 0; i < buffer.length; i++) {
-                    let channel = buffer[i];
-                    if (!channel.length) channel = new Float32Array(bufferSize);
-                    if (!this.window[i]) {
-                        this.window[i] = new Float32Array(windowSize);
-                        this.fftWindow[i] = new Float32Array(fftWindowSize);
-                    } else {
-                        if (this.window[i].length !== windowSize) {
-                            const oldWindow = this.window[i];
-                            const oldWindowSize = oldWindow.length;
-                            const window = new Float32Array(windowSize);
-                            if (oldWindowSize > windowSize) {
-                                window.set(oldWindow.subarray(oldWindowSize - windowSize));
-                                this.$ = 0;
-                            } else {
-                                window.set(oldWindow);
-                            }
-                            this.window[i] = window;
-                        }
-                        if (this.fftWindow[i].length !== fftWindowSize) {
-                            const oldWindow = this.fftWindow[i];
-                            const oldWindowSize = oldWindow.length;
-                            const window = new Float32Array(fftWindowSize);
-                            if (oldWindowSize > fftWindowSize) {
-                                window.set(oldWindow.subarray(oldWindowSize - fftWindowSize));
-                                this.$ = 0;
-                            } else {
-                                window.set(oldWindow);
-                            }
-                            this.fftWindow[i] = window;
-                        }
-                    }
-                    const window = this.window[i];
-                    $ = this.$;
-                    samplesWaiting = this.samplesWaiting;
-                    if (bufferSize > windowSize) {
-                        window.set(channel.subarray(bufferSize - windowSize));
-                        $ = 0;
-                        samplesWaiting = windowSize;
-                    } else {
-                        setBuffer(window, channel, $);
-                        $ = ($ + bufferSize) % windowSize;
-                        samplesWaiting += bufferSize;
-                    }
-                    $frame = this.$frame;
-                    $totalFrames = this.$totalFrames;
-                    while (samplesWaiting >= fftHopSize) {
-                        if (samplesWaiting / fftHopSize < frames + 1) {
-                            const trunc = sliceBuffer(window, fftSize, $ - samplesWaiting + fftHopSize - fftSize);
-                            apply(trunc, this._windowFunction);
-                            const ffted = this.fftw.forward(trunc);
-                            const amps = fftw2Amp(ffted, windowEnergyFactor.blackman);
-                            this.fftWindow[i].set(amps, $frame * fftBins);
-                            $frame = ($frame + 1) % this.frames;
-                        }
-                        $totalFrames++;
-                        samplesWaiting -= this._fftHopSize;
-                    }
-                }
-                this.$ = $;
-                this.$frame = $frame;
-                this.$totalFrames = $totalFrames;
-                this.samplesWaiting = samplesWaiting;
+            if (!buffer) return;
+            const { windowSize, fftSize, fftHopSize, fftBins } = this;
+            const frames = ~~((windowSize - fftSize) / fftHopSize) + 1;
+            const fftWindowSize = frames * fftBins;
+            this.frames = frames;
+            this.$ %= windowSize;
+            this.$frame %= frames;
+            if (this.window.length > buffer.length) { // Too much channels ?
+                this.window.splice(buffer.length);
+                this.fftWindow.splice(buffer.length);
             }
+            if (buffer.length === 0) return;
+            const bufferSize = Math.max(...buffer.map(c => c.length)) || 128;
+            this.$total += bufferSize;
+            let { $, samplesWaiting, $frame, $totalFrames, $fft } = this;
+            // Init windows
+            for (let i = 0; i < buffer.length; i++) {
+                $ = this.$;
+                $fft = this.$fft;
+                if (!this.window[i]) { // Initialise channel if not exist
+                    this.window[i] = new Float32Array(windowSize);
+                    this.fftWindow[i] = new Float32Array(fftWindowSize);
+                } else {
+                    if (this.window[i].length !== windowSize) { // adjust window size if not corresponded
+                        const oldWindow = this.window[i];
+                        const oldWindowSize = oldWindow.length;
+                        const window = new Float32Array(windowSize);
+                        $ = setBuffer(window, oldWindow, 0, $ - Math.min(windowSize, oldWindowSize));
+                        this.window[i] = window;
+                    }
+                    if (this.fftWindow[i].length !== fftWindowSize) { // adjust fftWindow size if not corresponded
+                        const oldWindow = this.fftWindow[i];
+                        const oldWindowSize = oldWindow.length;
+                        const window = new Float32Array(fftWindowSize);
+                        $fft = setBuffer(window, oldWindow, 0, $fft - Math.min(windowSize, oldWindowSize));
+                        $frame = ~~($fft / fftBins);
+                        this.fftWindow[i] = window;
+                    }
+                }
+            }
+            this.$ = $;
+            this.$frame = $frame;
+            // Write
+            for (let i = 0; i < buffer.length; i++) {
+                const window = this.window[i];
+                const channel = buffer[i].length ? buffer[i] : new Float32Array(bufferSize);
+                $ = this.$;
+                $frame = this.$frame;
+                $totalFrames = this.$totalFrames;
+                samplesWaiting = this.samplesWaiting;
+                if (bufferSize > windowSize) {
+                    window.set(channel.subarray(bufferSize - windowSize));
+                    $ = 0;
+                    samplesWaiting = windowSize;
+                } else {
+                    $ = setBuffer(window, channel, $);
+                    samplesWaiting += bufferSize;
+                }
+                while (samplesWaiting >= fftHopSize) {
+                    if (samplesWaiting / fftHopSize < frames + 1) {
+                        const trunc = sliceBuffer(window, fftSize, $ - samplesWaiting + fftHopSize - fftSize);
+                        apply(trunc, this._windowFunction);
+                        const ffted = this.fftw.forward(trunc);
+                        const amps = fftw2Amp(ffted, windowEnergyFactor.blackman);
+                        this.fftWindow[i].set(amps, $frame * fftBins);
+                        $frame = ($frame + 1) % this.frames;
+                    }
+                    $totalFrames++;
+                    samplesWaiting -= fftHopSize;
+                }
+            }
+            this.$ = $;
+            this.$frame = $frame;
+            this.$totalFrames = $totalFrames;
+            this.samplesWaiting = samplesWaiting;
         };
     }
     get buffer() {
