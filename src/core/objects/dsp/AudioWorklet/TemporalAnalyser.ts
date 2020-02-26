@@ -21,18 +21,20 @@ export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
     constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
-            const f = this.resolves[e.data.id];
+            const { id } = e.data;
+            delete e.data.id;
+            const f = this.resolves[id];
             if (f) f(e.data);
-            delete this.resolves[e.data.id];
+            delete this.resolves[id];
         };
     }
-    getRMS() {
+    get rms() {
         return this.gets({ rms: true });
     }
-    getZCR() {
+    get zcr() {
         return this.gets({ zcr: true });
     }
-    getBuffer() {
+    get buffer() {
         return this.gets({ buffer: true });
     }
     gets(options: Omit<DataToProcessor, "id">) {

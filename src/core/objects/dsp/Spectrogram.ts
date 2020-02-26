@@ -1,6 +1,6 @@
 // import * as Color from "color-js";
 import { CanvasUI } from "../BaseUI";
-import { SpectralAnalyserRegister, SpectralAnalyserNode, TWindowFunction } from "./AudioWorklet/SpectralAnalyserMain";
+import { SpectralAnalyserRegister, SpectralAnalyserNode, TWindowFunction } from "./AudioWorklet/SpectralAnalyser";
 import { TMeta, TPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
 import { Bang } from "../Base";
@@ -38,7 +38,7 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
         ctx.fillRect(0, 0, width, height);
         super.componentDidMount();
     }
-    paint() {
+    async paint() {
         if (this.state.continuous) this.schedulePaint();
         if (!this.object.state.node) return;
         if (this.object.state.node.destroyed) return;
@@ -55,17 +55,19 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
         const { ctx, offscreenCtx, offscreenVRes } = this;
         if (!ctx || !offscreenCtx) return;
 
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
-
-        // Background
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, width, height);
-
         const left = 0;
         const bottom = 0;
 
-        const { allAmplitudes } = this.object.state.node.gets({ allAmplitudes: true });
+        const { allAmplitudes } = await this.object.state.node.gets({ allAmplitudes: true });
+
+        // Background
+
+        if (ctx.canvas.width !== width) ctx.canvas.width = width;
+        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+
         if (!allAmplitudes) return;
         const { data: f, frameIndex, bins, frames: framesIn, startPointer: $ } = allAmplitudes;
         if (!f || !f.length || !f[0].length) return;
@@ -236,19 +238,21 @@ export class Spectrogram extends BaseDSP<{}, State, [Bang], [], [], Props, Spect
         });
         this.on("updateProps", (props) => {
             if (this.state.node) {
-                if (props.windowFunction) this.state.node.windowFunction = props.windowFunction;
-                if (props.fftSize) this.state.node.fftSize = props.fftSize;
-                if (props.fftOverlap) this.state.node.fftOverlap = props.fftOverlap;
-                if (props.windowSize) this.state.node.windowSize = props.windowSize;
+                const { parameters } = this.state.node;
+                if (props.windowFunction) this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
+                if (props.fftSize) this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
+                if (props.fftOverlap) this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
+                if (props.windowSize) this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
             }
         });
         this.on("postInit", async () => {
             await SpectralAnalyserRegister.register(this.audioCtx.audioWorklet);
             this.state.node = new SpectralAnalyserRegister.Node(this.audioCtx);
-            this.state.node.windowFunction = this.getProp("windowFunction");
-            this.state.node.fftSize = this.getProp("fftSize");
-            this.state.node.fftOverlap = this.getProp("fftOverlap");
-            this.state.node.windowSize = this.getProp("windowSize");
+            const { parameters } = this.state.node;
+            this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
+            this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
+            this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
+            this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
             this.inletConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();

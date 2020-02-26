@@ -126,8 +126,9 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabUIState> {
 
         const borderWidth = 0.5;
 
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
+        if (ctx.canvas.width !== width) ctx.canvas.width = width;
+        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        ctx.clearRect(0, 0, width, height);
         ctx.lineWidth = borderWidth;
 
         const buttonBorderColor = focus ? focusBorderColor : borderColor;

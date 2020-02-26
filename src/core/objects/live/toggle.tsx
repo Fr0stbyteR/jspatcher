@@ -33,8 +33,9 @@ class LiveToggleUI extends LiveUI<LiveToggle, LiveToggleUIState> {
         if (!ctx) return;
         const borderWidth = 1;
 
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
+        if (ctx.canvas.width !== width) ctx.canvas.width = width;
+        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        ctx.clearRect(0, 0, width, height);
 
         ctx.lineWidth = borderWidth;
 

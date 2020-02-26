@@ -42,9 +42,11 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
     constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
-            const f = this.resolves[e.data.id];
+            const { id } = e.data;
+            delete e.data.id;
+            const f = this.resolves[id];
             if (f) f(e.data);
-            delete this.resolves[e.data.id];
+            delete this.resolves[id];
         };
     }
     gets(options: Omit<DataToProcessor, "id">) {
