@@ -15,6 +15,8 @@ export interface DataFromProcessor {
 }
 export type Parameters = "windowSize";
 export const processorID = "__JSPatcher_TemporalAnalyser";
+export class TemporalAnalyserAtoms {
+}
 export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters> {
     promiseID = 0;
     resolves: { [id: number]: (rms?: DataFromProcessor | PromiseLike<DataFromProcessor>) => any } = {};

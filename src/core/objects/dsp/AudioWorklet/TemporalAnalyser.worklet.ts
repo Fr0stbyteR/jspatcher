@@ -40,6 +40,7 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
      * @memberof TemporalAnalyserProcessor
      */
     private $total = 0;
+    private _windowSize = 1024;
     constructor(options: AudioWorkletNodeOptions) {
         super(options);
         this.port.onmessage = (e) => {
@@ -62,10 +63,17 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         const data = this.windowF32;
         return { data, startPointer: this.$, sampleIndex: data.length ? this.$total - data[0].length : 0 };
     }
+    get windowSize() {
+        return this._windowSize;
+    }
+    set windowSize(sizeIn: number) {
+        this._windowSize = ~~Math.min(2 ** 32, Math.max(128, sizeIn || 1024));
+    }
     process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: { [key in Parameters]: Float32Array }) {
         if (this.destroyed) return false;
         const input = inputs[0];
-        const windowSize = ~~parameters.windowSize[0] || 1024;
+        this.windowSize = ~~parameters.windowSize[0];
+        const { windowSize } = this;
         this.$ %= windowSize;
         if (this.window.length > input.length) { // Too much channels ?
             this.window.splice(input.length);
