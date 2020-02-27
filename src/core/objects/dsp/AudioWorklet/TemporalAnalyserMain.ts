@@ -88,7 +88,7 @@ export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
     }
     get buffer() {
         const data = this.window;
-        return { data, startPointer: this.$, sampleIndex: data.length ? this.$total - data[0].length : 0 };
+        return { data, startPointer: this.$, sampleIndex: this.$total };
     }
     get windowSize() {
         return this._windowSize;

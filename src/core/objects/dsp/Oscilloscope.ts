@@ -77,7 +77,8 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         ctx.fillRect(0, 0, width, height);
 
         if (!buffer) return;
-        const { startPointer: $, data: t } = buffer;
+        const { $: $ui32, data: t } = buffer;
+        const $ = $ui32[0];
         if (!t || !t.length || !t[0].length) return;
         const channels = t.length;
         const l = t[0].length;

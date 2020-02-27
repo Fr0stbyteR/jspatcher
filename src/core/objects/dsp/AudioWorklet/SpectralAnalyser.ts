@@ -20,9 +20,9 @@ export interface DataToProcessor extends DisposableAudioWorkletMessageEventDataT
 }
 export interface DataFromProcessor {
     id: number;
-    buffer?: { startPointer: number; data: Float32Array[]; sampleIndex: number };
-    lastAmplitudes?: { startPointer: number; data: Float32Array[]; frameIndex: number };
-    allAmplitudes?: { startPointer: number; data: Float32Array[]; frames: number; bins: number; hopSize: number; frameIndex: number };
+    buffer?: { $: Uint32Array; data: Float32Array[]; $total: Uint32Array };
+    lastAmplitudes?: { $frame: number; data: Float32Array[]; $totalFrames: number };
+    allAmplitudes?: { $frame: Uint32Array; data: Float32Array[]; frames: number; fftBins: number; fftHopSize: number; $totalFrames: Uint32Array };
     amplitude?: number[];
     estimatedFreq?: number[];
     centroid?: number[];
@@ -37,9 +37,9 @@ export interface DataFromProcessor {
 export type Parameters = "windowSize" | "fftSize" | "fftOverlap" | "windowFunction";
 export const processorID = "__JSPatcher_SpectralAnalyser";
 export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters> {
-    promiseID = 0;
-    resolves: { [id: number]: (rms?: DataFromProcessor | PromiseLike<DataFromProcessor>) => any } = {};
-    constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
+    private promiseID = 0;
+    private resolves: { [id: number]: (rms?: DataFromProcessor | PromiseLike<DataFromProcessor>) => any } = {};
+    constructor(context: AudioContext) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
             const { id } = e.data;

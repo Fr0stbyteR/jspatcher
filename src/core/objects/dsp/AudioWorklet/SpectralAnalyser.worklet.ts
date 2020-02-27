@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import apply from "window-function/apply";
 import { blackman, hamming, hann, triangular } from "window-function";
 import { RFFT } from "fftw-js";
@@ -7,7 +6,85 @@ import { setTypedArray, getSubTypedArray, fftw2Amp, estimateFreq, centroid, flat
 import { ceil } from "../../../../utils/math";
 import { windowEnergyFactor } from "../../../../utils/windowEnergy";
 
+declare const sampleRate: number;
 const processorID = "__JSPatcher_SpectralAnalyser";
+
+/**
+ * Some data to transfer across threads
+ *
+ * @class SpectralAnalyserAtoms
+ */
+class SpectralAnalyserAtoms {
+    private readonly _sab: SharedArrayBuffer;
+    private readonly _$: Uint32Array;
+    private readonly _$total: Uint32Array;
+    private readonly _$frame: Uint32Array;
+    private readonly _$totalFrames: Uint32Array;
+    /**
+     * Next audio sample index to write into window
+     *
+     * @type {number}
+     * @memberof SpectralAnalyserAtoms
+     */
+    get $(): number {
+        return this._$[0];
+    }
+    set $(value: number) {
+        this._$[0] = value;
+    }
+    /**
+     * Total samples written counter
+     *
+     * @type {number}
+     * @memberof SpectralAnalyserAtoms
+     */
+    get $total(): number {
+        return this._$total[0];
+    }
+    set $total(value: number) {
+        this._$total[0] = value;
+    }
+    /**
+     * Next FFT frame index to write into fftWindow
+     *
+     * @type {number}
+     * @memberof SpectralAnalyserAtoms
+     */
+    get $frame(): number {
+        return this._$frame[0];
+    }
+    set $frame(value: number) {
+        this._$frame[0] = value;
+    }
+    /**
+     * Total FFT frames written counter
+     *
+     * @type {number}
+     * @memberof SpectralAnalyserAtoms
+     */
+    get $totalFrames(): number {
+        return this._$totalFrames[0];
+    }
+    set $totalFrames(value: number) {
+        this._$totalFrames[0] = value;
+    }
+    /**
+     * Get all atoms
+     *
+     * @readonly
+     * @memberof SpectralAnalyserAtoms
+     */
+    get atoms() {
+        return { $: this._$, $total: this._$total, $frame: this._$frame, $totalFrames: this._$totalFrames };
+    }
+    constructor() {
+        this._sab = new SharedArrayBuffer(4 * Uint32Array.BYTES_PER_ELEMENT);
+        this._$ = new Uint32Array(this._sab, 0, 1);
+        this._$total = new Uint32Array(this._sab, 4, 1);
+        this._$frame = new Uint32Array(this._sab, 8, 1);
+        this._$totalFrames = new Uint32Array(this._sab, 12, 1);
+    }
+}
 
 class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, DataFromProcessor, Parameters> {
     static get parameterDescriptors(): AudioWorkletAudioParamDescriptor<Parameters>[] {
@@ -61,33 +138,62 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
      *
      * @private
      * @type {Float32Array[]}
-     * @memberof TemporalAnalyserProcessor
+     * @memberof SpectralAnalyserProcessor
      */
     private fftWindowF32: Float32Array[] = [];
+    private readonly _atoms = new SpectralAnalyserAtoms();
+    /**
+     * Shared Data
+     *
+     * @memberof SpectralAnalyserProcessor
+     */
+    get atoms() {
+        return this._atoms.atoms;
+    }
     /**
      * Next audio sample index to write into window
      *
      * @memberof SpectralAnalyserProcessor
      */
-    private $ = 0;
+    get $() {
+        return this._atoms.$;
+    }
+    set $(value: number) {
+        this._atoms.$ = value;
+    }
     /**
      * Total samples written counter
      *
      * @memberof SpectralAnalyserProcessor
      */
-    private $total = 0;
-    /**
-     * Total FFT frames written counter
-     *
-     * @memberof SpectralAnalyserProcessor
-     */
-    private $totalFrames = 0;
+    get $total() {
+        return this._atoms.$total;
+    }
+    set $total(value: number) {
+        this._atoms.$total = value;
+    }
     /**
      * Next FFT frame index to write into fftWindow
      *
      * @memberof SpectralAnalyserProcessor
      */
-    private $frame = 0;
+    get $frame() {
+        return this._atoms.$frame;
+    }
+    set $frame(value: number) {
+        this._atoms.$frame = value;
+    }
+    /**
+     * Total FFT frames written counter
+     *
+     * @memberof SpectralAnalyserProcessor
+     */
+    get $totalFrames() {
+        return this._atoms.$totalFrames;
+    }
+    set $totalFrames(value: number) {
+        this._atoms.$totalFrames = value;
+    }
     /**
      * Total FFT frames in fftWindow
      * windowSize = (frames - 1) * fftHopSize + fftSize
@@ -146,22 +252,20 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             this.port.postMessage({ id, ...message });
         };
     }
-    get buffer() {
+    get buffer(): DataFromProcessor["buffer"] {
         const data = this.windowF32;
-        return { data, startPointer: this.$, sampleIndex: data.length ? this.$total - data[0].length : 0 };
+        const { $, $total } = this.atoms;
+        return { data, $, $total };
     }
-    get lastAmplitudes() {
-        return { startPointer: this.$fft, data: this.lastFrame, frameIndex: this.$totalFrames - 1 };
+    get lastAmplitudes(): DataFromProcessor["lastAmplitudes"] {
+        const { $frame, $totalFrames } = this;
+        return { $frame, data: this.lastFrame, $totalFrames };
     }
-    get allAmplitudes() {
-        return {
-            startPointer: this.$fft,
-            data: this.fftWindowF32,
-            frames: this.frames,
-            bins: this.fftBins,
-            hopSize: this._fftHopSize,
-            frameIndex: this.$totalFrames - this.frames
-        };
+    get allAmplitudes(): DataFromProcessor["allAmplitudes"] {
+        const data = this.fftWindowF32;
+        const { $frame, $totalFrames } = this.atoms;
+        const { frames, fftBins, fftHopSize } = this;
+        return { $frame, data, frames, fftBins, fftHopSize, $totalFrames };
     }
     get amplitude() {
         return this.lastFrame.map(channel => sum(channel));

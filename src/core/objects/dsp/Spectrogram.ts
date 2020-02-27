@@ -69,15 +69,16 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
         ctx.fillRect(0, 0, width, height);
 
         if (!allAmplitudes) return;
-        const { data: f, frameIndex, bins, frames: framesIn, startPointer: $ } = allAmplitudes;
+        const { data: f, $totalFrames, fftBins: bins, frames: framesIn, $frame: $frameUi32 } = allAmplitudes;
         if (!f || !f.length || !f[0].length) return;
         const l = f[0].length;
         const channels = f.length;
 
         // Draw to offscreen canvas
         let frames = this.frames;
-        const $lastFrame = frameIndex + framesIn - 1;
-        let $frame0 = ~~($ / bins);
+        const $lastFrame = $totalFrames[0] - 1;
+        const $frame = $frameUi32[0];
+        let $frame0 = $frame;
         const $frame1 = $frame0 + framesIn;
         if (frames !== framesIn) {
             offscreenCtx.canvas.width = framesIn;
@@ -147,7 +148,7 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
         ctx.imageSmoothingEnabled = false;
-        $frame0 = $ / bins;
+        $frame0 = $frame;
         if ($frame1 === frames) {
             ctx.drawImage(offscreenCtx.canvas, 0, 0, frames, offscreenVRes, left, 0, width - left, height - bottom);
         } else {
