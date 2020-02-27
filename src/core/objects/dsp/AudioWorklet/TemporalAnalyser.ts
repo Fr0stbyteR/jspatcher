@@ -11,17 +11,9 @@ export interface DataFromProcessor {
     id: number;
     rms?: number[];
     zcr?: number[];
-    buffer?: { $: Uint32Array; data: Float32Array[]; $total: Uint32Array };
+    buffer?: { $: Uint32Array; data: Float32Array[]; $total: Uint32Array; lock: Int32Array };
 }
 export type Parameters = "windowSize";
-export interface Atoms {
-    readonly _sab: SharedArrayBuffer;
-    readonly _$: Uint32Array;
-    readonly _$total: Uint32Array;
-    $: number;
-    $total: number;
-    atoms: { $: Uint32Array; $total: Uint32Array };
-}
 export const processorID = "__JSPatcher_TemporalAnalyser";
 export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters> {
     private promiseID = 0;

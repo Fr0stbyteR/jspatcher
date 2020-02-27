@@ -20,9 +20,9 @@ export interface DataToProcessor extends DisposableAudioWorkletMessageEventDataT
 }
 export interface DataFromProcessor {
     id: number;
-    buffer?: { $: Uint32Array; data: Float32Array[]; $total: Uint32Array };
+    buffer?: { $: Uint32Array; data: Float32Array[]; $total: Uint32Array; lock: Int32Array };
     lastAmplitudes?: { $frame: number; data: Float32Array[]; $totalFrames: number };
-    allAmplitudes?: { $frame: Uint32Array; data: Float32Array[]; frames: number; fftBins: number; fftHopSize: number; $totalFrames: Uint32Array };
+    allAmplitudes?: { $frame: Uint32Array; data: Float32Array[]; frames: number; fftBins: number; fftHopSize: number; $totalFrames: Uint32Array; lock: Int32Array };
     amplitude?: number[];
     estimatedFreq?: number[];
     centroid?: number[];

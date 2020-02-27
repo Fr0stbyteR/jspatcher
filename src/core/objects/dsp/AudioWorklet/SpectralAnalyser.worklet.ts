@@ -16,6 +16,7 @@ const processorID = "__JSPatcher_SpectralAnalyser";
  */
 class SpectralAnalyserAtoms {
     private readonly _sab: SharedArrayBuffer;
+    private readonly _lock: Int32Array;
     private readonly _$: Uint32Array;
     private readonly _$total: Uint32Array;
     private readonly _$frame: Uint32Array;
@@ -75,14 +76,24 @@ class SpectralAnalyserAtoms {
      * @memberof SpectralAnalyserAtoms
      */
     get atoms() {
-        return { $: this._$, $total: this._$total, $frame: this._$frame, $totalFrames: this._$totalFrames };
+        return { $: this._$, $total: this._$total, $frame: this._$frame, $totalFrames: this._$totalFrames, lock: this._lock };
+    }
+    wait() {
+        while (Atomics.load(this._lock, 0));
+    }
+    lock() {
+        return Atomics.store(this._lock, 0, 1);
+    }
+    unlock() {
+        return Atomics.store(this._lock, 0, 0);
     }
     constructor() {
-        this._sab = new SharedArrayBuffer(4 * Uint32Array.BYTES_PER_ELEMENT);
-        this._$ = new Uint32Array(this._sab, 0, 1);
-        this._$total = new Uint32Array(this._sab, 4, 1);
-        this._$frame = new Uint32Array(this._sab, 8, 1);
-        this._$totalFrames = new Uint32Array(this._sab, 12, 1);
+        this._sab = new SharedArrayBuffer(5 * Uint32Array.BYTES_PER_ELEMENT);
+        this._lock = new Int32Array(this._sab, 0, 1);
+        this._$ = new Uint32Array(this._sab, 4, 1);
+        this._$total = new Uint32Array(this._sab, 8, 1);
+        this._$frame = new Uint32Array(this._sab, 12, 1);
+        this._$totalFrames = new Uint32Array(this._sab, 16, 1);
     }
 }
 
@@ -254,8 +265,8 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
     }
     get buffer(): DataFromProcessor["buffer"] {
         const data = this.windowF32;
-        const { $, $total } = this.atoms;
-        return { data, $, $total };
+        const { $, $total, lock } = this.atoms;
+        return { data, $, $total, lock };
     }
     get lastAmplitudes(): DataFromProcessor["lastAmplitudes"] {
         const { $frame, $totalFrames } = this;
@@ -263,9 +274,9 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
     }
     get allAmplitudes(): DataFromProcessor["allAmplitudes"] {
         const data = this.fftWindowF32;
-        const { $frame, $totalFrames } = this.atoms;
+        const { $frame, $totalFrames, lock } = this.atoms;
         const { frames, fftBins, fftHopSize } = this;
-        return { $frame, data, frames, fftBins, fftHopSize, $totalFrames };
+        return { $frame, data, frames, fftBins, fftHopSize, $totalFrames, lock };
     }
     get amplitude() {
         return this.lastFrame.map(channel => sum(channel));
@@ -351,8 +362,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         const frames = ~~((windowSize - fftSize) / fftHopSize) + 1;
         const fftWindowSize = frames * fftBins;
         this.frames = frames;
-        this.$ %= windowSize;
-        this.$frame %= frames;
+
         if (this.window.length > input.length) {
             this.window.splice(input.length);
             this.fftWindow.splice(input.length);
@@ -360,7 +370,14 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             this.fftWindowF32.splice(input.length);
         }
         if (input.length === 0) return true;
+
         const bufferSize = Math.max(...input.map(c => c.length)) || 128;
+
+        this._atoms.wait();
+        this._atoms.lock();
+
+        this.$ %= windowSize;
+        this.$frame %= frames;
         this.$total += bufferSize;
         let { $, samplesWaiting, $frame, $totalFrames, $fft } = this;
         // Init windows
@@ -428,6 +445,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         this.$frame = $frame;
         this.$totalFrames = $totalFrames;
         this.samplesWaiting = samplesWaiting;
+        this._atoms.unlock();
         return true;
     }
     destroy() {

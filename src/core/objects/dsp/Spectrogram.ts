@@ -69,11 +69,13 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
         ctx.fillRect(0, 0, width, height);
 
         if (!allAmplitudes) return;
-        const { data: f, $totalFrames, fftBins: bins, frames: framesIn, $frame: $frameUi32 } = allAmplitudes;
+        const { data: f, $totalFrames, fftBins: bins, frames: framesIn, $frame: $frameUi32, lock } = allAmplitudes;
         if (!f || !f.length || !f[0].length) return;
         const l = f[0].length;
         const channels = f.length;
 
+        while (Atomics.load(lock, 0));
+        Atomics.store(lock, 0, 1);
         // Draw to offscreen canvas
         let frames = this.frames;
         const $lastFrame = $totalFrames[0] - 1;
@@ -113,6 +115,7 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
                 }
             }
         }
+        Atomics.store(lock, 0, 0);
         // Grids
         ctx.strokeStyle = gridColor;
         const vStep = 0.25;

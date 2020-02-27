@@ -1,4 +1,4 @@
-import { DataToProcessor, DataFromProcessor, Parameters, Atoms } from "./TemporalAnalyser";
+import { DataToProcessor, DataFromProcessor, Parameters } from "./TemporalAnalyser";
 import { rms, zcr, setTypedArray } from "../../../../utils/buffer";
 
 const processorID = "__JSPatcher_TemporalAnalyser";
@@ -8,8 +8,9 @@ const processorID = "__JSPatcher_TemporalAnalyser";
  *
  * @class TemporalAnalyserAtoms
  */
-class TemporalAnalyserAtoms implements Atoms {
+class TemporalAnalyserAtoms {
     readonly _sab: SharedArrayBuffer;
+    readonly _lock: Int32Array;
     readonly _$: Uint32Array;
     readonly _$total: Uint32Array;
     /**
@@ -43,12 +44,22 @@ class TemporalAnalyserAtoms implements Atoms {
      * @memberof TemporalAnalyserAtoms
      */
     get atoms() {
-        return { $: this._$, $total: this._$total };
+        return { $: this._$, $total: this._$total, lock: this._lock };
     }
-    constructor(sab: SharedArrayBuffer) {
-        this._sab = sab;
-        this._$ = new Uint32Array(this._sab, 0, 1);
-        this._$total = new Uint32Array(this._sab, 4, 1);
+    wait() {
+        while (Atomics.load(this._lock, 0));
+    }
+    lock() {
+        return Atomics.store(this._lock, 0, 1);
+    }
+    unlock() {
+        return Atomics.store(this._lock, 0, 0);
+    }
+    constructor() {
+        this._sab = new SharedArrayBuffer(3 * Uint32Array.BYTES_PER_ELEMENT);
+        this._lock = new Int32Array(this._sab, 0, 1);
+        this._$ = new Uint32Array(this._sab, 4, 1);
+        this._$total = new Uint32Array(this._sab, 8, 1);
     }
 }
 
@@ -77,7 +88,7 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
      * @memberof TemporalAnalyserProcessor
      */
     private readonly windowF32: Float32Array[] = [];
-    private readonly _atoms: TemporalAnalyserAtoms;
+    private readonly _atoms = new TemporalAnalyserAtoms();
     /**
      * Shared Data
      *
@@ -111,7 +122,6 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
     private _windowSize = 1024;
     constructor(options: AudioWorkletNodeOptions) {
         super(options);
-        this._atoms = new TemporalAnalyserAtoms(options.processorOptions);
         this.port.onmessage = (e) => {
             const { id } = e.data;
             if (e.data.destroy) this.destroy();
@@ -130,8 +140,8 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
     }
     get buffer(): DataFromProcessor["buffer"] {
         const data = this.windowF32;
-        const { $, $total } = this.atoms;
-        return { data, $, $total };
+        const { $, $total, lock } = this.atoms;
+        return { data, $, $total, lock };
     }
     get windowSize() {
         return this._windowSize;
@@ -144,12 +154,17 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
         const input = inputs[0];
         this.windowSize = ~~parameters.windowSize[0];
         const { windowSize } = this;
-        this.$ %= windowSize;
+
         if (this.window.length > input.length) { // Too much channels ?
             this.window.splice(input.length);
             this.windowF32.splice(input.length);
         }
         if (input.length === 0) return true;
+
+        this._atoms.wait();
+        this._atoms.lock();
+
+        this.$ %= windowSize;
         const bufferSize = Math.max(...input.map(c => c.length)) || 128;
         this.$total += bufferSize;
         let { $ } = this;
@@ -184,6 +199,7 @@ class TemporalAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
             }
         }
         this.$ = $;
+        this._atoms.unlock();
         return true;
     }
     destroy() {

@@ -77,12 +77,15 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         ctx.fillRect(0, 0, width, height);
 
         if (!buffer) return;
-        const { $: $ui32, data: t } = buffer;
-        const $ = $ui32[0];
+
+        const { $: $ui32, data: t, lock } = buffer;
         if (!t || !t.length || !t[0].length) return;
+
+        while (Atomics.load(lock, 0));
+        Atomics.store(lock, 0, 1);
+        const $ = $ui32[0];
         const channels = t.length;
         const l = t[0].length;
-
         // Vertical Range
         let min = -range;
         let max = range;
@@ -193,6 +196,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             }
             ctx.stroke();
         }
+        Atomics.store(lock, 0, 0);
         // Stats
         if (showStats) {
             ctx.font = "bold 12px Consolas, monospace";
