@@ -54,13 +54,12 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderUIState> {
         const distance = this.distance;
         const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
 
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
+        if (ctx.canvas.width !== width) ctx.canvas.width = width;
+        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        ctx.clearRect(0, 0, width, height);
 
         ctx.lineWidth = lineWidth;
         ctx.strokeStyle = sliderColor;
-
-        ctx.clearRect(0, 0, width, height);
 
         if (orientation === "vertical") {
             ctx.beginPath();

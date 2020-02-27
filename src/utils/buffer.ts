@@ -192,7 +192,7 @@ export const spread = (array: TypedArray | number[]) => Math.sqrt(conjugatedCent
  * @returns
  */
 // eslint-disable-next-line arrow-parens
-export const setBuffer = <T extends TypedArray = TypedArray>(to: T, from: T, offsetTo?: number, offsetFrom?: number) => {
+export const setTypedArray = <T extends TypedArray = TypedArray>(to: T, from: T, offsetTo?: number, offsetFrom?: number) => {
     const toLength = to.length;
     const fromLength = from.length;
     const spillLength = Math.min(toLength, fromLength);
@@ -211,13 +211,13 @@ export const setBuffer = <T extends TypedArray = TypedArray>(to: T, from: T, off
     return $to;
 };
 // eslint-disable-next-line arrow-parens
-export const getSubBuffer = <T extends TypedArray = TypedArray>(from: T, length: number, offset?: number) => {
+export const getSubTypedArray = <T extends TypedArray = TypedArray>(from: T, length: number, offset?: number) => {
     const fromLength = from.length;
     const $ = mod(offset, fromLength) || 0;
     if ($ === 0 && length === fromLength) return from;
     if ($ + length < fromLength) return from.subarray($, $ + length) as T;
     const to = new (from.constructor as TypedArrayConstructor)(length) as T;
-    setBuffer(to, from, 0, $);
+    setTypedArray(to, from, 0, $);
     return to;
 };
 // eslint-disable-next-line arrow-parens
@@ -227,7 +227,7 @@ export const sliceBuffer = <T extends TypedArray = TypedArray>(from: T, length: 
     if ($ === 0 && length === fromLength) return from.slice();
     if ($ + length < fromLength) return from.slice($, $ + length) as T;
     const to = new (from.constructor as TypedArrayConstructor)(length) as T;
-    setBuffer(to, from, 0, $);
+    setTypedArray(to, from, 0, $);
     return to;
 };
 /**

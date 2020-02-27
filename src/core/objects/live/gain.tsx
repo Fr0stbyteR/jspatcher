@@ -2,7 +2,7 @@ import { LiveSliderProps } from "./slider";
 import { LiveMeterProps } from "./meter";
 import { LiveUIState, LiveUI, LiveObject, LiveObjectState } from "./Base";
 import { TMeta } from "../../types";
-import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyserMain";
+import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
 import { atodb, dbtoa, normExp } from "../../../utils/math";
 import { Bang } from "../Base";
 
@@ -64,9 +64,8 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
         const distance = this.distance;
         const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
 
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
-
+        if (ctx.canvas.width !== width) ctx.canvas.width = width;
+        if (ctx.canvas.height !== height) ctx.canvas.height = height;
         ctx.clearRect(0, 0, width, height);
 
         this.normLevels = levels.map((v) => {
@@ -576,7 +575,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             let lastResult: number[] = [];
             const request = async () => {
                 if (this.state.rmsNode && !this.state.rmsNode.destroyed) {
-                    const { rms } = this.state.rmsNode.gets({ rms: true });
+                    const { rms } = await this.state.rmsNode.gets({ rms: true });
                     const mode = this.getProp("mode");
                     const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
                     const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
@@ -606,7 +605,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
         });
         let lastMetering: "preFader" | "postFader";
         this.on("updateProps", (props) => {
-            if (props.windowSize && this.state.rmsNode) this.state.rmsNode.windowSize = props.windowSize;
+            if (props.windowSize && this.state.rmsNode) this.applyBPF(this.state.rmsNode.parameters.get("windowSize"), [[props.windowSize]]);
             if (props.metering && lastMetering !== props.metering && this.state.rmsNode) {
                 if (lastMetering) {
                     if (lastMetering === "postFader") this.state.gainNode.disconnect(this.state.rmsNode);
@@ -622,7 +621,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             this.state.bypassNode.connect(this.state.gainNode);
             await TemporalAnalyserRegister.register(this.audioCtx.audioWorklet);
             this.state.rmsNode = new TemporalAnalyserRegister.Node(this.audioCtx);
-            this.state.rmsNode.windowSize = this.getProp("windowSize");
+            this.applyBPF(this.state.rmsNode.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             if (this.getProp("metering") === "preFader") this.state.bypassNode.connect(this.state.rmsNode, 0, 0);
             else this.state.gainNode.connect(this.state.rmsNode, 0, 0);
             startRequest();

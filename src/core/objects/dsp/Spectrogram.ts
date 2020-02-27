@@ -1,6 +1,6 @@
 // import * as Color from "color-js";
 import { CanvasUI } from "../BaseUI";
-import { SpectralAnalyserRegister, SpectralAnalyserNode, TWindowFunction } from "./AudioWorklet/SpectralAnalyserMain";
+import { SpectralAnalyserRegister, SpectralAnalyserNode, TWindowFunction } from "./AudioWorklet/SpectralAnalyser";
 import { TMeta, TPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
 import { Bang } from "../Base";
@@ -38,7 +38,7 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
         ctx.fillRect(0, 0, width, height);
         super.componentDidMount();
     }
-    paint() {
+    async paint() {
         if (this.state.continuous) this.schedulePaint();
         if (!this.object.state.node) return;
         if (this.object.state.node.destroyed) return;
@@ -55,27 +55,32 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
         const { ctx, offscreenCtx, offscreenVRes } = this;
         if (!ctx || !offscreenCtx) return;
 
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
-
-        // Background
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, width, height);
-
         const left = 0;
         const bottom = 0;
 
-        const { allAmplitudes } = this.object.state.node.gets({ allAmplitudes: true });
+        const { allAmplitudes } = await this.object.state.node.gets({ allAmplitudes: true });
+
+        // Background
+
+        if (ctx.canvas.width !== width) ctx.canvas.width = width;
+        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+
         if (!allAmplitudes) return;
-        const { data: f, frameIndex, bins, frames: framesIn, startPointer: $ } = allAmplitudes;
+        const { data: f, $totalFrames, fftBins: bins, frames: framesIn, $frame: $frameUi32, lock } = allAmplitudes;
         if (!f || !f.length || !f[0].length) return;
         const l = f[0].length;
         const channels = f.length;
 
+        while (Atomics.load(lock, 0));
+        Atomics.store(lock, 0, 1);
         // Draw to offscreen canvas
         let frames = this.frames;
-        const $lastFrame = frameIndex + framesIn - 1;
-        let $frame0 = ~~($ / bins);
+        const $lastFrame = $totalFrames[0] - 1;
+        const $frame = $frameUi32[0];
+        let $frame0 = $frame;
         const $frame1 = $frame0 + framesIn;
         if (frames !== framesIn) {
             offscreenCtx.canvas.width = framesIn;
@@ -110,6 +115,7 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
                 }
             }
         }
+        Atomics.store(lock, 0, 0);
         // Grids
         ctx.strokeStyle = gridColor;
         const vStep = 0.25;
@@ -145,7 +151,7 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
         ctx.imageSmoothingEnabled = false;
-        $frame0 = $ / bins;
+        $frame0 = $frame;
         if ($frame1 === frames) {
             ctx.drawImage(offscreenCtx.canvas, 0, 0, frames, offscreenVRes, left, 0, width - left, height - bottom);
         } else {
@@ -236,19 +242,21 @@ export class Spectrogram extends BaseDSP<{}, State, [Bang], [], [], Props, Spect
         });
         this.on("updateProps", (props) => {
             if (this.state.node) {
-                if (props.windowFunction) this.state.node.windowFunction = props.windowFunction;
-                if (props.fftSize) this.state.node.fftSize = props.fftSize;
-                if (props.fftOverlap) this.state.node.fftOverlap = props.fftOverlap;
-                if (props.windowSize) this.state.node.windowSize = props.windowSize;
+                const { parameters } = this.state.node;
+                if (props.windowFunction) this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
+                if (props.fftSize) this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
+                if (props.fftOverlap) this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
+                if (props.windowSize) this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
             }
         });
         this.on("postInit", async () => {
             await SpectralAnalyserRegister.register(this.audioCtx.audioWorklet);
             this.state.node = new SpectralAnalyserRegister.Node(this.audioCtx);
-            this.state.node.windowFunction = this.getProp("windowFunction");
-            this.state.node.fftSize = this.getProp("fftSize");
-            this.state.node.fftOverlap = this.getProp("fftOverlap");
-            this.state.node.windowSize = this.getProp("windowSize");
+            const { parameters } = this.state.node;
+            this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
+            this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
+            this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
+            this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
             this.inletConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();

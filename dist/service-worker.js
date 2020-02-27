@@ -95,7 +95,7 @@ define("./service-worker.js",['./workbox-bce63e3c'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "1582707213142"
+    prefix: "1582809437777"
   });
   workbox.skipWaiting();
   workbox.clientsClaim();
@@ -287,10 +287,10 @@ define("./service-worker.js",['./workbox-bce63e3c'], function (workbox) { 'use s
     "revision": "90509a043949258c3c2d90e3e63740d2"
   }, {
     "url": "index.js",
-    "revision": "6388b4183677b0355aaa265b5d9a52c0"
+    "revision": "9916ed86d7631abd25104d70715aa20d"
   }, {
-    "url": "js/395a3f25fb2dfdd94882.worklet.js",
-    "revision": "d13cbc26d5d0a945f29142a2077e7699"
+    "url": "js/216f76d8ac241970f02d.worklet.js",
+    "revision": "ad603cc03333813c541e4a372b9843af"
   }, {
     "url": "js/39678c5b6e9f8a9ad007.js",
     "revision": "ea3751618e88e9d34749ff79110b4f44"
@@ -300,6 +300,9 @@ define("./service-worker.js",['./workbox-bce63e3c'], function (workbox) { 'use s
   }, {
     "url": "js/8d6cf1de192a4d0521761f6e6aa2a82b.worker.js",
     "revision": "3ffcd4a66c91250c0a377a2432b22e4c"
+  }, {
+    "url": "js/94bc24d12e93dca3ce97.worklet.js",
+    "revision": "90338130ef803b8fcdc01795f7f8c685"
   }, {
     "url": "js/b7f07d82e2bf7bf2fafe.js",
     "revision": "02a67e3639b670d39d9efbcfb5feed16"

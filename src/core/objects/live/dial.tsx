@@ -66,8 +66,9 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialUIState> {
         const distance = this.distance;
         const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
 
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
+        if (ctx.canvas.width !== width) ctx.canvas.width = width;
+        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        ctx.clearRect(0, 0, width, height);
 
         const triangleHeight = 4;
         const triangleLineWidth = 0.6;

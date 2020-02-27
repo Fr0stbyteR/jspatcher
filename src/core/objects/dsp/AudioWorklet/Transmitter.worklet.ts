@@ -3,8 +3,8 @@ import { DataToProcessor, DataFromProcessor, Parameters } from "./Transmitter";
 const processorID = "__JSPatcher_Transmitter";
 
 class TransmitterProcessor extends AudioWorkletProcessor<DataToProcessor, DataFromProcessor, Parameters> {
-    destroyed = false;
-    $ = 0;
+    private destroyed = false;
+    private $ = 0;
     constructor(options: AudioWorkletNodeOptions) {
         super(options);
         this.port.onmessage = () => undefined;

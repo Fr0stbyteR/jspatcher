@@ -11,28 +11,30 @@ export interface DataFromProcessor {
     id: number;
     rms?: number[];
     zcr?: number[];
-    buffer?: { startPointer: number; data: Float32Array[]; sampleIndex: number };
+    buffer?: { $: Uint32Array; data: Float32Array[]; $total: Uint32Array; lock: Int32Array };
 }
 export type Parameters = "windowSize";
 export const processorID = "__JSPatcher_TemporalAnalyser";
 export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters> {
-    promiseID = 0;
-    resolves: { [id: number]: (rms?: DataFromProcessor | PromiseLike<DataFromProcessor>) => any } = {};
-    constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
+    private promiseID = 0;
+    private resolves: { [id: number]: (rms?: DataFromProcessor | PromiseLike<DataFromProcessor>) => any } = {};
+    constructor(context: AudioContext) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
-            const f = this.resolves[e.data.id];
+            const { id } = e.data;
+            delete e.data.id;
+            const f = this.resolves[id];
             if (f) f(e.data);
-            delete this.resolves[e.data.id];
+            delete this.resolves[id];
         };
     }
-    getRMS() {
+    get rms() {
         return this.gets({ rms: true });
     }
-    getZCR() {
+    get zcr() {
         return this.gets({ zcr: true });
     }
-    getBuffer() {
+    get buffer() {
         return this.gets({ buffer: true });
     }
     gets(options: Omit<DataToProcessor, "id">) {

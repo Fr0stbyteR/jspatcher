@@ -5,7 +5,7 @@ import { AudioWorkletRegister, DisposableAudioWorkletNode } from "./Base";
 import processorURL from "./Transmitter.worklet.ts"; // eslint-disable-line import/extensions
 import { DataFromProcessor, DataToProcessor, processorID } from "./Transmitter";
 import { ceil } from "../../../../utils/math";
-import { setBuffer, sliceBuffer, fftw2Amp, sum, estimateFreq, indexToFreq, centroid, flatness, flux, kurtosis, skewness, rolloff, slope, spread, getSubBuffer } from "../../../../utils/buffer";
+import { setTypedArray, fftw2Amp, sum, estimateFreq, indexToFreq, centroid, flatness, flux, kurtosis, skewness, rolloff, slope, spread, getSubTypedArray } from "../../../../utils/buffer";
 import { windowEnergyFactor } from "../../../../utils/windowEnergy";
 
 export type TWindowFunction = "blackman" | "hamming" | "hann" | "triangular";
@@ -95,6 +95,7 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
     private $frame = 0;
     /**
      * Total FFT frames in fftWindow
+     * windowSize = (frames - 1) * fftHopSize + fftSize
      *
      * @private
      * @memberof SpectralAnalyserNode
@@ -130,28 +131,28 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
     get $fft() {
         return this.$frame * this.fftBins;
     }
-    constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
+    constructor(context: AudioContext) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.sampleRate = context.sampleRate;
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
-            const { buffer } = e.data;
-            if (!buffer) return;
+            const { buffer: input } = e.data;
+            if (!input) return;
             const { windowSize, fftSize, fftHopSize, fftBins } = this;
             const frames = ~~((windowSize - fftSize) / fftHopSize) + 1;
             const fftWindowSize = frames * fftBins;
             this.frames = frames;
             this.$ %= windowSize;
             this.$frame %= frames;
-            if (this.window.length > buffer.length) { // Too much channels ?
-                this.window.splice(buffer.length);
-                this.fftWindow.splice(buffer.length);
+            if (this.window.length > input.length) { // Too much channels ?
+                this.window.splice(input.length);
+                this.fftWindow.splice(input.length);
             }
-            if (buffer.length === 0) return;
-            const bufferSize = Math.max(...buffer.map(c => c.length)) || 128;
+            if (input.length === 0) return;
+            const bufferSize = Math.max(...input.map(c => c.length)) || 128;
             this.$total += bufferSize;
             let { $, samplesWaiting, $frame, $totalFrames, $fft } = this;
             // Init windows
-            for (let i = 0; i < buffer.length; i++) {
+            for (let i = 0; i < input.length; i++) {
                 $ = this.$;
                 $fft = this.$fft;
                 if (!this.window[i]) { // Initialise channel if not exist
@@ -162,14 +163,14 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
                         const oldWindow = this.window[i];
                         const oldWindowSize = oldWindow.length;
                         const window = new Float32Array(windowSize);
-                        $ = setBuffer(window, oldWindow, 0, $ - Math.min(windowSize, oldWindowSize));
+                        $ = setTypedArray(window, oldWindow, 0, $ - Math.min(windowSize, oldWindowSize));
                         this.window[i] = window;
                     }
                     if (this.fftWindow[i].length !== fftWindowSize) { // adjust fftWindow size if not corresponded
                         const oldWindow = this.fftWindow[i];
                         const oldWindowSize = oldWindow.length;
                         const window = new Float32Array(fftWindowSize);
-                        $fft = setBuffer(window, oldWindow, 0, $fft - Math.min(windowSize, oldWindowSize));
+                        $fft = setTypedArray(window, oldWindow, 0, $fft - Math.min(windowSize, oldWindowSize));
                         $frame = ~~($fft / fftBins);
                         this.fftWindow[i] = window;
                     }
@@ -178,9 +179,9 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
             this.$ = $;
             this.$frame = $frame;
             // Write
-            for (let i = 0; i < buffer.length; i++) {
+            for (let i = 0; i < input.length; i++) {
                 const window = this.window[i];
-                const channel = buffer[i].length ? buffer[i] : new Float32Array(bufferSize);
+                const channel = input[i].length ? input[i] : new Float32Array(bufferSize);
                 $ = this.$;
                 $frame = this.$frame;
                 $totalFrames = this.$totalFrames;
@@ -190,12 +191,13 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
                     $ = 0;
                     samplesWaiting = windowSize;
                 } else {
-                    $ = setBuffer(window, channel, $);
+                    $ = setTypedArray(window, channel, $);
                     samplesWaiting += bufferSize;
                 }
                 while (samplesWaiting >= fftHopSize) {
                     if (samplesWaiting / fftHopSize < frames + 1) {
-                        const trunc = sliceBuffer(window, fftSize, $ - samplesWaiting + fftHopSize - fftSize);
+                        const trunc = new Float32Array(fftSize);
+                        setTypedArray(trunc, window, 0, $ - samplesWaiting + fftHopSize - fftSize);
                         apply(trunc, this._windowFunction);
                         const ffted = this.fftw.forward(trunc);
                         const amps = fftw2Amp(ffted, windowEnergyFactor.blackman);
@@ -217,11 +219,11 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
         return { data, startPointer: this.$, sampleIndex: data.length ? this.$total - data[0].length : 0 };
     }
     get lastAmplitudes() {
-        return { startPointer: this.$frame * this.fftBins, data: this.lastFrame, frameIndex: this.$totalFrames - 1 };
+        return { startPointer: this.$fft, data: this.lastFrame, frameIndex: this.$totalFrames - 1 };
     }
     get allAmplitudes() {
         return {
-            startPointer: this.$frame * this.fftBins,
+            startPointer: this.$fft,
             data: this.fftWindow,
             frames: this.frames,
             bins: this.fftBins,
@@ -265,7 +267,7 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
     }
     getLastFrame(offset: number) {
         const { fftWindow, fftBins, $frame } = this;
-        return fftWindow.map(window => getSubBuffer<Float32Array>(window, fftBins, ($frame - offset) * fftBins));
+        return fftWindow.map(window => getSubTypedArray<Float32Array>(window, fftBins, ($frame - offset) * fftBins));
     }
     get windowSize() {
         return this._windowSize;

@@ -1,6 +1,6 @@
 import { SpectralAnalyser } from "./SpectralAnalyser";
 import { TemporalAnalyser } from "./TemporalAnalyser";
-import { Oscilloscope } from "./Oscilloscopes";
+import { Oscilloscope } from "./Oscilloscope";
 import { Spectroscope } from "./Spectroscope";
 import { Spectrogram } from "./Spectrogram";
 

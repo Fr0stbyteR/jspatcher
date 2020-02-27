@@ -4,14 +4,18 @@
 /// AudioWorkletGlobalScope APIs
 /////////////////////////////
 
-declare class AudioWorkletProcessor<I extends { [key: string]: any } = { [key: string]: any }, O extends { [key: string]: any } = { [key: string]: any }, P extends string = string> {
-    static get parameterDescriptors(): AudioWorkletAudioParamDescriptor[];
-    public port: AudioWorkletMessagePort<I, O>;
-    public process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: { [key in P]: Float32Array }): boolean;
-    constructor(options: AudioWorkletNodeOptions);
+interface TypedAudioWorkletNodeOptions<T extends any = any> extends AudioWorkletNodeOptions {
+    processorOptions?: T;
 }
+declare class AudioWorkletProcessor<T extends { [key: string]: any } = { [key: string]: any }, F extends { [key: string]: any } = { [key: string]: any }, P extends string = string, O extends any = any> {
+    static get parameterDescriptors(): AudioWorkletAudioParamDescriptor[];
+    public port: AudioWorkletMessagePort<T, F>;
+    public process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: { [key in P]: Float32Array }): boolean;
+    constructor(options: TypedAudioWorkletNodeOptions<O>);
+}
+type ProcessorOptions<T> = T extends AudioWorkletProcessor<any, any, any, infer O> ? O : never;
 interface AudioWorkletProcessorConstructor<T extends AudioWorkletProcessor> {
-    new (options: AudioWorkletNodeOptions): T;
+    new (options: TypedAudioWorkletNodeOptions<ProcessorOptions<T>>): T;
 }
 declare function registerProcessor<T extends AudioWorkletProcessor>(name: string, constructor: AudioWorkletProcessorConstructor<T>): void;
 declare const currentFrame: number;

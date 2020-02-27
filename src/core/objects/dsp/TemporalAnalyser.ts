@@ -1,9 +1,9 @@
 import { DefaultDSP } from "./Base";
-import { TemporalAnalyserRegister, TemporalAnalyserNode, DataToGet, DataGot } from "./AudioWorklet/TemporalAnalyserMain";
+import { TemporalAnalyserRegister, TemporalAnalyserNode, DataToProcessor, DataFromProcessor } from "./AudioWorklet/TemporalAnalyser";
 import { TMeta, TPropsMeta } from "../../types";
 import { Bang } from "../Base";
 
-export interface Props extends Omit<DataToGet, "id"> {
+export interface Props extends Omit<DataToProcessor, "id"> {
     speedLim: number;
     windowSize: number;
     continuous: boolean;
@@ -12,7 +12,7 @@ export interface State {
     node: TemporalAnalyserNode;
     $requestTimer: number;
 }
-type Outlet0 = Omit<DataGot, "id">;
+type Outlet0 = Omit<DataFromProcessor, "id">;
 export class TemporalAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [], Props> {
     static description = "Temporal feature extractor"
     static inlets: TMeta["inlets"] = [{
@@ -60,16 +60,16 @@ export class TemporalAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
     subscribe() {
         super.subscribe();
         const startRequest = () => {
-            const request = () => {
+            const request = async () => {
                 if (this.state.node && !this.state.node.destroyed) {
                     const extractorKeys = [
                         "buffer",
                         "rms",
                         "zcr"
-                    ] as (keyof Omit<DataToGet, "id">)[];
-                    const gets: Omit<DataToGet, "id"> = {};
+                    ] as (keyof Omit<DataToProcessor, "id">)[];
+                    const gets: Omit<DataToProcessor, "id"> = {};
                     extractorKeys.forEach(key => gets[key] = this.getProp(key));
-                    const got = this.state.node.gets(gets);
+                    const got = await this.state.node.gets(gets);
                     this.outlet(0, got);
                 }
                 if (this.getProp("continuous")) scheduleRequest();
@@ -85,14 +85,16 @@ export class TemporalAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
         });
         this.on("updateProps", (props) => {
             if (this.state.node) {
+                const { parameters } = this.state.node;
                 if (props.continuous) startRequest();
-                if (props.windowSize) this.state.node.windowSize = props.windowSize;
+                if (props.windowSize) this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
             }
         });
         this.on("postInit", async () => {
             await TemporalAnalyserRegister.register(this.audioCtx.audioWorklet);
             this.state.node = new TemporalAnalyserRegister.Node(this.audioCtx);
-            this.state.node.windowSize = this.getProp("windowSize");
+            const { parameters } = this.state.node;
+            this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
             this.inletConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();

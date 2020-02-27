@@ -1,6 +1,6 @@
 import { AudioWorkletRegister, DisposableAudioWorkletNode } from "./Base";
 import processorURL from "./Transmitter.worklet.ts"; // eslint-disable-line import/extensions
-import { rms, zcr, setBuffer } from "../../../../utils/buffer";
+import { rms, zcr, setTypedArray } from "../../../../utils/buffer";
 import { DataFromProcessor, DataToProcessor, processorID } from "./Transmitter";
 
 export interface DataToGet {
@@ -38,19 +38,19 @@ export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
     constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
-            const { buffer } = e.data;
-            if (!buffer) return;
+            const { buffer: input } = e.data;
+            if (!input) return;
             const { windowSize } = this;
             this.$ %= windowSize;
-            if (this.window.length > buffer.length) { // Too much channels ?
-                this.window.splice(buffer.length);
+            if (this.window.length > input.length) { // Too much channels ?
+                this.window.splice(input.length);
             }
-            if (buffer.length === 0) return;
-            const bufferSize = Math.max(...buffer.map(c => c.length)) || 128;
+            if (input.length === 0) return;
+            const bufferSize = Math.max(...input.map(c => c.length)) || 128;
             this.$total += bufferSize;
             let { $ } = this;
             // Init windows
-            for (let i = 0; i < buffer.length; i++) {
+            for (let i = 0; i < input.length; i++) {
                 $ = this.$;
                 if (!this.window[i]) { // Initialise channel if not exist
                     this.window[i] = new Float32Array(windowSize);
@@ -59,22 +59,22 @@ export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
                         const oldWindow = this.window[i];
                         const oldWindowSize = oldWindow.length;
                         const window = new Float32Array(windowSize);
-                        $ = setBuffer(window, oldWindow, 0, $ - Math.min(windowSize, oldWindowSize));
+                        $ = setTypedArray(window, oldWindow, 0, $ - Math.min(windowSize, oldWindowSize));
                         this.window[i] = window;
                     }
                 }
             }
             this.$ = $;
             // Write
-            for (let i = 0; i < buffer.length; i++) {
+            for (let i = 0; i < input.length; i++) {
                 const window = this.window[i];
-                const channel = buffer[i].length ? buffer[i] : new Float32Array(bufferSize);
+                const channel = input[i].length ? input[i] : new Float32Array(bufferSize);
                 $ = this.$;
                 if (bufferSize > windowSize) {
                     window.set(channel.subarray(bufferSize - windowSize));
                     $ = 0;
                 } else {
-                    $ = setBuffer(window, channel, $);
+                    $ = setTypedArray(window, channel, $);
                 }
             }
             this.$ = $;
@@ -88,7 +88,7 @@ export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
     }
     get buffer() {
         const data = this.window;
-        return { data, startPointer: this.$, sampleIndex: data.length ? this.$total - data[0].length : 0 };
+        return { data, startPointer: this.$, sampleIndex: this.$total };
     }
     get windowSize() {
         return this._windowSize;
