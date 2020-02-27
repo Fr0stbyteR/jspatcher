@@ -115,7 +115,7 @@ export interface BaseUIState extends AbstractUIState {
     ignoreClick: boolean;
     hint: string;
 }
-export class BaseUI<T extends BaseObject = AnyObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIState> {
+export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIState> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     static defaultSize: [number, number] = [90, 20];
     static editableOnUnlock = false;

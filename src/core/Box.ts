@@ -196,7 +196,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     }
     update(e: { args?: any[]; props?: { [key: string]: any } }) {
         const { args, props } = e;
-        if (args) this.args = Object.assign(this.args, args);
+        if (args) this.args = args as Args<T>;
         if (props) {
             if (isTRect(props.rect)) {
                 this.setRect(props.rect);

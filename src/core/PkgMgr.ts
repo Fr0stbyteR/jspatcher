@@ -12,6 +12,7 @@ import Op from "./objects/Op";
 import Window from "./objects/Window";
 import WebAudio from "./objects/WebAudio/exports";
 import WebRTC from "./objects/WebRTC/exports";
+import WebMIDI from "./objects/WebMIDI/exports";
 import DSP from "./objects/dsp/exports";
 import live from "./objects/live/exports";
 import faust from "./objects/faust/exports";
@@ -30,6 +31,7 @@ export default class PackageManager {
         Op,
         WebAudio,
         WebRTC,
+        WebMIDI,
         DSP,
         new:
         New,

@@ -135,10 +135,10 @@ class InspectorColorItem extends React.PureComponent<{ itemKey: number | string;
         );
     }
 }
-class InspectorEnumItem extends React.PureComponent<{ itemKey: number | string; value: string | number | boolean; onChange: (value: string | number | boolean, key: number | string) => any; options: DropdownItemProps[] }> {
-    handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value as string | number | boolean, this.props.itemKey);
+class InspectorEnumItem extends React.PureComponent<{ itemKey: number | string; value: DropdownProps["value"]; onChange: (value: DropdownProps["value"], key: number | string) => any; options: DropdownItemProps[]; multiple?: boolean }> {
+    handleChangeDropdown = (e: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => this.props.onChange(data.value, this.props.itemKey);
     render() {
-        return <Dropdown className="inspector-value enum" size="mini" options={this.props.options} value={this.props.value} onChange={this.handleChangeDropdown} />;
+        return <Dropdown className="inspector-value enum" size="mini" options={this.props.options} value={this.props.value} onChange={this.handleChangeDropdown} multiple={this.props.multiple} />;
     }
 }
 class InspectorObjectItem extends React.PureComponent<{ itemKey: number | string; value: any; onChange: (value: any, key: number | string) => any }, { inputEditing: boolean }> {
@@ -185,6 +185,10 @@ class InspectorItem<MetaType extends "arg" | "prop"> extends React.PureComponent
     metaItem(meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number], value: any) {
         const { type } = meta;
         const itemProps = { itemKey: this.key, value, onChange: this.props.onChange };
+        if ((meta as TArgsMeta[number]).varLength) {
+            if (type === "enum") return <InspectorEnumItem {...itemProps} multiple options={meta.enums.map((text, i) => ({ text, key: i, value: text }))} />;
+            return <InpectorAnythingItem {...itemProps} />;
+        }
         if (type === "boolean") return <InspectorBooleanItem {...itemProps} />;
         if (type === "number") return <InspectorNumberItem {...itemProps} />;
         if (type === "string") return <InspectorStringItem {...itemProps} />;
@@ -356,9 +360,10 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
     handleChange = (value: any, key: number | string) => {
         if (!this.box) return;
         if (typeof key === "number") {
-            const state: any[] = [];
+            const state = this.box.args.slice();
             if (this.box.meta.args[key].varLength && Array.isArray(value)) {
-                value.forEach((v, i) => state[i + key] = v);
+                state.splice(key);
+                state.push(...value);
             } else {
                 state[key] = value;
             }

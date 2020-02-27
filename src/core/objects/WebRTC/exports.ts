@@ -1,4 +1,4 @@
-import { mediaDevices } from "./Media";
+import { mediaDevices } from "./devices";
 
 export default {
     mediaDevices

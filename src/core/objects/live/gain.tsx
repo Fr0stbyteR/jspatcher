@@ -348,13 +348,13 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
     static props: TMeta["props"] = {
         shortName: {
             type: "string",
-            default: "live.slider",
+            default: "live.gain",
             description: "Short name to display",
             isUIState: true
         },
         longName: {
             type: "string",
-            default: "live.slider",
+            default: "live.gain",
             description: "Long name to display",
             isUIState: true
         },

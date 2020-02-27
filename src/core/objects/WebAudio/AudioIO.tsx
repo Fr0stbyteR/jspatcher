@@ -70,7 +70,16 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
             description: "The linear sample size in bits"
         }
     }
+    _meta = AudioIn.meta;
+    get meta() {
+        return this._meta;
+    }
     state = { node: undefined as MediaStreamAudioSourceNode, stream: undefined as MediaStream, search: undefined as string };
+    handleDeviceChange = async () => {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const enums = devices.filter(d => d.kind === "audioinput").map(d => d.label || d.deviceId);
+        this._meta.args[0] = { ...AudioIn.args[0], type: "enum", enums };
+    }
     newSearch = async (search?: string) => {
         this.state.search = search;
         let deviceId: string;
@@ -90,6 +99,8 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
         });
         this.on("postInit", () => {
             const search = this.box.args[0];
+            navigator.mediaDevices.addEventListener("devicechange", this.handleDeviceChange);
+            this.handleDeviceChange();
             this.newSearch(search);
         });
         this.on("updateArgs", (args: [string?]) => {
@@ -105,6 +116,9 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
                 }
                 if (this.node) this.outlet(1, this.node);
             }
+        });
+        this.on("destroy", () => {
+            navigator.mediaDevices.removeEventListener("devicechange", this.handleDeviceChange);
         });
     }
     getConstraints(deviceId?: string): Constraints {
@@ -161,8 +175,17 @@ export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | Aud
             );
         }
     } : DefaultUI;
+    _meta = AudioOut.meta;
+    get meta() {
+        return this._meta;
+    }
     state = supportSetSinkId ? { node: this.audioCtx.destination, msadn: this.audioCtx.createMediaStreamDestination(), audio: new Audio(), search: undefined as string } : { node: this.audioCtx.destination };
     inletConnections = [{ node: this.node, index: 0 }];
+    handleDeviceChange = async () => {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const enums = devices.filter(d => d.kind === "audiooutput").map(d => d.label || d.deviceId);
+        this._meta.args[0] = { ...AudioOut.args[0], type: "enum", enums };
+    }
     newSearch = async (search?: string) => {
         if (!supportSetSinkId) return;
         this.state.search = search;
@@ -197,10 +220,15 @@ export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | Aud
                 if ("srcObject" in audio) audio.srcObject = stream;
                 else (audio as HTMLAudioElement).src = URL.createObjectURL(stream);
                 const search = this.box.args[0];
+                navigator.mediaDevices.addEventListener("devicechange", this.handleDeviceChange);
+                this.on("destroy", () => {
+                    navigator.mediaDevices.removeEventListener("devicechange", this.handleDeviceChange);
+                });
+                this.handleDeviceChange();
                 this.newSearch(search);
             }
         });
-        this.on("updateArgs", (args: [string?]) => {
+        this.on("updateArgs", (args: [string]) => {
             this.newSearch(args[0]);
         });
         this.on("updateProps", () => {
