@@ -99,7 +99,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     newTimestamp() {
         this._state.history.newTimestamp();
-        this.setActive();
         return this;
     }
     setActive() {

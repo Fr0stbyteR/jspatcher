@@ -36,18 +36,6 @@
             ],
             "disabled": false
         },
-        "line-4": {
-            "id": "line-4",
-            "src": [
-                "box-5",
-                0
-            ],
-            "dest": [
-                "box-6",
-                0
-            ],
-            "disabled": false
-        },
         "line-6": {
             "id": "line-6",
             "src": [
@@ -68,18 +56,6 @@
             ],
             "dest": [
                 "box-10",
-                0
-            ],
-            "disabled": false
-        },
-        "line-9": {
-            "id": "line-9",
-            "src": [
-                "box-6",
-                0
-            ],
-            "dest": [
-                "box-9",
                 0
             ],
             "disabled": false
@@ -164,6 +140,18 @@
             ],
             "dest": [
                 "box-21",
+                0
+            ],
+            "disabled": false
+        },
+        "line-20": {
+            "id": "line-20",
+            "src": [
+                "box-5",
+                0
+            ],
+            "dest": [
+                "box-9",
                 0
             ],
             "disabled": false
@@ -270,29 +258,6 @@
             "presentationRect": [
                 90,
                 330,
-                0,
-                0
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        },
-        "box-6": {
-            "id": "box-6",
-            "text": "Array.from",
-            "inlets": 1,
-            "outlets": 2,
-            "rect": [
-                0,
-                180,
-                90,
-                23
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                90,
-                480,
                 0,
                 0
             ],
@@ -515,6 +480,6 @@
         ],
         "openInPresentation": false,
         "boxIndexCount": 21,
-        "lineIndexCount": 19
+        "lineIndexCount": 20
     }
 }
