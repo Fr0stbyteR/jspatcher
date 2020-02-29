@@ -15,9 +15,10 @@ type TObjectExpr = {
 type TLineMap = Map<Line, string>;
 
 const findOutletFromLineMap = (lineMap: TLineMap, linesIn: Set<Line>) => {
-    const lines = Array.from(linesIn);
-    for (let i = 0; i < lines.length; i++) {
-        const outlet = lineMap.get(lines[i]);
+    const iterator = linesIn.values();
+    let r: IteratorResult<Line, Line>;
+    while (!(r = iterator.next()).done) {
+        const outlet = lineMap.get(r.value);
         if (outlet) return outlet;
     }
     return undefined;

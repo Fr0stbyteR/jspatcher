@@ -47,6 +47,7 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
     faustLibObjects: TPackage;
     faustInjected = false;
     patcher: Patcher;
+    active: Patcher;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;
     constructor(root?: HTMLDivElement) {
@@ -85,6 +86,7 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
         this.faust = faust;
         const patcher = new Patcher(this);
         this.patcher = patcher;
+        this.active = patcher;
         window.patcher = patcher;
 
         this.emit("text", "Loading Patcher...");

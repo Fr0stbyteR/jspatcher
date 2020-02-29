@@ -192,17 +192,19 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         return this;
     }
     isOutletTo(outlet: number, box: Box, inlet: number) {
-        const outletLines = Array.from(this._outletLines[outlet]);
-        for (let i = 0; i < outletLines.length; i++) {
-            const line = outletLines[i];
+        const iterator = this._outletLines[outlet].values();
+        let r: IteratorResult<Line, Line>;
+        while (!(r = iterator.next()).done) {
+            const line = r.value;
             if (line.destBox === box && line.destInlet === inlet) return true;
         }
         return false;
     }
     isInletFrom(inlet: number, box: Box, outlet: number) {
-        const inletLines = Array.from(this._inletLines[inlet]);
-        for (let i = 0; i < inletLines.length; i++) {
-            const line = inletLines[i];
+        const iterator = this._inletLines[inlet].values();
+        let r: IteratorResult<Line, Line>;
+        while (!(r = iterator.next()).done) {
+            const line = r.value;
             if (line.srcBox === box && line.srcOutlet === outlet) return true;
         }
         return false;

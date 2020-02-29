@@ -164,6 +164,7 @@ export default class TopMenu extends React.PureComponent<{ patcher: Patcher }> {
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();
     handleKeyDown = (e: KeyboardEvent) => {
+        if (!this.props.patcher.isActive) return;
         const fileMenu = this.refFileMenu.current;
         const editMenu = this.refEditMenu.current;
         if (!fileMenu || !editMenu) return;

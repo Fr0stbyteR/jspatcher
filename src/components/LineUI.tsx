@@ -261,6 +261,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
             }
         };
         const handleKeyDown = (e: KeyboardEvent) => {
+            if (!this.props.patcher.isActive) return;
             if (e.key === "Escape") {
                 e.stopPropagation();
                 e.preventDefault();

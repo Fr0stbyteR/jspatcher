@@ -263,6 +263,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
         });
     }
     handleMouseDown = (e: React.MouseEvent) => {
+        this.props.patcher.setActive();
         if (!e.shiftKey) this.props.patcher.deselectAll();
         if (e.button !== 0) return;
         if (this.props.patcher.state.locked) return;
@@ -337,6 +338,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
     }
     handleKeyDown = (e: KeyboardEvent) => {
         const { patcher } = this.props;
+        if (!patcher.isActive) return;
         if (patcher.state.locked) return;
         if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
             let x = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0;

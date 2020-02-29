@@ -99,7 +99,14 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     newTimestamp() {
         this._state.history.newTimestamp();
+        this.setActive();
         return this;
+    }
+    setActive() {
+        this.env.active = this;
+    }
+    get isActive() {
+        return this.env.active === this;
     }
     refreshInvalidBoxes() {
         for (const id in this.boxes) {
