@@ -108,8 +108,8 @@ export default class PackageManager {
         if (toExport === exported) return exported;
         return { [id]: exported }; // if exports is overwritten, wrap it
     }
-    async importFromNPM(pkgID: string) {
-        const id = pkgID.split("/").pop();
+    async importFromNPM(pkgID: string, idIn?: string) {
+        const id = idIn || pkgID.split("/").pop();
         if (id in this.externals) return;
         const jsModule = await this.getModuleFromURL(`https://unpkg.com/${pkgID}`, id);
         const pkg = Importer.import(id, jsModule);
