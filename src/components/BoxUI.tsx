@@ -402,7 +402,7 @@ class Outlets extends React.PureComponent<{ patcher: Patcher; box: Box }, { port
     }
 }
 class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
-    state = { isConnected: this.props.box.inletLines[this.props.index].length > 0, highlight: false };
+    state = { isConnected: this.props.box.inletLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);
@@ -465,7 +465,7 @@ class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: num
     }
 }
 class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
-    state = { isConnected: this.props.box.outletLines[this.props.index].length > 0, highlight: false };
+    state = { isConnected: this.props.box.outletLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
         this.props.box.on("highlightPort", this.handleHighlight);

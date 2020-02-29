@@ -3,6 +3,7 @@ import { stringifyError } from "../../utils/utils";
 import { MappedEventEmitter } from "../../utils/MappedEventEmitter";
 import Patcher from "../Patcher";
 import Box from "../Box";
+import Line from "../Line";
 import "./Default.scss";
 import "./Base.scss";
 import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect } from "../types";
@@ -156,13 +157,7 @@ export abstract class AbstractObject<
      */
     outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]): this {
         if (outlet >= this.outlets) return this;
-        const outletLines = this.outletLines[outlet].sort((id1, id2) => { // eslint-disable-line arrow-body-style
-            return this._patcher.lines[id2].positionHash - this._patcher.lines[id1].positionHash;
-        });
-        for (let j = 0; j < outletLines.length; j++) {
-            const lineID = outletLines[j];
-            this._patcher.lines[lineID].pass(data);
-        }
+        Array.from(this.outletLines[outlet]).sort(Line.compare).forEach(line => line.pass(data));
         return this;
     }
     /**
@@ -467,34 +462,34 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
     inletConnections: TAudioNodeInletConnection[] = [];
     outletConnections: TAudioNodeOutletConnection[] = [];
     connectAudio() {
-        this.box.allLines.forEach(el => this._patcher.lines[el].enable());
+        this.box.allLines.forEach(line => line.enable());
         return this;
     }
     connectAudioInlet(portIn?: number) {
-        this.box.inletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].enable());
+        this.inletLines.forEach((lines, port) => {
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.enable());
         });
         return this;
     }
     connectAudioOutlet(portIn?: number) {
-        this.box.outletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].enable());
+        this.outletLines.forEach((lines, port) => {
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.enable());
         });
         return this;
     }
     disconnectAudio() {
-        this.box.allLines.forEach(el => this._patcher.lines[el].disable());
+        this.box.allLines.forEach(line => line.disable());
         return this;
     }
     disconnectAudioInlet(portIn?: number) {
-        this.box.inletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].disable());
+        this.inletLines.forEach((lines, port) => {
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.disable());
         });
         return this;
     }
     disconnectAudioOutlet(portIn?: number) {
-        this.box.outletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(lineID => this._patcher.lines[lineID].disable());
+        this.outletLines.forEach((lines, port) => {
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.disable());
         });
         return this;
     }

@@ -562,19 +562,17 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         deselect.forEach(id => this.deselect(id));
     }
     selectedToString() {
-        const linesConcerned: { [id: string]: true } = {};
+        const lineSet = new Set<Line>();
         const patcher: TPatcher = { lines: {}, boxes: {} };
         this._state.selected
             .filter(id => id.startsWith("box") && this.boxes[id])
             .map(id => this.boxes[id])
             .forEach((box) => {
-                box.allLines.forEach(id => linesConcerned[id] = true);
+                box.allLines.forEach(line => lineSet.add(line));
                 patcher.boxes[box.id] = box;
             });
-        Object.keys(linesConcerned).forEach((lineID) => {
-            const line = this.lines[lineID];
-            if (!line) return;
-            if (patcher.boxes[line.srcID] && patcher.boxes[line.destID]) patcher.lines[lineID] = line;
+        lineSet.forEach((line) => {
+            if (patcher.boxes[line.srcID] && patcher.boxes[line.destID]) patcher.lines[line.id] = line;
         });
         return JSON.stringify(patcher, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
     }
@@ -627,17 +625,13 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         // Emit events
         if (!delta.x && !delta.y) return;
         if (presentation !== this._state.presentation) return;
-        const linesAffected: { [id: string]: true } = {};
+        const lineSet = new Set<Line>();
         boxes.forEach((box) => {
             box.emit(this._state.presentation ? "presentationRectChanged" : "rectChanged", box);
-            if (!presentation) box.allLines.forEach(id => linesAffected[id] = true);
+            if (!presentation) box.allLines.forEach(line => lineSet.add(line));
         });
         if (presentation) return;
-        for (const lineID in linesAffected) {
-            const line = this.lines[lineID];
-            if (!line) continue;
-            line.emit("posChanged", line);
-        }
+        lineSet.forEach(line => line.emit("posChanged", line));
     }
     resizeSelectedBox(boxID: string, dragOffset: { x: number; y: number }, type: TResizeHandlerType) {
         const { presentation, snapToGrid, selected } = this._state;
@@ -702,17 +696,13 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         // Emit events
         if (!delta.x && !delta.y) return;
         if (presentation !== this._state.presentation) return;
-        const linesAffected: { [id: string]: true } = {};
+        const lineSet = new Set<Line>();
         boxes.forEach((box) => {
             box.emit(this._state.presentation ? "presentationRectChanged" : "rectChanged", box);
-            if (!presentation) box.allLines.forEach(id => linesAffected[id] = true);
+            if (!presentation) box.allLines.forEach(line => lineSet.add(line));
         });
         if (presentation) return;
-        for (const lineID in linesAffected) {
-            const line = this.lines[lineID];
-            if (!line) continue;
-            line.emit("posChanged", line);
-        }
+        lineSet.forEach(line => line.emit("posChanged", line));
     }
     findNearestPort(findSrc: boolean, left: number, top: number, from: [string, number], to?: [string, number]) {
         let nearest: [string, number] = [null, null];
@@ -859,16 +849,17 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     }
     deleteSelected() {
         this.newTimestamp();
-        const map: { boxes: { [id: string]: true }; lines: { [id: string]: true } } = { boxes: {}, lines: {} };
-        this._state.selected.filter(id => id.startsWith("line")).forEach(id => map.lines[id] = true);
+        const boxSet = new Set<Box>();
+        const lineSet = new Set<Line>();
+        this._state.selected.filter(id => id.startsWith("line")).forEach(id => lineSet.add(this.lines[id]));
         this._state.selected.filter(id => id.startsWith("box")).forEach((id) => {
-            map.boxes[id] = true;
-            this.boxes[id].allLines.forEach(id => map.lines[id] = true);
+            boxSet.add(this.boxes[id]);
+            this.boxes[id].allLines.forEach(line => lineSet.add(line));
         });
         this._state.selected = [];
         const deleted: TPatcher = { boxes: {}, lines: {} };
-        Object.keys(map.lines).forEach(id => deleted.lines[id] = this.lines[id].destroy());
-        Object.keys(map.boxes).forEach(id => deleted.boxes[id] = this.boxes[id].destroy());
+        lineSet.forEach(line => deleted.lines[line.id] = line.destroy());
+        boxSet.forEach(box => deleted.boxes[box.id] = box.destroy());
         this.emit("deselected", Object.keys(deleted.lines));
         this.emit("delete", deleted);
         return deleted;

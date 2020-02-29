@@ -1,8 +1,9 @@
-import { isTRect, parseToPrimitive } from "../utils/utils";
-import { MappedEventEmitter } from "../utils/MappedEventEmitter";
 import Patcher from "./Patcher";
-import { AnyObject } from "./objects/Base";
+import Line from "./Line";
+import { MappedEventEmitter } from "../utils/MappedEventEmitter";
+import { isTRect, parseToPrimitive } from "../utils/utils";
 import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect } from "./types";
+import { AnyObject } from "./objects/Base";
 
 export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmitter<BoxEventMap> {
     id: string;
@@ -20,7 +21,9 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     private _parsed: { class: string; args: Args<T>; props: Props<T> };
     private _object: T;
     private _objectConstructor: typeof AnyObject;
-    private _patcher: Patcher;
+    private readonly _patcher: Patcher;
+    private readonly _inletLines: Set<Line>[];
+    private readonly _outletLines: Set<Line>[];
     constructor(patcherIn: Patcher, boxIn: TBox) {
         super();
         this.id = boxIn.id;
@@ -29,6 +32,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.props = (boxIn.props || {}) as Props<T>;
         this.inlets = boxIn.inlets;
         this.outlets = boxIn.outlets;
+        this._inletLines = new Array(this.inlets).fill(null).map(() => new Set<Line>());
+        this._outletLines = new Array(this.outlets).fill(null).map(() => new Set<Line>());
         const maxBoxIn = boxIn as unknown as TMaxBox["box"];
         this.rect = boxIn.rect || maxBoxIn.patching_rect;
         this.background = boxIn.background || !!maxBoxIn.background;
@@ -78,10 +83,10 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         return this._object.meta;
     }
     get outletLines() {
-        return this._patcher.getLinesBySrcID(this.id);
+        return this._outletLines;
     }
     get inletLines() {
-        return this._patcher.getLinesByDestID(this.id);
+        return this._inletLines;
     }
     get object() {
         return this._object;
@@ -95,27 +100,53 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     get parsed() {
         return this._parsed;
     }
+    addInletLine(line: Line) {
+        const index = line.destInlet;
+        if (!this._inletLines[index]) this._inletLines[index] = new Set<Line>();
+        this._inletLines[index].add(line);
+    }
+    removeInletLine(line: Line) {
+        const index = line.destInlet;
+        if (this._inletLines[index]) this._inletLines[index].delete(line);
+    }
+    addOutletLine(line: Line) {
+        const index = line.srcOutlet;
+        if (!this._outletLines[index]) this._outletLines[index] = new Set<Line>();
+        this._outletLines[index].add(line);
+    }
+    removeOutletLine(line: Line) {
+        const index = line.srcOutlet;
+        if (this._outletLines[index]) this._outletLines[index].delete(line);
+    }
     setInlets(count: number) {
         const lines = this.allLines;
-        lines.forEach(el => this._patcher.lines[el].disable());
+        lines.forEach(line => line.disable());
         this.inlets = count;
-        lines.forEach(el => this._patcher.lines[el].enable());
-        this.inletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateDest()));
+        lines.forEach(line => line.enable());
+        const linesSetLength = this._inletLines.length;
+        if (count > linesSetLength) this._inletLines.push(...new Array(count - linesSetLength).fill(null).map(() => new Set<Line>()));
+        else if (count < linesSetLength) this._inletLines.splice(count);
+        this._inletLines.forEach(set => set.forEach(line => line.uiUpdateDest()));
         this.emit("ioCountChanged", this);
     }
     setOutlets(count: number) {
         const lines = this.allLines;
-        lines.forEach(el => this._patcher.lines[el].disable());
+        lines.forEach(line => line.disable());
         this.outlets = count;
-        lines.forEach(el => this._patcher.lines[el].enable());
-        this.outletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateSrc()));
+        lines.forEach(line => line.enable());
+        const linesSetLength = this._outletLines.length;
+        if (count > linesSetLength) this._outletLines.push(...new Array(count - linesSetLength).fill(null).map(() => new Set<Line>()));
+        else if (count < linesSetLength) this._outletLines.splice(count);
+        this._outletLines.forEach(set => set.forEach(line => line.uiUpdateSrc()));
         this.emit("ioCountChanged", this);
     }
     getInletPos(port: number) {
-        return { top: this.rect[1], left: ((this.rect[0] + 10) + (this.rect[2] - 20) * port / (this.inlets > 1 ? this.inlets - 1 : 1)) };
+        const { left, top, width, inlets } = this;
+        return { top, left: ((left + 10) + (width - 20) * port / (inlets > 1 ? inlets - 1 : 1)) };
     }
     getOutletPos(port: number) {
-        return { top: this.rect[1] + this.rect[3], left: ((this.rect[0] + 10) + (this.rect[2] - 20) * port / (this.outlets > 1 ? this.outlets - 1 : 1)) };
+        const { left, top, width, height, outlets } = this;
+        return { top: top + height, left: ((left + 10) + (width - 20) * port / (outlets > 1 ? outlets - 1 : 1)) };
     }
     get inletsPositions() {
         const positions = [];
@@ -132,10 +163,10 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         return positions;
     }
     get allLines() {
-        const lines: { [key: string]: boolean } = {};
-        this.inletLines.forEach(el => el.forEach(id => lines[id] = true));
-        this.outletLines.forEach(el => el.forEach(id => lines[id] = true));
-        return Object.keys(lines);
+        const lines = new Set<Line>();
+        this._inletLines.forEach(set => set.forEach(line => lines.add(line)));
+        this._outletLines.forEach(set => set.forEach(line => lines.add(line)));
+        return lines;
     }
     // called when inlet or outlet are connected or disconnected
     connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
@@ -161,17 +192,17 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         return this;
     }
     isOutletTo(outlet: number, box: Box, inlet: number) {
-        const outletLines = this.outletLines[outlet];
+        const outletLines = Array.from(this._outletLines[outlet]);
         for (let i = 0; i < outletLines.length; i++) {
-            const line = this._patcher.lines[outletLines[i]];
+            const line = outletLines[i];
             if (line.destBox === box && line.destInlet === inlet) return true;
         }
         return false;
     }
     isInletFrom(inlet: number, box: Box, outlet: number) {
-        const inletLines = this.inletLines[inlet];
+        const inletLines = Array.from(this._inletLines[inlet]);
         for (let i = 0; i < inletLines.length; i++) {
-            const line = this._patcher.lines[inletLines[i]];
+            const line = inletLines[i];
             if (line.srcBox === box && line.srcOutlet === outlet) return true;
         }
         return false;
@@ -179,12 +210,12 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     changeText(textIn: string, force?: boolean) {
         if (!force && textIn === this.text) return this;
         const { defaultSize: oldDefaultSize } = this;
-        this.allLines.forEach(el => this._patcher.lines[el].disable());
+        this.allLines.forEach(line => line.disable());
         this._object.destroy();
         this.text = textIn;
         this.args = [] as Args<T>;
         this.init();
-        this.allLines.forEach(el => this._patcher.lines[el].enable());
+        this.allLines.forEach(line => line.enable());
         const { defaultSize } = this;
         if (!defaultSize.every((v, i) => v === oldDefaultSize[i])) {
             this.size = defaultSize;
@@ -301,8 +332,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         rect[2] = Math.max(15, rect[2]);
         rect[3] = Math.max(15, rect[3]);
         this.rect = rect;
-        this.inletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateDest()));
-        this.outletLines.forEach(el => el.forEach(id => this._patcher.lines[id].uiUpdateSrc()));
+        this.inletLines.forEach(set => set.forEach(line => line.uiUpdateDest()));
+        this.outletLines.forEach(set => set.forEach(line => line.uiUpdateSrc()));
         this.emit("rectChanged", this);
         return this;
     }
@@ -322,7 +353,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.emit("highlightPort", { isSrc, i, highlight });
     }
     destroy() {
-        this.allLines.forEach(el => this._patcher.deleteLine(el));
+        this.allLines.forEach(line => this._patcher.deleteLine(line.id));
         this._object.destroy();
         delete this._patcher.boxes[this.id];
         return this;

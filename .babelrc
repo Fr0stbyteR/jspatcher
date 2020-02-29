@@ -4,7 +4,6 @@
       "@babel/preset-env",
       {
         "targets": {
-          // "browsers": "Chrome >= 49, Firefox >= 45, Edge >= 13, Safari >= 10, iOS >= 10, Android >= 79"
           "browsers": "Chrome >= 55, Firefox >= 53, Edge >= 15, Safari >= 11, iOS >= 11, Android >= 79"
         }
       }
@@ -16,7 +15,6 @@
     [
       "@babel/plugin-proposal-class-properties", 
       { "loose": true }
-    ]/*,
-    "@babel/plugin-transform-runtime"*/
+    ]
   ]
 }

@@ -1,6 +1,7 @@
 import { DefaultObject } from "./Base";
-import Box from "../Box";
 import Patcher from "../Patcher";
+import Box from "../Box";
+import Line from "../Line";
 import { TPackage, TMeta, TPropsMeta } from "../types";
 import { subPatchersMap, TSubPatchersMap, SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
@@ -12,9 +13,10 @@ type TObjectExpr = {
     onces?: string[];
 };
 
-const findOutletFromLineMap = (lineMap: { [id: string]: string }, lines: string[]) => {
+const findOutletFromLineMap = (lineMap: { [id: string]: string }, linesIn: Set<Line>) => {
+    const lines = Array.from(linesIn);
     for (let i = 0; i < lines.length; i++) {
-        const outlet = lineMap[lines[i]];
+        const outlet = lineMap[lines[i].id];
         if (outlet) return outlet;
     }
     return undefined;
@@ -91,10 +93,11 @@ export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<Fa
         const { args } = box;
         const { inlets: totalInlets } = state;
         const inlets = new Array(totalInlets);
-        const incoming = inletLines.map((lines) => {
+        const incoming = inletLines.map((set) => {
+            const lines = Array.from(set);
             if (lines.length === 0) return "0";
-            if (lines.length === 1) return lineMap[lines[0]] || "0";
-            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+            if (lines.length === 1) return lineMap[lines[0].id] || "0";
+            return `(${lines.map(line => lineMap[line.id]).filter(line => line !== undefined).join(", ")} :> _)`;
         });
         if (this.reverseApply) {
             for (let i = 0; i < totalInlets; i++) {
@@ -158,14 +161,14 @@ export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<Fa
 
         if (outletLines.length === 0) return {};
         if (outletLines.length === 1) {
-            if (outletLines[0].length === 0) return {};
+            if (outletLines[0].size === 0) return {};
             const outlet = findOutletFromLineMap(lineMap, outletLines[0]);
             return outlet ? { exprs: [this.toMainExpr(outlet, inlets)], onces } : {};
         }
         exprs.push(this.toMainExpr(resultID, inlets));
         const allCut = new Array(this.outlets).fill("!");
         outletLines.forEach((lines, i) => {
-            if (lines.length === 0) return;
+            if (lines.size === 0) return;
             const outlet = findOutletFromLineMap(lineMap, lines);
             if (!outlet) return;
             const pass = allCut.slice();
@@ -291,15 +294,16 @@ class HBargraph extends FaustOp<{}, {}, [string, number, number]> {
     }
     toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const { inletLines, outletLines, symbol } = this;
-        const incoming = inletLines.length ? inletLines.map((lines) => {
+        const incoming = inletLines.length ? inletLines.map((set) => {
+            const lines = Array.from(set);
             if (lines.length === 0) return "0";
-            if (lines.length === 1) return lineMap[lines[0]] || "0";
-            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+            if (lines.length === 1) return lineMap[lines[0].id] || "0";
+            return `(${lines.map(line => lineMap[line.id]).filter(line => line !== undefined).join(", ")} :> _)`;
         }) : ["0"];
         const inlets = this.toInletsExpr(lineMap);
 
         if (outletLines.length === 1) {
-            if (outletLines[0].length === 0) return {};
+            if (outletLines[0].size === 0) return {};
             const outlet = findOutletFromLineMap(lineMap, outletLines[0]);
             if (!outlet) return {};
             const mainExpr = `${outlet} = ${incoming[0]} : ${symbol[0]}(${inlets});`;
@@ -330,10 +334,11 @@ class HGroup extends FaustOp<{}, {}, [string]> {
     }
     toInletsExpr(lineMap: { [id: string]: string }) {
         const { inletLines, box, resultID } = this;
-        const incoming = inletLines.length ? inletLines.map((lines) => {
+        const incoming = inletLines.length ? inletLines.map((set) => {
+            const lines = Array.from(set);
             if (lines.length === 0) return "0";
-            if (lines.length === 1) return lineMap[lines[0]] || "0";
-            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+            if (lines.length === 1) return lineMap[lines[0].id] || "0";
+            return `(${lines.map(line => lineMap[line.id]).filter(line => line !== undefined).join(", ")} :> _)`;
         }) : ["0"];
         const { args } = box;
         return [args[0] ? `"${args[0]}"` : `"${resultID}"`, incoming[0]].join(", ");
@@ -392,10 +397,11 @@ class Out extends FaustOp {
     }
     toExpr(lineMap: { [id: string]: string }): TObjectExpr {
         const exprs: string[] = [];
-        const inlets = this.inletLines.map((lines) => {
+        const inlets = this.inletLines.map((set) => {
+            const lines = Array.from(set);
             if (lines.length === 0) return "0";
-            if (lines.length === 1) return lineMap[lines[0]] || "0";
-            return `(${lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+            if (lines.length === 1) return lineMap[lines[0].id] || "0";
+            return `(${lines.map(line => lineMap[line.id]).filter(line => line !== undefined).join(", ")} :> _)`;
         });
 
         exprs.push(`${this.resultID} = ${inlets};`);
@@ -485,7 +491,7 @@ class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
         const inletLines: string[][] = [[]];
         const sendID = args[0];
         if (sendID && state.sendMap[sendID]) {
-            state.sendMap[sendID].forEach(s => s.inletLines.forEach(lines => inletLines[0].push(...lines)));
+            state.sendMap[sendID].forEach(s => s.inletLines.forEach(lines => inletLines[0].push(...Array.from(lines).map(line => line.id))));
         }
         return inletLines.map((lines) => { // inlets as 0, 1, 2
             if (lines.length === 0) return "0";
@@ -632,14 +638,14 @@ class Iterator extends FaustOp {
         const { inletLines, outletLines, box, resultID } = this;
         const inlet0Lines = inletLines[0];
         const { exprs: lExprs, onces } = toFaustLambda(this.patcher, [this], "lambda");
-        const lambda = inlet0Lines.length ? `lambda with {
+        const lambda = inlet0Lines.size ? `lambda with {
 ${lExprs.map(s => `    ${s.replace(/\n/g, "\n    ")}`).join("\n")}
 }` : "0";
         const inlets = `${resultID}_${this.outlets - 1}, ${box.args[0] || 0}, ${lambda}`;
 
         if (outletLines.length === 0) return {};
         if (outletLines.length === 1) {
-            if (outletLines[0].length === 0) return {};
+            if (outletLines[0].size === 0) return {};
             const outlet = findOutletFromLineMap(lineMap, outletLines[0]);
             return outlet ? { exprs: [this.toMainExpr(outlet, inlets)], onces } : {};
         }
@@ -648,7 +654,7 @@ ${lExprs.map(s => `    ${s.replace(/\n/g, "\n    ")}`).join("\n")}
         const allCut = new Array(this.outlets - 1).fill("!");
         outletLines.forEach((lines, i) => {
             if (i === this.outlets - 1) return;
-            if (lines.length === 0) return;
+            if (lines.size === 0) return;
             const outlet = findOutletFromLineMap(lineMap, lines);
             if (!outlet) return;
             const pass = allCut.slice();
@@ -662,13 +668,13 @@ ${lExprs.map(s => `    ${s.replace(/\n/g, "\n    ")}`).join("\n")}
         const { inletLines, outletLines, resultID } = this;
         const inlet0Lines = inletLines[0];
         let inlets;
-        if (inlet0Lines.length === 0) inlets = "0";
-        else if (inlet0Lines.length === 1) inlets = lineMap[inlet0Lines[0]] || "0";
-        else inlets = `(${inlet0Lines.map(line => lineMap[line]).filter(line => line !== undefined).join(", ")} :> _)`;
+        if (inlet0Lines.size === 0) inlets = "0";
+        else if (inlet0Lines.size === 1) inlets = lineMap[Array.from(inlet0Lines)[0].id] || "0";
+        else inlets = `(${Array.from(inlet0Lines).map(line => lineMap[line.id]).filter(line => line !== undefined).join(", ")} :> _)`;
 
         if (outletLines.length === 0) return {};
         if (outletLines.length === 1) {
-            if (outletLines[0].length === 0) return {};
+            if (outletLines[0].size === 0) return {};
             const outlet = findOutletFromLineMap(lineMap, outletLines[0]);
             return outlet ? { exprs: [`${outlet} = ${inlets};`] } : {};
         }
@@ -1123,20 +1129,18 @@ const mapLines = (box: Box, patcher: Patcher, visitedBoxes: Box[], ins: In[], re
     if (visitedBoxes.indexOf(box) >= 0) return;
     visitedBoxes.push(box);
     if (box.object instanceof Iterator && box !== visitedBoxes[0]) return;
-    const { inletLines } = box;
+    const inletLines = Array.from(box.inletLines);
     if (box.object instanceof Receive) {
         const { sendID } = box.object;
         if (sendMap[sendID]) {
             sendMap[sendID].forEach(s => inletLines.push(...s.inletLines));
         }
     }
-    inletLines.forEach(lines => lines.forEach((lineID) => {
-        const line = patcher.lines[lineID];
-        if (!line) return;
+    inletLines.forEach(lines => lines.forEach((line) => {
         const { srcBox } = line;
         if (srcBox.object instanceof In && ins.indexOf(srcBox.object) === -1) ins.push(srcBox.object);
         else if (srcBox.object instanceof Rec && recs.indexOf(srcBox.object) === -1) recs.push(srcBox.object);
-        lineMap[lineID] = `${(srcBox.object as FaustOp).resultID}_${line.srcOutlet}`;
+        lineMap[line.id] = `${(srcBox.object as FaustOp).resultID}_${line.srcOutlet}`;
         mapLines(srcBox, patcher, visitedBoxes, ins, recs, lineMap);
     }));
 };

@@ -53,6 +53,9 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
         super();
         this._divRoot = root;
     }
+    get ready() {
+        return this.init();
+    }
     async init() {
         const urlParams = new URLSearchParams(window.location.search);
         this._noUI = !!urlParams.get("min");
@@ -99,6 +102,7 @@ export default class Env extends MappedEventEmitter<{ text: string }> {
         if (runtime) patcher.setState({ runtime });
         if (!this._noUI && this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} /> : <UI patcher={patcher} />, this.divRoot);
         this.loaded = true;
+        return this;
     }
     get divRoot(): HTMLDivElement {
         return this._divRoot;

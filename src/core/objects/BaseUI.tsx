@@ -82,7 +82,7 @@ export abstract class AbstractUI<
         }
         return props as S & BaseUIState;
     }
-    private _handleUIUpdate = (e: Pick<S & AbstractUIState, keyof (S & AbstractUIState)>) => this.setState(e);
+    private _handleUIUpdate = (e?: Pick<S & AbstractUIState, keyof (S & AbstractUIState)>) => (e ? this.setState(e) : this.forceUpdate());
     private _handleResized = () => {
         const { width, height } = this.box;
         if (width !== this.state.width || height !== this.state.height) this.setState({ width, height });
