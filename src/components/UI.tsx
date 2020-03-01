@@ -13,7 +13,7 @@ export default class UI extends React.PureComponent<{ patcher: Patcher }, { load
     handleKeyDown = (e: React.KeyboardEvent) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-    }
+    };
     handleLoading = (loading?: string[]) => this.setState({ loading: loading ? loading.slice() : undefined });
     componentDidMount() {
         this.props.patcher.on("loading", this.handleLoading);

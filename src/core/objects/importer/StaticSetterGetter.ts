@@ -35,7 +35,7 @@ export class StaticSetterGetter extends SetterGetter<true> {
         } else if (inlet === 1) {
             this.state.input = data;
         }
-    }
+    };
     execute() {
         try {
             this.state.result = this.imported;

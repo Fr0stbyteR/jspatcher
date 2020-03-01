@@ -1,11 +1,11 @@
 import Patcher from "./Patcher";
 import Line from "./Line";
-import { MappedEventEmitter } from "../utils/MappedEventEmitter";
+import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import { isTRect, parseToPrimitive } from "../utils/utils";
 import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect } from "./types";
 import { AnyObject } from "./objects/Base";
 
-export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmitter<BoxEventMap> {
+export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmitter<BoxEventMap> {
     id: string;
     text = "";
     inlets = 0;
@@ -43,9 +43,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this.data = boxIn.data || ((boxIn as any).prevData ? (boxIn as any).prevData.storage : {});
         this._editing = !!boxIn._editing;
         this._patcher = patcherIn;
-        this.setMaxListeners(64);
     }
-    init() {
+    async init() {
         this._parsed = Box.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };
         const newMeta = this._patcher.getObjectMeta(this._parsed);
         for (const key in this.props) {
@@ -57,8 +56,12 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         this._objectConstructor = Constructor;
         if (!this.size.every(v => v > 0)) this.size = this.defaultSize;
         this._object = new Constructor(this, this._patcher) as T;
-        this._object.init();
-        this._object.postInit();
+        await this._object.init();
+        return this;
+    }
+    async postInit() {
+        await this._object.postInit();
+        return this;
     }
     /**
      * Main function when receive data from a inlet (base 0)
@@ -69,8 +72,8 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
      * @returns
      * @memberof Box
      */
-    fn<I extends keyof Pick<Inputs<T>, number>>(data: Inputs<T>[I], inlet: I) {
-        this._object.fn(data, inlet);
+    async fn<I extends keyof Pick<Inputs<T>, number>>(data: Inputs<T>[I], inlet: I) {
+        await this._object.fn(data, inlet);
         return this;
     }
     get uiComponent() {
@@ -209,14 +212,14 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         }
         return false;
     }
-    changeText(textIn: string, force?: boolean) {
+    async changeText(textIn: string, force?: boolean) {
         if (!force && textIn === this.text) return this;
         const { defaultSize: oldDefaultSize } = this;
         this.allLines.forEach(line => line.disable());
-        this._object.destroy();
+        await this._object.destroy();
         this.text = textIn;
         this.args = [] as Args<T>;
-        this.init();
+        await this.init();
         this.allLines.forEach(line => line.enable());
         const { defaultSize } = this;
         if (!defaultSize.every((v, i) => v === oldDefaultSize[i])) {
@@ -225,6 +228,7 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
         }
         this.emit("textChanged", this);
         this._object.emit("metaChanged", this._object.meta);
+        await this.postInit();
         return this;
     }
     update(e: { args?: any[]; props?: { [key: string]: any } }) {
@@ -354,9 +358,9 @@ export default class Box<T extends AnyObject = AnyObject> extends MappedEventEmi
     highlightPort(isSrc: boolean, i: number, highlight: boolean) {
         this.emit("highlightPort", { isSrc, i, highlight });
     }
-    destroy() {
+    async destroy() {
         this.allLines.forEach(line => this._patcher.deleteLine(line.id));
-        this._object.destroy();
+        await this._object.destroy();
         delete this._patcher.boxes[this.id];
         return this;
     }

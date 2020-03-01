@@ -31,7 +31,7 @@ export class mediaDevices extends DefaultWebRTCObject<{}, {}, [Bang | MediaDevic
             default: true,
             description: "Auto output devices when devices change"
         }
-    }
+    };
     handleDeviceChange = async () => {
         if (!this.getProp("autoUpdate")) return;
         const filters = this.box.args.slice();
@@ -42,7 +42,7 @@ export class mediaDevices extends DefaultWebRTCObject<{}, {}, [Bang | MediaDevic
             return { key, icon: { audioinput: "microphone", audiooutput: "volume up", videoinput: "camera" }[kind], text: label || deviceId, value: deviceId };
         });
         this.outletAll([devices, options]);
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

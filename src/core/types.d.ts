@@ -61,7 +61,7 @@ type TPatcherState = {
 };
 type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid" | "runtime">;
 
-type TErrorLevel = "error" | "warn" | "info" | "none"
+type TErrorLevel = "error" | "warn" | "info" | "none";
 
 type TPatcherLog = {
     errorLevel: TErrorLevel;
@@ -150,6 +150,7 @@ type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
 
 interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "loading": string[] | undefined;
+    "ready": never;
     "locked": boolean;
     "presentation": boolean;
     "showGrid": boolean;
@@ -262,8 +263,8 @@ type Args<T> = T extends AbstractObject<any, any, any, any, infer A, any, any, a
 type Props<T> = T extends AbstractObject<any, any, any, any, any, infer P, any, any> ? P : never;
 type UIState<T> = T extends AbstractObject<any, any, any, any, any, any, infer U, any> ? U : never;
 type EventMap<T> = T extends AbstractObject<any, any, any, any, any, any, any, infer E> ? E : never;
-type TInletEvent<I extends any[] = [], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
-type TOutletEvent<O extends any[] = [], $ extends keyof Pick<O, number> = keyof Pick<O, number>> = { outlet: $; data: O[$] };
+type TInletEvent<I extends any[] = any[], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
+type TOutletEvent<O extends any[] = any[], $ extends keyof Pick<O, number> = keyof Pick<O, number>> = { outlet: $; data: O[$] };
 type ObjectEventMap<I extends any[], A extends any[], P, U, E> = {
     "preInit": never;
     "update": { args?: Partial<A>; props?: Partial<P> };

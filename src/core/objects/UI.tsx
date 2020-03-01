@@ -10,11 +10,11 @@ import { TMeta, TPropsMeta } from "../types";
 import { BaseUI, BaseUIProps, BaseUIState } from "./BaseUI";
 import { selectElementRange, isNumberArray } from "../../utils/utils";
 
-class UIObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}, E = {}> extends BaseObject<D, S, I, O, A, P, U, E> {
+class UIObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}, E = {}> extends BaseObject<D, S, I, O, A, P, U, E> {
     static package = "UI";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
-    static description = "UI Object"
+    static description = "UI Object";
 }
 
 type ButtonUIState = { text: string; loading: boolean } & BaseUIState;
@@ -58,12 +58,12 @@ export class ButtonUI<T extends BaseObject<{ text: string }, { editing: boolean 
         }
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-    }
+    };
     handlePaste = (e: React.ClipboardEvent) => {
         if (!this.props.editing) return;
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
-    }
+    };
     render() {
         const { object } = this;
         const classArray = ["box-ui-button", "ui", "button", "compact", "mini"];
@@ -84,7 +84,7 @@ class MessageUI extends ButtonUI<message> {
     handleChanged = (text: string) => this.object.handleUpdateArgs([text]);
     handleClick = (e: React.MouseEvent) => {
         if (this.patcher.state.locked) this.object.outlet(0, this.object.state.buffer);
-    }
+    };
 }
 class message extends UIObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], {}, { text: string }> {
     static description = "Message";
@@ -182,11 +182,11 @@ class CommentUI extends BaseUI<comment> {
         if (!this.props.editing) return;
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-    }
+    };
     handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
-    }
+    };
     render() {
         const object = this.props.object;
         return (
@@ -228,7 +228,7 @@ export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
         this.codeEditor = monaco;
         this.object.emit("editorLoaded");
         monaco.onDidBlurEditorText(() => this.object.emit("editorBlur", monaco.getValue()));
-    }
+    };
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
     handleChange = (value: string, event: editor.IModelContentChangedEvent) => {
         this.setState({ value });
@@ -237,11 +237,11 @@ export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
     handleKeyDown = (e: React.KeyboardEvent) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-    }
+    };
     handleKeyUp = (e: React.KeyboardEvent) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-    }
+    };
     async componentDidMount() {
         super.componentDidMount();
         const reactMonacoEditor = await import("react-monaco-editor");
@@ -549,7 +549,7 @@ export class menu extends UIObject<{}, {}, [number | string | number[] | string[
             description: "Selection will wrap to end or start on press ArrowUp or ArrowDown",
             isUIState: true
         }
-    }
+    };
     static ui = MenuUI;
     subscribe() {
         super.subscribe();

@@ -180,22 +180,22 @@ export default class LeftMenu extends React.PureComponent<{ patcher: Patcher }, 
         };
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
-    }
+    };
     handleAudioSwitch = () => {
         const audioCtx = this.props.patcher.env.audioCtx;
         if (this.state.audioOn) audioCtx.suspend();
         else audioCtx.resume();
-    }
+    };
     handleAudioCtxStateChange = () => {
         const audioCtx = this.props.patcher.env.audioCtx;
         const { state } = audioCtx;
         this.setState({ audioOn: state === "running" });
-    }
+    };
     handlePatcherLoading = (loading?: string[]) => {
         if (loading) return;
         const codePanel = this.props.patcher.props.mode === "faust" || this.props.patcher.props.mode === "gen";
         this.setState({ active: TPanels.None, codePanel });
-    }
+    };
     componentDidMount() {
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);

@@ -173,7 +173,7 @@ export interface Props extends Omit<SpectrogramUIState, "cursorX" | "cursorY" | 
     windowFunction: TWindowFunction;
 }
 export class Spectrogram extends BaseDSP<{}, State, [Bang], [], [], Props, SpectrogramUIState> {
-    static description = "Spectroscope"
+    static description = "Spectroscope";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "signal",

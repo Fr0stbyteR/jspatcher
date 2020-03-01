@@ -3,11 +3,11 @@ import { TMeta } from "../types";
 import { DefaultObject } from "./Base";
 import { isNumberArray } from "../../utils/utils";
 
-class DefaultMaxObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}, E = {}> extends DefaultObject<D, S, I, O, A, P, U, E> {
+class DefaultMaxObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}, E = {}> extends DefaultObject<D, S, I, O, A, P, U, E> {
     static package = "Max";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
-    static description = "Max/MSP Objects"
+    static description = "Max/MSP Objects";
 }
 class mtof extends DefaultMaxObject<{}, {}, [number | number[]], [number | number[]], [], { base: number }> {
     static description = "Convert a MIDI note number to frequency";

@@ -14,7 +14,7 @@ export interface State {
 }
 type Outlet0 = Omit<DataFromProcessor, "id">;
 export class TemporalAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [], Props> {
-    static description = "Temporal feature extractor"
+    static description = "Temporal feature extractor";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "signal",
@@ -55,7 +55,7 @@ export class TemporalAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
             default: false,
             description: "Getting the zero crossing count"
         }
-    }
+    };
     state: State = { node: undefined, $requestTimer: -1 };
     subscribe() {
         super.subscribe();

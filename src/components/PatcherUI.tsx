@@ -40,7 +40,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         grid.setState(newState);
         boxes.setState(newState);
         if (lines) lines.setState(newState);
-    }
+    };
     handleLockedChange = (locked: boolean) => this.setState({ locked });
     handlePresentationChange = (presentation: boolean) => this.setState({ presentation });
     handleShowGridChange = (showGrid: boolean) => this.setState({ showGrid });
@@ -63,7 +63,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             boxes.setState(newState);
             if (lines) lines.setState(newState);
         }
-    }
+    };
     handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -159,7 +159,7 @@ class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; h
         if (this.props.patcher.state.isLoading) return;
         this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
         this.forceUpdate();
-    }
+    };
     handleCreate = (created: TPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(created.lines).forEach((id) => {
@@ -167,17 +167,17 @@ class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; h
             this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
         });
         this.forceUpdate();
-    }
+    };
     handleDeleteLine = (line: Line) => {
         if (this.props.patcher.state.isLoading) return;
         delete this.lines[line.id];
         this.forceUpdate();
-    }
+    };
     handleDelete = (deleted: TPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
         this.forceUpdate();
-    }
+    };
     handleLoading = (loading?: string[]) => {
         if (loading) return;
         for (const lineID in this.lines) {
@@ -190,7 +190,7 @@ class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; h
             }
             this.forceUpdate();
         });
-    }
+    };
     render() {
         return (
             <div className="lines" style={this.state}>
@@ -230,7 +230,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
         if (this.props.patcher.state.isLoading) return;
         this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
         this.forceUpdate();
-    }
+    };
     handleCreate = (created: TPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(created.boxes).forEach((id) => {
@@ -238,17 +238,17 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
             this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
         });
         this.forceUpdate();
-    }
+    };
     handleDeleteBox = (box: Box) => {
         if (this.props.patcher.state.isLoading) return;
         delete this.boxes[box.id];
         this.forceUpdate();
-    }
+    };
     handleDelete = (deleted: TPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(deleted.boxes).forEach(id => delete this.boxes[id]);
         this.forceUpdate();
-    }
+    };
     handleLoading = (loading?: string[]) => {
         if (loading) return;
         for (const boxID in this.boxes) {
@@ -261,7 +261,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
             }
             this.forceUpdate();
         });
-    }
+    };
     handleMouseDown = (e: React.MouseEvent) => {
         this.props.patcher.setActive();
         if (!e.shiftKey) this.props.patcher.deselectAll();
@@ -317,11 +317,11 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
             patcherDiv.addEventListener("scroll", handlePatcherScroll);
         };
         handleDraggable();
-    }
+    };
     handleClick = (e: React.MouseEvent) => {
         const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.setState({ locked: !this.props.patcher.state.locked });
-    }
+    };
     handleDoubleClick = (e: React.MouseEvent) => {
         const { patcher } = this.props;
         if (patcher.state.locked) return;
@@ -335,7 +335,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
         const y = round(Math.max(0, e.pageY - patcherRect.top + patcherDiv.scrollTop), gridY);
         const { presentation } = patcher._state;
         this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
-    }
+    };
     handleKeyDown = (e: KeyboardEvent) => {
         const { patcher } = this.props;
         if (!patcher.isActive) return;
@@ -363,7 +363,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
             const { presentation } = patcher._state;
             this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
         }
-    }
+    };
     handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };
     render() {
         const selectionRect = this.state.selectionRect;
@@ -392,7 +392,7 @@ class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; he
         if (loading) return;
         const { grid, editingBgColor } = this.props.patcher.props;
         this.setState({ grid: grid.slice() as [number, number], editingBgColor });
-    }
+    };
     handleGridChange = (grid: [number, number]) => this.setState({ grid: grid.slice() as [number, number] });
     handleEditingBgColorChange = (editingBgColor: string) => this.setState({ editingBgColor });
     componentDidMount() {

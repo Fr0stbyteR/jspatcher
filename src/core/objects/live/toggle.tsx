@@ -51,7 +51,7 @@ class LiveToggleUI extends LiveUI<LiveToggle, LiveToggleUIState> {
     }
     handlePointerDown = () => {
         this.setValueToOutput(1 - +!!this.state.value);
-    }
+    };
 }
 
 export class LiveToggle extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveToggleProps, LiveToggleUIState> {

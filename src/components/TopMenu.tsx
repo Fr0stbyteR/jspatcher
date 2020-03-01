@@ -40,11 +40,11 @@ class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
         patcher.loadFromFile(file);
         this.setState({ pName: patcher.fileName });
         this.refOpen.current.value = "";
-    }
+    };
     handleLoading = (loading?: string[]) => {
         if (loading) return;
         this.setState({ pName: this.props.patcher.fileName });
-    }
+    };
     componentDidMount() {
         this.props.patcher.on("loading", this.handleLoading);
     }
@@ -185,7 +185,7 @@ export default class TopMenu extends React.PureComponent<{ patcher: Patcher }> {
         else return;
         e.stopPropagation();
         e.preventDefault();
-    }
+    };
     componentDidMount() {
         document.addEventListener("keydown", this.handleKeyDown);
     }

@@ -1,9 +1,9 @@
 import Patcher from "./Patcher";
-import { MappedEventEmitter } from "../utils/MappedEventEmitter";
+import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import { LineEventMap, TLine, TLineType, TMetaType } from "./types";
 import { BaseAudioObject, AnyObject } from "./objects/Base";
 
-export default class Line extends MappedEventEmitter<LineEventMap> {
+export default class Line extends TypedEventEmitter<LineEventMap> {
     static isConnectableByAudio(from: AnyObject, outlet: number, to: AnyObject, inlet: number) {
         if (!(from instanceof BaseAudioObject)) return false;
         if (!(to instanceof BaseAudioObject)) return false;
@@ -144,7 +144,7 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
         delete this._patcher.lines[this.id];
         return this;
     }
-    pass(data: any) {
+    async pass(data: any) {
         this.emit("passData", data);
         return this.disabled ? this : this.destBox.fn(data, this.destInlet);
     }
@@ -193,7 +193,7 @@ export default class Line extends MappedEventEmitter<LineEventMap> {
             this._type = type;
             this.emit("typeChanged", type);
         }
-    }
+    };
     get type(): TLineType {
         return this._type;
     }

@@ -17,17 +17,17 @@ export class LineUI extends React.PureComponent<P, S> {
         if (this.state.destPos.left !== position.left || this.state.destPos.top !== position.top) {
             this.setState({ type: line.type, destPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
         }
-    }
+    };
     handleSrcPosChanged = (position: { left: number; top: number }) => {
         const { line } = this;
         if (this.state.srcPos.left !== position.left || this.state.srcPos.top !== position.top) {
             this.setState({ type: line.type, srcPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
         }
-    }
+    };
     handleResetPos = () => {
         const { line } = this;
         this.setState({ destPos: line.destPos, srcPos: line.srcPos }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
-    }
+    };
     handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
     handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
     handleTypeChanged = (type: TLineType) => this.setState({ type });
@@ -68,17 +68,17 @@ export class LineUI extends React.PureComponent<P, S> {
             else this.props.patcher.select(this.props.id);
         } else this.props.patcher.selectOnly(this.props.id);
         e.stopPropagation();
-    }
+    };
     handleMouseDownSrc = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         this.handleDraggable(e, true);
         e.stopPropagation();
-    }
+    };
     handleMouseDownDest = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         this.handleDraggable(e, false);
         e.stopPropagation();
-    }
+    };
     handleDraggable = (e: React.MouseEvent, isSrc: boolean) => {
         this.dragged = false;
         this.setState({ dragging: true });
@@ -143,7 +143,7 @@ export class LineUI extends React.PureComponent<P, S> {
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
         patcherDiv.addEventListener("scroll", handlePatcherScroll);
-    }
+    };
     handleClick = (e: React.MouseEvent) => e.stopPropagation();
     render() {
         const className = "line" + (this.state.selected ? " selected" : "") + (this.state.dragging ? " dragging" : "");
@@ -198,7 +198,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
         const fromPos = this.props.patcher.boxes[from[0]][findSrc ? "getInletPos" : "getOutletPos"](from[1]);
         this.setState({ srcPos: fromPos, destPos: fromPos });
         this.handleDraggable(findSrc, fromPos);
-    }
+    };
     handleDraggable = (isSrc: boolean, pos: { top: number; left: number }) => {
         this.dragged = false;
         const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
@@ -276,7 +276,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
         document.addEventListener("mouseup", handleMouseUp);
         document.addEventListener("keydown", handleKeyDown);
         patcherDiv.addEventListener("scroll", handlePatcherScroll);
-    }
+    };
     render() {
         if (!this.state.show) {
             return (

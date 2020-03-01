@@ -24,7 +24,7 @@ class Console extends React.PureComponent<{ patcher: Patcher; display: boolean }
         const cached = this.state.cached.slice();
         cached.push(log);
         this.setState({ cached }, this.scrollToEnd);
-    }
+    };
     handleClear = () => this.setState({ cached: [] });
     scrollToEnd = () => {
         if (!this.refTable.current) return;
@@ -32,7 +32,7 @@ class Console extends React.PureComponent<{ patcher: Patcher; display: boolean }
         const table = this.refTable.current;
         if (table.scrollTop + table.clientHeight !== table.scrollHeight) bottom = false;
         if (bottom) table.scrollTop = table.scrollHeight;
-    }
+    };
     componentDidUpdate(prevProps: Readonly<{ patcher: Patcher; display: boolean }>) {
         if (this.props.display && this.props.display !== prevProps.display) this.scrollToEnd();
     }
@@ -81,7 +81,7 @@ class InspectorNumberItem extends React.PureComponent<{ itemKey: number | string
     handleNumberInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         this.props.onChange(+e.currentTarget.value, this.props.itemKey);
         this.setState({ inputEditing: false });
-    }
+    };
     handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
     componentWillUnmount() {
         if (this.state.inputEditing && this.refInput.current) this.props.onChange(+this.refInput.current.value, this.props.itemKey);
@@ -99,7 +99,7 @@ class InspectorStringItem extends React.PureComponent<{ itemKey: number | string
     handleStringInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         this.props.onChange(e.currentTarget.value, this.props.itemKey);
         this.setState({ inputEditing: false });
-    }
+    };
     handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
     componentWillUnmount() {
         if (this.state.inputEditing && this.refInput.current) this.props.onChange(this.refInput.current.value, this.props.itemKey);
@@ -116,7 +116,7 @@ class InspectorColorItem extends React.PureComponent<{ itemKey: number | string;
     handleClickCover = (e: React.MouseEvent) => {
         this.setState({ showColorPicker: false });
         e.stopPropagation();
-    }
+    };
     handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.itemKey);
     render() {
         return (
@@ -152,7 +152,7 @@ class InspectorObjectItem extends React.PureComponent<{ itemKey: number | string
         } catch (e) {} // eslint-disable-line no-empty
         this.props.onChange(value, this.props.itemKey);
         this.setState({ inputEditing: false });
-    }
+    };
     handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
     componentWillUnmount() {
         if (this.state.inputEditing && this.refInput.current) {
@@ -483,25 +483,25 @@ class UIDock extends React.PureComponent<{ patcher: Patcher; display: boolean },
         if (this.state.box) this.state.box.object.off("destroy", this.handleDestroy);
         box.object.on("destroy", this.handleDestroy);
         this.setState({ box });
-    }
+    };
     handlePatcherLoading = () => {
         if (this.state.box) {
             this.state.box.object.off("destroy", this.handleDestroy);
             this.setState({ box: undefined });
         }
-    }
+    };
     handleResize = () => {
         if (this.refDiv.current && this.refUI.current) {
             const { width, height } = this.refDiv.current.getBoundingClientRect();
             this.refUI.current.setState({ width, height });
         }
-    }
+    };
     handleClear = () => {
         if (this.state.box) {
             this.state.box.object.off("destroy", this.handleDestroy);
             this.setState({ box: undefined });
         }
-    }
+    };
     componentDidMount() {
         this.props.patcher.on("loading", this.handlePatcherLoading);
         this.props.patcher.on("dockUI", this.handleDock);
@@ -585,22 +585,22 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
         };
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
-    }
+    };
     handleAudioSwitch = () => {
         const audioCtx = this.props.patcher.env.audioCtx;
         if (this.state.audioOn) audioCtx.suspend();
         else audioCtx.resume();
-    }
+    };
     handleAudioCtxStateChange = () => {
         const audioCtx = this.props.patcher.env.audioCtx;
         const { state } = audioCtx;
         this.setState({ audioOn: state === "running" });
-    }
+    };
     handlePatcherLoading = (loading?: string[]) => {
         if (loading) return;
         const codePanel = this.props.patcher.props.mode === "faust" || this.props.patcher.props.mode === "gen";
         this.setState({ active: TPanels.None, codePanel });
-    }
+    };
     handleDock = () => this.setState({ active: TPanels.Dock });
     componentDidMount() {
         const audioCtx = this.props.patcher.env.audioCtx;

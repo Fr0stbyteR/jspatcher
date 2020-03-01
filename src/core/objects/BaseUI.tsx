@@ -86,7 +86,7 @@ export abstract class AbstractUI<
     private _handleResized = () => {
         const { width, height } = this.box;
         if (width !== this.state.width || height !== this.state.height) this.setState({ width, height });
-    }
+    };
     componentDidMount() {
         delete this.box._editing;
         this.object.on("uiUpdate", this._handleUIUpdate);
@@ -127,7 +127,7 @@ export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIP
     };
     handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.object.patcher.state.locked) e.currentTarget.title = this.state.hint;
-    }
+    };
     handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.title = "";
     render() {
         const { object } = this;
@@ -369,12 +369,12 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         }
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-    }
+    };
     handleKeyUp = () => {
         if (!this.refSpan.current) return;
         if (this.refSpan.current.textContent === this.state.text) return;
         this.setState({ text: this.refSpan.current.textContent });
-    }
+    };
     get dropdownQuery() {
         let { text } = this.state;
         if (!this.props.editing || !text.length) return { Dropdown: undefined, query: undefined };
@@ -402,7 +402,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
     handlePaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
-    }
+    };
     handleSelect = (e: React.MouseEvent<HTMLTableRowElement>, textIn: string) => {
         e.preventDefault();
         if (this.refSpan.current) {
@@ -412,7 +412,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
             selectElementPos(span, text.length);
             this.setState({ text });
         }
-    }
+    };
     render() {
         const { object, dropdownQuery } = this;
         const textContainerStyle: React.CSSProperties = {
@@ -476,12 +476,12 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
         this.$paintRaf = (-1 * Math.round(Math.abs(60 / this.state.frameRate))) || -1;
         this.paintScheduled = false;
         this.paint();
-    }
+    };
     noPaintCallback = () => {
         this.$paintRaf++;
         this.paintScheduled = false;
         this.schedulePaint();
-    }
+    };
     schedulePaint() {
         if (this.paintScheduled) return;
         if (this.$paintRaf === -1) this.$paintRaf = requestAnimationFrame(this.paintCallback);
@@ -529,12 +529,12 @@ export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends P
     };
     handleDoubleClick = () => {
         if (this.patcher.state.locked) this.setState({ modalOpen: true });
-    }
+    };
     handleClose = () => this.setState({ modalOpen: false });
     handleKeyDown = (e: React.KeyboardEvent) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
-    }
+    };
     render() {
         const containerProps = { ...this.props.containerProps };
         if (!containerProps.onDoubleClick) containerProps.onDoubleClick = this.handleDoubleClick;
@@ -557,7 +557,7 @@ export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Part
     state: S & CodePopupUIState = {
         ...this.state,
         editorLoaded: false
-    }
+    };
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
     editorLanguage = "javascript";
@@ -568,7 +568,7 @@ export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Part
     handleCloseAndSave = () => {
         this.setState({ modalOpen: false });
         this.handleSave(this.codeEditor.getValue());
-    }
+    };
     handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
     handleResize = () => ((this.state.editorLoaded && this.codeEditor) ? this.codeEditor.layout() : undefined);
     async componentDidMount() {

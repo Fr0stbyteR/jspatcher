@@ -64,11 +64,11 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonUIState> {
     handlePointerDown = () => {
         this.inTouch = true;
         this.setValueToOutput(1);
-    }
+    };
     handlePointerUp = () => {
         this.inTouch = false;
         this.setValueToOutput(0);
-    }
+    };
 }
 
 export class LiveButton extends LiveObject<{}, {}, [any], [Bang, number], [number], LiveButtonProps, LiveButtonUIState> {

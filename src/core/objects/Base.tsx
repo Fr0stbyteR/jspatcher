@@ -1,6 +1,6 @@
 import { SemanticICONS } from "semantic-ui-react";
 import { stringifyError } from "../../utils/utils";
-import { MappedEventEmitter } from "../../utils/MappedEventEmitter";
+import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import Line from "../Line";
@@ -14,7 +14,7 @@ export abstract class AbstractObject<
     I extends any[] = any[], O extends any[] = any[],
     A extends any[] = any[], P extends {} = {},
     U extends {} = {}, E extends Partial<ObjectEventMap<I, A, P, U, {}>> & { [key: string]: any } = {}
-> extends MappedEventEmitter<ObjectEventMap<I, A, P, U, E>> {
+> extends TypedEventEmitter<ObjectEventMap<I, A, P, U, E>> {
     static package = "Base"; // div will have class "packageName" "packageName-objectName"
     static get _name() {
         return this.name;
@@ -56,7 +56,6 @@ export abstract class AbstractObject<
     constructor(box: Box, patcher: Patcher) {
         super();
         // line connected = metaChange event subscribed
-        this.setMaxListeners(64);
         // patcher object outside, use _ for prevent recursive stringify
         this._patcher = patcher;
         // the box which create this instance, use _ for prevent recursive stringify
@@ -67,10 +66,10 @@ export abstract class AbstractObject<
      *
      * @memberof AbstractObject
      */
-    init() {
+    async init() {
         // process args and props
         this.subscribe();
-        this.emit("preInit");
+        await this.emit("preInit");
         this.update(this.box.args, this.box.props);
         return this;
     }
@@ -79,8 +78,8 @@ export abstract class AbstractObject<
      *
      * @memberof AbstractObject
      */
-    postInit() {
-        this.emit("postInit");
+    async postInit() {
+        await this.emit("postInit");
     }
     /**
      * Do everything here
@@ -116,20 +115,22 @@ export abstract class AbstractObject<
     updateBox = (e: { args?: Partial<A>; props?: Partial<P> }): this => {
         this.box.update(e);
         return this;
-    }
+    };
     /**
      *
      * Will be called when arguments and properties are changed
      *
      * @param {Partial<A>} [args]
      * @param {Partial<P>} [props]
-     * @returns {this}
+     * @returns {Promise<this>}
      * @memberof AbstractObject
      */
-    update(args?: Partial<A>, props?: Partial<P>): this {
-        this.emit("update", { args, props });
-        if (args && args.length) this.emit("updateArgs", args);
-        if (props && Object.keys(props).length) this.emit("updateProps", props);
+    async update(args?: Partial<A>, props?: Partial<P>): Promise<this> {
+        const promises: Promise<void>[] = [];
+        promises.push(this.emit("update", { args, props }));
+        if (args && args.length) promises.push(this.emit("updateArgs", args));
+        if (props && Object.keys(props).length) promises.push(this.emit("updateProps", props));
+        await Promise.all(promises);
         return this;
     }
     /**
@@ -139,11 +140,11 @@ export abstract class AbstractObject<
      * @template $
      * @param {I[$]} data
      * @param {$} inlet
-     * @returns {this}
+     * @returns {Promise<this>}
      * @memberof AbstractObject
      */
-    fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(data: I[$], inlet: $): this {
-        this.emit("inlet", { data, inlet });
+    async fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(data: I[$], inlet: $): Promise<this> {
+        await this.emit("inlet", { data, inlet });
         return this;
     }
     /**
@@ -155,9 +156,10 @@ export abstract class AbstractObject<
      * @returns {this}
      * @memberof AbstractObject
      */
-    outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]): this {
+    async outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]): Promise<this> {
         if (outlet >= this.outlets) return this;
-        Array.from(this.outletLines[outlet]).sort(Line.compare).forEach(line => line.pass(data));
+        const promises = Array.from(this.outletLines[outlet]).sort(Line.compare).map(line => line.pass(data));
+        await Promise.all(promises);
         return this;
     }
     /**
@@ -167,23 +169,25 @@ export abstract class AbstractObject<
      * but `[undefined, 1]` will also outlet undefined on first outlet
      *
      * @param {Partial<O>} outputs
-     * @returns {this}
+     * @returns {Promise<this>}
      * @memberof AbstractObject
      */
-    outletAll(outputs: Partial<O>): this {
+    async outletAll(outputs: Partial<O>): Promise<this> {
+        const promises: Promise<this>[] = [];
         for (let i = outputs.length - 1; i >= 0; i--) {
-            if (i in outputs) this.outlet(i, outputs[i]);
+            if (i in outputs) promises.push(this.outlet(i, outputs[i]));
         }
+        Promise.all(promises);
         return this;
     }
     /**
      * Called when object will be destroyed
      *
-     * @returns {this}
+     * @returns {Promise<this>}
      * @memberof AbstractObject
      */
-    destroy(): this {
-        this.emit("destroy", this);
+    async destroy(): Promise<this> {
+        await this.emit("destroy", this);
         return this;
     }
     // called when inlet or outlet are connected or disconnected
@@ -291,8 +295,8 @@ type BaseAdditionalProps = {
 };
 export class BaseObject<
     D extends {} = {}, S extends {} = {},
-    I extends any[] = [], O extends any[] = [],
-    A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {},
+    I extends any[] = any[], O extends any[] = any[],
+    A extends any[] = any[], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {},
     U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}
 > extends AbstractObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
     static props: TMeta["props"] = {
@@ -377,8 +381,8 @@ export class BaseObject<
 }
 export class DefaultObject<
     D extends {} = {}, S extends {} = {},
-    I extends any[] = [], O extends any[] = [],
-    A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {},
+    I extends any[] = any[], O extends any[] = any[],
+    A extends any[] = any[], P extends Partial<DefaultUIState> & { [key: string]: any } = {},
     U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}
 > extends BaseObject<D, S, I, O, A, P & DefaultUIState, U & DefaultUIState, E> {
     static props: TMeta["props"] = {
@@ -437,7 +441,7 @@ export class DefaultObject<
     static ui = DefaultUI;
 }
 export class AnyObject extends BaseObject<{ [key: string]: any }, { [key: string]: any }, any[], any[], any[], { [key: string]: any }, { [key: string]: any }, { [key: string]: any }> {}
-export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
+export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
     get audioCtx() {
         return this.patcher.env.audioCtx;
     }
@@ -494,7 +498,7 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
         return this;
     }
 }
-export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseAudioObject<D, S, I, O, A, P, U & DefaultUIState, E> {
+export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseAudioObject<D, S, I, O, A, P, U & DefaultUIState, E> {
     static props = DefaultObject.props;
     static ui = DefaultUI;
 }
@@ -511,7 +515,7 @@ export class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], 
     static outlets: TMeta["outlets"] = [{
         type: "anything",
         description: "output same thing"
-    }]
+    }];
     state = { editing: false };
     subscribe() {
         super.subscribe();

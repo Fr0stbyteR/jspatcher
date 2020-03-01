@@ -6,7 +6,7 @@ import { detectOS } from "./utils/utils";
 import { faustLangRegister } from "./misc/monaco-faust/register";
 import Patcher from "./core/Patcher";
 import UI from "./components/UI";
-import { MappedEventEmitter } from "./utils/MappedEventEmitter";
+import { TypedEventEmitter } from "./utils/TypedEventEmitter";
 import { TFaustDocs } from "./misc/monaco-faust/Faust2Doc";
 import PatcherUI from "./components/PatcherUI";
 import { TPackage } from "./core/types";
@@ -34,7 +34,7 @@ export class LoaderUI extends React.PureComponent<{ env: Env }, { text: string }
  * @export
  * @class Env
  */
-export default class Env extends MappedEventEmitter<{ text: string }> {
+export default class Env extends TypedEventEmitter<{ text: string }> {
     loaded = false;
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();

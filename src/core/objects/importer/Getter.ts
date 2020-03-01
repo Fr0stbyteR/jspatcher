@@ -38,7 +38,7 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
             if (this.execute()) return this.output();
         }
         return this;
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("preInit", this.handlePreInit);

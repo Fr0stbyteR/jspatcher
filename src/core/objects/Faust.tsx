@@ -79,7 +79,7 @@ export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<Fa
         if (!e.args) return;
         this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
         this.outlets = this.state.outlets;
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("update", this.handleUpdate);
@@ -447,7 +447,7 @@ class Send extends FaustOp<{}, { sendMap: TSendMap }> {
             if (!this.state.sendMap[sendID]) this.state.sendMap[sendID] = [];
             if (this.state.sendMap[sendID].indexOf(this) === -1) this.state.sendMap[sendID].push(this);
         }
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -567,7 +567,7 @@ class Group extends FaustOp<{}, {}, (number | "_")[], { ins: number }> {
             default: 1,
             description: "Inputs count"
         }
-    }
+    };
     state = { inlets: 1, outlets: 1 };
     symbol = ["()"];
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
@@ -576,7 +576,7 @@ class Group extends FaustOp<{}, {}, (number | "_")[], { ins: number }> {
             this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
             this.outlets = this.state.outlets;
         }
-    }
+    };
     toMainExpr(out: string, inlets: string) {
         return `${out} = (${inlets});`;
     }
@@ -733,7 +733,7 @@ class Par extends Iterator {
         this._meta.outlets[outlets - 1] = outlet1Meta;
         this.meta = this._meta;
         this.outlets = outlets;
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("update", this.handleUpdate);
@@ -766,7 +766,7 @@ class LibOp extends FaustOp<{}, {}, (number | "_")[], LibOpProps> {
             default: undefined,
             description: "Force function outputs count"
         }
-    }
+    };
     state = { inlets: undefined as number, outlets: undefined as number };
     handlePostInit = async () => {
         const inletsForced = typeof this.state.inlets === "number";
@@ -785,7 +785,7 @@ class LibOp extends FaustOp<{}, {}, (number | "_")[], LibOpProps> {
         if (!inletsForced) this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
         if (!outletsForced) this.outlets = this.state.outlets;
         this.patcher.emit("graphChanged");
-    }
+    };
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this.state.outlets = ~~+this.getProp("outs");
@@ -793,7 +793,7 @@ class LibOp extends FaustOp<{}, {}, (number | "_")[], LibOpProps> {
             if (typeof this.state.inlets === "number") this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
             if (typeof this.state.outlets === "number") this.outlets = this.state.outlets;
         }
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("postInit", this.handlePostInit);
@@ -885,7 +885,7 @@ class SubPatcher extends FaustOp<Patcher, SubPatcherState, [string], {}, { patch
                 this.state.key = newKey;
             }
         }
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("preInit", this.handlePreInit);
@@ -932,7 +932,7 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
             default: undefined,
             description: "Force function outputs count"
         }
-    }
+    };
     static ui = CodeUI as any;
     state = { inlets: undefined as number, outlets: undefined as number };
     handlePostInit = async () => {
@@ -958,7 +958,7 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
         if (!inletsForced) this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
         if (!outletsForced) this.outlets = this.state.outlets;
         this.patcher.emit("graphChanged");
-    }
+    };
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this.state.outlets = ~~+this.getProp("outs");
@@ -966,11 +966,11 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
             this.inlets = ~~this.state.inlets - Math.min(~~this.state.inlets, this.constArgsCount);
             this.outlets = ~~this.state.outlets;
         }
-    }
+    };
     handleBlur = () => {
         this.patcher.emit("graphChanged");
         this.handlePostInit();
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("editorLoaded", () => this.updateUI({ language: "faust" }));

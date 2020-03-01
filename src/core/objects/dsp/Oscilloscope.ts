@@ -227,7 +227,7 @@ export interface Props extends Omit<OscilloscopeUIState, "$cursor" | "zoom" | "z
     windowFunction: TWindowFunction;
 }
 export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, OscilloscopeUIState> {
-    static description = "Oscilloscope"
+    static description = "Oscilloscope";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "signal",

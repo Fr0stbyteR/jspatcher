@@ -157,10 +157,10 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabUIState> {
                 return;
             }
         }
-    }
+    };
     handlePointerDrag = (e: PointerDragEvent) => {
         this.handlePointerDown(e);
-    }
+    };
     handleKeyDown = (e: React.KeyboardEvent) => {
         let addStep = 0;
         if (e.key === "ArrowUp" || e.key === "ArrowRight") addStep = 1;
@@ -169,7 +169,7 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabUIState> {
             const newValue = this.object.toValidValue(this.state.value + this.state.step * addStep);
             if (newValue !== this.state.value) this.setValueToOutput(newValue);
         }
-    }
+    };
 }
 
 export class LiveTab extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTabProps, LiveTabUIState> {

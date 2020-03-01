@@ -32,7 +32,7 @@ export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [],
             default: true,
             description: "Controls whether the impulse response from the buffer will be scaled by an equal-power normalization"
         }
-    }
+    };
     state = { node: this.audioCtx.createConvolver() };
     inletConnections = [{ node: this.node, index: 0 }];
     outletConnections = [{ node: this.node, index: 0 }];

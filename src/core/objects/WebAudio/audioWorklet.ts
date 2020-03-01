@@ -35,7 +35,7 @@ export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], 
                 }
             }
         }
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

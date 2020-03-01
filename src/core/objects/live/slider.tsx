@@ -25,7 +25,7 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderUIState> {
     state: LiveSliderUIState = {
         ...this.state,
         inputBuffer: ""
-    }
+    };
     className = "live-slider";
     interactionRect: number[] = [0, 0, 0, 0];
     inTouch = false;
@@ -173,17 +173,17 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderUIState> {
             if (newValue !== this.state.value) this.setValueToOutput(newValue);
         }
         this.inTouch = true;
-    }
+    };
     handlePointerDrag = (e: PointerDragEvent) => {
         if (!this.inTouch) return;
         let newValue;
         if (this.state.relative) newValue = this.getValueFromDelta(e);
         else newValue = this.getValueFromPos(e);
         if (newValue !== this.state.value) this.setValueToOutput(newValue);
-    }
+    };
     handlePointerUp = () => {
         this.inTouch = false;
-    }
+    };
     handleKeyDown = (e: React.KeyboardEvent) => {
         if (!this.state.inputBuffer) {
             let addStep = 0;
@@ -207,7 +207,7 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderUIState> {
             this.setState({ inputBuffer: "" });
             if (newValue !== this.state.value) this.setValueToOutput(newValue);
         }
-    }
+    };
     handleFocusOut = () => {
         if (this.state.inputBuffer) {
             const newValue = this.object.toValidValue(+this.state.inputBuffer);
@@ -215,7 +215,7 @@ class LiveSliderUI extends LiveUI<LiveSlider, LiveSliderUIState> {
             if (newValue !== this.state.value) this.setValueToOutput(newValue);
         }
         this.setState({ focus: false });
-    }
+    };
 }
 
 export class LiveSlider extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveSliderProps, LiveSliderUIState> {

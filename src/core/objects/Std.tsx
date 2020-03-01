@@ -2,7 +2,7 @@ import * as Util from "util";
 import { DefaultObject, Bang } from "./Base";
 import { TMeta } from "../types";
 
-class StdObject<D = {}, S = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
+class StdObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
     static package = "Std";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
@@ -81,7 +81,7 @@ class loadbang extends StdObject<{}, {}, [], [Bang], []> {
         this.on("preInit", () => {
             this.inlets = 0;
             this.outlets = 1;
-            this.patcher.on("loading", () => this.outlet(0, new Bang()));
+            this.patcher.on("ready", () => this.outlet(0, new Bang()));
         });
     }
 }
@@ -498,7 +498,7 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
             this.outletAll([, new Bang(), ...args]);
         }
         return this.state.result; // After outlet, result will be received.
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

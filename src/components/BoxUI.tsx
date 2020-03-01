@@ -32,7 +32,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         rect = rect.slice() as TRect;
         presentationRect = presentationRect.slice() as TRect;
         this.setState({ rect, presentationRect });
-    }
+    };
     handleTextChanged = () => {
         const { box } = this;
         if (!box) return;
@@ -44,13 +44,13 @@ export default class BoxUI extends React.PureComponent<P, S> {
         const key = performance.now().toString();
         const editing = uiComponent.editableOnUnlock && _editing;
         this.setState({ rect, presentationRect, presentation, uiComponent, key, editing }, this.inspectRectChange);
-    }
+    };
     handleRectChanged = () => this.setState({ rect: this.box.rect.slice() as TRect });
     handlePresentationRectChanged = () => this.setState({ presentationRect: this.box.presentationRect.slice() as TRect });
     handleBlur = () => {
         this.handlingToggleEditOnClick = false;
         this.setState({ editing: false }, this.inspectRectChange);
-    }
+    };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
@@ -135,11 +135,11 @@ export default class BoxUI extends React.PureComponent<P, S> {
             handleDraggable();
         }
         e.stopPropagation();
-    }
+    };
     handleClick = (e: React.MouseEvent) => {
         if (this.handlingToggleEditOnClick && this.state.selected && !this.state.editing && !this.dragged) this.setState({ editing: true });
         e.stopPropagation();
-    }
+    };
     handleKeyDown = (e: React.KeyboardEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.key === "Enter") {
@@ -153,7 +153,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 this.setState({ editing: !this.state.editing });
             }
         }
-    }
+    };
     /**
      * if calculated width and height is different from expected, update rect
      *
@@ -178,7 +178,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
             this.setState({ rect });
             box.setRect(rect.slice() as TRect);
         }
-    }
+    };
     handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
     handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
     handlePatcherPresentationChanged = (inPresentationMode: boolean) => this.setState({ inPresentationMode });
@@ -363,7 +363,7 @@ class Inlets extends React.PureComponent<{ patcher: Patcher; box: Box }, { ports
     }
     handleUpdate = () => {
         this.setState({ ports: this.ports });
-    }
+    };
     render() {
         return (
             <div className="box-inlets box-ports">
@@ -392,7 +392,7 @@ class Outlets extends React.PureComponent<{ patcher: Patcher; box: Box }, { port
     }
     handleUpdate = () => {
         this.setState({ ports: this.ports });
-    }
+    };
     render() {
         return (
             <div className="box-outlets box-ports">
@@ -418,31 +418,31 @@ class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: num
     handleHighlight = (e: BoxEventMap["highlightPort"]) => {
         const { isSrc, i, highlight } = e;
         if (!isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
-    }
+    };
     handleConnectedChange = (e: BoxEventMap["disconnectedPort" | "connectedPort"]) => {
         const { isSrc, i, last } = e;
         if (!isSrc && i === this.props.index) this.setState({ isConnected: !last });
-    }
+    };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
         if (e.target !== e.currentTarget) return;
         e.stopPropagation();
         this.props.patcher.tempLine(true, [this.props.box.id, this.props.index]);
-    }
+    };
     handleMouseEnter = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.buttons) return;
         this.setState({ highlight: true });
-    }
+    };
     handleMouseMove = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.currentTarget !== e.target) this.setState({ highlight: false });
-    }
+    };
     handleMouseLeave = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         this.setState({ highlight: false });
-    }
+    };
     render() {
         const { box, index: i, patcher } = this.props;
         const forceHot = patcher.props.mode === "gen" || patcher.props.mode === "faust";
@@ -481,31 +481,31 @@ class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: n
     handleHighlight = (e: BoxEventMap["highlightPort"]) => {
         const { isSrc, i, highlight } = e;
         if (isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
-    }
+    };
     handleConnectedChange = (e: BoxEventMap["disconnectedPort" | "connectedPort"]) => {
         const { isSrc, i, last } = e;
         if (isSrc && i === this.props.index) this.setState({ isConnected: !last });
-    }
+    };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
         if (e.target !== e.currentTarget) return;
         e.stopPropagation();
         this.props.patcher.tempLine(false, [this.props.box.id, this.props.index]);
-    }
+    };
     handleMouseEnter = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.buttons) return;
         this.setState({ highlight: true });
-    }
+    };
     handleMouseLeave = () => {
         if (this.props.patcher.state.locked) return;
         this.setState({ highlight: false });
-    }
+    };
     handleMouseMove = (e: React.MouseEvent) => {
         if (this.props.patcher.state.locked) return;
         if (e.currentTarget !== e.target) this.setState({ highlight: false });
-    }
+    };
     render() {
         const box = this.props.box;
         const i = this.props.index;

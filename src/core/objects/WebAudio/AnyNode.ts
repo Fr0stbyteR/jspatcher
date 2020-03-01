@@ -62,7 +62,7 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
             }
         }
         return this;
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("inlet", this.handleInlet);

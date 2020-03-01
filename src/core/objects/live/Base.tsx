@@ -133,7 +133,7 @@ export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [ke
     changeCallback = () => {
         this.props.object.onChangeFromUI({ value: this.state.value, displayValue: this.displayValue });
         this.$changeTimer = -1;
-    }
+    };
     scheduleChangeHandler() {
         if (this.$changeTimer === -1) this.$changeTimer = window.setTimeout(this.changeCallback, this.state.speedLim);
     }
@@ -165,7 +165,7 @@ export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [ke
 }
 export type LiveObjectState = { value: number; displayValue: string };
 export type LiveObjectEventMap = { "changeFromUI": { value: number; displayValue: string } };
-export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<Omit<LiveUIState, "value">> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & Omit<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
+export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<Omit<LiveUIState, "value">> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & Omit<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
     static package = "live";
     static author = "Fr0stbyteR";
     static version = "1.0.0";

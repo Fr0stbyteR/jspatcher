@@ -17,7 +17,7 @@ export interface State {
 }
 type Outlet0 = Omit<DataFromProcessor, "id">;
 export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [], Props> {
-    static description = "Spectral feature extractor"
+    static description = "Spectral feature extractor";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "signal",
@@ -124,7 +124,7 @@ export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
             default: false,
             description: "Getting the spectral spread"
         }
-    }
+    };
     state: State = { node: undefined, $requestTimer: -1 };
     subscribe() {
         super.subscribe();

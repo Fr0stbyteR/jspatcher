@@ -169,7 +169,7 @@
         "prefer-destructuring": "off",
         "prefer-template":"off",
         "quotes": ["error", "double", { "avoidEscape": true }],
-        "semi": "warn",
+        "semi": "off",
         "spaced-comment": [2, "always", { "markers": ["/"] }],
         "radix": "off",
         "react/forbid-foreign-prop-types": ["warn", { "allowInPropTypes": true }],
@@ -233,7 +233,8 @@
                 "ignoreRestSiblings": true
             }
         ],
-        "@typescript-eslint/no-useless-constructor": "warn"
+        "@typescript-eslint/no-useless-constructor": "warn",
+        "@typescript-eslint/semi": ["error", "always"]
     },
     "parser": "@typescript-eslint/parser",
     "plugins": ["@typescript-eslint", "react"]

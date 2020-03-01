@@ -69,7 +69,7 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
             default: undefined,
             description: "The linear sample size in bits"
         }
-    }
+    };
     _meta = AudioIn.meta;
     get meta() {
         return this._meta;
@@ -79,7 +79,7 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
         const devices = await navigator.mediaDevices.enumerateDevices();
         const enums = devices.filter(d => d.kind === "audioinput").map(d => d.label || d.deviceId);
         this._meta.args[0] = { ...AudioIn.args[0], type: "enum", enums };
-    }
+    };
     newSearch = async (search?: string) => {
         this.state.search = search;
         let deviceId: string;
@@ -185,7 +185,7 @@ export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | Aud
         const devices = await navigator.mediaDevices.enumerateDevices();
         const enums = devices.filter(d => d.kind === "audiooutput").map(d => d.label || d.deviceId);
         this._meta.args[0] = { ...AudioOut.args[0], type: "enum", enums };
-    }
+    };
     newSearch = async (search?: string) => {
         if (!supportSetSinkId) return;
         this.state.search = search;

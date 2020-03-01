@@ -1,7 +1,7 @@
 import { DefaultObject, Bang } from "./Base";
 import { TMeta } from "../types";
 
-abstract class JSOp<S = {}, I extends any[] = [], O extends any[] = [any], A extends any[] = [], P = {}> extends DefaultObject<{}, S, I, O, A, P> {
+abstract class JSOp<S = {}, I extends any[] = any[], O extends any[] = [any], A extends any[] = any[], P = {}> extends DefaultObject<{}, S, I, O, A, P> {
     static package = "Op";
 }
 class JSUnaryOp extends JSOp<{ result: any }, [any]> {

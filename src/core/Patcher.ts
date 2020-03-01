@@ -1,5 +1,5 @@
 import { rgbaMax2Css } from "../utils/utils";
-import { MappedEventEmitter } from "../utils/MappedEventEmitter";
+import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import Line from "./Line";
 import Box from "./Box";
 import Env from "../env";
@@ -11,7 +11,7 @@ import Base from "./objects/Base";
 import { toFaustDspCode } from "./objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 
-export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
+export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     static props: TPropsMeta<TPublicPatcherProps> = {
         dependencies: {
             type: "object",
@@ -48,7 +48,6 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     _outletAudioConnections: TPatcherAudioConnection[] = [];
     constructor(envIn: Env) {
         super();
-        this.setMaxListeners(4096);
         this._env = envIn;
         this.observeHistory();
         this.observeGraphChange();
@@ -113,10 +112,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             if (box instanceof Base.InvalidObject) box.changeText(box.text, true);
         }
     }
-    clear() {
-        for (const id in this.boxes) {
-            this.boxes[id].destroy();
-        }
+    async clear() {
+        if (this.boxes) await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].destroy()));
         this.lines = {};
         this.boxes = {};
         this.props = {
@@ -136,7 +133,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     async load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode) {
         this._state.isLoading = true;
         this.emit("loading", []);
-        this.clear();
+        await this.clear();
         if (!patcherIn) {
             this._state.isLoading = false;
             this.emit("loading");
@@ -144,6 +141,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         }
         this.props.mode = (patcherIn.props && patcherIn.props.mode ? patcherIn.props.mode : modeIn) || "js";
         const { mode } = this.props;
+        const $init: Promise<Box>[] = [];
         if (mode === "max" || mode === "gen") {
             const patcher = (patcherIn as TMaxPatcher).patcher;
             if (!patcher) {
@@ -160,14 +158,16 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                 const numID = parseInt(maxBox.id.match(/\d+/)[0]);
                 if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
                 const id = "box-" + numID;
-                this.createBox({
+                const $ = this.createBox({
                     id,
                     inlets: maxBox.numinlets,
                     outlets: maxBox.numoutlets,
                     rect: maxBox.patching_rect,
                     text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
-                });
+                }, true);
+                $init.push($);
             }
+            await Promise.all($init);
             for (let i = 0; i < maxLines.length; i++) {
                 const lineArgs = maxLines[i].patchline;
                 const id = "line-" + ++this.props.lineIndexCount;
@@ -194,11 +194,13 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             }
             if (patcher.boxes) { // Boxes & data
                 for (const id in patcher.boxes) {
-                    this.createBox(patcher.boxes[id]);
+                    const $ = this.createBox(patcher.boxes[id], true);
+                    $init.push($);
                     const numID = parseInt(id.match(/\d+/)[0]);
                     if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
                 }
             }
+            await Promise.all($init);
             if (patcher.lines) { // Lines
                 for (const id in patcher.lines) {
                     this.createLine(patcher.lines[id]);
@@ -210,6 +212,8 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         if (this.props.openInPresentation) this._state.presentation = true;
         this._state.isLoading = false;
         this.emit("loading");
+        await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].postInit()));
+        this.emit("ready");
         return this;
     }
     async loadFromURL(url: string) {
@@ -248,13 +252,14 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
     get fileName() {
         return `${this._state.name}.${{ js: "json", max: "maxpat", gen: "gendsp", faust: "dsppat" }[this.props.mode]}`;
     }
-    createBox(boxIn: TBox) {
+    async createBox(boxIn: TBox, noPostInit?: boolean) {
         if (!boxIn.hasOwnProperty("id")) boxIn.id = "box-" + ++this.props.boxIndexCount;
         const box = new Box(this, boxIn);
         this.boxes[box.id] = box;
-        box.init();
+        await box.init();
         this.newTimestamp();
         if (!this._state.isLoading) this.emit("createBox", box);
+        if (!noPostInit) await box.postInit();
         return box;
     }
     getObjectConstructor(parsed: { class: string; args: any[]; props: { [key: string]: any } }) {
@@ -275,9 +280,9 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.emit("changeBoxText", { oldText, text, box: this.boxes[boxID] });
         return this.boxes[boxID];
     }
-    deleteBox(boxID: string) {
+    async deleteBox(boxID: string) {
         const box = this.boxes[boxID];
-        box.destroy();
+        await box.destroy();
         this.deselect(boxID);
         this.newTimestamp();
         this.emit("deleteBox", box);
@@ -752,11 +757,13 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.emit("tempLine", { findSrc, from });
         return this;
     }
-    paste(clipboard: TPatcher | TMaxClipboard) {
+    async paste(clipboard: TPatcher | TMaxClipboard) {
         const idMap: { [key: string]: string } = {};
         const pasted: TPatcher = { boxes: {}, lines: {} };
         if (!clipboard || !clipboard.boxes) return pasted;
         this.newTimestamp();
+        const $init: Promise<Box>[] = [];
+        const $postInit: Promise<Box>[] = [];
         if (Array.isArray(clipboard.boxes)) { // Max Patcher
             this._state.isLoading = true;
             const maxBoxes = clipboard.boxes;
@@ -778,9 +785,13 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                     rect: maxBox.patching_rect,
                     text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
                 };
-                const createdBox = this.createBox(box);
-                if (createdBox) pasted.boxes[createdBox.id] = createdBox;
+                $init.push(this.createBox(box, true));
             }
+            const createdBoxes = (await Promise.all($init)).filter(box => !!box);
+            createdBoxes.forEach((box) => {
+                pasted.boxes[box.id] = box;
+                $postInit.push(box.postInit());
+            });
             if (Array.isArray(clipboard.lines)) {
                 const maxLines = clipboard.lines;
                 for (let i = 0; i < maxLines.length; i++) {
@@ -800,6 +811,7 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
             this.deselectAll();
             this.selects(Object.keys(pasted.boxes));
             this.emit("create", pasted);
+            await Promise.all($postInit);
             return pasted;
         }
         if (Array.isArray(clipboard.boxes) || Array.isArray(clipboard.lines)) return pasted;
@@ -815,9 +827,13 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
                 if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
             }
             box.rect = [box.rect[0] + 20, box.rect[1] + 20, box.rect[2], box.rect[3]];
-            const createdBox = this.createBox(box);
-            if (createdBox) pasted.boxes[createdBox.id] = createdBox;
+            $init.push(this.createBox(box, true));
         }
+        const createdBoxes = (await Promise.all($init)).filter(box => !!box);
+        createdBoxes.forEach((box) => {
+            pasted.boxes[box.id] = box;
+            $postInit.push(box.postInit());
+        });
         for (const lineID in clipboard.lines) {
             const line = clipboard.lines[lineID];
             line.id = "line-" + ++this.props.lineIndexCount;
@@ -830,18 +846,23 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.deselectAll();
         this.selects(Object.keys(pasted.boxes));
         this.emit("create", pasted);
+        await Promise.all($postInit);
         return pasted;
     }
-    create(objects: TPatcher) {
+    async create(objects: TPatcher) {
         this.newTimestamp();
+        const $init: Promise<Box>[] = [];
+        const $postInit: Promise<Box>[] = [];
         const created: TPatcher = { boxes: {}, lines: {} };
         for (const boxID in objects.boxes) {
             const boxIn = objects.boxes[boxID];
             const box = new Box(this, boxIn);
             this.boxes[box.id] = box;
             created.boxes[box.id] = box;
-            box.init();
+            $init.push(box.init());
+            $postInit.push(box.postInit());
         }
+        await Promise.all($init);
         for (const lineID in objects.lines) {
             const lineIn = objects.lines[lineID];
             const line = new Line(this, lineIn);
@@ -852,8 +873,9 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         this.deselectAll();
         this.selects(Object.keys(objects.boxes));
         this.emit("create", created);
+        await Promise.all($postInit);
     }
-    deleteSelected() {
+    async deleteSelected() {
         this.newTimestamp();
         const boxSet = new Set<Box>();
         const lineSet = new Set<Line>();
@@ -864,21 +886,27 @@ export default class Patcher extends MappedEventEmitter<PatcherEventMap> {
         });
         this._state.selected = [];
         const deleted: TPatcher = { boxes: {}, lines: {} };
+        const promises: Promise<Box>[] = [];
         lineSet.forEach(line => deleted.lines[line.id] = line.destroy());
-        boxSet.forEach(box => deleted.boxes[box.id] = box.destroy());
+        boxSet.forEach(box => promises.push(box.destroy()));
+        const deletedBoxes = await Promise.all(promises);
+        deletedBoxes.forEach(box => deleted.boxes[box.id] = box);
         this.emit("deselected", Object.keys(deleted.lines));
         this.emit("delete", deleted);
         return deleted;
     }
-    delete(objects: TPatcher) {
+    async delete(objects: TPatcher) {
         this.newTimestamp();
         const deleted: TPatcher = { boxes: {}, lines: {} };
         for (const id in objects.lines) {
             deleted.lines[id] = this.lines[id].destroy();
         }
+        const promises: Promise<Box>[] = [];
         for (const id in objects.boxes) {
-            deleted.boxes[id] = this.boxes[id].destroy();
+            promises.push(this.boxes[id].destroy());
         }
+        const deletedBoxes = await Promise.all(promises);
+        deletedBoxes.forEach(box => deleted.boxes[box.id] = box);
         const deselected = Object.keys(deleted.boxes).concat(Object.keys(deleted.lines));
         this.emit("deselected", deselected);
         this.emit("delete", deleted);

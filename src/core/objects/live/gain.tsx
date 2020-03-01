@@ -20,7 +20,7 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
         ...this.state,
         levels: [],
         inputBuffer: ""
-    }
+    };
     className = "live-gain";
     interactionRect: number[] = [0, 0, 0, 0];
     inTouch = false;
@@ -269,17 +269,17 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
             if (newValue !== this.state.value) this.setValueToOutput(newValue);
         }
         this.inTouch = true;
-    }
+    };
     handlePointerDrag = (e: PointerDragEvent) => {
         if (!this.inTouch) return;
         let newValue;
         if (this.state.relative) newValue = this.getValueFromDelta(e);
         else newValue = this.getValueFromPos(e);
         if (newValue !== this.state.value) this.setValueToOutput(newValue);
-    }
+    };
     handlePointerUp = () => {
         this.inTouch = false;
-    }
+    };
     handleKeyDown = (e: React.KeyboardEvent) => {
         if (!this.state.inputBuffer) {
             let addStep = 0;
@@ -303,7 +303,7 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
             this.setState({ inputBuffer: "" });
             if (newValue !== this.state.value) this.setValueToOutput(newValue);
         }
-    }
+    };
     handleFocusOut = () => {
         if (this.state.inputBuffer) {
             const newValue = this.object.toValidValue(+this.state.inputBuffer);
@@ -311,7 +311,7 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
             if (newValue !== this.state.value) this.setValueToOutput(newValue);
         }
         this.setState({ focus: false });
-    }
+    };
 }
 
 export type LiveGainState = { rmsNode: InstanceType<typeof TemporalAnalyserRegister["Node"]>; bypassNode: GainNode; gainNode: GainNode; $requestTimer: number } & LiveObjectState;
@@ -338,7 +338,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
     }, {
         type: "object",
         description: "Amplitude value: number[]"
-    }]
+    }];
     static args: TMeta["args"] = [{
         type: "number",
         optional: true,
@@ -558,7 +558,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             default: 0.01,
             description: "Ramp time"
         }
-    }
+    };
     static ui = LiveGainUI;
     state: LiveGainState = {
         ...this.state,
@@ -566,7 +566,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
         gainNode: this.audioCtx.createGain(),
         bypassNode: this.audioCtx.createGain(),
         $requestTimer: -1
-    }
+    };
     inletConnections = [{ node: this.state.bypassNode, index: 0 }];
     outletConnections = [{ node: this.state.gainNode, index: 0 }];
     subscribe() {

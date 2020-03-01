@@ -45,7 +45,7 @@ export class In extends DefaultObject<{}, { index: number }, [], [any], [number]
     }
     handlePatcherInlet = ({ data, inlet }: PatcherEventMap["inlet"]) => {
         if (inlet === this.state.index - 1) this.outlet(0, data);
-    }
+    };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -153,7 +153,7 @@ export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any]
             default: "",
             description: "Description text"
         }
-    }
+    };
     static outlets: TMeta["outlets"] = [{
         type: "signal",
         description: ""
@@ -301,7 +301,7 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
     state: { patcher: Patcher } & DefaultPopupUIState = {
         ...this.state,
         patcher: this.object.data
-    }
+    };
     static dockable = true;
     render() {
         const children = (

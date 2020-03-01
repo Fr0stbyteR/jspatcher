@@ -84,12 +84,12 @@ class LiveTextUI extends LiveUI<LiveText, LiveTextUIState> {
         const { value, mode } = this.state;
         this.inTouch = true;
         this.setValueToOutput(mode === "button" ? 1 : 1 - +!!value);
-    }
+    };
     handlePointerUp = () => {
         const { mode } = this.state;
         this.inTouch = false;
         if (mode === "button") this.setValueToOutput(0);
-    }
+    };
 }
 
 export class LiveText extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTextProps, LiveTextUIState> {

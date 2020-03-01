@@ -3,7 +3,7 @@ import { DefaultAudioObject } from "../Base";
 import { DefaultUIState } from "../BaseUI";
 
 export type DefaultFaustDynamicNodeState = { merger: ChannelMergerNode; splitter: ChannelSplitterNode; node: FaustAudioWorkletNode | FaustScriptProcessorNode };
-export default abstract class FaustDynamicNode<D extends {} = {}, S extends Partial<DefaultFaustDynamicNodeState> & { [key: string]: any } = {}, I extends any[] = [], O extends any[] = [], A extends any[] = [], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends DefaultAudioObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
+export default abstract class FaustDynamicNode<D extends {} = {}, S extends Partial<DefaultFaustDynamicNodeState> & { [key: string]: any } = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends DefaultAudioObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
     async getFaustNode(code: string, voices: number) {
         const { faust, audioCtx, supportAudioWorklet } = this.patcher.env;
         return faust.getNode(code, { audioCtx, useWorklet: supportAudioWorklet, voices, args: { "-I": ["libraries/", "project/"] } });

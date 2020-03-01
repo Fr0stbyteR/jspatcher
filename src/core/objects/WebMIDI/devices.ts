@@ -31,7 +31,7 @@ export class midiDevices extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.
             default: true,
             description: "Auto output devices when devices change"
         }
-    }
+    };
     state = { midiAccess: undefined as WebMidi.MIDIAccess };
     handleDeviceChange = async () => {
         if (!this.getProp("autoUpdate")) return;

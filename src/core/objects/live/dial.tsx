@@ -31,7 +31,7 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialUIState> {
     state: LiveDialUIState = {
         ...this.state,
         inputBuffer: ""
-    }
+    };
     className = "live-dial";
     interactionRect = [0, 0, 0, 0];
     inTouch = false;
@@ -244,15 +244,15 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialUIState> {
             || e.y > this.interactionRect[1] + this.interactionRect[3]
         ) return;
         this.inTouch = true;
-    }
+    };
     handlePointerDrag = (e: PointerDragEvent) => {
         if (!this.inTouch) return;
         const newValue = this.getValueFromDelta(e);
         if (newValue !== this.state.value) this.setValueToOutput(newValue);
-    }
+    };
     handlePointerUp = () => {
         this.inTouch = false;
-    }
+    };
     handleKeyDown = (e: React.KeyboardEvent) => {
         if (!this.state.inputBuffer) {
             let addStep = 0;
@@ -276,7 +276,7 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialUIState> {
             this.setState({ inputBuffer: "" });
             if (newValue !== this.state.value) this.setValueToOutput(newValue);
         }
-    }
+    };
     handleFocusOut = () => {
         if (this.state.inputBuffer) {
             const newValue = this.object.toValidValue(+this.state.inputBuffer);
@@ -284,7 +284,7 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialUIState> {
             if (newValue !== this.state.value) this.setValueToOutput(newValue);
         }
         this.setState({ focus: false });
-    }
+    };
 }
 
 export class LiveDial extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveDialProps, LiveDialUIState> {

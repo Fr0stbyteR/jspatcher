@@ -142,7 +142,7 @@ export interface Props extends Omit<SpectroscopeUIState, "$cursor" | "zoom" | "z
     windowFunction: TWindowFunction;
 }
 export class Spectroscope extends BaseDSP<{}, State, [Bang], [], [], Props, SpectroscopeUIState> {
-    static description = "Spectroscope"
+    static description = "Spectroscope";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "signal",
