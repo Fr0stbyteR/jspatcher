@@ -116,17 +116,21 @@ class message extends UIObject<{ text: string }, { buffer: any; editing: boolean
         this.on("preInit", () => {
             this.inlets = 2;
             this.outlets = 1;
+        });
+        this.on("postInit", () => {
             const args = this.box.args;
             if (typeof this.data.text === "string") this.state.buffer = this.parse(this.data.text);
             else if (typeof args[0] !== "undefined") {
-                this.data.text = this.stringify(args[0]);
-                this.state.buffer = args[0];
+                if (typeof this.data.text !== "string") {
+                    this.data.text = this.stringify(args[0]);
+                    this.state.buffer = args[0];
+                }
             } else {
                 this.data.text = "";
                 this.state.buffer = new Bang();
             }
+            this.on("updateArgs", this.handleUpdateArgs);
         });
-        this.on("updateArgs", this.handleUpdateArgs);
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) this.outlet(0, this.state.buffer);
             else if (inlet === 1) this.handleUpdateArgs([data]);
