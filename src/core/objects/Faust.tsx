@@ -2,8 +2,8 @@ import { DefaultObject } from "./Base";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import Line from "../Line";
-import { TPackage, TMeta, TPropsMeta } from "../types";
-import { subPatchersMap, TSubPatchersMap, SubPatcherUI } from "./SubPatcher";
+import { TPackage, TMeta, TPropsMeta, TPatcher } from "../types";
+import { SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
 import { CodeUI, comment } from "./UI";
 import { ImporterDirSelfObject } from "../../utils/symbols";
@@ -803,11 +803,11 @@ class LibOp extends FaustOp<{}, {}, (number | "_")[], LibOpProps> {
     }
 }
 interface SubPatcherState extends FaustOpState {
-    map: TSubPatchersMap;
+    patcher: Patcher;
     key: string;
     cachedCode: { exprs: string[]; onces: string[]; ins: number; outs: number };
 }
-class SubPatcher extends FaustOp<Patcher, SubPatcherState, [string], {}, { patcher: Patcher }> {
+class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, { patcher: Patcher }> {
     static description = "Sub-patcher represents a sub-process";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -827,69 +827,74 @@ class SubPatcher extends FaustOp<Patcher, SubPatcherState, [string], {}, { patch
         description: "Name of the subpatcher"
     }];
     static ui = SubPatcherUI;
-    state: SubPatcherState = { inlets: 0, outlets: 0, map: subPatchersMap, key: "", cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
+    state: SubPatcherState = { inlets: 0, outlets: 0, patcher: new Patcher(this.patcher.env), key: "", cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
     subscribePatcher = () => {
-        const patcher = this.data;
+        if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
+        const { patcher } = this.state;
         patcher.on("graphChanged", this.handleGraphChanged);
     };
     unsubscribePatcher = () => {
-        const patcher = this.data;
-        if (!(patcher instanceof Patcher)) return;
+        if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
+        const { patcher } = this.state;
         patcher.off("graphChanged", this.handleGraphChanged);
     };
     handlePatcherReset = () => {
-        const patcher = this.data;
-        if (!(patcher instanceof Patcher)) return;
-        this.updateUI({ patcher });
+        this.updateUI({ patcher: this.state.patcher });
     };
-    handleGraphChanged = () => {
-        const { ins, outs, exprs, onces } = inspectFaustPatcher(this.data);
+    handleGraphChanged = (passive?: boolean) => {
+        if (!passive && this.state.key) this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
+        const { ins, outs, exprs, onces } = inspectFaustPatcher(this.state.patcher);
         this.inlets = ins.length;
         this.outlets = outs.length;
         this.state.cachedCode = { exprs, onces, ins: ins.length, outs: outs.length };
         this.patcher.emit("graphChanged");
     };
-    handlePreInit = async () => {
-        if (this.data.boxes) {
-            const patcher = new Patcher(this.patcher.env);
-            await patcher.load(this.data);
-            this.data = patcher;
-        }
-    };
-    handlePostInit = async () => {
-        if (!(this.data instanceof Patcher)) {
-            const patcher = new Patcher(this.patcher.env);
-            this.data = patcher;
-            await patcher.load({}, "faust");
+    reload = async () => {
+        this.unsubscribePatcher();
+        const { args } = this.box;
+        if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
+        const { key } = this.state;
+        if (typeof key === "string") {
+            this.data = {};
+            const shared: TPatcher = this.sharedData.get("patcher", key);
+            if (shared) await this.state.patcher.load(shared, "faust");
+            else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
+        } else {
+            const { data } = this;
+            await this.state.patcher.load(data, "faust");
+            this.data = this.state.patcher;
         }
         this.handlePatcherReset();
         this.subscribePatcher();
-        this.handleGraphChanged();
+        this.handleGraphChanged(true);
     };
-    handleUpdate = ({ args }: { args?: any[] }) => {
-        if (args && typeof args[0] === "string") {
+    handlePreInit = async () => {
+        await this.state.patcher.load({}, "faust");
+    };
+    handleUpdate = async ({ args }: { args?: [string?] }) => {
+        if (typeof args[0] === "string" || typeof args[0] === "undefined") {
             const newKey = args[0] || "";
             if (newKey !== this.state.key) {
-                this.unsubscribePatcher();
-                if (!this.state.map[newKey]) {
-                    const patcher = new Patcher(this.patcher.env);
-                    patcher.load({}, "faust");
-                    if (newKey) this.state.map[newKey] = patcher;
-                    this.data = patcher;
-                } else {
-                    this.data = this.state.map[newKey];
-                }
-                this.handlePatcherReset();
-                this.handleGraphChanged();
-                this.subscribePatcher();
-                this.state.key = newKey;
+                await this.reload();
             }
+        }
+    };
+    handlePostInit = async () => {
+        if (!this.state.key) {
+            const { data } = this;
+            await this.state.patcher.load(data, "faust");
+            this.data = this.state.patcher;
+            this.handlePatcherReset();
+            this.subscribePatcher();
+            this.handleGraphChanged();
         }
     };
     subscribe() {
         super.subscribe();
         this.on("preInit", this.handlePreInit);
         this.on("postInit", this.handlePostInit);
+        this.on("sharedDataUpdated", this.reload);
+        this.on("destroy", this.unsubscribePatcher);
     }
     toMainExpr(out: string, inlets: string) {
         const { exprs, outs } = this.state.cachedCode;

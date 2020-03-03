@@ -481,8 +481,11 @@ class UIDock extends React.PureComponent<{ patcher: Patcher; display: boolean },
     handleDestroy = () => this.setState({ box: undefined });
     handleDock = (box: Box) => {
         if (this.state.box) this.state.box.object.off("destroy", this.handleDestroy);
-        box.object.on("destroy", this.handleDestroy);
-        this.setState({ box });
+        this.setState({ box: undefined });
+        this.forceUpdate(() => {
+            box.object.on("destroy", this.handleDestroy);
+            this.setState({ box });
+        });
     };
     handlePatcherLoading = () => {
         if (this.state.box) {
@@ -628,7 +631,7 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
                     <Menu.Item name={TPanels.Code} hidden={!this.state.codePanel} active={this.state.active === TPanels.Code} onClick={this.handleItemClick} title={TPanels.Code}>
                         <Icon name="code" color={this.state.active === TPanels.Code ? "teal" : "grey"} inverted />
                     </Menu.Item>
-                    <Menu.Item name={TPanels.Dock} hidden={this.state.codePanel} active={this.state.active === TPanels.Dock} onClick={this.handleItemClick} title={TPanels.Dock}>
+                    <Menu.Item name={TPanels.Dock} active={this.state.active === TPanels.Dock} onClick={this.handleItemClick} title={TPanels.Dock}>
                         <Icon name="edit" color={this.state.active === TPanels.Dock ? "teal" : "grey"} inverted />
                     </Menu.Item>
                     <div style={{ flex: "1 1 auto" }}></div>

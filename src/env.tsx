@@ -4,14 +4,14 @@ import { Dimmer, Loader } from "semantic-ui-react";
 import { Faust, FaustAudioWorkletNode } from "faust2webaudio";
 import { detectOS } from "./utils/utils";
 import { faustLangRegister } from "./misc/monaco-faust/register";
-import Patcher from "./core/Patcher";
-import UI from "./components/UI";
 import { TypedEventEmitter } from "./utils/TypedEventEmitter";
 import { TFaustDocs } from "./misc/monaco-faust/Faust2Doc";
-import PatcherUI from "./components/PatcherUI";
-import { TPackage } from "./core/types";
-import Importer from "./core/objects/importer/Importer";
+import { TPackage, TSharedData, TSharedDataConsumers } from "./core/types";
 import { getFaustLibObjects } from "./core/objects/Faust";
+import Patcher from "./core/Patcher";
+import Importer from "./core/objects/importer/Importer";
+import UI from "./components/UI";
+import PatcherUI from "./components/PatcherUI";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -39,6 +39,8 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();
     readonly supportAudioWorklet = !!window.AudioWorklet;
+    readonly data: TSharedData = {};
+    readonly dataConsumers: TSharedDataConsumers = {};
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;

@@ -28,7 +28,7 @@ class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
         this.refOpen.current.click();
     };
     handleClickSaveAs = () => {
-        const p = this.props.patcher.toString();
+        const p = this.props.patcher.toStringEnv();
         this.setState({
             pAsString: "data:application/json;charset=utf-8," + encodeURIComponent(p)
         }, () => this.refDownload.current.click());
@@ -182,6 +182,7 @@ export default class TopMenu extends React.PureComponent<{ patcher: Patcher }> {
         else if (e.key === "Delete" || e.key === "Backspace") editMenu.handleClickDelete();
         else if (ctrlKey && e.key === "d") editMenu.handleClickDuplicate();
         else if (ctrlKey && e.key === "a") editMenu.handleClickSelectAll();
+        else if (ctrlKey && e.key === "Enter") editMenu.handleClickDock();
         else return;
         e.stopPropagation();
         e.preventDefault();

@@ -6,6 +6,7 @@ import Line from "./Line";
 import History from "./History";
 import Env from "../env";
 import PackageManager from "./PkgMgr";
+import SharedData from "./Shared";
 
 declare global {
     interface Window {
@@ -25,6 +26,10 @@ type TPatcher = {
     lines: { [key: string]: TLine };
     boxes: { [key: string]: TBox };
     props?: {};
+};
+type TPatcherEnv = {
+    patcher: TPatcher;
+    data: TSharedData;
 };
 
 type TDependencies = { [name: string]: string };
@@ -58,6 +63,8 @@ type TPatcherState = {
     history: History;
     selected: string[];
     pkgMgr: PackageManager;
+    dataConsumers: TSharedDataConsumers;
+    dataMgr: SharedData;
 };
 type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid" | "runtime">;
 
@@ -147,6 +154,17 @@ type TBox = {
 type TRect = [number, number, number, number];
 
 type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
+
+type TSharedData = {
+    [category: string]: {
+        [key: string]: any;
+    };
+};
+type TSharedDataConsumers = {
+    [category: string]: {
+        [key: string]: Set<BaseObject>;
+    };
+};
 
 interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "loading": string[] | undefined;
@@ -279,6 +297,7 @@ type ObjectEventMap<I extends any[], A extends any[], P, U, E> = {
     "disconnectedOutlet": { outlet: number; destBox: Box; destInlet: number; lineID: string };
     "destroy": AnyObject;
     "metaChanged": TMeta;
+    "sharedDataUpdated": { category: string; key: string; data: any };
 } & E;
 type THistoryElement = {
     [key in keyof PatcherEventMap]?: PatcherEventMap[key][];

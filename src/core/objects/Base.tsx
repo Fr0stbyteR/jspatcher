@@ -239,6 +239,15 @@ export abstract class AbstractObject<
         this._box.data = dataIn as any;
     }
     /**
+     * Get the shared data manager
+     *
+     * @readonly
+     * @memberof AbstractObject
+     */
+    get sharedData() {
+        return this._patcher.state.dataMgr;
+    }
+    /**
      * Get prop value from box, if not defined, get from metadata default
      *
      * @template K

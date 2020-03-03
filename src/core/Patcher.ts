@@ -5,7 +5,8 @@ import Box from "./Box";
 import Env from "../env";
 import History from "./History";
 import PackageManager from "./PkgMgr";
-import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState } from "./types";
+import SharedData from "./Shared";
+import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv } from "./types";
 
 import Base from "./objects/Base";
 import { toFaustDspCode } from "./objects/Faust";
@@ -39,11 +40,12 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             default: false
         }
     };
-    _env: Env;
+    private readonly _env: Env;
     lines: { [key: string]: Line };
     boxes: { [key: string]: Box };
     props: TPatcherProps;
     _state: TPatcherState;
+    data: TSharedData;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
     constructor(envIn: Env) {
@@ -63,7 +65,9 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             log: [],
             history: undefined,
             selected: [],
-            pkgMgr: undefined
+            pkgMgr: undefined,
+            dataConsumers: {},
+            dataMgr: undefined
         };
         this.clear();
     }
@@ -126,19 +130,22 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             boxIndexCount: 0,
             lineIndexCount: 0
         };
+        this.data = {};
         this._state.selected = [];
         this._state.history = new History(this);
         this._state.pkgMgr = new PackageManager(this);
+        this._state.dataMgr = new SharedData(this);
     }
-    async load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode) {
+    async load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode, data?: TSharedData) {
         this._state.isLoading = true;
         this.emit("loading", []);
         await this.clear();
-        if (!patcherIn) {
+        if (typeof patcherIn !== "object") {
             this._state.isLoading = false;
             this.emit("loading");
             return this;
         }
+        if (typeof data === "object") this._state.dataMgr.mergeEnvData(data);
         this.props.mode = (patcherIn.props && patcherIn.props.mode ? patcherIn.props.mode : modeIn) || "js";
         const { mode } = this.props;
         const $init: Promise<Box>[] = [];
@@ -219,7 +226,8 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     async loadFromURL(url: string) {
         try {
             const file = await fetch(url);
-            const json = await file.json();
+            const json = await file.json() as TPatcher | TPatcherEnv;
+            if ("patcher" in json) return this.load(json.patcher, undefined, json.data);
             return this.load(json);
         } catch (e) {
             this.error(`Fetch file ${url} failed.`);
@@ -234,14 +242,15 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
-            let parsed: TPatcher;
+            let parsed: TPatcher | TPatcherEnv;
             try {
                 parsed = JSON.parse(reader.result.toString());
             } catch (e) {
                 this.error((e as Error).message);
             }
             if (parsed) {
-                this.load(parsed, extMap[ext]);
+                if ("patcher" in parsed) this.load(parsed.patcher, extMap[ext], parsed.data);
+                else this.load(parsed, extMap[ext]);
                 this._state.name = name;
             }
         };
@@ -272,10 +281,10 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     getObjectMeta(parsed: { class: string; args: any[]; props: { [key: string]: any } }) {
         return this.getObjectConstructor(parsed).meta;
     }
-    changeBoxText(boxID: string, text: string) {
+    async changeBoxText(boxID: string, text: string) {
         const oldText = this.boxes[boxID].text;
         if (oldText === text) return this.boxes[boxID];
-        this.boxes[boxID].changeText(text);
+        await this.boxes[boxID].changeText(text);
         this.newTimestamp();
         this.emit("changeBoxText", { oldText, text, box: this.boxes[boxID] });
         return this.boxes[boxID];
@@ -930,6 +939,12 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         }
     }
     toString() {
-        return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
+        return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v));
+    }
+    toSerializable() {
+        return JSON.parse(this.toString());
+    }
+    toStringEnv() {
+        return JSON.stringify({ patcher: this, data: this._env.data }, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
     }
 }

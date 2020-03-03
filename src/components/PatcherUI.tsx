@@ -7,7 +7,7 @@ import "./PatcherUI.scss";
 import "./zIndex.scss";
 import BoxUI from "./BoxUI";
 import { LineUI, TempLineUI } from "./LineUI";
-import { TPatcher, TPatcherMode, TRect } from "../core/types";
+import { TPatcher, TRect } from "../core/types";
 import { round } from "../utils/math";
 
 type P = { patcher: Patcher };
@@ -83,21 +83,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         const { dataTransfer } = e;
         if (dataTransfer && dataTransfer.files.length) {
             const file = e.dataTransfer.files[0];
-            const ext = file.name.split(".").pop();
-            const extMap: { [key: string]: TPatcherMode } = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
-            if (!extMap[ext]) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                let parsed: TPatcher;
-                try {
-                    parsed = JSON.parse(reader.result.toString());
-                } catch (e) {
-                    this.props.patcher.error((e as Error).message);
-                }
-                if (parsed) this.props.patcher.load(parsed, extMap[ext]);
-            };
-            reader.onerror = () => this.props.patcher.error(reader.error.message);
-            reader.readAsText(file, "UTF-8");
+            this.props.patcher.loadFromFile(file);
         }
     };
     componentDidMount() {

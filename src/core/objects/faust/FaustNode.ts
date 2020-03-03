@@ -70,14 +70,15 @@ export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string
         const { inlets, outlets, merger, splitter, node } = compiled;
         this.disconnectAudio();
         this.handleDestroy();
-        this.state = { voices, merger, splitter, node } as S;
-        const firstInletMeta = FaustNode.inlets[0];
+        Object.assign(this.state, { voices, merger, splitter, node } as S);
+        const Ctor = this.constructor as typeof FaustNode;
+        const firstInletMeta = Ctor.inlets[0];
         const firstInletSignalMeta: TInletMeta = { ...firstInletMeta, type: "signal" };
         const inletMeta: TInletMeta = { isHot: false, type: "signal", description: "Node connection" };
         const audioParamInletMeta: TInletMeta = { isHot: false, type: "signal", description: ": bpf or node connection" };
         const outletMeta: TOutletMeta = { type: "signal", description: "Node connection" };
-        const lastOutletMeta = FaustNode.outlets[0];
-        const factoryMeta = FaustNode.meta;
+        const lastOutletMeta = Ctor.outlets[0];
+        const factoryMeta = Ctor.meta;
         for (let i = 0; i < inlets; i++) {
             if (i === 0) factoryMeta.inlets[i] = compiled.inlets ? firstInletSignalMeta : firstInletMeta;
             else factoryMeta.inlets[i] = inletMeta;
