@@ -805,8 +805,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
                 const maxLines = clipboard.lines;
                 for (let i = 0; i < maxLines.length; i++) {
                     const lineArgs = maxLines[i].patchline;
-                    let id = "line-" + ++this.props.lineIndexCount;
-                    if (this.lines[id]) id = "line-" + ++this.props.lineIndexCount;
+                    const id = "line-" + ++this.props.lineIndexCount;
                     const line: TLine = {
                         id,
                         src: [idMap[lineArgs.source[0].replace(/obj/, "box")], lineArgs.source[1]],
@@ -843,9 +842,10 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             pasted.boxes[box.id] = box;
             $postInit.push(box.postInit());
         });
+        await Promise.all($postInit);
         for (const lineID in clipboard.lines) {
             const line = clipboard.lines[lineID];
-            line.id = "line-" + ++this.props.lineIndexCount;
+            if (this.lines[line.id]) line.id = "line-" + ++this.props.lineIndexCount;
             line.src[0] = idMap[line.src[0]];
             line.dest[0] = idMap[line.dest[0]];
             const createdLine = this.createLine(line);
@@ -855,7 +855,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this.deselectAll();
         this.selects(Object.keys(pasted.boxes));
         this.emit("create", pasted);
-        await Promise.all($postInit);
         return pasted;
     }
     async create(objects: TPatcher) {
@@ -872,8 +871,10 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             $postInit.push(box.postInit());
         }
         await Promise.all($init);
+        await Promise.all($postInit);
         for (const lineID in objects.lines) {
             const lineIn = objects.lines[lineID];
+            if (!this.canCreateLine(lineIn)) continue;
             const line = new Line(this, lineIn);
             this.lines[line.id] = line;
             created.lines[line.id] = line;
@@ -882,7 +883,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this.deselectAll();
         this.selects(Object.keys(objects.boxes));
         this.emit("create", created);
-        await Promise.all($postInit);
     }
     async deleteSelected() {
         this.newTimestamp();

@@ -70,7 +70,7 @@ export abstract class AbstractObject<
         // process args and props
         this.subscribe();
         await this.emit("preInit");
-        this.update(this.box.args, this.box.props);
+        await this.update(this.box.args, this.box.props);
         return this;
     }
     /**
