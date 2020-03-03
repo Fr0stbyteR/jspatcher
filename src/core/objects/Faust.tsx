@@ -833,10 +833,11 @@ class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, {
         const { patcher } = this.state;
         patcher.on("graphChanged", this.handleGraphChanged);
     };
-    unsubscribePatcher = () => {
+    unsubscribePatcher = async () => {
         if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
         patcher.off("graphChanged", this.handleGraphChanged);
+        await patcher.clear();
     };
     handlePatcherReset = () => {
         this.updateUI({ patcher: this.state.patcher });
@@ -850,7 +851,7 @@ class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, {
         this.patcher.emit("graphChanged");
     };
     reload = async () => {
-        this.unsubscribePatcher();
+        await this.unsubscribePatcher();
         const { args } = this.box;
         if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
         const { key } = this.state;

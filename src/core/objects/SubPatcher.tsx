@@ -369,7 +369,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             patcher.on("ioChanged", handlePatcherIOChanged);
             patcher.on("graphChanged", handlePatcherGraphChanged);
         };
-        const unsubscribePatcher = () => {
+        const unsubscribePatcher = async () => {
             if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
             const { patcher } = this.state;
             patcher.off("outlet", handlePatcherOutlet);
@@ -379,14 +379,15 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             patcher.off("connectAudioOutlet", handlePatcherConnectAudioOutlet);
             patcher.off("ioChanged", handlePatcherIOChanged);
             patcher.off("graphChanged", handlePatcherGraphChanged);
+            await patcher.clear();
         };
         const handlePatcherReset = () => {
             handlePatcherIOChanged(this.state.patcher.meta);
             this.updateUI({ patcher: this.state.patcher });
         };
         const reload = async () => {
-            unsubscribePatcher();
             this.disconnectAudio();
+            await unsubscribePatcher();
             const { args } = this.box;
             if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
             const { key } = this.state;
@@ -453,10 +454,11 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         const { patcher } = this.state;
         patcher.on("graphChanged", this.handleGraphChanged);
     };
-    unsubscribePatcher = () => {
+    unsubscribePatcher = async () => {
         if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
         patcher.off("graphChanged", this.handleGraphChanged);
+        await patcher.clear();
     };
     handlePatcherReset = () => {
         this.updateUI({ patcher: this.state.patcher });
@@ -468,8 +470,8 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         this.patcher.emit("graphChanged");
     };
     reload = async () => {
-        this.unsubscribePatcher();
         this.disconnectAudio();
+        await this.unsubscribePatcher();
         const { args } = this.box;
         if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
         const { key } = this.state;
