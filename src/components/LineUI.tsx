@@ -256,7 +256,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
                 this.setState({ show: false });
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
-                document.removeEventListener("keydown", handleKeyDown); // eslint-disable-line no-use-before-define, @typescript-eslint/no-use-before-define
+                document.removeEventListener("keydown", handleKeyDown);
                 patcherDiv.removeEventListener("scroll", handlePatcherScroll);
             }
         };

@@ -82,7 +82,11 @@ class InspectorNumberItem extends React.PureComponent<{ itemKey: number | string
         this.props.onChange(+e.currentTarget.value, this.props.itemKey);
         this.setState({ inputEditing: false });
     };
-    handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
+    handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") e.currentTarget.blur();
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+    };
     componentWillUnmount() {
         if (this.state.inputEditing && this.refInput.current) this.props.onChange(+this.refInput.current.value, this.props.itemKey);
     }
@@ -100,7 +104,11 @@ class InspectorStringItem extends React.PureComponent<{ itemKey: number | string
         this.props.onChange(e.currentTarget.value, this.props.itemKey);
         this.setState({ inputEditing: false });
     };
-    handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
+    handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") e.currentTarget.blur();
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+    };
     componentWillUnmount() {
         if (this.state.inputEditing && this.refInput.current) this.props.onChange(this.refInput.current.value, this.props.itemKey);
     }
@@ -153,7 +161,11 @@ class InspectorObjectItem extends React.PureComponent<{ itemKey: number | string
         this.props.onChange(value, this.props.itemKey);
         this.setState({ inputEditing: false });
     };
-    handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => (e.key === "Enter" ? e.currentTarget.blur() : undefined);
+    handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") e.currentTarget.blur();
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+    };
     componentWillUnmount() {
         if (this.state.inputEditing && this.refInput.current) {
             let value = this.refInput.current.value;

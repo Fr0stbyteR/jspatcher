@@ -10,11 +10,11 @@ import { LineUI, TempLineUI } from "./LineUI";
 import { TPatcher, TRect } from "../core/types";
 import { round } from "../utils/math";
 
-type P = { patcher: Patcher; transparent?: boolean };
+type P = { patcher: Patcher; transparent?: boolean; runtime?: boolean };
 type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: string; editingBgColor: string };
 export default class PatcherUI extends React.PureComponent<P, S> {
     state: S = {
-        locked: this.props.patcher.state.locked,
+        locked: this.props.runtime || this.props.patcher.state.locked,
         presentation: this.props.patcher.state.presentation,
         showGrid: this.props.patcher.state.showGrid,
         bgColor: this.props.patcher.props.bgColor,
@@ -41,12 +41,16 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         boxes.setState(newState);
         if (lines) lines.setState(newState);
     };
-    handleLockedChange = (locked: boolean) => this.setState({ locked });
+    handleLockedChange = (locked: boolean) => this.setState({ locked: this.props.runtime || locked });
     handlePresentationChange = (presentation: boolean) => this.setState({ presentation });
     handleShowGridChange = (showGrid: boolean) => this.setState({ showGrid });
     handleBgColorChange = (bgColor: string) => this.setState({ bgColor });
     handleEditingBgColorChange = (editingBgColor: string) => this.setState({ editingBgColor });
     handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        if (this.props.runtime) {
+            e.currentTarget.scrollTo(0, 0);
+            return;
+        }
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
         const lines = this.refLines.current;
@@ -187,7 +191,7 @@ class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; h
     }
 }
 type BoxesState = { width: string; height: string; selectionRect: TRect };
-class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
+class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean }, BoxesState> {
     state: BoxesState = { width: "100%", height: "100%", selectionRect: [0, 0, 0, 0] };
     boxes: { [key: string]: JSX.Element } = {};
     refDiv = React.createRef<HTMLDivElement>();
@@ -249,6 +253,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
         });
     };
     handleMouseDown = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         this.props.patcher.setActive();
         if (!e.shiftKey) this.props.patcher.deselectAll();
         if (e.button !== 0) return;
@@ -305,11 +310,13 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
         handleDraggable();
     };
     handleClick = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.setState({ locked: !this.props.patcher.state.locked });
     };
     handleDoubleClick = (e: React.MouseEvent) => {
-        const { patcher } = this.props;
+        const { patcher, runtime } = this.props;
+        if (runtime) return;
         if (patcher.state.locked) return;
         if (e.target !== this.refDiv.current) return;
         const ctrlKey = patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
@@ -323,7 +330,8 @@ class Boxes extends React.PureComponent<{ patcher: Patcher }, BoxesState> {
         this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
     };
     handleKeyDown = (e: KeyboardEvent) => {
-        const { patcher } = this.props;
+        const { patcher, runtime } = this.props;
+        if (runtime) return;
         if (!patcher.isActive) return;
         if (patcher.state.locked) return;
         if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {

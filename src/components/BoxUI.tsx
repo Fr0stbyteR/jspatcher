@@ -6,7 +6,7 @@ import "./BoxUI.scss";
 import { TResizeHandlerType, BoxEventMap, TRect, PatcherEventMap } from "../core/types";
 import { BaseUI } from "../core/objects/BaseUI";
 
-type P = { patcher: Patcher; id: string };
+type P = { patcher: Patcher; id: string; runtime?: boolean };
 type S = { selected: boolean; rect: TRect; presentationRect: TRect; presentation: boolean; inPresentationMode: boolean; uiComponent: typeof BaseUI; editing: boolean; key: string };
 export default class BoxUI extends React.PureComponent<P, S> {
     box = this.props.patcher.boxes[this.props.id];
@@ -52,6 +52,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         this.setState({ editing: false }, this.inspectRectChange);
     };
     handleMouseDown = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
@@ -179,7 +180,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
             box.setRect(rect.slice() as TRect);
         }
     };
-    handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
+    handleSelected = (ids: string[]) => (!this.props.runtime && ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
     handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
     handlePatcherPresentationChanged = (inPresentationMode: boolean) => this.setState({ inPresentationMode });
     handlePresentationChanged = () => this.setState({ presentation: this.box.presentation, presentationRect: this.box.presentationRect.slice() as TRect });
@@ -187,6 +188,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         if (selected.indexOf(this.props.id) !== -1) this.inspectRectChange();
     };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         const classList = e.currentTarget.classList;
         const typeMap: { [key: string]: TResizeHandlerType } = {

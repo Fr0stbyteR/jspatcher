@@ -54,7 +54,6 @@ type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "edi
 type TPatcherState = {
     name: string;
     isLoading: boolean;
-    runtime: boolean;
     locked: boolean;
     presentation: boolean;
     showGrid: boolean;
@@ -66,7 +65,7 @@ type TPatcherState = {
     dataConsumers: TSharedDataConsumers;
     dataMgr: SharedData;
 };
-type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid" | "runtime">;
+type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid">;
 
 type TErrorLevel = "error" | "warn" | "info" | "none";
 

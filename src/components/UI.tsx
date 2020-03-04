@@ -11,8 +11,8 @@ import "./UI.scss";
 export default class UI extends React.PureComponent<{ patcher: Patcher }, { loading: string[] }> {
     state = { loading: this.props.patcher.state.isLoading ? [] : undefined as string[] };
     handleKeyDown = (e: React.KeyboardEvent) => {
-        e.stopPropagation();
-        e.nativeEvent.stopImmediatePropagation();
+        // e.stopPropagation();
+        // e.nativeEvent.stopImmediatePropagation();
     };
     handleMouseDown = (e: React.MouseEvent) => {
         this.props.patcher.env.active = this.props.patcher;

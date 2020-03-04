@@ -57,7 +57,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this._state = {
             name: "patcher",
             isLoading: false,
-            runtime: false,
             locked: true,
             presentation: false,
             showGrid: true,
@@ -495,7 +494,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             const key = keyIn as keyof TPublicPatcherState;
             if (this._state[key] === state[key]) continue;
             changed = true;
-            if (key === "locked" && this._state.runtime) continue;
             if (key === "locked" || key === "presentation") this.deselectAll();
             this._state[key] = state[key] as any;
             this.emit(key, state[key]);

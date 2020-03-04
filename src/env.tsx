@@ -103,8 +103,7 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
             }
         }
         const runtime = !!urlParams.get("runtime");
-        if (runtime) patcher.setState({ runtime });
-        if (!this._noUI && this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} /> : <UI patcher={patcher} />, this.divRoot);
+        if (!this._noUI && this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} runtime /> : <UI patcher={patcher} />, this.divRoot);
         this.loaded = true;
         return this;
     }

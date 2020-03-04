@@ -7,3 +7,21 @@
         right: -1rem !important;
     }
 }
+.patcher {
+    & div.box-ui > div.package-subpatcher-bpatcher {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        & > div > div.patcher {
+            overflow: hidden;
+        }
+    }
+    &.locked {
+        & div.box-ui > div.package-subpatcher-bpatcher {
+            overflow: hidden;
+            & > div > div.patcher {
+                overflow: hidden;
+            }
+        }
+    }
+}

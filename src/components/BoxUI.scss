@@ -183,6 +183,11 @@
             display: none;
         }
 	}
+	&.unlocked /*>*/ div.boxes > div.box { // recursive: if parent patcher unlocked, no events
+		& > div.box-ui {
+            pointer-events: none !important;
+        }
+    }
 	&.unlocked > div.boxes > div.box {
 		& > div.box-ui {
             pointer-events: none;

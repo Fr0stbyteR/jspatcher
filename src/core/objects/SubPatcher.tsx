@@ -1,14 +1,16 @@
 import * as React from "react";
 import { StrictModalProps, Modal } from "semantic-ui-react";
-import { DefaultObject, DefaultAudioObject } from "./Base";
+import { DefaultObject, DefaultAudioObject, BaseAudioObject } from "./Base";
 import Patcher from "../Patcher";
 import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, TPatcher } from "../types";
-import { DefaultPopupUI, DefaultPopupUIState } from "./BaseUI";
+import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState } from "./BaseUI";
 import UI from "../../components/UI";
 import "./SubPatcher.scss";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
+import PatcherUI from "../../components/PatcherUI";
 
 export class In extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
+    static package = "SubPatcher";
     static description = "Patcher inlet (data)";
     static args: TMeta["args"] = [{
         type: "number",
@@ -75,6 +77,7 @@ export class In extends DefaultObject<{}, { index: number }, [], [any], [number]
 }
 
 export class Out extends DefaultObject<{}, { index: number }, [any], [], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
+    static package = "SubPatcher";
     static description = "Patcher outlet (data)";
     static args: TMeta["args"] = [{
         type: "number",
@@ -140,6 +143,7 @@ export class Out extends DefaultObject<{}, { index: number }, [any], [], [number
 }
 
 export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any], [number], { description: string }> {
+    static package = "SubPatcher";
     static description = "Patcher inlet (audio)";
     static args: TMeta["args"] = [{
         type: "number",
@@ -217,6 +221,7 @@ export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any]
 }
 
 export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [], [number], { description: string }> {
+    static package = "SubPatcher";
     static description = "Patcher outlet (audio)";
     static args: TMeta["args"] = [{
         type: "number",
@@ -302,13 +307,11 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
     static dockable = true;
     render() {
         const children = (
-            <>
-                <Modal.Content style={{ height: "100%", width: "100%" }}>
-                    <div style={{ height: "100%", width: "100%", display: "flex" }}>
-                        <UI patcher={this.state.patcher} />
-                    </div>
-                </Modal.Content>
-            </>
+            <Modal.Content style={{ height: "100%", width: "100%" }}>
+                <div style={{ height: "100%", width: "100%", display: "flex" }}>
+                    <UI patcher={this.state.patcher} />
+                </div>
+            </Modal.Content>
         );
         if (this.props.inDock) return children;
         const containerProps = { ...this.props.containerProps };
@@ -322,6 +325,7 @@ interface SubPatcherState {
     key: string;
 }
 export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherState, any[], any[], [string], {}, { patcher: Patcher }> {
+    static package = "SubPatcher";
     static description = "Sub-patcher";
     static args: TMeta["args"] = [{
         type: "string",
@@ -432,6 +436,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
 }
 interface FaustPatcherState extends FaustNodeState, SubPatcherState {}
 export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState, [string, number], { patcher: Patcher }> {
+    static package = "SubPatcher";
     static description = "Faust Sub-patcher, compiled to AudioNode";
     static args: TMeta["args"] = [{
         type: "string",
@@ -528,6 +533,140 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         this.on("destroy", this.unsubscribePatcher);
     }
 }
+export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher }> {
+    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
+    static defaultSize: [number, number] = [210, 90];
+    state: { patcher: Patcher } & BaseUIState = {
+        ...this.state,
+        patcher: this.object.state.patcher
+    };
+    static dockable = true;
+    render() {
+        if (this.props.inDock) {
+            return (
+                <div style={{ height: "100%", width: "100%", display: "flex" }}>
+                    <UI patcher={this.state.patcher} />
+                </div>
+            );
+        }
+        const children = (
+            <div style={{ height: "100%", width: "100%", display: "flex" }}>
+                <PatcherUI patcher={this.state.patcher} transparent runtime />
+            </div>
+        );
+        return <BaseUI {...this.props} children={children} />;
+    }
+}
+export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState, any[], any[], [string], {}, { patcher: Patcher }> {
+    static package = "SubPatcher";
+    static description = "Sub-patcher";
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: true,
+        default: "",
+        description: "Name of the subpatcher"
+    }];
+    state: SubPatcherState = { patcher: new Patcher(this.patcher.env), key: "" };
+    _meta: TMeta = bpatcher.meta;
+    get meta() {
+        return this._meta;
+    }
+    set meta(metaIn: TMeta) {
+        this._meta = metaIn;
+        this.emit("metaChanged", this._meta);
+    }
+    static ui = BPatcherUI;
+    subscribe() {
+        super.subscribe();
+        const handlePatcherOutlet = ({ outlet, data }: PatcherEventMap["outlet"]) => this.outlet(outlet, data);
+        const handlePatcherDisconnectAudioInlet = (port: number) => this.disconnectAudioInlet(port);
+        const handlePatcherDisconnectAudioOutlet = (port: number) => this.disconnectAudioOutlet(port);
+        const handlePatcherConnectAudioInlet = (port: number) => this.connectAudioInlet(port);
+        const handlePatcherConnectAudioOutlet = (port: number) => this.connectAudioOutlet(port);
+        const handlePatcherIOChanged = (meta: TMeta) => {
+            this.inletConnections = this.state.patcher.inletAudioConnections.slice();
+            this.outletConnections = this.state.patcher.outletAudioConnections.slice();
+            this.inlets = meta.inlets.length;
+            this.outlets = meta.outlets.length;
+            const { inlets, outlets } = meta;
+            this.meta = { ...this._meta, inlets, outlets, args: patcher.args };
+        };
+        const handlePatcherGraphChanged = (passive?: boolean) => {
+            if (!passive && this.state.key) this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
+            this.patcher.emit("graphChanged");
+        };
+        const subscribePatcher = () => {
+            if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
+            const { patcher } = this.state;
+            patcher.on("outlet", handlePatcherOutlet);
+            patcher.on("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
+            patcher.on("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
+            patcher.on("connectAudioInlet", handlePatcherConnectAudioInlet);
+            patcher.on("connectAudioOutlet", handlePatcherConnectAudioOutlet);
+            patcher.on("ioChanged", handlePatcherIOChanged);
+            patcher.on("graphChanged", handlePatcherGraphChanged);
+        };
+        const unsubscribePatcher = async () => {
+            if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
+            const { patcher } = this.state;
+            patcher.off("outlet", handlePatcherOutlet);
+            patcher.off("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
+            patcher.off("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
+            patcher.off("connectAudioInlet", handlePatcherConnectAudioInlet);
+            patcher.off("connectAudioOutlet", handlePatcherConnectAudioOutlet);
+            patcher.off("ioChanged", handlePatcherIOChanged);
+            patcher.off("graphChanged", handlePatcherGraphChanged);
+            await patcher.clear();
+        };
+        const handlePatcherReset = () => {
+            handlePatcherIOChanged(this.state.patcher.meta);
+            this.updateUI({ patcher: this.state.patcher });
+        };
+        const reload = async () => {
+            this.disconnectAudio();
+            await unsubscribePatcher();
+            const { args } = this.box;
+            if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
+            const { key } = this.state;
+            if (key) {
+                this.data = {};
+                const shared: TPatcher = this.sharedData.get("patcher", key);
+                if (shared) await this.state.patcher.load(shared, "js");
+                else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
+            } else {
+                const { data } = this;
+                await this.state.patcher.load(data, "js");
+                this.data = this.state.patcher;
+            }
+            handlePatcherReset();
+            subscribePatcher();
+            handlePatcherGraphChanged(true);
+            this.connectAudio();
+        };
+        this.on("preInit", async () => {
+            await this.state.patcher.load({}, "js");
+        });
+        this.on("updateArgs", async (args) => {
+            if (typeof args[0] === "string" || typeof args[0] === "undefined") {
+                const newKey = args[0];
+                if (newKey !== this.state.key) await reload();
+            }
+        });
+        this.on("postInit", async () => {
+            if (!this.state.key) {
+                const { data } = this;
+                await this.state.patcher.load(data, "js");
+                this.data = this.state.patcher;
+                handlePatcherReset();
+                subscribePatcher();
+                this.connectAudio();
+            }
+        });
+        this.on("inlet", ({ data, inlet }) => this.state.patcher.fn(data, inlet));
+        this.on("sharedDataUpdated", reload);
+        this.on("destroy", unsubscribePatcher);
+    }
+}
 
 export default {
     in: In,
@@ -537,5 +676,6 @@ export default {
     patcher,
     p: patcher,
     faustPatcher,
-    pfaust: faustPatcher
+    pfaust: faustPatcher,
+    bpatcher
 };
