@@ -1,6 +1,7 @@
 import { BaseObject } from "./objects/Base";
 import { TSharedData, TSharedDataConsumers } from "./types";
 import Patcher from "./Patcher";
+import { SharedDataNoValue } from "../utils/symbols";
 
 export default class SharedData {
     private data: TSharedData;
@@ -36,8 +37,8 @@ export default class SharedData {
         const isLocal = keyIn.startsWith("#");
         const key = isLocal ? keyIn.slice(1) : keyIn;
         const db = isLocal ? this.pData : this.data;
-        if (!(cat in db)) return undefined;
-        if (!(key in db[cat])) return undefined;
+        if (!(cat in db)) return SharedDataNoValue;
+        if (!(key in db[cat])) return SharedDataNoValue;
         return db[cat][key];
     }
     subscribe(cat: string, keyIn: string, consumer: BaseObject) {

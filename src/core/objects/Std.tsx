@@ -1,6 +1,7 @@
 import * as Util from "util";
 import { DefaultObject, Bang } from "./Base";
 import { TMeta } from "../types";
+import { SharedDataNoValue } from "../../utils/symbols";
 
 class StdObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
     static package = "Std";
@@ -441,7 +442,7 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any], [a
             const { key } = this.state;
             if (key) {
                 const shared = this.sharedData.get("_v", key);
-                if (shared) this.state.value = shared;
+                if (shared !== SharedDataNoValue) this.state.value = shared;
                 else this.sharedData.set("_v", key, this.state.value, this);
                 this.sharedData.subscribe("_v", this.state.key, this);
             }
@@ -482,7 +483,7 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any], [a
                 }
             }
         });
-        this.on("sharedDataUpdated", reload);
+        this.on("sharedDataUpdated", ({ data }) => this.state.value = data);
         this.on("destroy", () => {
             if (this.state.key) this.sharedData.unsubscribe("_v", this.state.key, this);
         });
