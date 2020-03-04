@@ -616,11 +616,13 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
         const codePanel = this.props.patcher.props.mode === "faust" || this.props.patcher.props.mode === "gen";
         this.setState({ active: TPanels.None, codePanel });
     };
+    handleInspector = () => this.setState({ active: TPanels.Inspector });
     handleDock = () => this.setState({ active: TPanels.Dock });
     componentDidMount() {
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.on("loading", this.handlePatcherLoading);
+        this.props.patcher.on("inspector", this.handleInspector);
         this.props.patcher.on("dockUI", this.handleDock);
         this.handlePatcherLoading();
     }
@@ -628,6 +630,7 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
         const audioCtx = this.props.patcher.env.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.off("loading", this.handlePatcherLoading);
+        this.props.patcher.off("inspector", this.handleInspector);
         this.props.patcher.off("dockUI", this.handleDock);
     }
     render() {

@@ -406,4 +406,10 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         }
         return objOut;
     }
+    toString() {
+        return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v));
+    }
+    toSerializable(): TBox {
+        return JSON.parse(this.toString());
+    }
 }

@@ -124,6 +124,10 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
         if (this.props.patcher.state.locked) return;
         this.props.patcher.selectAllBoxes();
     };
+    handleClickInspector = () => {
+        if (this.props.patcher.state.locked) return;
+        this.props.patcher.inspector();
+    };
     handleClickDock = () => {
         if (this.props.patcher.state.locked) return;
         this.props.patcher.dockUI();
@@ -153,6 +157,7 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
                     <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description={`${ctrlKey} + D`} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description={`${ctrlKey} + A`} disabled={locked} />
                     <Dropdown.Divider />
+                    <Dropdown.Item onClick={this.handleClickInspector} text="Inspector" description={`${ctrlKey} + I`} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickDock} text="Dock UI" description={`${ctrlKey} + Enter`} disabled={locked} />
                 </Dropdown.Menu>
             </Dropdown>
@@ -182,6 +187,7 @@ export default class TopMenu extends React.PureComponent<{ patcher: Patcher }> {
         else if (e.key === "Delete" || e.key === "Backspace") editMenu.handleClickDelete();
         else if (ctrlKey && e.key === "d") editMenu.handleClickDuplicate();
         else if (ctrlKey && e.key === "a") editMenu.handleClickSelectAll();
+        else if (ctrlKey && e.key === "i") editMenu.handleClickInspector();
         else if (ctrlKey && e.key === "Enter") editMenu.handleClickDock();
         else return;
         e.stopPropagation();

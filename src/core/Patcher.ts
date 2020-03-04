@@ -894,10 +894,15 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this._state.selected = [];
         const deleted: TPatcher = { boxes: {}, lines: {} };
         const promises: Promise<Box>[] = [];
-        lineSet.forEach(line => deleted.lines[line.id] = line.destroy());
-        boxSet.forEach(box => promises.push(box.destroy()));
-        const deletedBoxes = await Promise.all(promises);
-        deletedBoxes.forEach(box => deleted.boxes[box.id] = box);
+        lineSet.forEach((line) => {
+            deleted.lines[line.id] = line;
+            line.destroy();
+        });
+        boxSet.forEach((box) => {
+            deleted.boxes[box.id] = box.toSerializable();
+            promises.push(box.destroy());
+        });
+        await Promise.all(promises);
         this.emit("deselected", Object.keys(deleted.lines));
         this.emit("delete", deleted);
         return deleted;
@@ -910,10 +915,10 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         }
         const promises: Promise<Box>[] = [];
         for (const id in objects.boxes) {
+            deleted.boxes[id] = this.boxes[id].toSerializable();
             promises.push(this.boxes[id].destroy());
         }
-        const deletedBoxes = await Promise.all(promises);
-        deletedBoxes.forEach(box => deleted.boxes[box.id] = box);
+        await Promise.all(promises);
         const deselected = Object.keys(deleted.boxes).concat(Object.keys(deleted.lines));
         this.emit("deselected", deselected);
         this.emit("delete", deleted);
@@ -929,6 +934,13 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this.emit("generateCode", code);
         return code;
     }
+    inspector(box?: Box) {
+        if (box) this.emit("inspector", box);
+        else if (this._state.selected.length) {
+            const found = this._state.selected.find(id => id.startsWith("box"));
+            if (found && this.boxes[found]) this.emit("inspector", this.boxes[found]);
+        }
+    }
     dockUI(box?: Box) {
         if (box && box.uiComponent.dockable) this.emit("dockUI", box);
         else if (this._state.selected.length) {
@@ -939,7 +951,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     toString() {
         return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v));
     }
-    toSerializable() {
+    toSerializable(): TPatcher {
         return JSON.parse(this.toString());
     }
     toStringEnv() {
