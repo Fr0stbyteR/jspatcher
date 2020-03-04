@@ -10,7 +10,7 @@ import { LineUI, TempLineUI } from "./LineUI";
 import { TPatcher, TRect } from "../core/types";
 import { round } from "../utils/math";
 
-type P = { patcher: Patcher };
+type P = { patcher: Patcher; transparent?: boolean };
 type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: string; editingBgColor: string };
 export default class PatcherUI extends React.PureComponent<P, S> {
     state: S = {
@@ -110,7 +110,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (this.state.presentation) classArray.push("presentation");
         if (this.state.showGrid) classArray.push("show-grid");
         if (this.state.fileDropping) classArray.push("filedropping");
-        const backgroundColor = this.state.locked ? this.state.bgColor : this.state.editingBgColor;
+        const backgroundColor = this.props.transparent ? "transparent" : this.state.locked ? this.state.bgColor : this.state.editingBgColor;
         return (
             <div ref={this.refDiv} className={classArray.join(" ")} style={{ backgroundColor }} onScroll={this.handleScroll} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
                 <Grid {...this.props} ref={this.refGrid} />

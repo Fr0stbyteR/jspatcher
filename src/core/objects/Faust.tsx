@@ -855,7 +855,7 @@ class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, {
         const { args } = this.box;
         if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
         const { key } = this.state;
-        if (typeof key === "string") {
+        if (key) {
             this.data = {};
             const shared: TPatcher = this.sharedData.get("patcher", key);
             if (shared) await this.state.patcher.load(shared, "faust");
@@ -874,10 +874,8 @@ class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, {
     };
     handleUpdate = async ({ args }: { args?: [string?] }) => {
         if (typeof args[0] === "string" || typeof args[0] === "undefined") {
-            const newKey = args[0] || "";
-            if (newKey !== this.state.key) {
-                await this.reload();
-            }
+            const key = args[0];
+            if (key !== this.state.key) await this.reload();
         }
     };
     handlePostInit = async () => {

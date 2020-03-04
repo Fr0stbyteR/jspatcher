@@ -391,7 +391,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             const { args } = this.box;
             if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
             const { key } = this.state;
-            if (typeof key === "string") {
+            if (key) {
                 this.data = {};
                 const shared: TPatcher = this.sharedData.get("patcher", key);
                 if (shared) await this.state.patcher.load(shared, "js");
@@ -411,10 +411,8 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
         });
         this.on("updateArgs", async (args) => {
             if (typeof args[0] === "string" || typeof args[0] === "undefined") {
-                const newKey = args[0] || "";
-                if (newKey !== this.state.key) {
-                    await reload();
-                }
+                const newKey = args[0];
+                if (newKey !== this.state.key) await reload();
             }
         });
         this.on("postInit", async () => {
@@ -474,8 +472,9 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         await this.unsubscribePatcher();
         const { args } = this.box;
         if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
+        if (typeof args[1] === "number") this.state.voices = ~~Math.max(0, args[1]);
         const { key } = this.state;
-        if (typeof key === "string") {
+        if (key) {
             this.data = {};
             const shared: TPatcher = this.sharedData.get("patcher", key);
             if (shared) await this.state.patcher.load(shared, "faust");
@@ -494,11 +493,21 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         await this.state.patcher.load({}, "faust");
     };
     handleUpdateArgs = async (args: Partial<[string, number]>): Promise<void> => {
-        if (typeof args[1] === "number") this.state.voices = ~~Math.max(0, args[1]);
         if (typeof args[0] === "string" || typeof args[0] === "undefined") {
-            const newKey = args[0] || "";
-            if (newKey !== this.state.key) {
+            const key = args[0];
+            if (key !== this.state.key) {
                 await this.reload();
+            } else {
+                if (typeof args[1] === "number") {
+                    const voices = ~~Math.max(0, args[1]);
+                    if (voices !== this.state.voices) {
+                        this.state.voices = voices;
+                        this.disconnectAudio();
+                        const code = this.state.patcher.toFaustDspCode();
+                        if (code) await this.newNode(code, this.state.voices);
+                        this.connectAudio();
+                    }
+                }
             }
         }
     };

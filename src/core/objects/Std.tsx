@@ -402,8 +402,7 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         });
     }
 }
-const vVars: { [key: string]: any } = {};
-class v extends StdObject<{}, { name: string | number; map: { [key: string]: any }; value: any }, [Bang | any, any], [any], [string | number, any]> {
+class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any], [any], [string | number, any]> {
     static description = "Store anything as named sharable variable";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -431,33 +430,61 @@ class v extends StdObject<{}, { name: string | number; map: { [key: string]: any
         optional: true,
         description: "Initial value"
     }];
-    state = { name: undefined as string | number, map: vVars, value: undefined as any };
+    state = { key: undefined as string, value: undefined as any };
     subscribe() {
         super.subscribe();
+        const reload = () => {
+            if (this.state.key) this.sharedData.unsubscribe("_v", this.state.key, this);
+            const { args } = this.box;
+            if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
+            if (typeof args[1] !== "undefined") this.state.value = args[1];
+            const { key } = this.state;
+            if (key) {
+                const shared = this.sharedData.get("_v", key);
+                if (shared) this.state.value = shared;
+                else this.sharedData.set("_v", key, this.state.value, this);
+                this.sharedData.subscribe("_v", this.state.key, this);
+            }
+        };
         this.on("preInit", () => {
             this.inlets = 3;
             this.outlets = 1;
         });
         this.on("updateArgs", (args) => {
-            if (typeof args[0] === "string" || typeof args[0] === "number") this.state.name = args[0];
-            if (typeof args[1] !== "undefined") {
-                if (typeof this.state.name === "undefined") this.state.value = args[1];
-                this.state.map[this.state.name] = args[1];
+            if (typeof args[0] === "string" || typeof args[0] === "undefined") {
+                const key = args[0];
+                if (key !== this.state.key) {
+                    reload();
+                } else {
+                    if (typeof args[1] !== "undefined") {
+                        this.state.value = args[1];
+                        if (this.state.key) this.sharedData.set("_v", this.state.key, this.state.value, this);
+                    }
+                }
             }
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 if (!(data instanceof Bang)) {
-                    if (typeof this.state.name === "undefined") this.state.value = data;
-                    else this.state.map[this.state.name] = data;
+                    this.state.value = data;
+                    if (this.state.key) this.sharedData.set("_v", this.state.key, this.state.value, this);
                 }
-                this.outlet(0, typeof this.state.name === "undefined" ? this.state.value : this.state.map[this.state.name]);
+                this.outlet(0, this.state.value);
             } else if (inlet === 1) {
-                if (typeof this.state.name === "undefined") this.state.value = data;
-                else this.state.map[this.state.name] = data;
+                this.state.value = data;
+                if (this.state.key) this.sharedData.set("_v", this.state.key, this.state.value, this);
             } else if (inlet === 2) {
-                if (typeof data === "string" || typeof data === "number") this.state.name = data;
+                if (typeof data === "string" || typeof data === "number") {
+                    const key = data || "";
+                    if (key !== this.state.key) {
+                        reload();
+                    }
+                }
             }
+        });
+        this.on("sharedDataUpdated", reload);
+        this.on("destroy", () => {
+            if (this.state.key) this.sharedData.unsubscribe("_v", this.state.key, this);
         });
     }
 }

@@ -117,7 +117,6 @@ export abstract class AbstractObject<
         return this;
     };
     /**
-     *
      * Will be called when arguments and properties are changed
      *
      * @param {Partial<A>} [args]
