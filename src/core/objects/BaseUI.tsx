@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 import { Icon, SemanticICONS, StrictModalProps, Modal, Dimmer, Loader, Button } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
@@ -626,5 +627,41 @@ export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Part
         if (!containerProps.onDoubleClick) containerProps.onDoubleClick = this.handleDoubleClick;
         const modalProps: StrictModalProps = { ...this.props.modalProps, children, open: this.state.modalOpen, onClose: this.handleClose, basic: true, size: "fullscreen" };
         return <DefaultPopupUI {...this.props} modalProps={modalProps} containerProps={containerProps} />;
+    }
+}
+
+export class ShadowContent extends React.PureComponent<{ children: React.ReactNode; root: ShadowRoot }> {
+    render() {
+        const { children, root } = this.props;
+        return ReactDOM.createPortal(children, root as Node as Element);
+    }
+}
+export interface ShadowDOMUIState extends BaseUIState {
+    root: ShadowRoot;
+    children: Array<ChildNode>;
+}
+export class ShadowDOMUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<ShadowDOMUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & BaseUIProps, S & ShadowDOMUIState> {
+    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
+    static defaultSize: [number, number] = [210, 90];
+    root = React.createRef<HTMLDivElement>();
+    componentDidMount() {
+        super.componentDidMount();
+        const root = this.root.current.attachShadow({ mode: "open" });
+        if (this.state.children) this.state.children.forEach(v => root.appendChild(v));
+        this.setState({ root });
+    }
+    componentDidUpdate(prevProps: Readonly<P & BaseUIProps>, prevState: Readonly<S & ShadowDOMUIState>) {
+        if (!this.state.root) return;
+        if (this.state.children !== prevState.children) {
+            this.state.root.innerHTML = "";
+            this.state.children.forEach(v => this.state.root.appendChild(v));
+        }
+    }
+    render() {
+        return (
+            <BaseUI {...this.props}>
+                <div style={{ width: "100%", height: "100%", position: "absolute", display: "block", overflow: "auto" }} ref={this.root} />
+            </BaseUI>
+        );
     }
 }

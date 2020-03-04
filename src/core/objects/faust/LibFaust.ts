@@ -3,6 +3,7 @@ import { Bang, DefaultObject } from "../Base";
 import { TMeta } from "../../types";
 
 export default class libFaust extends DefaultObject<{}, {}, [Bang], [Faust]> {
+    static package = "Faust";
     static description = "Get LibFaust instance";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
