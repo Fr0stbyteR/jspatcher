@@ -197,6 +197,46 @@ class ForIn extends StdObject<{}, { buffer: any }, [any, any], [string | number 
         });
     }
 }
+class gate extends StdObject<{}, { pass: boolean }, [any, any], [any], [any]> {
+    static description = "Bypass or block incoming data";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Anything to bypass"
+    }, {
+        isHot: false,
+        type: "anything",
+        description: "Test, falsable to block"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Anything bypass"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: true,
+        default: true,
+        description: "default state"
+    }];
+    state = { pass: true };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 2;
+            this.outlets = 1;
+        });
+        this.on("updateArgs", (args) => {
+            this.state.pass = args[0] === "undefined" || args[0] === "" || !!args[0];
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (this.state.pass) this.outlet(0, data);
+            } else if (inlet === 1) {
+                this.state.pass = !!data;
+            }
+        });
+    }
+}
 class set extends StdObject<{}, { key: string | number; value: any }, [{ [key: string]: any } | any[], string | number, any], [{ [key: string]: any } | any[]], [string | number, any]> {
     static description = "Set a property of incoming object";
     static inlets: TMeta["inlets"] = [{
@@ -548,4 +588,4 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
     }
 }
 
-export default { print, for: For, "for-in": ForIn, if: If, sel, set, get, v, lambda, bang, loadbang };
+export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, v, lambda, bang, loadbang };
