@@ -94,15 +94,19 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         this.emit("text", "Loading Patcher...");
 
         const fileName = urlParams.get("file");
-        if (fileName) {
-            patcher.loadFromURL("../examples/" + fileName);
+        const mode = urlParams.get("mode");
+        const runtime = !!urlParams.get("runtime");
+        if (!fileName && !mode) {
+            const localStoragePatcher = localStorage.getItem("__JSPatcher_Patcher");
+            if (localStoragePatcher) await patcher.loadFromString(localStoragePatcher);
+        } else if (fileName) {
+            await patcher.loadFromURL("../examples/" + fileName);
         } else {
-            const mode = urlParams.get("mode");
             if (mode === "gen" || mode === "faust") {
-                patcher.load({}, mode);
+                await patcher.load({}, mode);
             }
         }
-        const runtime = !!urlParams.get("runtime");
+        this.patcher.on("graphChanged", () => localStorage.setItem("__JSPatcher_Patcher", this.patcher.toStringEnv(null)));
         if (!this._noUI && this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} runtime /> : <UI patcher={patcher} />, this.divRoot);
         this.loaded = true;
         return this;

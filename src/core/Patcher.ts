@@ -233,6 +233,16 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         }
         return this;
     }
+    async loadFromString(sIn: string) {
+        try {
+            const env = JSON.parse(sIn);
+            if ("patcher" in env) return this.load(env.patcher, undefined, env.data);
+            return this.load(env);
+        } catch (e) {
+            this.error(`Load from string: ${sIn.slice(20)}... failed.`);
+        }
+        return this;
+    }
     async loadFromFile(file: File) {
         const splitName = file.name.split(".");
         const ext = splitName.pop();
@@ -688,11 +698,13 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const widthLeast = boxes.sort((a, b) => a[rectKey][2] - b[rectKey][2])[0];
         const heightLeast = boxes.sort((a, b) => a[rectKey][3] - b[rectKey][3])[0];
         // Not allowing resize out of bound
-        delta.x = Math.max(delta.x, -leftMost[rectKey][0]);
-        delta.y = Math.max(delta.y, -topMost[rectKey][1]);
+        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.max(delta.x, -leftMost[rectKey][0]);
+        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.max(delta.y, -topMost[rectKey][1]);
         // Not allowing resize below 15px width or height
-        delta.x = Math.max(delta.x, 15 - widthLeast[rectKey][2]);
-        delta.y = Math.max(delta.y, 15 - heightLeast[rectKey][3]);
+        if (type === "ne" || type === "e" || type === "se") delta.x = Math.max(delta.x, 15 - widthLeast[rectKey][2]);
+        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.min(delta.x, widthLeast[rectKey][2] - 15);
+        if (type === "se" || type === "s" || type === "sw") delta.y = Math.max(delta.y, 15 - heightLeast[rectKey][3]);
+        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.min(delta.y, heightLeast[rectKey][3] - 15);
         boxes.forEach((box) => {
             const sizingX = box.uiComponent.sizing === "horizontal" || box.uiComponent.sizing === "both";
             const sizingY = box.uiComponent.sizing === "vertical" || box.uiComponent.sizing === "both";
@@ -948,13 +960,13 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             if (found && this.boxes[found] && this.boxes[found].uiComponent.dockable) this.emit("dockUI", this.boxes[found]);
         }
     }
-    toString() {
-        return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v));
+    toString(spacing?: number) {
+        return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
     }
     toSerializable(): TPatcher {
         return JSON.parse(this.toString());
     }
-    toStringEnv() {
-        return JSON.stringify({ patcher: this, data: this._env.data }, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
+    toStringEnv(spacing = 4) {
+        return JSON.stringify({ patcher: this, data: this._env.data }, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
     }
 }
