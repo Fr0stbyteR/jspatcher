@@ -324,8 +324,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
             <div className={classArray.join(" ")} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
                 {
                     this.state.inPresentationMode ? undefined : <>
-                        <Inlets patcher={this.props.patcher} box={box} />
-                        <Outlets patcher={this.props.patcher} box={box} />
+                        <Inlets patcher={this.props.patcher} box={box} runtime={this.props.runtime} />
+                        <Outlets patcher={this.props.patcher} box={box} runtime={this.props.runtime} />
                     </>
                 }
                 <div className={"resize-handlers resize-handlers-" + InnerUI.sizing}>
@@ -345,7 +345,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         );
     }
 }
-class Inlets extends React.PureComponent<{ patcher: Patcher; box: Box }, { ports: JSX.Element[] }> {
+class Inlets extends React.PureComponent<{ patcher: Patcher; box: Box; runtime?: boolean }, { ports: JSX.Element[] }> {
     get ports() {
         const ports: JSX.Element[] = [];
         for (let i = 0; i < this.props.box.inlets; i++) {
@@ -374,7 +374,7 @@ class Inlets extends React.PureComponent<{ patcher: Patcher; box: Box }, { ports
         );
     }
 }
-class Outlets extends React.PureComponent<{ patcher: Patcher; box: Box }, { ports: JSX.Element[] }> {
+class Outlets extends React.PureComponent<{ patcher: Patcher; box: Box; runtime?: boolean }, { ports: JSX.Element[] }> {
     get ports() {
         const ports: JSX.Element[] = [];
         for (let i = 0; i < this.props.box.outlets; i++) {
@@ -403,7 +403,7 @@ class Outlets extends React.PureComponent<{ patcher: Patcher; box: Box }, { port
         );
     }
 }
-class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
+class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: number; runtime?: boolean }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.inletLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
@@ -418,6 +418,7 @@ class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: num
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
     handleHighlight = (e: BoxEventMap["highlightPort"]) => {
+        if (this.props.runtime) return;
         const { isSrc, i, highlight } = e;
         if (!isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     };
@@ -426,6 +427,7 @@ class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: num
         if (!isSrc && i === this.props.index) this.setState({ isConnected: !last });
     };
     handleMouseDown = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
         if (e.target !== e.currentTarget) return;
@@ -433,15 +435,18 @@ class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: num
         this.props.patcher.tempLine(true, [this.props.box.id, this.props.index]);
     };
     handleMouseEnter = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         if (e.buttons) return;
         this.setState({ highlight: true });
     };
     handleMouseMove = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         if (e.currentTarget !== e.target) this.setState({ highlight: false });
     };
     handleMouseLeave = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         this.setState({ highlight: false });
     };
@@ -466,7 +471,7 @@ class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: num
         );
     }
 }
-class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: number }, { isConnected: boolean; highlight: boolean }> {
+class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: number; runtime?: boolean }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.outletLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
@@ -481,6 +486,7 @@ class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: n
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
     handleHighlight = (e: BoxEventMap["highlightPort"]) => {
+        if (this.props.runtime) return;
         const { isSrc, i, highlight } = e;
         if (isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
     };
@@ -489,6 +495,7 @@ class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: n
         if (isSrc && i === this.props.index) this.setState({ isConnected: !last });
     };
     handleMouseDown = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         if (e.button !== 0) return;
         if (e.target !== e.currentTarget) return;
@@ -496,15 +503,18 @@ class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: n
         this.props.patcher.tempLine(false, [this.props.box.id, this.props.index]);
     };
     handleMouseEnter = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         if (e.buttons) return;
         this.setState({ highlight: true });
     };
     handleMouseLeave = () => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         this.setState({ highlight: false });
     };
     handleMouseMove = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         if (e.currentTarget !== e.target) this.setState({ highlight: false });
     };

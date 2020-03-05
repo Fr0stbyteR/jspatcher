@@ -4,7 +4,7 @@ import "./LineUI.scss";
 import { TLineType } from "../core/types";
 
 type TPosition = { left: number; top: number };
-type P = { patcher: Patcher; id: string };
+type P = { patcher: Patcher; id: string; runtime?: boolean };
 type S = { type: TLineType; selected: boolean; dragging: boolean; destPos: TPosition; srcPos: TPosition; srcHandlerPos: TPosition; destHandlerPos: TPosition };
 export class LineUI extends React.PureComponent<P, S> {
     line = this.props.patcher.lines[this.props.id];
@@ -61,6 +61,7 @@ export class LineUI extends React.PureComponent<P, S> {
         return null;
     }
     handleMouseDown = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         this.setState(this.handlersPos);
         if (e.shiftKey) {
@@ -70,11 +71,13 @@ export class LineUI extends React.PureComponent<P, S> {
         e.stopPropagation();
     };
     handleMouseDownSrc = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         this.handleDraggable(e, true);
         e.stopPropagation();
     };
     handleMouseDownDest = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         this.handleDraggable(e, false);
         e.stopPropagation();

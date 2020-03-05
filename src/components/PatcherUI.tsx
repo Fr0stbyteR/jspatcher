@@ -125,7 +125,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     }
 }
 
-class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; height: string }> {
+class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean }, { width: string; height: string }> {
     state = { width: "100%", height: "100%" };
     lines: { [key: string]: JSX.Element } = {};
     componentDidMount() {
@@ -185,7 +185,7 @@ class Lines extends React.PureComponent<{ patcher: Patcher }, { width: string; h
         return (
             <div className="lines" style={this.state}>
                 {Object.values(this.lines)}
-                <TempLineUI {...this.props} />
+                {this.props.runtime ? undefined : <TempLineUI {...this.props} />}
             </div>
         );
     }
