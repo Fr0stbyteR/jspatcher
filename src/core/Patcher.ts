@@ -225,9 +225,9 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     async loadFromURL(url: string) {
         try {
             const file = await fetch(url);
-            const json = await file.json() as TPatcher | TPatcherEnv;
-            if ("patcher" in json) return this.load(json.patcher, undefined, json.data);
-            return this.load(json);
+            const parsed = await file.json() as TPatcher | TPatcherEnv | TMaxPatcher;
+            if ("patcher" in parsed && "data" in parsed) return this.load(parsed.patcher, undefined, parsed.data);
+            return this.load(parsed);
         } catch (e) {
             this.error(`Fetch file ${url} failed.`);
         }
@@ -235,9 +235,9 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     }
     async loadFromString(sIn: string) {
         try {
-            const env = JSON.parse(sIn);
-            if ("patcher" in env) return this.load(env.patcher, undefined, env.data);
-            return this.load(env);
+            const parsed = JSON.parse(sIn) as TPatcher | TPatcherEnv | TMaxPatcher;
+            if ("patcher" in parsed && "data" in parsed) return this.load(parsed.patcher, undefined, parsed.data);
+            return this.load(parsed);
         } catch (e) {
             this.error(`Load from string: ${sIn.slice(20)}... failed.`);
         }
@@ -251,14 +251,14 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
-            let parsed: TPatcher | TPatcherEnv;
+            let parsed: TPatcher | TPatcherEnv | TMaxPatcher;
             try {
                 parsed = JSON.parse(reader.result.toString());
             } catch (e) {
                 this.error((e as Error).message);
             }
             if (parsed) {
-                if ("patcher" in parsed) this.load(parsed.patcher, extMap[ext], parsed.data);
+                if ("patcher" in parsed && "data" in parsed) this.load(parsed.patcher, extMap[ext], parsed.data);
                 else this.load(parsed, extMap[ext]);
                 this._state.name = name;
             }
