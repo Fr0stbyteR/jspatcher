@@ -23,7 +23,7 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
     }];
     state = { node: null as ChannelSplitterNode };
     inletConnections = [{ node: this.node, index: 0 }];
-    _meta: TMeta;
+    _meta = Splitter.meta;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
