@@ -116,5 +116,35 @@ radians(a) = a * degtorad;
 fastcos = cos;
 fastsin = sin;
 fasttan = tan;
-hypot(a, b) = sqrt(a * a + b * b);
+hypot = ma.hypot;
 noise = no.noise;
+
+cycle = os.osc;
+cycle_phase(p) = os.oscp(0, p);
+
+atodb = ba.linear2db;
+dbtoa = ba.db2linear;
+ftom = ba.hz2midikey;
+mtof = ba.midikey2hz;
+mstosamp(x) = ba.sec2samp(x * 0.001);
+samptoms(x) = ba.samp2sec(x) * 1000.0;
+
+SAMPLERATE = ma.SR;
+samplerate = SAMPLERATE;
+
+fixdenorm(x) = ma.FTZ;
+fixnan(x) = x, 0.0 : select2(isnan(x));
+
+isdenorm(x) = abs(x) < ma.MIN;
+isnan(x) = x != x;
+isinf(x) = (x == inf) | (x == -inf) with { inf = 2.0 * ma.INFINITY; };
+
+
+t60(tau) = ba.if(clipCond, 0.0, exp(-1.0 / tauCenterClipped)) with {
+    clipCond = abs(tau) < ma.EPSILON;
+    tauCenterClipped = ba.if(clipCond, 1.0, tau / 6.9077552789821);
+};
+t60time(pole) = -6.9077552789821 / log(pole);
+
+change = sign(x - x');
+dcblock = fi.zero(1) : fi.pole(0.9997);
