@@ -148,3 +148,63 @@ t60time(pole) = -6.9077552789821 / log(pole);
 
 change = sign(x - x');
 dcblock = fi.zero(1) : fi.pole(0.9997);
+
+interp_linear(a, x, y) = x + a * (y - x);
+interp_cosine(a, x, y) = x * (1 - a2) + y * a2 with { a2 = (1 - cos(a * ma.PI)) / 2; };
+interp_cubic(a, w, x, y, z) = w * fw + x * fx + y * fy + z * fz with {
+    a1 = 1.0 + a;
+    aa = a * a1;
+    b = 1.0 - a;
+    b1 = 2.0 - a;
+    bb = b * b1;
+    fw = -0.1666667 * bb * a;
+    fx = 0.5 * bb * a1;
+    fy = 0.5 * aa * b1;
+    fz = 0-.1666667 * aa * b;
+};
+interp_spline(a, w, x, y, z) = c3 : *(a) : +(c2) : *(a) : +(c1) : *(a) : +(c0) with {
+    c0 = x;
+    c1 = 0.5 * (y - w);
+    c2 = w - 2.5 * x + y + y - 0.5 * z;
+    c3 = 0.5 * (z - w) + 1.5 * (x - y);
+};
+interp_spline6(a, y0, y1, y2, y3, y4, y5) = c5 : *(a) : +(c4) : *(a) : +(c3) : *(a) : +(c2) : *(a) : +(c1) : *(a) : +(c0) with {
+    ym2py2 = y0 + y4;
+    ym1py1 = y1 + y3;
+    y2mym2 = y4 - y0;
+    y1mym1 = y3 - y1;
+    sixthym1py1 = 1 / 6.0 * ym1py1;
+    c0 = 1 / 120.0 * ym2py2 + 13 / 60.0 * ym1py1 + 11 / 20.0 * y2;
+    c1 = 1 / 24.0 * y2mym2 + 5 / 12.0 * y1mym1;
+    c2 = 1 / 12.0 * ym2py2 + sixthym1py1 - 1 / 2.0 * y2;
+    c3 = 1 / 12.0 * y2mym2 - 1 / 6.0 * y1mym1;
+    c4 = 1 / 24.0 * ym2py2 - sixthym1py1 + 1 / 4.0 * y2;
+    c5 = 1 / 120.0 * (y5 - y0) + 1 / 24.0 * (y1 - y4) + 1 / 12.0 * (y3 - y2);
+};
+
+latch(x, c) = ba.sAndH(c != 0, x);
+phasewrap(a) = wrap(a, -1 * ma.PI, ma.PI);
+sah(x, c, t) = x * s : + ~ *(1 - s) with { s = (c' <= t) & (c > t); };
+slide(dest, up, down) = (_ <: last + c * d) ~ _ with {
+    last = _;
+    d = dest - last;
+    inc = 1 / max(1, abs(up));
+    dec = 1 / max(2, abs(down));
+    c = select2(d > 0, inc, dec);
+};
+
+elapsed = 1 : (+ ~ _);
+
+mulequals(x, c) = x : ((* : *(c == 0)) ~ +(ba.impulsify(x)));
+accum(x, c) = x : ((+ : *(c == 0)) ~ _);
+pulseequals = accum;
+counter(i, c, m) = select2(m != 0, accum(i, c), wrap(accum(i, c), 0, m));
+
+phasor(f, c) = f / ma.SR : ((+ : *(c == 0)), 1 : fmod) ~ _;
+// rate: TODO
+
+train(period, width, phase) = (%(int(period)) ~ +(init - init' + 1')) < (period * width) with { init = int(period * phase); };
+triangle(phaseIn, dutyIn) = select2(phase >= duty, select2(duty != 0, 0, phase / (duty | 1)), select2(duty != 1, phase, 1 - ((phase - duty) / ((1 - duty) | 1)))) with {
+    phase = wrap(phaseIn, 0, 1);
+    duty = clamp(dutyIn, 0, 1);
+};
