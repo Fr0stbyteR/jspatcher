@@ -116,7 +116,7 @@ radians(a) = a * degtorad;
 fastcos = cos;
 fastsin = sin;
 fasttan = tan;
-hypot = ma.hypot;
+hypot(a, b) = sqrt(a * a + b * b);
 noise = no.noise;
 
 cycle = os.osc;
