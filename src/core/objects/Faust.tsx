@@ -858,7 +858,7 @@ class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, {
         if (key) {
             this.data = {};
             const shared: TPatcher = this.sharedData.get("patcher", key);
-            if (shared) await this.state.patcher.load(shared, "faust");
+            if (typeof shared === "object") await this.state.patcher.load(shared, "faust");
             else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
         } else {
             const { data } = this;

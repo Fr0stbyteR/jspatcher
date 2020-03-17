@@ -398,7 +398,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             if (key) {
                 this.data = {};
                 const shared: TPatcher = this.sharedData.get("patcher", key);
-                if (shared) await this.state.patcher.load(shared, "js");
+                if (typeof shared === "object") await this.state.patcher.load(shared, "js");
                 else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
             } else {
                 const { data } = this;
@@ -482,7 +482,7 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         if (key) {
             this.data = {};
             const shared: TPatcher = this.sharedData.get("patcher", key);
-            if (shared) await this.state.patcher.load(shared, "faust");
+            if (typeof shared === "object") await this.state.patcher.load(shared, "faust");
             else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
         } else {
             const { data } = this;
@@ -631,7 +631,7 @@ export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState
             if (key) {
                 this.data = {};
                 const shared: TPatcher = this.sharedData.get("patcher", key);
-                if (shared) await this.state.patcher.load(shared, "js");
+                if (typeof shared === "object") await this.state.patcher.load(shared, "js");
                 else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
             } else {
                 const { data } = this;
