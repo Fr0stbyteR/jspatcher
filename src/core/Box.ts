@@ -72,8 +72,8 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
      * @returns
      * @memberof Box
      */
-    async fn<I extends keyof Pick<Inputs<T>, number>>(data: Inputs<T>[I], inlet: I) {
-        await this._object.fn(data, inlet);
+    fn<I extends keyof Pick<Inputs<T>, number>>(data: Inputs<T>[I], inlet: I) {
+        this._object.fn(data, inlet);
         return this;
     }
     get uiComponent() {

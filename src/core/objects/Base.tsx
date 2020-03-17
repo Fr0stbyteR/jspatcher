@@ -125,7 +125,7 @@ export abstract class AbstractObject<
      * @memberof AbstractObject
      */
     async update(args?: Partial<A>, props?: Partial<P>): Promise<this> {
-        const promises: Promise<void>[] = [];
+        const promises: Promise<void[]>[] = [];
         promises.push(this.emit("update", { args, props }));
         if (args && args.length) promises.push(this.emit("updateArgs", args));
         if (props && Object.keys(props).length) promises.push(this.emit("updateProps", props));
@@ -142,8 +142,8 @@ export abstract class AbstractObject<
      * @returns {Promise<this>}
      * @memberof AbstractObject
      */
-    async fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(data: I[$], inlet: $): Promise<this> {
-        await this.emit("inlet", { data, inlet });
+    fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(data: I[$], inlet: $): this {
+        this.emit("inlet", { data, inlet });
         return this;
     }
     /**
@@ -155,10 +155,9 @@ export abstract class AbstractObject<
      * @returns {this}
      * @memberof AbstractObject
      */
-    async outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]): Promise<this> {
+    outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]): this {
         if (outlet >= this.outlets) return this;
-        const promises = Array.from(this.outletLines[outlet]).sort(Line.compare).map(line => line.pass(data));
-        await Promise.all(promises);
+        Array.from(this.outletLines[outlet]).sort(Line.compare).map(line => line.pass(data));
         return this;
     }
     /**
@@ -171,12 +170,10 @@ export abstract class AbstractObject<
      * @returns {Promise<this>}
      * @memberof AbstractObject
      */
-    async outletAll(outputs: Partial<O>): Promise<this> {
-        const promises: Promise<this>[] = [];
+    outletAll(outputs: Partial<O>): this {
         for (let i = outputs.length - 1; i >= 0; i--) {
-            if (i in outputs) promises.push(this.outlet(i, outputs[i]));
+            if (i in outputs) this.outlet(i, outputs[i]);
         }
-        Promise.all(promises);
         return this;
     }
     /**

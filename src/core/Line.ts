@@ -144,7 +144,7 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         delete this._patcher.lines[this.id];
         return this;
     }
-    async pass(data: any) {
+    pass(data: any) {
         this.emit("passData", data);
         return this.disabled ? this : this.destBox.fn(data, this.destInlet);
     }

@@ -86,7 +86,7 @@ class loadbang extends StdObject<{}, {}, [], [Bang], []> {
         });
     }
 }
-class For extends StdObject<{}, { start: number; end: number; step: number }, [Bang, number, number, number], [number], [number, number, number?]> {
+class For extends StdObject<{}, { start: number; end: number; step: number }, [Bang, number, number, number], [Bang, number], [number, number, number?]> {
     static description = "Number iterator";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -106,6 +106,9 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
         description: "Set the step"
     }];
     static outlets: TMeta["outlets"] = [{
+        type: "bang",
+        description: "Bang when finished"
+    }, {
         type: "number",
         description: "Output all iterations one by one"
     }];
@@ -128,7 +131,7 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
         super.subscribe();
         this.on("preInit", () => {
             this.inlets = 4;
-            this.outlets = 1;
+            this.outlets = 2;
         });
         this.on("updateArgs", (args) => {
             this.state.start = +args[0] || 0;
@@ -145,8 +148,9 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
                         return;
                     }
                     for (let i = start; i < end; i += step) {
-                        this.outlet(0, i);
+                        this.outlet(1, i);
                     }
+                    this.outlet(0, new Bang());
                 }
             } else if (inlet === 1) this.state.start = +data;
             else if (inlet === 2) this.state.end = +data;
@@ -154,7 +158,7 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
         });
     }
 }
-class ForIn extends StdObject<{}, { buffer: any }, [any, any], [string | number | symbol, any], [{ [key: string]: any }]> {
+class ForIn extends StdObject<{}, { buffer: any }, [any, any], [Bang, string | number | symbol, any], [{ [key: string]: any }]> {
     static description = "Object key-value iterator";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -166,6 +170,9 @@ class ForIn extends StdObject<{}, { buffer: any }, [any, any], [string | number 
         description: "Set the iteration object"
     }];
     static outlets: TMeta["outlets"] = [{
+        type: "bang",
+        description: "Bang when finished"
+    }, {
         type: "anything",
         description: "Key"
     }, {
@@ -182,15 +189,16 @@ class ForIn extends StdObject<{}, { buffer: any }, [any, any], [string | number 
         super.subscribe();
         this.on("preInit", () => {
             this.inlets = 2;
-            this.outlets = 2;
+            this.outlets = 3;
         });
         this.on("updateArgs", args => this.state.buffer = args[0]);
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 if (!(data instanceof Bang)) this.state.buffer = data;
                 for (const key in this.state.buffer) {
-                    this.outletAll([key, this.state.buffer[key]]);
+                    this.outletAll([, key, this.state.buffer[key]]);
                 }
+                this.outlet(0, new Bang());
             } else if (inlet === 1) {
                 this.state.buffer = data;
             }
@@ -587,5 +595,49 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
         });
     }
 }
+class delay extends StdObject<{}, { time: number; ref: Set<number> }, [any, number], [any]> {
+    static description = "Delay an input";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Input to be delayed"
+    }, {
+        isHot: false,
+        type: "number",
+        description: "Delay time in seconds"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Delayed input"
+    }];
+    static args: TMeta["args"] = [{
+        type: "number",
+        optional: true,
+        default: 0,
+        description: "Default delay time"
+    }];
+    state = { time: 0, ref: new Set<number>() };
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 2;
+            this.outlets = 1;
+        });
+        this.on("updateArgs", () => {
+            const { args } = this.box;
+            if (typeof args[0] === "number") this.state.time = +args[0];
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                this.state.ref.add(window.setTimeout(() => this.outlet(0, data), this.state.time || 0));
+            } else if (inlet === 1) {
+                this.state.time = +data;
+            }
+        });
+        this.on("destroy", () => {
+            this.state.ref.forEach(ref => window.clearTimeout(ref));
+        });
+    }
+}
 
-export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, v, lambda, bang, loadbang };
+export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, v, lambda, bang, loadbang, delay };

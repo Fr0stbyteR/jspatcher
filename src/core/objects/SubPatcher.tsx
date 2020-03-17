@@ -461,7 +461,7 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
         patcher.off("graphChanged", this.handleGraphChanged);
-        await patcher.clear();
+        await patcher.load({}, "faust");
     };
     handlePatcherReset = () => {
         this.updateUI({ patcher: this.state.patcher });

@@ -1,35 +1,50 @@
 import { EventEmitter } from "events";
-import * as Emittery from "emittery";
 
 export class TypedEventEmitter<M> {
-    private readonly _emitter = new Emittery();
+    private _listeners = new Map<string, Set<(...e: any[]) => void | Promise<void>>>();
+    get listeners() {
+        return this._listeners;
+    }
+    private getListeners<K extends Extract<keyof M, string>>(eventName: K) {
+        if (!this._listeners.has(eventName)) this._listeners.set(eventName, new Set<(e: M[K]) => void | Promise<void>>());
+        return this._listeners.get(eventName);
+    }
     on<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => void) {
-        return this._emitter.on(eventName, listener);
-    }
-    events<K extends Extract<keyof M, string>>(eventName: K) {
-        return this._emitter.events(eventName) as AsyncIterableIterator<M[K]>;
-    }
-    async once<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => void) {
-        const data = await this._emitter.once(eventName) as M[K];
-        return listener(data);
+        this.getListeners(eventName).add(listener);
     }
     off<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => void) {
-        return this._emitter.off(eventName, listener);
+        this.getListeners(eventName).delete(listener);
     }
-    onAny<K extends Extract<keyof M, string>>(listener: (eventName: K, eventData?: M[K]) => void) {
-        return this._emitter.onAny(listener);
+    async emit<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
+        const listeners = this.getListeners(eventName);
+        if (!listeners) return [];
+        return Promise.all(Array.from(listeners).map(f => f(eventData)));
     }
-    anyEvent<K extends Extract<keyof M, string>>() {
-        return this._emitter.anyEvent() as AsyncIterableIterator<[M, K]>;
+    async emitSerial<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
+        const listeners = this.getListeners(eventName);
+        if (!listeners) return;
+        /* eslint-disable no-await-in-loop */
+        for (const listener of listeners) {
+            await listener(eventData);
+        }
     }
-    offAny<K extends Extract<keyof M, string>>(listener: (eventName: K, eventData?: M[K]) => void) {
-        return this._emitter.offAny(listener);
+    emitSync<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
+        const listeners = this.getListeners(eventName);
+        if (!listeners) return [];
+        return Array.from(listeners).map(f => f(eventData));
     }
-    emit<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
-        return this._emitter.emit(eventName, eventData);
+    removeAllListeners(eventName?: Extract<keyof M, string>) {
+        if (eventName) {
+            const listeners = this.getListeners(eventName);
+            if (listeners) listeners.clear();
+        } else {
+            this._listeners.clear();
+        }
     }
-    emitSerial<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
-        return this._emitter.emitSerial(eventName, eventData);
+    listenerCount(eventName: Extract<keyof M, string>) {
+        const listeners = this.getListeners(eventName);
+        if (!listeners) return 0;
+        return listeners.size;
     }
 }
 
