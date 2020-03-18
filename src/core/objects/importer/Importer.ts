@@ -92,7 +92,7 @@ export default class Importer {
     static import(pkgName: string, root: { [key: string]: any }, all?: boolean, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number) {
         const depth = typeof depthIn === "undefined" ? 0 : depthIn;
         const out = outIn || {};
-        const path = pathIn ? pathIn.slice() : [];
+        const path = pathIn || [];
         const stack = stackIn ? stackIn.slice() : [];
         let o: any;
         try {
@@ -114,17 +114,17 @@ export default class Importer {
                 if (typeof o === "object" && ["constructor", "__proto__"].indexOf(key) >= 0) continue;
             }
             const prop = props[key];
+            const newPath = [...path, key];
             if (key === "prototype") {
-                this.import(pkgName, root, all, out, [...path, "prototype"], stack, depth + 1);
+                this.import(pkgName, root, all, out, newPath, stack, depth + 1);
                 continue;
             }
             if (!all && !prop.enumerable) continue;
-            path[depth] = key;
-            const newObj = this.getObject(prop, pkgName, root, path.slice());
-            if (newObj) this.writeInPath(out, path.map(s => (s === "prototype" ? "" : s)), newObj);
+            const newObj = this.getObject(prop, pkgName, root, newPath);
+            if (newObj) this.writeInPath(out, newPath.map(s => (s === "prototype" ? "" : s)), newObj);
             const value = prop.value;
             if ((typeof value === "object" || typeof value === "function") && value !== null && !Array.isArray(value)) {
-                this.import(pkgName, root, all, out, path, stack, depth + 1);
+                this.import(pkgName, root, all, out, newPath, stack, depth + 1);
             }
         }
         return out;
