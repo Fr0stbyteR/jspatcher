@@ -143,12 +143,19 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         this._outletLines.forEach(set => set.forEach(line => line.uiUpdateSrc()));
         this.emit("ioCountChanged", this);
     }
-    getInletPos(port: number) {
-        const { left, top, width, inlets } = this;
+    getInletPos(port: number, mode?: "default" | "presentation") {
+        const { rect, presentationRect, inlets } = this;
+        const left = mode === "default" ? rect[0] : mode === "presentation" ? presentationRect[0] : this.left;
+        const top = mode === "default" ? rect[1] : mode === "presentation" ? presentationRect[1] : this.top;
+        const width = mode === "default" ? rect[2] : mode === "presentation" ? presentationRect[2] : this.width;
         return { top, left: ((left + 10) + (width - 20) * port / (inlets > 1 ? inlets - 1 : 1)) };
     }
-    getOutletPos(port: number) {
-        const { left, top, width, height, outlets } = this;
+    getOutletPos(port: number, mode?: "default" | "presentation") {
+        const { rect, presentationRect, outlets } = this;
+        const left = mode === "default" ? rect[0] : mode === "presentation" ? presentationRect[0] : this.left;
+        const top = mode === "default" ? rect[1] : mode === "presentation" ? presentationRect[1] : this.top;
+        const width = mode === "default" ? rect[2] : mode === "presentation" ? presentationRect[2] : this.width;
+        const height = mode === "default" ? rect[3] : mode === "presentation" ? presentationRect[3] : this.height;
         return { top: top + height, left: ((left + 10) + (width - 20) * port / (outlets > 1 ? outlets - 1 : 1)) };
     }
     get inletsPositions() {

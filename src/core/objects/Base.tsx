@@ -252,6 +252,10 @@ export abstract class AbstractObject<
      * @memberof AbstractObject
      */
     getProp<K extends keyof P = keyof P>(key: K): P[K] {
+        if (key === "rect") return this.box.rect as any;
+        if (key === "presentationRect") return this.box.presentationRect as any;
+        if (key === "background") return this.box.background as any;
+        if (key === "presentation") return this.box.presentation as any;
         return typeof this.box.props[key] === "undefined" ? this.meta.props[key as string].default : this.box.props[key];
     }
     /**

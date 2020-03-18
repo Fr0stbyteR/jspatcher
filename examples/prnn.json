@@ -3240,6 +3240,150 @@
                     1
                 ],
                 "disabled": false
+            },
+            "line-328": {
+                "id": "line-328",
+                "src": [
+                    "box-162",
+                    0
+                ],
+                "dest": [
+                    "box-243",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-330": {
+                "id": "line-330",
+                "src": [
+                    "box-243",
+                    0
+                ],
+                "dest": [
+                    "box-125",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-335": {
+                "id": "line-335",
+                "src": [
+                    "box-224",
+                    0
+                ],
+                "dest": [
+                    "box-59",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-336": {
+                "id": "line-336",
+                "src": [
+                    "box-249",
+                    0
+                ],
+                "dest": [
+                    "box-78",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-337": {
+                "id": "line-337",
+                "src": [
+                    "box-248",
+                    0
+                ],
+                "dest": [
+                    "box-78",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-338": {
+                "id": "line-338",
+                "src": [
+                    "box-250",
+                    0
+                ],
+                "dest": [
+                    "box-78",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-339": {
+                "id": "line-339",
+                "src": [
+                    "box-250",
+                    0
+                ],
+                "dest": [
+                    "box-253",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-340": {
+                "id": "line-340",
+                "src": [
+                    "box-249",
+                    0
+                ],
+                "dest": [
+                    "box-253",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-341": {
+                "id": "line-341",
+                "src": [
+                    "box-248",
+                    0
+                ],
+                "dest": [
+                    "box-253",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-343": {
+                "id": "line-343",
+                "src": [
+                    "box-251",
+                    0
+                ],
+                "dest": [
+                    "box-253",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-342": {
+                "id": "line-342",
+                "src": [
+                    "box-251",
+                    0
+                ],
+                "dest": [
+                    "box-69",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-345": {
+                "id": "line-345",
+                "src": [
+                    "box-253",
+                    0
+                ],
+                "dest": [
+                    "box-63",
+                    0
+                ],
+                "disabled": false
             }
         },
         "boxes": {
@@ -3255,10 +3399,10 @@
                     30
                 ],
                 "background": false,
-                "presentation": false,
+                "presentation": true,
                 "presentationRect": [
-                    651,
-                    93.578125,
+                    0,
+                    30,
                     30,
                     30
                 ],
@@ -3282,8 +3426,8 @@
                 "presentationRect": [
                     622,
                     135.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3307,8 +3451,8 @@
                 "presentationRect": [
                     687,
                     175.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -3330,8 +3474,8 @@
                 "presentationRect": [
                     127,
                     151.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3356,8 +3500,8 @@
                 "presentationRect": [
                     61,
                     190.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3383,8 +3527,8 @@
                 "presentationRect": [
                     366,
                     396.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -3408,8 +3552,8 @@
                 "presentationRect": [
                     497,
                     655.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3433,8 +3577,8 @@
                 "presentationRect": [
                     229,
                     533.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -3458,8 +3602,8 @@
                 "presentationRect": [
                     367,
                     239.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3485,8 +3629,8 @@
                 "presentationRect": [
                     311,
                     287.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3510,8 +3654,8 @@
                 "presentationRect": [
                     311,
                     287.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3535,8 +3679,8 @@
                 "presentationRect": [
                     311,
                     287.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3560,8 +3704,8 @@
                 "presentationRect": [
                     361,
                     283.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3585,8 +3729,8 @@
                 "presentationRect": [
                     361,
                     283.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3610,8 +3754,8 @@
                 "presentationRect": [
                     361,
                     283.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3635,8 +3779,8 @@
                 "presentationRect": [
                     243,
                     308.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3660,8 +3804,8 @@
                 "presentationRect": [
                     243,
                     308.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3685,8 +3829,8 @@
                 "presentationRect": [
                     243,
                     308.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3710,8 +3854,8 @@
                 "presentationRect": [
                     470,
                     419.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3736,8 +3880,8 @@
                 "presentationRect": [
                     246,
                     313.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {
                     "text": "[1, 0]"
@@ -3761,8 +3905,8 @@
                 "presentationRect": [
                     470,
                     419.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3787,8 +3931,8 @@
                 "presentationRect": [
                     246,
                     313.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {
                     "text": "[1, 0]"
@@ -3812,8 +3956,8 @@
                 "presentationRect": [
                     246,
                     313.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {
                     "text": "[1, 0]"
@@ -3837,8 +3981,8 @@
                 "presentationRect": [
                     470,
                     419.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -3863,8 +4007,8 @@
                 "presentationRect": [
                     443,
                     407.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -3886,8 +4030,8 @@
                 "presentationRect": [
                     443,
                     407.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -3909,8 +4053,8 @@
                 "presentationRect": [
                     443,
                     407.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -3932,8 +4076,8 @@
                 "presentationRect": [
                     443,
                     407.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -3955,8 +4099,8 @@
                 "presentationRect": [
                     443,
                     407.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -3978,8 +4122,8 @@
                 "presentationRect": [
                     443,
                     407.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4001,8 +4145,8 @@
                 "presentationRect": [
                     229,
                     533.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4026,8 +4170,8 @@
                 "presentationRect": [
                     229,
                     533.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4051,8 +4195,8 @@
                 "presentationRect": [
                     257,
                     447.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4076,8 +4220,8 @@
                 "presentationRect": [
                     257,
                     447.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4101,8 +4245,8 @@
                 "presentationRect": [
                     109,
                     407.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4126,8 +4270,8 @@
                 "presentationRect": [
                     116,
                     389.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4151,8 +4295,8 @@
                 "presentationRect": [
                     109,
                     407.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4176,8 +4320,8 @@
                 "presentationRect": [
                     116,
                     389.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4201,8 +4345,8 @@
                 "presentationRect": [
                     366,
                     396.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4226,8 +4370,8 @@
                 "presentationRect": [
                     109,
                     407.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4251,8 +4395,8 @@
                 "presentationRect": [
                     116,
                     389.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4276,8 +4420,8 @@
                 "presentationRect": [
                     366,
                     396.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4749,7 +4893,7 @@
                     0
                 ],
                 "data": {
-                    "text": "[2, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]"
+                    "text": "[ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ]"
                 },
                 "args": [],
                 "props": {}
@@ -5204,8 +5348,8 @@
                 "presentationRect": [
                     361,
                     283.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5229,8 +5373,8 @@
                 "presentationRect": [
                     361,
                     283.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5621,12 +5765,10 @@
                 "args": [
                     "queue",
                     [
-                        260,
-                        188,
-                        270,
-                        59,
-                        261,
-                        187
+                        64,
+                        268,
+                        192,
+                        278
                     ]
                 ],
                 "props": {}
@@ -6507,8 +6649,8 @@
                 "inlets": 2,
                 "outlets": 1,
                 "rect": [
+                    195,
                     15,
-                    765,
                     45,
                     23
                 ],
@@ -6532,21 +6674,23 @@
                 "inlets": 2,
                 "outlets": 2,
                 "rect": [
-                    75,
-                    765,
+                    255,
+                    15,
                     30,
                     30
                 ],
                 "background": false,
-                "presentation": false,
+                "presentation": true,
                 "presentationRect": [
-                    165,
-                    780,
+                    0,
+                    60,
                     30,
                     30
                 ],
                 "data": {},
-                "args": [],
+                "args": [
+                    1
+                ],
                 "props": {}
             },
             "box-163": {
@@ -6614,8 +6758,8 @@
                 "presentationRect": [
                     257,
                     447.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6639,8 +6783,8 @@
                 "presentationRect": [
                     257,
                     447.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6809,8 +6953,8 @@
                 "presentationRect": [
                     257,
                     447.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7052,8 +7196,8 @@
                 "presentationRect": [
                     257,
                     447.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7077,8 +7221,8 @@
                 "presentationRect": [
                     257,
                     447.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7202,8 +7346,8 @@
                 "presentationRect": [
                     257,
                     447.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7227,8 +7371,8 @@
                 "presentationRect": [
                     257,
                     447.578125,
-                    90,
-                    20
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7780,7 +7924,7 @@
                 "outlets": 2,
                 "rect": [
                     1770,
-                    150,
+                    135,
                     30,
                     30
                 ],
@@ -7937,8 +8081,8 @@
                 "presentationRect": [
                     651,
                     93.578125,
-                    30,
-                    30
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -8060,8 +8204,8 @@
                 "presentationRect": [
                     651,
                     93.578125,
-                    30,
-                    30
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -8129,12 +8273,12 @@
                     75
                 ],
                 "background": false,
-                "presentation": false,
+                "presentation": true,
                 "presentationRect": [
-                    285,
-                    795,
-                    120,
-                    45
+                    0,
+                    90,
+                    150,
+                    75
                 ],
                 "data": {},
                 "args": [],
@@ -8192,6 +8336,208 @@
                     16
                 ],
                 "props": {}
+            },
+            "box-240": {
+                "id": "box-240",
+                "text": "comment",
+                "inlets": 0,
+                "outlets": 0,
+                "rect": [
+                    570,
+                    15,
+                    45,
+                    22
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    30,
+                    30,
+                    45,
+                    22
+                ],
+                "data": {
+                    "value": "Start"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-243": {
+                "id": "box-243",
+                "text": "sel 1",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    135,
+                    15,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    120,
+                    825,
+                    0,
+                    0
+                ],
+                "data": {},
+                "args": [
+                    1
+                ],
+                "props": {}
+            },
+            "box-245": {
+                "id": "box-245",
+                "text": "comment",
+                "inlets": 0,
+                "outlets": 0,
+                "rect": [
+                    300,
+                    15,
+                    120,
+                    22
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    30,
+                    60,
+                    120,
+                    22
+                ],
+                "data": {
+                    "value": "Pause / Resume"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-248": {
+                "id": "box-248",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    2160,
+                    15,
+                    165,
+                    22
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    165,
+                    30,
+                    165,
+                    22
+                ],
+                "data": {
+                    "text": "[2, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-249": {
+                "id": "box-249",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    2160,
+                    45,
+                    165,
+                    22
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    165,
+                    60,
+                    165,
+                    22
+                ],
+                "data": {
+                    "text": "[1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0]"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-250": {
+                "id": "box-250",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    2160,
+                    75,
+                    165,
+                    22
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    165,
+                    90,
+                    165,
+                    22
+                ],
+                "data": {
+                    "text": "[1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-251": {
+                "id": "box-251",
+                "text": "slider",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    1995,
+                    15,
+                    120,
+                    45
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    165,
+                    120,
+                    120,
+                    45
+                ],
+                "data": {},
+                "args": [
+                    2
+                ],
+                "props": {
+                    "shortName": "Density",
+                    "longName": "Density",
+                    "max": 7
+                }
+            },
+            "box-253": {
+                "id": "box-253",
+                "text": "bang",
+                "inlets": 1,
+                "outlets": 1,
+                "rect": [
+                    1815,
+                    165,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    1815,
+                    165,
+                    0,
+                    0
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
             }
         },
         "props": {
@@ -8205,9 +8551,9 @@
                 15,
                 15
             ],
-            "openInPresentation": false,
-            "boxIndexCount": 238,
-            "lineIndexCount": 327
+            "openInPresentation": true,
+            "boxIndexCount": 253,
+            "lineIndexCount": 345
         },
         "data": {}
     },

@@ -41,6 +41,7 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     readonly supportAudioWorklet = !!window.AudioWorklet;
     readonly data: TSharedData = {};
     readonly dataConsumers: TSharedDataConsumers = {};
+    readonly modules = new Map<string, { [key: string]: any }>();
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;

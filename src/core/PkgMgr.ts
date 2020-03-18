@@ -83,6 +83,7 @@ export default class PackageManager {
         }[lib];
     }
     async getModuleFromURL(address: string, id: string) {
+        if (this.patcher.env.modules.has(address)) return { [id]: this.patcher.env.modules.get(address) };
         const toExport: { [key: string]: any } = {}; // Original exports, detect if exports is overwritten.
         window.exports = toExport;
         window.module = { exports: toExport } as any;
@@ -105,7 +106,11 @@ export default class PackageManager {
         const exported = window.module.exports as { [key: string]: any };
         delete window.exports;
         delete window.module;
-        if (toExport === exported) return exported;
+        if (toExport === exported) {
+            this.patcher.env.modules.set(address, exported);
+            return exported;
+        }
+        this.patcher.env.modules.set(address, { [id]: exported });
         return { [id]: exported }; // if exports is overwritten, wrap it
     }
     async importFromNPM(pkgID: string, idIn?: string) {

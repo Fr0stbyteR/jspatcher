@@ -149,8 +149,8 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         return this.disabled ? this : this.destBox.fn(data, this.destInlet);
     }
     get positionHash() {
-        const destPos = this.destPos;
-        return destPos.left * 65536 + destPos.top;
+        const { top, left } = this._patcher.boxes[this.dest[0]].getInletPos(this.dest[1], "default");
+        return left * 65536 + top;
     }
     get srcPos() {
         return this._patcher.boxes[this.src[0]].getOutletPos(this.src[1]);
