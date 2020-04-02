@@ -3412,13 +3412,13 @@
             },
             "box-2": {
                 "id": "box-2",
-                "text": "fetch \"http://download.magenta.tensorflow.org/models/performance_rnn/tfjs/weights_manifest.json\"",
+                "text": "fetch \"https://storage.googleapis.com/download.magenta.tensorflow.org/models/performance_rnn/tfjs/weights_manifest.json\"",
                 "inlets": 1,
                 "outlets": 2,
                 "rect": [
                     615,
                     75,
-                    555,
+                    675,
                     23
                 ],
                 "background": false,
@@ -3431,7 +3431,7 @@
                 ],
                 "data": {},
                 "args": [
-                    "http://download.magenta.tensorflow.org/models/performance_rnn/tfjs/weights_manifest.json"
+                    "https://storage.googleapis.com/download.magenta.tensorflow.org/models/performance_rnn/tfjs/weights_manifest.json"
                 ],
                 "props": {}
             },
@@ -3460,13 +3460,13 @@
             },
             "box-4": {
                 "id": "box-4",
-                "text": "tf.io.loadWeights null http://download.magenta.tensorflow.org/models/performance_rnn/tfjs/",
+                "text": "tf.io.loadWeights null https://storage.googleapis.com/download.magenta.tensorflow.org/models/performance_rnn/tfjs/",
                 "inlets": 4,
                 "outlets": 5,
                 "rect": [
                     615,
                     135,
-                    555,
+                    675,
                     23
                 ],
                 "background": false,
@@ -3480,7 +3480,7 @@
                 "data": {},
                 "args": [
                     null,
-                    "http://download.magenta.tensorflow.org/models/performance_rnn/tfjs/"
+                    "https://storage.googleapis.com/download.magenta.tensorflow.org/models/performance_rnn/tfjs/"
                 ],
                 "props": {}
             },
@@ -5764,12 +5764,7 @@
                 "data": {},
                 "args": [
                     "queue",
-                    [
-                        64,
-                        268,
-                        192,
-                        278
-                    ]
+                    []
                 ],
                 "props": {}
             },
