@@ -7,7 +7,7 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Bang, BaseObject, AnyObject } from "./Base";
 import "./UI.scss";
 import { TMeta, TPropsMeta } from "../types";
-import { BaseUI, BaseUIProps, BaseUIState } from "./BaseUI";
+import { BaseUI, BaseUIProps, BaseUIState, ShadowDOMUIState, ShadowDOMUI } from "./BaseUI";
 import { selectElementRange, isNumberArray } from "../../utils/utils";
 
 class UIObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}, E = {}> extends BaseObject<D, S, I, O, A, P, U, E> {
@@ -571,4 +571,45 @@ export class menu extends UIObject<{}, {}, [number | string | number[] | string[
         });
     }
 }
-export default { message, comment, code, menu };
+export class view extends UIObject<{}, {}, [string | Element], [], [string], {}, ShadowDOMUIState> {
+    static description = "View HTML Element";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "HTML string or HTMLElement object to view"
+    }];
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: true,
+        description: "initial innerHTML"
+    }];
+    static ui = ShadowDOMUI;
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 0;
+        });
+        this.on("updateArgs", (args) => {
+            if (typeof this.box.args[0] === "string") {
+                const template = document.createElement("template");
+                template.innerHTML = this.box.args[0];
+                this.updateUI({ children: Array.from(template.children) });
+            }
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (!(data instanceof Bang)) {
+                    if (typeof data === "string") {
+                        const template = document.createElement("template");
+                        template.innerHTML = data;
+                        this.updateUI({ children: Array.from(template.content.children) });
+                    } else if (data instanceof Element) {
+                        this.updateUI({ children: [data] });
+                    }
+                }
+            }
+        });
+    }
+}
+export default { message, comment, code, menu, view };
