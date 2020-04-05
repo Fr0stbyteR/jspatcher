@@ -1,4 +1,4 @@
-export const registeredProcessorsMap: { [key: string]: boolean } = {};
+export const registeredProcessors = new Set<string>();
 
 const AWN: typeof AudioWorkletNode = window.AudioWorkletNode ? AudioWorkletNode : null;
 type DataToProcessor = DisposableAudioWorkletMessageEventDataToProcessor;
@@ -25,13 +25,13 @@ export class DisposableAudioWorkletNode<F extends { [key: string]: any } = { [ke
 export abstract class AudioWorkletRegister {
     static processorID: string;
     static processorURL: string;
-    static registeredProcessorsMap = registeredProcessorsMap;
+    static registeredProcessors = registeredProcessors;
     static registering = false;
     static get registered() {
-        return this.registeredProcessorsMap[this.processorID];
+        return this.registeredProcessors.has(this.processorID);
     }
     static set registered(b: boolean) {
-        this.registeredProcessorsMap[this.processorID] = b;
+        this.registeredProcessors.add(this.processorID);
     }
     static processor: () => void;
     static Node: new (context: AudioContext, options?: AudioWorkletNodeOptions) => DisposableAudioWorkletNode;
