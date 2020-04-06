@@ -401,8 +401,8 @@ class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; he
     }
     render() {
         const { grid, editingBgColor, width, height } = this.state;
-        const isWhite = Color(editingBgColor).getLightness() < 0.5;
-        const gridColor = isWhite ? "#FFFFFF1A" : "#0000001A";
+        const gridIsWhite = Color(editingBgColor).getLightness() < 0.5;
+        const gridColor = gridIsWhite ? "#FFFFFF1A" : "#0000001A";
         const pxx = grid[0] + "px";
         const pxx1 = (grid[0] - 1) + "px";
         const pxy = grid[1] + "px";

@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import * as Color from "color-js";
 import { Icon, SemanticICONS, StrictModalProps, Modal, Dimmer, Loader, Button } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
@@ -134,7 +135,8 @@ export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIP
         const { object } = this;
         const packageName = "package-" + object.meta.package.toLowerCase();
         const className = packageName + "-" + object.meta.name.toLowerCase();
-        const classArray = [packageName, className, "box-ui-container", this.props.additionalClassName];
+        const classArray = [packageName, className, "box-ui-container"];
+        if (this.props.additionalClassName) classArray.push(this.props.additionalClassName);
         if (this.state.hidden) classArray.push("hidden");
         if (this.state.ignoreClick) classArray.push("ignore-click");
         return (
@@ -420,6 +422,12 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
             borderColor: this.state.borderColor,
             backgroundColor: this.state.bgColor
         };
+        if (this.state.loading) {
+            const bgColor = Color(this.state.bgColor);
+            const gradIsWhite = bgColor.getLightness() < 0.5;
+            const gradColor = gradIsWhite ? bgColor.lightenByAmount(0.25) : bgColor.darkenByAmount(0.25);
+            textContainerStyle.backgroundImage = `linear-gradient(to right, ${this.state.bgColor} 0%, ${gradColor.toCSS()} 20%, ${this.state.bgColor} 40%, ${this.state.bgColor} 200%)`;
+        }
         const spanStyle: React.CSSProperties = {
             color: this.state.textColor,
             fontFamily: `${this.state.fontFamily}, Tahoma, sans-serif`,
@@ -435,9 +443,9 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         const { Dropdown, query } = dropdownQuery;
         return (
             <BaseUI additionalClassName="box-ui-default" {...this.props}>
-                <div className="box-ui-text-container" {...textContainerProps}>
+                <div className={"box-ui-text-container" + (this.state.loading ? " loading" : "")} {...textContainerProps}>
                     <div className="box-ui-text-container-prepend" {...this.props.prependProps}>
-                        {object.meta.icon ? <Icon inverted={true} loading={this.state.loading} size="small" name={this.state.loading ? "spinner" : object.meta.icon} /> : null}
+                        {object.meta.icon ? <Icon inverted={true} size="small" name={object.meta.icon} /> : null}
                     </div>
                     <span contentEditable={this.props.editing} className={"editable" + (this.props.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} onBlur={this.props.onEditEnd} suppressContentEditableWarning={true} {...spanProps}>
                         {object.box.text}

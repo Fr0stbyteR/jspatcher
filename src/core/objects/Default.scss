@@ -28,6 +28,27 @@
         &:last-child {
             border-bottom-width: 4px;
         }
+        &.loading {
+            -webkit-animation-duration: 1s;
+            animation-duration: 1s;
+            -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+            -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+            -webkit-animation-name: placeHolderShimmer;
+            animation-name: placeHolderShimmer;
+            -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+            background-size: 1200px 100%;
+            @keyframes placeHolderShimmer{
+                0% {
+                    background-position: -1200px 0;
+                }
+                100% {
+                    background-position: 1200px 0;
+                }
+            }
+        }
         & > .box-ui-text-container-prepend {
             flex: 0 0 auto;
             min-width: 2px;
