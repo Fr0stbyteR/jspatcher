@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-4f86b97f'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "1586160817141"
+    prefix: "1586199042077"
   });
   workbox.skipWaiting();
   workbox.clientsClaim();
@@ -288,16 +288,16 @@ define("./service-worker.js",['./workbox-4f86b97f'], function (workbox) { 'use s
     "revision": "90509a043949258c3c2d90e3e63740d2"
   }, {
     "url": "index.js",
-    "revision": "c4074d503cccfa6a8ad980627963ab6f"
+    "revision": "d4f56c0e7342091d757bb691dd483cd3"
   }, {
     "url": "js/08564bf75e3bbc6f89ae.worklet.js",
     "revision": "f1bb859edecfe92f3d2e7043257b695d"
   }, {
-    "url": "js/39678c5b6e9f8a9ad007.js",
-    "revision": "ea3751618e88e9d34749ff79110b4f44"
-  }, {
     "url": "js/5efe0bfd958a7565be72.worklet.js",
     "revision": "91eb033646b6a0acce21638620db0506"
+  }, {
+    "url": "js/86485ddb6fbdf2c75d72.js",
+    "revision": "42191b76554549990999b33d1ef8a6ec"
   }, {
     "url": "js/8d6cf1de192a4d0521761f6e6aa2a82b.worker.js",
     "revision": "3ffcd4a66c91250c0a377a2432b22e4c"
@@ -305,14 +305,23 @@ define("./service-worker.js",['./workbox-4f86b97f'], function (workbox) { 'use s
     "url": "js/a32711bedf0de9ff4160.js",
     "revision": "2587f1c1b1e6ffad27f05da46f45e3c2"
   }, {
-    "url": "js/bc747a24a93435e93268.js",
-    "revision": "595dfb1234418273c08c7053b1ef7e2a"
+    "url": "js/a6c8479e408fc3ccbbea.js",
+    "revision": "5027adc63e5ba6396df0ad8241b8340c"
   }, {
-    "url": "js/d950379885fffa194df3.js",
-    "revision": "2448607921a5c7c9f53839aefd6c4bb2"
+    "url": "js/b63726184b9d553897d6.js",
+    "revision": "2ef1ef726176361e6b7bc92779fbbd60"
   }, {
-    "url": "js/f3200bc226c5d16a6db9.js",
-    "revision": "b9a9ab4a566ff020b77279de2863bbc0"
+    "url": "js/b71ec475ef3d0545b78f.js",
+    "revision": "88cb0d026125a157fefa9edd9969a710"
+  }, {
+    "url": "js/dcc8ae2697e37702f2dd.js",
+    "revision": "6549bd7b6bc5e8851b210b40764ef42a"
+  }, {
+    "url": "js/e0c066ebbc63eb8f2707.js",
+    "revision": "69efb6d095062a18b32aa99fbac0c239"
+  }, {
+    "url": "js/f696421493ec74946f95c102e8f6a657.worker.js",
+    "revision": "a7db7f55944311d08f9a7fcefcc9cee2"
   }, {
     "url": "manifest.json",
     "revision": "1cbaa3cdd5ba147975aa27bb8a1914f4"
