@@ -3401,8 +3401,8 @@
                 "background": false,
                 "presentation": true,
                 "presentationRect": [
-                    0,
-                    30,
+                    15,
+                    15,
                     30,
                     30
                 ],
@@ -3424,8 +3424,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    622,
-                    135.578125,
+                    637,
+                    120.578125,
                     15,
                     15
                 ],
@@ -3449,8 +3449,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    687,
-                    175.578125,
+                    702,
+                    160.578125,
                     15,
                     15
                 ],
@@ -3472,8 +3472,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    127,
-                    151.578125,
+                    142,
+                    136.578125,
                     15,
                     15
                 ],
@@ -3498,8 +3498,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    61,
-                    190.578125,
+                    76,
+                    175.578125,
                     15,
                     15
                 ],
@@ -3525,8 +3525,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    366,
-                    396.578125,
+                    381,
+                    381.578125,
                     15,
                     15
                 ],
@@ -3550,8 +3550,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    497,
-                    655.578125,
+                    512,
+                    640.578125,
                     15,
                     15
                 ],
@@ -3575,8 +3575,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    229,
-                    533.578125,
+                    244,
+                    518.578125,
                     15,
                     15
                 ],
@@ -3600,8 +3600,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    367,
-                    239.578125,
+                    382,
+                    224.578125,
                     15,
                     15
                 ],
@@ -3627,8 +3627,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    311,
-                    287.578125,
+                    326,
+                    272.578125,
                     15,
                     15
                 ],
@@ -3652,8 +3652,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    311,
-                    287.578125,
+                    326,
+                    272.578125,
                     15,
                     15
                 ],
@@ -3677,8 +3677,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    311,
-                    287.578125,
+                    326,
+                    272.578125,
                     15,
                     15
                 ],
@@ -3702,8 +3702,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    361,
-                    283.578125,
+                    376,
+                    268.578125,
                     15,
                     15
                 ],
@@ -3727,8 +3727,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    361,
-                    283.578125,
+                    376,
+                    268.578125,
                     15,
                     15
                 ],
@@ -3752,8 +3752,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    361,
-                    283.578125,
+                    376,
+                    268.578125,
                     15,
                     15
                 ],
@@ -3777,8 +3777,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    243,
-                    308.578125,
+                    258,
+                    293.578125,
                     15,
                     15
                 ],
@@ -3802,8 +3802,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    243,
-                    308.578125,
+                    258,
+                    293.578125,
                     15,
                     15
                 ],
@@ -3827,8 +3827,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    243,
-                    308.578125,
+                    258,
+                    293.578125,
                     15,
                     15
                 ],
@@ -3852,8 +3852,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    470,
-                    419.578125,
+                    485,
+                    404.578125,
                     15,
                     15
                 ],
@@ -3878,8 +3878,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    246,
-                    313.578125,
+                    261,
+                    298.578125,
                     15,
                     15
                 ],
@@ -3903,8 +3903,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    470,
-                    419.578125,
+                    485,
+                    404.578125,
                     15,
                     15
                 ],
@@ -3929,8 +3929,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    246,
-                    313.578125,
+                    261,
+                    298.578125,
                     15,
                     15
                 ],
@@ -3954,8 +3954,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    246,
-                    313.578125,
+                    261,
+                    298.578125,
                     15,
                     15
                 ],
@@ -3979,8 +3979,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    470,
-                    419.578125,
+                    485,
+                    404.578125,
                     15,
                     15
                 ],
@@ -4005,8 +4005,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    443,
-                    407.578125,
+                    458,
+                    392.578125,
                     15,
                     15
                 ],
@@ -4028,8 +4028,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    443,
-                    407.578125,
+                    458,
+                    392.578125,
                     15,
                     15
                 ],
@@ -4051,8 +4051,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    443,
-                    407.578125,
+                    458,
+                    392.578125,
                     15,
                     15
                 ],
@@ -4074,8 +4074,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    443,
-                    407.578125,
+                    458,
+                    392.578125,
                     15,
                     15
                 ],
@@ -4097,8 +4097,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    443,
-                    407.578125,
+                    458,
+                    392.578125,
                     15,
                     15
                 ],
@@ -4120,8 +4120,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    443,
-                    407.578125,
+                    458,
+                    392.578125,
                     15,
                     15
                 ],
@@ -4143,8 +4143,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    229,
-                    533.578125,
+                    244,
+                    518.578125,
                     15,
                     15
                 ],
@@ -4168,8 +4168,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    229,
-                    533.578125,
+                    244,
+                    518.578125,
                     15,
                     15
                 ],
@@ -4193,8 +4193,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    257,
-                    447.578125,
+                    272,
+                    432.578125,
                     15,
                     15
                 ],
@@ -4218,8 +4218,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    257,
-                    447.578125,
+                    272,
+                    432.578125,
                     15,
                     15
                 ],
@@ -4243,8 +4243,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    109,
-                    407.578125,
+                    124,
+                    392.578125,
                     15,
                     15
                 ],
@@ -4268,8 +4268,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    116,
-                    389.578125,
+                    131,
+                    374.578125,
                     15,
                     15
                 ],
@@ -4293,8 +4293,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    109,
-                    407.578125,
+                    124,
+                    392.578125,
                     15,
                     15
                 ],
@@ -4318,8 +4318,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    116,
-                    389.578125,
+                    131,
+                    374.578125,
                     15,
                     15
                 ],
@@ -4343,8 +4343,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    366,
-                    396.578125,
+                    381,
+                    381.578125,
                     15,
                     15
                 ],
@@ -4368,8 +4368,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    109,
-                    407.578125,
+                    124,
+                    392.578125,
                     15,
                     15
                 ],
@@ -4393,8 +4393,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    116,
-                    389.578125,
+                    131,
+                    374.578125,
                     15,
                     15
                 ],
@@ -4418,8 +4418,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    366,
-                    396.578125,
+                    381,
+                    381.578125,
                     15,
                     15
                 ],
@@ -4443,10 +4443,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    375,
-                    630,
-                    0,
-                    0
+                    390,
+                    615,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4469,10 +4469,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    420,
-                    540,
-                    0,
-                    0
+                    435,
+                    525,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4494,10 +4494,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    195,
-                    255,
-                    0,
-                    0
+                    210,
+                    240,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4517,10 +4517,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    420,
-                    255,
-                    0,
-                    0
+                    435,
+                    240,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4540,10 +4540,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1500,
-                    195,
-                    0,
-                    0
+                    1515,
+                    180,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4563,10 +4563,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1530,
-                    270,
-                    0,
-                    0
+                    1545,
+                    255,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4586,10 +4586,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1470,
-                    270,
-                    0,
-                    0
+                    1485,
+                    255,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4611,10 +4611,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1545,
-                    315,
-                    0,
-                    0
+                    1560,
+                    300,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4638,10 +4638,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1560,
-                    510,
-                    0,
-                    0
+                    1575,
+                    495,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4664,10 +4664,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1680,
-                    240,
-                    0,
-                    0
+                    1695,
+                    225,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4690,10 +4690,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1695,
-                    300,
-                    0,
-                    0
+                    1710,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4715,10 +4715,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1680,
-                    300,
-                    0,
-                    0
+                    1695,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4738,10 +4738,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1680,
-                    330,
-                    0,
-                    0
+                    1695,
+                    315,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4764,10 +4764,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1680,
-                    360,
-                    0,
-                    0
+                    1695,
+                    345,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4790,10 +4790,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1695,
-                    405,
-                    0,
-                    0
+                    1710,
+                    390,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4813,10 +4813,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1695,
-                    420,
-                    0,
-                    0
+                    1710,
+                    405,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4838,10 +4838,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1680,
-                    465,
-                    0,
-                    0
+                    1695,
+                    450,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4864,10 +4864,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1845,
-                    210,
-                    0,
-                    0
+                    1860,
+                    195,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4887,10 +4887,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1860,
-                    135,
-                    0,
-                    0
+                    1875,
+                    120,
+                    15,
+                    15
                 ],
                 "data": {
                     "text": "[ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ]"
@@ -4912,10 +4912,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1965,
-                    300,
-                    0,
-                    0
+                    1980,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -4935,10 +4935,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    2100,
-                    300,
-                    0,
-                    0
+                    2115,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4960,10 +4960,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1980,
-                    300,
-                    0,
-                    0
+                    1995,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -4985,10 +4985,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    2115,
-                    315,
-                    0,
-                    0
+                    2130,
+                    300,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5008,10 +5008,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1980,
-                    375,
-                    0,
-                    0
+                    1995,
+                    360,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5031,10 +5031,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1875,
-                    375,
-                    0,
-                    0
+                    1890,
+                    360,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5054,10 +5054,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1875,
-                    405,
-                    0,
-                    0
+                    1890,
+                    390,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5077,10 +5077,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1845,
-                    435,
-                    0,
-                    0
+                    1860,
+                    420,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5102,10 +5102,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1845,
-                    435,
-                    0,
-                    0
+                    1860,
+                    420,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5127,10 +5127,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1875,
-                    375,
-                    0,
-                    0
+                    1890,
+                    360,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5150,10 +5150,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    2100,
-                    300,
-                    0,
-                    0
+                    2115,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5175,10 +5175,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    2040,
-                    510,
-                    0,
-                    0
+                    2055,
+                    495,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5200,10 +5200,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    2010,
-                    495,
-                    0,
-                    0
+                    2025,
+                    480,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5223,10 +5223,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1935,
-                    540,
-                    0,
-                    0
+                    1950,
+                    525,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5246,10 +5246,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    2025,
-                    555,
-                    0,
-                    0
+                    2040,
+                    540,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5271,10 +5271,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1845,
-                    600,
-                    0,
-                    0
+                    1860,
+                    585,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5296,10 +5296,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1725,
-                    600,
-                    0,
-                    0
+                    1740,
+                    585,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5321,10 +5321,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1725,
-                    600,
-                    0,
-                    0
+                    1740,
+                    585,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5346,8 +5346,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    361,
-                    283.578125,
+                    376,
+                    268.578125,
                     15,
                     15
                 ],
@@ -5371,8 +5371,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    361,
-                    283.578125,
+                    376,
+                    268.578125,
                     15,
                     15
                 ],
@@ -5396,10 +5396,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1845,
-                    675,
-                    0,
-                    0
+                    1860,
+                    660,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5421,10 +5421,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1680,
-                    720,
-                    0,
-                    0
+                    1695,
+                    705,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5444,10 +5444,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1755,
-                    750,
-                    0,
-                    0
+                    1770,
+                    735,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5469,10 +5469,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    180,
-                    225,
-                    0,
-                    0
+                    195,
+                    210,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5495,10 +5495,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    210,
-                    285,
-                    0,
-                    0
+                    225,
+                    270,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5520,10 +5520,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    120,
-                    225,
-                    0,
-                    0
+                    135,
+                    210,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5543,10 +5543,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1530,
-                    270,
-                    0,
-                    0
+                    1545,
+                    255,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5566,10 +5566,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    120,
-                    300,
-                    0,
-                    0
+                    135,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5591,10 +5591,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    225,
-                    315,
-                    0,
-                    0
+                    240,
+                    300,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5616,10 +5616,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    255,
-                    315,
-                    0,
-                    0
+                    270,
+                    300,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5639,10 +5639,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    135,
-                    345,
-                    0,
-                    0
+                    150,
+                    330,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5662,10 +5662,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    135,
-                    405,
-                    0,
-                    0
+                    150,
+                    390,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5685,10 +5685,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    150,
-                    435,
-                    0,
-                    0
+                    165,
+                    420,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5710,10 +5710,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    135,
-                    450,
-                    0,
-                    0
+                    150,
+                    435,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5733,10 +5733,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    135,
-                    510,
-                    0,
-                    0
+                    150,
+                    495,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5756,15 +5756,18 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    120,
-                    465,
-                    0,
-                    0
+                    135,
+                    450,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
                     "queue",
-                    []
+                    [
+                        365,
+                        54
+                    ]
                 ],
                 "props": {}
             },
@@ -5782,10 +5785,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    105,
                     120,
-                    0,
-                    0
+                    105,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5805,10 +5808,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    90,
-                    0,
-                    0
+                    45,
+                    75,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5830,10 +5833,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    105,
-                    90,
-                    0,
-                    0
+                    120,
+                    75,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5853,10 +5856,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    90,
-                    120,
-                    0,
-                    0
+                    105,
+                    105,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5878,10 +5881,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    90,
-                    165,
-                    0,
-                    0
+                    105,
+                    150,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5903,10 +5906,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    90,
-                    225,
-                    0,
-                    0
+                    105,
+                    210,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5926,10 +5929,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    150,
-                    0,
-                    0
+                    45,
+                    135,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -5949,10 +5952,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    75,
-                    195,
-                    0,
-                    0
+                    90,
+                    180,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5974,10 +5977,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    210,
-                    0,
-                    0
+                    45,
+                    195,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -5999,10 +6002,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    225,
-                    0,
-                    0
+                    45,
+                    210,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6024,10 +6027,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    285,
-                    0,
-                    0
+                    45,
+                    270,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6050,10 +6053,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    210,
-                    0,
-                    0
+                    45,
+                    195,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6075,10 +6078,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    210,
-                    0,
-                    0
+                    45,
+                    195,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6100,10 +6103,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    90,
-                    300,
-                    0,
-                    0
+                    105,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6125,10 +6128,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    180,
-                    315,
-                    0,
-                    0
+                    195,
+                    300,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6150,10 +6153,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    285,
-                    0,
-                    0
+                    45,
+                    270,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6176,10 +6179,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    210,
-                    0,
-                    0
+                    45,
+                    195,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6201,10 +6204,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    210,
-                    0,
-                    0
+                    45,
+                    195,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6226,10 +6229,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    90,
-                    300,
-                    0,
-                    0
+                    105,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6251,10 +6254,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    180,
-                    315,
-                    0,
-                    0
+                    195,
+                    300,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6276,10 +6279,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    210,
-                    0,
-                    0
+                    45,
+                    195,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6301,10 +6304,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    285,
-                    0,
-                    0
+                    45,
+                    270,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6327,10 +6330,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    90,
-                    300,
-                    0,
-                    0
+                    105,
+                    285,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6352,10 +6355,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    210,
-                    0,
-                    0
+                    45,
+                    195,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6377,10 +6380,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    180,
-                    315,
-                    0,
-                    0
+                    195,
+                    300,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6402,10 +6405,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    300,
-                    585,
-                    0,
-                    0
+                    315,
+                    570,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6427,10 +6430,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    225,
-                    525,
-                    0,
-                    0
+                    240,
+                    510,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6452,10 +6455,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    225,
-                    570,
-                    0,
-                    0
+                    240,
+                    555,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6477,10 +6480,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    105,
                     120,
-                    0,
-                    0
+                    105,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -6500,10 +6503,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    150,
-                    675,
-                    0,
-                    0
+                    165,
+                    660,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6525,10 +6528,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    150,
-                    660,
-                    0,
-                    0
+                    165,
+                    645,
+                    15,
+                    15
                 ],
                 "data": {
                     "text": "0"
@@ -6550,10 +6553,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    75,
-                    450,
-                    0,
-                    0
+                    90,
+                    435,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -6575,10 +6578,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    75,
-                    450,
-                    0,
-                    0
+                    90,
+                    435,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6603,10 +6606,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    120,
-                    705,
-                    0,
-                    0
+                    135,
+                    690,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6629,10 +6632,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    30,
-                    675,
-                    0,
-                    0
+                    45,
+                    660,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -6652,10 +6655,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
+                    30,
+                    765,
                     15,
-                    780,
-                    0,
-                    0
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6677,8 +6680,8 @@
                 "background": false,
                 "presentation": true,
                 "presentationRect": [
-                    0,
-                    60,
+                    15,
+                    45,
                     30,
                     30
                 ],
@@ -6702,10 +6705,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    600,
-                    570,
-                    0,
-                    0
+                    615,
+                    555,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6728,10 +6731,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    615,
-                    660,
-                    0,
-                    0
+                    630,
+                    645,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -6751,8 +6754,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    257,
-                    447.578125,
+                    272,
+                    432.578125,
                     15,
                     15
                 ],
@@ -6776,8 +6779,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    257,
-                    447.578125,
+                    272,
+                    432.578125,
                     15,
                     15
                 ],
@@ -6801,10 +6804,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    210,
-                    285,
-                    0,
-                    0
+                    225,
+                    270,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6826,10 +6829,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    615,
-                    750,
-                    0,
-                    0
+                    630,
+                    735,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -6851,10 +6854,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    210,
-                    285,
-                    0,
-                    0
+                    225,
+                    270,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6877,10 +6880,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    720,
-                    630,
-                    0,
-                    0
+                    735,
+                    615,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -6900,10 +6903,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    615,
-                    660,
-                    0,
-                    0
+                    630,
+                    645,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -6923,10 +6926,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    615,
-                    660,
-                    0,
-                    0
+                    630,
+                    645,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -6946,8 +6949,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    257,
-                    447.578125,
+                    272,
+                    432.578125,
                     15,
                     15
                 ],
@@ -6971,10 +6974,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    810,
-                    600,
-                    0,
-                    0
+                    825,
+                    585,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -6996,10 +6999,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    930,
-                    645,
-                    0,
-                    0
+                    945,
+                    630,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7021,10 +7024,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    810,
-                    615,
-                    0,
-                    0
+                    825,
+                    600,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7044,10 +7047,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    885,
-                    675,
-                    0,
-                    0
+                    900,
+                    660,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7067,10 +7070,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    810,
-                    675,
-                    0,
-                    0
+                    825,
+                    660,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7093,10 +7096,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    810,
-                    705,
-                    0,
-                    0
+                    825,
+                    690,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7116,10 +7119,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    900,
-                    735,
-                    0,
-                    0
+                    915,
+                    720,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7141,10 +7144,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    945,
-                    615,
-                    0,
-                    0
+                    960,
+                    600,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7166,10 +7169,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    615,
-                    660,
-                    0,
-                    0
+                    630,
+                    645,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7189,8 +7192,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    257,
-                    447.578125,
+                    272,
+                    432.578125,
                     15,
                     15
                 ],
@@ -7214,8 +7217,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    257,
-                    447.578125,
+                    272,
+                    432.578125,
                     15,
                     15
                 ],
@@ -7239,10 +7242,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1020,
-                    615,
-                    0,
-                    0
+                    1035,
+                    600,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7264,10 +7267,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1020,
-                    660,
-                    0,
-                    0
+                    1035,
+                    645,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7289,10 +7292,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    975,
-                    675,
-                    0,
-                    0
+                    990,
+                    660,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7314,10 +7317,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    975,
-                    675,
-                    0,
-                    0
+                    990,
+                    660,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7339,8 +7342,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    257,
-                    447.578125,
+                    272,
+                    432.578125,
                     15,
                     15
                 ],
@@ -7364,8 +7367,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    257,
-                    447.578125,
+                    272,
+                    432.578125,
                     15,
                     15
                 ],
@@ -7389,10 +7392,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1125,
-                    675,
-                    0,
-                    0
+                    1140,
+                    660,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7412,10 +7415,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    975,
-                    780,
-                    0,
-                    0
+                    990,
+                    765,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7435,10 +7438,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    990,
-                    825,
-                    0,
-                    0
+                    1005,
+                    810,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7458,10 +7461,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1170,
-                    525,
-                    0,
-                    0
+                    1185,
+                    510,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7483,10 +7486,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1170,
-                    570,
-                    0,
-                    0
+                    1185,
+                    555,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7508,10 +7511,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    900,
-                    735,
-                    0,
-                    0
+                    915,
+                    720,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7533,10 +7536,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    990,
-                    825,
-                    0,
-                    0
+                    1005,
+                    810,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7556,10 +7559,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    615,
-                    660,
-                    0,
-                    0
+                    630,
+                    645,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7579,10 +7582,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    900,
-                    735,
-                    0,
-                    0
+                    915,
+                    720,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7604,10 +7607,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1305,
-                    600,
-                    0,
-                    0
+                    1320,
+                    585,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7627,10 +7630,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1320,
-                    615,
-                    0,
-                    0
+                    1335,
+                    600,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7655,10 +7658,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1305,
-                    600,
-                    0,
-                    0
+                    1320,
+                    585,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7678,10 +7681,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1320,
-                    690,
-                    0,
-                    0
+                    1335,
+                    675,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7703,10 +7706,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1530,
-                    570,
-                    0,
-                    0
+                    1545,
+                    555,
+                    15,
+                    15
                 ],
                 "data": {
                     "text": "[[\"note_on\", 0, 127], [\"note_off\", 0, 127], [\"time_shift\", 1, 100], [\"velocity_change\", 1, 32]]"
@@ -7728,10 +7731,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1455,
-                    600,
-                    0,
-                    0
+                    1470,
+                    585,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7751,10 +7754,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1575,
-                    645,
-                    0,
-                    0
+                    1590,
+                    630,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7777,10 +7780,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1680,
-                    645,
-                    0,
-                    0
+                    1695,
+                    630,
+                    15,
+                    15
                 ],
                 "data": {
                     "text": "0"
@@ -7802,10 +7805,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1470,
-                    705,
-                    0,
-                    0
+                    1485,
+                    690,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7827,10 +7830,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1575,
-                    690,
-                    0,
-                    0
+                    1590,
+                    675,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7850,10 +7853,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1575,
-                    735,
-                    0,
-                    0
+                    1590,
+                    720,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7875,10 +7878,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1575,
-                    765,
-                    0,
-                    0
+                    1590,
+                    750,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7898,10 +7901,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    2205,
-                    315,
-                    0,
-                    0
+                    2220,
+                    300,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7926,10 +7929,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1635,
-                    120,
-                    0,
-                    0
+                    1650,
+                    105,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7949,10 +7952,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    615,
-                    660,
-                    0,
-                    0
+                    630,
+                    645,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -7972,10 +7975,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1200,
-                    555,
-                    0,
-                    0
+                    1215,
+                    540,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -7997,10 +8000,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1305,
-                    570,
-                    0,
-                    0
+                    1320,
+                    555,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8022,10 +8025,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1185,
-                    615,
-                    0,
-                    0
+                    1200,
+                    600,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8048,10 +8051,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1170,
-                    615,
-                    0,
-                    0
+                    1185,
+                    600,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8074,8 +8077,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    651,
-                    93.578125,
+                    666,
+                    78.578125,
                     15,
                     15
                 ],
@@ -8097,10 +8100,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1455,
-                    255,
-                    0,
-                    0
+                    1470,
+                    240,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8122,10 +8125,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1455,
-                    255,
-                    0,
-                    0
+                    1470,
+                    240,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8147,10 +8150,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1470,
-                    240,
-                    0,
-                    0
+                    1485,
+                    225,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8172,10 +8175,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    930,
-                    645,
-                    0,
-                    0
+                    945,
+                    630,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8197,8 +8200,8 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    651,
-                    93.578125,
+                    666,
+                    78.578125,
                     15,
                     15
                 ],
@@ -8220,10 +8223,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    270,
-                    690,
-                    0,
-                    0
+                    285,
+                    675,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8245,10 +8248,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    375,
-                    855,
-                    0,
-                    0
+                    390,
+                    840,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8270,8 +8273,8 @@
                 "background": false,
                 "presentation": true,
                 "presentationRect": [
-                    0,
-                    90,
+                    15,
+                    75,
                     150,
                     75
                 ],
@@ -8296,10 +8299,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    375,
-                    855,
-                    0,
-                    0
+                    390,
+                    840,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [],
@@ -8319,10 +8322,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    285,
-                    750,
-                    0,
-                    0
+                    300,
+                    735,
+                    15,
+                    15
                 ],
                 "data": {
                     "code": "import(\"stdfaust.lib\");\r\nprocess = pm.guitar_ui_MIDI <: dm.freeverb_demo;"
@@ -8338,21 +8341,21 @@
                 "inlets": 0,
                 "outlets": 0,
                 "rect": [
-                    570,
+                    495,
                     15,
-                    45,
+                    120,
                     22
                 ],
                 "background": false,
                 "presentation": true,
                 "presentationRect": [
-                    30,
-                    30,
                     45,
+                    15,
+                    180,
                     22
                 ],
                 "data": {
-                    "value": "Start"
+                    "value": "Start (Click once) and wait..."
                 },
                 "args": [],
                 "props": {}
@@ -8371,10 +8374,10 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    120,
-                    825,
-                    0,
-                    0
+                    135,
+                    810,
+                    15,
+                    15
                 ],
                 "data": {},
                 "args": [
@@ -8396,8 +8399,8 @@
                 "background": false,
                 "presentation": true,
                 "presentationRect": [
-                    30,
-                    60,
+                    45,
+                    45,
                     120,
                     22
                 ],
@@ -8421,8 +8424,8 @@
                 "background": false,
                 "presentation": true,
                 "presentationRect": [
-                    165,
-                    30,
+                    225,
+                    15,
                     165,
                     22
                 ],
@@ -8446,8 +8449,8 @@
                 "background": false,
                 "presentation": true,
                 "presentationRect": [
-                    165,
-                    60,
+                    225,
+                    45,
                     165,
                     22
                 ],
@@ -8471,8 +8474,8 @@
                 "background": false,
                 "presentation": true,
                 "presentationRect": [
-                    165,
-                    90,
+                    225,
+                    75,
                     165,
                     22
                 ],
@@ -8496,8 +8499,8 @@
                 "background": false,
                 "presentation": true,
                 "presentationRect": [
-                    165,
-                    120,
+                    225,
+                    105,
                     120,
                     45
                 ],
@@ -8525,12 +8528,87 @@
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    1815,
-                    165,
-                    0,
-                    0
+                    1830,
+                    150,
+                    15,
+                    15
                 ],
                 "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-254": {
+                "id": "box-254",
+                "text": "comment",
+                "inlets": 0,
+                "outlets": 0,
+                "rect": [
+                    390,
+                    900,
+                    330,
+                    22
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    180,
+                    240,
+                    165,
+                    22
+                ],
+                "data": {
+                    "value": "Make sure audio is on ↘ "
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-255": {
+                "id": "box-255",
+                "text": "comment",
+                "inlets": 0,
+                "outlets": 0,
+                "rect": [
+                    390,
+                    870,
+                    345,
+                    22
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    15,
+                    195,
+                    345,
+                    22
+                ],
+                "data": {
+                    "value": "↓ Click \"Switch presentation mode\" to reveal patcher"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-256": {
+                "id": "box-256",
+                "text": "comment",
+                "inlets": 0,
+                "outlets": 0,
+                "rect": [
+                    2340,
+                    15,
+                    120,
+                    22
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    405,
+                    15,
+                    105,
+                    22
+                ],
+                "data": {
+                    "value": "Diffrent scales"
+                },
                 "args": [],
                 "props": {}
             }
@@ -8547,7 +8625,7 @@
                 15
             ],
             "openInPresentation": true,
-            "boxIndexCount": 253,
+            "boxIndexCount": 256,
             "lineIndexCount": 345
         },
         "data": {}

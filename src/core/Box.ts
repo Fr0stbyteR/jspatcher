@@ -55,6 +55,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         const Constructor = this._patcher.getObjectConstructor(this._parsed);
         this._objectConstructor = Constructor;
         if (!this.size.every(v => v > 0)) this.size = this.defaultSize;
+        if (!this.presentationSize.every(v => v > 0)) this.presentationSize = this.defaultSize;
         this._object = new Constructor(this, this._patcher) as T;
         await this._object.init();
         return this;
