@@ -1,8 +1,8 @@
 import { Bang, BaseObject } from "../Base";
 import { TMeta } from "../../types";
-import { ShadowDOMUI, ShadowDOMUIState } from "../BaseUI";
+import { DOMUI, DOMUIState } from "../BaseUI";
 
-export default class diagram extends BaseObject<{}, { svg: string }, [Bang | string], [string], [], {}, ShadowDOMUIState> {
+export default class diagram extends BaseObject<{}, { svg: string }, [Bang | string], [string], [], {}, DOMUIState> {
     static package = "Faust";
     static description = "Get Faust code diagram";
     static inlets: TMeta["inlets"] = [{
@@ -14,7 +14,7 @@ export default class diagram extends BaseObject<{}, { svg: string }, [Bang | str
         type: "string",
         description: "SVG code"
     }];
-    static ui = ShadowDOMUI;
+    static ui = DOMUI;
     state = { svg: "" };
     subscribe() {
         super.subscribe();

@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import * as Color from "color-js";
 import { Icon, SemanticICONS, StrictModalProps, Modal, Dimmer, Loader, Button } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
@@ -683,7 +682,6 @@ export interface DOMUIState extends BaseUIState {
     children: ChildNode[];
 }
 export class DOMUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<DOMUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & BaseUIProps, S & DOMUIState> {
-    static dockable = true;
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     static defaultSize: [number, number] = [210, 90];
     render() {
@@ -692,12 +690,5 @@ export class DOMUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIPr
                 {this.state.shadow ? <ShadowDOMContainer children={this.state.children} /> : <DivContainer containerProps={this.state.containerProps} children={this.state.children} />}
             </BaseUI>
         );
-    }
-}
-
-export class ShadowContent extends React.PureComponent<{ children: React.ReactNode; root: ShadowRoot }> {
-    render() {
-        const { children, root } = this.props;
-        return ReactDOM.createPortal(children, root as Node as Element);
     }
 }
