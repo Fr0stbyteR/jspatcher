@@ -46,6 +46,9 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         if (this._patcher.props.mode !== "js") return false;
         return Line.isConnectableByAudio(this.srcBox.object, this.srcOutlet, this.destBox.object, this.destInlet);
     }
+    get presentation() {
+        return this.srcBox && this.srcBox.presentation && this.destBox && this.destBox.presentation;
+    }
     setSrc(src: [string, number]) {
         const srcID = src[0];
         const srcOutlet = src[1];

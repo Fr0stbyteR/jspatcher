@@ -167,6 +167,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
             return;
         }
         const div = this.refDiv.current;
+        if (div.offsetParent === null) return;
         const divRect = div.getBoundingClientRect();
         const box = this.props.patcher.boxes[this.props.id];
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";

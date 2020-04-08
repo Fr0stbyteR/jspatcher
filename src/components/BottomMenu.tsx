@@ -15,11 +15,13 @@ export default class BottomMenu extends React.PureComponent<P, S> {
         this.props.patcher.on("locked", this.handleLockedChange);
         this.props.patcher.on("presentation", this.handlePresentationChange);
         this.props.patcher.on("showGrid", this.handleShowGridChange);
+        this.props.patcher.on("loading", this.handleLoading);
     }
     componentWillUnmount() {
         this.props.patcher.off("locked", this.handleLockedChange);
         this.props.patcher.off("presentation", this.handlePresentationChange);
         this.props.patcher.off("showGrid", this.handleShowGridChange);
+        this.props.patcher.off("loading", this.handleLoading);
     }
     handleLockedChange = (locked: boolean) => this.setState({ locked });
     handleShowGridChange = (showGrid: boolean) => this.setState({ showGrid });
@@ -27,6 +29,9 @@ export default class BottomMenu extends React.PureComponent<P, S> {
     handleClickLock = () => this.props.patcher.setState({ locked: !this.state.locked });
     handleClickGrid = () => this.props.patcher.setState({ showGrid: !this.state.showGrid });
     handleClickPresentation = () => this.props.patcher.setState({ presentation: !this.state.presentation });
+    handleLoading = (loading: string[]) => {
+        if (!loading) this.setState({ presentation: this.props.patcher.state.presentation });
+    };
     render() {
         return (
             <Menu inverted icon size="mini" className="bottom-menu">

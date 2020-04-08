@@ -215,7 +215,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
                 }
             }
         }
-        if (this.props.openInPresentation) this._state.presentation = true;
+        this._state.presentation = !!this.props.openInPresentation;
         this._state.isLoading = false;
         this.emit("loading");
         await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].postInit()));

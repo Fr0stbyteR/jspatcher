@@ -364,17 +364,22 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
         this.setState({ meta, args, props: { ...props, ...additionalProps }, rect: null, presentationRect: null });
     };
     handlePatcherPropsChanged = () => this.setState({ patcherProps: this.props.patcher.publicProps });
+    handlePatcherLoading = (loading: string[]) => {
+        if (!loading) this.setState({ patcherProps: this.props.patcher.publicProps });
+    };
     componentDidMount() {
         this.handleSelected();
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleSelected);
         this.props.patcher.on("propsChanged", this.handlePatcherPropsChanged);
+        this.props.patcher.on("loading", this.handlePatcherLoading);
     }
     componentWillUnmount() {
         this.unSubscribeBox(true);
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleSelected);
         this.props.patcher.off("propsChanged", this.handlePatcherPropsChanged);
+        this.props.patcher.off("loading", this.handlePatcherLoading);
     }
     handleChange = (value: any, key: number | string) => {
         if (!this.box) return;

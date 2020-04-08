@@ -28,7 +28,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     size = { width: 0, height: 0 };
     handleLoading = (loading?: string[]) => {
         if (loading) return;
-        this.setState({ bgColor: this.props.patcher.props.bgColor, editingBgColor: this.props.patcher.props.editingBgColor });
+        const { patcher } = this.props;
+        this.setState({ bgColor: patcher.props.bgColor, editingBgColor: patcher.props.editingBgColor, presentation: patcher.state.presentation });
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
         const lines = this.refLines.current;

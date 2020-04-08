@@ -129,7 +129,7 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
 }
 class Objects extends React.PureComponent<{ patcher: Patcher }, { pkg: TPackage }> {
     state = { pkg: this.props.patcher.activePkg };
-    handlePkgChanged: (e: { pkg: TPackage }) => void = ({ pkg }) => this.setState({ pkg });
+    handlePkgChanged: (e: { pkg: TPackage }) => void = ({ pkg }) => this.setState({ pkg: {} }, () => this.setState({ pkg }));
     componentDidMount() {
         this.props.patcher.on("libChanged", this.handlePkgChanged);
     }

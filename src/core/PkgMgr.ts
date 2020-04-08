@@ -83,7 +83,7 @@ export default class PackageManager {
         }[lib];
     }
     async getModuleFromURL(address: string, id: string) {
-        if (this.patcher.env.modules.has(address)) return { [id]: this.patcher.env.modules.get(address) };
+        if (this.patcher.env.modules.has(address)) return this.patcher.env.modules.get(address);
         const toExport: { [key: string]: any } = {}; // Original exports, detect if exports is overwritten.
         window.exports = toExport;
         window.module = { exports: toExport } as any;
