@@ -305,18 +305,19 @@ export abstract class AbstractObject<
         return this.constructor.name;
     }
 }
-type BaseAdditionalProps = {
+export interface BaseObjectAdditionalProps {
     background: boolean;
     presentation: boolean;
     rect: TRect;
     presentationRect: TRect;
-};
+}
+export interface BaseObjectProps extends BaseObjectAdditionalProps, BaseUIState {}
 export class BaseObject<
     D extends {} = {}, S extends {} = {},
     I extends any[] = any[], O extends any[] = any[],
-    A extends any[] = any[], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {},
+    A extends any[] = any[], P extends Partial<BaseObjectProps> & { [key: string]: any } = {},
     U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}
-> extends AbstractObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
+> extends AbstractObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
     static props: TMeta["props"] = {
         hidden: {
             type: "boolean",
@@ -385,7 +386,7 @@ export class BaseObject<
         super.subscribe();
         this.on("update", this.updateBox);
         const isUIStateKey = (x: any): x is keyof (U & BaseUIState) => this.meta.props[x] && this.meta.props[x].isUIState;
-        const updateUIFromProps = (props: Partial<P & BaseUIState & BaseAdditionalProps>) => {
+        const updateUIFromProps = (props: Partial<P & BaseObjectProps>) => {
             if (props) {
                 const uiState: Partial<U & BaseUIState> = {};
                 for (const key in props) {
@@ -397,12 +398,23 @@ export class BaseObject<
         this.on("updateProps", updateUIFromProps);
     }
 }
+export interface DefaultObjectUIProps {
+    bgColor: string;
+    borderColor: string;
+    textColor: string;
+    fontFamily: string;
+    fontSize: number;
+    fontStyle: "normal" | "italic" | "oblique";
+    fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
+    textAlign: "center" | "left" | "right";
+}
+export interface DefaultObjectProps extends DefaultObjectUIProps, BaseObjectProps {}
 export class DefaultObject<
     D extends {} = {}, S extends {} = {},
     I extends any[] = any[], O extends any[] = any[],
-    A extends any[] = any[], P extends Partial<DefaultUIState> & { [key: string]: any } = {},
+    A extends any[] = any[], P extends Partial<DefaultObjectProps> & { [key: string]: any } = {},
     U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}
-> extends BaseObject<D, S, I, O, A, P & DefaultUIState, U & DefaultUIState, E> {
+> extends BaseObject<D, S, I, O, A, P & DefaultObjectProps, U & DefaultUIState, E> {
     static props: TMeta["props"] = {
         bgColor: {
             type: "color",
@@ -459,7 +471,7 @@ export class DefaultObject<
     static ui = DefaultUI;
 }
 export class AnyObject extends BaseObject<{ [key: string]: any }, { [key: string]: any }, any[], any[], any[], { [key: string]: any }, { [key: string]: any }, { [key: string]: any }> {}
-export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<BaseUIState & BaseAdditionalProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseUIState & BaseAdditionalProps, U & BaseUIState, E> {
+export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<BaseObjectProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
     get audioCtx() {
         return this.patcher.env.audioCtx;
     }

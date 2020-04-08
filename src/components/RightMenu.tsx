@@ -125,16 +125,23 @@ class InspectorColorItem extends React.PureComponent<{ itemKey: number | string;
         this.setState({ showColorPicker: false });
         e.stopPropagation();
     };
-    handleChangeColor = (e: ColorResult) => this.props.onChange(e.hex, this.props.itemKey);
+    handleChangeColor = (e: ColorResult) => {
+        const color = e.rgb;
+        this.props.onChange(`rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`, this.props.itemKey);
+    };
+    handleKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>) => {
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+    };
     render() {
         return (
             <>
-                <span className="inspector-value color" style={{ backgroundColor: this.props.value }} onClick={this.handleClickColorSpan}>
+                <span className="inspector-value color" style={{ backgroundColor: this.props.value }} onClick={this.handleClickColorSpan} onKeyDown={this.handleKeyDown}>
                     {
                         this.state.showColorPicker
                             ? <>
                                 <div className="color-picker-fullscreen-cover" onClick={this.handleClickCover} />
-                                <ChromePicker color={this.props.value} onChange={this.handleChangeColor} />
+                                <ChromePicker color={this.props.value} disableAlpha={false} onChange={this.handleChangeColor} />
                             </>
                             : <></>
                     }

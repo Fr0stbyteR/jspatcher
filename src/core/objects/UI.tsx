@@ -155,9 +155,21 @@ class message extends UIObject<{ text: string }, { buffer: any; editing: boolean
     }
     static ui: typeof BaseUI = MessageUI;
 }
+interface CommentProps {
+    bgColor: string;
+    textColor: string;
+    fontFamily: string;
+    fontSize: number;
+    fontStyle: "normal" | "italic" | "oblique";
+    fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
+    textAlign: "center" | "left" | "right";
+}
+interface CommentUIState extends BaseUIState, CommentProps {
+    value: string;
+}
 class CommentUI extends BaseUI<comment, {}, { value: string }> {
     static editableOnUnlock = true;
-    state: BaseUIState & { value: string } = { ...this.state, value: this.object.data.value };
+    state: CommentUIState = { ...this.state, value: this.object.data.value };
     refSpan = React.createRef<HTMLSpanElement>();
     componentDidMount() {
         super.componentDidMount();
@@ -193,22 +205,82 @@ class CommentUI extends BaseUI<comment, {}, { value: string }> {
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     };
     render() {
+        const containerStyle: React.CSSProperties = {
+            backgroundColor: this.state.bgColor
+        };
+        const containerProps = { ...this.props.containerProps };
+        containerProps.style = { ...containerProps.style, ...containerStyle };
+        const spanStyle: React.CSSProperties = {
+            color: this.state.textColor,
+            fontFamily: `${this.state.fontFamily}, Tahoma, sans-serif`,
+            fontSize: this.state.fontSize,
+            fontWeight: this.state.fontWeight,
+            fontStyle: this.state.fontStyle,
+            textAlign: this.state.textAlign
+        };
         return (
-            <BaseUI {...this.props}>
-                <span contentEditable={this.props.editing} className={"editable" + (this.props.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onBlur={this.props.onEditEnd} suppressContentEditableWarning={true}>
+            <BaseUI {...this.props} containerProps={containerProps}>
+                <span contentEditable={this.props.editing} className={"editable" + (this.props.editing ? " editing" : "")} ref={this.refSpan} style={spanStyle} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onBlur={this.props.onEditEnd} suppressContentEditableWarning={true}>
                     {this.state.value}
                 </span>
             </BaseUI>
         );
     }
 }
-export class comment extends UIObject<{ value: string }, {}, [string], [], [string], {}, { value: string }> {
+export class comment extends UIObject<{ value: string }, {}, [string], [], [string], CommentProps, CommentUIState> {
     static description = "Text Comment";
     static args: TMeta["args"] = [{
         type: "string",
         optional: true,
         description: "Initial text"
     }];
+    static props: TPropsMeta<CommentProps> = {
+        bgColor: {
+            type: "color",
+            default: "transparent",
+            description: "Background color",
+            isUIState: true
+        },
+        textColor: {
+            type: "color",
+            default: "rgb(255, 255, 255)",
+            description: "Text color",
+            isUIState: true
+        },
+        fontFamily: {
+            type: "enum",
+            enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
+            default: "Lato",
+            description: "Font family",
+            isUIState: true
+        },
+        fontSize: {
+            type: "number",
+            default: 12,
+            description: "Text font size",
+            isUIState: true
+        },
+        fontStyle: {
+            type: "enum",
+            enums: ["normal", "italic", "oblique"],
+            default: "normal",
+            description: "Text style",
+            isUIState: true
+        },
+        fontWeight: {
+            type: "string",
+            default: "normal",
+            description: 'Text style: "normal" | "bold" | "lighter" | "bolder" | number',
+            isUIState: true
+        },
+        textAlign: {
+            type: "enum",
+            enums: ["left", "center", "right"],
+            default: "left",
+            description: "Text style",
+            isUIState: true
+        }
+    };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

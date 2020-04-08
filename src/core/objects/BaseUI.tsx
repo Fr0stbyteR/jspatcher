@@ -7,7 +7,7 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import Box from "../Box";
 import "./Default.scss";
 import "./Base.scss";
-import { AbstractObject, BaseObject, AnyObject, DefaultObject } from "./Base";
+import { AbstractObject, BaseObject, AnyObject, DefaultObject, DefaultObjectUIProps } from "./Base";
 import { selectElementPos, selectElementRange } from "../../utils/utils";
 import { TFlatPackage, TMetaType } from "../types";
 import { ImporterDirSelfObject } from "../../utils/symbols";
@@ -152,15 +152,7 @@ export interface DefaultUIProps extends BaseUIProps {
     spanProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement>;
     appendProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
 }
-export interface DefaultUIState extends BaseUIState {
-    bgColor: string;
-    borderColor: string;
-    textColor: string;
-    fontFamily: string;
-    fontSize: number;
-    fontStyle: "normal" | "italic" | "oblique";
-    fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
-    textAlign: "center" | "left" | "right";
+export interface DefaultUIState extends BaseUIState, DefaultObjectUIProps {
     text: string;
     loading: boolean;
 }
