@@ -155,8 +155,9 @@ class message extends UIObject<{ text: string }, { buffer: any; editing: boolean
     }
     static ui: typeof BaseUI = MessageUI;
 }
-class CommentUI extends BaseUI<comment> {
+class CommentUI extends BaseUI<comment, {}, { value: string }> {
     static editableOnUnlock = true;
+    state: BaseUIState & { value: string } = { ...this.state, value: this.object.data.value };
     refSpan = React.createRef<HTMLSpanElement>();
     componentDidMount() {
         super.componentDidMount();
@@ -192,17 +193,16 @@ class CommentUI extends BaseUI<comment> {
         document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
     };
     render() {
-        const object = this.props.object;
         return (
             <BaseUI {...this.props}>
                 <span contentEditable={this.props.editing} className={"editable" + (this.props.editing ? " editing" : "")} ref={this.refSpan} onMouseDown={this.handleMouseDown} onClick={this.handleClick} onPaste={this.handlePaste} onKeyDown={this.handleKeyDown} onBlur={this.props.onEditEnd} suppressContentEditableWarning={true}>
-                    {object.data.value}
+                    {this.state.value}
                 </span>
             </BaseUI>
         );
     }
 }
-export class comment extends UIObject<{ value: string }, {}, [], [], [string]> {
+export class comment extends UIObject<{ value: string }, {}, [string], [], [string], {}, { value: string }> {
     static description = "Text Comment";
     static args: TMeta["args"] = [{
         type: "string",
@@ -212,11 +212,17 @@ export class comment extends UIObject<{ value: string }, {}, [], [], [string]> {
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
-            this.inlets = 0;
+            this.inlets = 1;
             this.outlets = 0;
         });
         this.on("updateArgs", (args) => {
             if (!this.data.hasOwnProperty("value")) this.data.value = args.join(" ");
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (typeof data === "string") {
+                this.data.value = data;
+                this.updateUI({ value: data });
+            }
         });
     }
     static ui: typeof BaseUI = CommentUI;

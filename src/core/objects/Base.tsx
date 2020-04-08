@@ -143,6 +143,15 @@ export abstract class AbstractObject<
      * @memberof AbstractObject
      */
     fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(data: I[$], inlet: $): this {
+        if (inlet === 0) { // allow change props via first inlet with an props object
+            if (typeof data === "object") {
+                const propsKeys = Object.keys(this.meta.props);
+                if (Object.keys(data).every(k => propsKeys.indexOf(k) !== -1)) {
+                    this.update(undefined, data);
+                    return this;
+                }
+            }
+        }
         this.emit("inlet", { data, inlet });
         return this;
     }
