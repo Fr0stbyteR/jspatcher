@@ -7,7 +7,7 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Bang, BaseObject, AnyObject } from "./Base";
 import "./UI.scss";
 import { TMeta, TPropsMeta } from "../types";
-import { BaseUI, BaseUIProps, BaseUIState, ShadowDOMUIState, ShadowDOMUI } from "./BaseUI";
+import { BaseUI, BaseUIProps, BaseUIState, DOMUIState, DOMUI } from "./BaseUI";
 import { selectElementRange, isNumberArray } from "../../utils/utils";
 
 class UIObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}, E = {}> extends BaseObject<D, S, I, O, A, P, U, E> {
@@ -649,7 +649,11 @@ export class menu extends UIObject<{}, {}, [number | string | number[] | string[
         });
     }
 }
-export class view extends UIObject<{}, {}, [string | Element], [], [string], {}, ShadowDOMUIState> {
+export interface ViewProps {
+    shadow: boolean;
+    containerProps: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
+}
+export class view extends UIObject<{}, {}, [string | Element], [], [string], {}, DOMUIState> {
     static description = "View HTML Element";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -661,7 +665,21 @@ export class view extends UIObject<{}, {}, [string | Element], [], [string], {},
         optional: true,
         description: "initial innerHTML"
     }];
-    static ui = ShadowDOMUI;
+    static props: TPropsMeta<ViewProps> = {
+        shadow: {
+            type: "boolean",
+            default: true,
+            description: "Whether children should be attached to a Shadow DOM",
+            isUIState: true
+        },
+        containerProps: {
+            type: "object",
+            default: {},
+            description: "Available under non-shadow mode, the props for div container",
+            isUIState: true
+        }
+    };
+    static ui = DOMUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

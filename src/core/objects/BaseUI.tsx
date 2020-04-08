@@ -631,38 +631,73 @@ export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Part
     }
 }
 
-export class ShadowContent extends React.PureComponent<{ children: React.ReactNode; root: ShadowRoot }> {
-    render() {
-        const { children, root } = this.props;
-        return ReactDOM.createPortal(children, root as Node as Element);
-    }
-}
-export interface ShadowDOMUIState extends BaseUIState {
-    root: ShadowRoot;
-    children: Array<ChildNode>;
-}
-export class ShadowDOMUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<ShadowDOMUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & BaseUIProps, S & ShadowDOMUIState> {
-    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
-    static defaultSize: [number, number] = [210, 90];
+export class DivContainer extends React.PureComponent<{ containerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>; children?: ChildNode[] }, { root: HTMLDivElement }> {
     root = React.createRef<HTMLDivElement>();
+    state = { root: undefined as HTMLDivElement };
     componentDidMount() {
-        super.componentDidMount();
-        const root = this.root.current.attachShadow({ mode: "open" });
-        if (this.state.children) this.state.children.forEach(v => root.appendChild(v));
+        const root = this.root.current;
+        if (this.props.children) this.props.children.forEach(v => root.appendChild(v));
         this.setState({ root });
     }
-    componentDidUpdate(prevProps: Readonly<P & BaseUIProps>, prevState: Readonly<S & ShadowDOMUIState>) {
+    componentDidUpdate(prevProps: Readonly<{ children: ChildNode[] }>, prevState: Readonly<{ root: HTMLDivElement }>) {
         if (!this.state.root) return;
-        if (this.state.children !== prevState.children) {
+        if (this.props.children !== prevProps.children) {
+            // eslint-disable-next-line react/no-direct-mutation-state
             this.state.root.innerHTML = "";
-            this.state.children.forEach(v => this.state.root.appendChild(v));
+            this.props.children.forEach(v => this.state.root.appendChild(v));
+        }
+    }
+    render() {
+        const { containerProps } = this.props;
+        const containerStyle: React.CSSProperties = { width: "100%", height: "100%", position: "absolute", display: "block", overflow: "auto", ...((containerProps && containerProps.style) ? containerProps.style : {}) };
+        return (
+            <div {...containerProps} style={containerStyle} ref={this.root} />
+        );
+    }
+}
+export class ShadowDOMContainer extends React.PureComponent<{ children: ChildNode[] }, { root: ShadowRoot }> {
+    root = React.createRef<HTMLDivElement>();
+    state = { root: undefined as ShadowRoot };
+    componentDidMount() {
+        const root = this.root.current.attachShadow({ mode: "open" });
+        if (this.props.children) this.props.children.forEach(v => root.appendChild(v));
+        this.setState({ root });
+    }
+    componentDidUpdate(prevProps: Readonly<{ children: ChildNode[] }>, prevState: Readonly<{ root: ShadowRoot }>) {
+        if (!this.state.root) return;
+        if (this.props.children !== prevProps.children) {
+            // eslint-disable-next-line react/no-direct-mutation-state
+            this.state.root.innerHTML = "";
+            this.props.children.forEach(v => this.state.root.appendChild(v));
         }
     }
     render() {
         return (
+            <div style={{ width: "100%", height: "100%", position: "absolute", display: "block", overflow: "auto" }} ref={this.root} />
+        );
+    }
+}
+export interface DOMUIState extends BaseUIState {
+    shadow: boolean;
+    containerProps: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
+    children: ChildNode[];
+}
+export class DOMUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<DOMUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & BaseUIProps, S & DOMUIState> {
+    static dockable = true;
+    static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
+    static defaultSize: [number, number] = [210, 90];
+    render() {
+        return (
             <BaseUI {...this.props}>
-                <div style={{ width: "100%", height: "100%", position: "absolute", display: "block", overflow: "auto" }} ref={this.root} />
+                {this.state.shadow ? <ShadowDOMContainer children={this.state.children} /> : <DivContainer containerProps={this.state.containerProps} children={this.state.children} />}
             </BaseUI>
         );
+    }
+}
+
+export class ShadowContent extends React.PureComponent<{ children: React.ReactNode; root: ShadowRoot }> {
+    render() {
+        const { children, root } = this.props;
+        return ReactDOM.createPortal(children, root as Node as Element);
     }
 }
