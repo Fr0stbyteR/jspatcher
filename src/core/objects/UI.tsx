@@ -649,11 +649,14 @@ export class menu extends UIObject<{}, {}, [number | string | number[] | string[
         });
     }
 }
+export class ViewUI extends DOMUI<view> {
+    state: DOMUIState = { ...this.state, children: this.object.state.children };
+}
 export interface ViewProps {
     shadow: boolean;
     containerProps: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
 }
-export class view extends UIObject<{}, {}, [string | Element], [], [string], {}, DOMUIState> {
+export class view extends UIObject<{}, { children: ChildNode[] }, [string | Element], [], [string], {}, DOMUIState> {
     static description = "View HTML Element";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -679,7 +682,8 @@ export class view extends UIObject<{}, {}, [string | Element], [], [string], {},
             isUIState: true
         }
     };
-    static ui = DOMUI;
+    static ui = ViewUI;
+    state = { children: [] as ChildNode[] };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -690,7 +694,8 @@ export class view extends UIObject<{}, {}, [string | Element], [], [string], {},
             if (typeof this.box.args[0] === "string") {
                 const template = document.createElement("template");
                 template.innerHTML = this.box.args[0];
-                this.updateUI({ children: Array.from(template.children) });
+                this.state.children = Array.from(template.content.children);
+                this.updateUI({ children: this.state.children });
             }
         });
         this.on("inlet", ({ data, inlet }) => {
@@ -699,10 +704,11 @@ export class view extends UIObject<{}, {}, [string | Element], [], [string], {},
                     if (typeof data === "string") {
                         const template = document.createElement("template");
                         template.innerHTML = data;
-                        this.updateUI({ children: Array.from(template.content.children) });
+                        this.state.children = Array.from(template.content.children);
                     } else if (data instanceof Element) {
-                        this.updateUI({ children: [data] });
+                        this.state.children = [data];
                     }
+                    this.updateUI({ children: this.state.children });
                 }
             }
         });

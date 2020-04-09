@@ -624,6 +624,18 @@
                     0
                 ],
                 "disabled": false
+            },
+            "line-96": {
+                "id": "line-96",
+                "src": [
+                    "box-98",
+                    0
+                ],
+                "dest": [
+                    "box-50",
+                    0
+                ],
+                "disabled": false
             }
         },
         "boxes": {
@@ -657,7 +669,7 @@
                 "outlets": 2,
                 "rect": [
                     15,
-                    15,
+                    45,
                     30,
                     30
                 ],
@@ -1706,6 +1718,29 @@
                         }
                     }
                 }
+            },
+            "box-98": {
+                "id": "box-98",
+                "text": "loadbang",
+                "inlets": 0,
+                "outlets": 1,
+                "rect": [
+                    15,
+                    15,
+                    90,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    105,
+                    45,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
             }
         },
         "props": {
@@ -1720,8 +1755,8 @@
                 15
             ],
             "openInPresentation": false,
-            "boxIndexCount": 97,
-            "lineIndexCount": 95
+            "boxIndexCount": 98,
+            "lineIndexCount": 96
         },
         "data": {}
     },

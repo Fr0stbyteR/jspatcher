@@ -684,6 +684,7 @@ export interface DOMUIState extends BaseUIState {
 export class DOMUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<DOMUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & BaseUIProps, S & DOMUIState> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     static defaultSize: [number, number] = [210, 90];
+    state: S & DOMUIState = { ...this.state, shadow: false, containerProps: {}, children: [] };
     render() {
         return (
             <BaseUI {...this.props}>
