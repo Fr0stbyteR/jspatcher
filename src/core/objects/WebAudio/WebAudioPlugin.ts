@@ -1,6 +1,6 @@
 import { Bang, BaseAudioObject } from "../Base";
 import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
-import { ShadowDOMUI, ShadowDOMUIState } from "../BaseUI";
+import { DOMUI, DOMUIState } from "../BaseUI";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 
 interface WebAudioPluginManifest {
@@ -25,10 +25,14 @@ declare class WebAudioPlugin {
 }
 const AWN: typeof AudioWorkletNode = window.AudioWorkletNode ? AudioWorkletNode : null;
 
-export type S = { merger: ChannelMergerNode; splitter: ChannelSplitterNode; node: WebAudioPluginNode };
+class PluginUI extends DOMUI<Plugin> {
+    state: DOMUIState = { ...this.state, children: this.object.state.children };
+}
+
+export type S = { merger: ChannelMergerNode; splitter: ChannelSplitterNode; node: WebAudioPluginNode; children: ChildNode[] };
 type I = [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]];
 type O = (null | AudioNode)[];
-export default class plugin extends BaseAudioObject<{}, S, I, O, [string], {}, ShadowDOMUIState> {
+export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, DOMUIState> {
     static description = "Dynamically load WebAudioPlugin";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -44,9 +48,9 @@ export default class plugin extends BaseAudioObject<{}, S, I, O, [string], {}, S
         optional: false,
         description: "WebAudioPlugin URL"
     }];
-    static ui = ShadowDOMUI;
-    state = { merger: undefined, splitter: undefined, node: undefined } as S;
-    _meta: TMeta = plugin.meta;
+    static ui = PluginUI;
+    state = { merger: undefined, splitter: undefined, node: undefined, children: [] } as S;
+    _meta: TMeta = Plugin.meta;
     get meta() {
         return this._meta;
     }
@@ -88,7 +92,8 @@ export default class plugin extends BaseAudioObject<{}, S, I, O, [string], {}, S
         const factory = new Constructor(this.audioCtx, url);
         const node = await factory.load();
         const element = await factory.loadGui();
-        this.updateUI({ children: [element] });
+        this.state.children = [element];
+        this.updateUI({ children: this.state.children });
 
         let splitter: ChannelSplitterNode;
         let merger: ChannelMergerNode;
@@ -106,7 +111,7 @@ export default class plugin extends BaseAudioObject<{}, S, I, O, [string], {}, S
             node.connect(splitter, 0, 0);
         }
         Object.assign(this.state, { merger, splitter, node } as S);
-        const Ctor = this.constructor as typeof plugin;
+        const Ctor = this.constructor as typeof Plugin;
         const firstInletMeta = Ctor.inlets[0];
         const firstInletSignalMeta: TInletMeta = { ...firstInletMeta, type: "signal" };
         const inletMeta: TInletMeta = { isHot: false, type: "signal", description: "Node connection" };
