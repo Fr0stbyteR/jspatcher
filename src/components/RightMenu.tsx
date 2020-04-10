@@ -471,7 +471,10 @@ class CodeEditor extends React.PureComponent<{ patcher: Patcher }, { value: stri
     state = { value: this.code, editorLoaded: false };
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
+    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => {
+        monaco.updateOptions({ readOnly: true });
+        this.codeEditor = monaco;
+    };
     handleGraphChanged = (e?: string[]) => {
         if (!e && !this.props.patcher.state.isLoading && this.state.editorLoaded) this.setState({ value: this.code });
     };
