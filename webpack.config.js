@@ -64,6 +64,7 @@ const config = {
     new CopyWebpackPlugin([
       { from: './src/html', to: './' },
       { from: './src/misc/monaco-faust/primitives.lib', to: './deps/' },
+      { from: './src/misc/gen2faust.lib', to: './deps/' },
       { from: './node_modules/faust2webaudio/dist/libfaust-wasm.*', to: './deps/', flatten: true }
     ]),
     new MonacoWebpackPlugin({

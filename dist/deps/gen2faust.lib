@@ -1,0 +1,210 @@
+import("stdfaust.lib");
+
+neqp(a, b) = a * (a != b);
+eq(a, b) = a == b;
+eqp(a, b) = a * (a == b);
+gt(a, b) = a > b;
+gte(a, b) = a >= b;
+gtep(a, b) = a * (a >= b);
+gtp(a, b) = a * (a > b);
+lt(a, b) = a < b;
+lte(a, b) = a <= b;
+ltep(a, b) = a * (a <= b);
+ltp(a, b) = a * (a < b);
+maximum = max;
+minimum = min;
+neq(a, b) = a != b;
+step(a, b) = a >= b;
+
+DEGTORAD = ma.PI / 180;
+degtorad = DEGTORAD;
+E = exp(1);
+e = E;
+f = float;
+HALFPI = ma.PI * 0.5;
+halfpi = HALFPI;
+i = int;
+INVPI = 1 / ma.PI;
+invpi = INVPI;
+LN10 = log(10);
+ln10 = LN10;
+LN2 = log(2);
+ln2 = LN2;
+LOG10E = log10(E);
+log10e = LOG10E;
+LOG2E = ma.log2(E);
+log2e = LOG2E;
+PHI = 1.61803398874989484820;
+phi = PHI;
+PI = ma.PI;
+pi = PI;
+RADTODEG = 180 / ma.PI;
+radtodeg = RADTODEG;
+SQRT1_2 = 1 / sqrt(2);
+sqrt1_2 = SQRT1_2;
+SQRT2 = sqrt(2);
+sqrt2 = SQRT2;
+TWOPI = ma.PI * 2;
+twopi = TWOPI;
+
+pass = _;
+
+not(a) = a != 0;
+and = &;
+bool(a) = a != 0;
+or = |;
+rmod(a, b) = b % a;
+rsub(a, b) = b - a;
+rdiv(a, b) = b / a;
+mod = fmod;
+add = +;
+sub = -;
+div = /;
+
+absdiff(a, b) = abs(a - b);
+cartopol(x, y) = sqrt(x * x + y * y), atan2(y, x);
+neg(a) = -a;
+poltocar(r, t) = r * cos(t), r * sin(t);
+
+fract(a) = a - trunc(a);
+sign = ma.signum;
+trunc(a) = (a > 0) * floor(a) + (a < 0) * ceil(a);
+
+exp2(a) = 2 ^ a; 
+fastexp = exp;
+fastpow = pow;
+ln = log;
+log2 = ma.log2;
+
+clamp(s, l, h) = s : max(l) : min(h); // different from gen implementation if l > h
+clip = clamp;
+fold(s, lIn, hIn) = s - l : abs : fmod(_, d * 2) : *(d != 0) : -(d) : abs : +(l) with {
+    l = min(lIn, hIn);
+    h = max(lIn, hIn);
+    d = h - l;
+};
+scale(s, l0, h0, l1, h1, e) = n1 * d1 + l1 with {
+    d0 = h0 - l0;
+    d1 = h1 - l1;
+    n0 = s - l0 : /(d0) : *(d0 != 0);
+    v = (n0 > 0) | ((n0 < 0) & (fmod(e, 1) == 0));
+    e1 = (v * e) + (1 - v);
+    n1 = (v * n0) ^ e1;
+};
+wrap(s, lIn, hIn) = s - l : fmod(_, d) : +(d) : fmod(_, d) : +(l) with {
+    l = min(lIn, hIn);
+    h = max(lIn, hIn);
+    d = h - l;
+};
+switch(c, t, f) = (c != 0) * t + (c == 0) * f;
+gate(t, g) = ba.selectoutn(t, g - 1);
+mix(a, b, c) = c * b + (1 - c) * a;
+selector(t, g) = ba.selectn(t, g - 1);
+smoothstep(l, h, s) = 3 * n * n - 2 * n * n * n with {
+    d = h - l;
+    n = s - l : /(d) : *(d != 0) : max(0) : min(1);
+};
+
+acosh = ma.acosh;
+asinh = ma.asinh;
+atanh = ma.atanh;
+cosh = ma.cosh;
+sinh = ma.sinh;
+tanh = ma.tanh;
+degrees(a) = a * radtodeg;
+radians(a) = a * degtorad;
+fastcos = cos;
+fastsin = sin;
+fasttan = tan;
+hypot(a, b) = sqrt(a * a + b * b);
+noise = no.noise;
+
+cycle = os.osc;
+cycle_phase(p) = os.oscp(0, p);
+
+atodb = ba.linear2db;
+dbtoa = ba.db2linear;
+ftom = ba.hz2midikey;
+mtof = ba.midikey2hz;
+mstosamp(x) = ba.sec2samp(x * 0.001);
+samptoms(x) = ba.samp2sec(x) * 1000.0;
+
+SAMPLERATE = ma.SR;
+samplerate = SAMPLERATE;
+
+fixdenorm(x) = ma.FTZ;
+fixnan(x) = x, 0.0 : select2(isnan(x));
+
+isdenorm(x) = abs(x) < ma.MIN;
+isnan(x) = x != x;
+isinf(x) = (x == inf) | (x == -inf) with { inf = 2.0 * ma.INFINITY; };
+
+
+t60(tau) = ba.if(clipCond, 0.0, exp(-1.0 / tauCenterClipped)) with {
+    clipCond = abs(tau) < ma.EPSILON;
+    tauCenterClipped = ba.if(clipCond, 1.0, tau / 6.9077552789821);
+};
+t60time(pole) = -6.9077552789821 / log(pole);
+
+change = sign(x - x');
+dcblock = fi.zero(1) : fi.pole(0.9997);
+
+interp_linear(a, x, y) = x + a * (y - x);
+interp_cosine(a, x, y) = x * (1 - a2) + y * a2 with { a2 = (1 - cos(a * ma.PI)) / 2; };
+interp_cubic(a, w, x, y, z) = w * fw + x * fx + y * fy + z * fz with {
+    a1 = 1.0 + a;
+    aa = a * a1;
+    b = 1.0 - a;
+    b1 = 2.0 - a;
+    bb = b * b1;
+    fw = -0.1666667 * bb * a;
+    fx = 0.5 * bb * a1;
+    fy = 0.5 * aa * b1;
+    fz = 0-.1666667 * aa * b;
+};
+interp_spline(a, w, x, y, z) = c3 : *(a) : +(c2) : *(a) : +(c1) : *(a) : +(c0) with {
+    c0 = x;
+    c1 = 0.5 * (y - w);
+    c2 = w - 2.5 * x + y + y - 0.5 * z;
+    c3 = 0.5 * (z - w) + 1.5 * (x - y);
+};
+interp_spline6(a, y0, y1, y2, y3, y4, y5) = c5 : *(a) : +(c4) : *(a) : +(c3) : *(a) : +(c2) : *(a) : +(c1) : *(a) : +(c0) with {
+    ym2py2 = y0 + y4;
+    ym1py1 = y1 + y3;
+    y2mym2 = y4 - y0;
+    y1mym1 = y3 - y1;
+    sixthym1py1 = 1 / 6.0 * ym1py1;
+    c0 = 1 / 120.0 * ym2py2 + 13 / 60.0 * ym1py1 + 11 / 20.0 * y2;
+    c1 = 1 / 24.0 * y2mym2 + 5 / 12.0 * y1mym1;
+    c2 = 1 / 12.0 * ym2py2 + sixthym1py1 - 1 / 2.0 * y2;
+    c3 = 1 / 12.0 * y2mym2 - 1 / 6.0 * y1mym1;
+    c4 = 1 / 24.0 * ym2py2 - sixthym1py1 + 1 / 4.0 * y2;
+    c5 = 1 / 120.0 * (y5 - y0) + 1 / 24.0 * (y1 - y4) + 1 / 12.0 * (y3 - y2);
+};
+
+latch(x, c) = ba.sAndH(c != 0, x);
+phasewrap(a) = wrap(a, -1 * ma.PI, ma.PI);
+sah(x, c, t) = x * s : + ~ *(1 - s) with { s = (c' <= t) & (c > t); };
+slide(dest, up, down) = (_ <: last + c * d) ~ _ with {
+    last = _;
+    d = dest - last;
+    inc = 1 / max(1, abs(up));
+    dec = 1 / max(2, abs(down));
+    c = select2(d > 0, inc, dec);
+};
+
+elapsed = 1 : (+ ~ _);
+
+mulequals(x, c) = x : ((* : *(c == 0)) ~ +(ba.impulsify(x)));
+accum(x, c) = x : ((+ : *(c == 0)) ~ _);
+pulseequals = accum;
+counter(i, c, m) = select2(m != 0, accum(i, c), wrap(accum(i, c), 0, m));
+
+phasor(f, c) = f / ma.SR : ((+ : *(c == 0)), 1 : fmod) ~ _;
+// rate: TODO
+
+train(period, width, phase) = (%(int(period)) ~ +(init - init' + 1')) < (period * width) with { init = int(period * phase); };
+triangle(phaseIn, dutyIn) = select2(phase >= duty, select2(duty != 0, 0, phase / (duty | 1)), select2(duty != 1, phase, 1 - ((phase - duty) / ((1 - duty) | 1)))) with {
+    phase = wrap(phaseIn, 0, 1);
+    duty = clamp(dutyIn, 0, 1);
+};

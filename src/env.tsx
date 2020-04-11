@@ -80,6 +80,11 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         const faustPrimitiveLib = await faustPrimitiveLibFile.text();
         faust.fs.writeFile("./libraries/primitives.lib", faustPrimitiveLib);
 
+        this.emit("text", "Fetching Gen-to-Faust Library...");
+        const gen2FaustLibFile = await fetch("./deps/gen2faust.lib");
+        const gen2FaustLib = await gen2FaustLibFile.text();
+        faust.fs.writeFile("./libraries/gen2faust.lib", gen2FaustLib);
+
         this.emit("text", "Loading Monaco Editor...");
         const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
         const { providers } = await faustLangRegister(monacoEditor, faust);
