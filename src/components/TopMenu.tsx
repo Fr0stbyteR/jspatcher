@@ -91,19 +91,24 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
     };
     handleClickCut = async () => {
         if (this.props.patcher.state.locked) return;
-        await navigator.clipboard.writeText(this.props.patcher.selectedToString());
+        const s = this.props.patcher.selectedToString();
+        if (!s) return;
+        await navigator.clipboard.writeText(s);
         this.props.patcher.deleteSelected();
     };
     handleClickCopy = () => {
         if (this.props.patcher.state.locked) return;
-        navigator.clipboard.writeText(this.props.patcher.selectedToString());
+        const s = this.props.patcher.selectedToString();
+        if (!s) return;
+        navigator.clipboard.writeText(s);
     };
     handleClickPaste = async () => {
         if (this.props.patcher.state.locked) return;
-        const text = await navigator.clipboard.readText();
+        const s = await navigator.clipboard.readText();
+        if (!s) return;
         let parsed: TPatcher | TMaxClipboard;
         try {
-            parsed = JSON.parse(text);
+            parsed = JSON.parse(s);
         } catch (e) {} // eslint-disable-line no-empty
         this.props.patcher.paste(parsed);
     };
@@ -113,10 +118,11 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
     };
     handleClickDuplicate = () => {
         if (this.props.patcher.state.locked) return;
-        const text = this.props.patcher.selectedToString();
+        const s = this.props.patcher.selectedToString();
+        if (!s) return;
         let parsed: TPatcher;
         try {
-            parsed = JSON.parse(text);
+            parsed = JSON.parse(s);
         } catch (e) {} // eslint-disable-line no-empty
         this.props.patcher.paste(parsed);
     };

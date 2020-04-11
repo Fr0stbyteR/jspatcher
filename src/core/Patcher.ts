@@ -602,6 +602,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         lineSet.forEach((line) => {
             if (patcher.boxes[line.srcID] && patcher.boxes[line.destID]) patcher.lines[line.id] = line;
         });
+        if (!Object.keys(patcher.boxes)) return undefined;
         return JSON.stringify(patcher, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
     }
     moveBox(boxID: string, deltaXIn: number, deltaYIn: number) {
@@ -826,10 +827,12 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
                 }
             }
             this._state.isLoading = false;
-            this.deselectAll();
-            this.selects(Object.keys(pasted.boxes));
-            this.emit("create", pasted);
-            await Promise.all($postInit);
+            if (Object.keys(pasted.boxes).length) {
+                this.deselectAll();
+                this.selects(Object.keys(pasted.boxes));
+                this.emit("create", pasted);
+                await Promise.all($postInit);
+            }
             return pasted;
         }
         if (Array.isArray(clipboard.boxes) || Array.isArray(clipboard.lines)) return pasted;
@@ -844,7 +847,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
                 const numID = parseInt(box.id.match(/\d+/)[0]);
                 if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
             }
-            box.rect = [box.rect[0] + 20, box.rect[1] + 20, box.rect[2], box.rect[3]];
+            box.rect = [box.rect[0] + 30, box.rect[1] + 30, box.rect[2], box.rect[3]];
             $init.push(this.createBox(box, true));
         }
         const createdBoxes = (await Promise.all($init)).filter(box => !!box);
@@ -862,9 +865,11 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             if (createdLine) pasted.lines[createdLine.id] = line;
         }
         this._state.isLoading = false;
-        this.deselectAll();
-        this.selects(Object.keys(pasted.boxes));
-        this.emit("create", pasted);
+        if (Object.keys(pasted.boxes).length) {
+            this.deselectAll();
+            this.selects(Object.keys(pasted.boxes));
+            this.emit("create", pasted);
+        }
         return pasted;
     }
     async create(objects: TPatcher) {
@@ -903,6 +908,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             boxSet.add(this.boxes[id]);
             this.boxes[id].allLines.forEach(line => lineSet.add(line));
         });
+        if (!boxSet.size) return undefined;
         this._state.selected = [];
         const deleted: TPatcher = { boxes: {}, lines: {} };
         const promises: Promise<Box>[] = [];

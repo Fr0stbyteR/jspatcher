@@ -31,22 +31,22 @@ export default class History {
         (this.events[this.timestamp][type] as PatcherEventMap[K][]).push(e);
         return this;
     }
-    undo() {
+    async undo() {
         if (this.undoList.length === 0) return this;
         this.capture = false;
         const eID = this.undoList.pop();
         const patcher = this._patcher;
         if (this.events[eID].hasOwnProperty("deleteBox")) {
-            this.events[eID].deleteBox.forEach(box => patcher.createBox(box));
+            await Promise.all(this.events[eID].deleteBox.map(box => patcher.createBox(box)));
         }
         if (this.events[eID].hasOwnProperty("deleteLine")) {
             this.events[eID].deleteLine.forEach(line => patcher.createLine(line));
         }
         if (this.events[eID].hasOwnProperty("delete")) {
-            this.events[eID].delete.forEach(deleted => patcher.create(deleted));
+            await Promise.all(this.events[eID].delete.map(deleted => patcher.create(deleted)));
         }
         if (this.events[eID].hasOwnProperty("changeBoxText")) {
-            this.events[eID].changeBoxText.forEach(({ box, oldText }) => patcher.changeBoxText(box.id, oldText));
+            await Promise.all(this.events[eID].changeBoxText.map(({ box, oldText }) => patcher.changeBoxText(box.id, oldText)));
         }
         if (this.events[eID].hasOwnProperty("moved")) {
             this.events[eID].moved.forEach(({ selected, delta, presentation }) => patcher.move(selected, { x: -1 * delta.x, y: -1 * delta.y }, presentation));
@@ -61,10 +61,10 @@ export default class History {
             this.events[eID].createLine.forEach(line => patcher.deleteLine(line.id));
         }
         if (this.events[eID].hasOwnProperty("createBox")) {
-            this.events[eID].createBox.forEach(box => patcher.deleteBox(box.id));
+            await Promise.all(this.events[eID].createBox.map(box => patcher.deleteBox(box.id)));
         }
         if (this.events[eID].hasOwnProperty("create")) {
-            this.events[eID].create.forEach(created => patcher.delete(created));
+            await Promise.all(this.events[eID].create.map(created => patcher.delete(created)));
         }
         if (this.events[eID].hasOwnProperty("resized")) {
             this.events[eID].resized.forEach(({ selected, delta, type, presentation }) => patcher.resize(selected, { x: -1 * delta.x, y: -1 * delta.y }, type, presentation));
@@ -73,22 +73,22 @@ export default class History {
         this.capture = true;
         return this;
     }
-    redo() {
+    async redo() {
         if (this.redoList.length === 0) return this;
         this.capture = false;
         const eID = this.redoList.pop();
         const patcher = this._patcher;
         if (this.events[eID].hasOwnProperty("createBox")) {
-            this.events[eID].createBox.forEach(box => patcher.createBox(box));
+            await Promise.all(this.events[eID].createBox.map(box => patcher.createBox(box)));
         }
         if (this.events[eID].hasOwnProperty("createLine")) {
             this.events[eID].createLine.forEach(line => patcher.createLine(line));
         }
         if (this.events[eID].hasOwnProperty("create")) {
-            this.events[eID].create.forEach(created => patcher.create(created));
+            await Promise.all(this.events[eID].create.map(created => patcher.create(created)));
         }
         if (this.events[eID].hasOwnProperty("changeBoxText")) {
-            this.events[eID].changeBoxText.forEach(({ box, text }) => patcher.changeBoxText(box.id, text));
+            await Promise.all(this.events[eID].changeBoxText.map(({ box, text }) => patcher.changeBoxText(box.id, text)));
         }
         if (this.events[eID].hasOwnProperty("moved")) {
             this.events[eID].moved.forEach(({ selected, delta, presentation }) => patcher.move(selected, delta, presentation));
@@ -103,10 +103,10 @@ export default class History {
             this.events[eID].deleteLine.forEach(line => patcher.deleteLine(line.id));
         }
         if (this.events[eID].hasOwnProperty("deleteBox")) {
-            this.events[eID].deleteBox.forEach(box => patcher.deleteBox(box.id));
+            await Promise.all(this.events[eID].deleteBox.map(box => patcher.deleteBox(box.id)));
         }
         if (this.events[eID].hasOwnProperty("delete")) {
-            this.events[eID].delete.forEach(deleted => patcher.delete(deleted));
+            await Promise.all(this.events[eID].delete.map(deleted => patcher.delete(deleted)));
         }
         if (this.events[eID].hasOwnProperty("resized")) {
             this.events[eID].resized.forEach(({ selected, delta, type, presentation }) => patcher.resize(selected, delta, type, presentation));
