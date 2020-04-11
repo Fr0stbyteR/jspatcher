@@ -36,9 +36,9 @@ class print extends StdObject<{}, { title: string }, [any], [], [string]> {
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 if (data instanceof Bang) {
-                    this.patcher.newLog("none", this.state.title, "Bang");
+                    this.patcher.newLog("none", this.state.title, "Bang", this.box);
                 } else {
-                    this.patcher.newLog("none", this.state.title, typeof data === "string" ? data : Util.inspect(data));
+                    this.patcher.newLog("none", this.state.title, typeof data === "string" ? data : Util.inspect(data), this.box);
                 }
             }
         });

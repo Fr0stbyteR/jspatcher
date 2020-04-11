@@ -219,7 +219,9 @@ export abstract class AbstractObject<
         return this;
     }
     error(data: any) {
-        this._patcher.newLog("error", this.meta.name, stringifyError(data), this._box);
+        const s = stringifyError(data);
+        this._patcher.newLog("error", this.meta.name, s, this._box);
+        this._box.error(s);
         return this;
     }
     info(data: any) {
@@ -228,6 +230,16 @@ export abstract class AbstractObject<
     }
     warn(data: any) {
         this._patcher.newLog("warn", this.meta.name, stringifyError(data), this._box);
+        return this;
+    }
+    /**
+     * Highlight the UI box
+     *
+     * @returns
+     * @memberof AbstractObject
+     */
+    highlight() {
+        this._box.highlight();
         return this;
     }
     get patcher() {

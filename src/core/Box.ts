@@ -363,6 +363,12 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         this.emit("presentationRectChanged", this);
         return this;
     }
+    error(text: string) {
+        this.emit("error", text);
+    }
+    highlight() {
+        this.emit("highlight", this);
+    }
     highlightPort(isSrc: boolean, i: number, highlight: boolean) {
         this.emit("highlightPort", { isSrc, i, highlight });
     }

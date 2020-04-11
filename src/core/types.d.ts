@@ -71,7 +71,7 @@ type TErrorLevel = "error" | "warn" | "info" | "none";
 
 type TPatcherLog = {
     errorLevel: TErrorLevel;
-    emitter?: any;
+    emitter?: Box | Patcher | any;
     title: string;
     message: string;
 };
@@ -220,6 +220,8 @@ interface BoxEventMap {
     "backgroundChanged": Box;
     "presentationChanged": Box;
     "textChanged": Box;
+    "highlight": Box;
+    "error": string;
     "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
     "connectedPort": { isSrc: boolean; i: number; last?: false };
     "disconnectedPort": { isSrc: boolean; i: number; last: boolean };

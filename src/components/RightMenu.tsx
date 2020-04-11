@@ -8,6 +8,7 @@ import Box from "../core/Box";
 import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta, TRect, TPatcherProps, TPublicPatcherProps } from "../core/types";
 import "./RightMenu.scss";
 import { BaseUI } from "../core/objects/BaseUI";
+import { BaseObject } from "../core/objects/Base";
 
 enum TPanels {
     None = "None",
@@ -33,6 +34,9 @@ class Console extends React.PureComponent<{ patcher: Patcher; display: boolean }
         if (table.scrollTop + table.clientHeight !== table.scrollHeight) bottom = false;
         if (bottom) table.scrollTop = table.scrollHeight;
     };
+    handleHighlight = (emitter: any) => {
+        if ((emitter instanceof BaseObject) || (emitter instanceof Box)) emitter.highlight();
+    };
     componentDidUpdate(prevProps: Readonly<{ patcher: Patcher; display: boolean }>) {
         if (this.props.display && this.props.display !== prevProps.display) this.scrollToEnd();
     }
@@ -45,7 +49,7 @@ class Console extends React.PureComponent<{ patcher: Patcher; display: boolean }
     render() {
         if (!this.props.display) return <></>;
         const logs = this.state.cached.map((log, i) => (
-            <Table.Row key={i} negative={log.errorLevel === "error"} warning={log.errorLevel === "warn"} positive={log.errorLevel === "info"}>
+            <Table.Row key={i} negative={log.errorLevel === "error"} warning={log.errorLevel === "warn"} positive={log.errorLevel === "info"} onDoubleClick={() => this.handleHighlight(log.emitter)}>
                 <Table.Cell width={4}>{log.title}</Table.Cell>
                 <Table.Cell width={12}>{log.message}</Table.Cell>
             </Table.Row>

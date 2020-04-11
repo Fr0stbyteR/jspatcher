@@ -7,7 +7,7 @@ import { TResizeHandlerType, BoxEventMap, TRect, PatcherEventMap } from "../core
 import { BaseUI } from "../core/objects/BaseUI";
 
 type P = { patcher: Patcher; id: string; runtime?: boolean };
-type S = { selected: boolean; rect: TRect; presentationRect: TRect; presentation: boolean; inPresentationMode: boolean; uiComponent: typeof BaseUI; editing: boolean; key: string };
+type S = { selected: boolean; rect: TRect; presentationRect: TRect; presentation: boolean; inPresentationMode: boolean; uiComponent: typeof BaseUI; editing: boolean; highlight: boolean; error: boolean; key: string };
 export default class BoxUI extends React.PureComponent<P, S> {
     box = this.props.patcher.boxes[this.props.id];
     refDiv = React.createRef<HTMLDivElement>();
@@ -23,6 +23,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
         inPresentationMode: this.props.patcher.state.presentation,
         uiComponent: this.box.uiComponent,
         editing: this.box.uiComponent.editableOnUnlock && this.box._editing,
+        highlight: false,
+        error: false,
         key: performance.now().toString()
     };
     handleResetPos = () => {
@@ -188,6 +190,21 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handleResized = ({ selected }: PatcherEventMap["resized"]) => {
         if (selected.indexOf(this.props.id) !== -1) this.inspectRectChange();
     };
+    clearOverlay = () => {
+        this.setState({ highlight: false, error: false });
+        document.removeEventListener("mousedown", this.clearOverlay);
+    };
+    handleHighlight = () => {
+        if (!this.refDiv.current) return;
+        const div = this.refDiv.current;
+        div.scrollIntoView(false);
+        this.setState({ highlight: true });
+        document.addEventListener("mousedown", this.clearOverlay);
+    };
+    handleError = () => {
+        this.setState({ error: true });
+        document.addEventListener("mousedown", this.clearOverlay);
+    };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
@@ -283,6 +300,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
         box.on("rectChanged", this.handleRectChanged);
         box.on("presentationRectChanged", this.handlePresentationRectChanged);
         box.on("presentationChanged", this.handlePresentationChanged);
+        box.on("highlight", this.handleHighlight);
+        box.on("error", this.handleError);
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleDeselected);
         this.props.patcher.on("presentation", this.handlePatcherPresentationChanged);
@@ -301,6 +320,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
         box.off("rectChanged", this.handleRectChanged);
         box.off("presentationRectChanged", this.handlePresentationRectChanged);
         box.off("presentationChanged", this.handlePresentationChanged);
+        box.off("highlight", this.handleHighlight);
+        box.off("error", this.handleError);
     }
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
         this.box.object.error(error);
@@ -328,6 +349,9 @@ export default class BoxUI extends React.PureComponent<P, S> {
                         <Inlets patcher={this.props.patcher} box={box} runtime={this.props.runtime} />
                         <Outlets patcher={this.props.patcher} box={box} runtime={this.props.runtime} />
                     </>
+                }
+                {
+                    this.state.error || this.state.highlight ? <div style={{ position: "absolute", width: "100%", height: "100%", backgroundColor: this.state.error ? "rgba(255, 0, 0, 0.3)" : "rgba(255, 255, 128, 0.3)" }} /> : undefined
                 }
                 <div className={"resize-handlers resize-handlers-" + InnerUI.sizing}>
                     <div className="resize-handler resize-handler-n" onMouseDown={this.handleResizeMouseDown}></div>
