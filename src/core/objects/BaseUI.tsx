@@ -443,7 +443,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
                     </span>
                     {
                         Dropdown === DefaultUIDropdownObjects && typeof query === "string"
-                            ? <DefaultUIDropdownObjects lib={this.patcher.activeLib} query={query} onSelect={this.handleSelect} ref={this.refDropdownObject} />
+                            ? <DefaultUIDropdownObjects lib={this.patcher.activeLib} query={query} onSelect={this.handleSelect} staticMethodOnly={object.box.text.startsWith("new ")} ref={this.refDropdownObject} />
                             : Dropdown === DefaultUIDropdownArgv && typeof query === "object"
                                 ? <DefaultUIDropdownArgv obj={query.obj} argv={query.argv} onSelect={this.handleSelect} ref={this.refDropdownArgv} />
                                 : undefined

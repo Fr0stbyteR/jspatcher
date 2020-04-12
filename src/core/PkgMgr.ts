@@ -33,8 +33,7 @@ export default class PackageManager {
         WebRTC,
         WebMIDI,
         DSP,
-        new:
-        New,
+        new: New,
         live,
         faust
     };
@@ -172,5 +171,49 @@ export default class PackageManager {
             }
         }
         return libOut;
+    }
+    searchInLib(query: string, limit = Infinity, staticMethodOnly = false, lib = this.activeLib) {
+        const keys = Object.keys(lib).sort();
+        const items: { key: string; object: typeof AnyObject }[] = [];
+        for (let i = 0; i < keys.length; i++) {
+            if (items.length >= limit) break;
+            const key = keys[i];
+            if (key.startsWith(query)) {
+                const o = lib[key];
+                if (staticMethodOnly) {
+                    if (o[ImporterDirSelfObject as unknown as keyof typeof AnyObject]) {
+                        items.push({ key, object: o });
+                    }
+                } else {
+                    items.push({ key, object: o });
+                }
+            }
+        }
+        return items;
+    }
+    searchInPkg(query: string, limit = Infinity, staticMethodOnly = false, pkg = this.activePkg, path: string[] = []): { path: string[]; object?: typeof AnyObject | TPackage }[] {
+        const outs: { path: string[]; object?: typeof AnyObject | TPackage }[] = [];
+        for (const key in pkg) {
+            if (outs.length >= limit) break;
+            const o = pkg[key];
+            if (typeof o === "object") {
+                if (key.indexOf(query) !== -1) outs.push({ path: [...path, key], object: o });
+                else outs.push(...this.searchInPkg(query, limit, staticMethodOnly, o, [...path, key]));
+            } else {
+                if (key.indexOf(query) !== -1) outs.push({ path: [...path, key], object: o });
+            }
+        }
+        return outs;
+    }
+    getFromPath(pathIn: (string | symbol)[], pkg = this.activePkg) {
+        const path = pathIn.slice();
+        let o: TPackage | typeof AnyObject = pkg;
+        while (path.length) {
+            const key = path.shift() as any;
+            o = (o as TPackage)[key];
+            if (!o) return null;
+            if (typeof o !== "object" && !(o.prototype instanceof BaseObject)) return null;
+        }
+        return o;
     }
 }

@@ -76,8 +76,19 @@
             user-select: none;
             -webkit-user-select: none;
             & > .segment {
+                flex: 1 1 auto;
+                overflow: auto;
+                display: block;
+                margin: 0px;
                 padding: 0.5em;
                 background-color: transparent;
+            }
+            & > .menu {
+                flex-direction: column;
+                & > .input {
+                    margin-top: auto;
+                    margin-bottom: auto;
+                }
             }
             & .abstract > .content > .header {
                 font-style: italic;

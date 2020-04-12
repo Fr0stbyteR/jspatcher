@@ -1,5 +1,5 @@
 import * as React from "react";
-import { MenuItemProps, Menu, Icon, Header, Segment, List } from "semantic-ui-react";
+import { MenuItemProps, Menu, Icon, Header, Segment, List, Input } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import "./LeftMenu.scss";
 import { TPackage } from "../core/types";
@@ -11,51 +11,78 @@ enum TPanels {
     Objects = "Objects",
     Packages = "Packages"
 }
-class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage; path: string[] }, { selected: string | symbol }> {
-    state = { selected: undefined as string | symbol };
+class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage; path: string[]; search?: string }, { selected: (string | symbol)[] }> {
+    state = { selected: [] as (string | symbol)[] };
     refIcon = React.createRef<Icon>();
     get list() {
-        const { pkg, path } = this.props;
+        const { pkg, path: pathIn, search } = this.props;
         const { selected } = this.state;
-        const list = [];
-        if (path.length && ImporterDirSelfObject in pkg) {
-            const sel = selected === ImporterDirSelfObject;
-            const props = sel ? { className: "abstract selected", description: this.getDescription(ImporterDirSelfObject) } : { className: "abstract" };
-            list.push(<List.Item key={0} {...props} icon="window maximize" header={path[path.length - 1]} onClick={() => this.handleSelect(ImporterDirSelfObject)} onMouseDown={(e: React.MouseEvent) => this.handleMouseDown(e, ImporterDirSelfObject)} />);
+        const list: JSX.Element[] = [];
+        if (search) {
+            const searchResult = this.props.patcher._state.pkgMgr.searchInPkg(search, 128, false, pkg);
+            searchResult.forEach((r, i) => {
+                const { object, path } = r;
+                const key = path[path.length - 1];
+                const sel = selected.length === path.length && selected.every((e, i) => e === path[i]);
+                if (typeof object === "object") {
+                    list.push(<List.Item key={i} icon={sel ? "folder open" : "folder"} className={key ? "folder-item" : "abstract folder-item"} header={path.join(".")} onClick={() => this.handleSelect(path)} />);
+                    if (sel) {
+                        list.push(
+                            <List.Item key={`${i}_Folder`} className="folder-content">
+                                <ObjectsItems {...this.props} search={undefined} pkg={object} path={path} />
+                            </List.Item>
+                        );
+                    }
+                } else {
+                    const props = sel ? { className: "selected", description: this.getDescription(path) } : {};
+                    list.push(<List.Item key={i} {...props} icon="window maximize" header={path.join(".")} onClick={() => this.handleSelect(path)} onMouseDown={(e: React.MouseEvent) => this.handleMouseDown(e, path)} />);
+                }
+            });
+            return list;
+        }
+        if (pathIn.length && ImporterDirSelfObject in pkg) {
+            const path = [...pathIn, ImporterDirSelfObject];
+            const sel = selected.length === path.length && selected.every((e, i) => e === path[i]);
+            const props = sel ? { className: "abstract selected", description: this.getDescription(path) } : { className: "abstract" };
+            list.push(<List.Item key={"__JSPatcher_ImporterDirSelfObject"} {...props} icon="window maximize" header={pathIn[pathIn.length - 1]} onClick={() => this.handleSelect(path)} onMouseDown={(e: React.MouseEvent) => this.handleMouseDown(e, path)} />);
         }
         for (const key in pkg) {
+            const path = [...pathIn, key];
+            const sel = selected.length === path.length && selected.every((e, i) => e === path[i]);
             if (typeof pkg[key] === "object") {
-                list.push(<List.Item key={key} icon={selected === key ? "folder open" : "folder"} className={key ? "folder-item" : "abstract folder-item"} header={key || "prototype"} onClick={() => this.handleSelect(key)} />);
-                if (selected === key) {
+                list.push(<List.Item key={key} icon={sel ? "folder open" : "folder"} className={key ? "folder-item" : "abstract folder-item"} header={key || "prototype"} onClick={() => this.handleSelect(path)} />);
+                if (sel) {
                     list.push(
                         <List.Item key={1} className="folder-content">
-                            <ObjectsItems {...this.props} pkg={pkg[key] as TPackage} path={[...path, key]} />
+                            <ObjectsItems {...this.props} pkg={pkg[key] as TPackage} path={path} />
                         </List.Item>
                     );
                 }
             } else {
-                const sel = selected === key;
-                const props = sel ? { className: "selected", description: this.getDescription(key) } : {};
-                list.push(<List.Item key={key} {...props} icon="window maximize" header={key || "prototype"} onClick={() => this.handleSelect(key)} onMouseDown={(e: React.MouseEvent) => this.handleMouseDown(e, key)} />);
+                const props = sel ? { className: "selected", description: this.getDescription(path) } : {};
+                list.push(<List.Item key={key} {...props} icon="window maximize" header={key || "prototype"} onClick={() => this.handleSelect(path)} onMouseDown={(e: React.MouseEvent) => this.handleMouseDown(e, path)} />);
             }
         }
         return list;
     }
-    getDescription(key: string | symbol) {
-        const obj = this.props.pkg[key as string];
+    getDescription(path: (string | symbol)[]) {
+        const obj = this.props.patcher._state.pkgMgr.getFromPath(path);
         return typeof obj === "function" && obj.prototype instanceof BaseObject ? obj.description : undefined;
     }
-    isFolder(key: string | symbol) {
-        return typeof this.props.pkg[key as string] === "object";
+    isFolder(path: (string | symbol)[]) {
+        const obj = this.props.patcher._state.pkgMgr.getFromPath(path);
+        return typeof obj === "object";
     }
-    isObject(key: string | symbol) {
-        const obj = this.props.pkg[key as string];
+    isObject(path: (string | symbol)[]) {
+        const obj = this.props.patcher._state.pkgMgr.getFromPath(path);
         return typeof obj === "function" && obj.prototype instanceof BaseObject;
     }
-    getObjText(key: string | symbol) {
-        const path = this.props.path.slice();
+    getObjText(pathIn: (string | symbol)[]) {
+        const path = pathIn.slice();
+        const key = path[path.length - 1];
         const lib = this.props.patcher.activeLib;
-        if (key !== ImporterDirSelfObject) path.push(key as string);
+        const isConstructor = key === ImporterDirSelfObject;
+        if (isConstructor) path.pop();
         let id = path.join(".");
         const refObj = lib[id];
         if (!refObj) return undefined;
@@ -65,10 +92,15 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
             if (lib[newID] === refObj) id = newID;
             else break;
         }
+        if (isConstructor) return `new ${id}`;
         return id;
     }
-    handleSelect = (key: string | symbol) => this.setState({ selected: this.state.selected === key && this.isFolder(key) ? undefined : key });
-    handleMouseDown = (e: React.MouseEvent, key: string | symbol) => {
+    handleSelect = (path: (string | symbol)[]) => {
+        const { selected } = this.state;
+        const same = selected.length === path.length && selected.every((e, i) => e === path[i]);
+        this.setState({ selected: same && this.isFolder(path) ? [] : path });
+    };
+    handleMouseDown = (e: React.MouseEvent, path: (string | symbol)[]) => {
         if (this.props.patcher.state.locked) return;
         const currentTarget = e.currentTarget as HTMLDivElement;
         // Find Patcher Div
@@ -114,7 +146,7 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
             const y = pageY - top + scrollTop;
             const { patcher } = this.props;
             const { presentation } = patcher._state;
-            patcher.createBox({ text: this.getObjText(key), inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
+            patcher.createBox({ text: this.getObjText(path), inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
         };
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
@@ -127,8 +159,9 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
         );
     }
 }
-class Objects extends React.PureComponent<{ patcher: Patcher }, { pkg: TPackage }> {
-    state = { pkg: this.props.patcher.activePkg };
+class Objects extends React.PureComponent<{ patcher: Patcher }, { pkg: TPackage; search: string }> {
+    state = { pkg: this.props.patcher.activePkg, search: "" };
+    timer: number = undefined;
     handlePkgChanged: (e: { pkg: TPackage }) => void = ({ pkg }) => this.setState({ pkg: {} }, () => this.setState({ pkg }));
     componentDidMount() {
         this.props.patcher.on("libChanged", this.handlePkgChanged);
@@ -136,11 +169,36 @@ class Objects extends React.PureComponent<{ patcher: Patcher }, { pkg: TPackage 
     componentWillUnmount() {
         this.props.patcher.off("libChanged", this.handlePkgChanged);
     }
+    handleKeyDown = (e: React.KeyboardEvent<Input>) => {
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+    };
+    applySearch = (search: string) => {
+        this.setState({ search });
+        this.timer = undefined;
+    };
+    handleChange = (e: React.ChangeEvent<HTMLInputElement>, data: { value: string }) => {
+        if (this.timer) window.clearTimeout(this.timer);
+        window.setTimeout(this.applySearch, 500, data.value);
+    };
+    handleClickClose = (e: React.MouseEvent) => {
+        const input = e.currentTarget.previousSibling as HTMLInputElement;
+        if (input) {
+            input.value = "";
+            input.focus();
+        }
+        this.setState({ search: "" });
+    };
     render() {
         return (
-            <Segment inverted size="mini">
-                <ObjectsItems {...this.props} pkg={this.state.pkg} path={[]} />
-            </Segment>
+            <>
+                <Segment inverted size="mini">
+                    <ObjectsItems {...this.props} pkg={this.state.pkg} path={[]} search={this.state.search} />
+                </Segment>
+                <Menu icon inverted size="mini">
+                    <Input inverted size="mini" fluid icon={this.state.search ? { name: "close", link: true, onClick: this.handleClickClose } : "search"} placeholder="Search..." onKeyDown={this.handleKeyDown} onChange={this.handleChange} />
+                </Menu>
+            </>
         );
     }
 }
