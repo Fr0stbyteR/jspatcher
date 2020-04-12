@@ -143,3 +143,13 @@ export const selectElementPos = (e: HTMLElement, pos: number) => {
     selection.removeAllRanges();
     selection.addRange(range);
 };
+// eslint-disable-next-line arrow-body-style
+export const getPropertyDescriptor = (obj: { [key: string]: any }, key: string): PropertyDescriptor => {
+    return Object.getOwnPropertyDescriptor(obj, key) || getPropertyDescriptor(Object.getPrototypeOf(obj), key);
+};
+export const getPropertyDescriptors = (obj: Function | { [key: string]: any }): PropertyDescriptorMap => {
+    if (typeof obj === "function") return Object.getOwnPropertyDescriptors(obj);
+    const proto = Object.getPrototypeOf(obj);
+    if (obj !== Object.prototype && proto === Object.prototype) return Object.getOwnPropertyDescriptors(obj);
+    return Object.assign(proto ? getPropertyDescriptors(proto) : {}, Object.getOwnPropertyDescriptors(obj));
+};

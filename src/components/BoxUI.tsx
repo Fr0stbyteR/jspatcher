@@ -195,6 +195,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         document.removeEventListener("mousedown", this.clearOverlay);
     };
     handleHighlight = () => {
+        document.removeEventListener("mousedown", this.clearOverlay);
         if (!this.refDiv.current) return;
         const div = this.refDiv.current;
         div.scrollIntoView(false);
@@ -202,6 +203,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         document.addEventListener("mousedown", this.clearOverlay);
     };
     handleError = () => {
+        document.removeEventListener("mousedown", this.clearOverlay);
         this.setState({ error: true });
         document.addEventListener("mousedown", this.clearOverlay);
     };

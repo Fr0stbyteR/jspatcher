@@ -12,6 +12,7 @@ import { TPackage } from "../../types";
 import { AnyImportedObject } from "./ImportedObject";
 import { BaseObject } from "../Base";
 import { ImporterDirSelfObject } from "../../../utils/symbols";
+import { getPropertyDescriptors } from "../../../utils/utils";
 
 type TImportedModule = { [key: string]: any };
 declare interface Window {
@@ -104,7 +105,7 @@ export default class Importer {
         stack[depth] = o;
         let props: { [key: string]: TypedPropertyDescriptor<any> | PropertyDescriptor };
         try { // mitigate opener.location.href error
-            props = Object.getOwnPropertyDescriptors(o);
+            props = getPropertyDescriptors(o);
         } catch (e) {
             return out;
         }
