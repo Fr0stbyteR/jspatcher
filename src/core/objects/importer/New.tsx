@@ -61,7 +61,8 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
                 else if (Wrapper.prototype instanceof StaticMethod) {
                     this.state.Wrapper = Wrapper as typeof StaticMethod;
                     const Fn = this.imported;
-                    this.inlets = Fn.length === 0 ? 1 : Fn.length; // Function.length property
+                    const argsCount = Math.max(Fn.length, args.length - 1, ~~+this.getProp("args"));
+                    this.inlets = Math.max(1, argsCount);
                     this.outlets = 1 + this.inlets;
                 } else {
                     this.error("Given function is not constructable");
@@ -73,7 +74,9 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         });
         this.on("updateProps", (props) => {
             if (props.args && typeof props.args === "number" && props.args >= 0) {
-                this.inlets = ~~props.args;
+                const Fn = this.imported;
+                const argsCount = Math.max(Fn.length, this.box.args.length - 1, ~~+props.args);
+                this.inlets = Math.max(1, argsCount);
                 this.outlets = 1 + this.inlets;
             }
         });

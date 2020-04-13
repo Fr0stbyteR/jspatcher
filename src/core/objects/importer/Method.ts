@@ -68,10 +68,15 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
         });
         this.on("updateArgs", (args) => {
             this.state.inputs = args.slice();
+            const fn = this.imported;
+            const argsCount = Math.max(fn.length, args.length, ~~+this.getProp("args"));
+            this.inlets = Math.max(1, this.initialInlets + argsCount);
+            this.outlets = this.initialOutlets + argsCount;
         });
         this.on("updateProps", (props) => {
             if (props.args && typeof props.args === "number" && props.args >= 0) {
-                const argsCount = ~~props.args;
+                const fn = this.imported;
+                const argsCount = Math.max(fn.length, this.box.args.length, ~~props.args);
                 this.inlets = Math.max(1, this.initialInlets + argsCount);
                 this.outlets = this.initialOutlets + argsCount;
             }

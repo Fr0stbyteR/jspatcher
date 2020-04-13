@@ -9,7 +9,8 @@ import "./Base.scss";
 import { AbstractObject, BaseObject, AnyObject, DefaultObject, DefaultObjectUIProps } from "./Base";
 import { selectElementPos, selectElementRange } from "../../utils/utils";
 import { TFlatPackage, TMetaType } from "../types";
-import { ImporterDirSelfObject } from "../../utils/symbols";
+import { ImportedStaticMethodObject } from "../../utils/symbols";
+import { StaticMethod } from "./importer/StaticMethod";
 
 export interface AbstractUIProps<T extends AbstractObject = AbstractObject> {
     object: T;
@@ -189,7 +190,7 @@ class DefaultUIDropdownObjects extends React.Component<DefaultUIDropdownObjectsP
                 const o = lib[key];
                 const { icon, description } = o.meta;
                 if (staticMethodOnly) {
-                    if (o[ImporterDirSelfObject as unknown as keyof typeof AnyObject]) {
+                    if ((o as typeof StaticMethod)[ImportedStaticMethodObject]) {
                         items.push({ key, icon, description });
                     }
                 } else {
@@ -443,7 +444,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
                     </span>
                     {
                         Dropdown === DefaultUIDropdownObjects && typeof query === "string"
-                            ? <DefaultUIDropdownObjects lib={this.patcher.activeLib} query={query} onSelect={this.handleSelect} staticMethodOnly={object.box.text.startsWith("new ")} ref={this.refDropdownObject} />
+                            ? <DefaultUIDropdownObjects lib={this.patcher.activeLib} query={query} onSelect={this.handleSelect} staticMethodOnly={this.state.text.startsWith("new ")} ref={this.refDropdownObject} />
                             : Dropdown === DefaultUIDropdownArgv && typeof query === "object"
                                 ? <DefaultUIDropdownArgv obj={query.obj} argv={query.argv} onSelect={this.handleSelect} ref={this.refDropdownArgv} />
                                 : undefined

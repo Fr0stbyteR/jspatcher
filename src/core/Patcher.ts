@@ -908,7 +908,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             boxSet.add(this.boxes[id]);
             this.boxes[id].allLines.forEach(line => lineSet.add(line));
         });
-        if (!boxSet.size) return undefined;
+        if (!boxSet.size && !lineSet.size) return undefined;
         this._state.selected = [];
         const deleted: TPatcher = { boxes: {}, lines: {} };
         const promises: Promise<Box>[] = [];

@@ -640,4 +640,113 @@ class delay extends StdObject<{}, { time: number; ref: Set<number> }, [any, numb
     }
 }
 
-export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, v, lambda, bang, loadbang, delay };
+type CallState = { instance: any; inputs: any[]; result: any };
+export class call extends DefaultObject<{}, CallState, any[], any[], [string, ...any[]], { args: number; sync: boolean }, { loading: boolean }> {
+    static description = "Call a method of current object";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Instance to read"
+    }, {
+        isHot: false,
+        type: "anything",
+        varLength: true,
+        description: "Method argument"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        description: "Instance bypass"
+    }, {
+        type: "anything",
+        description: "Method return value"
+    }, {
+        type: "anything",
+        varLength: true,
+        description: "Argument after method called"
+    }];
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: false,
+        description: "Method name"
+    }, {
+        type: "anything",
+        optional: true,
+        varLength: true,
+        description: "Set arguments while loaded"
+    }];
+    static props: TMeta["props"] = {
+        args: {
+            type: "number",
+            default: 0,
+            description: "arguments count for method"
+        },
+        sync: {
+            type: "boolean",
+            default: false,
+            description: "If true and in case the result is a Promise, instead of waiting for result, will output the Promise object"
+        }
+    };
+    state: CallState = { instance: undefined, inputs: [], result: null };
+    initialInlets = 1;
+    initialOutlets = 2;
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = this.initialInlets;
+            this.outlets = this.initialOutlets;
+        });
+        this.on("updateArgs", (args) => {
+            this.state.inputs = args.slice(1);
+            const argsCount = Math.max(args.length - 1, ~~+this.getProp("args"));
+            this.inlets = Math.max(1, this.initialInlets + argsCount);
+            this.outlets = this.initialOutlets + argsCount;
+        });
+        this.on("updateProps", (props) => {
+            if (props.args && typeof props.args === "number" && props.args >= 0) {
+                const argsCount = Math.max(this.box.args.length - 1, ~~props.args);
+                this.inlets = Math.max(1, this.initialInlets + argsCount);
+                this.outlets = this.initialOutlets + argsCount;
+            }
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                if (!(data instanceof Bang)) this.state.instance = data;
+                if (this.execute()) this.output();
+            } else {
+                this.state.inputs[inlet - 1] = data;
+            }
+        });
+    }
+    execute() {
+        const m = this.box.args[0];
+        try {
+            this.state.result = this.state.instance[m](...this.state.inputs);
+            return true;
+        } catch (e) {
+            this.error(e);
+            return false;
+        }
+    }
+    callback = () => this.outletAll([this.state.instance, this.state.result, ...this.state.inputs]);
+    output() {
+        if (this.state.result instanceof Promise && !this.getProp("sync")) {
+            this.loading = true;
+            this.state.result.then((r) => {
+                this.loading = false;
+                this.state.result = r;
+                this.callback();
+            }, (r) => {
+                this.loading = false;
+                this.error(r);
+            });
+            return this;
+        }
+        return this.callback();
+    }
+    set loading(loading: boolean) {
+        this.updateUI({ loading });
+    }
+}
+
+
+export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, call, v, lambda, bang, loadbang, delay };

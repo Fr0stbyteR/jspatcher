@@ -151,7 +151,11 @@ class message extends UIObject<{ text: string }, { buffer: any; editing: boolean
     }
     stringify(o: any) {
         if (typeof o === "string") return o;
-        return Util.inspect(o);
+        try {
+            return JSON.stringify(o);
+        } catch (e) {
+            return Util.inspect(o);
+        }
     }
     static ui: typeof BaseUI = MessageUI;
 }
