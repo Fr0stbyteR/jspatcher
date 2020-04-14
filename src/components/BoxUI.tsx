@@ -198,7 +198,12 @@ export default class BoxUI extends React.PureComponent<P, S> {
         document.removeEventListener("mousedown", this.clearOverlay);
         if (!this.refDiv.current) return;
         const div = this.refDiv.current;
-        div.scrollIntoView(false);
+        const patcherDiv = div.parentElement.parentElement;
+        if (div.offsetTop < patcherDiv.scrollTop
+            || div.offsetLeft < patcherDiv.scrollLeft
+            || div.offsetTop + div.offsetHeight < patcherDiv.scrollTop + patcherDiv.offsetHeight
+            || div.offsetLeft + div.offsetWidth < patcherDiv.scrollLeft + patcherDiv.offsetWidth
+        ) div.scrollIntoView({ block: "nearest", inline: "nearest" });
         this.setState({ highlight: true });
         document.addEventListener("mousedown", this.clearOverlay);
     };

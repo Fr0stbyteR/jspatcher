@@ -165,15 +165,19 @@ class DefaultUIDropdownObjects extends React.Component<DefaultUIDropdownObjectsP
     next() {
         const { items, $ } = this.state;
         this.setState({ $: Math.min(items.length - 1, $ + 1) });
-        if ($ >= 0 && this.refTBody.current && items[$]) {
-            (this.refTBody.current.children[$] as HTMLTableRowElement).scrollIntoView(false);
+        if ($ >= 0 && this.refTBody.current && items[$ + 1]) {
+            const table = this.refTBody.current.parentElement;
+            const row = (this.refTBody.current.children[$ + 1] as HTMLTableRowElement);
+            if (row.offsetTop + row.offsetHeight > table.scrollTop + table.offsetHeight) row.scrollIntoView(false);
         }
     }
     prev() {
         const { items, $ } = this.state;
         this.setState({ $: Math.max(-1, $ - 1) });
-        if ($ >= 0 && this.refTBody.current && items[$]) {
-            (this.refTBody.current.children[$] as HTMLTableRowElement).scrollIntoView(false);
+        if ($ >= 0 && this.refTBody.current && items[$ - 1]) {
+            const table = this.refTBody.current.parentElement;
+            const row = (this.refTBody.current.children[$ - 1] as HTMLTableRowElement);
+            if (row.offsetTop < table.scrollTop) row.scrollIntoView(true);
         }
     }
     get current() {
