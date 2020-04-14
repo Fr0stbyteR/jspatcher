@@ -17,7 +17,7 @@
                 "id": "line-2",
                 "src": [
                     "box-6",
-                    1
+                    0
                 ],
                 "dest": [
                     "box-7",
@@ -73,23 +73,11 @@
                 ],
                 "disabled": false
             },
-            "line-15": {
-                "id": "line-15",
-                "src": [
-                    "box-9",
-                    0
-                ],
-                "dest": [
-                    "box-15",
-                    0
-                ],
-                "disabled": false
-            },
             "line-18": {
                 "id": "line-18",
                 "src": [
                     "box-18",
-                    1
+                    0
                 ],
                 "dest": [
                     "box-10",
@@ -106,6 +94,42 @@
                 "dest": [
                     "box-22",
                     1
+                ],
+                "disabled": false
+            },
+            "line-22": {
+                "id": "line-22",
+                "src": [
+                    "box-7",
+                    0
+                ],
+                "dest": [
+                    "box-27",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-23": {
+                "id": "line-23",
+                "src": [
+                    "box-27",
+                    0
+                ],
+                "dest": [
+                    "box-15",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-24": {
+                "id": "line-24",
+                "src": [
+                    "box-18",
+                    0
+                ],
+                "dest": [
+                    "box-28",
+                    0
                 ],
                 "disabled": false
             }
@@ -207,6 +231,106 @@
                 "args": [],
                 "props": {}
             },
+            "box-15": {
+                "id": "box-15",
+                "text": "code javascript",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    60,
+                    210,
+                    510,
+                    90
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    315,
+                    210,
+                    400,
+                    225
+                ],
+                "data": {
+                    "value": "(obj) => {\r\n    return Object.entries(obj).map(\r\n        ([key, value]) => ({ key, text: key, value })\r\n    );\r\n}"
+                },
+                "args": [
+                    "javascript"
+                ],
+                "props": {}
+            },
+            "box-17": {
+                "id": "box-17",
+                "text": "eval",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    60,
+                    315,
+                    90,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    315,
+                    300,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-18": {
+                "id": "box-18",
+                "text": "Function..call @args 2",
+                "inlets": 3,
+                "outlets": 4,
+                "rect": [
+                    60,
+                    345,
+                    135,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    330,
+                    315,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {
+                    "args": 2
+                }
+            },
+            "box-22": {
+                "id": "box-22",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    60,
+                    480,
+                    555,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    120,
+                    420,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "https://mainline.i3s.unice.fr/WebAudioPluginBank/Faust/ZitaRevV3"
+                },
+                "args": [],
+                "props": {}
+            },
             "box-10": {
                 "id": "box-10",
                 "text": "menu",
@@ -214,7 +338,7 @@
                 "outlets": 1,
                 "rect": [
                     60,
-                    270,
+                    375,
                     165,
                     22
                 ],
@@ -438,49 +562,22 @@
                     ]
                 }
             },
-            "box-15": {
-                "id": "box-15",
-                "text": "code javascript",
-                "inlets": 2,
-                "outlets": 1,
-                "rect": [
-                    480,
-                    90,
-                    510,
-                    90
-                ],
-                "background": false,
-                "presentation": false,
-                "presentationRect": [
-                    315,
-                    210,
-                    400,
-                    225
-                ],
-                "data": {
-                    "value": "(obj) => {\r\n    return Object.entries(obj).map(\r\n        ([key, value]) => ({ key, text: key, value })\r\n    );\r\n}"
-                },
-                "args": [
-                    "javascript"
-                ],
-                "props": {}
-            },
-            "box-17": {
-                "id": "box-17",
-                "text": "eval",
+            "box-27": {
+                "id": "box-27",
+                "text": "bang",
                 "inlets": 1,
-                "outlets": 2,
+                "outlets": 1,
                 "rect": [
-                    480,
-                    195,
+                    60,
+                    180,
                     90,
                     23
                 ],
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    315,
-                    300,
+                    495,
+                    30,
                     90,
                     20
                 ],
@@ -488,53 +585,26 @@
                 "args": [],
                 "props": {}
             },
-            "box-18": {
-                "id": "box-18",
-                "text": "Function..call @args 2",
-                "inlets": 3,
-                "outlets": 4,
+            "box-28": {
+                "id": "box-28",
+                "text": "console.log",
+                "inlets": 1,
+                "outlets": 1,
                 "rect": [
-                    60,
                     240,
-                    135,
+                    375,
+                    90,
                     23
                 ],
                 "background": false,
                 "presentation": false,
                 "presentationRect": [
-                    330,
-                    315,
+                    390,
+                    375,
                     90,
                     20
                 ],
                 "data": {},
-                "args": [],
-                "props": {
-                    "args": 2
-                }
-            },
-            "box-22": {
-                "id": "box-22",
-                "text": "message",
-                "inlets": 2,
-                "outlets": 1,
-                "rect": [
-                    60,
-                    390,
-                    555,
-                    22
-                ],
-                "background": false,
-                "presentation": false,
-                "presentationRect": [
-                    120,
-                    420,
-                    90,
-                    20
-                ],
-                "data": {
-                    "text": "https://mainline.i3s.unice.fr/WebAudioPluginBank/Mike-AUBENAS/MixingConsole/Mixer"
-                },
                 "args": [],
                 "props": {}
             }
@@ -549,8 +619,8 @@
                 15
             ],
             "openInPresentation": false,
-            "boxIndexCount": 26,
-            "lineIndexCount": 21
+            "boxIndexCount": 28,
+            "lineIndexCount": 24
         },
         "data": {}
     },

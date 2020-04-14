@@ -80,9 +80,29 @@ class loadbang extends StdObject<{}, {}, [], [Bang], []> {
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
-            this.inlets = 0;
+            this.inlets = 1;
             this.outlets = 1;
             this.patcher.on("ready", () => this.outlet(0, new Bang()));
+        });
+    }
+}
+class unloadbang extends StdObject<{}, {}, [], [Bang], []> {
+    static description = "Bang when patcher will be unloaded";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "anything",
+        description: "Anything to transform to a bang"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "bang",
+        description: "Bang when inlet"
+    }];
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 1;
+            this.patcher.on("unload", () => this.outlet(0, new Bang()));
         });
     }
 }
@@ -641,7 +661,7 @@ class delay extends StdObject<{}, { time: number; ref: Set<number> }, [any, numb
 }
 
 type CallState = { instance: any; inputs: any[]; result: any };
-export class call extends DefaultObject<{}, CallState, any[], any[], [string, ...any[]], { args: number; sync: boolean }, { loading: boolean }> {
+export class call extends DefaultObject<{}, CallState, [any | Bang, ...any[]], any[], [string, ...any[]], { args: number; sync: boolean }, { loading: boolean }> {
     static description = "Call a method of current object";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -655,10 +675,10 @@ export class call extends DefaultObject<{}, CallState, any[], any[], [string, ..
     }];
     static outlets: TMeta["outlets"] = [{
         type: "anything",
-        description: "Instance bypass"
+        description: "Method return value"
     }, {
         type: "anything",
-        description: "Method return value"
+        description: "Instance bypass"
     }, {
         type: "anything",
         varLength: true,
@@ -727,7 +747,7 @@ export class call extends DefaultObject<{}, CallState, any[], any[], [string, ..
             return false;
         }
     }
-    callback = () => this.outletAll([this.state.instance, this.state.result, ...this.state.inputs]);
+    callback = () => this.outletAll([this.state.result, this.state.instance, ...this.state.inputs]);
     output() {
         if (this.state.result instanceof Promise && !this.getProp("sync")) {
             this.loading = true;
@@ -749,4 +769,4 @@ export class call extends DefaultObject<{}, CallState, any[], any[], [string, ..
 }
 
 
-export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, call, v, lambda, bang, loadbang, delay };
+export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, call, v, lambda, bang, loadbang, unloadbang, delay };

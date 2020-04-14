@@ -15,10 +15,10 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
     }];
     static outlets: TMeta["outlets"] = [{
         type: "anything",
-        description: "Instance bypass"
+        description: "Value"
     }, {
         type: "anything",
-        description: "Value"
+        description: "Instance bypass"
     }];
     static props: TMeta["props"] = {
         sync: {
@@ -53,7 +53,7 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
             return false;
         }
     }
-    callback = () => this.outletAll([this.state.instance, this.state.result] as O<Static>);
+    callback = () => this.outletAll([this.state.result, this.state.instance] as O<Static>);
     output() {
         if (this.state.result instanceof Promise && !this.getProp("sync")) {
             this.loading = true;

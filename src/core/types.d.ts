@@ -168,6 +168,7 @@ type TSharedDataConsumers = {
 interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "loading": string[] | undefined;
     "ready": never;
+    "unload": never;
     "locked": boolean;
     "presentation": boolean;
     "showGrid": boolean;

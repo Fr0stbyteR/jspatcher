@@ -267,6 +267,10 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         reader.readAsText(file, "UTF-8");
         return this;
     }
+    async unload() {
+        await this.emit("unload");
+        await this.clear();
+    }
     get fileName() {
         return `${this._state.name}.${{ js: "json", max: "maxpat", gen: "gendsp", faust: "dsppat" }[this.props.mode]}`;
     }

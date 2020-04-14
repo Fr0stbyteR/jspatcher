@@ -23,10 +23,10 @@ export class Property<Static extends boolean = false> extends ImportedObject<any
     }];
     static outlets: TMeta["outlets"] = [{
         type: "anything",
-        description: "Instance bypass"
+        description: "Value"
     }, {
         type: "anything",
-        description: "Value"
+        description: "Instance bypass"
     }];
     state: S<Static> = { instance: undefined };
     handlePreInit = () => {
@@ -42,7 +42,7 @@ export class Property<Static extends boolean = false> extends ImportedObject<any
             } catch (e) {
                 this.error(e);
             }
-            this.outletAll([this.state.instance, result] as O<Static>);
+            this.outletAll([result, this.state.instance] as O<Static>);
         } else if (inlet === 1) {
             try {
                 this.state.instance[this.name] = data;

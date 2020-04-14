@@ -21,10 +21,10 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
     }];
     static outlets: TMeta["outlets"] = [{
         type: "anything",
-        description: "Instance bypass"
+        description: "Method return value"
     }, {
         type: "anything",
-        description: "Method return value"
+        description: "Instance bypass"
     }, {
         type: "anything",
         varLength: true,
@@ -93,7 +93,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
             return false;
         }
     }
-    callback = () => this.outletAll([this.state.instance, this.state.result, ...this.state.inputs] as O<Static>);
+    callback = () => this.outletAll([this.state.result, this.state.instance, ...this.state.inputs] as O<Static>);
     output() {
         if (this.state.result instanceof Promise && !this.getProp("sync")) {
             this.loading = true;
