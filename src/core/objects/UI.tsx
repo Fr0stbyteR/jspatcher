@@ -104,7 +104,7 @@ class message extends UIObject<{ text: string }, { buffer: any; editing: boolean
     state = { buffer: new Bang(), editing: false };
     handleUpdateArgs = (args: any[]) => {
         if (typeof args[0] !== "undefined") {
-            this.data.text = this.stringify(args[0]);
+            this.setData({ text: this.stringify(args[0]) });
             this.state.buffer = this.parse(args[0]);
         } else {
             this.state.buffer = new Bang();
@@ -122,11 +122,11 @@ class message extends UIObject<{ text: string }, { buffer: any; editing: boolean
             if (typeof this.data.text === "string") this.state.buffer = this.parse(this.data.text);
             else if (typeof args[0] !== "undefined") {
                 if (typeof this.data.text !== "string") {
-                    this.data.text = this.stringify(args[0]);
+                    this.setData({ text: this.stringify(args[0]) });
                     this.state.buffer = args[0];
                 }
             } else {
-                this.data.text = "";
+                this.setData({ text: "" });
                 this.state.buffer = new Bang();
             }
             this.on("updateArgs", this.handleUpdateArgs);
@@ -194,7 +194,7 @@ class CommentUI extends BaseUI<comment, {}, { value: string }> {
         } else {
             window.getSelection().removeAllRanges();
             span.blur();
-            this.props.object.data.value = span.textContent;
+            this.props.object.setData({ value: span.textContent });
         }
     }
     handleMouseDown = (e: React.MouseEvent) => (this.props.editing ? e.stopPropagation() : null);
@@ -292,11 +292,11 @@ export class comment extends UIObject<{ value: string }, {}, [string], [], [stri
             this.outlets = 0;
         });
         this.on("updateArgs", (args) => {
-            if (!this.data.hasOwnProperty("value")) this.data.value = args.join(" ");
+            if (!this.data.hasOwnProperty("value")) this.setData({ value: args.join(" ") });
         });
         this.on("inlet", ({ data, inlet }) => {
             if (typeof data === "string") {
-                this.data.value = data;
+                this.setData({ value: data });
                 this.updateUI({ value: data });
             }
         });
@@ -372,7 +372,7 @@ export class code extends UIObject<{ value: string }, {}, [Bang, string], [strin
         this.on("preInit", () => {
             this.inlets = 2;
             this.outlets = 1;
-            if (typeof this.box.data.value === "undefined") this.box.data.value = "";
+            if (typeof this.data.value === "undefined") this.setData({ value: "" });
         });
         this.on("editorLoaded", () => this.updateUI({ language: this.box.args[0] || "javascript" }));
         this.on("updateArgs", (args) => {
@@ -380,11 +380,11 @@ export class code extends UIObject<{ value: string }, {}, [Bang, string], [strin
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(0, this.box.data.value);
+                if (data instanceof Bang) this.outlet(0, this.data.value);
             } else if (inlet === 1) {
                 const value = typeof data === "string" ? data : `${data}`;
                 this.updateUI({ value });
-                this.box.data.value = value;
+                this.setData({ value });
             }
         });
     }

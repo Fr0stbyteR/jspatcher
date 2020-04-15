@@ -17,7 +17,7 @@ class FaustNodeUI extends CodePopupUI<FaustNode> {
 }
 const AWN: typeof AudioWorkletNode = window.AudioWorkletNode ? AudioWorkletNode : null;
 export interface FaustNodeData {
-    code: string;
+    code?: string;
 }
 export interface FaustNodeState {
     merger: ChannelMergerNode;
@@ -29,7 +29,7 @@ type Args = [number];
 type I = [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]];
 type O = (null | FaustAudioWorkletNode | FaustScriptProcessorNode)[];
 
-export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string]: any } = FaustNodeData, S extends FaustNodeState & { [key: string]: any } = FaustNodeState, A extends any[] = Args, U extends { [key: string]: any } = {}> extends FaustDynamicNode<D, S, I, O, A, {}, U> {
+export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string]: any } = {}, S extends Partial<FaustNodeState> & { [key: string]: any } = {}, A extends any[] = Args, U extends { [key: string]: any } = {}> extends FaustDynamicNode<D & FaustNodeData, S & FaustNodeState, I, O, A, {}, U> {
     static package = "Faust";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
@@ -50,7 +50,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string
         description: "Polyphonic instrument voices count"
     }];
     static ui: typeof DefaultUI = FaustNodeUI;
-    state = { merger: undefined, splitter: undefined, node: undefined, voices: 0 } as S;
+    state = { merger: undefined, splitter: undefined, node: undefined, voices: 0 } as S & FaustNodeState;
     async newNode(code: string, voices: number) {
         let compiled: { inlets: number; outlets: number; node: FaustAudioWorkletNode | FaustScriptProcessorNode; splitter: ChannelSplitterNode; merger: ChannelMergerNode };
         try {
@@ -110,7 +110,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string
             if (data instanceof Bang) {
                 if (this.state.node) this.outlet(this.outlets - 1, this.state.node);
             } else if (typeof data === "string") {
-                this.data.code = data;
+                this.setData({ code: data } as D);
                 await this.newNode(data, this.state.voices);
             } else if (typeof data === "number") {
                 this.state.voices = Math.max(0, ~~data);

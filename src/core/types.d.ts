@@ -286,7 +286,7 @@ type UIState<T> = T extends AbstractObject<any, any, any, any, any, any, infer U
 type EventMap<T> = T extends AbstractObject<any, any, any, any, any, any, any, infer E> ? E : never;
 type TInletEvent<I extends any[] = any[], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
 type TOutletEvent<O extends any[] = any[], $ extends keyof Pick<O, number> = keyof Pick<O, number>> = { outlet: $; data: O[$] };
-type ObjectEventMap<I extends any[], A extends any[], P, U, E> = {
+type ObjectEventMap<D, S, I extends any[], A extends any[], P, U, E> = {
     "preInit": never;
     "update": { args?: Partial<A>; props?: Partial<P> };
     "updateArgs": Partial<A>;
@@ -300,6 +300,8 @@ type ObjectEventMap<I extends any[], A extends any[], P, U, E> = {
     "disconnectedOutlet": { outlet: number; destBox: Box; destInlet: number; lineID: string };
     "destroy": AnyObject;
     "metaChanged": TMeta;
+    "dataUpdated": Partial<D>;
+    "stateUpdated": Partial<S>;
     "sharedDataUpdated": { category: string; key: string; data: any };
 } & E;
 type THistoryElement = {

@@ -13,8 +13,8 @@ export abstract class AbstractObject<
     D extends {} = {}, S extends {} = {},
     I extends any[] = any[], O extends any[] = any[],
     A extends any[] = any[], P extends {} = {},
-    U extends {} = {}, E extends Partial<ObjectEventMap<I, A, P, U, {}>> & { [key: string]: any } = {}
-> extends TypedEventEmitter<ObjectEventMap<I, A, P, U, E>> {
+    U extends {} = {}, E extends Partial<ObjectEventMap<D, S, I, A, P, U, {}>> & { [key: string]: any } = {}
+> extends TypedEventEmitter<ObjectEventMap<D, S, I, A, P, U, E>> {
     static package = "Base"; // div will have class "packageName" "packageName-objectName"
     static get _name() {
         return this.name;
@@ -41,13 +41,16 @@ export abstract class AbstractObject<
             props: this.props
         };
     }
-    _meta = (this.constructor as typeof AbstractObject).meta;
+    private _meta = (this.constructor as typeof AbstractObject).meta;
     get meta() {
         return this._meta;
     }
     set meta(metaIn: TMeta) {
         this._meta = metaIn;
         this.emit("metaChanged", this._meta);
+    }
+    setMeta(metaIn: Partial<TMeta>) {
+        this.meta = Object.assign(this.meta, metaIn);
     }
     /**
      * should save all temporary variables here
@@ -56,6 +59,10 @@ export abstract class AbstractObject<
      * @memberof AbstractBaseObject
      */
     state: S;
+    setState(stateIn: Partial<S>) {
+        this.state = Object.assign(this.state, stateIn);
+        this.emit("stateUpdated", this.state);
+    }
     protected readonly _patcher: Patcher;
     protected readonly _box: Box<this>;
     constructor(box: Box, patcher: Patcher) {
@@ -260,6 +267,10 @@ export abstract class AbstractObject<
     }
     set data(dataIn: D) {
         this._box.data = dataIn as any;
+        this.emit("dataUpdated", dataIn);
+    }
+    setData(dataIn: Partial<D>) {
+        this.data = Object.assign(this.data, dataIn);
     }
     /**
      * Get the shared data manager
