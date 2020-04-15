@@ -202,6 +202,7 @@ interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "stateChanged": Partial<TPublicPatcherState>;
     "propsChanged": Partial<TPublicPatcherProps>;
     "libChanged": { pkg: TPackage; lib: TFlatPackage };
+    "changed": never;
     "inspector": Box;
     "dockUI": Box;
 }
@@ -223,6 +224,8 @@ interface BoxEventMap {
     "textChanged": Box;
     "highlight": Box;
     "error": string;
+    "metaChanged": TMeta;
+    "dataUpdated": any;
     "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
     "connectedPort": { isSrc: boolean; i: number; last?: false };
     "disconnectedPort": { isSrc: boolean; i: number; last: boolean };

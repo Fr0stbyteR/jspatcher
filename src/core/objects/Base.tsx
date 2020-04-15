@@ -413,6 +413,8 @@ export class BaseObject<
     }
     subscribe() {
         super.subscribe();
+        this.on("metaChanged", meta => this.box.emit("metaChanged", meta));
+        this.on("dataUpdated", data => this.box.emit("dataUpdated", data));
         this.on("update", this.updateBox);
         const isUIStateKey = (x: any): x is keyof (U & BaseUIState) => this.meta.props[x] && this.meta.props[x].isUIState;
         const updateUIFromProps = (props: Partial<P & BaseObjectProps>) => {

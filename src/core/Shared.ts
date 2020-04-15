@@ -8,11 +8,13 @@ export default class SharedData {
     private $data: TSharedDataConsumers;
     private pData: TSharedData;
     private $pData: TSharedDataConsumers;
+    private readonly _patcher: Patcher;
     constructor(patcher: Patcher) {
         this.data = patcher.env.data;
         this.$data = patcher.env.dataConsumers;
         this.pData = patcher.data;
         this.$pData = patcher._state.dataConsumers;
+        this._patcher = patcher;
     }
     set(cat: string, keyIn: string, data: any, consumer: BaseObject) {
         const isLocal = keyIn.startsWith("#");
@@ -31,6 +33,7 @@ export default class SharedData {
         $db[cat][key].forEach((o) => {
             if (o === consumer) return;
             o.emit("sharedDataUpdated", { category: cat, key, data });
+            if (!cat.startsWith("_") && !key.startsWith("_") && this._patcher) this._patcher.emit("changed");
         });
     }
     get(cat: string, keyIn: string) {
@@ -67,6 +70,7 @@ export default class SharedData {
             const db = isLocal ? this.pData : this.data;
             delete $db[cat][key];
             delete db[cat][key];
+            if (!cat.startsWith("_") && !key.startsWith("_") && this._patcher) this._patcher.emit("changed");
         }
     }
     mergeEnvData(dbIn: TSharedData) {

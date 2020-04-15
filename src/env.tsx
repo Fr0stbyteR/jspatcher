@@ -110,7 +110,7 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
                 await patcher.load({}, mode);
             }
         }
-        patcher.on("graphChanged", () => localStorage.setItem("__JSPatcher_Patcher", patcher.toStringEnv(null)));
+        patcher.on("changed", () => localStorage.setItem("__JSPatcher_Patcher", patcher.toStringEnv(null)));
         if (!this._noUI && this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} runtime /> : <UI patcher={patcher} />, this.divRoot);
         this.loaded = true;
         return this;

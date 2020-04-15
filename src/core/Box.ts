@@ -43,6 +43,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         this.data = boxIn.data || ((boxIn as any).prevData ? (boxIn as any).prevData.storage : {});
         this._editing = !!boxIn._editing;
         this._patcher = patcherIn;
+        this.on("dataUpdated", () => this._patcher.emit("changed"));
     }
     async init() {
         this._parsed = Box.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };

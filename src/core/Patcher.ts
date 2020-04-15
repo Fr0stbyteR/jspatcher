@@ -54,6 +54,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this.observeHistory();
         this.observeGraphChange();
         this.observeLibChange();
+        this.observeChange();
         this._state = {
             name: "patcher",
             isLoading: false,
@@ -87,7 +88,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     }
     private observeGraphChange() {
         const eventNames = [
-            "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
+            "ready", "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
             "changeBoxText", "changeLineSrc", "changeLineDest"
         ] as const;
         eventNames.forEach(e => this.on(e, () => this.emit("graphChanged")));
@@ -98,6 +99,12 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             "changeBoxText", "changeLineSrc", "changeLineDest", "moved", "resized"
         ] as const;
         eventNames.forEach(type => this.on(type, e => this._state.history.did(type, e)));
+    }
+    private observeChange() {
+        const eventNames = [
+            "ready", "graphChanged", "moved", "resized", "propsChanged"
+        ] as const;
+        eventNames.forEach(type => this.on(type, () => this.emit("changed")));
     }
     newTimestamp() {
         this._state.history.newTimestamp();

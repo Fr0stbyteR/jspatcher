@@ -34,11 +34,11 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         const { srcBox, destBox } = this;
         this._type = this.calcType();
         if (srcBox) {
-            srcBox.object.on("metaChanged", this.updateType);
+            srcBox.on("metaChanged", this.updateType);
             srcBox.addOutletLine(this);
         }
         if (destBox) {
-            destBox.object.on("metaChanged", this.updateType);
+            destBox.on("metaChanged", this.updateType);
             destBox.addInletLine(this);
         }
     }
@@ -53,13 +53,13 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         const srcID = src[0];
         const srcOutlet = src[1];
         if (srcID === this.src[0] && srcOutlet === this.src[1]) return this;
-        this.srcBox.object.off("metaChanged", this.updateType);
+        this.srcBox.off("metaChanged", this.updateType);
         this.disable();
         this.srcBox.removeOutletLine(this);
         this.src = [srcID, srcOutlet];
         this.srcBox.addOutletLine(this);
         this.enable();
-        this.srcBox.object.on("metaChanged", this.updateType);
+        this.srcBox.on("metaChanged", this.updateType);
         this.updateType();
         return this.uiUpdateSrc();
     }
@@ -74,13 +74,13 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         const destID = dest[0];
         const destInlet = dest[1];
         if (destID === this.dest[0] && destInlet === this.dest[1]) return this;
-        this.destBox.object.off("metaChanged", this.updateType);
+        this.destBox.off("metaChanged", this.updateType);
         this.disable();
         this.destBox.removeInletLine(this);
         this.dest = [destID, destInlet];
         this.destBox.addInletLine(this);
         this.enable();
-        this.destBox.object.on("metaChanged", this.updateType);
+        this.destBox.on("metaChanged", this.updateType);
         this.updateType();
         return this.uiUpdateDest();
     }
@@ -139,8 +139,8 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         return this;
     }
     destroy() {
-        this.destBox.object.off("metaChanged", this.updateType);
-        this.srcBox.object.off("metaChanged", this.updateType);
+        this.destBox.off("metaChanged", this.updateType);
+        this.srcBox.off("metaChanged", this.updateType);
         this.disable();
         this.srcBox.removeOutletLine(this);
         this.destBox.removeInletLine(this);

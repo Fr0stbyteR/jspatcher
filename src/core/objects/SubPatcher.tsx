@@ -326,6 +326,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             if (!passive && this.state.key) this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
             this.patcher.emit("graphChanged");
         };
+        const handlePatcherChanged = () => this.patcher.emit("changed");
         const subscribePatcher = () => {
             if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
             const { patcher } = this.state;
@@ -336,6 +337,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             patcher.on("connectAudioOutlet", handlePatcherConnectAudioOutlet);
             patcher.on("ioChanged", handlePatcherIOChanged);
             patcher.on("graphChanged", handlePatcherGraphChanged);
+            patcher.on("changed", handlePatcherChanged);
         };
         const unsubscribePatcher = async () => {
             if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
@@ -347,6 +349,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             patcher.off("connectAudioOutlet", handlePatcherConnectAudioOutlet);
             patcher.off("ioChanged", handlePatcherIOChanged);
             patcher.off("graphChanged", handlePatcherGraphChanged);
+            patcher.off("changed", handlePatcherChanged);
             await patcher.unload();
         };
         const handlePatcherReset = () => {
@@ -419,11 +422,13 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
         patcher.on("graphChanged", this.handleGraphChanged);
+        patcher.on("changed", this.handlePatcherChanged);
     };
     unsubscribePatcher = async () => {
         if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
         patcher.off("graphChanged", this.handleGraphChanged);
+        patcher.off("changed", this.handlePatcherChanged);
         await patcher.load({}, "faust");
     };
     handlePatcherReset = () => {
@@ -435,6 +440,7 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         if (code) await this.newNode(code, this.state.voices);
         this.patcher.emit("graphChanged");
     };
+    handlePatcherChanged = () => this.patcher.emit("changed");
     reload = async () => {
         this.disconnectAudio();
         await this.unsubscribePatcher();
@@ -550,6 +556,7 @@ export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState
             if (!passive && this.state.key) this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
             this.patcher.emit("graphChanged");
         };
+        const handlePatcherChanged = () => this.patcher.emit("changed");
         const subscribePatcher = () => {
             if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
             const { patcher } = this.state;
@@ -560,6 +567,7 @@ export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState
             patcher.on("connectAudioOutlet", handlePatcherConnectAudioOutlet);
             patcher.on("ioChanged", handlePatcherIOChanged);
             patcher.on("graphChanged", handlePatcherGraphChanged);
+            patcher.on("changed", handlePatcherChanged);
         };
         const unsubscribePatcher = async () => {
             if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
@@ -571,6 +579,7 @@ export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState
             patcher.off("connectAudioOutlet", handlePatcherConnectAudioOutlet);
             patcher.off("ioChanged", handlePatcherIOChanged);
             patcher.off("graphChanged", handlePatcherGraphChanged);
+            patcher.off("changed", handlePatcherChanged);
             await patcher.unload();
         };
         const handlePatcherReset = () => {
