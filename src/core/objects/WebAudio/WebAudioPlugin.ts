@@ -50,14 +50,6 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
     }];
     static ui = PluginUI;
     state = { merger: undefined, splitter: undefined, node: undefined, children: [] } as S;
-    _meta: TMeta = Plugin.meta;
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-    }
     async load(url: string) {
         const address = `${url}/main.js`;
         let name: string;

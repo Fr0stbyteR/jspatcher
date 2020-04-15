@@ -41,8 +41,13 @@ export abstract class AbstractObject<
             props: this.props
         };
     }
+    _meta = (this.constructor as typeof AbstractObject).meta;
     get meta() {
-        return (this.constructor as typeof AbstractObject).meta;
+        return this._meta;
+    }
+    set meta(metaIn: TMeta) {
+        this._meta = metaIn;
+        this.emit("metaChanged", this._meta);
     }
     /**
      * should save all temporary variables here

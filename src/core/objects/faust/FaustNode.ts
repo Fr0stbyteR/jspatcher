@@ -51,14 +51,6 @@ export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string
     }];
     static ui: typeof DefaultUI = FaustNodeUI;
     state = { merger: undefined, splitter: undefined, node: undefined, voices: 0 } as S;
-    _meta: TMeta = FaustNode.meta;
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-    }
     async newNode(code: string, voices: number) {
         let compiled: { inlets: number; outlets: number; node: FaustAudioWorkletNode | FaustScriptProcessorNode; splitter: ChannelSplitterNode; merger: ChannelMergerNode };
         try {

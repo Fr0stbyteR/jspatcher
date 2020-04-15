@@ -17,14 +17,6 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
         description: "Node connection"
     }];
     state = { node: undefined as AudioNode };
-    _meta: TMeta = AnyNode.meta;
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-    }
     handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
         if (inlet === 0) {
             try {

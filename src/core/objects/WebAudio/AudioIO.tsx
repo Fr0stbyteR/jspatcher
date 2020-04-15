@@ -70,15 +70,13 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
             description: "The linear sample size in bits"
         }
     };
-    _meta = AudioIn.meta;
-    get meta() {
-        return this._meta;
-    }
     state = { node: undefined as MediaStreamAudioSourceNode, stream: undefined as MediaStream, search: undefined as string };
     handleDeviceChange = async () => {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const enums = devices.filter(d => d.kind === "audioinput").map(d => d.label || d.deviceId);
-        this._meta.args[0] = { ...AudioIn.args[0], type: "enum", enums };
+        const { meta } = this;
+        meta.args[0] = { ...AudioIn.args[0], type: "enum", enums };
+        this.meta = meta;
     };
     newSearch = async (search?: string) => {
         this.state.search = search;
@@ -175,16 +173,14 @@ export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | Aud
             );
         }
     } : DefaultUI;
-    _meta = AudioOut.meta;
-    get meta() {
-        return this._meta;
-    }
     state = supportSetSinkId ? { node: this.audioCtx.destination, msadn: this.audioCtx.createMediaStreamDestination(), audio: new Audio(), search: undefined as string } : { node: this.audioCtx.destination };
     inletConnections = [{ node: this.node, index: 0 }];
     handleDeviceChange = async () => {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const enums = devices.filter(d => d.kind === "audiooutput").map(d => d.label || d.deviceId);
-        this._meta.args[0] = { ...AudioOut.args[0], type: "enum", enums };
+        const { meta } = this;
+        meta.args[0] = { ...AudioOut.args[0], type: "enum", enums };
+        this.meta = meta;
     };
     newSearch = async (search?: string) => {
         if (!supportSetSinkId) return;

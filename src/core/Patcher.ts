@@ -138,7 +138,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     async load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode, data?: TSharedData) {
         this._state.isLoading = true;
         this.emit("loading", []);
-        await this.clear();
+        await this.unload();
         if (typeof patcherIn !== "object") {
             this._state.isLoading = false;
             this.emit("loading");

@@ -21,10 +21,6 @@ export class midiIn extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIA
         optional: false,
         description: "Device name or ID"
     }];
-    _meta = midiIn.meta;
-    get meta() {
-        return this._meta;
-    }
     state = { midiAccess: undefined as WebMidi.MIDIAccess, search: undefined as string, port: undefined as WebMidi.MIDIInput };
     handleDeviceChange = async () => {
         const { midiAccess } = this.state;
@@ -35,7 +31,9 @@ export class midiIn extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIA
         const devices: WebMidi.MIDIInput[] = [];
         midiAccess.inputs.forEach(v => devices.push(v));
         const enums = devices.map(d => d.name || d.id);
-        this._meta.args[0] = { ...midiIn.args[0], type: "enum", enums };
+        const { meta } = this;
+        meta.args[0] = { ...midiIn.args[0], type: "enum", enums };
+        this.meta = meta;
     };
     handleMIDIMessage = (e: WebMidi.MIDIMessageEvent) => this.outlet(0, e.data);
     newSearch = async (search?: string) => {
@@ -114,10 +112,6 @@ export class midiOut extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDI
         optional: false,
         description: "Device name or ID"
     }];
-    _meta = midiOut.meta;
-    get meta() {
-        return this._meta;
-    }
     state = { midiAccess: undefined as WebMidi.MIDIAccess, search: undefined as string, port: undefined as WebMidi.MIDIOutput };
     handleDeviceChange = async () => {
         const { midiAccess } = this.state;
@@ -128,7 +122,9 @@ export class midiOut extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDI
         const devices: WebMidi.MIDIOutput[] = [];
         midiAccess.outputs.forEach(v => devices.push(v));
         const enums = devices.map(d => d.name || d.id);
-        this._meta.args[0] = { ...midiOut.args[0], type: "enum", enums };
+        const { meta } = this;
+        meta.args[0] = { ...midiOut.args[0], type: "enum", enums };
+        this.meta = meta;
     };
     newSearch = async (search?: string) => {
         this.state.search = search;

@@ -23,7 +23,6 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
     }];
     state = { node: null as ChannelSplitterNode };
     inletConnections = [{ node: this.node, index: 0 }];
-    _meta = Splitter.meta;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -42,13 +41,6 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
                 } else if (data instanceof Bang) this.outlet(this.outlets - 1, this.node);
             }
         });
-    }
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
     }
     resetNode(channelCount: number) {
         this.disconnectAudio();

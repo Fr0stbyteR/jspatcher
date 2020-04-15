@@ -35,21 +35,13 @@ export class In extends DefaultObject<{}, { index: number }, [], [any], [number]
         type: "anything",
         description: ""
     }];
-    _meta: TMeta = In.meta;
     state = { index: undefined as number };
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-        this.patcher.changeIO();
-    }
     handlePatcherInlet = ({ data, inlet }: PatcherEventMap["inlet"]) => {
         if (inlet === this.state.index - 1) this.outlet(0, data);
     };
     subscribe() {
         super.subscribe();
+        this.on("metaChanged", () => this.patcher.changeIO());
         this.on("preInit", () => {
             this.inlets = 0;
             this.outlets = 1;
@@ -64,9 +56,10 @@ export class In extends DefaultObject<{}, { index: number }, [], [any], [number]
             }
         });
         this.on("updateProps", (props) => {
-            if (typeof props.description === "string") this._meta.outlets[0].description = props.description;
-            if (typeof props.type === "string") this._meta.outlets[0].type = props.type || "anything";
-            this.meta = this._meta;
+            const { meta } = this;
+            if (typeof props.description === "string") meta.outlets[0].description = props.description;
+            if (typeof props.type === "string") meta.outlets[0].type = props.type || "anything";
+            this.meta = meta;
         });
         this.patcher.on("inlet", this.handlePatcherInlet);
         this.on("destroy", () => {
@@ -103,18 +96,10 @@ export class Out extends DefaultObject<{}, { index: number }, [any], [], [number
         description: "",
         isHot: true
     }];
-    _meta: TMeta = Out.meta;
     state = { index: undefined as number };
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-        this.patcher.changeIO();
-    }
     subscribe() {
         super.subscribe();
+        this.on("metaChanged", () => this.patcher.changeIO());
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 0;
@@ -129,9 +114,10 @@ export class Out extends DefaultObject<{}, { index: number }, [any], [], [number
             }
         });
         this.on("updateProps", (props) => {
-            if (typeof props.description === "string") this._meta.inlets[0].description = props.description;
-            if (typeof props.type === "string") this._meta.inlets[0].type = props.type || "anything";
-            this.meta = this._meta;
+            const { meta } = this;
+            if (typeof props.description === "string") meta.inlets[0].description = props.description;
+            if (typeof props.type === "string") meta.inlets[0].type = props.type || "anything";
+            this.meta = meta;
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) this.patcher.outlet(this.state.index - 1, data);
@@ -163,19 +149,11 @@ export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any]
         description: ""
     }];
     outletConnections: TAudioNodeOutletConnection[] = [{ node: undefined as GainNode, index: 0 }];
-    _meta: TMeta = AudioIn.meta;
     _duringInit = true;
     state = { index: undefined as number };
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-        this.patcher.changeIO();
-    }
     subscribe() {
         super.subscribe();
+        this.on("metaChanged", () => this.patcher.changeIO());
         this.on("preInit", () => {
             this.inlets = 0;
             this.outlets = 1;
@@ -210,8 +188,9 @@ export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any]
             }
         });
         this.on("updateProps", (props) => {
-            if (typeof props.description === "string") this._meta.outlets[0].description = props.description;
-            this.meta = this._meta;
+            const { meta } = this;
+            if (typeof props.description === "string") meta.outlets[0].description = props.description;
+            this.meta = meta;
         });
         this.on("destroy", () => {
             this.patcher.inspectAudioIO();
@@ -242,19 +221,11 @@ export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [
         isHot: true
     }];
     inletConnections: TAudioNodeInletConnection[] = [{ node: undefined as GainNode, index: 0 }];
-    _meta: TMeta = AudioOut.meta;
     _duringInit = true;
     state = { index: undefined as number };
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-        this.patcher.changeIO();
-    }
     subscribe() {
         super.subscribe();
+        this.on("metaChanged", () => this.patcher.changeIO());
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 0;
@@ -289,8 +260,9 @@ export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [
             }
         });
         this.on("updateProps", (props) => {
-            if (typeof props.description === "string") this._meta.outlets[0].description = props.description;
-            this.meta = this._meta;
+            const { meta } = this;
+            if (typeof props.description === "string") meta.outlets[0].description = props.description;
+            this.meta = meta;
         });
         this.on("destroy", () => {
             this.patcher.inspectAudioIO();
@@ -334,14 +306,6 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
         description: "Name of the subpatcher"
     }];
     state: SubPatcherState = { patcher: new Patcher(this.patcher.env), key: "" };
-    _meta: TMeta = patcher.meta;
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-    }
     static ui = SubPatcherUI;
     subscribe() {
         super.subscribe();
@@ -356,7 +320,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             this.inlets = meta.inlets.length;
             this.outlets = meta.outlets.length;
             const { inlets, outlets } = meta;
-            this.meta = { ...this._meta, inlets, outlets, args: patcher.args };
+            this.meta = { ...this.meta, inlets, outlets, args: patcher.args };
         };
         const handlePatcherGraphChanged = (passive?: boolean) => {
             if (!passive && this.state.key) this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
@@ -383,7 +347,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             patcher.off("connectAudioOutlet", handlePatcherConnectAudioOutlet);
             patcher.off("ioChanged", handlePatcherIOChanged);
             patcher.off("graphChanged", handlePatcherGraphChanged);
-            await patcher.clear();
+            await patcher.unload();
         };
         const handlePatcherReset = () => {
             handlePatcherIOChanged(this.state.patcher.meta);
@@ -451,7 +415,6 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
     }];
     static ui = SubPatcherUI;
     state = { merger: undefined, splitter: undefined, node: undefined, voices: 0, patcher: new Patcher(this.patcher.env), key: "" } as FaustPatcherState;
-    _meta: TMeta = faustPatcher.meta;
     subscribePatcher = () => {
         if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
@@ -567,14 +530,6 @@ export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState
         description: "Name of the subpatcher"
     }];
     state: SubPatcherState = { patcher: new Patcher(this.patcher.env), key: "" };
-    _meta: TMeta = bpatcher.meta;
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-    }
     static ui = BPatcherUI;
     subscribe() {
         super.subscribe();
@@ -589,7 +544,7 @@ export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState
             this.inlets = meta.inlets.length;
             this.outlets = meta.outlets.length;
             const { inlets, outlets } = meta;
-            this.meta = { ...this._meta, inlets, outlets, args: patcher.args };
+            this.meta = { ...this.meta, inlets, outlets, args: patcher.args };
         };
         const handlePatcherGraphChanged = (passive?: boolean) => {
             if (!passive && this.state.key) this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
@@ -616,7 +571,7 @@ export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState
             patcher.off("connectAudioOutlet", handlePatcherConnectAudioOutlet);
             patcher.off("ioChanged", handlePatcherIOChanged);
             patcher.off("graphChanged", handlePatcherGraphChanged);
-            await patcher.clear();
+            await patcher.unload();
         };
         const handlePatcherReset = () => {
             handlePatcherIOChanged(this.state.patcher.meta);

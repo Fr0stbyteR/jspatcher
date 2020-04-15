@@ -27,14 +27,6 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | 
     }];
     state = { node: null as ChannelMergerNode };
     outletConnections = [{ node: this.node, index: 0 }];
-    _meta = Merger.meta;
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-    }
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

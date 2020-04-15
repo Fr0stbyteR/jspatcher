@@ -49,7 +49,6 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
     faustInjected = false;
-    patcher: Patcher;
     active: Patcher;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;
@@ -93,7 +92,6 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
 
         this.faust = faust;
         const patcher = new Patcher(this);
-        this.patcher = patcher;
         this.active = patcher;
         window.patcher = patcher;
 
@@ -112,7 +110,7 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
                 await patcher.load({}, mode);
             }
         }
-        this.patcher.on("graphChanged", () => localStorage.setItem("__JSPatcher_Patcher", this.patcher.toStringEnv(null)));
+        patcher.on("graphChanged", () => localStorage.setItem("__JSPatcher_Patcher", patcher.toStringEnv(null)));
         if (!this._noUI && this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} runtime /> : <UI patcher={patcher} />, this.divRoot);
         this.loaded = true;
         return this;
@@ -124,6 +122,6 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         if (root === this._divRoot) return;
         if (!this._noUI && this._divRoot) ReactDOM.unmountComponentAtNode(this._divRoot);
         this._divRoot = root;
-        if (!this._noUI && root) ReactDOM.render(this.loaded ? <UI patcher={this.patcher} /> : <LoaderUI env={this} />, root);
+        if (!this._noUI && root) ReactDOM.render(this.loaded ? <UI patcher={this.active} /> : <LoaderUI env={this} />, root);
     }
 }

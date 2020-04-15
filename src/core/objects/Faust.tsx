@@ -710,14 +710,6 @@ class Seq extends Iterator {
 }
 class Par extends Iterator {
     static description = "Parallel iterator";
-    _meta = Par.meta;
-    get meta() {
-        return this._meta;
-    }
-    set meta(metaIn: TMeta) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-    }
     symbol = ["par"];
     handleUpdate = (e: { args?: any[] }) => {
         if (!e.args) return;
@@ -727,11 +719,12 @@ class Par extends Iterator {
         if (outlets === this.outlets) return;
         const outlet0Meta = Par.outlets[0];
         const outlet1Meta = Par.outlets[1];
+        const { meta } = this;
         for (let i = 0; i < outlets - 1; i++) {
-            this._meta.outlets[i] = outlet0Meta;
+            meta.outlets[i] = outlet0Meta;
         }
-        this._meta.outlets[outlets - 1] = outlet1Meta;
-        this.meta = this._meta;
+        meta.outlets[outlets - 1] = outlet1Meta;
+        this.meta = meta;
         this.outlets = outlets;
     };
     subscribe() {
@@ -837,7 +830,7 @@ class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, {
         if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
         patcher.off("graphChanged", this.handleGraphChanged);
-        await patcher.clear();
+        await patcher.unload();
     };
     handlePatcherReset = () => {
         this.updateUI({ patcher: this.state.patcher });
