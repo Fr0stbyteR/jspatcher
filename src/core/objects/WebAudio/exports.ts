@@ -20,6 +20,7 @@ import Panner from "./Panner";
 import StereoPanner from "./StereoPanner";
 import WaveShaper from "./WaveShaper";
 import { AudioIn, AudioOut } from "./AudioIO";
+import Plugin from "./WebAudioPlugin";
 /*
 const {
     BaseAudioContext,
@@ -73,5 +74,6 @@ export default {
     "pan~": StereoPanner,
     "waveshaper~": WaveShaper,
     "audioIn~": AudioIn,
-    "audioOut~": AudioOut
+    "audioOut~": AudioOut,
+    "plugin~": Plugin
 };

@@ -19,9 +19,10 @@ declare class WebAudioPluginNode extends AudioNode {
     getParam(key: string): number;
 }
 declare class WebAudioPlugin {
-    constructor(audioCtx: AudioContext, baseUrl: string)
-    load(): Promise<WebAudioPluginNode>;
-    loadGui(): Promise<ChildNode>;
+    constructor(audioCtx: AudioContext);
+    setState(): void;
+    createAudioNode(options?: any): Promise<AudioNode>;
+    createElement(options?: any): Promise<ChildNode>;
 }
 const AWN: typeof AudioWorkletNode = window.AudioWorkletNode ? AudioWorkletNode : null;
 
@@ -29,7 +30,7 @@ class PluginUI extends DOMUI<Plugin> {
     state: DOMUIState = { ...this.state, children: this.object.state.children };
 }
 
-export type S = { merger: ChannelMergerNode; splitter: ChannelSplitterNode; node: WebAudioPluginNode; children: ChildNode[] };
+export type S = { node: WebAudioPluginNode; children: ChildNode[] };
 type I = [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]];
 type O = (null | AudioNode)[];
 export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, DOMUIState> {
@@ -51,58 +52,31 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
     static ui = PluginUI;
     state = { merger: undefined, splitter: undefined, node: undefined, children: [] } as S;
     async load(url: string) {
-        const address = `${url}/main.js`;
-        let name: string;
-        let vendor: string;
         let Constructor: typeof WebAudioPlugin;
         try {
-            const r = await fetch(`${url}/main.json`);
-            const manifest = await r.json() as WebAudioPluginManifest;
-            name = manifest.name;
-            vendor = manifest.vendor;
+            const m = await import(/* webpackIgnore: true */url);
+            Constructor = m.default;
         } catch (e) {
             this.error(e.message);
         }
-        const executor = (resolve: (script: HTMLScriptElement) => void, reject: (reason?: Error) => void) => {
-            const script = document.createElement("script");
-            script.async = true;
-            script.src = address;
-            script.type = "module";
-            script.addEventListener("load", () => resolve(script));
-            script.addEventListener("error", () => reject(new Error(`Error loading script: ${address}`)));
-            script.addEventListener("abort", () => reject(new Error(`Script loading aborted: ${address}`)));
-            document.head.appendChild(script);
-        };
+        let node: AudioNode;
+        let element: ChildNode;
         try {
-            await new Promise(executor);
-            Constructor = window[vendor + name as any] as unknown as typeof WebAudioPlugin;
+            const factory = new Constructor(this.audioCtx);
+            node = await factory.createAudioNode();
+            element = await factory.createElement();
         } catch (e) {
             if (e) this.error((e as Error).message);
+            return;
         }
         this.disconnectAudio();
         this.handleDestroy();
-        const factory = new Constructor(this.audioCtx, url);
-        const node = await factory.load();
-        const element = await factory.loadGui();
         this.state.children = [element];
         this.updateUI({ children: this.state.children });
-
-        let splitter: ChannelSplitterNode;
-        let merger: ChannelMergerNode;
         node.channelInterpretation = "discrete";
-        const { audioCtx } = this.patcher.env;
-        const inlets = node.inputChannelCount();
-        const outlets = node.outputChannelCount();
-        if (inlets) {
-            merger = audioCtx.createChannelMerger(inlets);
-            merger.channelInterpretation = "discrete";
-            merger.connect(node, 0, 0);
-        }
-        if (outlets) {
-            splitter = audioCtx.createChannelSplitter(outlets);
-            node.connect(splitter, 0, 0);
-        }
-        Object.assign(this.state, { merger, splitter, node } as S);
+        const inlets = node.numberOfInputs;
+        const outlets = node.numberOfOutputs;
+        Object.assign(this.state, { node } as S);
         const Ctor = this.constructor as typeof Plugin;
         const firstInletMeta = Ctor.inlets[0];
         const firstInletSignalMeta: TInletMeta = { ...firstInletMeta, type: "signal" };
@@ -114,11 +88,11 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
         for (let i = 0; i < inlets; i++) {
             if (i === 0) factoryMeta.inlets[i] = inlets ? firstInletSignalMeta : firstInletMeta;
             else factoryMeta.inlets[i] = inletMeta;
-            this.inletConnections[i] = { node: merger, index: i };
+            this.inletConnections[i] = { node, index: i };
         }
         for (let i = 0; i < outlets; i++) {
             factoryMeta.outlets[i] = outletMeta;
-            this.outletConnections[i] = { node: splitter, index: i };
+            this.outletConnections[i] = { node, index: i };
         }
         factoryMeta.outlets[outlets] = lastOutletMeta;
         if (node instanceof AWN) {
@@ -139,8 +113,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
         this.outlet(this.outlets - 1, this.state.node);
     }
     handleDestroy = () => {
-        const { merger, node } = this.state;
-        if (merger) merger.disconnect();
+        const { node } = this.state;
         if (node) {
             node.disconnect();
             // node.destroy();
