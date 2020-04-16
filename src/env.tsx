@@ -12,6 +12,7 @@ import Patcher from "./core/Patcher";
 import Importer from "./core/objects/importer/Importer";
 import UI from "./components/UI";
 import PatcherUI from "./components/PatcherUI";
+import { GlobalPackageManager } from "./core/PkgMgr";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -41,14 +42,13 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     readonly supportAudioWorklet = !!window.AudioWorklet;
     readonly data: TSharedData = {};
     readonly dataConsumers: TSharedDataConsumers = {};
-    readonly modules = new Map<string, { [key: string]: any }>();
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;
     faustDocs: TFaustDocs;
     faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
-    faustInjected = false;
+    pkgMgr = new GlobalPackageManager(this);
     active: Patcher;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;

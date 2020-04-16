@@ -4,8 +4,8 @@ import Line from "./Line";
 import Box from "./Box";
 import Env from "../env";
 import History from "./History";
-import PackageManager from "./PkgMgr";
 import SharedData from "./Shared";
+import { PackageManager } from "./PkgMgr";
 import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv } from "./types";
 
 import Base from "./objects/Base";

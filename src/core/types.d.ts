@@ -5,8 +5,8 @@ import Box from "./Box";
 import Line from "./Line";
 import History from "./History";
 import Env from "../env";
-import PackageManager from "./PkgMgr";
 import SharedData from "./Shared";
+import { PackageManager } from "./PkgMgr";
 
 declare global {
     interface Window {

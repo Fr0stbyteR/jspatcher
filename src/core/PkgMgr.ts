@@ -1,3 +1,4 @@
+import Env from "../env";
 import Patcher from "./Patcher";
 import Importer from "./objects/importer/Importer";
 import { TFlatPackage, TPackage, TPatcherMode } from "./types";
@@ -19,42 +20,29 @@ import faust from "./objects/faust/exports";
 import SubPatcher from "./objects/SubPatcher";
 import { ImporterDirSelfObject } from "../utils/symbols";
 
-export default class PackageManager {
+export class PackageManager {
     private readonly patcher: Patcher;
-    private readonly externals: { [id: string]: string } = {};
-    readonly pkgJS: TPackage = {
-        Base,
-        Std,
-        SubPatcher,
-        Max,
-        UI,
-        Op,
-        WebAudio,
-        WebRTC,
-        WebMIDI,
-        DSP,
-        new: New,
-        live,
-        faust
-    };
-    readonly pkgFaust: TPackage = Faust;
-    readonly pkgMax: TPackage = {};
-    readonly pkgGen: TPackage = Gen;
-    private readonly libJS: TFlatPackage = this.packageRegister(this.pkgJS, {});
-    private readonly libFaust: TFlatPackage = this.packageRegister(this.pkgFaust, {});
-    private readonly libMax: TFlatPackage = {};
-    private readonly libGen: TFlatPackage = this.packageRegister(this.pkgGen, {});
+    private readonly global: GlobalPackageManager;
+    readonly pkgJS: TPackage;
+    readonly pkgFaust: TPackage;
+    readonly pkgMax: TPackage;
+    readonly pkgGen: TPackage;
+    private readonly libJS: TFlatPackage;
+    private readonly libFaust: TFlatPackage;
+    private readonly libMax: TFlatPackage;
+    private readonly libGen: TFlatPackage;
     constructor(patcherIn: Patcher) {
         this.patcher = patcherIn;
-        const { env } = patcherIn;
-        // Faust stuffs
-        if (!env.faustInjected) {
-            this.add(patcherIn.env.faustAdditionalObjects, "js", ["faust"]);
-            this.add(patcherIn.env.faustLibObjects, "faust");
-            env.faustInjected = true;
-        }
-        // Window
-        this.add({ Window }, "js");
+        this.global = patcherIn.env.pkgMgr;
+        const { js, faust, max, gen } = this.global;
+        this.pkgJS = { ...js };
+        this.pkgFaust = { ...faust };
+        this.pkgMax = { ...max };
+        this.pkgGen = { ...gen };
+        this.libJS = this.packageRegister(this.pkgJS);
+        this.libFaust = this.packageRegister(this.pkgFaust);
+        this.libMax = this.packageRegister(this.pkgMax);
+        this.libGen = this.packageRegister(this.pkgGen);
     }
     get patcherMode() {
         return this.patcher.props.mode;
@@ -81,47 +69,14 @@ export default class PackageManager {
             gen: this.pkgGen
         }[lib];
     }
-    async getModuleFromURL(address: string, id: string) {
-        if (this.patcher.env.modules.has(address)) return this.patcher.env.modules.get(address);
-        const toExport: { [key: string]: any } = {}; // Original exports, detect if exports is overwritten.
-        window.exports = toExport;
-        window.module = { exports: toExport } as any;
-        const executor = (resolve: (script: HTMLScriptElement) => void, reject: (reason?: Error) => void) => {
-            const script = document.createElement("script");
-            script.async = true;
-            script.src = address;
-            script.type = "module";
-            script.addEventListener("load", () => resolve(script));
-            script.addEventListener("error", () => reject(new Error(`Error loading script: ${address}`)));
-            script.addEventListener("abort", () => reject(new Error(`Script loading aborted: ${address}`)));
-            document.head.appendChild(script);
-        };
-        try {
-            await new Promise(executor);
-        } catch (e) {
-            if (e) this.patcher.error((e as Error).message);
-            return toExport;
-        }
-        const exported = window.module.exports as { [key: string]: any };
-        delete window.exports;
-        delete window.module;
-        if (toExport === exported) {
-            this.patcher.env.modules.set(address, exported);
-            return exported;
-        }
-        this.patcher.env.modules.set(address, { [id]: exported });
-        return { [id]: exported }; // if exports is overwritten, wrap it
-    }
     async importFromNPM(pkgID: string, idIn?: string) {
         const id = idIn || pkgID.split("/").pop();
-        if (id in this.externals) return;
-        const jsModule = await this.getModuleFromURL(`https://unpkg.com/${pkgID}`, id);
+        const jsModule = await this.global.getModuleFromNPM(pkgID, id);
         const pkg = Importer.import(id, jsModule);
         this.add(pkg, "js", [id]);
     }
     async importFromURL(address: string, id: string) {
-        if (id in this.externals) return;
-        const jsModule = await this.getModuleFromURL(address, id);
+        const jsModule = await this.global.getModuleFromURL(address, id);
         const pkg = Importer.import(id, jsModule);
         this.add(pkg, "js", [id]);
     }
@@ -138,7 +93,7 @@ export default class PackageManager {
         this.packageRegister(pkgIn, this.getLib(lib), 2, pathIn);
         this.patcher.emit("libChanged", { pkg: this.activePkg, lib: this.activeLib });
     }
-    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject }, rootifyDepth = Infinity, pathIn?: string[]) {
+    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject } = {}, rootifyDepth = Infinity, pathIn?: string[]) {
         const path = pathIn ? pathIn.slice() : [];
         if (path.length && ImporterDirSelfObject in pkg) {
             const el = pkg[ImporterDirSelfObject as any];
@@ -215,5 +170,82 @@ export default class PackageManager {
             if (typeof o !== "object" && !(o.prototype instanceof BaseObject)) return null;
         }
         return o;
+    }
+}
+
+export class GlobalPackageManager {
+    readonly js: TPackage = {
+        Base,
+        Std,
+        SubPatcher,
+        Max,
+        UI,
+        Op,
+        WebAudio,
+        WebRTC,
+        WebMIDI,
+        DSP,
+        new: New,
+        live,
+        faust,
+        window: Window
+    };
+    readonly faust: TPackage = Faust;
+    readonly max: TPackage = {};
+    readonly gen: TPackage = Gen;
+    private readonly env: Env;
+    externals = new Map<string, { [key: string]: any }>();
+    constructor(envIn: Env) {
+        this.env = envIn;
+        this.add(this.env.faustAdditionalObjects, "js", ["faust"]);
+        this.add(this.env.faustLibObjects, "faust");
+        this.add({ window: Window }, "js");
+    }
+    private add(pkgIn: TPackage, lib: TPatcherMode, pathIn: string[] = []) {
+        const path = pathIn.slice();
+        let pkg = this[lib];
+        while (path.length) {
+            const key = path.shift();
+            if (!pkg[key]) pkg[key] = {};
+            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof BaseObject) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
+            pkg = pkg[key] as TPackage;
+        }
+        Object.assign(pkg, pkgIn);
+    }
+    /**
+     * If the module bahave as ESM, then export ESModule
+     * Simulate NodeJS environment, good to load NPM Package
+     *
+     * @private
+     * @param {string} url
+     * @returns
+     * @memberof GlobalPackageManager
+     */
+    private async fetchModule(url: string) {
+        const toExport = {};
+        window.exports = toExport;
+        window.module = { exports: toExport } as any;
+        const esm = await import(/* webpackIgnore: true */url);
+        const esmKeys = Object.keys(esm);
+        if (esmKeys.length === 1 && esmKeys[0] === "default") return esm.default;
+        if (esmKeys.length) return esm;
+        const exported = window.module.exports;
+        delete window.exports;
+        delete window.module;
+        return exported;
+    }
+    async getModuleFromURL(url: string, id: string) {
+        if (this.externals.has(url)) return this.externals.get(url);
+        const rawModule = await this.fetchModule(url);
+        const m = typeof rawModule === "object" ? rawModule : { [id]: rawModule };
+        if (!Object.keys(m)) throw new Error(`Module ${id} from ${url} is empty`);
+        this.externals.set(url, m);
+        return m;
+    }
+    async getModuleFromNPM(pkgID: string, idIn?: string) {
+        const id = idIn || pkgID.split("/").pop();
+        const url = `https://unpkg.com/${pkgID}`;
+        if (this.externals.has(url)) return this.externals.get(url);
+        return this.getModuleFromURL(url, id);
     }
 }
