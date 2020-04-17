@@ -4,6 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const VERSION = require("./src/scripts/version");
 
 const config = {
   entry: './src/index.tsx',
@@ -72,7 +73,7 @@ const config = {
       languages: ['javascript', 'html']
     }),
     new WorkboxWebpackPlugin.GenerateSW({
-      cacheId: new Date().getTime().toString(),
+      cacheId: VERSION,
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       skipWaiting: true,

@@ -10,17 +10,20 @@
         width: 4px;
         height: 100%;
         cursor: e-resize;
-        z-index: 1;
     }
     & > .left-menu {
         position: relative;
         width: auto !important;
-        z-index: 0;
         display: flex !important;
         margin: 0px !important;
         border-radius: 0px !important;
         & > .item:first-child, .item:last-child {
             border-radius: 0px !important;
+        }
+        & > .ui.item.dropdown {
+            & > .text {
+                display: none;
+            }
         }
     }
     & > .left-pane {

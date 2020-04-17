@@ -1,10 +1,11 @@
 import * as React from "react";
-import { MenuItemProps, Menu, Icon, Header, Segment, List, Input } from "semantic-ui-react";
+import { MenuItemProps, Menu, Icon, Header, Segment, List, Input, Dropdown } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import "./LeftMenu.scss";
 import { TPackage } from "../core/types";
 import { BaseObject } from "../core/objects/Base";
 import { ImporterDirSelfObject } from "../utils/symbols";
+import VERSION from "../scripts/version";
 
 enum TPanels {
     None = "None",
@@ -202,6 +203,18 @@ class Objects extends React.PureComponent<{ patcher: Patcher }, { pkg: TPackage;
         );
     }
 }
+class ConfigMenu extends React.PureComponent<{ patcher: Patcher }> {
+    render() {
+        return (
+            <Dropdown item={true} icon={<Icon name="cog" color="grey" inverted />}>
+                <Dropdown.Menu style={{ minWidth: "max-content", zIndex: 200 }}>
+                    <Dropdown.Item href="https://github.com/fr0stbyter/jspatcher" target="_blank" text="Visit GitHub" />
+                    <Dropdown.Item disabled text={`Version: ${VERSION}`} />
+                </Dropdown.Menu>
+            </Dropdown>
+        );
+    }
+}
 export default class LeftMenu extends React.PureComponent<{ patcher: Patcher }, { active: TPanels; codePanel: boolean; audioOn: boolean }> {
     state = { active: TPanels.None, codePanel: false, audioOn: this.props.patcher.env.audioCtx.state === "running" };
     refDivPane = React.createRef<HTMLDivElement>();
@@ -279,9 +292,7 @@ export default class LeftMenu extends React.PureComponent<{ patcher: Patcher }, 
                         <Icon name="add" color={this.state.active === TPanels.Objects ? "teal" : "grey"} inverted />
                     </Menu.Item>
                     <div style={{ flex: "1 1 auto" }}></div>
-                    <Menu.Item name="Config" active={false}>
-                        <Icon name="cog" color="grey" inverted />
-                    </Menu.Item>
+                    <ConfigMenu {...this.props} />
                 </Menu>
                 <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown} hidden={this.state.active === TPanels.None}></div>
             </>

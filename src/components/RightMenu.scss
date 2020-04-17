@@ -10,12 +10,10 @@
         width: 4px;
         height: 100%;
         cursor: w-resize;
-        z-index: 1;
     }
     & > .right-menu {
         position: relative;
         width: auto !important;
-        z-index: 0;
         display: flex !important;
         margin: 0px !important;
         border-radius: 0px !important;
