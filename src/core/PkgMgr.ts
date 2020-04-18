@@ -31,6 +31,13 @@ export class PackageManager {
     private readonly libFaust: TFlatPackage;
     private readonly libMax: TFlatPackage;
     private readonly libGen: TFlatPackage;
+    /**
+     * `[id, url]`
+     *
+     * @type {[string, string][]}
+     * @memberof PackageManager
+     */
+    readonly imported: [string, string][] = [];
     constructor(patcherIn: Patcher) {
         this.patcher = patcherIn;
         this.global = patcherIn.env.pkgMgr;
@@ -71,14 +78,20 @@ export class PackageManager {
     }
     async importFromNPM(pkgID: string, idIn?: string) {
         const id = idIn || pkgID.split("/").pop();
-        const jsModule = await this.global.getModuleFromNPM(pkgID, id);
-        const pkg = Importer.import(id, jsModule);
-        this.add(pkg, "js", [id]);
+        const url = `https://unpkg.com/${pkgID}`;
+        return this.importFromURL(url, id);
     }
-    async importFromURL(address: string, id: string) {
-        const jsModule = await this.global.getModuleFromURL(address, id);
+    async importFromURL(url: string, id: string) {
+        const jsModule = await this.global.getModuleFromURL(url, id);
         const pkg = Importer.import(id, jsModule);
-        this.add(pkg, "js", [id]);
+        this.imported.push([id, url]);
+        return this.add(pkg, "js", [id]);
+    }
+    remove(url: string) {
+        const { imported } = this;
+        const i = imported.findIndex(t => t[1] === url);
+        if (i === -1) return;
+        imported.splice(i, 1);
     }
     add(pkgIn: TPackage, lib: TPatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();
@@ -93,7 +106,7 @@ export class PackageManager {
         this.packageRegister(pkgIn, this.getLib(lib), 2, pathIn);
         this.patcher.emit("libChanged", { pkg: this.activePkg, lib: this.activeLib });
     }
-    packageRegister(pkg: TPackage, libOut: { [key: string]: typeof AnyObject } = {}, rootifyDepth = Infinity, pathIn?: string[]) {
+    packageRegister(pkg: TPackage, libOut: TFlatPackage = {}, rootifyDepth = Infinity, pathIn?: string[]) {
         const path = pathIn ? pathIn.slice() : [];
         if (path.length && ImporterDirSelfObject in pkg) {
             const el = pkg[ImporterDirSelfObject as any];
@@ -238,14 +251,8 @@ export class GlobalPackageManager {
         if (this.externals.has(url)) return this.externals.get(url);
         const rawModule = await this.fetchModule(url);
         const m = typeof rawModule === "object" ? rawModule : { [id]: rawModule };
-        if (!Object.keys(m)) throw new Error(`Module ${id} from ${url} is empty`);
+        if (!Object.keys(m).length) throw new Error(`Module ${id} from ${url} is empty`);
         this.externals.set(url, m);
         return m;
-    }
-    async getModuleFromNPM(pkgID: string, idIn?: string) {
-        const id = idIn || pkgID.split("/").pop();
-        const url = `https://unpkg.com/${pkgID}`;
-        if (this.externals.has(url)) return this.externals.get(url);
-        return this.getModuleFromURL(url, id);
     }
 }

@@ -609,6 +609,9 @@ export class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
             isUIState: true
         }
     };
+    subscribe() {
+        this.patcher.on("libChanged", () => this.box.changeText(this.box.text, true));
+    }
 }
 export class Bang {
     toString() {

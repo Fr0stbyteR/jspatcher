@@ -8744,9 +8744,12 @@
         },
         "props": {
             "mode": "js",
-            "dependencies": {
-                "tf": "https://unpkg.com/@tensorflow/tfjs"
-            },
+            "dependencies": [
+                [
+                    "tf",
+                    "https://unpkg.com/@tensorflow/tfjs"
+                ]
+            ],
             "bgColor": "rgba(61, 65, 70, 1)",
             "editingBgColor": "rgba(82, 87, 94, 1)",
             "grid": [

@@ -3,34 +3,53 @@ import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 
-interface WebAudioPluginManifest {
-    documentation: string;
-    name: string;
-    thumbnail: string;
-    vendor: string;
-    category: string;
-    version: string;
+declare type TypedEvent<T extends string | number | symbol = never, I extends EventInit = {}> = {
+    [K in keyof I]: I[K];
+} & Event & { type: T };
+declare interface TypedEventTarget<M extends Record<string, EventInit & Record<string, any>> = {}> extends EventTarget {
+    addEventListener<K extends keyof M>(type: K, listener: (e: TypedEvent<K, M[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+    removeEventListener<K extends keyof M>(type: K, listener: (e: TypedEvent<K, M[K]>) => any, options?: boolean | EventListenerOptions): void;
+    removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
-declare class WebAudioPluginNode extends AudioNode {
-    inputChannelCount(): number;
-    outputChannelCount(): number;
-    onMidi(data: number[] | Uint8Array): any;
-    setParam(key: string, value: number): any;
-    getParam(key: string): number;
+declare interface WebAudioPluginCreateOptions<S extends Record<string, any> = {}> {
+    state?: Partial<S>;
 }
-declare class WebAudioPlugin {
-    constructor(audioCtx: AudioContext);
-    setState(): void;
-    createAudioNode(options?: any): Promise<AudioNode>;
-    createElement(options?: any): Promise<ChildNode>;
+/**
+ * `WebAudioPlugin` main interface
+ *
+ * @interface WebAudioPlugin
+ * @extends {TypedEventTarget<E>}
+ * @template P `AudioParam` names, e.g. `"gain" | "feedback" | "ratio"`
+ * @template S State type, e.g. `{ id: string, color: string }`
+ * @template E Event map, e.g. `{ midiMessage: { data: Uint8Array } }`
+ */
+declare interface WebAudioPlugin<P extends string = never, S extends Record<string, any> = {}, E extends Record<string, EventInit & Record<string, any>> = {}> extends TypedEventTarget<E> {
+    initialize(state?: Partial<S>): this;
+    setState(state: Partial<S>): void;
+    getState(): S;
+    getParam(key: P): AudioParam;
+    setParam(key: P, value: number): void;
+    createAudioNode(options?: WebAudioPluginCreateOptions<S>): Promise<AudioNode>;
+    createElement(options?: WebAudioPluginCreateOptions<S>): Promise<Element>;
 }
+declare const WebAudioPlugin: {
+    prototype: WebAudioPlugin;
+    new <P extends string = never, S extends Record<string, any> = {}, E extends Record<string, EventInit & Record<string, any>> = {}>(audioContext: AudioContext): WebAudioPlugin<P, S, E>;
+};
+// let ac: AudioContext;
+// const w = new WebAudioPlugin<"gain" | "feedback" | "ratio", { a: number }, { midiMessage: { data: Uint8Array } }>(ac);
+// w.addEventListener("midiMessage", e => e.data);
+// w.setParam("feedback", 1);
+// w.setState({ a: 2 });
+
 const AWN: typeof AudioWorkletNode = window.AudioWorkletNode ? AudioWorkletNode : null;
 
 class PluginUI extends DOMUI<Plugin> {
     state: DOMUIState = { ...this.state, children: this.object.state.children };
 }
 
-export type S = { node: WebAudioPluginNode; children: ChildNode[] };
+export type S = { node: AudioNode; children: ChildNode[] };
 type I = [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]];
 type O = (null | AudioNode)[];
 export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, DOMUIState> {
@@ -60,7 +79,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
             this.error(e.message);
         }
         let node: AudioNode;
-        let element: ChildNode;
+        let element: Element;
         try {
             const factory = new Constructor(this.audioCtx);
             node = await factory.createAudioNode();
@@ -133,14 +152,14 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
             } else if (typeof data === "string") {
                 await this.load(data);
             } else if (isMIDIEvent(data)) {
-                if (this.state.node) this.state.node.onMidi(data);
+                // if (this.state.node) this.state.node.onMidi(data);
             } else if (typeof data === "object") {
                 if (this.state.node) {
                     for (const key in data) {
                         try {
                             const bpf = decodeLine((data as { [key: string]: TBPF })[key]);
                             if (this.state.node instanceof AWN) this.applyBPF(this.state.node.parameters.get(key), bpf);
-                            else this.state.node.setParam(key, bpf[bpf.length - 1][0]);
+                            // else this.state.node.setParam(key, bpf[bpf.length - 1][0]);
                         } catch (e) {
                             this.error(e.message);
                         }

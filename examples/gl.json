@@ -1745,9 +1745,12 @@
         },
         "props": {
             "mode": "js",
-            "dependencies": {
-                "three": "https://unpkg.com/three"
-            },
+            "dependencies": [
+                [
+                    "three",
+                    "https://unpkg.com/three"
+                ]
+            ],
             "bgColor": "#3d4146",
             "editingBgColor": "rgba(82, 87, 94, 1)",
             "grid": [

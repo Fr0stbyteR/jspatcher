@@ -8,7 +8,6 @@ import SharedData from "./Shared";
 import { PackageManager } from "./PkgMgr";
 import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv } from "./types";
 
-import Base from "./objects/Base";
 import { toFaustDspCode } from "./objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 
@@ -17,7 +16,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         dependencies: {
             type: "object",
             description: "Patcher dependencies",
-            default: {}
+            default: []
         },
         bgColor: {
             type: "color",
@@ -53,7 +52,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this._env = envIn;
         this.observeHistory();
         this.observeGraphChange();
-        this.observeLibChange();
         this.observeChange();
         this._state = {
             name: "patcher",
@@ -82,9 +80,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     }
     get activeLib() {
         return this._state.pkgMgr.activeLib;
-    }
-    private observeLibChange() {
-        this.on("libChanged", () => this.refreshInvalidBoxes());
     }
     private observeGraphChange() {
         const eventNames = [
@@ -115,12 +110,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     }
     get isActive() {
         return this.env.active === this;
-    }
-    refreshInvalidBoxes() {
-        for (const id in this.boxes) {
-            const box = this.boxes[id];
-            if (box instanceof Base.InvalidObject) box.changeText(box.text, true);
-        }
     }
     async clear() {
         if (this.boxes) await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].destroy()));
@@ -196,14 +185,26 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
             if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
             if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
             if (mode === "js" && this.props.dependencies) {
-                let depNames = Object.keys(this.props.dependencies);
+                const { dependencies } = this.props;
+                if (!Array.isArray(dependencies)) {
+                    this.props.dependencies = [];
+                    for (const key in dependencies as { [key: string]: string }) {
+                        this.props.dependencies.push([key, dependencies[key]]);
+                    }
+                }
+                let depNames = this.props.dependencies.map(t => t[0]);
                 this.emit("loading", depNames);
-                const promises = depNames.slice().map(async (name, i) => {
-                    await this._state.pkgMgr.importFromURL(this.props.dependencies[name], name);
+                for (let i = 0; i < this.props.dependencies.length; i++) {
+                    const [name, url] = this.props.dependencies[i];
+                    try {
+                        // eslint-disable-next-line no-await-in-loop
+                        await this._state.pkgMgr.importFromURL(url, name);
+                    } catch (e) {
+                        this.error(`Loading dependency: ${name} from ${url} failed`);
+                    }
                     depNames = depNames.splice(i, 1);
                     this.emit("loading", depNames);
-                });
-                await Promise.all(promises);
+                }
             }
             if (patcher.boxes) { // Boxes & data
                 for (const id in patcher.boxes) {
@@ -281,6 +282,20 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     get fileName() {
         return `${this._state.name}.${{ js: "json", max: "maxpat", gen: "gendsp", faust: "dsppat" }[this.props.mode]}`;
     }
+    async addPackage(namespace: string, url: string) {
+        const { dependencies } = this.props;
+        await this.state.pkgMgr.importFromURL(url, namespace);
+        dependencies.push([namespace, url]);
+        this.setProps({ dependencies: dependencies.slice() });
+    }
+    removePackage(url: string) {
+        const { dependencies } = this.props;
+        const i = dependencies.findIndex(t => t[1] === url);
+        if (i === -1) return;
+        dependencies.splice(i, 1);
+        this.state.pkgMgr.remove(url);
+        this.setProps({ dependencies: dependencies.slice() });
+    }
     async createBox(boxIn: TBox, noPostInit?: boolean) {
         if (!boxIn.hasOwnProperty("id")) boxIn.id = "box-" + ++this.props.boxIndexCount;
         const box = new Box(this, boxIn);
@@ -295,7 +310,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const className = parsed.class;
         if (typeof className !== "string" || className.length === 0) return this.activeLib.EmptyObject;
         if (this.activeLib[className]) return this.activeLib[className];
-        this.newLog("error", "Patcher", "Object " + className + " not found.", this);
+        this.error(`Object ${className} not found.`);
         return this.activeLib.InvalidObject;
     }
     getObjectMeta(parsed: { class: string; args: any[]; props: { [key: string]: any } }) {

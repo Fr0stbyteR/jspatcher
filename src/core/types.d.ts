@@ -32,7 +32,7 @@ type TPatcherEnv = {
     data: TSharedData;
 };
 
-type TDependencies = { [name: string]: string };
+type TDependencies = [string, string][];
 
 type TPatcherProps = {
     mode: TPatcherMode;
