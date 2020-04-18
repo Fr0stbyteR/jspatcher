@@ -1,4 +1,5 @@
 import * as Util from "util";
+import Patcher from "../Patcher";
 import { DefaultObject, Bang } from "./Base";
 import { TMeta } from "../types";
 import { SharedDataNoValue } from "../../utils/symbols";
@@ -764,6 +765,30 @@ export class call extends DefaultObject<{}, CallState, [any | Bang, ...any[]], a
         this.updateUI({ loading });
     }
 }
+class thispatcher extends StdObject<{}, {}, [Bang], [Patcher]> {
+    static description = "Current patcher instance";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "bang",
+        description: "Bang to output patcher instance"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "object",
+        description: "Patcher instance"
+    }];
+    subscribe() {
+        super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 1;
+            this.outlets = 1;
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                this.outlet(0, this.patcher);
+            }
+        });
+    }
+}
 
 
-export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, call, v, lambda, bang, loadbang, unloadbang, delay };
+export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, call, v, lambda, bang, loadbang, unloadbang, delay, thispatcher };

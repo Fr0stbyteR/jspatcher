@@ -1,6 +1,6 @@
 import * as React from "react";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown, DropdownProps, DropdownItemProps } from "semantic-ui-react";
+import { Menu, Icon, MenuItemProps, Header, Loader, Dimmer, Table, Ref, Checkbox, Dropdown, DropdownProps, DropdownItemProps, Label } from "semantic-ui-react";
 import { ChromePicker, ColorResult } from "react-color";
 import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
@@ -458,6 +458,7 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
                 table.push(item);
             });
         }
+        const boxIDs = this.props.patcher.state.selected.filter(id => id.startsWith("box")).map(s => +s.slice(4)).sort((a, b) => a - b);
         return (
             <>
                 <Table className="last-table" inverted celled striped selectable unstackable size="small" compact="very">
@@ -466,6 +467,9 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
                     </Table.Body>
                 </Table>
                 <Menu icon inverted size="mini">
+                    <Label.Group size="mini" color="grey">
+                        {boxIDs.length ? boxIDs.map(id => <Label style={{ margin: ".5em" }} key={id} content={id} />) : <Label style={{ margin: ".5em" }} content="Patcher" />}
+                    </Label.Group>
                 </Menu>
             </>
         );
