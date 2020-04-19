@@ -295,12 +295,13 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
             this.setState({ meta: null, args: [], props: {}, rect: null, presentationRect: null });
             return;
         }
-        const { meta, args, props, rect, presentationRect, presentation, background } = boxes[0];
+        const { meta: boxMeta, args, props, rect, presentationRect, presentation, background } = boxes[0];
         if (boxes.length === 1) {
-            this.setState({ meta, args: args.slice(), props: { ...props, presentation, background }, rect, presentationRect });
+            this.setState({ meta: boxMeta, args: args.slice(), props: { ...props, presentation, background }, rect, presentationRect });
             return;
         }
-        const commonProps = { ...meta.props };
+        const meta = { ...boxMeta };
+        const commonProps = { ...boxMeta.props };
         for (const key in commonProps) {
             const prop = commonProps[key];
             if (key === "rect" || key === "presentationRect") {
@@ -336,7 +337,7 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
             }
         }
         meta.props = commonProps;
-        const commonArgs = meta.args.slice();
+        const commonArgs = boxMeta.args.slice();
         for (let i = commonArgs.length - 1; i >= 0; i--) {
             const arg = commonArgs[i];
             const useDefault = !(i in arg);
