@@ -11,7 +11,7 @@ import { TPatcher, TRect } from "../core/types";
 import { round } from "../utils/math";
 
 type P = { patcher: Patcher; transparent?: boolean; runtime?: boolean };
-type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: string; editingBgColor: string };
+type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: string; editingBgColor: string; selectionRect: TRect };
 export default class PatcherUI extends React.PureComponent<P, S> {
     state: S = {
         locked: this.props.runtime || this.props.patcher.state.locked,
@@ -19,13 +19,15 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         showGrid: this.props.patcher.state.showGrid,
         bgColor: this.props.patcher.props.bgColor,
         editingBgColor: this.props.patcher.props.editingBgColor,
-        fileDropping: false
+        fileDropping: false,
+        selectionRect: [0, 0, 0, 0]
     };
     refDiv = React.createRef<HTMLDivElement>();
     refGrid = React.createRef<Grid>();
     refBoxes = React.createRef<Boxes>();
     refLines = React.createRef<Lines>();
     size = { width: 0, height: 0 };
+    cachedMousePos = { x: 0, y: 0 };
     handleLoading = (loading?: string[]) => {
         if (loading) return;
         const { patcher } = this.props;
@@ -53,8 +55,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             return;
         }
         const grid = this.refGrid.current;
-        const boxes = this.refBoxes.current;
-        const lines = this.refLines.current;
+        // const boxes = this.refBoxes.current;
+        // const lines = this.refLines.current;
         const div = e.currentTarget;
         let shouldUpdate = false;
         if (div.scrollWidth !== this.size.width || div.scrollHeight !== this.size.height) {
@@ -65,8 +67,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (shouldUpdate) {
             const newState = { width: this.size.width + "px", height: this.size.height + "px" };
             grid.setState(newState);
-            boxes.setState(newState);
-            if (lines) lines.setState(newState);
+            // boxes.setState(newState);
+            // if (lines) lines.setState(newState);
         }
     };
     handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
@@ -91,6 +93,114 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             this.props.patcher.loadFromFile(file);
         }
     };
+    handleMouseDown = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
+        this.props.patcher.setActive();
+        if (!e.shiftKey) this.props.patcher.deselectAll();
+        if (e.button !== 0) return;
+        if (this.props.patcher.state.locked) return;
+        // Handle Draggable
+        const handleDraggable = () => {
+            const patcherDiv = this.refDiv.current;
+            const patcherRect = patcherDiv.getBoundingClientRect();
+            let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+            const selectedBefore = this.props.patcher.state.selected.slice();
+            const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as TRect;
+            const handleMouseMove = (e: MouseEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (e.movementX || e.movementY) {
+                    selectionRect[2] = e.pageX - patcherRect.left + patcherDiv.scrollLeft;
+                    selectionRect[3] = e.pageY - patcherRect.top + patcherDiv.scrollTop;
+                    this.setState({ selectionRect: selectionRect.slice() as TRect });
+                    this.props.patcher.selectRegion(selectionRect, selectedBefore);
+                }
+                const x = e.pageX - patcherRect.left;
+                const y = e.pageY - patcherRect.top;
+                if (x < 10) patcherDiv.scrollLeft += x - 10;
+                if (x > patcherRect.width - 10) patcherDiv.scrollLeft += x + 10 - patcherRect.width;
+                if (y < 10) patcherDiv.scrollTop += y - 10;
+                if (y > patcherRect.height - 10) patcherDiv.scrollTop += y + 10 - patcherRect.height;
+            };
+            const handlePatcherScroll = (e: UIEvent) => {
+                const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
+                const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
+                selectionRect[2] += movementX;
+                selectionRect[3] += movementY;
+                patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
+                if (movementX || movementY) {
+                    this.setState({ selectionRect: selectionRect.slice() as TRect });
+                    this.props.patcher.selectRegion(selectionRect, selectedBefore);
+                }
+            };
+            const handleMouseUp = (e: MouseEvent) => {
+                e.stopPropagation();
+                e.preventDefault();
+                document.removeEventListener("mousemove", handleMouseMove);
+                document.removeEventListener("mouseup", handleMouseUp);
+                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
+                this.setState({ selectionRect: [0, 0, 0, 0] });
+            };
+            document.addEventListener("mousemove", handleMouseMove);
+            document.addEventListener("mouseup", handleMouseUp);
+            patcherDiv.addEventListener("scroll", handlePatcherScroll);
+        };
+        handleDraggable();
+    };
+    handleClick = (e: React.MouseEvent) => {
+        if (this.props.runtime) return;
+        const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.setState({ locked: !this.props.patcher.state.locked });
+    };
+    handleDoubleClick = (e: React.MouseEvent) => {
+        const { patcher, runtime } = this.props;
+        if (runtime) return;
+        if (patcher.state.locked) return;
+        if (!(e.target instanceof HTMLDivElement && (e.target.classList.contains("boxes") || e.target.classList.contains("patcher")))) return;
+        const ctrlKey = patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        if (ctrlKey || e.shiftKey) return;
+        const patcherDiv = this.refDiv.current as HTMLDivElement;
+        if (!patcherDiv) return;
+        const patcherRect = patcherDiv.getBoundingClientRect();
+        const [gridX, gridY] = patcher.props.grid;
+        const x = round(Math.max(0, e.pageX - patcherRect.left + patcherDiv.scrollLeft), gridX);
+        const y = round(Math.max(0, e.pageY - patcherRect.top + patcherDiv.scrollTop), gridY);
+        const { presentation } = patcher._state;
+        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
+    };
+    handleKeyDown = (e: KeyboardEvent) => {
+        const { patcher, runtime } = this.props;
+        if (runtime) return;
+        if (!patcher.isActive) return;
+        if (patcher.state.locked) return;
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
+            let x = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0;
+            let y = e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0;
+            if (!e.shiftKey && patcher._state.snapToGrid) {
+                x *= patcher.props.grid[0];
+                y *= patcher.props.grid[1];
+            }
+            patcher.moveSelectedBox({ x, y });
+        } else if ((e.key === "n" || e.key === "m" || e.key === "b" || e.key === "c" || e.key === "i" || e.key === "s") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+            e.stopPropagation();
+            e.preventDefault();
+            const patcherDiv = this.refDiv.current as HTMLDivElement;
+            if (!patcherDiv) return;
+            const patcherRect = patcherDiv.getBoundingClientRect();
+            const [gridX, gridY] = patcher.props.grid;
+            const x = round(Math.max(0, this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft), gridX);
+            const y = round(Math.max(0, this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop), gridY);
+            let text = "";
+            if (e.key === "m") text = "message";
+            else if (e.key === "c") text = "comment";
+            else if (e.key === "b") text = "live.button";
+            else if (e.key === "i") text = "live.numbox";
+            else if (e.key === "s") text = "live.slider";
+            const { presentation } = patcher._state;
+            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
+        }
+    };
+    handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };
     componentDidMount() {
         const patcher = this.props.patcher;
         patcher.on("loading", this.handleLoading);
@@ -99,6 +209,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         patcher.on("showGrid", this.handleShowGridChange);
         patcher.on("bgColor", this.handleBgColorChange);
         patcher.on("editingBgColor", this.handleEditingBgColorChange);
+        document.addEventListener("keydown", this.handleKeyDown);
     }
     componentWillUnmount() {
         const patcher = this.props.patcher;
@@ -108,8 +219,20 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         patcher.off("showGrid", this.handleShowGridChange);
         patcher.off("bgColor", this.handleBgColorChange);
         patcher.off("editingBgColor", this.handleEditingBgColorChange);
+        document.removeEventListener("keydown", this.handleKeyDown);
     }
     render() {
+        const { selectionRect } = this.state;
+        let selectionDiv;
+        if (selectionRect[2] !== selectionRect[0] || selectionRect[3] !== selectionRect[1]) {
+            const selectionDivStyle = {
+                left: Math.min(selectionRect[0], selectionRect[2]),
+                top: Math.min(selectionRect[1], selectionRect[3]),
+                width: Math.abs(selectionRect[2] - selectionRect[0]),
+                height: Math.abs(selectionRect[3] - selectionRect[1])
+            } as React.CSSProperties;
+            selectionDiv = <div className="selection" style={selectionDivStyle}/>;
+        }
         const classArray = ["patcher"];
         classArray.push(this.state.locked ? "locked" : "unlocked");
         if (this.state.presentation) classArray.push("presentation");
@@ -117,10 +240,11 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (this.state.fileDropping) classArray.push("filedropping");
         const backgroundColor = this.props.transparent ? "transparent" : this.state.locked ? this.state.bgColor : this.state.editingBgColor;
         return (
-            <div ref={this.refDiv} className={classArray.join(" ")} style={{ backgroundColor }} onScroll={this.handleScroll} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
+            <div ref={this.refDiv} className={classArray.join(" ")} style={{ backgroundColor }} onMouseDown={this.handleMouseDown} onMouseMove={this.handleMouseMove} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} onScroll={this.handleScroll} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
                 <Grid {...this.props} ref={this.refGrid} />
                 <Boxes {...this.props} ref={this.refBoxes} />
                 {this.state.presentation ? <></> : <Lines {...this.props} ref={this.refLines} />}
+                {selectionDiv}
             </div>
         );
     }
@@ -191,13 +315,10 @@ class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
         );
     }
 }
-type BoxesState = { width: string; height: string; selectionRect: TRect };
+type BoxesState = { width: string; height: string };
 class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean }, BoxesState> {
-    state: BoxesState = { width: "100%", height: "100%", selectionRect: [0, 0, 0, 0] };
+    state: BoxesState = { width: "100%", height: "100%" };
     boxes: { [key: string]: JSX.Element } = {};
-    refDiv = React.createRef<HTMLDivElement>();
-    dragged = false;
-    cachedMousePos = { x: 0, y: 0 };
     componentDidMount() {
         this.handleLoading();
         const patcher = this.props.patcher;
@@ -206,7 +327,6 @@ class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
         patcher.on("create", this.handleCreate);
         patcher.on("deleteBox", this.handleDeleteBox);
         patcher.on("delete", this.handleDelete);
-        document.addEventListener("keydown", this.handleKeyDown);
     }
     componentWillUnmount() {
         const patcher = this.props.patcher;
@@ -215,7 +335,6 @@ class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
         patcher.off("create", this.handleCreate);
         patcher.off("deleteBox", this.handleDeleteBox);
         patcher.off("delete", this.handleDelete);
-        document.removeEventListener("keydown", this.handleKeyDown);
     }
     handleCreateBox = (box: Box) => {
         if (this.props.patcher.state.isLoading) return;
@@ -253,129 +372,10 @@ class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
             this.forceUpdate();
         });
     };
-    handleMouseDown = (e: React.MouseEvent) => {
-        if (this.props.runtime) return;
-        this.props.patcher.setActive();
-        if (!e.shiftKey) this.props.patcher.deselectAll();
-        if (e.button !== 0) return;
-        if (this.props.patcher.state.locked) return;
-        // Handle Draggable
-        const handleDraggable = () => {
-            this.dragged = false;
-            const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
-            const patcherRect = patcherDiv.getBoundingClientRect();
-            let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-            const selectedBefore = this.props.patcher.state.selected.slice();
-            const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as TRect;
-            const handleMouseMove = (e: MouseEvent) => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (e.movementX || e.movementY) {
-                    if (!this.dragged) this.dragged = true;
-                    selectionRect[2] = e.pageX - patcherRect.left + patcherDiv.scrollLeft;
-                    selectionRect[3] = e.pageY - patcherRect.top + patcherDiv.scrollTop;
-                    this.setState({ selectionRect: selectionRect.slice() as TRect });
-                    this.props.patcher.selectRegion(selectionRect, selectedBefore);
-                }
-                const x = e.pageX - patcherRect.left;
-                const y = e.pageY - patcherRect.top;
-                if (x < 10) patcherDiv.scrollLeft += x - 10;
-                if (x > patcherRect.width - 10) patcherDiv.scrollLeft += x + 10 - patcherRect.width;
-                if (y < 10) patcherDiv.scrollTop += y - 10;
-                if (y > patcherRect.height - 10) patcherDiv.scrollTop += y + 10 - patcherRect.height;
-            };
-            const handlePatcherScroll = (e: UIEvent) => {
-                const movementX = patcherDiv.scrollLeft - patcherPrevScroll.left;
-                const movementY = patcherDiv.scrollTop - patcherPrevScroll.top;
-                selectionRect[2] += movementX;
-                selectionRect[3] += movementY;
-                patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-                if (movementX || movementY) {
-                    if (!this.dragged) this.dragged = true;
-                    this.setState({ selectionRect: selectionRect.slice() as TRect });
-                    this.props.patcher.selectRegion(selectionRect, selectedBefore);
-                }
-            };
-            const handleMouseUp = (e: MouseEvent) => {
-                e.stopPropagation();
-                e.preventDefault();
-                document.removeEventListener("mousemove", handleMouseMove);
-                document.removeEventListener("mouseup", handleMouseUp);
-                patcherDiv.removeEventListener("scroll", handlePatcherScroll);
-                this.setState({ selectionRect: [0, 0, 0, 0] });
-            };
-            document.addEventListener("mousemove", handleMouseMove);
-            document.addEventListener("mouseup", handleMouseUp);
-            patcherDiv.addEventListener("scroll", handlePatcherScroll);
-        };
-        handleDraggable();
-    };
-    handleClick = (e: React.MouseEvent) => {
-        if (this.props.runtime) return;
-        const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.setState({ locked: !this.props.patcher.state.locked });
-    };
-    handleDoubleClick = (e: React.MouseEvent) => {
-        const { patcher, runtime } = this.props;
-        if (runtime) return;
-        if (patcher.state.locked) return;
-        if (e.target !== this.refDiv.current) return;
-        const ctrlKey = patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        if (ctrlKey || e.shiftKey) return;
-        const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
-        const patcherRect = patcherDiv.getBoundingClientRect();
-        const [gridX, gridY] = patcher.props.grid;
-        const x = round(Math.max(0, e.pageX - patcherRect.left + patcherDiv.scrollLeft), gridX);
-        const y = round(Math.max(0, e.pageY - patcherRect.top + patcherDiv.scrollTop), gridY);
-        const { presentation } = patcher._state;
-        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
-    };
-    handleKeyDown = (e: KeyboardEvent) => {
-        const { patcher, runtime } = this.props;
-        if (runtime) return;
-        if (!patcher.isActive) return;
-        if (patcher.state.locked) return;
-        if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
-            let x = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0;
-            let y = e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0;
-            if (!e.shiftKey && patcher._state.snapToGrid) {
-                x *= patcher.props.grid[0];
-                y *= patcher.props.grid[1];
-            }
-            patcher.moveSelectedBox({ x, y });
-        } else if ((e.key === "n" || e.key === "m" || e.key === "b" || e.key === "c") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
-            e.stopPropagation();
-            e.preventDefault();
-            const patcherDiv = this.refDiv.current.parentElement as HTMLDivElement;
-            const patcherRect = patcherDiv.getBoundingClientRect();
-            const [gridX, gridY] = patcher.props.grid;
-            const x = round(Math.max(0, this.cachedMousePos.x - patcherRect.left + patcherDiv.scrollLeft), gridX);
-            const y = round(Math.max(0, this.cachedMousePos.y - patcherRect.top + patcherDiv.scrollTop), gridY);
-            let text = "";
-            if (e.key === "m") text = "message";
-            else if (e.key === "c") text = "comment";
-            else if (e.key === "b") text = "live.button";
-            const { presentation } = patcher._state;
-            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
-        }
-    };
-    handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };
     render() {
-        const selectionRect = this.state.selectionRect;
-        let selectionDiv;
-        if (selectionRect[2] !== selectionRect[0] || selectionRect[3] !== selectionRect[1]) {
-            const selectionDivStyle = {
-                left: Math.min(selectionRect[0], selectionRect[2]),
-                top: Math.min(selectionRect[1], selectionRect[3]),
-                width: Math.abs(selectionRect[2] - selectionRect[0]),
-                height: Math.abs(selectionRect[3] - selectionRect[1])
-            } as React.CSSProperties;
-            selectionDiv = <div className="selection" style={selectionDivStyle}/>;
-        }
         return (
-            <div className="boxes" onMouseDown={this.handleMouseDown} onMouseMove={this.handleMouseMove} onDoubleClick={this.handleDoubleClick} ref={this.refDiv} onClick={this.handleClick} style={this.state}>
+            <div className="boxes" style={this.state}>
                 {Object.values(this.boxes)}
-                {selectionDiv}
             </div>
         );
     }

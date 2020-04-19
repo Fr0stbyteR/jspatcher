@@ -27,10 +27,10 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabUIState> {
     className = "live-tab";
     tabRects: TRect[] = [];
     inTouch = false;
-    getTabRects() {
+    getTabRects(width: number, height: number) {
         const {
-            width,
-            height,
+            // width,
+            // height,
             multiline,
             mode,
             enums,
@@ -119,15 +119,13 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabUIState> {
             enums,
             value
         } = this.state;
-        const { width, height } = this.box;
         const ctx = this.ctx;
         if (!ctx) return;
-        const tabRects = this.getTabRects();
+        const [width, height] = this.fullSize();
+        const tabRects = this.getTabRects(width, height);
 
         const borderWidth = 0.5;
 
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
         ctx.clearRect(0, 0, width, height);
         ctx.lineWidth = borderWidth;
 

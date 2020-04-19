@@ -270,7 +270,7 @@ class Packages extends React.PureComponent<{ patcher: Patcher }, { imports: [str
                             <Table.Cell style={{ padding: 0 }} width={1}>
                                 <Button icon="add" size="mini" compact inverted disabled={this.state.adding} loading={this.state.adding} onClick={this.handleAdd} title="Add a package" />
                             </Table.Cell>
-                            <Table.Cell width={logs.length ? undefined : 4} style={{ padding: 0 }}>
+                            <Table.Cell width={4} style={{ padding: 0 }}>
                                 <Input fluid size="mini" placeholder={"Namespace"} onKeyDown={this.handleInputKeyDown} />
                             </Table.Cell>
                             <Table.Cell style={{ padding: 0 }}>

@@ -28,8 +28,8 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonUIState> {
             this.resetCallback();
         }
         const {
-            width,
-            height,
+            // width,
+            // height,
             active,
             focus,
             bgColor,
@@ -44,8 +44,7 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonUIState> {
         if (!ctx) return;
         const borderWidth = 1;
 
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
 
         ctx.lineWidth = borderWidth;

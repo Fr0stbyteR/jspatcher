@@ -19,8 +19,8 @@ export interface AbstractUIProps<T extends AbstractObject = AbstractObject> {
     onEditEnd: () => any;
 }
 export interface AbstractUIState {
-    width: number;
-    height: number;
+    width: number | string;
+    height: number | string;
 }
 export abstract class AbstractUI<
         T extends AbstractObject = AbstractObject,
@@ -477,6 +477,22 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
     get ctx() {
         return this.refCanvas.current ? this.refCanvas.current.getContext("2d") : null;
     }
+    fullSize(): [number, number] {
+        const { width, height } = this.state;
+        const { canvas, ctx } = this;
+        if (!ctx) return [0, 0];
+        if (typeof width === "number" && typeof height === "number") {
+            if (ctx.canvas.width !== width) ctx.canvas.width = width;
+            if (ctx.canvas.height !== height) ctx.canvas.height = height;
+            return [width, height];
+        }
+        const rect = canvas.getBoundingClientRect();
+        const w = typeof width === "number" ? width : ~~rect.width;
+        const h = typeof height === "number" ? height : ~~rect.height;
+        if (ctx.canvas.width !== w) ctx.canvas.width = w;
+        if (ctx.canvas.height !== h) ctx.canvas.height = h;
+        return [w, h];
+    }
     paintCallback = () => {
         this.$paintRaf = (-1 * Math.round(Math.abs(60 / this.state.frameRate))) || -1;
         this.paintScheduled = false;
@@ -516,7 +532,7 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
             <BaseUI {...this.props}>
                 <canvas
                     ref={this.refCanvas}
-                    {...this.props.canvasProps}
+                    {...canvasProps}
                 />
             </BaseUI>
         );

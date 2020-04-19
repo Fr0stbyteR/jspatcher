@@ -143,7 +143,7 @@ type TBox = {
     rect: TRect;
     background?: boolean;
     presentation?: boolean;
-    presentationRect?: TRect;
+    presentationRect?: TPresentationRect;
     args?: any[];
     props?: { [key: string]: any };
     data?: { [key: string]: any };
@@ -151,6 +151,7 @@ type TBox = {
 };
 
 type TRect = [number, number, number, number];
+type TPresentationRect = [number | string, number | string, number | string, number | string];
 
 type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
 

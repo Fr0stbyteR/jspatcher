@@ -26,11 +26,10 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
     offscreenCtx = document.createElement("canvas").getContext("2d");
     offscreenVRes = 1024;
     componentDidMount() {
-        const { width, height, bgColor } = this.state;
+        const { bgColor } = this.state;
         const { ctx, offscreenCtx, frames } = this;
         if (!ctx) return;
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         offscreenCtx.canvas.width = frames;
         offscreenCtx.canvas.height = this.offscreenVRes;
         // Background
@@ -43,8 +42,8 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
         if (!this.object.state.node) return;
         if (this.object.state.node.destroyed) return;
         const {
-            width,
-            height,
+            // width,
+            // height,
             // zoom,
             // zoomOffset,
             // $cursor,
@@ -62,8 +61,7 @@ export class SpectrogramUI extends CanvasUI<Spectrogram, {}, SpectrogramUIState>
 
         // Background
 
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, width, height);

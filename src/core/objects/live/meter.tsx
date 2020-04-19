@@ -38,8 +38,8 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
     maxTimer: number;
     paint() {
         const {
-            width,
-            height,
+            // width,
+            // height,
             active,
             mode,
             value,
@@ -58,8 +58,7 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
         const ctx = this.ctx;
         if (!ctx) return;
 
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
 
         this.normValues = value.map((v) => {

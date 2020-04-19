@@ -30,8 +30,8 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxUIState> {
     className = "live-numbox";
     paint() {
         const {
-            width,
-            height,
+            // width,
+            // height,
             active,
             focus,
             fontFamily,
@@ -55,8 +55,7 @@ class LiveNumboxUI extends LiveUI<LiveNumbox, LiveNumboxUIState> {
         const distance = this.distance;
         const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
 
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
 
         // draw background

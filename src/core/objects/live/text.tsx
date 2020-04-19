@@ -27,8 +27,8 @@ class LiveTextUI extends LiveUI<LiveText, LiveTextUIState> {
     inTouch = false;
     paint() {
         const {
-            width,
-            height,
+            // width,
+            // height,
             active,
             focus,
             fontFamily,
@@ -54,8 +54,7 @@ class LiveTextUI extends LiveUI<LiveText, LiveTextUIState> {
 
         const borderWidth = 0.5;
 
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
         ctx.lineWidth = borderWidth;
 

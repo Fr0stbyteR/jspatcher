@@ -3,11 +3,12 @@ import { Popup } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
 import "./BoxUI.scss";
-import { TResizeHandlerType, BoxEventMap, TRect, PatcherEventMap } from "../core/types";
+import { TResizeHandlerType, BoxEventMap, TRect, PatcherEventMap, TPresentationRect } from "../core/types";
 import { BaseUI } from "../core/objects/BaseUI";
+import { isRectMovable, isRectResizable } from "../utils/utils";
 
 type P = { patcher: Patcher; id: string; runtime?: boolean };
-type S = { selected: boolean; rect: TRect; presentationRect: TRect; presentation: boolean; inPresentationMode: boolean; uiComponent: typeof BaseUI; editing: boolean; highlight: boolean; error: boolean; key: string };
+type S = { selected: boolean; rect: TRect; presentationRect: TPresentationRect; presentation: boolean; inPresentationMode: boolean; uiComponent: typeof BaseUI; editing: boolean; highlight: boolean; error: boolean; key: string };
 export default class BoxUI extends React.PureComponent<P, S> {
     box = this.props.patcher.boxes[this.props.id];
     refDiv = React.createRef<HTMLDivElement>();
@@ -18,7 +19,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
     state: S = {
         selected: false,
         rect: this.box.rect.slice() as TRect,
-        presentationRect: this.box.presentationRect.slice() as TRect,
+        presentationRect: this.box.presentationRect.slice() as TPresentationRect,
         presentation: this.box.presentation,
         inPresentationMode: this.props.patcher.state.presentation,
         uiComponent: this.box.uiComponent,
@@ -48,7 +49,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         this.setState({ rect, presentationRect, presentation, uiComponent, key, editing }, this.inspectRectChange);
     };
     handleRectChanged = () => this.setState({ rect: this.box.rect.slice() as TRect });
-    handlePresentationRectChanged = () => this.setState({ presentationRect: this.box.presentationRect.slice() as TRect });
+    handlePresentationRectChanged = () => this.setState({ presentationRect: this.box.presentationRect.slice() as TPresentationRect });
     handleBlur = () => {
         this.handlingToggleEditOnClick = false;
         this.setState({ editing: false }, this.inspectRectChange);
@@ -60,6 +61,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
         // Handle Draggable
         const handleDraggable = () => {
+            if (!isRectMovable(this.state[rectKey])) return;
             this.dragged = false;
             this.dragging = true;
             const patcherDiv = this.refDiv.current.parentElement.parentElement as HTMLDivElement;
@@ -67,7 +69,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             const lastPos = { x: e.pageX, y: e.pageY };
             let dragOffset = { x: 0, y: 0 };
-            const origOffset = this.state[rectKey].slice(0, 2);
+            const origOffset = this.state[rectKey].slice(0, 2) as [number, number];
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -107,7 +109,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 e.stopPropagation();
                 e.preventDefault();
                 this.dragging = false;
-                const curOffset = this.state[rectKey];
+                const curOffset = this.state[rectKey].slice(0, 2) as [number, number];
                 const totalOffset = { x: curOffset[0] - origOffset[0], y: curOffset[1] - origOffset[1] };
                 if (this.dragged) this.props.patcher.moveEnd(totalOffset);
                 document.removeEventListener("mousemove", handleMouseMove);
@@ -215,6 +217,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
+        const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
+        if (!isRectResizable(this.state[rectKey])) return;
         const classList = e.currentTarget.classList;
         const typeMap: { [key: string]: TResizeHandlerType } = {
             "resize-handler-n": "n",

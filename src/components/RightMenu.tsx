@@ -5,7 +5,7 @@ import { ChromePicker, ColorResult } from "react-color";
 import MonacoEditor from "react-monaco-editor";
 import Patcher from "../core/Patcher";
 import Box from "../core/Box";
-import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta, TRect, TPatcherProps, TPublicPatcherProps } from "../core/types";
+import { TPatcherLog, TMeta, TArgsMeta, TPropsMeta, TRect, TPatcherProps, TPublicPatcherProps, TPresentationRect } from "../core/types";
 import "./RightMenu.scss";
 import { BaseUI } from "../core/objects/BaseUI";
 import { BaseObject } from "../core/objects/Base";
@@ -259,7 +259,7 @@ type InspectorState = {
     props: { [key: string]: any };
     patcherProps: TPublicPatcherProps;
     rect: TRect;
-    presentationRect: TRect;
+    presentationRect: TPresentationRect;
 };
 class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState> {
     state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null, patcherProps: this.props.patcher.publicProps };

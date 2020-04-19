@@ -27,11 +27,10 @@ export interface OscilloscopeUIState {
 export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUIState> {
     static defaultSize = [120, 60] as [number, number];
     componentDidMount() {
-        const { width, height, bgColor } = this.state;
+        const { bgColor } = this.state;
         const ctx = this.ctx;
         if (!ctx) return;
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         // Background
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, width, height);
@@ -42,8 +41,8 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         if (!this.object.state.node) return;
         if (this.object.state.node.destroyed) return;
         const {
-            width,
-            height,
+            // width,
+            // height,
             // zoom,
             // zoomOffset,
             stablize,
@@ -70,8 +69,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         const { sampleRate } = this.object.audioCtx;
 
         // Background
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, width, height);

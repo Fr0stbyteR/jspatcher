@@ -1,4 +1,4 @@
-import { rgbaMax2Css } from "../utils/utils";
+import { rgbaMax2Css, isTRect, isRectMovable, isRectResizable } from "../utils/utils";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import Line from "./Line";
 import Box from "./Box";
@@ -6,7 +6,7 @@ import Env from "../env";
 import History from "./History";
 import SharedData from "./Shared";
 import { PackageManager } from "./PkgMgr";
-import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv } from "./types";
+import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv, TPresentationRect } from "./types";
 
 import { toFaustDspCode } from "./objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
@@ -603,8 +603,10 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         for (const boxID in this.boxes) {
             const box = this.boxes[boxID];
             if (presentation && !box.presentation) continue;
-            const [boxLeft, boxTop] = box[rectKey];
-            const [boxRight, boxBottom] = [boxLeft + box[rectKey][2], boxTop + box[rectKey][3]];
+            const rect = box[rectKey];
+            if (!isTRect(rect)) continue;
+            const [boxLeft, boxTop, boxWidth, boxHeight] = rect;
+            const [boxRight, boxBottom] = [boxLeft + boxWidth, boxTop + boxHeight];
             if (boxLeft < right && boxTop < bottom && boxRight > left && boxBottom > top) {
                 const i = select.indexOf(boxID);
                 if (i === -1) select.push(boxID);
@@ -637,7 +639,8 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const rectKey = presentation ? "presentationRect" : "rect";
         const box = this.boxes[boxID];
         if (!box) return this;
-        const rect = box[rectKey].slice() as TRect;
+        const rect = box[rectKey].slice() as TPresentationRect;
+        if (!isRectMovable(rect)) return this;
         // Not allowing resize out of bound
         const deltaX = Math.max(deltaXIn, -rect[0]);
         const deltaY = Math.max(deltaYIn, -rect[1]);
@@ -645,7 +648,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         rect[0] += deltaX;
         rect[1] += deltaY;
         if (presentation) box.setPresentationRect(rect);
-        else box.setRect(rect);
+        else box.setRect(rect as TRect);
         return this;
     }
     moveSelectedBox(dragOffset: { x: number; y: number }, refBoxID?: string) {
@@ -654,6 +657,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const delta = { ...dragOffset };
         if (refBoxID) {
             const rect = this.boxes[refBoxID][rectKey];
+            if (!isRectMovable(rect)) return { x: 0, y: 0 };
             delta.x = snapToGrid ? Math.round((rect[0] + dragOffset.x) / this.props.grid[0]) * this.props.grid[0] - rect[0] : dragOffset.x;
             delta.y = snapToGrid ? Math.round((rect[1] + dragOffset.y) / this.props.grid[1]) * this.props.grid[1] - rect[1] : dragOffset.y;
         }
@@ -668,15 +672,15 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     move(selected: string[], delta: { x: number; y: number }, presentation: boolean) {
         selected.forEach(id => this.select(id));
         const rectKey = presentation ? "presentationRect" : "rect";
-        const boxes = this._state.selected.filter(id => id.startsWith("box") && this.boxes[id]).map(id => this.boxes[id]);
+        const boxes = this._state.selected.filter(id => id.startsWith("box") && this.boxes[id] && isRectMovable(this.boxes[id][rectKey])).map(id => this.boxes[id]);
         if (boxes.length === 0) return;
-        const leftMost = boxes.sort((a, b) => a[rectKey][0] - b[rectKey][0])[0];
-        const topMost = boxes.sort((a, b) => a[rectKey][1] - b[rectKey][1])[0];
+        const leftMost = boxes.sort((a, b) => (a[rectKey] as TRect)[0] - (b[rectKey] as TRect)[0])[0];
+        const topMost = boxes.sort((a, b) => (a[rectKey] as TRect)[1] - (b[rectKey] as TRect)[0])[0];
         // Not allowing resize out of bound
         delta.x = Math.max(delta.x, -leftMost[rectKey][0]);
         delta.y = Math.max(delta.y, -topMost[rectKey][1]);
-        if (delta.x) boxes.forEach(box => box[rectKey][0] += delta.x);
-        if (delta.y) boxes.forEach(box => box[rectKey][1] += delta.y);
+        if (delta.x) boxes.forEach(box => (box[rectKey] as TRect)[0] += delta.x);
+        if (delta.y) boxes.forEach(box => (box[rectKey] as TRect)[1] += delta.y);
         // Emit events
         if (!delta.x && !delta.y) return;
         if (presentation !== this._state.presentation) return;
@@ -692,6 +696,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const { presentation, snapToGrid, selected } = this._state;
         const rectKey = presentation ? "presentationRect" : "rect";
         const rect = this.boxes[boxID][rectKey];
+        if (!isRectResizable(rect)) return { x: 0, y: 0 };
         const delta = { x: 0, y: 0 };
         // Round delta to grid
         if (type === "e" || type === "se" || type === "ne") {
@@ -718,35 +723,35 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType, presentation: boolean) {
         selected.forEach(id => this.select(id));
         const rectKey = presentation ? "presentationRect" : "rect";
-        const boxes = this._state.selected.filter(id => id.startsWith("box") && this.boxes[id]).map(id => this.boxes[id]);
+        const boxes = this._state.selected.filter(id => id.startsWith("box") && this.boxes[id] && isRectResizable(this.boxes[id][rectKey])).map(id => this.boxes[id]);
         if (boxes.length === 0) return;
-        const leftMost = boxes.sort((a, b) => a[rectKey][0] - b[rectKey][0])[0];
-        const topMost = boxes.sort((a, b) => a[rectKey][1] - b[rectKey][1])[0];
-        const widthLeast = boxes.sort((a, b) => a[rectKey][2] - b[rectKey][2])[0];
-        const heightLeast = boxes.sort((a, b) => a[rectKey][3] - b[rectKey][3])[0];
+        const leftMost = boxes.sort((a, b) => (a[rectKey] as TRect)[0] - (b[rectKey] as TRect)[0])[0];
+        const topMost = boxes.sort((a, b) => (a[rectKey] as TRect)[1] - (b[rectKey] as TRect)[1])[0];
+        const widthLeast = boxes.sort((a, b) => (a[rectKey] as TRect)[2] - (b[rectKey] as TRect)[2])[0];
+        const heightLeast = boxes.sort((a, b) => (a[rectKey] as TRect)[3] - (b[rectKey] as TRect)[3])[0];
         // Not allowing resize out of bound
         if (type === "sw" || type === "w" || type === "nw") delta.x = Math.max(delta.x, -leftMost[rectKey][0]);
         if (type === "nw" || type === "n" || type === "ne") delta.y = Math.max(delta.y, -topMost[rectKey][1]);
         // Not allowing resize below 15px width or height
-        if (type === "ne" || type === "e" || type === "se") delta.x = Math.max(delta.x, 15 - widthLeast[rectKey][2]);
-        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.min(delta.x, widthLeast[rectKey][2] - 15);
-        if (type === "se" || type === "s" || type === "sw") delta.y = Math.max(delta.y, 15 - heightLeast[rectKey][3]);
-        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.min(delta.y, heightLeast[rectKey][3] - 15);
+        if (type === "ne" || type === "e" || type === "se") delta.x = Math.max(delta.x, 15 - (widthLeast[rectKey] as TRect)[2]);
+        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.min(delta.x, (widthLeast[rectKey] as TRect)[2] - 15);
+        if (type === "se" || type === "s" || type === "sw") delta.y = Math.max(delta.y, 15 - (heightLeast[rectKey] as TRect)[3]);
+        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.min(delta.y, (heightLeast[rectKey] as TRect)[3] - 15);
         boxes.forEach((box) => {
             const sizingX = box.uiComponent.sizing === "horizontal" || box.uiComponent.sizing === "both";
             const sizingY = box.uiComponent.sizing === "vertical" || box.uiComponent.sizing === "both";
             if (delta.x && sizingX) {
-                if (type === "ne" || type === "e" || type === "se") box[rectKey][2] += delta.x;
+                if (type === "ne" || type === "e" || type === "se") (box[rectKey] as TRect)[2] += delta.x;
                 if (type === "sw" || type === "w" || type === "nw") {
-                    box[rectKey][2] -= delta.x;
-                    box[rectKey][0] += delta.x;
+                    (box[rectKey] as TRect)[2] -= delta.x;
+                    (box[rectKey] as TRect)[0] += delta.x;
                 }
             }
             if (delta.y && sizingY) {
-                if (type === "se" || type === "s" || type === "sw") box[rectKey][3] += delta.y;
+                if (type === "se" || type === "s" || type === "sw") (box[rectKey] as TRect)[3] += delta.y;
                 if (type === "nw" || type === "n" || type === "ne") {
-                    box[rectKey][3] -= delta.y;
-                    box[rectKey][1] += delta.y;
+                    (box[rectKey] as TRect)[3] -= delta.y;
+                    (box[rectKey] as TRect)[1] += delta.y;
                 }
             }
         });

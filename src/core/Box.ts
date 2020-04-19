@@ -1,8 +1,8 @@
 import Patcher from "./Patcher";
 import Line from "./Line";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
-import { isTRect, parseToPrimitive } from "../utils/utils";
-import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect } from "./types";
+import { isTRect, parseToPrimitive, isTPresentationRect } from "../utils/utils";
+import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect, TPresentationRect } from "./types";
 import { AnyObject } from "./objects/Base";
 
 export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmitter<BoxEventMap> {
@@ -13,7 +13,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
     rect: TRect;
     background: boolean;
     presentation: boolean;
-    presentationRect: TRect;
+    presentationRect: TPresentationRect;
     data: Data<T>;
     args: Args<T>;
     props: Props<T>;
@@ -145,19 +145,14 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         this._outletLines.forEach(set => set.forEach(line => line.uiUpdateSrc()));
         this.emit("ioCountChanged", this);
     }
-    getInletPos(port: number, mode?: "default" | "presentation") {
-        const { rect, presentationRect, inlets } = this;
-        const left = mode === "default" ? rect[0] : mode === "presentation" ? presentationRect[0] : this.left;
-        const top = mode === "default" ? rect[1] : mode === "presentation" ? presentationRect[1] : this.top;
-        const width = mode === "default" ? rect[2] : mode === "presentation" ? presentationRect[2] : this.width;
+    getInletPos(port: number) {
+        const { rect, inlets } = this;
+        const [left, top, width] = rect;
         return { top, left: ((left + 10) + (width - 20) * port / (inlets > 1 ? inlets - 1 : 1)) };
     }
-    getOutletPos(port: number, mode?: "default" | "presentation") {
-        const { rect, presentationRect, outlets } = this;
-        const left = mode === "default" ? rect[0] : mode === "presentation" ? presentationRect[0] : this.left;
-        const top = mode === "default" ? rect[1] : mode === "presentation" ? presentationRect[1] : this.top;
-        const width = mode === "default" ? rect[2] : mode === "presentation" ? presentationRect[2] : this.width;
-        const height = mode === "default" ? rect[3] : mode === "presentation" ? presentationRect[3] : this.height;
+    getOutletPos(port: number) {
+        const { rect, outlets } = this;
+        const [left, top, width, height] = rect;
         return { top: top + height, left: ((left + 10) + (width - 20) * port / (outlets > 1 ? outlets - 1 : 1)) };
     }
     get inletsPositions() {
@@ -248,7 +243,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
                 this.setRect(props.rect);
                 delete props.rect;
             }
-            if (isTRect(props.presentationRect)) {
+            if (isTPresentationRect(props.presentationRect)) {
                 this.setPresentationRect(props.presentationRect);
                 delete props.presentationRect;
             }
@@ -273,11 +268,11 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         this.setRect([typeof leftIn === "number" ? leftIn : left, typeof topIn === "number" ? topIn : top, width, height] as TRect);
     }
     get presentationPosition() {
-        return this.presentationRect.slice(0, 2) as [number, number];
+        return this.presentationRect.slice(0, 2) as [number | string, number | string];
     }
-    set presentationPosition([leftIn, topIn]: [number, number]) {
+    set presentationPosition([leftIn, topIn]: [number | string, number | string]) {
         const [left, top, width, height] = this.presentationRect;
-        this.setPresentationRect([typeof leftIn === "number" ? leftIn : left, typeof topIn === "number" ? topIn : top, width, height] as TRect);
+        this.setPresentationRect([typeof leftIn === "number" || typeof leftIn === "string" ? leftIn : left, typeof topIn === "number" || typeof topIn === "string" ? topIn : top, width, height] as TPresentationRect);
     }
     get size() {
         return this.rect.slice(2) as [number, number];
@@ -287,43 +282,43 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         this.setRect([left, top, widthIn || width, heightIn || height] as TRect);
     }
     get presentationSize() {
-        return this.presentationRect.slice(2) as [number, number];
+        return this.presentationRect.slice(2) as [number | string, number | string];
     }
-    set presentationSize([widthIn, heightIn]: [number, number]) {
+    set presentationSize([widthIn, heightIn]: [number | string, number | string]) {
         const [left, top, width, height] = this.presentationRect;
-        this.setPresentationRect([left, top, widthIn || width, heightIn || height] as TRect);
+        this.setPresentationRect([left, top, widthIn || width, heightIn || height] as TPresentationRect);
     }
     get left() {
         const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
         return this[rectKey][0];
     }
-    set left(leftIn: number) {
+    set left(leftIn: number | string) {
         const positionKey = this._patcher._state.presentation ? "presentationPosition" : "position";
-        this[positionKey] = [leftIn, undefined];
+        this[positionKey] = [leftIn as any, undefined];
     }
     get top() {
         const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
         return this[rectKey][1];
     }
-    set top(topIn: number) {
+    set top(topIn: number | string) {
         const positionKey = this._patcher._state.presentation ? "presentationPosition" : "position";
-        this[positionKey] = [undefined, topIn];
+        this[positionKey] = [undefined, topIn as any];
     }
     get width() {
         const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
         return this[rectKey][2];
     }
-    set width(widthIn: number) {
+    set width(widthIn: number | string) {
         const sizeKey = this._patcher._state.presentation ? "presentationSize" : "size";
-        this[sizeKey] = [widthIn, undefined];
+        this[sizeKey] = [widthIn as any, undefined];
     }
     get height() {
         const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
         return this[rectKey][3];
     }
-    set height(heightIn: number) {
+    set height(heightIn: number | string) {
         const sizeKey = this._patcher._state.presentation ? "presentationSize" : "size";
-        this[sizeKey] = [undefined, heightIn];
+        this[sizeKey] = [undefined, heightIn as any];
     }
     setBackground(bool: boolean) {
         if (!!this.background === !!bool) return this;
@@ -339,9 +334,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         return this;
     }
     setRect(rect: TRect) {
-        if (rect.every((v, i) => v === this.rect[i])) return this;
-        if (!rect.every(v => typeof v === "number")) return this;
-        if (rect.length !== 4) return this;
+        if (!isTRect(rect)) return this;
         rect[0] = Math.max(0, rect[0]);
         rect[1] = Math.max(0, rect[1]);
         rect[2] = Math.max(15, rect[2]);
@@ -352,14 +345,12 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         this.emit("rectChanged", this);
         return this;
     }
-    setPresentationRect(rect: TRect) {
-        if (rect.every((v, i) => v === this.presentationRect[i])) return this;
-        if (!rect.every(v => typeof v === "number")) return this;
-        if (rect.length !== 4) return this;
-        rect[0] = Math.max(0, rect[0]);
-        rect[1] = Math.max(0, rect[1]);
-        rect[2] = Math.max(15, rect[2]);
-        rect[3] = Math.max(15, rect[3]);
+    setPresentationRect(rect: TPresentationRect) {
+        if (!isTPresentationRect(rect)) return this;
+        if (typeof rect[0] === "number") rect[0] = Math.max(0, rect[0]);
+        if (typeof rect[1] === "number") rect[1] = Math.max(0, rect[1]);
+        if (typeof rect[2] === "number") rect[2] = Math.max(15, rect[2]);
+        if (typeof rect[3] === "number") rect[3] = Math.max(15, rect[3]);
         this.presentationRect = rect;
         this.emit("presentationRectChanged", this);
         return this;

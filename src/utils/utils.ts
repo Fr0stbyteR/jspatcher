@@ -1,16 +1,25 @@
-import { TMIDIEvent, TBPF, TRect } from "../core/types";
+/* eslint-disable arrow-body-style */
+import { TMIDIEvent, TBPF, TRect, TPresentationRect } from "../core/types";
 
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
 export const isTRect = (x: any): x is TRect => {
-    if (!isNumberArray(x)) return false;
-    if (x.length !== 4) return false;
-    if (x[0] < 0) return false;
-    if (x[1] < 0) return false;
-    if (x[2] < 15) return false;
-    if (x[3] < 15) return false;
-    return true;
+    return isNumberArray(x)
+        && x.length === 4
+        && x[0] >= 0
+        && x[1] >= 0
+        && x[2] >= 15
+        && x[3] >= 15;
 };
+export const isTPresentationRect = (x: any): x is TPresentationRect => {
+    return Array.isArray(x)
+        && x.length === 4
+        && x.every(v => typeof v === "number" || typeof v === "string");
+};
+export const isRectMovable = (x: any): x is [number, number, number | string, number | string] => {
+    return isTPresentationRect(x) && typeof x[0] === "number" && typeof x[1] === "number";
+};
+export const isRectResizable = (x: any): x is TRect => isTRect(x);
 export const isMIDIEvent = (x: any): x is TMIDIEvent => (isNumberArray(x) || x instanceof Uint8Array) && x.length === 3;
 export const stringifyError = (data: any) => {
     if (typeof data === "string") return data;

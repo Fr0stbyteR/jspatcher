@@ -29,8 +29,8 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
     maxTimer: number;
     paint() {
         const {
-            width,
-            height,
+            // width,
+            // height,
             fontFamily,
             fontSize,
             fontFace,
@@ -64,8 +64,7 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
         const distance = this.distance;
         const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
 
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
 
         this.normLevels = levels.map((v) => {

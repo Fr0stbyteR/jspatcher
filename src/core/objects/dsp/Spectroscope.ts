@@ -22,11 +22,10 @@ export interface SpectroscopeUIState {
 export class SpectroscopeUI extends CanvasUI<Spectroscope, {}, SpectroscopeUIState> {
     static defaultSize = [120, 60] as [number, number];
     componentDidMount() {
-        const { width, height, bgColor } = this.state;
+        const { bgColor } = this.state;
         const ctx = this.ctx;
         if (!ctx) return;
-        ctx.canvas.width = width;
-        ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         // Background
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, width, height);
@@ -37,8 +36,8 @@ export class SpectroscopeUI extends CanvasUI<Spectroscope, {}, SpectroscopeUISta
         if (!this.object.state.node) return;
         if (this.object.state.node.destroyed) return;
         const {
-            width,
-            height,
+            // width,
+            // height,
             // zoom,
             // zoomOffset,
             // $cursor,
@@ -57,8 +56,7 @@ export class SpectroscopeUI extends CanvasUI<Spectroscope, {}, SpectroscopeUISta
         const { lastAmplitudes } = await this.object.state.node.gets({ lastAmplitudes: true });
 
         // Background
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, width, height);

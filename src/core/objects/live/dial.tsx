@@ -37,8 +37,8 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialUIState> {
     inTouch = false;
     paint() {
         const {
-            width,
-            height,
+            // width,
+            // height,
             active,
             focus,
             fontFamily,
@@ -66,8 +66,7 @@ class LiveDialUI extends LiveUI<LiveDial, LiveDialUIState> {
         const distance = this.distance;
         const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
 
-        if (ctx.canvas.width !== width) ctx.canvas.width = width;
-        if (ctx.canvas.height !== height) ctx.canvas.height = height;
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
 
         const triangleHeight = 4;
