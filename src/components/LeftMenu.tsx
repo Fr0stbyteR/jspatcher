@@ -241,6 +241,11 @@ class Packages extends React.PureComponent<{ patcher: Patcher }, { imports: [str
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
     };
+    handleInputNameKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        const cell = e.currentTarget.parentElement.parentElement as HTMLTableCellElement;
+        const inputURL = cell.nextSibling.firstChild.firstChild as HTMLInputElement;
+        if (!inputURL.value || inputURL.value.startsWith("https://unpkg.com/")) inputURL.value = `https://unpkg.com/${e.currentTarget.value}`;
+    };
     componentDidMount() {
         this.props.patcher.on("ready", this.handleLibChanged);
         this.props.patcher.on("libChanged", this.handleLibChanged);
@@ -271,7 +276,7 @@ class Packages extends React.PureComponent<{ patcher: Patcher }, { imports: [str
                                 <Button icon="add" size="mini" compact inverted disabled={this.state.adding} loading={this.state.adding} onClick={this.handleAdd} title="Add a package" />
                             </Table.Cell>
                             <Table.Cell width={4} style={{ padding: 0 }}>
-                                <Input fluid size="mini" placeholder={"Namespace"} onKeyDown={this.handleInputKeyDown} />
+                                <Input fluid size="mini" placeholder={"Namespace"} onKeyDown={this.handleInputKeyDown} onKeyUp={this.handleInputNameKeyUp} />
                             </Table.Cell>
                             <Table.Cell style={{ padding: 0 }}>
                                 <Input fluid size="mini" placeholder={"URL"} onKeyDown={this.handleInputKeyDown} />
