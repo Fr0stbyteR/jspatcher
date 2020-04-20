@@ -50,9 +50,11 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
     state: S = { Wrapper: null, inputs: [], result: null };
     subscribe() {
         super.subscribe();
-        this.on("preInit", () => {
-            this.inlets = 1;
-            this.outlets = 1;
+        this.on("postInit", () => {
+            const Fn = this.imported;
+            const argsCount = Math.max(Fn.length, this.box.args.length - 1, ~~+this.getProp("args"));
+            this.inlets = Math.max(1, argsCount);
+            this.outlets = 1 + this.inlets;
         });
         this.on("updateArgs", (args) => {
             if (typeof args[0] !== "undefined") {

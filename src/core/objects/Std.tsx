@@ -497,7 +497,7 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any], [a
         optional: true,
         description: "Initial value"
     }];
-    state = { key: undefined as string, value: undefined as any };
+    state = { key: undefined as string, value: SharedDataNoValue as any };
     subscribe() {
         super.subscribe();
         const reload = () => {

@@ -170,11 +170,12 @@ export default class BoxUI extends React.PureComponent<P, S> {
             this.textChanged = false;
             return;
         }
+        const box = this.props.patcher.boxes[this.props.id];
+        const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
+        if (!isRectResizable(box[rectKey])) return;
         const div = this.refDiv.current;
         if (div.offsetParent === null) return;
         const divRect = div.getBoundingClientRect();
-        const box = this.props.patcher.boxes[this.props.id];
-        const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
         if (divRect.width === box[rectKey][2] && divRect.height === box[rectKey][3]) return;
         const rect = [box[rectKey][0], box[rectKey][1], divRect.width, divRect.height] as TRect;
         if (this.state.inPresentationMode) {

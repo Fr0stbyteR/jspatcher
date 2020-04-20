@@ -61,10 +61,11 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
     };
     subscribe() {
         super.subscribe();
-        this.on("preInit", () => {
+        this.on("postInit", () => {
             const fn = this.imported;
-            this.inlets = Math.max(1, this.initialInlets + fn.length); // Function.length property
-            this.outlets = this.initialOutlets + fn.length;
+            const argsCount = Math.max(fn.length, this.box.args.length, ~~+this.getProp("args"));
+            this.inlets = Math.max(1, this.initialInlets + argsCount);
+            this.outlets = this.initialOutlets + argsCount;
         });
         this.on("updateArgs", (args) => {
             this.state.inputs = args.slice();
