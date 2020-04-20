@@ -51,7 +51,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     handleEditingBgColorChange = (editingBgColor: string) => this.setState({ editingBgColor });
     handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         if (this.props.runtime) {
-            e.currentTarget.scrollTo(0, 0);
+            // e.currentTarget.scrollTo(0, 0);
             return;
         }
         const grid = this.refGrid.current;
@@ -103,6 +103,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         const handleDraggable = () => {
             const patcherDiv = this.refDiv.current;
             const patcherRect = patcherDiv.getBoundingClientRect();
+            if (patcherRect.top + patcherDiv.clientHeight < e.pageY || patcherRect.left + patcherDiv.clientWidth < e.pageX) return; // Click on scrollbar
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             const selectedBefore = this.props.patcher.state.selected.slice();
             const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as TRect;
