@@ -51,7 +51,7 @@ export default class Importer {
             static package = pkgName;
             static root = root;
             static path = path;
-            static get _name() { return path[path.length - 1]; }
+            static get _name() { return path[path.length - 1] || pkgName; }
         };
     }
     /*
@@ -108,6 +108,10 @@ export default class Importer {
             props = getPropertyDescriptors(o);
         } catch (e) {
             return out;
+        }
+        if (path.length === 0) {
+            const newObj = this.getObject({ value: root }, pkgName, root, []);
+            if (newObj) this.writeInPath(out, [], newObj);
         }
         for (const key in props) {
             if (all) {
