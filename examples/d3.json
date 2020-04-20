@@ -3022,7 +3022,7 @@
                 "presentation": true,
                 "presentationRect": [
                     0,
-                    75,
+                    60,
                     "100%",
                     "calc(100% - 60px)"
                 ],
@@ -3096,7 +3096,7 @@
                     180,
                     0,
                     50,
-                    36
+                    22
                 ],
                 "data": {
                     "value": "Bottom"
