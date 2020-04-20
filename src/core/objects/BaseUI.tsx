@@ -503,22 +503,24 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
         this.paintScheduled = false;
         this.schedulePaint();
     };
-    schedulePaint() {
+    schedulePaint = () => {
         if (this.patcher.state.presentation && !this.box.presentation) return;
         if (this.paintScheduled) return;
         if (this.$paintRaf === -1) this.$paintRaf = requestAnimationFrame(this.paintCallback);
         else if (this.$paintRaf < -1) requestAnimationFrame(this.noPaintCallback);
         this.paintScheduled = true;
-    }
+    };
     componentDidMount() {
         super.componentDidMount();
         this.schedulePaint();
+        this.patcher.on("presentation", this.schedulePaint);
     }
     componentDidUpdate() { // But super.componentDidUpdate is not a function
         this.schedulePaint();
     }
     componentWillUnmount() {
         super.componentWillUnmount();
+        this.patcher.off("presentation", this.schedulePaint);
         if (this.paintScheduled) cancelAnimationFrame(this.$paintRaf);
     }
     paint() {
