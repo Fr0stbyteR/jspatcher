@@ -6,7 +6,7 @@ import Env from "../env";
 import History from "./History";
 import SharedData from "./Shared";
 import { PackageManager } from "./PkgMgr";
-import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv, TPresentationRect } from "./types";
+import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv } from "./types";
 
 import { toFaustDspCode } from "./objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
@@ -548,11 +548,12 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         if (changed) this.emit("propsChanged", props);
     }
     get publicProps() {
-        const { dependencies, bgColor, editingBgColor, grid } = this.props;
-        return { dependencies, bgColor, editingBgColor, grid } as TPublicPatcherProps;
+        const { dependencies, bgColor, editingBgColor, grid, openInPresentation } = this.props;
+        return { dependencies, bgColor, editingBgColor, grid, openInPresentation } as TPublicPatcherProps;
     }
     selectAllBoxes() {
-        const ids = Object.keys(this.boxes);
+        let ids = Object.keys(this.boxes);
+        if (this.state.presentation) ids = ids.filter(id => this.boxes[id].presentation);
         this._state.selected = ids;
         this.emit("selected", ids);
     }
@@ -633,24 +634,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         if (!Object.keys(patcher.boxes)) return undefined;
         return JSON.stringify(patcher, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
     }
-    moveBox(boxID: string, deltaXIn: number, deltaYIn: number) {
-        if (!deltaXIn && !deltaYIn) return this;
-        const { presentation } = this._state;
-        const rectKey = presentation ? "presentationRect" : "rect";
-        const box = this.boxes[boxID];
-        if (!box) return this;
-        const rect = box[rectKey].slice() as TPresentationRect;
-        if (!isRectMovable(rect)) return this;
-        // Not allowing resize out of bound
-        const deltaX = Math.max(deltaXIn, -rect[0]);
-        const deltaY = Math.max(deltaYIn, -rect[1]);
-        if (!deltaX && !deltaY) return this;
-        rect[0] += deltaX;
-        rect[1] += deltaY;
-        if (presentation) box.setPresentationRect(rect);
-        else box.setRect(rect as TRect);
-        return this;
-    }
     moveSelectedBox(dragOffset: { x: number; y: number }, refBoxID?: string) {
         const { presentation, snapToGrid, selected } = this._state;
         const rectKey = presentation ? "presentationRect" : "rect";
@@ -667,29 +650,41 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     }
     moveEnd(delta: { x: number; y: number }) {
         this.newTimestamp();
-        this.emit("moved", { delta, selected: this._state.selected, presentation: this._state.presentation });
+        const { presentation, selected } = this._state;
+        const rectKey = presentation ? "presentationRect" : "rect";
+        let ids = selected.filter(id => id.startsWith("box") && this.boxes[id]);
+        if (presentation) ids = ids.filter(id => isRectMovable(this.boxes[id][rectKey]));
+        this.emit("moved", { delta, selected: ids, presentation: this._state.presentation });
     }
     move(selected: string[], delta: { x: number; y: number }, presentation: boolean) {
-        selected.forEach(id => this.select(id));
+        this.selects(selected);
         const rectKey = presentation ? "presentationRect" : "rect";
-        const boxes = this._state.selected.filter(id => id.startsWith("box") && this.boxes[id] && isRectMovable(this.boxes[id][rectKey])).map(id => this.boxes[id]);
+        let ids = selected.filter(id => id.startsWith("box") && this.boxes[id]);
+        if (presentation) ids = ids.filter(id => isRectMovable(this.boxes[id][rectKey]));
+        const boxes = ids.map(id => this.boxes[id]);
         if (boxes.length === 0) return;
-        const leftMost = boxes.sort((a, b) => (a[rectKey] as TRect)[0] - (b[rectKey] as TRect)[0])[0];
-        const topMost = boxes.sort((a, b) => (a[rectKey] as TRect)[1] - (b[rectKey] as TRect)[0])[0];
+        let [left, top] = boxes[0][rectKey] as TRect;
+        for (let i = 1; i < boxes.length; i++) {
+            const box = boxes[i];
+            const [$left, $top] = box[rectKey] as TRect;
+            if ($left < left) left = $left;
+            if ($top < top) top = $top;
+        }
         // Not allowing resize out of bound
-        delta.x = Math.max(delta.x, -leftMost[rectKey][0]);
-        delta.y = Math.max(delta.y, -topMost[rectKey][1]);
+        delta.x = Math.max(delta.x, -left);
+        delta.y = Math.max(delta.y, -top);
         if (delta.x) boxes.forEach(box => (box[rectKey] as TRect)[0] += delta.x);
         if (delta.y) boxes.forEach(box => (box[rectKey] as TRect)[1] += delta.y);
         // Emit events
         if (!delta.x && !delta.y) return;
         if (presentation !== this._state.presentation) return;
+        this.emit("moving", { selected: ids, delta, presentation });
+        if (presentation) return;
         const lineSet = new Set<Line>();
         boxes.forEach((box) => {
-            box.emit(this._state.presentation ? "presentationRectChanged" : "rectChanged", box);
-            if (!presentation) box.allLines.forEach(line => lineSet.add(line));
+            box.inletLines.forEach(set => set.forEach(line => lineSet.add(line)));
+            box.outletLines.forEach(set => set.forEach(line => lineSet.add(line)));
         });
-        if (presentation) return;
         lineSet.forEach(line => line.emit("posChanged", line));
     }
     resizeSelectedBox(boxID: string, dragOffset: { x: number; y: number }, type: TResizeHandlerType) {
@@ -721,22 +716,29 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this.emit("resized", { delta, type, selected, presentation });
     }
     resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType, presentation: boolean) {
-        selected.forEach(id => this.select(id));
+        this.selects(selected);
         const rectKey = presentation ? "presentationRect" : "rect";
-        const boxes = this._state.selected.filter(id => id.startsWith("box") && this.boxes[id] && isRectResizable(this.boxes[id][rectKey])).map(id => this.boxes[id]);
+        let ids = selected.filter(id => id.startsWith("box") && this.boxes[id]);
+        if (presentation) ids = ids.filter(id => isRectResizable(this.boxes[id][rectKey]));
+        const boxes = ids.map(id => this.boxes[id]);
         if (boxes.length === 0) return;
-        const leftMost = boxes.sort((a, b) => (a[rectKey] as TRect)[0] - (b[rectKey] as TRect)[0])[0];
-        const topMost = boxes.sort((a, b) => (a[rectKey] as TRect)[1] - (b[rectKey] as TRect)[1])[0];
-        const widthLeast = boxes.sort((a, b) => (a[rectKey] as TRect)[2] - (b[rectKey] as TRect)[2])[0];
-        const heightLeast = boxes.sort((a, b) => (a[rectKey] as TRect)[3] - (b[rectKey] as TRect)[3])[0];
+        let [left, top, width, height] = boxes[0][rectKey] as TRect;
+        for (let i = 1; i < boxes.length; i++) {
+            const box = boxes[i];
+            const [$left, $top, $width, $height] = box[rectKey] as TRect;
+            if ($left < left) left = $left;
+            if ($top < top) top = $top;
+            if ($width < width) width = $width;
+            if ($height < height) height = $height;
+        }
         // Not allowing resize out of bound
-        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.max(delta.x, -leftMost[rectKey][0]);
-        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.max(delta.y, -topMost[rectKey][1]);
+        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.max(delta.x, -left);
+        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.max(delta.y, -top);
         // Not allowing resize below 15px width or height
-        if (type === "ne" || type === "e" || type === "se") delta.x = Math.max(delta.x, 15 - (widthLeast[rectKey] as TRect)[2]);
-        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.min(delta.x, (widthLeast[rectKey] as TRect)[2] - 15);
-        if (type === "se" || type === "s" || type === "sw") delta.y = Math.max(delta.y, 15 - (heightLeast[rectKey] as TRect)[3]);
-        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.min(delta.y, (heightLeast[rectKey] as TRect)[3] - 15);
+        if (type === "ne" || type === "e" || type === "se") delta.x = Math.max(delta.x, 15 - width);
+        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.min(delta.x, width - 15);
+        if (type === "se" || type === "s" || type === "sw") delta.y = Math.max(delta.y, 15 - height);
+        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.min(delta.y, height - 15);
         boxes.forEach((box) => {
             const sizingX = box.uiComponent.sizing === "horizontal" || box.uiComponent.sizing === "both";
             const sizingY = box.uiComponent.sizing === "vertical" || box.uiComponent.sizing === "both";
@@ -758,12 +760,13 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         // Emit events
         if (!delta.x && !delta.y) return;
         if (presentation !== this._state.presentation) return;
+        boxes.forEach(box => box.emit(presentation ? "presentationRectChanged" : "rectChanged", box));
+        if (presentation) return;
         const lineSet = new Set<Line>();
         boxes.forEach((box) => {
-            box.emit(this._state.presentation ? "presentationRectChanged" : "rectChanged", box);
-            if (!presentation) box.allLines.forEach(line => lineSet.add(line));
+            box.inletLines.forEach(set => set.forEach(line => lineSet.add(line)));
+            box.outletLines.forEach(set => set.forEach(line => lineSet.add(line)));
         });
-        if (presentation) return;
         lineSet.forEach(line => line.emit("posChanged", line));
     }
     findNearestPort(findSrc: boolean, left: number, top: number, from: [string, number], to?: [string, number]) {

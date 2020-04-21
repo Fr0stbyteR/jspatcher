@@ -186,10 +186,31 @@ export default class BoxUI extends React.PureComponent<P, S> {
             box.setRect(rect.slice() as TRect);
         }
     };
-    handleSelected = (ids: string[]) => (!this.props.runtime && ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
-    handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
+    handleSelected = (ids: string[]) => (!this.props.runtime && !this.state.selected && ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
+    handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 && this.state.selected ? this.setState({ selected: false }) : null);
     handlePatcherPresentationChanged = (inPresentationMode: boolean) => this.setState({ inPresentationMode });
     handlePresentationChanged = () => this.setState({ presentation: this.box.presentation, presentationRect: this.box.presentationRect.slice() as TRect });
+    translate = { x: 0, y: 0 };
+    handleMoving = ({ selected, delta, presentation }: PatcherEventMap["moving"]) => {
+        if (!this.refDiv.current) return;
+        if (this.props.patcher.state.presentation !== presentation) return;
+        if (this.props.patcher.state.presentation && !this.state.presentation) return;
+        if (selected.indexOf(this.props.id) !== -1) {
+            this.translate.x += delta.x;
+            this.translate.y += delta.y;
+            this.refDiv.current.style.transform = `translate(${this.translate.x}px, ${this.translate.y}px)`;
+        }
+    };
+    handleMoved = ({ selected, presentation }: PatcherEventMap["moved"]) => {
+        if (!this.refDiv.current) return;
+        if (selected.indexOf(this.props.id) !== -1) {
+            this.translate.x = 0;
+            this.translate.y = 0;
+            this.refDiv.current.style.transform = "";
+            if (presentation) this.handlePresentationRectChanged();
+            else this.handleRectChanged();
+        }
+    };
     handleResized = ({ selected }: PatcherEventMap["resized"]) => {
         if (selected.indexOf(this.props.id) !== -1) this.inspectRectChange();
     };
@@ -317,6 +338,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
         this.props.patcher.on("selected", this.handleSelected);
         this.props.patcher.on("deselected", this.handleDeselected);
         this.props.patcher.on("presentation", this.handlePatcherPresentationChanged);
+        this.props.patcher.on("moving", this.handleMoving);
+        this.props.patcher.on("moved", this.handleMoved);
         this.props.patcher.on("resized", this.handleResized);
         this.inspectRectChange();
     }

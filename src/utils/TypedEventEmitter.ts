@@ -1,24 +1,25 @@
 import { EventEmitter } from "events";
 
 export class TypedEventEmitter<M> {
-    private _listeners = new Map<string, Set<(...e: any[]) => void | Promise<void>>>();
+    private _listeners: { [eventName: string]: ((...e: any[]) => void | Promise<void>)[] } = {};
     get listeners() {
         return this._listeners;
     }
     private getListeners<K extends Extract<keyof M, string>>(eventName: K) {
-        if (!this._listeners.has(eventName)) this._listeners.set(eventName, new Set<(e: M[K]) => void | Promise<void>>());
-        return this._listeners.get(eventName);
+        if (!(eventName in this._listeners)) this._listeners[eventName] = [];
+        return this._listeners[eventName];
     }
     on<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => void) {
-        this.getListeners(eventName).add(listener);
+        if (this.getListeners(eventName).indexOf(listener) === -1) this.getListeners(eventName).push(listener);
     }
     off<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => void) {
-        this.getListeners(eventName).delete(listener);
+        const i = this.getListeners(eventName).indexOf(listener);
+        if (i !== -1) this.getListeners(eventName).splice(i, 1);
     }
     async emit<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
         const listeners = this.getListeners(eventName);
         if (!listeners) return [];
-        return Promise.all(Array.from(listeners).map(f => f(eventData)));
+        return Promise.all(listeners.map(f => f(eventData)));
     }
     async emitSerial<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
         const listeners = this.getListeners(eventName);
@@ -30,21 +31,19 @@ export class TypedEventEmitter<M> {
     }
     emitSync<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
         const listeners = this.getListeners(eventName);
-        if (!listeners) return [];
-        return Array.from(listeners).map(f => f(eventData));
+        if (!listeners) return;
+        listeners.map(f => f(eventData));
     }
     removeAllListeners(eventName?: Extract<keyof M, string>) {
         if (eventName) {
-            const listeners = this.getListeners(eventName);
-            if (listeners) listeners.clear();
+            this._listeners[eventName] = [];
         } else {
-            this._listeners.clear();
+            this._listeners = {};
         }
     }
     listenerCount(eventName: Extract<keyof M, string>) {
-        const listeners = this.getListeners(eventName);
-        if (!listeners) return 0;
-        return listeners.size;
+        if (!(eventName in this._listeners)) return 0;
+        return this._listeners[eventName].length;
     }
 }
 

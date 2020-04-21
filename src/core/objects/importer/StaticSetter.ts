@@ -13,7 +13,7 @@ export class StaticSetter extends Setter<true> {
     static outlets: TMeta["outlets"] = [];
     initialInlets = 1;
     initialOutlets = 0;
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+    handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) this.imported = data;
     };
     handleUpdateArgs = (args: [any?]) => {

@@ -189,7 +189,9 @@ interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "selected": string[];
     "deselected": string[];
     "tempLine": { findSrc: boolean; from: [string, number] };
+    "moving": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
     "moved": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
+    "resizing": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType; presentation: boolean };
     "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType; presentation: boolean };
     "generateCode": string;
     "graphChanged": never;

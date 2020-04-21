@@ -23,7 +23,7 @@ export class StaticMethod extends Method<true> {
     }];
     initialInlets = 0;
     initialOutlets = 1;
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+    handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.inputs[inlet] = data;
             if (this.execute()) this.output();

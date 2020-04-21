@@ -40,7 +40,7 @@ export class SetterGetter<Static extends boolean = false> extends ImportedObject
     initialInlets = 2;
     initialOutlets = 2;
     state: S<Static> = { instance: undefined, input: null, result: null };
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+    handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;
             if (typeof this.state.instance === "undefined") return;

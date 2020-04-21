@@ -292,7 +292,7 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
         this.unSubscribeBox();
         this.subscribeBox();
         if (boxes.length === 0) {
-            this.setState({ meta: null, args: [], props: {}, rect: null, presentationRect: null });
+            this.setState({ meta: null, args: [], props: {}, rect: null, presentationRect: null, patcherProps: this.props.patcher.publicProps });
             return;
         }
         const { meta: boxMeta, args, props, rect, presentationRect, presentation, background } = boxes[0];

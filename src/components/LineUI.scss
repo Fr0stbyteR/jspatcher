@@ -1,16 +1,16 @@
 .patcher {
-    > div.lines > div.line {
+    & > div.lines > div.line {
         position: absolute;
         outline-width: 0;
         pointer-events: none;
-        > svg {
+        & > svg {
             filter: drop-shadow(rgba(200, 200, 200, 0.5) 0px 0px 0.5px);
-            > path.normal {
+            & > path.normal, line.normal {
                 stroke: rgb(158, 159, 159);
                 stroke-width: 2;
                 fill: transparent;
             }
-            > path.audio {
+            & > path.audio, line.audio {
                 stroke: rgb(215, 248, 135);
                 stroke-width: 2;
                 fill: transparent;
@@ -19,12 +19,12 @@
             &:hover {
                 filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
                 stroke-width: 3;
-                > path {
+                & > path, line {
                     stroke-width: 3;
                 }
             }
         }
-        > div.line-handler {
+        & > div.line-handler {
             position: absolute;
             border-radius: 50%;
             margin: -3px;
@@ -50,9 +50,9 @@
             }
         }
         &.selected {
-            > svg {
+            & > svg {
                 filter: drop-shadow(rgb(0, 0, 237) 0px 0px 2px);
-                > path {
+                & > path, line {
                     stroke-width: 3;
                 }
             }
@@ -64,10 +64,10 @@
             }
         }
     }
-    &.unlocked > div.lines > div.line > svg > path {
+    &.unlocked > div.lines > div.line > svg > path, line {
         pointer-events: auto;
     }
-    &.locked > div.lines > div.line > svg > path {
+    &.locked > div.lines > div.line > svg > path, line {
         pointer-events: none;
     }
     &.presentation > div.lines {

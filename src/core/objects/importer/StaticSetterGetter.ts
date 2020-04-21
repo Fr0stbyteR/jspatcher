@@ -20,7 +20,7 @@ export class StaticSetterGetter extends SetterGetter<true> {
     }];
     initialInlets = 2;
     initialOutlets = 1;
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+    handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) return;
             if (typeof this.state.input !== "undefined") {

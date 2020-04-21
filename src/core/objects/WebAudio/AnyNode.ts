@@ -17,7 +17,7 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
         description: "Node connection"
     }];
     state = { node: undefined as AudioNode };
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+    handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             try {
                 if (data instanceof AudioNode) {

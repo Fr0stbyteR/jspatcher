@@ -30,7 +30,7 @@ export class StaticProperty extends Property<true> {
         this.inlets = 2;
         this.outlets = 1;
     };
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+    handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             if (data instanceof Bang) this.outlet(0, this.imported);
         } else if (inlet === 1) {

@@ -18,9 +18,8 @@ export class StaticGetter extends Getter<true> {
         this.inlets = 1;
         this.outlets = 1;
     };
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
-        if (inlet === 0 && data instanceof Bang && this.execute()) return this.output();
-        return this;
+    handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
+        if (inlet === 0 && data instanceof Bang && this.execute()) this.output();
     };
     execute() {
         try {

@@ -33,7 +33,7 @@ export class Property<Static extends boolean = false> extends ImportedObject<any
         this.inlets = 2;
         this.outlets = 2;
     };
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+    handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;
             let result;

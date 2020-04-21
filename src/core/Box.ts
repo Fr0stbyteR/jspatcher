@@ -1,7 +1,7 @@
 import Patcher from "./Patcher";
 import Line from "./Line";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
-import { isTRect, parseToPrimitive, isTPresentationRect } from "../utils/utils";
+import { isTRect, parseToPrimitive, isTPresentationRect, isRectMovable, isRectResizable } from "../utils/utils";
 import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect, TPresentationRect } from "./types";
 import { AnyObject } from "./objects/Base";
 
@@ -354,6 +354,14 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         this.presentationRect = rect;
         this.emit("presentationRectChanged", this);
         return this;
+    }
+    get isMovable() {
+        if (!this._patcher.state.presentation) return true;
+        return isRectMovable(this.presentationRect);
+    }
+    get isResizable() {
+        if (!this._patcher.state.presentation) return true;
+        return isRectResizable(this.presentationRect);
     }
     error(text: string) {
         this.emit("error", text);

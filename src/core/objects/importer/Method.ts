@@ -51,7 +51,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
     state: S<Static> = { instance: undefined, inputs: [], result: null };
     initialInlets = 1;
     initialOutlets = 2;
-    handleInlet: (e: { data: any; inlet: number }) => void = ({ data, inlet }) => {
+    handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             if (!(data instanceof Bang)) this.state.instance = data;
             if (this.execute()) this.output();
