@@ -26,6 +26,19 @@ export class LineUI extends React.PureComponent<P, S> {
     };
     handleResetPos = () => {
         const { line } = this;
+        const { destPos, srcPos } = line;
+        if (
+            this.refDiv.current
+            && srcPos.left - this.state.srcPos.left === destPos.left - this.state.destPos.left
+            && srcPos.top - this.state.srcPos.top === destPos.top - this.state.destPos.top
+        ) {
+            const start = srcPos;
+            const end = destPos;
+            const x = Math.min(start.left, end.left) - 5;
+            const y = Math.min(start.top, end.top) - 10;
+            this.refDiv.current.style.transform = `translate(${x}px, ${y}px)`;
+            return;
+        }
         this.setState({ destPos: line.destPos, srcPos: line.srcPos }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
     };
     handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
