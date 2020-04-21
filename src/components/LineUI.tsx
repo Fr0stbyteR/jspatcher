@@ -32,10 +32,8 @@ export class LineUI extends React.PureComponent<P, S> {
             && srcPos.left - this.state.srcPos.left === destPos.left - this.state.destPos.left
             && srcPos.top - this.state.srcPos.top === destPos.top - this.state.destPos.top
         ) {
-            const start = srcPos;
-            const end = destPos;
-            const x = Math.min(start.left, end.left) - 5;
-            const y = Math.min(start.top, end.top) - 10;
+            const x = Math.min(srcPos.left, destPos.left) - 5;
+            const y = Math.min(srcPos.top, destPos.top) - 10;
             this.refDiv.current.style.transform = `translate(${x}px, ${y}px)`;
             return;
         }
