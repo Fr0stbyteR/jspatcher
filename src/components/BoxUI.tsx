@@ -69,7 +69,6 @@ export default class BoxUI extends React.PureComponent<P, S> {
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             const lastPos = { x: e.pageX, y: e.pageY };
             let dragOffset = { x: 0, y: 0 };
-            const origOffset = this.state[rectKey].slice(0, 2) as [number, number];
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -109,9 +108,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 e.stopPropagation();
                 e.preventDefault();
                 this.dragging = false;
-                const curOffset = this.state[rectKey].slice(0, 2) as [number, number];
-                const totalOffset = { x: curOffset[0] - origOffset[0], y: curOffset[1] - origOffset[1] };
-                if (this.dragged) this.props.patcher.moveEnd(totalOffset);
+                if (this.dragged) this.props.patcher.moveEnd({ ...this.translate });
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
                 this.refDiv.current.removeEventListener("keydown", handleKey);

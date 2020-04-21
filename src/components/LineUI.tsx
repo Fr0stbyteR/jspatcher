@@ -152,6 +152,8 @@ export class LineUI extends React.PureComponent<P, S> {
         const className = "line" + (this.state.selected ? " selected" : "") + (this.state.dragging ? " dragging" : "");
         const start = this.state.srcPos;
         const end = this.state.destPos;
+        const x = Math.min(start.left, end.left) - 5;
+        const y = Math.min(start.top, end.top) - 10;
         const divStyle = {
             left: Math.min(start.left, end.left) - 5,
             top: Math.min(start.top, end.top) - 10,
@@ -167,7 +169,7 @@ export class LineUI extends React.PureComponent<P, S> {
         const dBezierT = Math.min(divStyle.height, dStartT + Math.max(5, (divStyle.height - 20) * 0.2));
         const d = `M ${dStartL} ${dStartT} Q ${dStartL} ${dBezierT} ${dMidL} ${dMidT} T ${dEndL} ${dEndT}`;
         return (
-            <div className={className} tabIndex={0} style={divStyle} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
+            <div className={className} tabIndex={0} style={{ transform: `translate(${x}px, ${y}px)` }} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
                     <path className="normal" d={d} ref={this.refPath} />
                     {this.state.type === "audio" ? <path className="audio" d={d} /> : undefined}
