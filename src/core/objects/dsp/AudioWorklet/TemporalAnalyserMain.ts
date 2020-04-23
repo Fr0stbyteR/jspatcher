@@ -35,7 +35,7 @@ export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
      */
     private $total = 0;
     private _windowSize = 1024;
-    constructor(context: AudioContext, options?: AudioWorkletNodeOptions) {
+    constructor(context: BaseAudioContext, options?: AudioWorkletNodeOptions) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
             const { buffer: input } = e.data;

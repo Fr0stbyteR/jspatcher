@@ -47,7 +47,6 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
             max,
             active,
             mode,
-            clipSize,
             bgColor,
             coldColor,
             warmColor,
@@ -92,7 +91,9 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
         }
 
         const channels = this.normLevels.length;
-        const clip = clipSize === "normal" ? 10 : 20;
+        const clipValue = +(mode === "linear");
+        const clipDistance = LiveUI.getDistance({ type: "float", value: clipValue, min, max, exponent: 0 });
+        const clip = width - clipDistance * width;
         const meterThick = 8;
         const metersThick = meterThick * (1.5 * channels - 0.5);
 
@@ -511,13 +512,6 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             enums: ["deciBel", "linear"],
             default: "deciBel",
             description: "Display mode",
-            isUIState: true
-        },
-        clipSize: {
-            type: "enum",
-            enums: ["normal", "extended"],
-            default: "normal",
-            description: "Size of clip display",
             isUIState: true
         },
         speedLim: {

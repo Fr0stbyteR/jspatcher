@@ -131,7 +131,7 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
     get $fft() {
         return this.$frame * this.fftBins;
     }
-    constructor(context: AudioContext) {
+    constructor(context: BaseAudioContext) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.sampleRate = context.sampleRate;
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {

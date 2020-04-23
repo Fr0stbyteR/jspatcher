@@ -39,7 +39,7 @@ export const processorID = "__JSPatcher_SpectralAnalyser";
 export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters> {
     private promiseID = 0;
     private resolves: { [id: number]: (rms?: DataFromProcessor | PromiseLike<DataFromProcessor>) => any } = {};
-    constructor(context: AudioContext) {
+    constructor(context: BaseAudioContext) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
             const { id } = e.data;

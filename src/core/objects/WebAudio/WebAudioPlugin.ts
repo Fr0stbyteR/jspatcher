@@ -35,7 +35,7 @@ declare interface WebAudioPlugin<P extends string = never, S extends Record<stri
 }
 declare const WebAudioPlugin: {
     prototype: WebAudioPlugin;
-    new <P extends string = never, S extends Record<string, any> = {}, E extends Record<string, EventInit & Record<string, any>> = {}>(audioContext: AudioContext): WebAudioPlugin<P, S, E>;
+    new <P extends string = never, S extends Record<string, any> = {}, E extends Record<string, EventInit & Record<string, any>> = {}>(audioContext: BaseAudioContext): WebAudioPlugin<P, S, E>;
 };
 // let ac: AudioContext;
 // const w = new WebAudioPlugin<"gain" | "feedback" | "ratio", { a: number }, { midiMessage: { data: Uint8Array } }>(ac);

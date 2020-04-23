@@ -34,7 +34,7 @@ export abstract class AudioWorkletRegister {
         this.registeredProcessors.add(this.processorID);
     }
     static processor: () => void;
-    static Node: new (context: AudioContext, options?: AudioWorkletNodeOptions) => DisposableAudioWorkletNode;
+    static Node: new (context: BaseAudioContext, options?: AudioWorkletNodeOptions) => DisposableAudioWorkletNode;
     private static resolves: { [id: string]: ((value?: void | PromiseLike<void>) => void)[]} = {};
     private static rejects: { [id: string]: ((reason?: any) => void)[] } = {};
     private static async registerProcessor(audioWorklet: AudioWorklet) {

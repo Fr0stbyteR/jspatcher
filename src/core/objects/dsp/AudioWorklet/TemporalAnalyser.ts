@@ -18,7 +18,7 @@ export const processorID = "__JSPatcher_TemporalAnalyser";
 export class TemporalAnalyserNode extends DisposableAudioWorkletNode<DataFromProcessor, DataToProcessor, Parameters> {
     private promiseID = 0;
     private resolves: { [id: number]: (rms?: DataFromProcessor | PromiseLike<DataFromProcessor>) => any } = {};
-    constructor(context: AudioContext) {
+    constructor(context: BaseAudioContext) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         this.port.onmessage = (e: AudioWorkletMessageEvent<DataFromProcessor>) => {
             const { id } = e.data;

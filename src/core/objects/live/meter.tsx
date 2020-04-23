@@ -1,4 +1,4 @@
-import { LiveObject } from "./Base";
+import { LiveObject, LiveUI } from "./Base";
 import { BaseAudioObject } from "../Base";
 import { TMeta } from "../../types";
 import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
@@ -9,7 +9,6 @@ export interface LiveMeterProps {
     active: boolean;
     orientation: "vertical" | "horizontal";
     mode: "deciBel" | "linear";
-    clipSize: "normal" | "extended";
     min: number;
     max: number;
     thresholdLinear: number;
@@ -33,7 +32,7 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
         ...this.state,
         value: []
     };
-    normValues: number[] = [];
+    values: number[] = [];
     maxValues: number[] = [];
     maxTimer: number;
     paint() {
@@ -46,7 +45,6 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
             min,
             max,
             orientation,
-            clipSize,
             bgColor,
             coldColor,
             warmColor,
@@ -61,93 +59,140 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
         const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
 
-        this.normValues = value.map((v) => {
-            if (mode === "deciBel") {
-                if (v <= 0) return Math.max(0, (v - min) / -min);
-                return 1 + Math.min(1, v / max);
-            }
-            return v <= 1 ? Math.max(0, v) : 2;
-        });
-        if (this.normValues.length === 0) this.normValues = [0];
-        if (this.normValues.find((v, i) => typeof this.maxValues[i] === "undefined" || v > this.maxValues[i])) {
-            this.maxValues = [...this.normValues];
+        this.values = value.slice();
+        if (this.values.length === 0) this.values = [min];
+        if (this.values.find((v, i) => typeof this.maxValues[i] === "undefined" || v > this.maxValues[i])) {
+            this.maxValues = [...this.values];
             if (this.maxTimer) window.clearTimeout(this.maxTimer);
             this.maxTimer = window.setTimeout(() => {
-                this.maxValues = [...this.normValues];
+                this.maxValues = [...this.values];
                 this.maxTimer = undefined;
                 this.schedulePaint();
             }, 1000);
-        } else if (this.normValues.find((v, i) => v < this.maxValues[i]) && typeof this.maxTimer === "undefined") {
+        } else if (this.values.find((v, i) => v < this.maxValues[i]) && typeof this.maxTimer === "undefined") {
             this.maxTimer = window.setTimeout(() => {
-                this.maxValues = [...this.normValues];
+                this.maxValues = [...this.values];
                 this.maxTimer = undefined;
                 this.schedulePaint();
             }, 1000);
         }
-        const channels = this.normValues.length;
-        const clip = clipSize === "normal" ? 10 : 20;
+        const channels = this.values.length;
+        const clipValue = +(mode === "linear");
         if (orientation === "horizontal") {
-            const warmStop = width - clip - 1;
-            const hotStop = width - clip;
-            const gradient = ctx.createLinearGradient(0, 0, width, 0);
-            gradient.addColorStop(0, active ? coldColor : inactiveColdColor);
-            gradient.addColorStop(warmStop / width, active ? warmColor : inactiveWarmColor);
-            gradient.addColorStop(hotStop / width, active ? hotColor : inactiveWarmColor);
-            gradient.addColorStop(1, active ? overloadColor : inactiveWarmColor);
-            const $height = (height - channels - 1) / this.normValues.length;
+            const $height = (height - channels - 1) / this.values.length;
             ctx.fillStyle = bgColor;
-            let $top = 0;
-            this.normValues.forEach((v) => {
-                if (v < 1) ctx.fillRect(0, $top, warmStop, $height);
-                if (v < 2) ctx.fillRect(hotStop, $top, clip, $height);
-                $top += $height + 1;
-            });
-            $top = 0;
-            ctx.fillStyle = gradient;
-            this.normValues.forEach((v, i) => {
-                if (v > 0) ctx.fillRect(0, $top, Math.min(1, v) * warmStop, $height);
-                if (v > 1) ctx.fillRect(hotStop, $top, Math.min(1, (v - 1)) * clip, $height);
-                const histMax = this.maxValues[i];
-                if (typeof histMax === "number" && histMax > v) {
-                    if (histMax <= 1) ctx.fillRect(Math.min(warmStop - 1, histMax * warmStop), $top, 1, $height);
-                    else ctx.fillRect(Math.min(width - 1, hotStop + (histMax - 1) * clip), $top, 1, $height);
-                }
-                $top += $height + 1;
-            });
+            if (min >= clipValue || clipValue >= max) {
+                const fgColor = min >= clipValue ? active ? overloadColor : inactiveWarmColor : active ? coldColor : inactiveColdColor;
+                let $top = 0;
+                this.values.forEach((v) => {
+                    if (v < max) ctx.fillRect(0, $top, width, $height);
+                    $top += $height + 1;
+                });
+                $top = 0;
+                ctx.fillStyle = fgColor;
+                this.values.forEach((v, i) => {
+                    const distance = LiveUI.getDistance({ type: "float", value: v, min, max, exponent: 0 });
+                    if (distance > 0) ctx.fillRect(0, $top, distance * width, $height);
+                    const histMax = this.maxValues[i];
+                    if (typeof histMax === "number" && histMax > v) {
+                        const histDistance = LiveUI.getDistance({ type: "float", value: histMax, min, max, exponent: 0 });
+                        ctx.fillRect(Math.min(width - 1, histDistance * width), $top, 1, $height);
+                    }
+                    $top += $height + 1;
+                });
+            } else {
+                const clipDistance = LiveUI.getDistance({ type: "float", value: clipValue, min, max, exponent: 0 });
+                const clip = width - clipDistance * width;
+                const hotStop = width - clip;
+                const warmStop = hotStop - 1;
+                const gradient = ctx.createLinearGradient(0, 0, width, 0);
+                gradient.addColorStop(0, active ? coldColor : inactiveColdColor);
+                gradient.addColorStop(warmStop / width, active ? warmColor : inactiveWarmColor);
+                gradient.addColorStop(hotStop / width, active ? hotColor : inactiveWarmColor);
+                gradient.addColorStop(1, active ? overloadColor : inactiveWarmColor);
+                let $top = 0;
+                this.values.forEach((v) => {
+                    if (v < clipValue) ctx.fillRect(0, $top, warmStop, $height);
+                    if (v < max) ctx.fillRect(hotStop, $top, clip, $height);
+                    $top += $height + 1;
+                });
+                $top = 0;
+                ctx.fillStyle = gradient;
+                this.values.forEach((v, i) => {
+                    const distance = LiveUI.getDistance({ type: "float", value: v, min, max, exponent: 0 });
+                    if (distance > 0) ctx.fillRect(0, $top, Math.min(clipDistance, distance) * width, $height);
+                    if (distance > clipDistance) ctx.fillRect(hotStop, $top, Math.min(clip, (distance - clipDistance) * width), $height);
+                    const histMax = this.maxValues[i];
+                    if (typeof histMax === "number" && histMax > v) {
+                        const histDistance = LiveUI.getDistance({ type: "float", value: histMax, min, max, exponent: 0 });
+                        if (histDistance <= clipDistance) ctx.fillRect(histDistance * width, $top, 1, $height);
+                        else ctx.fillRect(Math.min(width - 1, histDistance * width), $top, 1, $height);
+                    }
+                    $top += $height + 1;
+                });
+            }
         } else {
-            const warmStop = clip + 1;
-            const hotStop = clip;
-            const gradient = ctx.createLinearGradient(0, height, 0, 0);
-            gradient.addColorStop(0, active ? coldColor : inactiveColdColor);
-            gradient.addColorStop((height - warmStop) / height, active ? warmColor : inactiveWarmColor);
-            gradient.addColorStop((height - hotStop) / height, active ? hotColor : inactiveWarmColor);
-            gradient.addColorStop(1, active ? overloadColor : inactiveWarmColor);
-            const $width = (width - channels - 1) / this.normValues.length;
+            const $width = (width - channels - 1) / this.values.length;
             ctx.fillStyle = bgColor;
-            let $left = 0;
-            this.normValues.forEach((v) => {
-                if (v < 1) ctx.fillRect($left, warmStop, $width, height - warmStop);
-                if (v < 2) ctx.fillRect($left, 0, $width, hotStop);
-                $left += $width + 1;
-            });
-            $left = 0;
-            ctx.fillStyle = gradient;
-            this.normValues.forEach((v, i) => {
-                if (v > 0) {
-                    const drawHeight = Math.min(1, v) * (height - warmStop);
-                    ctx.fillRect($left, height - drawHeight, $width, drawHeight);
-                }
-                if (v > 1) {
-                    const drawHeight = Math.min(1, (v - 1)) * clip;
-                    ctx.fillRect($left, hotStop - drawHeight, $width, drawHeight);
-                }
-                const histMax = this.maxValues[i];
-                if (typeof histMax === "number" && histMax > v) {
-                    if (histMax <= 1) ctx.fillRect($left, height - histMax * (height - warmStop), $width, 1);
-                    else ctx.fillRect($left, Math.max(0, hotStop - (histMax - 1) * clip), $width, 1);
-                }
-                $left += $width + 1;
-            });
+            if (min >= clipValue || clipValue >= max) {
+                const fgColor = min >= clipValue ? active ? overloadColor : inactiveWarmColor : active ? coldColor : inactiveColdColor;
+                let $left = 0;
+                this.values.forEach((v) => {
+                    if (v < max) ctx.fillRect($left, 0, $width, height);
+                    $left += $width + 1;
+                });
+                $left = 0;
+                ctx.fillStyle = fgColor;
+                this.values.forEach((v, i) => {
+                    const distance = LiveUI.getDistance({ type: "float", value: v, min, max, exponent: 0 });
+                    if (distance > 0) {
+                        const drawHeight = distance * height;
+                        ctx.fillRect($left, height - drawHeight, $width, drawHeight);
+                    }
+                    const histMax = this.maxValues[i];
+                    if (typeof histMax === "number" && histMax > v) {
+                        const histDistance = LiveUI.getDistance({ type: "float", value: histMax, min, max, exponent: 0 });
+                        ctx.fillRect($left, height - histDistance * height, $width, 1);
+                    }
+                    $left += $width + 1;
+                });
+            } else {
+                const clipDistance = LiveUI.getDistance({ type: "float", value: clipValue, min, max, exponent: 0 });
+                const clip = height - clipDistance * height;
+                const warmStop = clip + 1;
+                const hotStop = clip;
+                const gradient = ctx.createLinearGradient(0, height, 0, 0);
+                gradient.addColorStop(0, active ? coldColor : inactiveColdColor);
+                gradient.addColorStop((height - warmStop) / height, active ? warmColor : inactiveWarmColor);
+                gradient.addColorStop((height - hotStop) / height, active ? hotColor : inactiveWarmColor);
+                gradient.addColorStop(1, active ? overloadColor : inactiveWarmColor);
+                let $left = 0;
+                this.values.forEach((v) => {
+                    if (v < clipValue) ctx.fillRect($left, warmStop, $width, height - warmStop);
+                    if (v < max) ctx.fillRect($left, 0, $width, clip);
+                    $left += $width + 1;
+                });
+                $left = 0;
+                ctx.fillStyle = gradient;
+                this.values.forEach((v, i) => {
+                    const distance = LiveUI.getDistance({ type: "float", value: v, min, max, exponent: 0 });
+                    if (distance > 0) {
+                        const drawHeight = Math.min(clipDistance, distance) * height;
+                        ctx.fillRect($left, height - drawHeight, $width, drawHeight);
+                    }
+                    if (distance > clipDistance) {
+                        const drawHeight = Math.min(clip, (distance - clipDistance) * height);
+                        ctx.fillRect($left, clip - drawHeight, $width, drawHeight);
+                    }
+                    const histMax = this.maxValues[i];
+                    if (typeof histMax === "number" && histMax > v) {
+                        const histDistance = LiveUI.getDistance({ type: "float", value: histMax, min, max, exponent: 0 });
+                        if (histDistance <= clipDistance) ctx.fillRect($left, height - histDistance * height, $width, 1);
+                        else ctx.fillRect($left, Math.max(0, height - histDistance * height - 1), $width, 1);
+                    }
+                    $left += $width + 1;
+                });
+            }
         }
     }
 }
@@ -239,13 +284,6 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             enums: ["deciBel", "linear"],
             default: "deciBel",
             description: "Display mode",
-            isUIState: true
-        },
-        clipSize: {
-            type: "enum",
-            enums: ["normal", "extended"],
-            default: "normal",
-            description: "Size of clip display",
             isUIState: true
         },
         speedLim: {

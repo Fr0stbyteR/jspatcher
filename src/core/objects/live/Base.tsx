@@ -107,7 +107,7 @@ export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [ke
     }
     static getDistance(state: { type: "enum" | "int" | "float"; value: number; min: number; max: number; exponent: number; enums?: string[] }) {
         const { type, max, min, value, exponent, enums } = state;
-        const normalized = type === "enum" ? Math.max(0, Math.min(enums.length - 1, value)) / (enums.length - 1) : (value - min) / (max - min);
+        const normalized = type === "enum" ? Math.max(0, Math.min(enums.length - 1, value)) / (enums.length - 1) : (Math.max(min, Math.min(max, value)) - min) / (max - min);
         return iNormExp(normalized || 0, exponent);
     }
     /**

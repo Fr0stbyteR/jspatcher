@@ -61,7 +61,7 @@
         "no-continue": "off",
         "no-delete-var": "warn",
         "no-dupe-args": "warn",
-        "no-dupe-class-members": "warn",
+        "no-dupe-class-members": "off",
         "no-dupe-keys": "warn",
         "no-duplicate-case": "warn",
         "no-empty": "warn",
