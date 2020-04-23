@@ -258,6 +258,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
             this.props = Object.assign(this.props, props);
         }
         this.emit("updatedFromObject", { args, props });
+        this._patcher.emit("changed");
         return this;
     }
     get position() {

@@ -88,7 +88,7 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
         const channels = this.levels.length;
         const clipValue = +(mode === "linear");
         const meterThick = 8;
-        const metersThick = meterThick * (channels + 1) - 1;
+        const metersThick = (meterThick + 1) * channels - 1;
 
         ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
         ctx.textAlign = "center";
@@ -280,10 +280,6 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
         isHot: true,
         type: "signal",
         description: "Signal in, number to set gain"
-    }, {
-        isHot: false,
-        type: "number",
-        description: "Set gain without output the value"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "signal",
@@ -556,7 +552,8 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             }
         });
         let lastMetering: "preFader" | "postFader";
-        this.on("updateProps", (props) => {
+        let lastMode: "deciBel" | "linear";
+        this.on("updateProps", async (props) => {
             if (props.windowSize && this.state.rmsNode) this.applyBPF(this.state.rmsNode.parameters.get("windowSize"), [[props.windowSize]]);
             if (props.metering && lastMetering !== props.metering && this.state.rmsNode) {
                 if (lastMetering) {
@@ -567,9 +564,24 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
                 if (props.metering === "preFader") this.state.bypassNode.connect(this.state.rmsNode, 0, 0);
                 else this.state.gainNode.connect(this.state.rmsNode, 0, 0);
             }
+            if (props.mode && lastMode && lastMode !== props.mode) {
+                lastMode = props.mode;
+                let value: number;
+                if (props.mode === "linear") {
+                    value = dbtoa(this.state.value);
+                    await this.update(undefined, { min: 0, max: 1.5, unitStyle: "float" });
+                } else {
+                    value = atodb(this.state.value);
+                    await this.update(undefined, { min: -70, max: 6, unitStyle: "decibel" });
+                }
+                this.state.value = value;
+                this.validateValue();
+                this.updateUI({ value: this.state.value });
+            }
         });
         this.on("postInit", async () => {
-            this.applyBPF(this.state.gainNode.gain, [[dbtoa(this.state.value)]]);
+            lastMode = this.getProp("mode");
+            this.applyBPF(this.state.gainNode.gain, [[this.getProp("mode") === "deciBel" ? dbtoa(this.state.value) : this.state.value]]);
             this.state.bypassNode.connect(this.state.gainNode);
             await TemporalAnalyserRegister.register(this.audioCtx.audioWorklet);
             this.state.rmsNode = new TemporalAnalyserRegister.Node(this.audioCtx);
@@ -584,22 +596,18 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
                     const value = +data;
                     this.state.value = value;
                     this.validateValue();
-                    this.applyBPF(this.state.gainNode.gain, [[value === this.getProp("min") ? 0 : dbtoa(value), this.getProp("interp")]]);
+                    const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? dbtoa(this.state.value) : this.state.value;
+                    this.applyBPF(this.state.gainNode.gain, [[paramValue, this.getProp("interp")]]);
                     this.updateUI({ value: this.state.value });
                 }
                 this.outletAll([, this.state.value, this.state.displayValue]);
-            } else if (inlet === 1) {
-                const value = +data;
-                this.state.value = value;
-                this.validateValue();
-                this.applyBPF(this.state.gainNode.gain, [[value === this.getProp("min") ? 0 : dbtoa(this.state.value), this.getProp("interp")]]);
-                this.updateUI({ value: this.state.value });
             }
         });
         this.on("changeFromUI", ({ value, displayValue }) => {
             this.state.value = value;
             this.state.displayValue = displayValue;
-            this.applyBPF(this.state.gainNode.gain, [[value === this.getProp("min") ? 0 : dbtoa(this.state.value), this.getProp("interp")]]);
+            const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? dbtoa(this.state.value) : this.state.value;
+            this.applyBPF(this.state.gainNode.gain, [[paramValue, this.getProp("interp")]]);
             this.outletAll([, this.state.value, this.state.displayValue]);
         });
         this.on("destroy", () => {
