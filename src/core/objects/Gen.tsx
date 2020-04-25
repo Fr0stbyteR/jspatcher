@@ -1,5 +1,5 @@
 import { DefaultObject, EmptyObject, InvalidObject } from "./Base";
-import { comment } from "./UI";
+import comment from "./UI/comment";
 import "./Gen.scss";
 
 const genOperators: { [key: string]: string[] } = {

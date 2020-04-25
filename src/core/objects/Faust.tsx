@@ -5,7 +5,8 @@ import Line from "../Line";
 import { TPackage, TMeta, TPropsMeta, TPatcher } from "../types";
 import { SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
-import { CodeUI, comment } from "./UI";
+import { CodeUI } from "./UI/code";
+import comment from "./UI/comment";
 import { ImporterDirSelfObject } from "../../utils/symbols";
 
 type TObjectExpr = {

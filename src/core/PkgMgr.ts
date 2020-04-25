@@ -8,7 +8,7 @@ import New from "./objects/importer/New";
 import Gen from "./objects/Gen";
 import Max from "./objects/Max";
 import Faust from "./objects/Faust";
-import UI from "./objects/UI";
+import UI from "./objects/UI/exports";
 import Op from "./objects/Op";
 import Window from "./objects/Window";
 import WebAudio from "./objects/WebAudio/exports";
@@ -204,7 +204,7 @@ export class GlobalPackageManager {
         window: Window
     };
     readonly faust: TPackage = Faust;
-    readonly max: TPackage = {};
+    readonly max: TPackage = Max;
     readonly gen: TPackage = Gen;
     private readonly env: Env;
     externals = new Map<string, { [key: string]: any }>();

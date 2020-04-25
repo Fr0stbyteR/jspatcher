@@ -1,6 +1,6 @@
 import "./Max.scss";
 import { TMeta } from "../types";
-import { DefaultObject } from "./Base";
+import { DefaultObject, EmptyObject, InvalidObject } from "./Base";
 import { isNumberArray } from "../../utils/utils";
 
 class DefaultMaxObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}, E = {}> extends DefaultObject<D, S, I, O, A, P, U, E> {
@@ -83,6 +83,8 @@ class ftom extends DefaultMaxObject<{}, {}, [number | number[]], [number | numbe
 }
 
 export default {
+    EmptyObject,
+    InvalidObject,
     ftom,
     mtof
 };

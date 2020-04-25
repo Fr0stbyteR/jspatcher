@@ -234,6 +234,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         document.addEventListener("mousedown", this.clearOverlay);
     };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
         if (this.props.runtime) return;
         if (this.props.patcher.state.locked) return;
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
