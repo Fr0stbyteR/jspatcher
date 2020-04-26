@@ -12,18 +12,18 @@ export class LineUI extends React.PureComponent<P, S> {
     refDiv = React.createRef<HTMLDivElement>();
     refPath = React.createRef<SVGPathElement>();
     dragged = false;
-    handleDestPosChanged = (position: { left: number; top: number }) => {
-        const { line } = this;
-        if (this.state.destPos.left !== position.left || this.state.destPos.top !== position.top) {
-            this.setState({ type: line.type, destPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
-        }
-    };
-    handleSrcPosChanged = (position: { left: number; top: number }) => {
-        const { line } = this;
-        if (this.state.srcPos.left !== position.left || this.state.srcPos.top !== position.top) {
-            this.setState({ type: line.type, srcPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
-        }
-    };
+    // handleDestPosChanged = (position: { left: number; top: number }) => {
+    //     const { line } = this;
+    //     if (this.state.destPos.left !== position.left || this.state.destPos.top !== position.top) {
+    //         this.setState({ type: line.type, destPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
+    //     }
+    // };
+    // handleSrcPosChanged = (position: { left: number; top: number }) => {
+    //     const { line } = this;
+    //     if (this.state.srcPos.left !== position.left || this.state.srcPos.top !== position.top) {
+    //         this.setState({ type: line.type, srcPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
+    //     }
+    // };
     handleResetPos = () => {
         const { line } = this;
         const { destPos, srcPos } = line;
@@ -44,8 +44,8 @@ export class LineUI extends React.PureComponent<P, S> {
     handleTypeChanged = (type: TLineType) => this.setState({ type });
     componentDidMount() {
         const { line } = this;
-        line.on("destPosChanged", this.handleDestPosChanged);
-        line.on("srcPosChanged", this.handleSrcPosChanged);
+        line.on("destPosChanged", this.handleResetPos);
+        line.on("srcPosChanged", this.handleResetPos);
         line.on("posChanged", this.handleResetPos);
         line.on("typeChanged", this.handleTypeChanged);
         this.props.patcher.on("selected", this.handleSelected);
@@ -55,8 +55,8 @@ export class LineUI extends React.PureComponent<P, S> {
         this.props.patcher.off("selected", this.handleSelected);
         this.props.patcher.off("deselected", this.handleDeselected);
         const { line } = this;
-        line.off("destPosChanged", this.handleDestPosChanged);
-        line.off("srcPosChanged", this.handleSrcPosChanged);
+        line.off("destPosChanged", this.handleResetPos);
+        line.off("srcPosChanged", this.handleResetPos);
         line.off("posChanged", this.handleResetPos);
         line.off("typeChanged", this.handleTypeChanged);
     }

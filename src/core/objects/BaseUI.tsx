@@ -127,10 +127,10 @@ export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIP
         background: this.box.background || false,
         presentation: this.box.presentation || false
     };
-    handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    private _handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.object.patcher.state.locked) e.currentTarget.title = this.state.hint;
     };
-    handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.title = "";
+    private _handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.title = "";
     render() {
         const { object } = this;
         const packageName = "package-" + object.meta.package.toLowerCase();
@@ -140,7 +140,7 @@ export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIP
         if (this.state.hidden) classArray.push("hidden");
         if (this.state.ignoreClick) classArray.push("ignore-click");
         return (
-            <div className={classArray.join(" ")} {...this.props.containerProps} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+            <div className={classArray.join(" ")} {...this.props.containerProps} onMouseEnter={this._handleMouseEnter} onMouseLeave={this._handleMouseLeave}>
                 {this.props.children}
             </div>
         );

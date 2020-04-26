@@ -1,485 +1,532 @@
 {
-    "lines": {
-        "line-1": {
-            "id": "line-1",
-            "src": [
-                "box-1",
-                1
-            ],
-            "dest": [
-                "box-2",
-                1
-            ],
-            "disabled": false
-        },
-        "line-2": {
-            "id": "line-2",
-            "src": [
-                "box-4",
-                0
-            ],
-            "dest": [
-                "box-1",
-                0
-            ],
-            "disabled": false
-        },
-        "line-3": {
-            "id": "line-3",
-            "src": [
-                "box-2",
-                0
-            ],
-            "dest": [
-                "box-5",
-                0
-            ],
-            "disabled": false
-        },
-        "line-6": {
-            "id": "line-6",
-            "src": [
-                "box-10",
-                0
-            ],
-            "dest": [
-                "box-9",
-                0
-            ],
-            "disabled": false
-        },
-        "line-8": {
-            "id": "line-8",
-            "src": [
-                "box-4",
-                0
-            ],
-            "dest": [
-                "box-10",
-                0
-            ],
-            "disabled": false
-        },
-        "line-11": {
-            "id": "line-11",
-            "src": [
-                "box-9",
-                0
-            ],
-            "dest": [
-                "box-13",
-                0
-            ],
-            "disabled": false
-        },
-        "line-12": {
-            "id": "line-12",
-            "src": [
-                "box-9",
-                1
-            ],
-            "dest": [
-                "box-13",
-                1
-            ],
-            "disabled": false
-        },
-        "line-15": {
-            "id": "line-15",
-            "src": [
-                "box-16",
-                0
-            ],
-            "dest": [
-                "box-15",
-                0
-            ],
-            "disabled": false
-        },
-        "line-16": {
-            "id": "line-16",
-            "src": [
-                "box-13",
-                0
-            ],
-            "dest": [
-                "box-16",
-                0
-            ],
-            "disabled": false
-        },
-        "line-17": {
-            "id": "line-17",
-            "src": [
-                "box-5",
-                0
-            ],
-            "dest": [
-                "box-18",
-                0
-            ],
-            "disabled": false
-        },
-        "line-18": {
-            "id": "line-18",
-            "src": [
-                "box-20",
-                0
-            ],
-            "dest": [
-                "box-9",
-                4
-            ],
-            "disabled": false
-        },
-        "line-19": {
-            "id": "line-19",
-            "src": [
-                "box-16",
-                0
-            ],
-            "dest": [
-                "box-21",
-                0
-            ],
-            "disabled": false
-        },
-        "line-20": {
-            "id": "line-20",
-            "src": [
-                "box-5",
-                0
-            ],
-            "dest": [
-                "box-9",
-                0
-            ],
-            "disabled": false
-        }
-    },
-    "boxes": {
-        "box-1": {
-            "id": "box-1",
-            "text": "midiDevices",
-            "inlets": 1,
-            "outlets": 2,
-            "rect": [
-                0,
-                45,
-                270,
-                23
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                75,
-                165,
-                0,
-                0
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        },
-        "box-2": {
-            "id": "box-2",
-            "text": "menu",
-            "inlets": 2,
-            "outlets": 1,
-            "rect": [
-                0,
-                90,
-                270,
-                22
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                420,
-                90,
-                0,
-                0
-            ],
-            "data": {},
-            "args": [],
-            "props": {
-                "options": [
-                    {
-                        "key": 0,
-                        "icon": "sign-in",
-                        "text": "KOMPLETE KONTROL A61 MIDI",
-                        "value": "input-0"
-                    },
-                    {
-                        "key": 1,
-                        "icon": "sign-out",
-                        "text": "KOMPLETE KONTROL A61 MIDI",
-                        "value": "output-1"
-                    }
-                ]
+    "patcher": {
+        "lines": {
+            "line-1": {
+                "id": "line-1",
+                "src": [
+                    "box-1",
+                    1
+                ],
+                "dest": [
+                    "box-2",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-2": {
+                "id": "line-2",
+                "src": [
+                    "box-4",
+                    0
+                ],
+                "dest": [
+                    "box-1",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-3": {
+                "id": "line-3",
+                "src": [
+                    "box-2",
+                    0
+                ],
+                "dest": [
+                    "box-5",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-6": {
+                "id": "line-6",
+                "src": [
+                    "box-10",
+                    0
+                ],
+                "dest": [
+                    "box-9",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-8": {
+                "id": "line-8",
+                "src": [
+                    "box-4",
+                    0
+                ],
+                "dest": [
+                    "box-10",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-11": {
+                "id": "line-11",
+                "src": [
+                    "box-9",
+                    0
+                ],
+                "dest": [
+                    "box-13",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-12": {
+                "id": "line-12",
+                "src": [
+                    "box-9",
+                    1
+                ],
+                "dest": [
+                    "box-13",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-15": {
+                "id": "line-15",
+                "src": [
+                    "box-16",
+                    0
+                ],
+                "dest": [
+                    "box-15",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-16": {
+                "id": "line-16",
+                "src": [
+                    "box-13",
+                    0
+                ],
+                "dest": [
+                    "box-16",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-17": {
+                "id": "line-17",
+                "src": [
+                    "box-5",
+                    0
+                ],
+                "dest": [
+                    "box-18",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-18": {
+                "id": "line-18",
+                "src": [
+                    "box-20",
+                    0
+                ],
+                "dest": [
+                    "box-9",
+                    4
+                ],
+                "disabled": false
+            },
+            "line-19": {
+                "id": "line-19",
+                "src": [
+                    "box-16",
+                    0
+                ],
+                "dest": [
+                    "box-21",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-20": {
+                "id": "line-20",
+                "src": [
+                    "box-5",
+                    0
+                ],
+                "dest": [
+                    "box-9",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-21": {
+                "id": "line-21",
+                "src": [
+                    "box-5",
+                    0
+                ],
+                "dest": [
+                    "box-36",
+                    0
+                ],
+                "disabled": false
             }
         },
-        "box-4": {
-            "id": "box-4",
-            "text": "live.button",
-            "inlets": 1,
-            "outlets": 2,
-            "rect": [
-                0,
-                0,
-                30,
-                30
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                90,
-                120,
-                0,
-                0
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        },
-        "box-5": {
-            "id": "box-5",
-            "text": "midiIn",
-            "inlets": 1,
-            "outlets": 2,
-            "rect": [
-                0,
-                135,
-                90,
-                23
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                90,
-                330,
-                0,
-                0
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        },
-        "box-9": {
-            "id": "box-9",
-            "text": "faust.faustnode~ 16",
-            "inlets": 13,
-            "outlets": 3,
-            "rect": [
-                0,
-                330,
-                150,
-                23
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                75,
-                375,
-                0,
-                0
-            ],
-            "data": {
-                "code": "import(\"stdfaust.lib\");\r\nprocess = pm.clarinet_ui_MIDI <: dm.freeverb_demo;\r\n"
+        "boxes": {
+            "box-1": {
+                "id": "box-1",
+                "text": "midiDevices",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    0,
+                    45,
+                    270,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    75,
+                    165,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
             },
-            "args": [
-                16
-            ],
-            "props": {}
-        },
-        "box-10": {
-            "id": "box-10",
-            "text": "code",
-            "inlets": 2,
-            "outlets": 1,
-            "rect": [
-                30,
-                225,
-                495,
-                90
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                120,
-                315,
-                400,
-                225
-            ],
-            "data": {
-                "value": "import(\"stdfaust.lib\");\r\nprocess = pm.clarinet_ui_MIDI <: dm.freeverb_demo;\r\n"
+            "box-2": {
+                "id": "box-2",
+                "text": "menu",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    0,
+                    90,
+                    270,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    420,
+                    90,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {
+                    "options": [
+                        {
+                            "key": 0,
+                            "icon": "sign-in",
+                            "text": "KOMPLETE KONTROL A61 MIDI",
+                            "value": "input-0"
+                        },
+                        {
+                            "key": 1,
+                            "icon": "sign-in",
+                            "text": "Komplete Kontrol A DAW",
+                            "value": "input-1"
+                        },
+                        {
+                            "key": 2,
+                            "icon": "sign-out",
+                            "text": "Komplete Kontrol A DAW",
+                            "value": "output-2"
+                        }
+                    ]
+                }
             },
-            "args": [
-                "faust"
-            ],
-            "props": {}
+            "box-4": {
+                "id": "box-4",
+                "text": "live.button",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    0,
+                    0,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    120,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-5": {
+                "id": "box-5",
+                "text": "midiIn",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    0,
+                    135,
+                    90,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    330,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-9": {
+                "id": "box-9",
+                "text": "faust.faustnode~ 16",
+                "inlets": 13,
+                "outlets": 3,
+                "rect": [
+                    0,
+                    330,
+                    150,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    75,
+                    375,
+                    90,
+                    20
+                ],
+                "data": {
+                    "code": "import(\"stdfaust.lib\");\r\nprocess = pm.clarinet_ui_MIDI <: dm.freeverb_demo;\r\n"
+                },
+                "args": [
+                    16
+                ],
+                "props": {}
+            },
+            "box-10": {
+                "id": "box-10",
+                "text": "code",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    30,
+                    225,
+                    495,
+                    90
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    120,
+                    315,
+                    400,
+                    225
+                ],
+                "data": {
+                    "value": "import(\"stdfaust.lib\");\r\nprocess = pm.clarinet_ui_MIDI <: dm.freeverb_demo;\r\n"
+                },
+                "args": [
+                    "faust"
+                ],
+                "props": {}
+            },
+            "box-13": {
+                "id": "box-13",
+                "text": "merger~ 2",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    0,
+                    375,
+                    90,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    15,
+                    555,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    2
+                ],
+                "props": {}
+            },
+            "box-15": {
+                "id": "box-15",
+                "text": "scope~",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    150,
+                    420,
+                    285,
+                    135
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    285,
+                    510,
+                    120,
+                    60
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-16": {
+                "id": "box-16",
+                "text": "live.gain~",
+                "inlets": 1,
+                "outlets": 4,
+                "rect": [
+                    0,
+                    420,
+                    120,
+                    75
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    375,
+                    495,
+                    120,
+                    45
+                ],
+                "data": {},
+                "args": [],
+                "props": {
+                    "shortName": "Gain",
+                    "longName": "Gain"
+                }
+            },
+            "box-18": {
+                "id": "box-18",
+                "text": "button",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    105,
+                    135,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    225,
+                    225,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-20": {
+                "id": "box-20",
+                "text": "live.dial",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    180,
+                    330,
+                    45,
+                    60
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    225,
+                    405,
+                    45,
+                    60
+                ],
+                "data": {},
+                "args": [],
+                "props": {
+                    "shortName": "Stiffness",
+                    "max": 1,
+                    "step": 0.01,
+                    "type": "float",
+                    "unitStyle": "float"
+                }
+            },
+            "box-21": {
+                "id": "box-21",
+                "text": "destination~",
+                "inlets": 1,
+                "outlets": 1,
+                "rect": [
+                    0,
+                    525,
+                    90,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    75,
+                    675,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-36": {
+                "id": "box-36",
+                "text": "keyboard",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    150,
+                    135,
+                    450,
+                    60
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    390,
+                    60,
+                    450,
+                    60
+                ],
+                "data": {},
+                "args": [],
+                "props": {
+                    "mode": "poly"
+                }
+            }
         },
-        "box-13": {
-            "id": "box-13",
-            "text": "merger~ 2",
-            "inlets": 2,
-            "outlets": 2,
-            "rect": [
-                0,
-                375,
-                90,
-                23
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
+        "props": {
+            "mode": "js",
+            "dependencies": [],
+            "bgColor": "rgba(61, 65, 70, 1)",
+            "editingBgColor": "rgba(82, 87, 94, 1)",
+            "grid": [
                 15,
-                555,
-                0,
-                0
+                15
             ],
-            "data": {},
-            "args": [
-                2
-            ],
-            "props": {}
+            "openInPresentation": false,
+            "boxIndexCount": 37,
+            "lineIndexCount": 22
         },
-        "box-15": {
-            "id": "box-15",
-            "text": "scope~",
-            "inlets": 1,
-            "outlets": 0,
-            "rect": [
-                150,
-                420,
-                285,
-                135
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                285,
-                510,
-                120,
-                60
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        },
-        "box-16": {
-            "id": "box-16",
-            "text": "live.gain~",
-            "inlets": 1,
-            "outlets": 4,
-            "rect": [
-                0,
-                420,
-                120,
-                75
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                375,
-                495,
-                120,
-                45
-            ],
-            "data": {},
-            "args": [],
-            "props": {
-                "shortName": "Gain",
-                "longName": "Gain"
-            }
-        },
-        "box-18": {
-            "id": "box-18",
-            "text": "button",
-            "inlets": 1,
-            "outlets": 2,
-            "rect": [
-                105,
-                135,
-                30,
-                30
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                225,
-                225,
-                30,
-                30
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        },
-        "box-20": {
-            "id": "box-20",
-            "text": "live.dial",
-            "inlets": 2,
-            "outlets": 2,
-            "rect": [
-                180,
-                330,
-                45,
-                60
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                225,
-                405,
-                45,
-                60
-            ],
-            "data": {},
-            "args": [],
-            "props": {
-                "shortName": "Stiffness",
-                "max": 1,
-                "step": 0.01,
-                "type": "float",
-                "unitStyle": "float"
-            }
-        },
-        "box-21": {
-            "id": "box-21",
-            "text": "destination~",
-            "inlets": 1,
-            "outlets": 1,
-            "rect": [
-                0,
-                525,
-                90,
-                23
-            ],
-            "background": false,
-            "presentation": false,
-            "presentationRect": [
-                75,
-                675,
-                0,
-                0
-            ],
-            "data": {},
-            "args": [],
-            "props": {}
-        }
+        "data": {}
     },
-    "props": {
-        "mode": "js",
-        "dependencies": {},
-        "bgColor": "rgba(61, 65, 70, 1)",
-        "editingBgColor": "rgba(82, 87, 94, 1)",
-        "grid": [
-            15,
-            15
-        ],
-        "openInPresentation": false,
-        "boxIndexCount": 21,
-        "lineIndexCount": 20
-    }
+    "data": {}
 }
