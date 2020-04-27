@@ -20,6 +20,7 @@ interface KeyboardUIProps {
 }
 interface KeyboardUIState extends KeyboardState, BaseUIState, KeyboardUIProps {}
 
+// TODO: touch support
 export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIState> {
     static sizing = "both" as const;
     static defaultSize: [number, number] = [450, 60];
@@ -46,32 +47,85 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
         }
         return count;
     }
-    inTouch = false;
-    handleMouseDownKey = (e: React.MouseEvent<SVGRectElement>, key: number) => {
+    mouseDown = false;
+    touches: number[] = [];
+    handleMouseDownKey = (e: React.MouseEvent<SVGRectElement>) => {
+        const key = +e.currentTarget.getAttribute("values");
+        if (this.state.mode === "touch") {
+            if (this.state.keys[key]) return;
+            this.touches[-1] = key;
+        }
         const rect = e.currentTarget.getBoundingClientRect();
         const y = e.pageY - rect.top;
         const height = rect.height;
         const velocity = (Math.min(127, ~~(y / height * 128)) || 1);
         this.object.keyTrigger(key, velocity);
-        this.inTouch = true;
+        this.mouseDown = true;
         const handleMouseUp = () => {
-            this.inTouch = false;
-            if (this.state.mode === "touch") {
-                this.object.flush();
-                this.setState(this.object.state);
+            this.mouseDown = false;
+            if (this.state.mode === "touch" && this.touches[-1]) {
+                this.object.keyTrigger(this.touches[-1], 0);
+                delete this.touches[-1];
             }
             this.setState({ selected: undefined });
             document.removeEventListener("mouseup", handleMouseUp);
         };
         document.addEventListener("mouseup", handleMouseUp);
     };
-    handleMouseEnterKey = (e: React.MouseEvent<SVGRectElement>, key: number) => {
-        if (!this.inTouch) return;
+    handleMouseEnterKey = (e: React.MouseEvent<SVGRectElement>) => {
+        if (!this.mouseDown) return;
+        const key = +e.currentTarget.getAttribute("values");
+        if (this.state.mode === "touch") {
+            if (this.touches[-1] && this.touches[-1] !== key) {
+                this.object.keyTrigger(this.touches[-1], 0);
+                delete this.touches[-1];
+            }
+            if (this.state.keys[key]) return;
+        }
         const rect = e.currentTarget.getBoundingClientRect();
         const y = e.pageY - rect.top;
         const height = rect.height;
         const velocity = (Math.min(127, ~~(y / height * 128)) || 1);
         this.object.keyTrigger(key, velocity);
+        if (this.state.mode === "touch") this.touches[-1] = key;
+    };
+    handleTouchStartKey = (e: React.TouchEvent<SVGRectElement>, keyIn?: number) => {
+        if (this.state.mode !== "touch") return;
+        e.stopPropagation();
+        const key = typeof keyIn === "number" ? keyIn : +e.currentTarget.getAttribute("values");
+        Array.from(e.changedTouches).forEach((touch) => {
+            const { identifier: id } = touch;
+            if (this.touches[id]) this.object.keyTrigger(this.touches[id], 0);
+            this.touches[id] = key;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const y = touch.pageY - rect.top;
+            const height = rect.height;
+            const velocity = (Math.min(127, ~~(y / height * 128)) || 1);
+            this.object.keyTrigger(key, velocity);
+        });
+    };
+    handleTouchMoveKey = (e: React.TouchEvent<SVGRectElement>) => {
+        if (this.state.mode !== "touch") return;
+        e.stopPropagation();
+        e.preventDefault();
+        Array.from(e.changedTouches).forEach((touch) => {
+            const target = document.elementFromPoint(touch.pageX, touch.pageY);
+            if (target.parentElement !== e.currentTarget.parentElement) return;
+            const key = +target.getAttribute("values");
+            if (typeof key === "undefined") return;
+            if (this.state.keys[key]) return;
+            this.handleTouchStartKey(e, key);
+        });
+    };
+    handleTouchEndKey = (e: React.TouchEvent<SVGRectElement>) => {
+        if (this.state.mode !== "touch") return;
+        e.stopPropagation();
+        e.preventDefault();
+        Array.from(e.changedTouches).forEach((touch) => {
+            const { identifier: id } = touch;
+            if (this.touches[id]) this.object.keyTrigger(this.touches[id], 0);
+            delete this.touches[id];
+        });
     };
     render() {
         const { from, to, whiteCount, state } = this;
@@ -79,10 +133,10 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
         const whites: JSX.Element[] = [];
         const blacks: JSX.Element[] = [];
         const whiteSplits: JSX.Element[] = [];
-        const blackStyle = { fill: blackKeyColor, strokeWidth: 0 };
-        const whiteStyle = { fill: whiteKeyColor, strokeWidth: 0 };
-        const keyOnStyle = { fill: keyOnColor, strokeWidth: 1, stroke: "black" };
-        const selectedStyle = { fill: selectedColor, strokeWidth: 1, stroke: "black" };
+        const blackStyle: React.CSSProperties = { fill: blackKeyColor, strokeWidth: 0 };
+        const whiteStyle: React.CSSProperties = { fill: whiteKeyColor, strokeWidth: 0 };
+        const keyOnStyle: React.CSSProperties = { fill: keyOnColor, strokeWidth: 1, stroke: "black" };
+        const selectedStyle: React.CSSProperties = { fill: selectedColor, strokeWidth: 1, stroke: "black" };
         const whiteWidthPercentage = 100 / whiteCount;
         const blackWidthPercentage = 100 / whiteCount * 2 / 3;
         const whiteWidth = `${whiteWidthPercentage}%`;
@@ -92,21 +146,30 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
         while (key <= to) {
             const $key = key;
             const keyOn = +!!this.state.keys[$key];
+            const commonProps: React.SVGProps<SVGRectElement> = {
+                key: $key,
+                values: `${key}`,
+                onMouseDown: this.handleMouseDownKey,
+                onMouseEnter: this.handleMouseEnterKey,
+                onTouchStart: this.handleTouchStartKey,
+                onTouchMove: this.handleTouchMoveKey,
+                onTouchEnd: this.handleTouchEndKey
+            };
             if (this.isBlack(key)) {
                 const style = key === selected ? selectedStyle : keyOn ? keyOnStyle : blackStyle;
                 const x = `${($white - 1 / 3) * whiteWidthPercentage}%`;
-                blacks.push(<rect key={$key} x={x} y={0} width={blackWidth} height="70%" style={style} onMouseDown={e => this.handleMouseDownKey(e, $key)} onMouseEnter={e => this.handleMouseEnterKey(e, $key)} />);
+                blacks.push(<rect x={x} y={0} width={blackWidth} height="70%" style={style} {...commonProps} />);
             } else {
                 const style = key === selected ? selectedStyle : keyOn ? keyOnStyle : whiteStyle;
                 const x = `${$white * whiteWidthPercentage}%`;
-                whites.push(<rect key={$key} x={x} y={0} width={whiteWidth} height="100%" style={style} onMouseDown={e => this.handleMouseDownKey(e, $key)} onMouseEnter={e => this.handleMouseEnterKey(e, $key)} />);
+                whites.push(<rect x={x} y={0} width={whiteWidth} height="100%" style={style} {...commonProps} />);
                 if ($white) whiteSplits.push(<line key={$key} x1={x} y1={this.isBlack($key - 1) ? "70%" : 0} x2={x} y2="100%" stroke="black" />);
                 $white++;
             }
             key++;
         }
         return (
-            <svg width="100%" height="100%">
+            <svg width="100%" height="100%" style={{ touchAction: "none" }}>
                 <rect x={0} y={0} width="100%" height="100%" style={{ fill: "transparent", strokeWidth: 2, stroke: "black" }} />
                 {whiteSplits}
                 {whites}
@@ -184,7 +247,7 @@ export default class keyboard extends UIObject<{}, KeyboardState, [TMIDIEvent, T
         }
         return keys;
     }
-    flush(noOutput?: boolean) {
+    flush() {
         const { keys } = this.state;
         for (let $key = 0; $key < 128; $key++) {
             if (keys[$key]) {
@@ -211,9 +274,8 @@ export default class keyboard extends UIObject<{}, KeyboardState, [TMIDIEvent, T
             this.setState({ keys: { ...keys }, selected: v ? key : undefined });
         } else {
             const { keys } = this.state;
-            this.flush(noOutput);
             keys[key] = velocity;
-            if (!noOutput && velocity) this.outlet(0, new Uint8Array([9 << 4, key, velocity]) as Uint8Array & { length: 3 });
+            if (!noOutput) this.outlet(0, new Uint8Array([9 << 4, key, velocity]) as Uint8Array & { length: 3 });
             this.setState({ keys: { ...keys }, selected: velocity ? key : undefined });
         }
         this.updateUI(this.state);
