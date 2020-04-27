@@ -175,12 +175,12 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
         );
     }
 }
-export default class keyboard extends UIObject<{}, KeyboardState, [TMIDIEvent, TMIDIEvent], [Uint8Array & { length: 3 }], [], KeyboardUIProps, KeyboardUIProps & KeyboardState> {
+export default class keyboard extends UIObject<{}, KeyboardState, [TMIDIEvent | "flush", TMIDIEvent], [Uint8Array & { length: 3 }], [], KeyboardUIProps, KeyboardUIProps & KeyboardState> {
     static description = "Keyboard";
     static inlets: TMeta["inlets"] = [{
-        type: "object",
+        type: "anything",
         isHot: true,
-        description: "Display & output same MIDI event"
+        description: 'Display & output same MIDI event, "flush" to flush active notes'
     }, {
         type: "object",
         isHot: true,
@@ -293,7 +293,11 @@ export default class keyboard extends UIObject<{}, KeyboardState, [TMIDIEvent, T
             }
         });
         this.on("inlet", ({ data, inlet }) => {
-            if (isMIDIEvent(data)) {
+            if (inlet === 0 && data === "flush") {
+                this.flush();
+                this.setState({ keys: { ...this.state.keys }, selected: undefined });
+                this.updateUI(this.state);
+            } else if (isMIDIEvent(data)) {
                 const cmd = data[0] >> 4;
                 const channel = data[0] & 0xf;
                 const data1 = data[1];
