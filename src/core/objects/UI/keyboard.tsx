@@ -132,9 +132,8 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
         const { blackKeyColor, whiteKeyColor, keyOnColor, selectedColor, selected } = state;
         const whites: JSX.Element[] = [];
         const blacks: JSX.Element[] = [];
-        const whiteSplits: JSX.Element[] = [];
-        const blackStyle: React.CSSProperties = { fill: blackKeyColor, strokeWidth: 0 };
-        const whiteStyle: React.CSSProperties = { fill: whiteKeyColor, strokeWidth: 0 };
+        const blackStyle: React.CSSProperties = { fill: blackKeyColor, strokeWidth: 1, stroke: "black" };
+        const whiteStyle: React.CSSProperties = { fill: whiteKeyColor, strokeWidth: 1, stroke: "black" };
         const keyOnStyle: React.CSSProperties = { fill: keyOnColor, strokeWidth: 1, stroke: "black" };
         const selectedStyle: React.CSSProperties = { fill: selectedColor, strokeWidth: 1, stroke: "black" };
         const whiteWidthPercentage = 100 / whiteCount;
@@ -163,7 +162,6 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
                 const style = key === selected ? selectedStyle : keyOn ? keyOnStyle : whiteStyle;
                 const x = `${$white * whiteWidthPercentage}%`;
                 whites.push(<rect x={x} y={0} width={whiteWidth} height="100%" style={style} {...commonProps} />);
-                if ($white) whiteSplits.push(<line key={$key} x1={x} y1={this.isBlack($key - 1) ? "70%" : 0} x2={x} y2="100%" stroke="black" />);
                 $white++;
             }
             key++;
@@ -171,7 +169,6 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
         return (
             <svg width="100%" height="100%" style={{ touchAction: "none" }}>
                 <rect x={0} y={0} width="100%" height="100%" style={{ fill: "transparent", strokeWidth: 2, stroke: "black" }} />
-                {whiteSplits}
                 {whites}
                 {blacks}
             </svg>
