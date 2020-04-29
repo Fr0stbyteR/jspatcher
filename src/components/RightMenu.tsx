@@ -593,7 +593,7 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
         }
     };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        const origin = { x: e.pageX, y: e.pageY };
+        const origin = { x: e.clientX, y: e.clientY };
         const rect = this.refDivPane.current.getBoundingClientRect();
         const { width: curWidth } = rect;
         const panel = this.state.active;
@@ -601,7 +601,7 @@ export default class RightMenu extends React.PureComponent<{ patcher: Patcher },
             e.stopPropagation();
             e.preventDefault();
             if (this.refDivPane.current && e.movementX) {
-                const width = curWidth - (e.pageX - origin.x);
+                const width = curWidth - (e.clientX - origin.x);
                 if (width < 100) {
                     this.setState({ active: TPanels.None });
                 } else {

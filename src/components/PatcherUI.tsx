@@ -103,21 +103,21 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         const handleDraggable = () => {
             const patcherDiv = this.refDiv.current;
             const patcherRect = patcherDiv.getBoundingClientRect();
-            if (patcherRect.top + patcherDiv.clientHeight < e.pageY || patcherRect.left + patcherDiv.clientWidth < e.pageX) return; // Click on scrollbar
+            if (patcherRect.top + patcherDiv.clientHeight < e.clientY || patcherRect.left + patcherDiv.clientWidth < e.clientX) return; // Click on scrollbar
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             const selectedBefore = this.props.patcher.state.selected.slice();
-            const selectionRect = [e.pageX - patcherRect.left + patcherDiv.scrollLeft, e.pageY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as TRect;
+            const selectionRect = [e.clientX - patcherRect.left + patcherDiv.scrollLeft, e.clientY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as TRect;
             const handleMouseMove = (e: MouseEvent) => {
                 e.stopPropagation();
                 e.preventDefault();
                 if (e.movementX || e.movementY) {
-                    selectionRect[2] = e.pageX - patcherRect.left + patcherDiv.scrollLeft;
-                    selectionRect[3] = e.pageY - patcherRect.top + patcherDiv.scrollTop;
+                    selectionRect[2] = e.clientX - patcherRect.left + patcherDiv.scrollLeft;
+                    selectionRect[3] = e.clientY - patcherRect.top + patcherDiv.scrollTop;
                     this.setState({ selectionRect: selectionRect.slice() as TRect });
                     this.props.patcher.selectRegion(selectionRect, selectedBefore);
                 }
-                const x = e.pageX - patcherRect.left;
-                const y = e.pageY - patcherRect.top;
+                const x = e.clientX - patcherRect.left;
+                const y = e.clientY - patcherRect.top;
                 if (x < 10) patcherDiv.scrollLeft += x - 10;
                 if (x > patcherRect.width - 10) patcherDiv.scrollLeft += x + 10 - patcherRect.width;
                 if (y < 10) patcherDiv.scrollTop += y - 10;
@@ -164,8 +164,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (!patcherDiv) return;
         const patcherRect = patcherDiv.getBoundingClientRect();
         const [gridX, gridY] = patcher.props.grid;
-        const x = round(Math.max(0, e.pageX - patcherRect.left + patcherDiv.scrollLeft), gridX);
-        const y = round(Math.max(0, e.pageY - patcherRect.top + patcherDiv.scrollTop), gridY);
+        const x = round(Math.max(0, e.clientX - patcherRect.left + patcherDiv.scrollLeft), gridX);
+        const y = round(Math.max(0, e.clientY - patcherRect.top + patcherDiv.scrollTop), gridY);
         const { presentation } = patcher._state;
         this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
     };
@@ -201,7 +201,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
         }
     };
-    handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.pageX, y: e.pageY };
+    handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.clientX, y: e.clientY };
     componentDidMount() {
         const patcher = this.props.patcher;
         patcher.on("loading", this.handleLoading);

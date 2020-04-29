@@ -109,7 +109,7 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
         e.stopPropagation();
         e.preventDefault();
         Array.from(e.changedTouches).forEach((touch) => {
-            const target = document.elementFromPoint(touch.pageX, touch.pageY);
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
             if (target.parentElement !== e.currentTarget.parentElement) return;
             const key = +target.getAttribute("values");
             if (typeof key === "undefined") return;

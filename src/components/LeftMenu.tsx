@@ -126,8 +126,8 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
             e.preventDefault();
             if (cloned) {
                 cloned.style.display = "block";
-                cloned.style.left = `${e.pageX - 10}px`;
-                cloned.style.top = `${e.pageY - 10}px`;
+                cloned.style.left = `${e.clientX - 10}px`;
+                cloned.style.top = `${e.clientY - 10}px`;
             }
         };
         const handleMouseUp = (e: MouseEvent) => {
@@ -136,15 +136,15 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
             if (cloned) cloned.remove();
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
-            const { pageX, pageY } = e;
+            const { clientX, clientY } = e;
             const { left, top, width, height } = patcherRect;
-            if (pageX < left) return;
-            if (pageX > left + width) return;
-            if (pageY < top) return;
-            if (pageY > top + height) return;
+            if (clientX < left) return;
+            if (clientX > left + width) return;
+            if (clientY < top) return;
+            if (clientY > top + height) return;
             const { scrollLeft, scrollTop } = patcherDiv;
-            const x = pageX - left + scrollLeft;
-            const y = pageY - top + scrollTop;
+            const x = clientX - left + scrollLeft;
+            const y = clientY - top + scrollTop;
             const { patcher } = this.props;
             const { presentation } = patcher._state;
             patcher.createBox({ text: this.getObjText(path), inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
@@ -315,14 +315,14 @@ export default class LeftMenu extends React.PureComponent<{ patcher: Patcher }, 
         }
     };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        const origin = { x: e.pageX, y: e.pageY };
+        const origin = { x: e.clientX, y: e.clientY };
         const curWidth = this.refDivPane.current.getBoundingClientRect().width;
         const panel = this.state.active;
         const handleMouseMove = (e: MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
             if (this.refDivPane.current && e.movementX) {
-                const width = curWidth - (origin.x - e.pageX);
+                const width = curWidth - (origin.x - e.clientX);
                 if (width < 100) {
                     this.setState({ active: TPanels.None });
                 } else {
