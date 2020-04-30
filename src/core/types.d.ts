@@ -315,4 +315,6 @@ type THistoryElement = {
 };
 
 type TBPF = string | number | number[] | number[][];
+type TBPFPoint = [number, number, number];
+type TStrictBPF = TBPFPoint[];
 type TMIDIEvent = [number, number, number] | (Uint8Array & { length: 3 });

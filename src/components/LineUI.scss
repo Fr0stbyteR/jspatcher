@@ -5,12 +5,12 @@
         pointer-events: none;
         & > svg {
             filter: drop-shadow(rgba(200, 200, 200, 0.5) 0px 0px 0.5px);
-            & > path.normal, line.normal {
+            & > path.normal, & > line.normal {
                 stroke: rgb(158, 159, 159);
                 stroke-width: 2;
                 fill: transparent;
             }
-            & > path.audio, line.audio {
+            & > path.audio, & > line.audio {
                 stroke: rgb(215, 248, 135);
                 stroke-width: 2;
                 fill: transparent;
@@ -19,7 +19,7 @@
             &:hover {
                 filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
                 stroke-width: 3;
-                & > path, line {
+                & > path, & > line {
                     stroke-width: 3;
                 }
             }
@@ -52,7 +52,7 @@
         &.selected {
             & > svg {
                 filter: drop-shadow(rgb(0, 0, 237) 0px 0px 2px);
-                & > path, line {
+                & > path, & > line {
                     stroke-width: 3;
                 }
             }
@@ -64,10 +64,10 @@
             }
         }
     }
-    &.unlocked > div.lines > div.line > svg > path, line {
+    &.unlocked > div.lines > div.line > svg > path, &.unlocked > div.lines > div.line > svg > line {
         pointer-events: auto;
     }
-    &.locked > div.lines > div.line > svg > path, line {
+    &.locked > div.lines > div.line > svg > path, &.locked > div.lines > div.line > svg > line {
         pointer-events: none;
     }
     &.presentation > div.lines {

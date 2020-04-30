@@ -1,6 +1,6 @@
 import * as React from "react";
-import { BaseUI, BaseUIState } from "../BaseUI";
 import UIObject from "./Base";
+import { BaseUI, BaseUIState } from "../BaseUI";
 import { TMIDIEvent, TMeta, TPropsMeta } from "../../types";
 import { isMIDIEvent } from "../../../utils/utils";
 
@@ -20,7 +20,6 @@ interface KeyboardUIProps {
 }
 interface KeyboardUIState extends KeyboardState, BaseUIState, KeyboardUIProps {}
 
-// TODO: touch support
 export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIState> {
     static sizing = "both" as const;
     static defaultSize: [number, number] = [450, 60];
@@ -167,11 +166,13 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
             key++;
         }
         return (
-            <svg width="100%" height="100%" style={{ touchAction: "none" }}>
-                <rect x={0} y={0} width="100%" height="100%" style={{ fill: "transparent", strokeWidth: 2, stroke: "black" }} />
-                {whites}
-                {blacks}
-            </svg>
+            <BaseUI {...this.props} containerProps={{ style: { height: "100%", width: "100%" } }}>
+                <svg width="100%" height="100%" style={{ touchAction: "none" }}>
+                    <rect x={0} y={0} width="100%" height="100%" style={{ fill: "transparent", strokeWidth: 2, stroke: "black" }} />
+                    {whites}
+                    {blacks}
+                </svg>
+            </BaseUI>
         );
     }
 }

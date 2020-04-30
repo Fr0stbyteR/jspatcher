@@ -5,15 +5,15 @@ export const mod = (x: number, y: number): number => (x % y + y) % y;
 /**
  * Round a number to multiple of another
  */
-export const round = (x: number, to: number): number => Math.round(x / to) * to;
+export const round = (x: number, to: number): number => (Math.abs(to) < 1 ? Math.round(x * (1 / to)) / (1 / to) : Math.round(x / to) * to);
 /**
  * Floor a number to multiple of another
  */
-export const floor = (x: number, to: number): number => Math.floor(x / to) * to;
+export const floor = (x: number, to: number): number => (Math.abs(to) < 1 ? Math.floor(x * (1 / to)) / (1 / to) : Math.floor(x / to) * to);
 /**
  * Ceil a number to multiple of another
  */
-export const ceil = (x: number, to: number): number => Math.ceil(x / to) * to;
+export const ceil = (x: number, to: number): number => (Math.abs(to) < 1 ? Math.ceil(x * (1 / to)) / (1 / to) : Math.ceil(x / to) * to);
 /**
  * Degree to radian
  */
@@ -52,3 +52,11 @@ export const iNormExp = (x: number, e: number): number => Math.max(0, x) ** (1.5
  * @returns {number} scaled value
  */
 export const normExp = (x: number, e: number): number => Math.max(0, x) ** (1.5 ** e);
+
+export const scale = (x: number, l1: number, h1: number, l2: number, h2: number) => {
+    const r1 = h1 - l1;
+    const r2 = h2 - l2;
+    return (x - l1) / r1 * r2 + l2;
+};
+
+export const scaleClip = (x: number, l1: number, h1: number, l2: number, h2: number) => Math.max(l2, Math.min(h2, scale(x, l1, h1, l2, h2)));
