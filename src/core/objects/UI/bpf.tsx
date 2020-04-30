@@ -6,7 +6,7 @@ import { TBPF, TStrictBPF, TBPFPoint, TMeta, TPropsMeta } from "../../types";
 import { decodeBPF } from "../../../utils/utils";
 import { normExp, round, scaleClip } from "../../../utils/math";
 
-interface BPFState {
+interface BPFData {
     points: TStrictBPF;
 }
 interface BPFUIProps {
@@ -20,21 +20,21 @@ interface BPFUIProps {
     lineColor: string;
     bgColor: string;
 }
-interface BPFUIState extends BPFState, BaseUIState, BPFUIProps {
+interface BPFUIState extends BPFData, BaseUIState, BPFUIProps {
     ghostPoint: TBPFPoint;
 }
 
 export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
     static sizing = "both" as const;
     static defaultSize: [number, number] = [450, 300];
-    state: BPFUIState = { ...this.state, points: this.object.state.points, ghostPoint: undefined };
+    state: BPFUIState = { ...this.state, points: this.object.data.points, ghostPoint: undefined };
     dragged = false;
     mouseDown = false;
     refG = React.createRef<SVGGElement>();
     handleResized = () => {
         if (this.refG.current) {
             this.refG.current.style.transformOrigin = "0";
-            this.refG.current.style.transformOrigin = "center";
+            requestAnimationFrame(() => this.refG.current.style.transformOrigin = "center");
         }
     };
     componentDidMount() {
@@ -64,7 +64,7 @@ export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
         const { index: $point, point } = this.getInsertPoint(x, y);
         points.splice($point, 0, point);
         this.setState({ points: points.slice() });
-        this.object.setState({ points: this.state.points });
+        this.object.setData({ points: this.state.points });
     };
     handleMouseMoveLine = (e: React.MouseEvent<SVGLineElement>) => {
         if (this.mouseDown) return;
@@ -115,7 +115,7 @@ export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
                     points[i + 1][1] = Math.min(rangeMax, Math.max(rangeMin, next[1] - delta));
                 }
                 this.setState({ points: points.slice() });
-                this.object.setState({ points: this.state.points });
+                this.object.setData({ points: this.state.points });
             };
             const handleMouseUp = () => {
                 this.mouseDown = false;
@@ -133,7 +133,7 @@ export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
             ];
             points.splice($point, 0, point);
             this.setState({ points: points.slice() });
-            this.object.setState({ points: this.state.points });
+            this.object.setData({ points: this.state.points });
             const handleMouseMove = (e: MouseEvent) => {
                 this.dragged = true;
                 const clientX = Math.max(limits[0], Math.min(limits[1], e.clientX));
@@ -143,7 +143,7 @@ export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
                 const point: TBPFPoint = [x, y, 0];
                 points[$point] = point;
                 this.setState({ points: points.slice() });
-                this.object.setState({ points: this.state.points });
+                this.object.setData({ points: this.state.points });
             };
             const handleMouseUp = () => {
                 this.mouseDown = false;
@@ -182,7 +182,7 @@ export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
             const point = [x, y, 0];
             points[i] = point as TBPFPoint;
             this.setState({ points: points.slice() });
-            this.object.setState({ points: this.state.points });
+            this.object.setData({ points: this.state.points });
         };
         const handleMouseUp = () => {
             document.removeEventListener("mousemove", handleMouseMove);
@@ -199,7 +199,7 @@ export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
         const { points } = this.state;
         points.splice(i, 1);
         this.setState({ points: points.slice() });
-        this.object.setState({ points: this.state.points });
+        this.object.setData({ points: this.state.points });
     };
     getInsertPoint(x: number, yIn?: number, e = 0): { index: number; point: TBPFPoint } {
         const { points } = this.state;
@@ -304,7 +304,7 @@ export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
         );
     }
 }
-export default class bpf extends UIObject<{}, BPFState, [TBPF | Bang], [TStrictBPF], [], BPFUIProps, BPFUIProps & BPFState> {
+export default class bpf extends UIObject<BPFData, {}, [TBPF | Bang], [TStrictBPF], [], BPFUIProps, BPFUIProps & BPFData> {
     static description = "Break-point function editor";
     static inlets: TMeta["inlets"] = [{
         type: "anything",
@@ -378,12 +378,12 @@ export default class bpf extends UIObject<{}, BPFState, [TBPF | Bang], [TStrictB
         }
     };
     static ui = BPFUI;
-    state: BPFState = { points: [] };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
             this.inlets = 2;
             this.outlets = 1;
+            if (!this.data.points) this.data.points = [];
         });
         let prevRange: [number, number];
         let prevDomain: number;
@@ -393,21 +393,21 @@ export default class bpf extends UIObject<{}, BPFState, [TBPF | Bang], [TStrictB
         });
         this.on("updateProps", () => {
             const range = this.getProp("range");
-            if (prevRange !== range) {
-                const points = this.state.points.map(p => [p[0], scaleClip(p[1], prevRange[0], prevRange[1], range[0], range[1]), p[2]] as TBPFPoint);
-                this.setState({ points });
+            if (prevRange && prevRange !== range) {
+                const points = this.data.points.map(p => [p[0], scaleClip(p[1], prevRange[0], prevRange[1], range[0], range[1]), p[2]] as TBPFPoint);
+                this.setData({ points });
                 this.updateUI(this.state);
             }
             const domain = this.getProp("domain");
-            if (prevDomain !== domain) {
-                const points = this.state.points.map(p => [scaleClip(p[0], 0, prevDomain, 0, domain), p[1], p[2]] as TBPFPoint);
-                this.setState({ points });
+            if (typeof prevDomain === "number" && prevDomain !== domain) {
+                const points = this.data.points.map(p => [scaleClip(p[0], 0, prevDomain, 0, domain), p[1], p[2]] as TBPFPoint);
+                this.setData({ points });
                 this.updateUI(this.state);
             }
         });
         this.on("inlet", ({ data, inlet }) => {
             if (data instanceof Bang) {
-                if (inlet === 0) this.outlet(0, this.state.points);
+                if (inlet === 0) this.outlet(0, this.data.points);
             } else {
                 let points: TStrictBPF;
                 try {
@@ -415,7 +415,7 @@ export default class bpf extends UIObject<{}, BPFState, [TBPF | Bang], [TStrictB
                 } catch (e) {
                     this.error("Cannot decode inlet BPF");
                 }
-                this.setState({ points });
+                this.setData({ points });
                 this.updateUI(this.state);
             }
         });

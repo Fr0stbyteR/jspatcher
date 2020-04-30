@@ -287,7 +287,7 @@ export default class keyboard extends UIObject<{}, KeyboardState, [TMIDIEvent | 
         let prevMode: KeyboardUIProps["mode"];
         this.on("postInit", () => prevMode = this.getProp("mode"));
         this.on("updateProps", () => {
-            if (prevMode !== this.getProp("mode")) {
+            if (prevMode && prevMode !== this.getProp("mode")) {
                 this.flush();
                 this.setState({ keys: { ...this.state.keys }, selected: undefined });
                 this.updateUI(this.state);
