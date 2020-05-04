@@ -591,8 +591,16 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this.emit("deselected", selected);
     }
     selectOnly(id: string) {
-        this.deselectAll();
-        this.select(id);
+        const { selected } = this._state;
+        const $ = selected.indexOf(id);
+        if ($ === -1) {
+            this.deselectAll();
+            this.select(id);
+        } else {
+            selected.splice($, 1);
+            this.emit("deselected", selected);
+            this._state.selected = [id];
+        }
     }
     selectRegion(selectionRect: number[], selectedBefore: string[]) {
         let [left, top, right, bottom] = selectionRect;

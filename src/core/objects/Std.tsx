@@ -469,7 +469,7 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         });
     }
 }
-class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any], [any], [string | number, any]> {
+class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any, string | number], [any], [string | number, any]> {
     static description = "Store anything as named sharable variable";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -500,17 +500,18 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any], [a
     state = { key: undefined as string, value: SharedDataNoValue as any };
     subscribe() {
         super.subscribe();
+        const sharedDataKey = "_v";
         const reload = () => {
-            if (this.state.key) this.sharedData.unsubscribe("_v", this.state.key, this);
+            if (this.state.key) this.sharedData.unsubscribe(sharedDataKey, this.state.key, this);
             const { args } = this.box;
             if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
             if (typeof args[1] !== "undefined") this.state.value = args[1];
             const { key } = this.state;
             if (key) {
-                const shared = this.sharedData.get("_v", key);
+                const shared = this.sharedData.get(sharedDataKey, key);
                 if (shared !== SharedDataNoValue) this.state.value = shared;
-                else this.sharedData.set("_v", key, this.state.value, this);
-                this.sharedData.subscribe("_v", this.state.key, this);
+                else this.sharedData.set(sharedDataKey, key, this.state.value, this);
+                this.sharedData.subscribe(sharedDataKey, this.state.key, this);
             }
         };
         this.on("preInit", () => {
@@ -525,7 +526,7 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any], [a
                 } else {
                     if (typeof args[1] !== "undefined") {
                         this.state.value = args[1];
-                        if (this.state.key) this.sharedData.set("_v", this.state.key, this.state.value, this);
+                        if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
                     }
                 }
             }
@@ -534,12 +535,12 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any], [a
             if (inlet === 0) {
                 if (!(data instanceof Bang)) {
                     this.state.value = data;
-                    if (this.state.key) this.sharedData.set("_v", this.state.key, this.state.value, this);
+                    if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
                 }
                 this.outlet(0, this.state.value);
             } else if (inlet === 1) {
                 this.state.value = data;
-                if (this.state.key) this.sharedData.set("_v", this.state.key, this.state.value, this);
+                if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
             } else if (inlet === 2) {
                 if (typeof data === "string" || typeof data === "number") {
                     const key = data || "";
@@ -551,7 +552,7 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any], [a
         });
         this.on("sharedDataUpdated", ({ data }) => this.state.value = data);
         this.on("destroy", () => {
-            if (this.state.key) this.sharedData.unsubscribe("_v", this.state.key, this);
+            if (this.state.key) this.sharedData.unsubscribe(sharedDataKey, this.state.key, this);
         });
     }
 }

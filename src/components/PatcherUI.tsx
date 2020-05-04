@@ -28,6 +28,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     refLines = React.createRef<Lines>();
     size = { width: 0, height: 0 };
     cachedMousePos = { x: 0, y: 0 };
+    dragged = false;
     handleLoading = (loading?: string[]) => {
         if (loading) return;
         const { patcher } = this.props;
@@ -99,6 +100,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (!e.shiftKey) this.props.patcher.deselectAll();
         if (e.button !== 0) return;
         if (this.props.patcher.state.locked) return;
+        this.dragged = false;
         // Handle Draggable
         const handleDraggable = () => {
             const patcherDiv = this.refDiv.current;
@@ -108,6 +110,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             const selectedBefore = this.props.patcher.state.selected.slice();
             const selectionRect = [e.clientX - patcherRect.left + patcherDiv.scrollLeft, e.clientY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as TRect;
             const handleMouseMove = (e: MouseEvent) => {
+                this.dragged = true;
                 e.stopPropagation();
                 e.preventDefault();
                 if (e.movementX || e.movementY) {
@@ -154,6 +157,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.setState({ locked: !this.props.patcher.state.locked });
     };
     handleDoubleClick = (e: React.MouseEvent) => {
+        if (this.dragged) return;
         const { patcher, runtime } = this.props;
         if (runtime) return;
         if (patcher.state.locked) return;
