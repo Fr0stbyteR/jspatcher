@@ -501,12 +501,11 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any, str
     subscribe() {
         super.subscribe();
         const sharedDataKey = "_v";
-        const reload = () => {
+        const reload = (key: string) => {
             if (this.state.key) this.sharedData.unsubscribe(sharedDataKey, this.state.key, this);
             const { args } = this.box;
-            if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
+            this.state.key = key;
             if (typeof args[1] !== "undefined") this.state.value = args[1];
-            const { key } = this.state;
             if (key) {
                 const shared = this.sharedData.get(sharedDataKey, key);
                 if (shared !== SharedDataNoValue) this.state.value = shared;
@@ -519,15 +518,13 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any, str
             this.outlets = 1;
         });
         this.on("updateArgs", (args) => {
-            if (typeof args[0] === "string" || typeof args[0] === "undefined") {
-                const key = args[0];
-                if (key !== this.state.key) {
-                    reload();
-                } else {
-                    if (typeof args[1] !== "undefined") {
-                        this.state.value = args[1];
-                        if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
-                    }
+            const key = typeof args[0] === "undefined" ? args[0] : args[0].toString();
+            if (key !== this.state.key) {
+                reload(key);
+            } else {
+                if (typeof args[1] !== "undefined") {
+                    this.state.value = args[1];
+                    if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
                 }
             }
         });
@@ -543,9 +540,9 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any, str
                 if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
             } else if (inlet === 2) {
                 if (typeof data === "string" || typeof data === "number") {
-                    const key = data || "";
+                    const key = data.toString() || "";
                     if (key !== this.state.key) {
-                        reload();
+                        reload(key);
                     }
                 }
             }

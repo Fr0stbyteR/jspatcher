@@ -5,5 +5,6 @@ import menu from "./menu";
 import view from "./view";
 import keyboard from "./keyboard";
 import bpf from "./bpf";
+import waveform from "./waveform";
 
-export default { message, comment, code, menu, view, keyboard, bpf };
+export default { message, comment, code, menu, view, keyboard, bpf, waveform };
