@@ -159,10 +159,14 @@ class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [a
 const functions: { [key: string]: (...args: any[]) => any } = {
     Add: (a: any, b: any) => a + b,
     Sub: (a: any, b: any) => a - b,
+    $Sub: (a: any, b: any) => b - a,
     Mul: (a: any, b: any) => a * b,
     Div: (a: any, b: any) => a / b,
+    $Div: (a: any, b: any) => b / a,
     Exp: (a: any, b: any) => a ** b,
+    $Exp: (a: any, b: any) => b ** a,
     Mod: (a: any, b: any) => a % b,
+    $Mod: (a: any, b: any) => b % a,
     Inc: (a: any) => ++a, // eslint-disable-line no-param-reassign
     Dec: (a: any) => --a, // eslint-disable-line no-param-reassign
     Eql: (a: any, b: any) => a == b, // eslint-disable-line eqeqeq
@@ -210,10 +214,14 @@ export default {
     instanceof: Ops.Instanceof,
     "+": Ops.Add,
     "-": Ops.Sub,
+    "!-": Ops.$Sub,
     "*": Ops.Mul,
     "/": Ops.Div,
+    "!/": Ops.$Div,
     "**": Ops.Exp,
+    "!**": Ops.$Exp,
     "%": Ops.Mod,
+    "!%": Ops.Mod,
     "++": Ops.Inc,
     "--": Ops.Dec,
     "==": Ops.Eql,

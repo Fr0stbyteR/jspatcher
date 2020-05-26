@@ -41,7 +41,7 @@ interface AudioWorkletMessagePort<I extends { [key: string]: any } = { [key: str
 interface AudioWorkletMessageEvent<T extends any = any> extends MessageEvent {
     data: T;
 }
-type DisposableAudioParamMap<P extends string = string> = ReadonlyMap<P, AudioParam>
+type DisposableAudioParamMap<P extends string = string> = ReadonlyMap<P, AudioParam>;
 
 declare module "*.worklet.ts" {
     const exportString: string;

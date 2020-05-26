@@ -180,6 +180,9 @@ export default class TopMenu extends React.PureComponent<{ patcher: Patcher }> {
         const editMenu = this.refEditMenu.current;
         if (!fileMenu || !editMenu) return;
 
+        if (e.target instanceof HTMLInputElement) return;
+        if (e.target instanceof HTMLTextAreaElement) return;
+        if ((e.target as HTMLElement).contentEditable === "true") return;
         const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         if (ctrlKey && e.shiftKey && e.key === "n") fileMenu.handleClickNew();
         else if (ctrlKey && e.key === "o") fileMenu.handleClickOpen();

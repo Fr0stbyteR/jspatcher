@@ -48,7 +48,7 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     faustDocs: TFaustDocs;
     faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
-    pkgMgr = new GlobalPackageManager(this);
+    pkgMgr: GlobalPackageManager;
     active: Patcher;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;
@@ -89,6 +89,8 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         const { providers } = await faustLangRegister(monacoEditor, faust);
         this.faustDocs = providers.docs;
         this.faustLibObjects = getFaustLibObjects(this.faustDocs);
+
+        this.pkgMgr = new GlobalPackageManager(this);
 
         this.faust = faust;
         const patcher = new Patcher(this);
