@@ -1,55 +1,15 @@
+import { WebAudioPlugin } from "sdk";
+import * as Loader from "sdk/src/Loader";
 import { Bang, BaseAudioObject } from "../Base";
 import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 
-declare type TypedEvent<T extends string | number | symbol = never, I extends EventInit = {}> = {
-    [K in keyof I]: I[K];
-} & Event & { type: T };
-declare interface TypedEventTarget<M extends Record<string, EventInit & Record<string, any>> = {}> extends EventTarget {
-    addEventListener<K extends keyof M>(type: K, listener: (e: TypedEvent<K, M[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-    removeEventListener<K extends keyof M>(type: K, listener: (e: TypedEvent<K, M[K]>) => any, options?: boolean | EventListenerOptions): void;
-    removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-}
-declare interface WebAudioPluginCreateOptions<S extends Record<string, any> = {}> {
-    state?: Partial<S>;
-}
-/**
- * `WebAudioPlugin` main interface
- *
- * @interface WebAudioPlugin
- * @extends {TypedEventTarget<E>}
- * @template P `AudioParam` names, e.g. `"gain" | "feedback" | "ratio"`
- * @template S State type, e.g. `{ id: string, color: string }`
- * @template E Event map, e.g. `{ midiMessage: { data: Uint8Array } }`
- */
-declare interface WebAudioPlugin<P extends string = never, S extends Record<string, any> = {}, E extends Record<string, EventInit & Record<string, any>> = {}> extends TypedEventTarget<E> {
-    initialize(state?: Partial<S>): this;
-    setState(state: Partial<S>): void;
-    getState(): S;
-    getParam(key: P): AudioParam;
-    setParam(key: P, value: number): void;
-    createAudioNode(options?: WebAudioPluginCreateOptions<S>): Promise<AudioNode>;
-    createElement(options?: WebAudioPluginCreateOptions<S>): Promise<Element>;
-}
-declare const WebAudioPlugin: {
-    prototype: WebAudioPlugin;
-    new <P extends string = never, S extends Record<string, any> = {}, E extends Record<string, EventInit & Record<string, any>> = {}>(audioContext: BaseAudioContext): WebAudioPlugin<P, S, E>;
-};
-// let ac: AudioContext;
-// const w = new WebAudioPlugin<"gain" | "feedback" | "ratio", { a: number }, { midiMessage: { data: Uint8Array } }>(ac);
-// w.addEventListener("midiMessage", e => e.data);
-// w.setParam("feedback", 1);
-// w.setState({ a: 2 });
-
-const AWN: typeof AudioWorkletNode = window.AudioWorkletNode ? AudioWorkletNode : null;
-
 class PluginUI extends DOMUI<Plugin> {
     state: DOMUIState = { ...this.state, children: this.object.state.children };
 }
 
-export type S = { node: AudioNode; children: ChildNode[] };
+export type S = { node: AudioNode; plugin: WebAudioPlugin; children: ChildNode[] };
 type I = [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]];
 type O = (null | AudioNode)[];
 export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, DOMUIState> {
@@ -69,21 +29,21 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
         description: "WebAudioPlugin URL"
     }];
     static ui = PluginUI;
-    state = { merger: undefined, splitter: undefined, node: undefined, children: [] } as S;
+    state = { merger: undefined, splitter: undefined, node: undefined, plugin: undefined, children: [] } as S;
     async load(url: string) {
-        let Constructor: typeof WebAudioPlugin;
+        let WAPCtor: typeof WebAudioPlugin;
+        let plugin: WebAudioPlugin;
         try {
-            const m = await import(/* webpackIgnore: true */url);
-            Constructor = m.default;
+            WAPCtor = await Loader.loadPluginFromUrl(url);
         } catch (e) {
             this.error(e.message);
         }
         let node: AudioNode;
         let element: Element;
         try {
-            const factory = new Constructor(this.audioCtx);
-            node = await factory.createAudioNode();
-            element = await factory.createElement();
+            plugin = await WAPCtor.createInstance(this.audioCtx);
+            node = plugin.audioNode;
+            element = await plugin.createGui();
         } catch (e) {
             if (e) this.error((e as Error).message);
             return;
@@ -95,7 +55,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
         node.channelInterpretation = "discrete";
         const inlets = node.numberOfInputs;
         const outlets = node.numberOfOutputs;
-        Object.assign(this.state, { node } as S);
+        Object.assign(this.state, { node, plugin } as S);
         const Ctor = this.constructor as typeof Plugin;
         const firstInletMeta = Ctor.inlets[0];
         const firstInletSignalMeta: TInletMeta = { ...firstInletMeta, type: "signal" };
@@ -114,29 +74,25 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
             this.outletConnections[i] = { node, index: i };
         }
         factoryMeta.outlets[outlets] = lastOutletMeta;
-        if (node instanceof AWN) {
-            const audioParams: string[] = [];
-            node.parameters.forEach((v, k) => audioParams.push(k));
-            for (let i = inlets || 1; i < (inlets || 1) + audioParams.length; i++) {
-                const path = audioParams[i - (inlets || 1)];
-                const param = node.parameters.get(path);
-                const { defaultValue, minValue, maxValue } = param;
-                factoryMeta.inlets[i] = { ...audioParamInletMeta, description: `${path}${audioParamInletMeta.description}: ${defaultValue} (${minValue} - ${maxValue})` };
-                this.inletConnections[i] = { node: param };
-            }
+        const audioParams: string[] = [];
+        plugin.paramMgr.parameters.forEach((v, k) => audioParams.push(k));
+        for (let i = inlets || 1; i < (inlets || 1) + audioParams.length; i++) {
+            const path = audioParams[i - (inlets || 1)];
+            const param = plugin.paramMgr.parameters.get(path);
+            const { defaultValue, minValue, maxValue } = param;
+            factoryMeta.inlets[i] = { ...audioParamInletMeta, description: `${path}${audioParamInletMeta.description}: ${defaultValue} (${minValue} - ${maxValue})` };
+            this.inletConnections[i] = { node: param };
         }
         this.meta = factoryMeta;
-        this.inlets = (inlets || 1) + (node instanceof AWN ? node.parameters.size : 0);
+        this.inlets = (inlets || 1) + plugin.paramMgr.parameters.size;
         this.outlets = outlets + 1;
         this.connectAudio();
         this.outlet(this.outlets - 1, this.state.node);
     }
     handleDestroy = () => {
-        const { node } = this.state;
-        if (node) {
-            node.disconnect();
-            // node.destroy();
-        }
+        const { node, plugin } = this.state;
+        if (node) node.disconnect();
+        if (plugin) plugin.destroy();
     };
     handlePreInit = () => undefined as any;
     handlePostInit = async () => {
@@ -158,7 +114,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
                     for (const key in data) {
                         try {
                             const bpf = decodeLine((data as { [key: string]: TBPF })[key]);
-                            if (this.state.node instanceof AWN) this.applyBPF(this.state.node.parameters.get(key), bpf);
+                            this.applyBPF(this.state.plugin.paramMgr.parameters.get(key), bpf);
                             // else this.state.node.setParam(key, bpf[bpf.length - 1][0]);
                         } catch (e) {
                             this.error(e.message);
@@ -166,7 +122,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
                     }
                 }
             }
-        } else if (this.state.node instanceof AWN) {
+        } else {
             const con = this.inletConnections[inlet].node;
             if (con instanceof AudioParam) {
                 try {

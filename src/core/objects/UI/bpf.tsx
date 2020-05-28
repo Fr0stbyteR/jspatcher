@@ -38,10 +38,12 @@ export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
         }
     };
     componentDidMount() {
+        super.componentDidMount();
         this.box.on("rectChanged", this.handleResized);
         this.box.on("presentationRectChanged", this.handleResized);
     }
     componentWillUnmount() {
+        super.componentWillUnmount();
         this.box.off("rectChanged", this.handleResized);
         this.box.off("presentationRectChanged", this.handleResized);
     }
@@ -396,18 +398,20 @@ export default class bpf extends UIObject<BPFData, {}, [TBPF | Bang], [TStrictBP
             if (prevRange && prevRange !== range) {
                 const points = this.data.points.map(p => [p[0], scaleClip(p[1], prevRange[0], prevRange[1], range[0], range[1]), p[2]] as TBPFPoint);
                 this.setData({ points });
-                this.updateUI(this.state);
+                this.updateUI(this.data);
+                prevRange = range;
             }
             const domain = this.getProp("domain");
             if (typeof prevDomain === "number" && prevDomain !== domain) {
                 const points = this.data.points.map(p => [scaleClip(p[0], 0, prevDomain, 0, domain), p[1], p[2]] as TBPFPoint);
                 this.setData({ points });
-                this.updateUI(this.state);
+                this.updateUI(this.data);
+                prevDomain = domain;
             }
         });
         this.on("inlet", ({ data, inlet }) => {
             if (data instanceof Bang) {
-                if (inlet === 0) this.outlet(0, this.data.points);
+                if (inlet === 0) this.outlet(0, this.data.points.map(p => [p[1], p[0], p[2]]));
             } else {
                 let points: TStrictBPF;
                 try {
@@ -416,7 +420,7 @@ export default class bpf extends UIObject<BPFData, {}, [TBPF | Bang], [TStrictBP
                     this.error("Cannot decode inlet BPF");
                 }
                 this.setData({ points });
-                this.updateUI(this.state);
+                this.updateUI(this.data);
             }
         });
     }
