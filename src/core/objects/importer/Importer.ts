@@ -124,7 +124,7 @@ export default class Importer {
             const newObj = this.getObject(prop, pkgName, root, newPath);
             if (newObj) this.writeInPath(out, newPath.map((s, i) => (i !== newPath.length - 1 && s === "prototype" ? "" : s)), newObj);
             const value = prop.value;
-            if ((typeof value === "object" || typeof value === "function") && value !== null && !Array.isArray(value)) {
+            if ((typeof value === "object" || typeof value === "function") && value !== null && (value === Array.prototype || !Array.isArray(value))) {
                 this.import(pkgName, root, all, out, newPath, stack, depth + 1);
             }
         }
