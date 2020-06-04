@@ -22,9 +22,7 @@ class Console extends React.PureComponent<{ patcher: Patcher; display: boolean }
     refTable = React.createRef<HTMLTableElement>();
     logDuringLoading: TPatcherLog[] = [];
     handleNewLog = (log: TPatcherLog) => {
-        const cached = this.state.cached.slice();
-        cached.push(log);
-        this.setState({ cached }, this.scrollToEnd);
+        this.setState(({ cached }) => ({ cached: [...cached, log] }), this.scrollToEnd);
     };
     handleClear = () => this.setState({ cached: [] });
     scrollToEnd = () => {
