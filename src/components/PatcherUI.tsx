@@ -179,6 +179,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (!patcher.isActive) return;
         if (patcher.state.locked) return;
         if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
+            e.stopPropagation();
+            e.preventDefault();
             let x = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0;
             let y = e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0;
             if (!e.shiftKey && patcher._state.snapToGrid) {

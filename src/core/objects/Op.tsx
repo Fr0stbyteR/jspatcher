@@ -212,6 +212,8 @@ for (const key in functions) {
 export default {
     typeof: Ops.Typeof,
     instanceof: Ops.Instanceof,
+    void: Ops.void,
+    in: Ops.in,
     "+": Ops.Add,
     "-": Ops.Sub,
     "!-": Ops.$Sub,
