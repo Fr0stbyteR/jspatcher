@@ -429,7 +429,7 @@
                     30,
                     30,
                     120,
-                    78
+                    64
                 ],
                 "background": false,
                 "presentation": false,
@@ -440,7 +440,7 @@
                     20
                 ],
                 "data": {
-                    "value": "the window object will be print in the browser consoleconsole.log(window)"
+                    "value": "the window object will be print in the browser console  console.log(window)"
                 },
                 "args": [],
                 "props": {
