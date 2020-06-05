@@ -857,14 +857,14 @@ class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, {
         } else {
             const { data } = this;
             await this.state.patcher.load(data, "faust");
-            this.data = this.state.patcher;
+            this.data = this.state.patcher.toSerializable();
         }
         this.handlePatcherReset();
         this.subscribePatcher();
         this.handleGraphChanged(true);
     };
-    handlePreInit = async () => {
-        await this.state.patcher.load({}, "faust");
+    handlePreInit = () => {
+        this.state.patcher.props.mode = "faust";
     };
     handleUpdate = async ({ args }: { args?: [string?] }) => {
         if (typeof args[0] === "string" || typeof args[0] === "undefined") {
@@ -876,7 +876,7 @@ class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, {
         if (!this.state.key) {
             const { data } = this;
             await this.state.patcher.load(data, "faust");
-            this.data = this.state.patcher;
+            this.data = this.state.patcher.toSerializable();
             this.handlePatcherReset();
             this.subscribePatcher();
             this.handleGraphChanged();
