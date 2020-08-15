@@ -1,7 +1,47 @@
-import { DefaultObject, EmptyObject, InvalidObject } from "./Base";
 import comment from "./UI/comment";
+import { LibOp, EmptyObject, InvalidObject, In, Out, Send, Receive, SubPatcher } from "./Faust";
+import { TPackage } from "../types";
 import "./Gen.scss";
 
+export class GenLibOp extends LibOp {
+    static package = "Gen";
+    static author = "Fr0stbyteR";
+    static version = "1.0.0";
+    static description = "Gen Operator";
+    toOnceExpr(): string[] {
+        return ['import("gen2faust.lib");'];
+    }
+}
+export class Gen extends SubPatcher {
+    type = "gen" as const;
+}
+const genOps: TPackage = {
+    in: In,
+    out: Out,
+    send: Send,
+    receive: Receive,
+    gen: Gen
+};
+type TOpMap = { [category: string]: {[className: string]: { desc: string; symbol: string | string[]; inlets: number; applyArgsFromStart?: boolean }} };
+const opMap: TOpMap = {
+    common: {
+        Neqp: { symbol: ["!=p", "neqp"], inlets: 2, desc: "Returns in1 if it does not equal in2, else returns zero. Equivalent to in1*(in1 != in2)." },
+        Gt: { symbol: [">, gt"], inlets: 2, desc: "Returns 1 if in1 is greater than in2, else returns zero." },
+        Eq: { symbol: ["==, eq"], inlets: 2, desc: "Returns 1 if in1 equals in2, else returns zero." },
+        Eqp: { symbol: ["==p, eqp"], inlets: 2, desc: "Returns in1 if it equals in2, else returns zero. Equivalent to in1*(in1 == in2)." },
+        Gtr: { symbol: [">=, gte"], inlets: 2, desc: "Returns 1 if in1 is equal to or greater than in2, else returns zero." },
+        Gtep: { symbol: [">=p, gtep"], inlets: 2, desc: "Returns in1 if in1 is equal to or greater than in2, else returns zero. Equivalent to in1*(in1 >= in2)." },
+        Gtp: { symbol: [">p, gtp"], inlets: 2, desc: "Returns in1 if in1 is greater than in2, else returns zero. Equivalent to in1*(in1 > in2)." },
+        Lt: { symbol: ["<, lt"], inlets: 2, desc: "Returns 1 if in1 is less than than in2, else returns zero." },
+        Lte: { symbol: ["<=, lte"], inlets: 2, desc: "Returns 1 if in1 is equal to or less than in2, else returns zero." },
+        Ltep: { symbol: ["<=p, ltep"], inlets: 2, desc: "Returns in1 if in1 is equal to or less than in2, else returns zero. Equivalent to in1*(in1 <= in2)." },
+        Ltp: { symbol: ["<p, ltp"], inlets: 2, desc: "Returns in1 if in1 is less than in2, else returns zero. Equivalent to in1*(in1 < in2)." },
+        Max: { symbol: ["max, maximum"], inlets: 2, desc: "The maximum of the inputs" },
+        Min: { symbol: ["min, minimum"], inlets: 2, desc: "The minimum of the inputs" },
+        Neq: { symbol: ["!=, neq"], inlets: 2, desc: "Returns 1 if in1 does not equal in2, else returns zero." },
+        Step: { symbol: ["step"], inlets: 2, desc: "Akin to the GLSL step operator: 0 is returned if in1 < in2, and 1 is returned otherwise." }
+    }
+};
 const genOperators: { [key: string]: string[] } = {
     common: [
         "!=p", "neqp", "==", "eq", "==p", "eqp",
@@ -45,16 +85,10 @@ const genOperators: { [key: string]: string[] } = {
         "concat", "cross", "dot", "faceforward", "length", "normalize", "reflect", "refract", "rotor", "swiz", "vec"
     ]
 };
-export class GenOp extends DefaultObject {
-    static package = "Gen";
-    static author = "Fr0stbyteR";
-    static version = "1.0.0";
-    static description = "Gen Operator";
-}
-const GenOps: { [key: string]: typeof GenOp | typeof comment | typeof EmptyObject | typeof InvalidObject } = { comment, EmptyObject, InvalidObject };
+const GenOps: { [key: string]: typeof GenLibOp | typeof comment | typeof EmptyObject | typeof InvalidObject } = { comment, EmptyObject, InvalidObject };
 for (const key in genOperators) {
     genOperators[key].forEach((name) => {
-        GenOps[name] = class extends GenOp {
+        GenOps[name] = class extends GenLibOp {
             static description = "Gen Operator " + name;
         };
     });

@@ -59,7 +59,8 @@ rdiv(a, b) = b / a;
 mod = fmod;
 add = +;
 sub = -;
-div = /;
+mul = *; // [1, 1]
+div = /; // [1, 1]
 
 absdiff(a, b) = abs(a - b);
 cartopol(x, y) = sqrt(x * x + y * y), atan2(y, x);
@@ -76,14 +77,14 @@ fastpow = pow;
 ln = log;
 log2 = ma.log2;
 
-clamp(s, l, h) = s : max(l) : min(h); // different from gen implementation if l > h
-clip = clamp;
-fold(s, lIn, hIn) = s - l : abs : fmod(_, d * 2) : *(d != 0) : -(d) : abs : +(l) with {
+clamp(s, l, h) = s : max(l) : min(h); // different from gen implementation if l > h // [0, 0, 1]
+clip = clamp; // [0, 0, 1]
+fold(s, lIn, hIn) = s - l : abs : fmod(_, d * 2) : *(d != 0) : -(d) : abs : +(l) with { // [0, 0, 1]
     l = min(lIn, hIn);
     h = max(lIn, hIn);
     d = h - l;
 };
-scale(s, l0, h0, l1, h1, e) = n1 * d1 + l1 with {
+scale(s, l0, h0, l1, h1, e) = n1 * d1 + l1 with { // [0, 0, 1, 0, 1, 1]
     d0 = h0 - l0;
     d1 = h1 - l1;
     n0 = s - l0 : /(d0) : *(d0 != 0);
@@ -91,16 +92,16 @@ scale(s, l0, h0, l1, h1, e) = n1 * d1 + l1 with {
     e1 = (v * e) + (1 - v);
     n1 = (v * n0) ^ e1;
 };
-wrap(s, lIn, hIn) = s - l : fmod(_, d) : +(d) : fmod(_, d) : +(l) with {
+wrap(s, lIn, hIn) = s - l : fmod(_, d) : +(d) : fmod(_, d) : +(l) with { // [0, 0, 1]
     l = min(lIn, hIn);
     h = max(lIn, hIn);
     d = h - l;
 };
 switch(c, t, f) = (c != 0) * t + (c == 0) * f;
-gate(t, g) = ba.selectoutn(t, g - 1);
-mix(a, b, c) = c * b + (1 - c) * a;
-selector(t, g) = ba.selectn(t, g - 1);
-smoothstep(l, h, s) = 3 * n * n - 2 * n * n * n with {
+gate(t, g) = ba.selectoutn(t, g - 1); // t = 1 as arg only, g = 1, infered 1 input = 0
+mix(a, b, c) = c * b + (1 - c) * a; // [0, 1, 0.5]
+selector(t, g) = ba.selectn(t, g - 1); // t = 2 as arg only, g = 0, infered t inputs = 0 
+smoothstep(l, h, s) = 3 * n * n - 2 * n * n * n with { // [0, 1, 0.5]
     d = h - l;
     n = s - l : /(d) : *(d != 0) : max(0) : min(1);
 };
@@ -116,23 +117,25 @@ radians(a) = a * degtorad;
 fastcos = cos;
 fastsin = sin;
 fasttan = tan;
-hypot(a, b) = sqrt(a * a + b * b);
+hypot(a, b) = sqrt(a * a + b * b); // [0, 1]
 noise = no.noise;
 
-cycle = os.osc;
-cycle_phase(p) = os.oscp(0, p);
+cycle(f) = os.osc(f); // [440]
+cycle_phase(p) = os.oscp(0, p); // when cycle @index phase, p = 0
 
 atodb = ba.linear2db;
 dbtoa = ba.db2linear;
-ftom = ba.hz2midikey;
-mtof = ba.midikey2hz;
-mstosamp(x) = ba.sec2samp(x * 0.001);
-samptoms(x) = ba.samp2sec(x) * 1000.0;
+ftom(f, b) = 12 * ma.log2(f / b) + 69; // [440, 440]
+mtof(m, b) = b * pow(2, (m - 69) / 12); // [69, 440]
+mstosamp(x) = ba.sec2samp(x * 0.001); // [1000]
+samptoms(x) = ba.samp2sec(x) * 1000.0; // [1]
 
 SAMPLERATE = ma.SR;
 samplerate = SAMPLERATE;
+VECTORSIZE = 128;
+vectorsize = VECTORSIZE;
 
-fixdenorm(x) = ma.FTZ;
+fixdenorm(x) = ma.FTZ(x);
 fixnan(x) = x, 0.0 : select2(isnan(x));
 
 isdenorm(x) = abs(x) < ma.MIN;
@@ -140,18 +143,18 @@ isnan(x) = x != x;
 isinf(x) = (x == inf) | (x == -inf) with { inf = 2.0 * ma.INFINITY; };
 
 
-t60(tau) = ba.if(clipCond, 0.0, exp(-1.0 / tauCenterClipped)) with {
+t60(tau) = ba.if(clipCond, 0.0, exp(-1.0 / tauCenterClipped)) with { // [SR]
     clipCond = abs(tau) < ma.EPSILON;
     tauCenterClipped = ba.if(clipCond, 1.0, tau / 6.9077552789821);
 };
-t60time(pole) = -6.9077552789821 / log(pole);
+t60time(pole) = -6.9077552789821 / log(pole); // [1]
 
 change = sign(x - x');
 dcblock = fi.zero(1) : fi.pole(0.9997);
 
-interp_linear(a, x, y) = x + a * (y - x);
-interp_cosine(a, x, y) = x * (1 - a2) + y * a2 with { a2 = (1 - cos(a * ma.PI)) / 2; };
-interp_cubic(a, w, x, y, z) = w * fw + x * fx + y * fy + z * fz with {
+interp_linear(a, x, y) = x + a * (y - x); // interp @mode linear
+interp_cosine(a, x, y) = x * (1 - a2) + y * a2 with { a2 = (1 - cos(a * ma.PI)) / 2; }; // interp @mode cosine
+interp_cubic(a, w, x, y, z) = w * fw + x * fx + y * fy + z * fz with { // interp @mode cubic
     a1 = 1.0 + a;
     aa = a * a1;
     b = 1.0 - a;
@@ -162,13 +165,13 @@ interp_cubic(a, w, x, y, z) = w * fw + x * fx + y * fy + z * fz with {
     fy = 0.5 * aa * b1;
     fz = 0-.1666667 * aa * b;
 };
-interp_spline(a, w, x, y, z) = c3 : *(a) : +(c2) : *(a) : +(c1) : *(a) : +(c0) with {
+interp_spline(a, w, x, y, z) = c3 : *(a) : +(c2) : *(a) : +(c1) : *(a) : +(c0) with { // interp @mode spline
     c0 = x;
     c1 = 0.5 * (y - w);
     c2 = w - 2.5 * x + y + y - 0.5 * z;
     c3 = 0.5 * (z - w) + 1.5 * (x - y);
 };
-interp_spline6(a, y0, y1, y2, y3, y4, y5) = c5 : *(a) : +(c4) : *(a) : +(c3) : *(a) : +(c2) : *(a) : +(c1) : *(a) : +(c0) with {
+interp_spline6(a, y0, y1, y2, y3, y4, y5) = c5 : *(a) : +(c4) : *(a) : +(c3) : *(a) : +(c2) : *(a) : +(c1) : *(a) : +(c0) with { // interp @mode spline6
     ym2py2 = y0 + y4;
     ym1py1 = y1 + y3;
     y2mym2 = y4 - y0;
@@ -185,7 +188,7 @@ interp_spline6(a, y0, y1, y2, y3, y4, y5) = c5 : *(a) : +(c4) : *(a) : +(c3) : *
 latch(x, c) = ba.sAndH(c != 0, x);
 phasewrap(a) = wrap(a, -1 * ma.PI, ma.PI);
 sah(x, c, t) = x * s : + ~ *(1 - s) with { s = (c' <= t) & (c > t); };
-slide(dest, up, down) = (_ <: last + c * d) ~ _ with {
+slide(dest, up, down) = (_ <: last + c * d) ~ _ with { // [0, 1, 1]
     last = _;
     d = dest - last;
     inc = 1 / max(1, abs(up));
@@ -197,14 +200,14 @@ elapsed = 1 : (+ ~ _);
 
 mulequals(x, c) = x : ((* : *(c == 0)) ~ +(ba.impulsify(x)));
 accum(x, c) = x : ((+ : *(c == 0)) ~ _);
-pulseequals = accum;
-counter(i, c, m) = select2(m != 0, accum(i, c), wrap(accum(i, c), 0, m));
+plusequals = accum; // +=
+counter(i, c, m) = select2(m != 0, accum(i, c), wrap(accum(i, c), 0, m)); // [1, 0, 0]
 
-phasor(f, c) = f / ma.SR : ((+ : *(c == 0)), 1 : fmod) ~ _;
+phasor(f, c) = f / ma.SR : ((+ : *(c == 0)), 1 : fmod) ~ _; // [440, 0]
 // rate: TODO
 
-train(period, width, phase) = (%(int(period)) ~ +(init - init' + 1')) < (period * width) with { init = int(period * phase); };
-triangle(phaseIn, dutyIn) = select2(phase >= duty, select2(duty != 0, 0, phase / (duty | 1)), select2(duty != 1, phase, 1 - ((phase - duty) / ((1 - duty) | 1)))) with {
+train(period, width, phase) = (%(int(period)) ~ +(init - init' + 1')) < (period * width) with { init = int(period * phase); }; // [SR, 0.5, 0];
+triangle(phaseIn, dutyIn) = select2(phase >= duty, select2(duty != 0, 0, phase / (duty | 1)), select2(duty != 1, phase, 1 - ((phase - duty) / ((1 - duty) | 1)))) with { // [0, 0.5]
     phase = wrap(phaseIn, 0, 1);
     duty = clamp(dutyIn, 0, 1);
 };

@@ -412,9 +412,9 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
                     <Table.Cell colSpan={2} width={16} className="division-name">Patcher</Table.Cell>
                 </Table.Row>
             );
-            Object.keys(Patcher.props).forEach((nameIn) => {
+            Object.keys((this.props.patcher.constructor as typeof Patcher).props).forEach((nameIn) => {
                 const name = nameIn as keyof typeof Patcher["props"];
-                const propMeta = Patcher.props[name];
+                const propMeta = (this.props.patcher.constructor as typeof Patcher).props[name];
                 const value = this.state.patcherProps[name];
                 const item = <InspectorPropItem {...this.props} key={name} itemKey={name} meta={propMeta} value={value} onChange={this.handlePatcherChange} />;
                 table.push(item);

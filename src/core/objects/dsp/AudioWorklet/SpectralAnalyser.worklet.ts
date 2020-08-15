@@ -399,7 +399,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProcessor<DataToProcessor, D
                     this.windowF32[i] = new Float32Array(window);
                 }
                 if (this.fftWindowF32[i].length !== fftWindowSize) { // adjust fftWindow size if not corresponded
-                    const oldWindow = this.fftWindow[i];
+                    const oldWindow = this.fftWindowF32[i];
                     const oldWindowSize = oldWindow.length;
                     const window = new SharedArrayBuffer(fftWindowSize * Float32Array.BYTES_PER_ELEMENT);
                     $fft = setTypedArray(new Float32Array(window), new Float32Array(oldWindow), 0, $fft - Math.min(windowSize, oldWindowSize));

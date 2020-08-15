@@ -305,7 +305,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
         default: "",
         description: "Name of the subpatcher"
     }];
-    state: SubPatcherState = { patcher: new Patcher(this.patcher.env), key: "" };
+    state: SubPatcherState = { patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.env), key: "" };
     static ui = SubPatcherUI;
     subscribe() {
         super.subscribe();
@@ -417,7 +417,7 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         description: "Polyphonic instrument voices count"
     }];
     static ui = SubPatcherUI;
-    state = { merger: undefined, splitter: undefined, node: undefined, voices: 0, patcher: new Patcher(this.patcher.env), key: "" } as FaustPatcherState;
+    state = { merger: undefined, splitter: undefined, node: undefined, voices: 0, patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.env), key: "" } as FaustPatcherState;
     subscribePatcher = () => {
         if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
@@ -535,7 +535,7 @@ export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState
         default: "",
         description: "Name of the subpatcher"
     }];
-    state: SubPatcherState = { patcher: new Patcher(this.patcher.env), key: "" };
+    state: SubPatcherState = { patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.env), key: "" };
     static ui = BPatcherUI;
     subscribe() {
         super.subscribe();

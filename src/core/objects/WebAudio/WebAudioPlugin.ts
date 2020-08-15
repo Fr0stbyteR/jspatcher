@@ -1,5 +1,4 @@
-import { WebAudioPlugin } from "sdk";
-import * as Loader from "sdk/src/Loader";
+import { WebAudioModule } from "sdk";
 import { Bang, BaseAudioObject } from "../Base";
 import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
@@ -9,11 +8,11 @@ class PluginUI extends DOMUI<Plugin> {
     state: DOMUIState = { ...this.state, children: this.object.state.children };
 }
 
-export type S = { node: AudioNode; plugin: WebAudioPlugin; children: ChildNode[] };
+export type S = { node: AudioNode; plugin: WebAudioModule; children: ChildNode[] };
 type I = [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]];
 type O = (null | AudioNode)[];
 export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, DOMUIState> {
-    static description = "Dynamically load WebAudioPlugin";
+    static description = "Dynamically load WebAudioModule";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "anything",
@@ -21,20 +20,20 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
     }];
     static outlets: TMeta["outlets"] = [{
         type: "object",
-        description: "WebAudioPlugin instance"
+        description: "WebAudioModule instance"
     }];
     static args: TMeta["args"] = [{
         type: "string",
         optional: false,
-        description: "WebAudioPlugin URL"
+        description: "WebAudioModule URL"
     }];
     static ui = PluginUI;
     state = { merger: undefined, splitter: undefined, node: undefined, plugin: undefined, children: [] } as S;
     async load(url: string) {
-        let WAPCtor: typeof WebAudioPlugin;
-        let plugin: WebAudioPlugin;
+        let WAPCtor: typeof WebAudioModule;
+        let plugin: WebAudioModule;
         try {
-            WAPCtor = await Loader.loadPluginFromUrl(url);
+            WAPCtor = await import(/* webpackIgnore: true */url);
         } catch (e) {
             this.error(e.message);
         }
@@ -60,7 +59,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
         const firstInletMeta = Ctor.inlets[0];
         const firstInletSignalMeta: TInletMeta = { ...firstInletMeta, type: "signal" };
         const inletMeta: TInletMeta = { isHot: false, type: "signal", description: "Node connection" };
-        const audioParamInletMeta: TInletMeta = { isHot: false, type: "signal", description: ": bpf or node connection" };
+        const audioParamInletMeta: TInletMeta = { isHot: false, type: "number", description: ": bpf or node connection" };
         const outletMeta: TOutletMeta = { type: "signal", description: "Node connection" };
         const lastOutletMeta = Ctor.outlets[0];
         const factoryMeta = Ctor.meta;
@@ -74,17 +73,16 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
             this.outletConnections[i] = { node, index: i };
         }
         factoryMeta.outlets[outlets] = lastOutletMeta;
-        const audioParams: string[] = [];
-        plugin.paramMgr.parameters.forEach((v, k) => audioParams.push(k));
-        for (let i = inlets || 1; i < (inlets || 1) + audioParams.length; i++) {
-            const path = audioParams[i - (inlets || 1)];
-            const param = plugin.paramMgr.parameters.get(path);
+        const paramInfo = await plugin.audioNode.getParameterInfo();
+        const params = Object.keys(paramInfo);
+        for (let i = inlets || 1; i < (inlets || 1) + params.length; i++) {
+            const path = params[i - (inlets || 1)];
+            const param = paramInfo[path];
             const { defaultValue, minValue, maxValue } = param;
             factoryMeta.inlets[i] = { ...audioParamInletMeta, description: `${path}${audioParamInletMeta.description}: ${defaultValue} (${minValue} - ${maxValue})` };
-            this.inletConnections[i] = { node: param };
         }
         this.meta = factoryMeta;
-        this.inlets = (inlets || 1) + plugin.paramMgr.parameters.size;
+        this.inlets = (inlets || 1) + params.length;
         this.outlets = outlets + 1;
         this.connectAudio();
         this.outlet(this.outlets - 1, this.state.node);
@@ -92,7 +90,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
     handleDestroy = () => {
         const { node, plugin } = this.state;
         if (node) node.disconnect();
-        if (plugin) plugin.destroy();
+        if (plugin) plugin.audioNode.destroy();
     };
     handlePreInit = () => undefined as any;
     handlePostInit = async () => {
@@ -114,7 +112,11 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
                     for (const key in data) {
                         try {
                             const bpf = decodeLine((data as { [key: string]: TBPF })[key]);
-                            this.applyBPF(this.state.plugin.paramMgr.parameters.get(key), bpf);
+                            let t = 0;
+                            bpf.forEach((a) => {
+                                if (a.length > 1) t += a[1];
+                                this.state.plugin.audioNode.scheduleEvent({ type: "automation", data: { id: key, value: a[0], normalized: false }, time: this.audioCtx.currentTime + t });
+                            });
                             // else this.state.node.setParam(key, bpf[bpf.length - 1][0]);
                         } catch (e) {
                             this.error(e.message);
