@@ -206,7 +206,13 @@ export class InvalidObject extends FaustOp {
         return {};
     }
 }
-class Param extends FaustOp<{}, {}, [string, number, number, number, number]> {
+interface GenParamProps {
+    default: number;
+    max: number;
+    min: number;
+    name: string;
+}
+export class Param extends FaustOp<{}, {}, [string, number, number, number, number], GenParamProps> {
     static description = "DSP Parameter";
     static args: TMeta["args"] = [{
         type: "string",
@@ -229,16 +235,39 @@ class Param extends FaustOp<{}, {}, [string, number, number, number, number]> {
         optional: false,
         description: "Parameter step"
     }];
+    static props: TPropsMeta<GenParamProps> = {
+        default: {
+            type: "number",
+            default: 0,
+            description: "Parameter default"
+        },
+        max: {
+            type: "number",
+            default: Number.MAX_SAFE_INTEGER,
+            description: "Parameter max"
+        },
+        min: {
+            type: "number",
+            default: Number.MIN_SAFE_INTEGER,
+            description: "Parameter min"
+        },
+        name: {
+            type: "string",
+            default: "",
+            description: "Parameter name / descriptor"
+        }
+    };
     symbol = ["hslider"];
     state: FaustOpState = { ...this.state, inlets: 0, outlets: 1 };
     toInletsExpr(lineMap: TLineMap) {
         const { box, resultID } = this;
+        const { default: d, max, min, name } = this.props;
         const args = box.args.slice(0, 5);
-        args[0] = args[0] ? `"${args[0]}"` : `"${resultID}"`;
-        args[1] = args[1] || 0;
-        args[2] = args[2] || 0;
-        args[3] = args[3] || 1;
-        args[4] = args[4] || 0.01;
+        args[0] = args[0] ? `"${args[0]}"` : name ? `"${name}"` : `"${resultID}"`;
+        if (typeof args[1] === "undefined") args[1] = d;
+        if (typeof args[2] === "undefined") args[2] = min;
+        if (typeof args[3] === "undefined") args[3] = max;
+        if (typeof args[4] === "undefined") args[4] = 0.01;
         return args.join(", ");
     }
 }
@@ -568,7 +597,7 @@ class Mem extends FaustOp {
     symbol = ["mem", "'"];
     state: FaustOpState = { ...this.state, inlets: 1, outlets: 1 };
 }
-class Const extends FaustOp {
+export class Const extends FaustOp {
     static description = "Output a constant";
     static args: TMeta["args"] = [{
         type: "number",
@@ -794,7 +823,7 @@ export class LibOp extends FaustOp<{}, {}, (number | "_")[], LibOpProps> {
         const outletsForced = typeof this.state.outlets === "number";
         if (inletsForced && outletsForced) return;
         const { args } = this.box;
-        const inspectCode = `import("stdfaust.lib"); process = ${this.symbol[0]}${args.length ? `(${args.map(_ => (_ === "_" ? 0 : _)).join(", ")})` : ""};`;
+        const inspectCode = `${this.toOnceExpr().join(" ")} process = ${this.symbol[0]}${args.length ? `(${args.map(_ => (_ === "_" ? 0 : _)).join(", ")})` : ""};`;
         try {
             const { dspMeta } = await this.patcher.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
             if (!inletsForced) this.state.inlets = ~~dspMeta.inputs + args.length;
