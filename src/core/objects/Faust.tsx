@@ -24,7 +24,7 @@ const findOutletFromLineMap = (lineMap: TLineMap, linesIn: Set<Line>) => {
     }
     return undefined;
 };
-interface FaustOpState {
+export interface FaustOpState {
     inlets: number;
     outlets: number;
     defaultArgs: (number | string)[];
@@ -101,8 +101,8 @@ export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<Fa
         const inlets = new Array(totalInlets);
         const incoming = inletLines.map((set, i) => {
             const lines = Array.from(set);
-            if (lines.length === 0) return `${this.state.defaultArgs[i]}` || "0";
-            if (lines.length === 1) return lineMap.get(lines[0]) || `${this.state.defaultArgs[i]}` || "0";
+            if (lines.length === 0) return `${state.defaultArgs[i]}` || "0";
+            if (lines.length === 1) return lineMap.get(lines[0]) || `${state.defaultArgs[i]}` || "0";
             return `(${lines.map(line => lineMap.get(line)).filter(line => line !== undefined).join(", ")} :> _)`;
         });
         if (this.reverseApply) {
@@ -556,7 +556,7 @@ class Merge extends FaustOp {
         return `${out} = ${inlets} ${this.symbol[0]} _;`;
     }
 }
-class Rec extends FaustOp {
+export class Rec extends FaustOp {
     static description = "Recursion with 1-sample delay";
     static args: TMeta["args"] = [{
         type: "number",
@@ -575,11 +575,11 @@ class Rec extends FaustOp {
         });
     }
     toInletsExpr(lineMap: TLineMap) {
-        const { inletLines } = this;
+        const { inletLines, state } = this;
         const incoming = inletLines.map((set, i) => {
             const lines = Array.from(set);
-            if (lines.length === 0) return `${this.state.defaultArgs[i]}` || "0";
-            if (lines.length === 1) return lineMap.get(lines[0]) || `${this.state.defaultArgs[i]}` || "0";
+            if (lines.length === 0) return `${state.defaultArgs[i]}` || "0";
+            if (lines.length === 1) return lineMap.get(lines[0]) || `${state.defaultArgs[i]}` || "0";
             return `(${lines.map(line => lineMap.get(line)).filter(line => line !== undefined).join(", ")} :> _)`;
         });
         return incoming.join(", ");
@@ -789,11 +789,86 @@ class Par extends Iterator {
         this.on("update", this.handleUpdate);
     }
 }
-interface LibOpProps {
+export class Expr extends FaustOp<{}, {}, (string | number)[]> {
+    static description = "Evaluate expression with inputs `in1, in2...`";
+    symbol = ["expr"];
+    handleUpdate = async (e: { args?: any[] }) => {
+        if (!e.args) return;
+        this.inlets = this.getExprInputs();
+        this.outlets = await this.getExprOutputs();
+    };
+    getExprInputs() {
+        let inputs = 0;
+        const expr = this.box.args.join(" ");
+        const regexp = /\bin(\d+)\b/g;
+        let r: RegExpExecArray;
+        while ((r = regexp.exec(expr))) {
+            const input = +r[1];
+            if (input > inputs) inputs = input;
+        }
+        return inputs;
+    }
+    async getExprOutputs() {
+        const regexp = /\bin\d+\b/g;
+        const expr = this.box.args.join(" ");
+        const inspectCode = `${this.toOnceExpr().join(" ")} process = ${expr.replace(regexp, "0")};`;
+        try {
+            const { dspMeta } = await this.patcher.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
+            return ~~dspMeta.outputs;
+        } catch {
+            return 1;
+        }
+    }
+    toExpr(lineMap: TLineMap): TObjectExpr {
+        const exprs: string[] = [];
+        const onces = this.toOnceExpr();
+
+        const { outletLines, resultID } = this;
+        const { inletLines, state } = this;
+        const incoming = inletLines.map((set, i) => {
+            const lines = Array.from(set);
+            if (lines.length === 0) return `${state.defaultArgs[i]}` || "0";
+            if (lines.length === 1) return lineMap.get(lines[0]) || `${state.defaultArgs[i]}` || "0";
+            return `(${lines.map(line => lineMap.get(line)).filter(line => line !== undefined).join(", ")} :> _)`;
+        });
+
+        const regexp = /\bin(\d+)\b/g;
+        let expr = this.box.args.join(" ");
+        let r: RegExpExecArray;
+        while ((r = regexp.exec(expr))) {
+            const $ = r.index;
+            const l = r[0].length;
+            const i = +r[1];
+            expr = `${expr.slice(0, $)}${incoming[i]}${expr.slice($ + l)}`;
+        }
+
+        if (outletLines.length === 0) return {};
+        if (outletLines.length === 1) {
+            if (outletLines[0].size === 0) return {};
+            const outlet = findOutletFromLineMap(lineMap, outletLines[0]);
+            return outlet ? { exprs: [`${outlet} = ${expr};`], onces } : {};
+        }
+        exprs.push(`${resultID} = ${expr};`);
+        const allCut = new Array(this.outlets).fill("!");
+        outletLines.forEach((lines, i) => {
+            if (lines.size === 0) return;
+            const outlet = findOutletFromLineMap(lineMap, lines);
+            if (!outlet) return;
+            const pass = allCut.slice();
+            pass[i] = "_";
+            exprs.push(`${outlet} = ${resultID} : ${pass.join(", ")};`);
+        });
+        return { exprs, onces };
+    }
+    toOnceExpr(): string[] {
+        return ['import("stdfaust.lib");'];
+    }
+}
+export interface LibOpProps {
     ins: number;
     outs: number;
 }
-export class LibOp extends FaustOp<{}, {}, (number | "_")[], LibOpProps> {
+export class LibOp<P extends { [key: string]: any } = {}> extends FaustOp<{}, {}, (number | "_")[], Partial<LibOpProps> & P> {
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "number",
@@ -817,7 +892,7 @@ export class LibOp extends FaustOp<{}, {}, (number | "_")[], LibOpProps> {
             description: "Force function outputs count"
         }
     };
-    state = { inlets: undefined as number, outlets: undefined as number, defaultArgs: [] as number[] };
+    state = { inlets: undefined, outlets: undefined, defaultArgs: [] } as FaustOpState;
     handlePostInit = async () => {
         const inletsForced = typeof this.state.inlets === "number";
         const outletsForced = typeof this.state.outlets === "number";
@@ -991,7 +1066,7 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
         }
     };
     static ui = CodeUI as any;
-    state = { inlets: undefined as number, outlets: undefined as number, defaultArgs: [] as number[] };
+    state = { inlets: undefined, outlets: undefined, defaultArgs: [] } as FaustOpState;
     handlePostInit = async () => {
         const definedInlets = this.getProp("ins");
         const inletsForced = typeof definedInlets === "number";
@@ -1092,7 +1167,7 @@ const faustOps: TPackage = {
     InvalidObject
 };
 
-type TOpMap = { [category: string]: {[className: string]: { desc: string; symbol: string | string[]; inlets: number; applyArgsFromStart?: boolean }} };
+type TOpMap = { [category: string]: { [className: string]: { desc: string; symbol: string | string[]; inlets: number; applyArgsFromStart?: boolean } } };
 const opMap: TOpMap = {
     mathOps: {
         Int: { symbol: ["int", "i"], inlets: 1, desc: "Force cast to int" },

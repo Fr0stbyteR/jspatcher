@@ -149,8 +149,9 @@ t60(tau) = ba.if(clipCond, 0.0, exp(-1.0 / tauCenterClipped)) with { // [SR]
 };
 t60time(pole) = -6.9077552789821 / log(pole); // [1]
 
-change = sign(x - x');
+change(x) = sign(x - x');
 dcblock = fi.zero(1) : fi.pole(0.9997);
+delta(x) = x - x';
 
 interp_linear(a, x, y) = x + a * (y - x); // interp @mode linear
 interp_cosine(a, x, y) = x * (1 - a2) + y * a2 with { a2 = (1 - cos(a * ma.PI)) / 2; }; // interp @mode cosine
