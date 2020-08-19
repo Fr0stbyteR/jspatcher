@@ -505,7 +505,8 @@ class CodeEditor extends React.PureComponent<{ patcher: Patcher }, { value: stri
             : <Dimmer active><Loader content="Loading" /></Dimmer>;
     }
     get code() {
-        return this.props.patcher.props.mode === "faust" ? this.props.patcher.toFaustDspCode() : "";
+        const { patcher } = this.props;
+        return patcher.props.mode === "faust" || patcher.props.mode === "gen" ? patcher.toFaustDspCode() : "";
     }
 }
 class UIDock extends React.PureComponent<{ patcher: Patcher; display: boolean }, { box: Box }> {

@@ -243,12 +243,12 @@ export class Param extends FaustOp<{}, {}, [string, number, number, number, numb
         },
         max: {
             type: "number",
-            default: Number.MAX_SAFE_INTEGER,
+            default: 2147483647,
             description: "Parameter max"
         },
         min: {
             type: "number",
-            default: Number.MIN_SAFE_INTEGER,
+            default: -2147483648,
             description: "Parameter min"
         },
         name: {
@@ -810,7 +810,7 @@ export class Expr extends FaustOp<{}, {}, (string | number)[]> {
     }
     async getExprOutputs() {
         const regexp = /\bin\d+\b/g;
-        const expr = this.box.args.join(" ");
+        const expr = this.box.args.join(" ").replace(/\\,/g, ",").replace(/^-/, "0-");
         const inspectCode = `${this.toOnceExpr().join(" ")} process = ${expr.replace(regexp, "0")};`;
         try {
             const { dspMeta } = await this.patcher.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
@@ -833,12 +833,12 @@ export class Expr extends FaustOp<{}, {}, (string | number)[]> {
         });
 
         const regexp = /\bin(\d+)\b/g;
-        let expr = this.box.args.join(" ");
+        let expr = this.box.args.join(" ").replace(/\\,/g, ",").replace(/^-/, "0-");
         let r: RegExpExecArray;
         while ((r = regexp.exec(expr))) {
             const $ = r.index;
             const l = r[0].length;
-            const i = +r[1];
+            const i = +r[1] - 1;
             expr = `${expr.slice(0, $)}${incoming[i]}${expr.slice($ + l)}`;
         }
 

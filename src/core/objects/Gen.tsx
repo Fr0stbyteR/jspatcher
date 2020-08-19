@@ -11,6 +11,12 @@ export class GenLibOp<P extends { [key: string]: any } = {}> extends LibOp<P> {
     toOnceExpr(): string[] {
         return ['import("gen2faust.lib");'];
     }
+    handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
+        if (e.args.length || "ins" in e.props || "outs" in e.props) {
+            this.inlets = ~~this.state.inlets - Math.min(~~this.state.inlets, this.constArgsCount);
+            this.outlets = ~~this.state.outlets;
+        }
+    };
 }
 export class Gen extends SubPatcher {
     type = "gen" as const;
@@ -34,7 +40,7 @@ export class Cycle extends GenLibOp<CycleProps> {
             description: "Driver"
         }
     };
-    state: FaustOpState = { ...this.state, defaultArgs: [440] };
+    state: FaustOpState = { ...this.state, inlets: 1, outlets: 1, defaultArgs: [440] };
     get symbol() {
         return [this.getProp("index") === "freq" ? "cycle" : "cycle_phase"];
     }
@@ -54,12 +60,23 @@ export class Interp extends GenLibOp<InterpProps> {
             description: "Interpolation mode"
         }
     };
-    state: FaustOpState = { ...this.state, defaultArgs: [440] };
+    state: FaustOpState = { ...this.state, inlets: 3, outlets: 1, defaultArgs: [440] };
     get symbol() {
         return [`interp_${this.getProp("mode")}`];
     }
+    handleUpdate = (e?: { args?: any[]; props?: LibOpProps & InterpProps }) => {
+        if ("mode" in e.props) {
+            const { mode } = e.props;
+            this.state.inlets = mode === "linear" || mode === "cosine" ? 3 : mode === "cubic" || mode === "spline" ? 5 : mode === "spline6" ? 6 : 3;
+            this.inlets = ~~this.state.inlets - Math.min(~~this.state.inlets, this.constArgsCount);
+            this.outlets = ~~this.state.outlets;
+        }
+    };
 }
 const genOps: TPackage = {
+    comment,
+    EmptyObject,
+    InvalidObject,
     in: In,
     out: Out,
     send: Send,
@@ -185,8 +202,8 @@ const opMap: TOpMap = {
         // Convert
         Atodb: { symbol: ["atodb"], inlets: 1, desc: "Convert linear amplitude to deciBel value" },
         DBtoa: { symbol: ["dbtoa"], inlets: 1, desc: "Convert deciBel value to linear amplitude" },
-        Ftom: { symbol: ["ftom"], inlets: 2, defaultArgs: [440, 440], desc: "Frequency given in Hertz is converted to MIDI note number (0-127). Fractional note numbers are supported. The second input sets the tuning base (default 440)." },
-        Mtof: { symbol: ["mtof"], inlets: 2, defaultArgs: [69, 440], desc: "MIDI note number (0-127) is converted to frequency in Hertz. Fractional note numbers are supported. The second input sets the tuning base (default 440)." },
+        Ftom: { symbol: ["ftom"], inlets: 2, defaultArgs: [440, 440], applyArgsFromStart: true, desc: "Frequency given in Hertz is converted to MIDI note number (0-127). Fractional note numbers are supported. The second input sets the tuning base (default 440)." },
+        Mtof: { symbol: ["mtof"], inlets: 2, defaultArgs: [69, 440], applyArgsFromStart: true, desc: "MIDI note number (0-127) is converted to frequency in Hertz. Fractional note numbers are supported. The second input sets the tuning base (default 440)." },
         MStosamps: { symbol: ["mstosamps"], inlets: 1, defaultArgs: [1000], desc: "Convert period in milliseconds to samples" },
         Sampstoms: { symbol: ["sampstoms"], inlets: 1, defaultArgs: [1], desc: "Convert period in samples to milliseconds" },
         // Constants
@@ -206,7 +223,7 @@ const opMap: TOpMap = {
         Latch: { symbol: ["latch"], inlets: 1, desc: "Conditionally passes or holds input. The first inlet is the 'input' and the second inlet is the 'control'. When the control is non-zero, the input value is passed through. When the control is zero, the previous input value is output. It can be used to periodically sample & hold a source signal with a simpler trigger logic than the sah operator." },
         Phasewrap: { symbol: ["phasewrap"], inlets: 1, desc: "Wrap input to the range -pi to +pi" },
         Sah: { symbol: ["sah"], inlets: 1, desc: "The first inlet is the 'input' and the second inlet is the 'control'. When the control makes a transition from being at or below the trigger value to being above the trigger threshold, the input is sampled. The sampled value is output until another control transition occurs, at which point the input is sampled again. The default threshold value is 0, but can be specified as the last inlet/argument. The @init attribute sets the initial previous value to compare to (default 0)." },
-        Slide: { symbol: ["slide"], inlets: 1, defaultArgs: [0, 1, 1], desc: "Use the slide operator for envelope following and lowpass filtering. Related to the MSP slide~ object." },
+        Slide: { symbol: ["slide"], inlets: 3, defaultArgs: [0, 1, 1], desc: "Use the slide operator for envelope following and lowpass filtering. Related to the MSP slide~ object." },
         // Globals
         Elapsed: { symbol: ["elapsed"], inlets: 1, desc: "The number of samples elapsed since the patcher DSP began, or since the last reset." },
         // Integrator
@@ -222,6 +239,7 @@ const opMap: TOpMap = {
         Triangle: { symbol: ["triangle"], inlets: 2, defaultArgs: [0, 0.5], desc: "A triangle/ramp wavetable with input to change phase offset of the peak value. The phase ranges from 0 to 1 (and wraps outside these values). With a duty cycle of 0, it produces a descending sawtooth; with a duty cycle of 1 it produces ascending sawtooth; with a duty cycle of 0.5 it produces a triangle waveform. Output values always bounded in 0 to 1." }
     }
 };
+/*
 const genOperators: { [key: string]: string[] } = {
     common: [
         "!=p", "neqp", "==", "eq", "==p", "eqp",
@@ -265,12 +283,21 @@ const genOperators: { [key: string]: string[] } = {
         "concat", "cross", "dot", "faceforward", "length", "normalize", "reflect", "refract", "rotor", "swiz", "vec"
     ]
 };
-const GenOps: { [key: string]: typeof GenLibOp | typeof comment | typeof EmptyObject | typeof InvalidObject } = { comment, EmptyObject, InvalidObject };
-for (const key in genOperators) {
-    genOperators[key].forEach((name) => {
-        GenOps[name] = class extends GenLibOp {
-            static description = "Gen Operator " + name;
+*/
+for (const category in opMap) {
+    for (const name in opMap[category]) {
+        const entry = opMap[category][name];
+        const { symbol, inlets, outlets, desc, applyArgsFromStart, defaultArgs } = entry;
+        const Op = class extends GenLibOp {
+            static get _name() { return name; }
+            static description = desc;
+            symbol = typeof symbol === "string" ? [symbol] : symbol;
+            state: FaustOpState = { ...this.state, inlets, outlets: outlets || 1, defaultArgs };
+            reverseApply = !applyArgsFromStart;
         } as typeof GenLibOp;
-    });
+        genOps[name] = Op;
+        if (typeof symbol === "string") genOps[symbol] = Op;
+        else symbol.forEach(s => genOps[s] = Op);
+    }
 }
-export default GenOps;
+export default genOps;
