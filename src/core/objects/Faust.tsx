@@ -406,6 +406,10 @@ export class In extends FaustOp {
         const i = this.box.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
     }
+    get resultID() {
+        const i = this.box.args[0];
+        return `${this.meta.name.replace(".", "_")}_${typeof i === "number" && i >= 0 ? i : this.box.id.substr(4)}`;
+    }
     toMainExpr(out: string, inlets: string) {
         return `${out} = _;`;
     }
@@ -429,6 +433,10 @@ export class Out extends FaustOp {
     get index() {
         const i = this.box.args[0];
         return typeof i === "number" && i >= 0 ? i : Infinity;
+    }
+    get resultID() {
+        const i = this.box.args[0];
+        return `${this.meta.name.replace(".", "_")}_${typeof i === "number" && i >= 0 ? i : this.box.id.substr(4)}`;
     }
     toExpr(lineMap: TLineMap): TObjectExpr {
         const exprs: string[] = [];
@@ -1315,12 +1323,14 @@ export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: str
     // Build main in/outs
     ins = ins.sort((a, b) => a.index - b.index);
     ins.forEach((in_) => {
-        mainIns.push(`${in_.resultID}_0`);
+        const id = `${in_.resultID}_0`;
+        if (mainIns.indexOf(id) === -1) mainIns.push(id);
     });
     outs.forEach((out) => {
         if (out instanceof Iterator) exprs.push(...out.toNormalExpr(lineMap).exprs || []);
         else exprs.push(...out.toExpr(lineMap).exprs || []);
-        mainOuts.push(out.resultID);
+        const id = out.resultID;
+        if (mainIns.indexOf(id) === -1) mainOuts.push(id);
     });
     // Generate Final expressions
     exprs.forEach((s, i) => exprs[i] = `    ${s.replace(/\n/g, "\n    ")}`); // indent
