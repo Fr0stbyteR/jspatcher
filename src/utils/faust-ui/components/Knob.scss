@@ -1,0 +1,28 @@
+.faust-ui-component.faust-ui-component-knob {
+    align-items: center;
+    & > canvas {
+        position: relative;
+        display: block;
+        flex: 1 1 auto;
+        min-height: 50%;
+        width: 100%;
+    }
+    & > input {
+        position: relative;
+        display: block;
+        flex: 0 1 auto;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.25);
+        margin: 0px;
+        border-width: 0px;
+        border-radius: 4px;
+        max-width: calc(100% - 8px);
+        padding: 2px 4px;
+        -moz-appearance:textfield;
+        &::-webkit-inner-spin-button, 
+        &::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+}

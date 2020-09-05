@@ -1,0 +1,20 @@
+.faust-ui-component.faust-ui-component-radio {
+    align-items: center;
+    & > .faust-ui-component-label {
+        flex: 0 0 auto;
+        margin-top: auto;
+    }
+    & > .faust-ui-component-radio-group {
+        flex: 0 0 auto;
+        margin-bottom: auto;
+        border-width: 1px;
+        border-radius: 4px;
+        padding: 2px 4px;
+        width: calc(100% - 8px);
+        & > div {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    }
+}

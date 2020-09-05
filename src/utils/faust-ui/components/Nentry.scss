@@ -1,0 +1,15 @@
+.faust-ui-component.faust-ui-component-nentry {
+    align-items: center;
+    & input {
+        margin: 0px;
+        text-align: center;
+        border-width: 1px;
+        border-radius: 4px;
+        padding: 2px 4px;
+        width: calc(100% - 8px);
+        &::-webkit-inner-spin-button, 
+        &::-webkit-outer-spin-button {
+            opacity: 1;
+        }
+    }
+}

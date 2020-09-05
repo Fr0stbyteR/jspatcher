@@ -221,7 +221,6 @@ export interface LineEventMap {
 export interface BoxEventMap {
     "rectChanged": Box;
     "presentationRectChanged": Box;
-    "presentationResized": Box;
     "backgroundChanged": Box;
     "presentationChanged": Box;
     "textChanged": Box;

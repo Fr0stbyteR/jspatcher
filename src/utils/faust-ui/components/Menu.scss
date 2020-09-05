@@ -1,0 +1,11 @@
+.faust-ui-component.faust-ui-component-menu {
+    align-items: center;
+    & > select {
+        margin: 0px;
+        text-align: center;
+        border-width: 1px;
+        border-radius: 4px;
+        padding: 2px 4px;
+        width: calc(100% - 8px);
+    }
+}
