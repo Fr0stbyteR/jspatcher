@@ -20,7 +20,7 @@ export const getDisplayValue = (value: number, type: string, unitstyle: string, 
     return "N/A";
 };
 export type LiveUIState = LiveUIProps & BaseUIState;
-export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [key: string]: any } = {}> extends CanvasUI<T, {}, S & LiveUIState> {
+export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & Record<string, any> = {}> extends CanvasUI<T, {}, S & LiveUIState> {
     className: string;
     $changeTimer = -1;
     state: S & LiveUIState = {
@@ -165,7 +165,7 @@ export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & { [ke
 }
 export type LiveObjectState = { value: number; displayValue: string };
 export type LiveObjectEventMap = { "changeFromUI": { value: number; displayValue: string } };
-export class LiveObject<D = {}, S extends Partial<LiveObjectState> & { [key: string]: any } = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<Omit<LiveUIState, "value">> & { [key: string]: any } = {}, U extends Partial<LiveUIState> & { [key: string]: any } = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & Omit<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
+export class LiveObject<D = {}, S extends Partial<LiveObjectState> & Record<string, any> = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<Omit<LiveUIState, "value">> & Record<string, any> = {}, U extends Partial<LiveUIState> & Record<string, any> = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & Omit<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
     static package = "live";
     static author = "Fr0stbyteR";
     static version = "1.0.0";

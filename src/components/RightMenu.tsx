@@ -254,7 +254,7 @@ class InspectorPropItem extends InspectorItem<"prop"> {
 type InspectorState = {
     meta: TMeta;
     args: any[];
-    props: { [key: string]: any };
+    props: Record<string, any>;
     patcherProps: TPublicPatcherProps;
     rect: TRect;
     presentationRect: TPresentationRect;
@@ -263,7 +263,7 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
     state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null, patcherProps: this.props.patcher.publicProps };
     boxes: Box[];
     box: Box;
-    handleBoxUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => this.setState({ args: e.args || [], props: e.props || {} });
+    handleBoxUpdate = (e: { args?: any[]; props?: Record<string, any> }) => this.setState({ args: e.args || [], props: e.props || {} });
     handleBoxRectChanged = (box: Box) => this.setState({ rect: box.rect.slice() as TRect });
     handleBoxPresentationRectChanged = (box: Box) => this.setState({ presentationRect: box.presentationRect.slice() as TRect });
     unSubscribeBox = (force?: boolean) => {
@@ -361,7 +361,7 @@ class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState
             }
         }
         meta.args = commonArgs;
-        const additionalProps: { [key: string]: any } = {};
+        const additionalProps: Record<string, any> = {};
         if ("presentation" in commonProps) additionalProps.presentation = presentation;
         if ("background" in commonProps) additionalProps.background = background;
         this.setState({ meta, args, props: { ...props, ...additionalProps }, rect: null, presentationRect: null });

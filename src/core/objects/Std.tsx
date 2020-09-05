@@ -179,7 +179,7 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
         });
     }
 }
-class ForIn extends StdObject<{}, { buffer: any }, [any, any], [Bang, string | number | symbol, any], [{ [key: string]: any }]> {
+class ForIn extends StdObject<{}, { buffer: any }, [any, any], [Bang, string | number | symbol, any], [Record<string, any>]> {
     static description = "Object key-value iterator";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -266,7 +266,7 @@ class gate extends StdObject<{}, { pass: boolean }, [any, any], [any], [any]> {
         });
     }
 }
-class set extends StdObject<{}, { key: string | number; value: any }, [{ [key: string]: any } | any[], string | number, any], [{ [key: string]: any } | any[]], [string | number, any]> {
+class set extends StdObject<{}, { key: string | number; value: any }, [Record<string, any> | any[], string | number, any], [Record<string, any> | any[]], [string | number, any]> {
     static description = "Set a property of incoming object";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -327,7 +327,7 @@ class set extends StdObject<{}, { key: string | number; value: any }, [{ [key: s
         });
     }
 }
-class get extends StdObject<{}, { keys: (string | number)[] }, [{ [key: string]: any } | any[], ...(string | number)[]], any[], (string | number)[]> {
+class get extends StdObject<{}, { keys: (string | number)[] }, [Record<string, any> | any[], ...(string | number)[]], any[], (string | number)[]> {
     static description = "Get properties of incoming object";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -787,6 +787,5 @@ class thispatcher extends StdObject<{}, {}, [Bang], [Patcher]> {
         });
     }
 }
-
 
 export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, call, v, lambda, bang, loadbang, unloadbang, delay, thispatcher };

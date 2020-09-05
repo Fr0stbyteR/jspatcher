@@ -3,7 +3,7 @@ import { LibOp, EmptyObject, InvalidObject, Const, In, Out, Rec, Send, Receive, 
 import { TPackage, TPropsMeta } from "../types";
 import "./Gen.scss";
 
-export class GenLibOp<P extends { [key: string]: any } = {}> extends LibOp<P> {
+export class GenLibOp<P extends Record<string, any> = {}> extends LibOp<P> {
     static package = "Gen";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
@@ -122,7 +122,7 @@ const opMap: TOpMap = {
         PHI: { symbol: ["phi", "PHI"], inlets: 0, desc: "A constant value" },
         PI: { symbol: ["PI", "pi"], inlets: 0, desc: "A constant value" },
         Radtodeg: { symbol: ["RADTODEG", "radtodeg"], inlets: 0, desc: "A constant value" },
-        Sqrt1_2: { symbol: ["SQRT1_2", "sqrt1_2"], inlets: 0, desc: "A constant value" }, // eslint-disable-line @typescript-eslint/camelcase
+        Sqrt1_2: { symbol: ["SQRT1_2", "sqrt1_2"], inlets: 0, desc: "A constant value" },
         Sqrt2: { symbol: ["SQRT2", "sqrt2"], inlets: 0, desc: "A constant value" },
         Twopi: { symbol: ["TWOPI", "twopi"], inlets: 0, desc: "A constant value" },
 
@@ -240,7 +240,7 @@ const opMap: TOpMap = {
     }
 };
 /*
-const genOperators: { [key: string]: string[] } = {
+const genOperators: Record<string, string[]> = {
     common: [
         "!=p", "neqp", "==", "eq", "==p", "eqp",
         ">", "gt", ">=", "gte", ">=p", "gtep", ">p", "gtp",
@@ -291,7 +291,9 @@ for (const category in opMap) {
         const Op = class extends GenLibOp {
             static get _name() { return name; }
             static description = desc;
-            symbol = typeof symbol === "string" ? [symbol] : symbol;
+            get symbol() {
+                return typeof symbol === "string" ? [symbol] : symbol;
+            }
             state: FaustOpState = { ...this.state, inlets, outlets: outlets || 1, defaultArgs };
             reverseApply = !applyArgsFromStart;
         } as typeof GenLibOp;

@@ -235,7 +235,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         await this.postInit();
         return this;
     }
-    update(e: { args?: any[]; props?: { [key: string]: any } }) {
+    update(e: { args?: any[]; props?: Record<string, any> }) {
         const { args, props } = e;
         if (args) this.args = args as Args<T>;
         if (props) {
@@ -390,7 +390,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
             // Each call to exec returns the next regex match as an array
             match = REGEX.exec(strIn);
         }
-        const objOut: { class: string; args: any[]; props: { [key: string]: any } } = { class: "", args: [], props: {} };
+        const objOut: { class: string; args: any[]; props: Record<string, any> } = { class: "", args: [], props: {} };
         let lastProp;
         if (strArray.length) objOut.class = strArray.shift();
         while (strArray.length) {

@@ -20,21 +20,21 @@ declare global {
     }
 }
 
-type TPatcherMode = "max" | "gen" | "faust" | "js";
+export type TPatcherMode = "max" | "gen" | "faust" | "js";
 
-type TPatcher = {
-    lines: { [key: string]: TLine };
-    boxes: { [key: string]: TBox };
+export type TPatcher = {
+    lines: Record<string, TLine>;
+    boxes: Record<string, TBox>;
     props?: {};
 };
-type TPatcherEnv = {
+export type TPatcherEnv = {
     patcher: TPatcher;
     data: TSharedData;
 };
 
-type TDependencies = [string, string][];
+export type TDependencies = [string, string][];
 
-type TPatcherProps = {
+export type TPatcherProps = {
     mode: TPatcherMode;
     dependencies: TDependencies;
     bgColor: string;
@@ -49,9 +49,9 @@ type TPatcherProps = {
     description?: string;
     openInPresentation: boolean;
 };
-type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid" | "openInPresentation">;
+export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid" | "openInPresentation">;
 
-type TPatcherState = {
+export type TPatcherState = {
     name: string;
     isLoading: boolean;
     locked: boolean;
@@ -65,43 +65,43 @@ type TPatcherState = {
     dataConsumers: TSharedDataConsumers;
     dataMgr: SharedData;
 };
-type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid">;
+export type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid">;
 
-type TErrorLevel = "error" | "warn" | "info" | "none";
+export type TErrorLevel = "error" | "warn" | "info" | "none";
 
-type TPatcherLog = {
+export type TPatcherLog = {
     errorLevel: TErrorLevel;
     emitter?: Box | Patcher | any;
     title: string;
     message: string;
 };
 
-type TMaxPatcher = {
+export type TMaxPatcher = {
     patcher: {
         lines: TMaxLine[];
         boxes: TMaxBox[];
         rect: number[];
         bgcolor: [number, number, number, number];
-        editing_bgcolor: [number, number, number, number];
+        editing_bgcolor: [number, number, number, number]; // eslint-disable-line camelcase
         gridsize: [number, number];
         [key: string]: any;
     };
 };
-type TMaxBox = {
+export type TMaxBox = {
     box: {
         id: string;
         maxclass: "newobj" | string;
         text?: string;
         numinlets: number;
         numoutlets: number;
-        patching_rect: TRect;
-        presentation_rect?: TRect;
+        patching_rect: TRect; // eslint-disable-line camelcase
+        presentation_rect?: TRect; // eslint-disable-line camelcase
         background?: number;
         presentation?: number;
     };
 };
 
-type TMaxLine = {
+export type TMaxLine = {
     patchline: {
         destination: [string, number];
         source: [string, number];
@@ -110,7 +110,7 @@ type TMaxLine = {
     };
 };
 
-type TMaxClipboard = {
+export type TMaxClipboard = {
     boxes: TMaxBox[];
     lines: TMaxLine[];
     appversion: {
@@ -121,21 +121,21 @@ type TMaxClipboard = {
         modernui: number;
     };
 };
-type TPackage = { [key: string]: typeof AnyObject | TPackage };
-type TFlatPackage = { [key: string]: typeof AnyObject };
-type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };
-type TAudioNodeOutletConnection = { node: AudioNode; index: number };
-type TPatcherAudioConnection = { node: GainNode; index: number };
+export type TPackage = { [key: string]: typeof AnyObject | TPackage };
+export type TFlatPackage = { [key: string]: typeof AnyObject };
+export type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };
+export type TAudioNodeOutletConnection = { node: AudioNode; index: number };
+export type TPatcherAudioConnection = { node: GainNode; index: number };
 
-declare type TLine = {
+export type TLine = {
     id?: string;
     src: [string, number];
     dest: [string, number];
     disabled?: boolean;
 };
-type TLineType = "normal" | "audio";
+export type TLineType = "normal" | "audio";
 
-type TBox = {
+export type TBox = {
     id?: string;
     text: string;
     inlets: number;
@@ -145,28 +145,28 @@ type TBox = {
     presentation?: boolean;
     presentationRect?: TPresentationRect;
     args?: any[];
-    props?: { [key: string]: any };
-    data?: { [key: string]: any };
+    props?: Record<string, any>;
+    data?: Record<string, any>;
     _editing?: boolean;
 };
 
-type TRect = [number, number, number, number];
-type TPresentationRect = [number | string, number | string, number | string, number | string];
+export type TRect = [number, number, number, number];
+export type TPresentationRect = [number | string, number | string, number | string, number | string];
 
-type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
+export type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
 
-type TSharedData = {
+export type TSharedData = {
     [category: string]: {
         [key: string]: any;
     };
 };
-type TSharedDataConsumers = {
+export type TSharedDataConsumers = {
     [category: string]: {
         [key: string]: Set<BaseObject>;
     };
 };
 
-interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
+export interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "loading": string[] | undefined;
     "ready": never;
     "unload": never;
@@ -210,7 +210,7 @@ interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "dockUI": Box;
 }
 
-interface LineEventMap {
+export interface LineEventMap {
     "passData": any;
     "destPosChanged": { top: number; left: number };
     "srcPosChanged": { top: number; left: number };
@@ -218,7 +218,7 @@ interface LineEventMap {
     "typeChanged": TLineType;
 }
 
-interface BoxEventMap {
+export interface BoxEventMap {
     "rectChanged": Box;
     "presentationRectChanged": Box;
     "presentationResized": Box;
@@ -233,25 +233,25 @@ interface BoxEventMap {
     "connectedPort": { isSrc: boolean; i: number; last?: false };
     "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
     "ioCountChanged": Box;
-    "updatedFromObject": { args?: any[]; props?: { [key: string]: any } };
+    "updatedFromObject": { args?: any[]; props?: Record<string, any> };
 }
-type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "function" | "bang" | "color" | "enum";
-type TInletMeta = {
+export type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "function" | "bang" | "color" | "enum";
+export type TInletMeta = {
     isHot: boolean;
     type: TMetaType;
     enums?: string[];
     varLength?: boolean;
     description: string;
 };
-type TInletsMeta = TInletMeta[];
-type TOutletMeta = {
+export type TInletsMeta = TInletMeta[];
+export type TOutletMeta = {
     type: TMetaType;
     enums?: string[];
     varLength?: boolean;
     description: string;
 };
-type TOutletsMeta = TOutletMeta[];
-type TArgMeta = {
+export type TOutletsMeta = TOutletMeta[];
+export type TArgMeta = {
     type: TMetaType;
     enums?: string[];
     optional: boolean;
@@ -259,8 +259,8 @@ type TArgMeta = {
     varLength?: boolean;
     description: string;
 };
-type TArgsMeta = TArgMeta[];
-type TPropMeta<T extends any = any> = {
+export type TArgsMeta = TArgMeta[];
+export type TPropMeta<T extends any = any> = {
     type: TMetaType;
     enums?: string[];
     default: T;
@@ -268,8 +268,8 @@ type TPropMeta<T extends any = any> = {
     description: string;
     isUIState?: boolean;
 };
-type TPropsMeta<T extends { [key: string]: any } = { [key: string]: any }> = { [K in keyof T]: TPropMeta<T[K]> };
-type TMeta = {
+export type TPropsMeta<T extends Record<string, any> = Record<string, any>> = { [K in keyof T]: TPropMeta<T[K]> };
+export type TMeta = {
     package: string; // div will have class "package-name" "package-name-objectname"
     name: string;
     icon: SemanticICONS; // semantic icon to display in UI
@@ -282,17 +282,17 @@ type TMeta = {
     props: TPropsMeta;
 };
 
-type Data<T> = T extends AbstractObject<infer D, any, any, any, any, any, any, any> ? D : never;
-type State<T> = T extends AbstractObject<any, infer S, any, any, any, any, any, any> ? S : never;
-type Inputs<T> = T extends AbstractObject<any, any, infer I, any, any, any, any, any> ? I : never;
-type Outputs<T> = T extends AbstractObject<any, any, any, infer O, any, any, any, any> ? O : never;
-type Args<T> = T extends AbstractObject<any, any, any, any, infer A, any, any, any> ? A : never;
-type Props<T> = T extends AbstractObject<any, any, any, any, any, infer P, any, any> ? P : never;
-type UIState<T> = T extends AbstractObject<any, any, any, any, any, any, infer U, any> ? U : never;
-type EventMap<T> = T extends AbstractObject<any, any, any, any, any, any, any, infer E> ? E : never;
-type TInletEvent<I extends any[] = any[], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
-type TOutletEvent<O extends any[] = any[], $ extends keyof Pick<O, number> = keyof Pick<O, number>> = { outlet: $; data: O[$] };
-type ObjectEventMap<D, S, I extends any[], A extends any[], P, U, E> = {
+export type Data<T> = T extends AbstractObject<infer D, any, any, any, any, any, any, any> ? D : never;
+export type State<T> = T extends AbstractObject<any, infer S, any, any, any, any, any, any> ? S : never;
+export type Inputs<T> = T extends AbstractObject<any, any, infer I, any, any, any, any, any> ? I : never;
+export type Outputs<T> = T extends AbstractObject<any, any, any, infer O, any, any, any, any> ? O : never;
+export type Args<T> = T extends AbstractObject<any, any, any, any, infer A, any, any, any> ? A : never;
+export type Props<T> = T extends AbstractObject<any, any, any, any, any, infer P, any, any> ? P : never;
+export type UIState<T> = T extends AbstractObject<any, any, any, any, any, any, infer U, any> ? U : never;
+export type EventMap<T> = T extends AbstractObject<any, any, any, any, any, any, any, infer E> ? E : never;
+export type TInletEvent<I extends any[] = any[], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
+export type TOutletEvent<O extends any[] = any[], $ extends keyof Pick<O, number> = keyof Pick<O, number>> = { outlet: $; data: O[$] };
+export type ObjectEventMap<D, S, I extends any[], A extends any[], P, U, E> = {
     "preInit": never;
     "update": { args?: Partial<A>; props?: Partial<P> };
     "updateArgs": Partial<A>;
@@ -310,11 +310,11 @@ type ObjectEventMap<D, S, I extends any[], A extends any[], P, U, E> = {
     "stateUpdated": Partial<S>;
     "sharedDataUpdated": { category: string; key: string; data: any };
 } & E;
-type THistoryElement = {
+export type THistoryElement = {
     [key in keyof PatcherEventMap]?: PatcherEventMap[key][];
 };
 
-type TBPF = string | number | number[] | number[][];
-type TBPFPoint = [number, number, number];
-type TStrictBPF = TBPFPoint[];
-type TMIDIEvent = [number, number, number] | (Uint8Array & { length: 3 });
+export type TBPF = string | number | number[] | number[][];
+export type TBPFPoint = [number, number, number];
+export type TStrictBPF = TBPFPoint[];
+export type TMIDIEvent = [number, number, number] | (Uint8Array & { length: 3 });

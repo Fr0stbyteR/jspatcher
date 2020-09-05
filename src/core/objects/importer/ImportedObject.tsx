@@ -31,7 +31,7 @@ export class ImportedObjectUI<T extends DefaultObject> extends DefaultUI<T> {
     }
 }
 export abstract class ImportedObject<T, S, I extends any[], O extends any[], A extends any[], P, U> extends DefaultObject<{}, S, I, O, A, P, U> {
-    static root: { [key: string]: any };
+    static root: Record<string, any>;
     static path: string[];
     static description = "Auto-imported object";
     get name() {

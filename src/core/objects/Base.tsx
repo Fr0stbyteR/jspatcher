@@ -13,7 +13,7 @@ export abstract class AbstractObject<
     D extends {} = {}, S extends {} = {},
     I extends any[] = any[], O extends any[] = any[],
     A extends any[] = any[], P extends {} = {},
-    U extends {} = {}, E extends Partial<ObjectEventMap<D, S, I, A, P, U, {}>> & { [key: string]: any } = {}
+    U extends {} = {}, E extends Partial<ObjectEventMap<D, S, I, A, P, U, {}>> & Record<string, any> = {}
 > extends TypedEventEmitter<ObjectEventMap<D, S, I, A, P, U, E>> {
     static package = "Base"; // div will have class "packageName" "packageName-objectName"
     static get _name() {
@@ -344,8 +344,8 @@ export interface BaseObjectProps extends BaseObjectAdditionalProps, BaseUIState 
 export class BaseObject<
     D extends {} = {}, S extends {} = {},
     I extends any[] = any[], O extends any[] = any[],
-    A extends any[] = any[], P extends Partial<BaseObjectProps> & { [key: string]: any } = {},
-    U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}
+    A extends any[] = any[], P extends Partial<BaseObjectProps> & Record<string, any> = {},
+    U extends Partial<BaseUIState> & Record<string, any> = {}, E extends {} = {}
 > extends AbstractObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
     static props: TMeta["props"] = {
         hidden: {
@@ -443,8 +443,8 @@ export interface DefaultObjectProps extends DefaultObjectUIProps, BaseObjectProp
 export class DefaultObject<
     D extends {} = {}, S extends {} = {},
     I extends any[] = any[], O extends any[] = any[],
-    A extends any[] = any[], P extends Partial<DefaultObjectProps> & { [key: string]: any } = {},
-    U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}
+    A extends any[] = any[], P extends Partial<DefaultObjectProps> & Record<string, any> = {},
+    U extends Partial<DefaultUIState> & Record<string, any> = {}, E extends {} = {}
 > extends BaseObject<D, S, I, O, A, P & DefaultObjectProps, U & DefaultUIState, E> {
     static props: TMeta["props"] = {
         bgColor: {
@@ -501,25 +501,26 @@ export class DefaultObject<
     };
     static ui = DefaultUI;
 }
-export class AnyObject extends BaseObject<{ [key: string]: any }, { [key: string]: any }, any[], any[], any[], { [key: string]: any }, { [key: string]: any }, { [key: string]: any }> {}
-export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<BaseObjectProps> & { [key: string]: any } = {}, U extends Partial<BaseUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
+export class AnyObject extends BaseObject<Record<string, any>, Record<string, any>, any[], any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> {}
+export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<BaseObjectProps> & Record<string, any> = {}, U extends Partial<BaseUIState> & Record<string, any> = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
     get audioCtx() {
         return this.patcher.env.audioCtx;
     }
     applyBPF(param: AudioParam, bpf: number[][]) {
         const { audioCtx } = this;
-        param.cancelScheduledValues(audioCtx.currentTime);
-        param.setValueAtTime(param.value, audioCtx.currentTime);
+        const { currentTime } = audioCtx;
+        param.cancelScheduledValues(currentTime);
+        param.setValueAtTime(param.value, currentTime);
         let t = 0;
         bpf.forEach((a) => {
             if (a.length === 1) {
-                param.setValueAtTime(a[0], audioCtx.currentTime + t);
+                param.setValueAtTime(a[0], currentTime + t);
             } else if (a.length > 1) {
                 t += a[1];
                 if (a.length === 3 && a[2] === 1) {
-                    param.exponentialRampToValueAtTime(a[0], audioCtx.currentTime + t);
+                    param.exponentialRampToValueAtTime(a[0], currentTime + t);
                 } else {
-                    param.linearRampToValueAtTime(a[0], audioCtx.currentTime + t);
+                    param.linearRampToValueAtTime(a[0], currentTime + t);
                 }
             }
         });
@@ -559,7 +560,7 @@ export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any
         return this;
     }
 }
-export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<DefaultUIState> & { [key: string]: any } = {}, U extends Partial<DefaultUIState> & { [key: string]: any } = {}, E extends {} = {}> extends BaseAudioObject<D, S, I, O, A, P, U & DefaultUIState, E> {
+export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<DefaultUIState> & Record<string, any> = {}, U extends Partial<DefaultUIState> & Record<string, any> = {}, E extends {} = {}> extends BaseAudioObject<D, S, I, O, A, P, U & DefaultUIState, E> {
     static props = DefaultObject.props;
     static ui = DefaultUI;
 }

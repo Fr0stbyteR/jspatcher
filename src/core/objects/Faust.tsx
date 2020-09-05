@@ -29,7 +29,7 @@ export interface FaustOpState {
     outlets: number;
     defaultArgs: (number | string)[];
 }
-export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<FaustOpState> & { [key: string]: any } = FaustOpState, A extends any[] = (number | "_")[], P extends { [key: string]: any } = {}, U extends { [key: string]: any } = {}, E extends { [key: string]: any } = {}> extends DefaultObject<D, S & FaustOpState, [], [], A, P, U, E> {
+export class FaustOp<D extends Record<string, any> = {}, S extends Partial<FaustOpState> & Record<string, any> = FaustOpState, A extends any[] = (number | "_")[], P extends Record<string, any> = {}, U extends Record<string, any> = {}, E extends Record<string, any> = {}> extends DefaultObject<D, S & FaustOpState, [], [], A, P, U, E> {
     static package = "FaustOps";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
@@ -79,7 +79,7 @@ export class FaustOp<D extends { [key: string]: any } = {}, S extends Partial<Fa
      *
      * @memberof FaustOp
      */
-    handleUpdate = (e: { args?: any[]; props?: { [key: string]: any } }) => {
+    handleUpdate = (e: { args?: any[]; props?: Record<string, any> }) => {
         if (!e.args) return;
         this.inlets = this.state.inlets - Math.min(this.state.inlets, this.constArgsCount);
         this.outlets = this.state.outlets;
@@ -257,7 +257,9 @@ export class Param extends FaustOp<{}, {}, [string, number, number, number, numb
             description: "Parameter name / descriptor"
         }
     };
-    symbol = ["hslider"];
+    get symbol() {
+        return ["hslider"];
+    }
     state: FaustOpState = { ...this.state, inlets: 0, outlets: 1 };
     toInletsExpr(lineMap: TLineMap) {
         const { box, resultID } = this;
@@ -273,10 +275,14 @@ export class Param extends FaustOp<{}, {}, [string, number, number, number, numb
 }
 class HSlider extends Param {}
 class VSlider extends Param {
-    symbol = ["vslider"];
+    get symbol() {
+        return ["vslider"];
+    }
 }
 class Nentry extends Param {
-    symbol = ["nentry"];
+    get symbol() {
+        return ["nentry"];
+    }
 }
 class Checkbox extends Param {
     static args: TMeta["args"] = [{
@@ -284,7 +290,9 @@ class Checkbox extends Param {
         optional: false,
         description: "Parameter name / descriptor"
     }];
-    symbol = ["checkbox"];
+    get symbol() {
+        return ["checkbox"];
+    }
     toInletsExpr(lineMap: TLineMap) {
         const { box, resultID } = this;
         const { args } = box;
@@ -292,7 +300,9 @@ class Checkbox extends Param {
     }
 }
 class Button extends Checkbox {
-    symbol = ["button"];
+    get symbol() {
+        return ["button"];
+    }
 }
 class HBargraph extends FaustOp<{}, {}, [string, number, number]> {
     static description = "Bargraph monitor";
@@ -309,7 +319,9 @@ class HBargraph extends FaustOp<{}, {}, [string, number, number]> {
         optional: false,
         description: "Parameter max"
     }];
-    symbol = ["hbargraph"];
+    get symbol() {
+        return ["hbargraph"];
+    }
     state: FaustOpState = { ...this.state, inlets: 1, outlets: 1 };
     subscribe() {
         super.subscribe();
@@ -348,7 +360,9 @@ class HBargraph extends FaustOp<{}, {}, [string, number, number]> {
     }
 }
 class VBargraph extends HBargraph {
-    symbol = ["vbargraph"];
+    get symbol() {
+        return ["vbargraph"];
+    }
 }
 class HGroup extends FaustOp<{}, {}, [string]> {
     static description = "UI group";
@@ -357,7 +371,9 @@ class HGroup extends FaustOp<{}, {}, [string]> {
         optional: false,
         description: "UI name / descriptor"
     }];
-    symbol = ["hgroup"];
+    get symbol() {
+        return ["hgroup"];
+    }
     state: FaustOpState = { ...this.state, inlets: 1, outlets: 1 };
     subscribe() {
         super.subscribe();
@@ -380,10 +396,14 @@ class HGroup extends FaustOp<{}, {}, [string]> {
     }
 }
 class VGroup extends HGroup {
-    symbol = ["vgroup"];
+    get symbol() {
+        return ["vgroup"];
+    }
 }
 class TGroup extends HGroup {
-    symbol = ["tgroup"];
+    get symbol() {
+        return ["tgroup"];
+    }
 }
 
 export class In extends FaustOp {
@@ -393,7 +413,9 @@ export class In extends FaustOp {
         optional: false,
         description: "Signal index (0-based)"
     }];
-    symbol = ["in"];
+    get symbol() {
+        return ["in"];
+    }
     subscribe() {
         super.subscribe();
         this.off("update", this.handleUpdate);
@@ -421,7 +443,9 @@ export class Out extends FaustOp {
         optional: false,
         description: "Signal index (0-based)"
     }];
-    symbol = ["out"];
+    get symbol() {
+        return ["out"];
+    }
     subscribe() {
         super.subscribe();
         this.off("update", this.handleUpdate);
@@ -453,7 +477,9 @@ export class Out extends FaustOp {
 }
 class Pass extends FaustOp {
     static description = "Bypass Signal";
-    symbol = ["_"];
+    get symbol() {
+        return ["_"];
+    }
     subscribe() {
         super.subscribe();
         this.off("update", this.handleUpdate);
@@ -466,7 +492,7 @@ class Pass extends FaustOp {
         return `${out} = ${inlets};`;
     }
 }
-type TSendMap = { [key: string]: Send[] };
+type TSendMap = Record<string, Send[]>;
 const sendMap: TSendMap = {};
 export class Send extends FaustOp<{}, { sendMap: TSendMap }> {
     static description = "Send Signal to receive";
@@ -475,7 +501,9 @@ export class Send extends FaustOp<{}, { sendMap: TSendMap }> {
         optional: false,
         description: "Send / Receive ID"
     }];
-    symbol = ["s"];
+    get symbol() {
+        return ["s"];
+    }
     state: FaustOpState & { sendMap: TSendMap } = { ...this.state, inlets: 1, outlets: 0, sendMap };
     get sendID() {
         return this.box.args[0];
@@ -515,7 +543,9 @@ export class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
         optional: false,
         description: "Send / Receive ID"
     }];
-    symbol = ["r"];
+    get symbol() {
+        return ["r"];
+    }
     state: FaustOpState & { sendMap: TSendMap } = { ...this.state, inlets: 0, outlets: 1, sendMap };
     get sendID() {
         return this.box.args[0];
@@ -550,7 +580,9 @@ export class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
 }
 class Split extends FaustOp {
     static description = "Split Signal";
-    symbol = ["<:"];
+    get symbol() {
+        return ["<:"];
+    }
     state: FaustOpState = { ...this.state, inlets: 1, outlets: 2 };
     toMainExpr(out: string, inlets: string) {
         return `${out} = ${inlets} ${this.symbol[0]} ${new Array(this.outlets).fill("_").join(", ")};`;
@@ -558,7 +590,9 @@ class Split extends FaustOp {
 }
 class Merge extends FaustOp {
     static description = "Merge Signal";
-    symbol = [":>"];
+    get symbol() {
+        return [":>"];
+    }
     state: FaustOpState = { ...this.state, inlets: 2, outlets: 1 };
     toMainExpr(out: string, inlets: string) {
         return `${out} = ${inlets} ${this.symbol[0]} _;`;
@@ -572,7 +606,9 @@ export class Rec extends FaustOp {
         default: 1,
         description: "Samples to delay"
     }];
-    symbol = ["~"];
+    get symbol() {
+        return ["~"];
+    }
     state: FaustOpState = { ...this.state, inlets: 1, outlets: 1 };
     subscribe() {
         super.subscribe();
@@ -602,7 +638,9 @@ export class Rec extends FaustOp {
 }
 class Mem extends FaustOp {
     static description = "1-sample delay";
-    symbol = ["mem", "'"];
+    get symbol() {
+        return ["mem", "'"];
+    }
     state: FaustOpState = { ...this.state, inlets: 1, outlets: 1 };
 }
 export class Const extends FaustOp {
@@ -613,7 +651,9 @@ export class Const extends FaustOp {
         default: 0,
         description: "Constant value"
     }];
-    symbol = ["const", "c"];
+    get symbol() {
+        return ["const", "c"];
+    }
     state: FaustOpState = { ...this.state, inlets: 1, outlets: 1 };
     toMainExpr(out: string, inlets: string) {
         return `${out} = ${inlets};`;
@@ -634,7 +674,9 @@ class Group extends FaustOp<{}, {}, (number | "_")[], { ins: number }> {
         }
     };
     state: FaustOpState = { ...this.state, inlets: 1, outlets: 1 };
-    symbol = ["()"];
+    get symbol() {
+        return ["()"];
+    }
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this.state.inlets = ~~+this.getProp("ins");
         if (e.args.length || "ins" in e.props) {
@@ -655,7 +697,9 @@ class Waveform extends FaustOp {
         type: "number",
         description: "the periodic signal itself"
     }];
-    symbol = ["waveform"];
+    get symbol() {
+        return ["waveform"];
+    }
     state: FaustOpState = { ...this.state, inlets: 0, outlets: 2 };
     toInletsExpr(lineMap: TLineMap) {
         return this.box.args.join(", ");
@@ -667,7 +711,9 @@ class Waveform extends FaustOp {
 }
 class SR extends FaustOp {
     static description = "Sample Rate";
-    symbol = ["ma.SR"];
+    get symbol() {
+        return ["ma.SR"];
+    }
     state: FaustOpState = { ...this.state, inlets: 0, outlets: 1 };
     toOnceExpr(): string[] {
         return ['import("stdfaust.lib");'];
@@ -763,19 +809,27 @@ ${lExprs.map(s => `    ${s.replace(/\n/g, "\n    ")}`).join("\n")}
 }
 class Sum extends Iterator {
     static description = "Sum iterator";
-    symbol = ["sum"];
+    get symbol() {
+        return ["sum"];
+    }
 }
 class Prod extends Iterator {
     static description = "Production iterator";
-    symbol = ["prod"];
+    get symbol() {
+        return ["prod"];
+    }
 }
 class Seq extends Iterator {
     static description = "Seqential iterator";
-    symbol = ["seq"];
+    get symbol() {
+        return ["seq"];
+    }
 }
 class Par extends Iterator {
     static description = "Parallel iterator";
-    symbol = ["par"];
+    get symbol() {
+        return ["par"];
+    }
     handleUpdate = (e: { args?: any[] }) => {
         if (!e.args) return;
         const { args } = this.box;
@@ -799,7 +853,9 @@ class Par extends Iterator {
 }
 export class Expr extends FaustOp<{}, {}, (string | number)[]> {
     static description = "Evaluate expression with inputs `in1, in2...`";
-    symbol = ["expr"];
+    get symbol() {
+        return ["expr"];
+    }
     handleUpdate = async (e: { args?: any[] }) => {
         if (!e.args) return;
         this.inlets = this.getExprInputs();
@@ -876,7 +932,7 @@ export interface LibOpProps {
     ins: number;
     outs: number;
 }
-export class LibOp<P extends { [key: string]: any } = {}> extends FaustOp<{}, {}, (number | "_")[], Partial<LibOpProps> & P> {
+export class LibOp<P extends Record<string, any> = {}> extends FaustOp<{}, {}, (number | "_")[], Partial<LibOpProps> & P> {
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "number",
@@ -1240,7 +1296,9 @@ for (const className in opMap.mathOps) {
             type: "number",
             description: outletDesc
         }];
-        symbol = typeof symbol === "string" ? [symbol] : symbol;
+        get symbol() {
+            return typeof symbol === "string" ? [symbol] : symbol;
+        }
         state = { inlets, outlets: 1, defaultArgs: new Array(inlets).fill(0) };
         reverseApply = !applyArgsFromStart;
     };
@@ -1255,7 +1313,9 @@ export const getFaustLibObjects = (docs: TFaustDocs) => {
         const Op = class extends LibOp {
             static get _name() { return key; }
             static description = docStr.substr(0, docStr.indexOf("\n"));
-            symbol = [key];
+            get symbol() {
+                return [key];
+            }
         };
         const path = key.split(".");
         let pkg = ops;

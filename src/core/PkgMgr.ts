@@ -207,7 +207,7 @@ export class GlobalPackageManager {
     readonly max: TPackage = Max;
     readonly gen: TPackage = Gen;
     private readonly env: Env;
-    externals = new Map<string, { [key: string]: any }>();
+    externals = new Map<string, Record<string, any>>();
     constructor(envIn: Env) {
         this.env = envIn;
         this.add(this.env.faustAdditionalObjects, "js", ["faust"]);

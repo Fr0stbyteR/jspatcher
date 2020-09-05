@@ -2,7 +2,7 @@ export const registeredProcessors = new Set<string>();
 
 const AWN: typeof AudioWorkletNode = window.AudioWorkletNode ? AudioWorkletNode : null;
 type DataToProcessor = DisposableAudioWorkletMessageEventDataToProcessor;
-export class DisposableAudioWorkletNode<F extends { [key: string]: any } = { [key: string]: any }, T extends DataToProcessor = DataToProcessor, P extends string = string, O extends any = any> extends AWN {
+export class DisposableAudioWorkletNode<F extends Record<string, any> = Record<string, any>, T extends DataToProcessor = DataToProcessor, P extends string = string, O extends any = any> extends AWN {
     get port(): AudioWorkletMessagePort<F, T> {
         return super.port;
     }

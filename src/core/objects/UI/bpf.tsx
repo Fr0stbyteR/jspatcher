@@ -411,7 +411,10 @@ export default class bpf extends UIObject<BPFData, {}, [TBPF | Bang], [TStrictBP
         });
         this.on("inlet", ({ data, inlet }) => {
             if (data instanceof Bang) {
-                if (inlet === 0) this.outlet(0, this.data.points.map(p => [p[1], p[0], p[2]]));
+                if (inlet === 0) {
+                    const { points } = this.data;
+                    this.outlet(0, points.map((p, i) => [p[1], p[0] - (i > 0 ? points[i - 1][0] : 0), p[2]]));
+                }
             } else {
                 let points: TStrictBPF;
                 try {

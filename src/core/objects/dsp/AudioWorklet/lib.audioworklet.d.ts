@@ -7,7 +7,7 @@
 interface TypedAudioWorkletNodeOptions<T extends any = any> extends AudioWorkletNodeOptions {
     processorOptions?: T;
 }
-declare class AudioWorkletProcessor<T extends { [key: string]: any } = { [key: string]: any }, F extends { [key: string]: any } = { [key: string]: any }, P extends string = string, O extends any = any> {
+declare class AudioWorkletProcessor<T extends Record<string, any> = Record<string, any>, F extends Record<string, any> = Record<string, any>, P extends string = string, O extends any = any> {
     static get parameterDescriptors(): AudioWorkletAudioParamDescriptor[];
     public port: AudioWorkletMessagePort<T, F>;
     public process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: { [key in P]: Float32Array }): boolean;
@@ -32,7 +32,7 @@ interface AudioWorkletAudioParamDescriptor<P extends string = string> extends Au
 interface DisposableAudioWorkletMessageEventDataToProcessor {
     destroy?: boolean;
 }
-interface AudioWorkletMessagePort<I extends { [key: string]: any } = { [key: string]: any }, O extends { [key: string]: any } = { [key: string]: any }> extends MessagePort {
+interface AudioWorkletMessagePort<I extends Record<string, any> = Record<string, any>, O extends Record<string, any> = Record<string, any>> extends MessagePort {
     onmessage: ((this: MessagePort, ev: AudioWorkletMessageEvent<I>) => any) | null;
     onmessageerror: ((this: MessagePort, ev: AudioWorkletMessageEvent<I>) => any) | null;
     postMessage(message: O, transfer: Transferable[]): void

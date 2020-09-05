@@ -35,7 +35,7 @@ const {
     AudioDestinationNode,
     ChannelSplitterNode
 } = window;
-const WebAudioAPI: { [key: string]: any } = {
+const WebAudioAPI: Record<string, any> = {
     BaseAudioContext,
     AudioContext,
     webkitAudioContext,

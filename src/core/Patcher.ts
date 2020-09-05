@@ -40,8 +40,8 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         }
     };
     private readonly _env: Env;
-    lines: { [key: string]: Line };
-    boxes: { [key: string]: Box };
+    lines: Record<string, Line>;
+    boxes: Record<string, Box>;
     props: TPatcherProps;
     _state: TPatcherState;
     data: TSharedData;
@@ -188,7 +188,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
                 const { dependencies } = this.props;
                 if (!Array.isArray(dependencies)) {
                     this.props.dependencies = [];
-                    for (const key in dependencies as { [key: string]: string }) {
+                    for (const key in dependencies as Record<string, string>) {
                         this.props.dependencies.push([key, dependencies[key]]);
                     }
                 }
@@ -255,7 +255,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const splitName = file.name.split(".");
         const ext = splitName.pop();
         const name = splitName.join(".");
-        const extMap: { [key: string]: TPatcherMode } = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+        const extMap: Record<string, TPatcherMode> = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
@@ -306,14 +306,14 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         if (!noPostInit) await box.postInit();
         return box;
     }
-    getObjectConstructor(parsed: { class: string; args: any[]; props: { [key: string]: any } }) {
+    getObjectConstructor(parsed: { class: string; args: any[]; props: Record<string, any> }) {
         const className = parsed.class;
         if (typeof className !== "string" || className.length === 0) return this.activeLib.EmptyObject;
         if (this.activeLib[className]) return this.activeLib[className];
         this.error(`Object ${className} not found.`);
         return this.activeLib.InvalidObject;
     }
-    getObjectMeta(parsed: { class: string; args: any[]; props: { [key: string]: any } }) {
+    getObjectMeta(parsed: { class: string; args: any[]; props: Record<string, any> }) {
         return this.getObjectConstructor(parsed).meta;
     }
     async changeBoxText(boxID: string, text: string) {
@@ -820,7 +820,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         return this;
     }
     async paste(clipboard: TPatcher | TMaxClipboard) {
-        const idMap: { [key: string]: string } = {};
+        const idMap: Record<string, string> = {};
         const pasted: TPatcher = { boxes: {}, lines: {} };
         if (!clipboard || !clipboard.boxes) return pasted;
         this.newTimestamp();

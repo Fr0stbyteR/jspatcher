@@ -24,8 +24,8 @@ export interface AbstractUIState {
 }
 export abstract class AbstractUI<
         T extends AbstractObject = AbstractObject,
-        P extends Partial<AbstractUIProps<T>> & { [key: string]: any } = {},
-        S extends Partial<AbstractUIState> & { [key: string]: any } = {}
+        P extends Partial<AbstractUIProps<T>> & Record<string, any> = {},
+        S extends Partial<AbstractUIState> & Record<string, any> = {}
 > extends React.PureComponent<AbstractUIProps<T> & P, S & AbstractUIState> {
     /**
      * Sizing rule
@@ -108,7 +108,7 @@ export abstract class AbstractUI<
         return <></>;
     }
 }
-export interface BaseUIProps extends AbstractUIProps {
+export interface BaseUIProps<T extends BaseObject = BaseObject> extends AbstractUIProps<T> {
     containerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     additionalClassName?: string;
 }
@@ -117,7 +117,7 @@ export interface BaseUIState extends AbstractUIState {
     ignoreClick: boolean;
     hint: string;
 }
-export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<BaseUIState> & { [key: string]: any } = {}> extends AbstractUI<T, P & BaseUIProps, S & BaseUIState> {
+export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps<T>> & Record<string, any> = {}, S extends Partial<BaseUIState> & Record<string, any> = {}> extends AbstractUI<T, P & BaseUIProps<T>, S & BaseUIState> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "horizontal";
     static defaultSize: [number, number] = [90, 20];
     static editableOnUnlock = false;
@@ -146,7 +146,7 @@ export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIP
         );
     }
 }
-export interface DefaultUIProps extends BaseUIProps {
+export interface DefaultUIProps<T extends DefaultObject = DefaultObject> extends BaseUIProps<T> {
     textContainerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     prependProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     spanProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLSpanElement> & React.HTMLAttributes<HTMLSpanElement>;
@@ -297,7 +297,7 @@ class DefaultUIDropdownArgv extends React.Component<DefaultUIDropdownArgvProps, 
         );
     }
 }
-export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & DefaultUIProps, S & DefaultUIState> {
+export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultUIProps> & Record<string, any> = {}, S extends Partial<DefaultUIState> & Record<string, any> = {}> extends BaseUI<T, P & DefaultUIProps<T>, S & DefaultUIState> {
     static editableOnUnlock = true;
     state: S & DefaultUIState = {
         ...this.state,
@@ -459,14 +459,14 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         );
     }
 }
-export interface CanvasUIProps extends BaseUIProps {
+export interface CanvasUIProps<T extends BaseObject = BaseObject> extends BaseUIProps<T> {
     canvasProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasElement> & React.HTMLAttributes<HTMLCanvasElement>;
     onPaint?: <S extends CanvasUIState = CanvasUIState>(ctx: CanvasRenderingContext2D, state: S) => void;
 }
 export interface CanvasUIState extends BaseUIState {
     frameRate: number;
 }
-export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<CanvasUIProps> & { [key: string]: any } = {}, S extends Partial<CanvasUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & CanvasUIProps, S & CanvasUIState> {
+export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<CanvasUIProps> & Record<string, any> = {}, S extends Partial<CanvasUIState> & Record<string, any> = {}> extends BaseUI<T, P & CanvasUIProps<T>, S & CanvasUIState> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     refCanvas = React.createRef<HTMLCanvasElement>();
     paintScheduled = false;
@@ -546,7 +546,7 @@ export interface DefaultPopupUIProps extends DefaultUIProps {
 export interface DefaultPopupUIState extends DefaultUIState {
     modalOpen: boolean;
 }
-export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultPopupUIProps> & { [key: string]: any } = {}, S extends Partial<DefaultPopupUIState> & { [key: string]: any } = {}> extends DefaultUI<T, P & DefaultPopupUIProps, S & DefaultPopupUIState> {
+export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultPopupUIProps> & Record<string, any> = {}, S extends Partial<DefaultPopupUIState> & Record<string, any> = {}> extends DefaultUI<T, P & DefaultPopupUIProps, S & DefaultPopupUIState> {
     state: S & DefaultPopupUIState = {
         ...this.state,
         modalOpen: false
@@ -576,7 +576,7 @@ export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends P
 export interface CodePopupUIState extends DefaultPopupUIState {
     editorLoaded: boolean;
 }
-export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultPopupUIProps> & { [key: string]: any } = {}, S extends Partial<CodePopupUIState> & { [key: string]: any } = {}> extends DefaultPopupUI<T, P, S & CodePopupUIState> {
+export class CodePopupUI<T extends DefaultObject = DefaultObject, P extends Partial<DefaultPopupUIProps> & Record<string, any> = {}, S extends Partial<CodePopupUIState> & Record<string, any> = {}> extends DefaultPopupUI<T, P, S & CodePopupUIState> {
     static dockable = true;
     state: S & CodePopupUIState = {
         ...this.state,
@@ -704,7 +704,7 @@ export interface DOMUIState extends BaseUIState {
     containerProps: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
     children: ChildNode[];
 }
-export class DOMUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & { [key: string]: any } = {}, S extends Partial<DOMUIState> & { [key: string]: any } = {}> extends BaseUI<T, P & BaseUIProps, S & DOMUIState> {
+export class DOMUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & Record<string, any> = {}, S extends Partial<DOMUIState> & Record<string, any> = {}> extends BaseUI<T, P & BaseUIProps<T>, S & DOMUIState> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     static defaultSize: [number, number] = [210, 90];
     state: S & DOMUIState = { ...this.state, shadow: false, containerProps: {}, children: [] };

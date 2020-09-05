@@ -23,7 +23,7 @@ The format of a comment is :
 everything else is considered Faust code.
 --------------------------------------------------------
 */
-export type TFaustDocs = { [key: string]: TFaustDoc };
+export type TFaustDocs = Record<string, TFaustDoc>;
 export type TFaustDoc = { path: string[]; name: string; doc: string };
 /**
  *

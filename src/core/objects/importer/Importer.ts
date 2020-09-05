@@ -14,7 +14,7 @@ import { BaseObject } from "../Base";
 import { ImporterDirSelfObject } from "../../../utils/symbols";
 import { getPropertyDescriptors } from "../../../utils/utils";
 
-type TImportedModule = { [key: string]: any };
+type TImportedModule = Record<string, any>;
 declare interface Window {
     module: { exports: TImportedModule };
     exports: TImportedModule;
@@ -22,7 +22,7 @@ declare interface Window {
 
 export default class Importer {
     static $self = ImporterDirSelfObject;
-    static getObject(p: PropertyDescriptor, pkgName: string, root: { [key: string]: any }, path: string[]): typeof AnyImportedObject {
+    static getObject(p: PropertyDescriptor, pkgName: string, root: Record<string, any>, path: string[]): typeof AnyImportedObject {
         const isStatic = path[path.length - 2] !== "prototype";
         let Super: typeof AnyImportedObject;
         const type = typeof p.value;
@@ -81,7 +81,7 @@ export default class Importer {
      *
      * @static
      * @param {string} pkgName package identifier
-     * @param {{ [key: string]: any }} root imported JavaScript object
+     * @param {Record<string, any>} root imported JavaScript object
      * @param {boolean} [all] import non-iterables
      * @param {TPackage} [outIn]
      * @param {string[]} [pathIn]
@@ -90,7 +90,7 @@ export default class Importer {
      * @returns
      * @memberof Importer
      */
-    static import(pkgName: string, root: { [key: string]: any }, all?: boolean, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number) {
+    static import(pkgName: string, root: Record<string, any>, all?: boolean, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number) {
         const depth = typeof depthIn === "undefined" ? 0 : depthIn;
         const out = outIn || {};
         const path = pathIn || [];
@@ -103,7 +103,7 @@ export default class Importer {
         }
         if (typeof o === "undefined" || o === null || stack.indexOf(o) !== -1 || (pkgName !== "window" && o === window)) return out; // cyclic object
         stack[depth] = o;
-        let props: { [key: string]: TypedPropertyDescriptor<any> | PropertyDescriptor };
+        let props: Record<string, TypedPropertyDescriptor<any> | PropertyDescriptor>;
         try { // mitigate opener.location.href error
             props = getPropertyDescriptors(o);
         } catch (e) {

@@ -9,7 +9,7 @@ class PluginUI extends DOMUI<Plugin> {
 }
 
 export type S = { node: AudioNode; plugin: WebAudioModule; children: ChildNode[] };
-type I = [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]];
+type I = [Bang | number | string | TMIDIEvent | Record<string, TBPF>, ...TBPF[]];
 type O = (null | AudioNode)[];
 export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, DOMUIState> {
     static description = "Dynamically load WebAudioModule";
@@ -111,7 +111,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
                 if (this.state.node) {
                     for (const key in data) {
                         try {
-                            const bpf = decodeLine((data as { [key: string]: TBPF })[key]);
+                            const bpf = decodeLine((data as Record<string, TBPF>)[key]);
                             let t = 0;
                             bpf.forEach((a) => {
                                 if (a.length > 1) t += a[1];

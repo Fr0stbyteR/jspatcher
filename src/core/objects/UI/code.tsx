@@ -7,7 +7,6 @@ import { BaseUIState, BaseUI } from "../BaseUI";
 import { AnyObject, Bang } from "../Base";
 import { TMeta } from "../../types";
 
-
 type CodeUIState = { language: string; value: string; editorLoaded: boolean; editing: boolean } & BaseUIState;
 export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
     static sizing = "both" as const;

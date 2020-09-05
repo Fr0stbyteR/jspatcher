@@ -58,7 +58,6 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
         const ctx = this.ctx;
         if (!ctx) return;
 
-
         const left = 0;
         const bottom = 0;
 

@@ -26,10 +26,10 @@ export interface FaustNodeState {
     voices: number;
 }
 type Args = [number];
-type I = [Bang | number | string | TMIDIEvent | { [key: string]: TBPF }, ...TBPF[]];
+type I = [Bang | number | string | TMIDIEvent | Record<string, TBPF>, ...TBPF[]];
 type O = (null | FaustAudioWorkletNode | FaustScriptProcessorNode)[];
 
-export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string]: any } = {}, S extends Partial<FaustNodeState> & { [key: string]: any } = {}, A extends any[] = Args, U extends { [key: string]: any } = {}> extends FaustDynamicNode<D & FaustNodeData, S & FaustNodeState, I, O, A, {}, U> {
+export default class FaustNode<D extends Partial<FaustNodeData> & Record<string, any> = {}, S extends Partial<FaustNodeState> & Record<string, any> = {}, A extends any[] = Args, U extends Record<string, any> = {}> extends FaustDynamicNode<D & FaustNodeData, S & FaustNodeState, I, O, A, {}, U> {
     static package = "Faust";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
@@ -120,7 +120,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & { [key: string
                 if (this.state.node) {
                     for (const key in data) {
                         try {
-                            const bpf = decodeLine((data as { [key: string]: TBPF })[key]);
+                            const bpf = decodeLine((data as Record<string, TBPF>)[key]);
                             if (this.state.node instanceof AWN) this.applyBPF(this.state.node.parameters.get(key), bpf);
                             else this.state.node.setParamValue(key, bpf[bpf.length - 1][0]);
                         } catch (e) {

@@ -240,7 +240,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
         if (!isRectResizable(this.state[rectKey])) return;
         const classList = e.currentTarget.classList;
-        const typeMap: { [key: string]: TResizeHandlerType } = {
+        const typeMap: Record<string, TResizeHandlerType> = {
             "resize-handler-n": "n",
             "resize-handler-ne": "ne",
             "resize-handler-e": "e",

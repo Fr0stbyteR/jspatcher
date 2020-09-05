@@ -156,7 +156,7 @@ class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [a
         });
     }
 }
-const functions: { [key: string]: (...args: any[]) => any } = {
+const functions: Record<string, (...args: any[]) => any> = {
     Add: (a: any, b: any) => a + b,
     Sub: (a: any, b: any) => a - b,
     $Sub: (a: any, b: any) => b - a,
@@ -193,7 +193,7 @@ const functions: { [key: string]: (...args: any[]) => any } = {
     in: (a: any, b: any) => a in b
 };
 
-const Ops: { [key: string]: typeof JSUnaryOp | typeof JSBinaryOp } = {};
+const Ops: Record<string, typeof JSUnaryOp | typeof JSBinaryOp> = {};
 for (const key in functions) {
     const f = functions[key];
     if (f.length === 1) {

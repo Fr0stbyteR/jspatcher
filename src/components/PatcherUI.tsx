@@ -259,7 +259,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
 
 class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean }, { width: string; height: string }> {
     state = { width: "100%", height: "100%" };
-    lines: { [key: string]: JSX.Element } = {};
+    lines: Record<string, JSX.Element> = {};
     componentDidMount() {
         this.handleLoading();
         const patcher = this.props.patcher;
@@ -325,7 +325,7 @@ class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
 type BoxesState = { width: string; height: string };
 class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean }, BoxesState> {
     state: BoxesState = { width: "100%", height: "100%" };
-    boxes: { [key: string]: JSX.Element } = {};
+    boxes: Record<string, JSX.Element> = {};
     componentDidMount() {
         this.handleLoading();
         const patcher = this.props.patcher;
