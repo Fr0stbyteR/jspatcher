@@ -1,3 +1,5 @@
+import { isNumberArray } from "./utils";
+
 /**
  * Mod support wrapping with negative numbers
  */
@@ -60,3 +62,13 @@ export const scale = (x: number, l1: number, h1: number, l2: number, h2: number)
 };
 
 export const scaleClip = (x: number, l1: number, h1: number, l2: number, h2: number) => Math.max(l2, Math.min(h2, scale(x, l1, h1, l2, h2)));
+
+// eslint-disable-next-line arrow-body-style
+export const isIdentityMatrix = (x: number[][]) => {
+    return Array.isArray(x)
+    && x.every((row, i) => isNumberArray(row)
+    && row.length === x.length
+    && row.every((e, j) => e === (j === i ? 1 : 0)));
+};
+
+export const identityMatrix = (dim: number) => new Array(dim).fill(undefined).map((x, i) => new Array(dim).fill(undefined).map((y, j) => +(i === j)));

@@ -89,6 +89,11 @@ export const detectOS = (): "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown" =
     if (appVersion.indexOf("Linux") !== -1) return "Linux";
     return "Unknown";
 };
+export const detectBrowserCore = () => {
+    if ((window as any).chrome) return "Chromium";
+    if ((window as any).InstallTrigger) return "Gecko";
+    return "Unknown";
+};
 export const roundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number | number[]) => {
     const radii = [0, 0, 0, 0];
     if (typeof radius === "number") radii.fill(radius);
@@ -161,4 +166,18 @@ export const getPropertyDescriptors = (obj: Function | Record<string, any>): Pro
     const proto = Object.getPrototypeOf(obj);
     if (obj !== Object.prototype && proto === Object.prototype) return Object.getOwnPropertyDescriptors(obj);
     return Object.assign(proto ? getPropertyDescriptors(proto) : {}, Object.getOwnPropertyDescriptors(obj));
+};
+export const getAudioChannelData = (audioBuffer: AudioBuffer, shared = false) => {
+    const supportSAB = typeof SharedArrayBuffer !== "undefined";
+    const channelData: Float32Array[] = [];
+    const { numberOfChannels, length } = audioBuffer;
+    for (let i = 0; i < numberOfChannels; i++) {
+        if (shared && supportSAB) {
+            channelData[i] = new Float32Array(new SharedArrayBuffer(length * Float32Array.BYTES_PER_ELEMENT));
+            channelData[i].set(audioBuffer.getChannelData(i));
+        } else {
+            channelData[i] = audioBuffer.getChannelData(i);
+        }
+    }
+    return channelData;
 };

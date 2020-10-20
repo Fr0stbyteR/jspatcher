@@ -1,7 +1,7 @@
-import Env from "../env";
+import Env from "./Env";
 import Patcher from "./Patcher";
 import Importer from "./objects/importer/Importer";
-import { TFlatPackage, TPackage, TPatcherMode } from "./types";
+import { TFlatPackage, TPackage, PatcherMode } from "./types";
 import Base, { AnyObject, BaseObject } from "./objects/Base";
 import Std from "./objects/Std";
 import New from "./objects/importer/New";
@@ -60,7 +60,7 @@ export class PackageManager {
     get activeLib() {
         return this.getLib(this.patcherMode);
     }
-    getLib(lib: TPatcherMode) {
+    getLib(lib: PatcherMode) {
         return {
             js: this.libJS,
             faust: this.libFaust,
@@ -68,7 +68,7 @@ export class PackageManager {
             gen: this.libGen
         }[lib];
     }
-    getPkg(lib: TPatcherMode) {
+    getPkg(lib: PatcherMode) {
         return {
             js: this.pkgJS,
             faust: this.pkgFaust,
@@ -93,7 +93,7 @@ export class PackageManager {
         if (i === -1) return;
         imported.splice(i, 1);
     }
-    add(pkgIn: TPackage, lib: TPatcherMode, pathIn: string[] = []) {
+    add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();
         let pkg = this.getPkg(lib);
         while (path.length) {
@@ -214,7 +214,7 @@ export class GlobalPackageManager {
         this.add(this.env.faustLibObjects, "faust");
         this.add({ window: Window }, "js");
     }
-    private add(pkgIn: TPackage, lib: TPatcherMode, pathIn: string[] = []) {
+    private add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();
         let pkg = this[lib];
         while (path.length) {

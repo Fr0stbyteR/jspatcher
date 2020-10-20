@@ -1,17 +1,17 @@
 import { rgbaMax2Css, isTRect, isRectMovable, isRectResizable } from "../utils/utils";
-import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import Line from "./Line";
 import Box from "./Box";
-import Env from "../env";
-import History from "./History";
+import Env from "./Env";
+import PatcherHistory from "./PatcherHistory";
 import SharedData from "./Shared";
 import { PackageManager } from "./PkgMgr";
-import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, TPatcherMode, TPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv } from "./types";
+import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode, RawPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv } from "./types";
 
 import { toFaustDspCode } from "./objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
+import FileInstance from "./file/FileInstance";
 
-export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
+export default class Patcher extends FileInstance<PatcherEventMap> {
     static props: TPropsMeta<TPublicPatcherProps> = {
         dependencies: {
             type: "object",
@@ -101,10 +101,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         ] as const;
         eventNames.forEach(type => this.on(type, () => this.emit("changed")));
     }
-    newTimestamp() {
-        this._state.history.newTimestamp();
-        return this;
-    }
     setActive() {
         this.env.active = this;
     }
@@ -127,11 +123,11 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         };
         this.data = {};
         this._state.selected = [];
-        this._state.history = new History(this);
+        this._state.history = new PatcherHistory(this);
         this._state.pkgMgr = new PackageManager(this);
         this._state.dataMgr = new SharedData(this);
     }
-    async load(patcherIn: TPatcher | TMaxPatcher | any, modeIn?: TPatcherMode, data?: TSharedData) {
+    async load(patcherIn: RawPatcher | TMaxPatcher | any, modeIn?: PatcherMode, data?: TSharedData) {
         this._state.isLoading = true;
         this.emit("loading", []);
         await this.unload();
@@ -233,7 +229,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     async loadFromURL(url: string) {
         try {
             const file = await fetch(url);
-            const parsed = await file.json() as TPatcher | TPatcherEnv | TMaxPatcher;
+            const parsed = await file.json() as RawPatcher | TPatcherEnv | TMaxPatcher;
             if ("patcher" in parsed && "data" in parsed) return this.load(parsed.patcher, undefined, parsed.data);
             return this.load(parsed);
         } catch (e) {
@@ -243,7 +239,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     }
     async loadFromString(sIn: string) {
         try {
-            const parsed = JSON.parse(sIn) as TPatcher | TPatcherEnv | TMaxPatcher;
+            const parsed = JSON.parse(sIn) as RawPatcher | TPatcherEnv | TMaxPatcher;
             if ("patcher" in parsed && "data" in parsed) return this.load(parsed.patcher, undefined, parsed.data);
             return this.load(parsed);
         } catch (e) {
@@ -255,11 +251,11 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const splitName = file.name.split(".");
         const ext = splitName.pop();
         const name = splitName.join(".");
-        const extMap: Record<string, TPatcherMode> = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+        const extMap: Record<string, PatcherMode> = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
-            let parsed: TPatcher | TPatcherEnv | TMaxPatcher;
+            let parsed: RawPatcher | TPatcherEnv | TMaxPatcher;
             try {
                 parsed = JSON.parse(reader.result.toString());
             } catch (e) {
@@ -301,7 +297,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const box = new Box(this, boxIn);
         this.boxes[box.id] = box;
         await box.init();
-        this.newTimestamp();
         if (!this._state.isLoading) this.emit("createBox", box);
         if (!noPostInit) await box.postInit();
         return box;
@@ -320,7 +315,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const oldText = this.boxes[boxID].text;
         if (oldText === text) return this.boxes[boxID];
         await this.boxes[boxID].changeText(text);
-        this.newTimestamp();
         this.emit("changeBoxText", { oldText, text, box: this.boxes[boxID] });
         return this.boxes[boxID];
     }
@@ -328,7 +322,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const box = this.boxes[boxID];
         await box.destroy();
         this.deselect(boxID);
-        this.newTimestamp();
         this.emit("deleteBox", box);
         return box;
     }
@@ -338,7 +331,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const line = new Line(this, lineIn);
         this.lines[line.id] = line;
         line.enable();
-        this.newTimestamp();
         if (!this._state.isLoading) this.emit("createLine", line);
         return line;
     }
@@ -352,7 +344,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const line = this.lines[lineID];
         line.destroy();
         this.deselect(lineID);
-        this.newTimestamp();
         this.emit("deleteLine", line);
         return line;
     }
@@ -365,7 +356,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const oldSrc: [string, number] = [line.srcID, line.srcOutlet];
         const src: [string, number] = [srcID, srcOutlet];
         line.setSrc(src);
-        this.newTimestamp();
         this.emit("changeLineSrc", { line, oldSrc, src });
         this.emit("changeLine", { line, isSrc: true, oldPort: oldSrc, port: src });
         return line;
@@ -379,7 +369,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         const oldDest: [string, number] = [line.destID, line.destInlet];
         const dest: [string, number] = [destID, destOutlet];
         line.setDest(dest);
-        this.newTimestamp();
         this.emit("changeLineDest", { line, oldDest, dest });
         this.emit("changeLine", { line, isSrc: false, oldPort: oldDest, port: dest });
         return line;
@@ -628,7 +617,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     }
     selectedToString() {
         const lineSet = new Set<Line>();
-        const patcher: TPatcher = { lines: {}, boxes: {} };
+        const patcher: RawPatcher = { lines: {}, boxes: {} };
         this._state.selected
             .filter(id => id.startsWith("box") && this.boxes[id])
             .map(id => this.boxes[id])
@@ -657,7 +646,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
     moveEnd(delta: { x: number; y: number }) {
-        this.newTimestamp();
         const { presentation, selected } = this._state;
         const rectKey = presentation ? "presentationRect" : "rect";
         let ids = selected.filter(id => id.startsWith("box") && this.boxes[id]);
@@ -719,7 +707,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
     resizeEnd(delta: { x: number; y: number }, type: TResizeHandlerType) {
-        this.newTimestamp();
         const { selected, presentation } = this._state;
         this.emit("resized", { delta, type, selected, presentation });
     }
@@ -819,11 +806,10 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this.emit("tempLine", { findSrc, from });
         return this;
     }
-    async paste(clipboard: TPatcher | TMaxClipboard) {
+    async paste(clipboard: RawPatcher | TMaxClipboard) {
         const idMap: Record<string, string> = {};
-        const pasted: TPatcher = { boxes: {}, lines: {} };
+        const pasted: RawPatcher = { boxes: {}, lines: {} };
         if (!clipboard || !clipboard.boxes) return pasted;
-        this.newTimestamp();
         const $init: Promise<Box>[] = [];
         const $postInit: Promise<Box>[] = [];
         if (Array.isArray(clipboard.boxes)) { // Max Patcher
@@ -914,11 +900,10 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         }
         return pasted;
     }
-    async create(objects: TPatcher) {
-        this.newTimestamp();
+    async create(objects: RawPatcher) {
         const $init: Promise<Box>[] = [];
         const $postInit: Promise<Box>[] = [];
-        const created: TPatcher = { boxes: {}, lines: {} };
+        const created: RawPatcher = { boxes: {}, lines: {} };
         for (const boxID in objects.boxes) {
             const boxIn = objects.boxes[boxID];
             const box = new Box(this, boxIn);
@@ -942,7 +927,6 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this.emit("create", created);
     }
     async deleteSelected() {
-        this.newTimestamp();
         const boxSet = new Set<Box>();
         const lineSet = new Set<Line>();
         this._state.selected.filter(id => id.startsWith("line")).forEach(id => lineSet.add(this.lines[id]));
@@ -952,7 +936,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         });
         if (!boxSet.size && !lineSet.size) return undefined;
         this._state.selected = [];
-        const deleted: TPatcher = { boxes: {}, lines: {} };
+        const deleted: RawPatcher = { boxes: {}, lines: {} };
         const promises: Promise<Box>[] = [];
         lineSet.forEach((line) => {
             deleted.lines[line.id] = line;
@@ -967,9 +951,8 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
         this.emit("delete", deleted);
         return deleted;
     }
-    async delete(objects: TPatcher) {
-        this.newTimestamp();
-        const deleted: TPatcher = { boxes: {}, lines: {} };
+    async delete(objects: RawPatcher) {
+        const deleted: RawPatcher = { boxes: {}, lines: {} };
         for (const id in objects.lines) {
             deleted.lines[id] = this.lines[id].destroy();
         }
@@ -1011,7 +994,7 @@ export default class Patcher extends TypedEventEmitter<PatcherEventMap> {
     toString(spacing?: number) {
         return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
     }
-    toSerializable(): TPatcher {
+    toSerializable(): RawPatcher {
         return JSON.parse(this.toString());
     }
     toStringEnv(spacing = 4) {

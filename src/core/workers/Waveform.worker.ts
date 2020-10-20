@@ -6,11 +6,10 @@ import ProxyWorker from "./ProxyWorker";
 // eslint-disable-next-line no-undef
 const SAB = globalThis.SharedArrayBuffer || globalThis.ArrayBuffer;
 class Waveform extends ProxyWorker<IWaveformWorker> {
-    generate(buffer: Float32Array[]) {
+    generate(buffer: Float32Array[], stepsFactor = 16) {
         const waveformData: WaveformData = {};
         if (buffer.length === 0) return waveformData;
         const l = buffer[0].length;
-        const stepsFactor = 16;
         for (let stepLength = stepsFactor; stepLength <= l / stepsFactor; stepLength *= stepsFactor) {
             const stepData: WaveformStepData = [];
             waveformData[stepLength] = stepData;

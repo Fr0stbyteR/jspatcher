@@ -7,7 +7,7 @@ import "./PatcherUI.scss";
 import "./zIndex.scss";
 import BoxUI from "./BoxUI";
 import { LineUI, TempLineUI } from "./LineUI";
-import { TPatcher, TRect } from "../core/types";
+import { RawPatcher, TRect } from "../core/types";
 import { round } from "../utils/math";
 
 type P = { patcher: Patcher; transparent?: boolean; runtime?: boolean };
@@ -282,7 +282,7 @@ class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
         this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
         this.forceUpdate();
     };
-    handleCreate = (created: TPatcher) => {
+    handleCreate = (created: RawPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(created.lines).forEach((id) => {
             const line = created.lines[id];
@@ -295,7 +295,7 @@ class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
         delete this.lines[line.id];
         this.forceUpdate();
     };
-    handleDelete = (deleted: TPatcher) => {
+    handleDelete = (deleted: RawPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
         this.forceUpdate();
@@ -348,7 +348,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
         this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
         this.forceUpdate();
     };
-    handleCreate = (created: TPatcher) => {
+    handleCreate = (created: RawPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(created.boxes).forEach((id) => {
             const box = created.boxes[id];
@@ -361,7 +361,7 @@ class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
         delete this.boxes[box.id];
         this.forceUpdate();
     };
-    handleDelete = (deleted: TPatcher) => {
+    handleDelete = (deleted: RawPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(deleted.boxes).forEach(id => delete this.boxes[id]);
         this.forceUpdate();

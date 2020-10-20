@@ -2,7 +2,7 @@ import { DefaultObject } from "./Base";
 import Patcher from "../Patcher";
 import Box from "../Box";
 import Line from "../Line";
-import { TPackage, TMeta, TPropsMeta, TPatcher } from "../types";
+import { TPackage, TMeta, TPropsMeta, RawPatcher } from "../types";
 import { SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
 import { CodeUI } from "./UI/code";
@@ -997,7 +997,7 @@ interface SubPatcherState extends FaustOpState {
     key: string;
     cachedCode: { exprs: string[]; onces: string[]; ins: number; outs: number };
 }
-export class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string], {}, { patcher: Patcher }> {
+export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [string], {}, { patcher: Patcher }> {
     static description = "Sub-patcher represents a sub-process";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -1049,7 +1049,7 @@ export class SubPatcher extends FaustOp<TPatcher | {}, SubPatcherState, [string]
         const { key } = this.state;
         if (key) {
             this.data = {};
-            const shared: TPatcher = this.sharedData.get("patcher", key);
+            const shared: RawPatcher = this.sharedData.get("patcher", key);
             if (typeof shared === "object") await this.state.patcher.load(shared, this.type);
             else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
         } else {

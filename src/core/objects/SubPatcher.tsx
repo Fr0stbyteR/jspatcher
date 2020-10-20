@@ -2,7 +2,7 @@ import * as React from "react";
 import { StrictModalProps, Modal } from "semantic-ui-react";
 import { DefaultObject, DefaultAudioObject, BaseAudioObject } from "./Base";
 import Patcher from "../Patcher";
-import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, TPatcher } from "../types";
+import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher } from "../types";
 import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState } from "./BaseUI";
 import UI from "../../components/UI";
 import "./SubPatcher.scss";
@@ -296,7 +296,7 @@ interface SubPatcherState {
     patcher: Patcher;
     key: string;
 }
-export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherState, any[], any[], [string], {}, { patcher: Patcher }> {
+export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherState, any[], any[], [string], {}, { patcher: Patcher }> {
     static package = "SubPatcher";
     static description = "Sub-patcher";
     static args: TMeta["args"] = [{
@@ -364,7 +364,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
             const { key } = this.state;
             if (key) {
                 this.data = {};
-                const shared: TPatcher = this.sharedData.get("patcher", key);
+                const shared: RawPatcher = this.sharedData.get("patcher", key);
                 if (typeof shared === "object") await this.state.patcher.load(shared, "js");
                 else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
             } else {
@@ -402,7 +402,7 @@ export class patcher extends DefaultAudioObject<Partial<TPatcher>, SubPatcherSta
     }
 }
 interface FaustPatcherState extends FaustNodeState, SubPatcherState {}
-export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState, [string, number], { patcher: Patcher }> {
+export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherState, [string, number], { patcher: Patcher }> {
     static package = "SubPatcher";
     static description = "Faust Sub-patcher, compiled to AudioNode";
     static args: TMeta["args"] = [{
@@ -450,7 +450,7 @@ export class faustPatcher extends FaustNode<Partial<TPatcher>, FaustPatcherState
         const { key } = this.state;
         if (key) {
             this.data = {};
-            const shared: TPatcher = this.sharedData.get("patcher", key);
+            const shared: RawPatcher = this.sharedData.get("patcher", key);
             if (typeof shared === "object") await this.state.patcher.load(shared, "faust");
             else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
         } else {
@@ -526,7 +526,7 @@ export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher }> {
         return <BaseUI {...this.props} children={children} />;
     }
 }
-export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState, any[], any[], [string], {}, { patcher: Patcher }> {
+export class bpatcher extends BaseAudioObject<Partial<RawPatcher>, SubPatcherState, any[], any[], [string], {}, { patcher: Patcher }> {
     static package = "SubPatcher";
     static description = "Sub-patcher";
     static args: TMeta["args"] = [{
@@ -594,7 +594,7 @@ export class bpatcher extends BaseAudioObject<Partial<TPatcher>, SubPatcherState
             const { key } = this.state;
             if (key) {
                 this.data = {};
-                const shared: TPatcher = this.sharedData.get("patcher", key);
+                const shared: RawPatcher = this.sharedData.get("patcher", key);
                 if (typeof shared === "object") await this.state.patcher.load(shared, "js");
                 else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
             } else {

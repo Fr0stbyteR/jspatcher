@@ -1,4 +1,4 @@
-export type PromisifiedFunction<F extends (...args: any[]) => any> = (...args: Parameters<F>) => Promise<ReturnType<F>>;
+export type PromisifiedFunction<F extends (...args: any[]) => any> = (...args: Parameters<F>) => ReturnType<F> extends Promise<any> ? ReturnType<F> : Promise<ReturnType<F>>;
 
 export type UnPromisifiedFunction<F extends (...args: any[]) => any> = (...args: Parameters<F>) => ReturnType<F> extends Promise<infer P> ? P : ReturnType<F>;
 

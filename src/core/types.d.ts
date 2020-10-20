@@ -3,8 +3,8 @@ import { BaseObject, AnyObject, AbstractObject } from "./objects/Base";
 import Patcher from "./Patcher";
 import Box from "./Box";
 import Line from "./Line";
-import History from "./History";
-import Env from "../env";
+import PatcherHistory from "./PatcherHistory";
+import Env from "./Env";
 import SharedData from "./Shared";
 import { PackageManager } from "./PkgMgr";
 
@@ -20,22 +20,54 @@ declare global {
     }
 }
 
-export type TPatcherMode = "max" | "gen" | "faust" | "js";
+export type PatcherMode = "max" | "gen" | "faust" | "js";
 
-export type TPatcher = {
+export type PatcherFileExtension = "jspat" | "maxpat" | "gendsp" | "dsppat";
+
+export type AudioFileExtension = "wav" | "aif" | "aiff" | "mp3" | "aac" | "flac" | "ogg";
+
+export type TextFileExtension = "txt" | "json";
+
+export type FileExtension = PatcherFileExtension | AudioFileExtension | TextFileExtension;
+
+export type ProjectItemType = "patcher" | "audio" | "text" | "folder" | "unknown";
+
+export type ProjectItemDataType<T extends ProjectItemType = any> = T extends "folder" ? RawProjectItems : T extends "patcher" ? RawPatcher : T extends "text" ? string : ArrayBuffer;
+
+export interface RawProjectItem<T extends ProjectItemType = any> {
+    type: T;
+    name: string;
+    data: T extends "folder" ? never : ProjectItemDataType<T>;
+    items: T extends "folder" ? RawProjectItems : never;
+}
+export type RawProjectItems = RawProjectItem[];
+
+export interface ProjectProps {
+    name: string;
+    author: string;
+    version: string;
+}
+
+export interface RawProject {
+    props: ProjectProps;
+    files: RawProjectItems;
+    data: TSharedData;
+}
+
+export interface RawPatcher {
     lines: Record<string, TLine>;
     boxes: Record<string, TBox>;
     props?: {};
-};
-export type TPatcherEnv = {
-    patcher: TPatcher;
+}
+export interface TPatcherEnv {
+    patcher: RawPatcher;
     data: TSharedData;
-};
+}
 
 export type TDependencies = [string, string][];
 
-export type TPatcherProps = {
-    mode: TPatcherMode;
+export interface TPatcherProps {
+    mode: PatcherMode;
     dependencies: TDependencies;
     bgColor: string;
     editingBgColor: string;
@@ -48,10 +80,10 @@ export type TPatcherProps = {
     version?: string;
     description?: string;
     openInPresentation: boolean;
-};
+}
 export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid" | "openInPresentation">;
 
-export type TPatcherState = {
+export interface TPatcherState {
     name: string;
     isLoading: boolean;
     locked: boolean;
@@ -59,24 +91,24 @@ export type TPatcherState = {
     showGrid: boolean;
     snapToGrid: boolean;
     log: TPatcherLog[];
-    history: History;
+    history: PatcherHistory;
     selected: string[];
     pkgMgr: PackageManager;
     dataConsumers: TSharedDataConsumers;
     dataMgr: SharedData;
-};
+}
 export type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid">;
 
 export type TErrorLevel = "error" | "warn" | "info" | "none";
 
-export type TPatcherLog = {
+export interface TPatcherLog {
     errorLevel: TErrorLevel;
     emitter?: Box | Patcher | any;
     title: string;
     message: string;
-};
+}
 
-export type TMaxPatcher = {
+export interface TMaxPatcher {
     patcher: {
         lines: TMaxLine[];
         boxes: TMaxBox[];
@@ -86,8 +118,8 @@ export type TMaxPatcher = {
         gridsize: [number, number];
         [key: string]: any;
     };
-};
-export type TMaxBox = {
+}
+export interface TMaxBox {
     box: {
         id: string;
         maxclass: "newobj" | string;
@@ -99,18 +131,18 @@ export type TMaxBox = {
         background?: number;
         presentation?: number;
     };
-};
+}
 
-export type TMaxLine = {
+export interface TMaxLine {
     patchline: {
         destination: [string, number];
         source: [string, number];
         order: number;
         midpoints: number[];
     };
-};
+}
 
-export type TMaxClipboard = {
+export interface TMaxClipboard {
     boxes: TMaxBox[];
     lines: TMaxLine[];
     appversion: {
@@ -120,22 +152,22 @@ export type TMaxClipboard = {
         architecture: string;
         modernui: number;
     };
-};
+}
 export type TPackage = { [key: string]: typeof AnyObject | TPackage };
 export type TFlatPackage = { [key: string]: typeof AnyObject };
 export type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };
 export type TAudioNodeOutletConnection = { node: AudioNode; index: number };
 export type TPatcherAudioConnection = { node: GainNode; index: number };
 
-export type TLine = {
+export interface TLine {
     id?: string;
     src: [string, number];
     dest: [string, number];
     disabled?: boolean;
-};
+}
 export type TLineType = "normal" | "audio";
 
-export type TBox = {
+export interface TBox {
     id?: string;
     text: string;
     inlets: number;
@@ -148,24 +180,57 @@ export type TBox = {
     props?: Record<string, any>;
     data?: Record<string, any>;
     _editing?: boolean;
-};
+}
 
 export type TRect = [number, number, number, number];
 export type TPresentationRect = [number | string, number | string, number | string, number | string];
 
 export type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
 
-export type TSharedData = {
+export interface TSharedData {
     [category: string]: {
         [key: string]: any;
     };
-};
-export type TSharedDataConsumers = {
+}
+export interface TSharedDataConsumers {
     [category: string]: {
         [key: string]: Set<BaseObject>;
     };
-};
+}
 
+export interface EditorEventMap {
+    "status": { busy: boolean; error?: boolean; message?: string };
+    "editFile": { fileName: string; data: Patcher };
+    "stopEditFile": { fileName: string };
+    "undo": never;
+    "redo": never;
+}
+
+export interface EditorState {
+    env: Env;
+    fileName: string;
+    clipboard: RawPatcher;
+    editing: string[];
+    fileState: Record<string, Patcher>;
+}
+export interface FileEventMap {
+    "ready": boolean;
+    "changed": never;
+    "destroyed": never;
+}
+export interface FileState {
+    isLoading: boolean;
+    isDirty: boolean;
+    isMemoryOnly: boolean;
+    isEditing: boolean;
+}
+export interface JSPatcherFile extends FileState {
+    type: "patcher" | "audio" | "text";
+    createdTime: number;
+    lastModifiedTime: number;
+    instance: any;
+    history: any
+}
 export interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
     "loading": string[] | undefined;
     "ready": never;
@@ -173,8 +238,8 @@ export interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherStat
     "locked": boolean;
     "presentation": boolean;
     "showGrid": boolean;
-    "create": TPatcher;
-    "delete": TPatcher;
+    "create": RawPatcher;
+    "delete": RawPatcher;
     "createBox": Box;
     "deleteBox": Box;
     "createObject": BaseObject;
@@ -317,3 +382,14 @@ export type TBPF = string | number | number[] | number[][];
 export type TBPFPoint = [number, number, number];
 export type TStrictBPF = TBPFPoint[];
 export type TMIDIEvent = [number, number, number] | (Uint8Array & { length: 3 });
+
+export interface WaveformMinMaxData {
+    min: Float32Array;
+    max: Float32Array;
+}
+export interface WaveformStepData extends Array<WaveformMinMaxData> {
+    idx?: Int32Array;
+}
+export interface WaveformData {
+    [step: number]: WaveformStepData;
+}

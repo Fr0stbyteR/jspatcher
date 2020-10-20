@@ -2,17 +2,23 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Dimmer, Loader } from "semantic-ui-react";
 import { Faust, FaustAudioWorkletNode } from "faust2webaudio";
-import { detectOS } from "./utils/utils";
-import { faustLangRegister } from "./misc/monaco-faust/register";
-import { TypedEventEmitter } from "./utils/TypedEventEmitter";
-import { TFaustDocs } from "./misc/monaco-faust/Faust2Doc";
-import { TPackage, TSharedData, TSharedDataConsumers } from "./core/types";
-import { getFaustLibObjects } from "./core/objects/Faust";
-import Patcher from "./core/Patcher";
-import Importer from "./core/objects/importer/Importer";
-import UI from "./components/UI";
-import PatcherUI from "./components/PatcherUI";
-import { GlobalPackageManager } from "./core/PkgMgr";
+import { detectOS, detectBrowserCore } from "../utils/utils";
+import { faustLangRegister } from "../misc/monaco-faust/register";
+import { TypedEventEmitter } from "../utils/TypedEventEmitter";
+import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
+import { TPackage, TSharedData, TSharedDataConsumers } from "./types";
+import { getFaustLibObjects } from "./objects/Faust";
+import Patcher from "./Patcher";
+import Importer from "./objects/importer/Importer";
+import UI from "../components/UI";
+import PatcherUI from "../components/PatcherUI";
+import { GlobalPackageManager } from "./PkgMgr";
+import Editor from "./Editor";
+import FileManager from "./FileMgr";
+import FileMgrWorker from "./workers/FileMgrWorker";
+import WaveformWorker from "./workers/WaveformWorker";
+import WavEncoderWorker from "./workers/WavEncoderWorker";
+import TaskManager from "./TaskMgr";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -36,12 +42,20 @@ export class LoaderUI extends React.PureComponent<{ env: Env }, { text: string }
  * @class Env
  */
 export default class Env extends TypedEventEmitter<{ text: string }> {
+    readonly fileMgrWorker = new FileMgrWorker();
+    readonly waveformWorker = new WaveformWorker();
+    readonly wavEncoderWorker = new WavEncoderWorker();
     loaded = false;
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();
+    readonly browser = detectBrowserCore();
+    readonly language = navigator.language === "zh-CN" ? "zh-CN" : "en";
     readonly supportAudioWorklet = !!window.AudioWorklet;
     readonly data: TSharedData = {};
     readonly dataConsumers: TSharedDataConsumers = {};
+    readonly taskMgr = new TaskManager();
+    readonly fileMgr = new FileManager(this);
+    readonly editor = new Editor(this);
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;

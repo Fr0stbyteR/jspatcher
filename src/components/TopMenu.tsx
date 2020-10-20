@@ -2,7 +2,7 @@ import * as React from "react";
 import { Menu, Dropdown, Ref } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import "./TopMenu.scss";
-import { TPatcher, TMaxClipboard } from "../core/types";
+import { RawPatcher, TMaxClipboard } from "../core/types";
 
 class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
     refDownload = React.createRef<HTMLAnchorElement>();
@@ -106,7 +106,7 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
         if (this.props.patcher.state.locked) return;
         const s = await navigator.clipboard.readText();
         if (!s) return;
-        let parsed: TPatcher | TMaxClipboard;
+        let parsed: RawPatcher | TMaxClipboard;
         try {
             parsed = JSON.parse(s);
         } catch (e) {} // eslint-disable-line no-empty
@@ -120,7 +120,7 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
         if (this.props.patcher.state.locked) return;
         const s = this.props.patcher.selectedToString();
         if (!s) return;
-        let parsed: TPatcher;
+        let parsed: RawPatcher;
         try {
             parsed = JSON.parse(s);
         } catch (e) {} // eslint-disable-line no-empty

@@ -31,7 +31,7 @@ class FileMgr extends ProxyWorker<IFileManagerWorker> {
             ));
         });
     }
-    renameFile(oldPath: string, newPath: string) {
+    rename(oldPath: string, newPath: string) {
         return new Promise<true>((resolve, reject) => this.fs.rename(oldPath, newPath, e => (e ? reject(e) : resolve(true))));
     }
     exists(path: string) {
