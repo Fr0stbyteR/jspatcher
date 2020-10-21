@@ -18,7 +18,7 @@ export default class History<EventMap extends Record<string, any> = {}> {
         this.emitDirty();
     }
     emitDirty() {
-        this.instance.emitDirty(this.isDirty);
+        this.instance.emit("changed");
     }
     destroy() {
         this.eventListening.forEach(type => this.instance.off(type as Extract<keyof EventMap, string>, event => this.did(type, event)));

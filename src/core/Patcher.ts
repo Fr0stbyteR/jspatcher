@@ -50,7 +50,6 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     constructor(envIn: Env) {
         super();
         this._env = envIn;
-        this.observeHistory();
         this.observeGraphChange();
         this.observeChange();
         this._state = {
@@ -81,19 +80,15 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     get activeLib() {
         return this._state.pkgMgr.activeLib;
     }
+    get history(): PatcherHistory {
+        return this._state.history;
+    }
     private observeGraphChange() {
         const eventNames = [
             "ready", "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
             "changeBoxText", "changeLineSrc", "changeLineDest"
         ] as const;
         eventNames.forEach(e => this.on(e, () => this.emit("graphChanged")));
-    }
-    private observeHistory() {
-        const eventNames = [
-            "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
-            "changeBoxText", "changeLineSrc", "changeLineDest", "moved", "resized"
-        ] as const;
-        eventNames.forEach(type => this.on(type, e => this._state.history.did(type, e)));
     }
     private observeChange() {
         const eventNames = [
@@ -126,6 +121,11 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         this._state.history = new PatcherHistory(this);
         this._state.pkgMgr = new PackageManager(this);
         this._state.dataMgr = new SharedData(this);
+    }
+    async init(data: ArrayBuffer) {
+        if (!data.byteLength) return this.load({});
+        const patcherIn = await new Response(data).json();
+        return this.load(patcherIn);
     }
     async load(patcherIn: RawPatcher | TMaxPatcher | any, modeIn?: PatcherMode, data?: TSharedData) {
         this._state.isLoading = true;
@@ -274,6 +274,10 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     async unload() {
         await this.emit("unload");
         await this.clear();
+    }
+    async destroy() {
+        await this.unload();
+        await this.emit("destroy");
     }
     get fileName() {
         return `${this._state.name}.${{ js: "json", max: "maxpat", gen: "gendsp", faust: "dsppat" }[this.props.mode]}`;
@@ -999,5 +1003,8 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     }
     toStringEnv(spacing = 4) {
         return JSON.stringify({ patcher: this, data: this._env.data }, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
+    }
+    serialize() {
+        return new Blob([this.toString()]).arrayBuffer();
     }
 }

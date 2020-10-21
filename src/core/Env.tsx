@@ -13,7 +13,6 @@ import Importer from "./objects/importer/Importer";
 import UI from "../components/UI";
 import PatcherUI from "../components/PatcherUI";
 import { GlobalPackageManager } from "./PkgMgr";
-import Editor from "./Editor";
 import FileManager from "./FileMgr";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
@@ -55,7 +54,6 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     readonly dataConsumers: TSharedDataConsumers = {};
     readonly taskMgr = new TaskManager();
     readonly fileMgr = new FileManager(this);
-    readonly editor = new Editor(this);
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;
@@ -75,7 +73,11 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     }
     async init() {
         const urlParams = new URLSearchParams(window.location.search);
-        this._noUI = !!urlParams.get("min");
+        const urlparamsOptions = {
+            noUI: !!urlParams.get("min"),
+            runtime: !!urlParams.get("runtime")
+        };
+        this._noUI = urlparamsOptions.noUI;
         if (!this._noUI && this.divRoot) ReactDOM.render(<LoaderUI env={this} />, this.divRoot);
 
         this.emit("text", "Loading Faust2WebAudio...");
@@ -104,6 +106,8 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         this.faustDocs = providers.docs;
         this.faustLibObjects = getFaustLibObjects(this.faustDocs);
 
+        this.emit("text", "Loading Files");
+        await this.fileMgr.init();
         this.pkgMgr = new GlobalPackageManager(this);
 
         this.faust = faust;
@@ -115,7 +119,7 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
 
         const fileName = urlParams.get("file");
         const mode = urlParams.get("mode");
-        const runtime = !!urlParams.get("runtime");
+        const runtime = urlparamsOptions.runtime;
         if (!fileName && !mode) {
             const localStoragePatcher = localStorage.getItem("__JSPatcher_Patcher");
             if (localStoragePatcher) await patcher.loadFromString(localStoragePatcher);

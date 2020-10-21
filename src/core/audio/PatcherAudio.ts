@@ -3,6 +3,7 @@ import Waveform from "../../utils/Waveform";
 import { Options } from "../../utils/WavEncoder";
 import Env from "../Env";
 import FileInstance from "../file/FileInstance";
+import AudioHistory from "./AudioHistory";
 import OperableAudioBuffer from "./OperableAudioBuffer";
 
 export interface PatcherAudioEventMap {
@@ -26,6 +27,10 @@ export interface PatcherAudioEventMap {
 
 export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     readonly env: Env;
+    _history: AudioHistory = new AudioHistory(this);
+    get history() {
+        return this._history;
+    }
     audioBuffer: OperableAudioBuffer;
     waveform: Waveform;
 

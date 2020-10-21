@@ -1,7 +1,7 @@
 import History from "../file/History";
 import PatcherAudio, { PatcherAudioEventMap } from "./PatcherAudio";
 
-export default class PatcherAudioHistory extends History<PatcherAudioEventMap> {
+export default class AudioHistory extends History<PatcherAudioEventMap> {
     instance: PatcherAudio;
     eventListening: (keyof PatcherAudioEventMap)[] = ["faded", "fadedIn", "fadedOut", "cutEnd", "pasted", "deleted", "silenced", "insertedSilence", "resampled", "remixed", "recorded"];
     async undo() {

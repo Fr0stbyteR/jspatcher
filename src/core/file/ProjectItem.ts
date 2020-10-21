@@ -1,6 +1,7 @@
 import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import FileManager from "../FileMgr";
 import { ProjectItemType } from "../types";
+import FileInstance from "./FileInstance";
 import Folder from "./Folder";
 
 export interface ProjectItemEventMap {
@@ -48,8 +49,31 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         this.emit("ready");
         return this;
     }
-    async instantiate(): Promise<any> {
+    async instantiate(): Promise<FileInstance<any>> {
+        throw new Error("Not implemented.");
         // new instance Patcher / AudioBuffer etc
+        // this.inspectInstance(instance);
+    }
+    inspectInstance(instance: FileInstance<any>) {
+        const handleReady = () => {
+            instance.on("changed", handleChange);
+            instance.on("save", handleSave);
+            instance.on("saveAs", handleSaveAs);
+            instance.on("destroy", handleDestroy);
+        };
+        const handleChange = () => this.emit("dirty", instance.isDirty);
+        const handleSave = (data: ArrayBuffer) => this.save(data);
+        const handleSaveAs = ({ parent, name, data }: { parent: Folder, name: string, data: ArrayBuffer }) => {
+            this.saveAs(parent, name, data);
+        };
+        const handleDestroy = () => {
+            instance.off("ready", handleReady);
+            instance.off("save", handleSave);
+            instance.off("saveAs", handleSaveAs);
+            instance.off("changed", handleChange);
+            instance.off("destroy", handleDestroy);
+        };
+        instance.on("ready", handleReady);
     }
     get path(): string {
         return this.parentPath ? `${this.parentPath}/${this._name}` : "";
