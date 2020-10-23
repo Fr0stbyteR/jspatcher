@@ -6,7 +6,6 @@ export default class AudioFile extends ProjectItem {
     async instantiate() {
         const { env } = this.fileMgr;
         const audio = new PatcherAudio(env);
-        this.inspectInstance(audio);
         await audio.init(this.data);
         return audio;
     }

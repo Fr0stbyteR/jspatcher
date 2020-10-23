@@ -1,23 +1,33 @@
 import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
+import Env from "../Env";
 import FileManager from "../FileMgr";
+import Project from "../Project";
 import { ProjectItemType } from "../types";
 import FileInstance from "./FileInstance";
 import Folder from "./Folder";
 
 export interface ProjectItemEventMap {
     "ready": never;
-    "renamed": { oldName: string, newName: string };
-    "moved": { from: Folder, to: Folder };
+    "instantiated": FileInstance;
+    "nameChanged": { oldName: string, newName: string };
+    "pathChanged": { from: Folder, to: Folder };
     "destroyed": never;
-    "saved": never;
     "dirty": boolean;
 }
 
 export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> {
     type: ProjectItemType = "unknown";
-    private _fileMgr: FileManager;
+    private readonly _env: Env;
+    get env(): Env {
+        return this._env;
+    }
+    private readonly _fileMgr: FileManager;
     get fileMgr() {
         return this._fileMgr;
+    }
+    private readonly _project: Project;
+    get project() {
+        return this._project;
     }
     protected _name: string;
     get name() {
@@ -28,16 +38,18 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     get data() {
         return this._data;
     }
-    constructor(fileMgrIn: FileManager, parentIn: Folder, nameIn: string, dataIn?: ArrayBuffer) {
+    constructor(fileMgrIn: FileManager, projectIn: Project, parentIn: Folder, nameIn: string, dataIn?: ArrayBuffer) {
         super();
         this._fileMgr = fileMgrIn;
+        this._env = fileMgrIn.env;
+        this._project = projectIn;
         this.parent = parentIn;
         this._name = nameIn;
         if (dataIn) this._data = dataIn;
     }
     clone(parentIn = this.parent, nameIn = this._name, dataIn?: ArrayBuffer) {
         const Ctor = this.constructor as typeof ProjectItem;
-        return new Ctor(this._fileMgr, parentIn, nameIn, dataIn);
+        return new Ctor(this._fileMgr, this.project, parentIn, nameIn, dataIn);
     }
     async init() {
         this._data = await this.fileMgr.readFile(this.path);
@@ -48,33 +60,6 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         throw new Error("Not implemented.");
         // new instance Patcher / AudioBuffer etc
         // this.inspectInstance(instance);
-    }
-    inspectInstance(instance: FileInstance<any>) {
-        const handleReady = () => {
-            instance.on("changed", handleChange);
-            instance.on("save", handleSave);
-            instance.on("saveAs", handleSaveAs);
-            instance.on("destroy", handleDestroy);
-        };
-        const handleChange = () => this.emit("dirty", instance.isDirty);
-        const handleSave = (data: ArrayBuffer) => this.save(data);
-        const handleSaveAs = async ({ parent, name, data }: { parent: Folder, name: string, data: ArrayBuffer }) => {
-            if (instance.isTemporary) {
-                await this.move(parent);
-                await this.rename(name);
-                await this.save(data);
-            } else {
-                await this.saveAs(parent, name, data);
-            }
-        };
-        const handleDestroy = () => {
-            instance.off("ready", handleReady);
-            instance.off("save", handleSave);
-            instance.off("saveAs", handleSaveAs);
-            instance.off("changed", handleChange);
-            instance.off("destroy", handleDestroy);
-        };
-        instance.on("ready", handleReady);
     }
     get path(): string {
         return this.parentPath ? `${this.parentPath}/${this._name}` : "";
@@ -89,22 +74,24 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         if (!this.parent.existItem(newNameIn)) throw new Error(`${newName} already exists.`);
         await this.fileMgr.rename(this.path, `${this.parentPath}/${newNameIn}`);
         this.fileMgr.emitTreeChanged();
-        this.emit("renamed", { oldName, newName });
+        this.emit("nameChanged", { oldName, newName });
     }
-    async move(to: Folder) {
+    async move(to: Folder, newName = this.name) {
         if (to === this.parent) return;
-        if (!to.existItem(this.name)) throw new Error(`${this.name} already exists in ${to.name}`);
-        await this._fileMgr.rename(this.path, `${to.path}/${this._name}`);
+        if (!to.existItem(newName)) throw new Error(`${newName} already exists in ${to.name}`);
+        await this._fileMgr.rename(this.path, `${to.path}/${newName}`);
         const from = this.parent;
         from.items.delete(this);
         this.parent = to;
+        this._name = newName;
         this.parent.items.add(this);
         this.fileMgr.emitTreeChanged();
-        this.emit("moved", { from, to });
+        this.emit("pathChanged", { from, to });
     }
     async destroy() {
         await this._fileMgr.remove(this.path);
         this.parent.items.delete(this);
+        this.fileMgr.emitTreeChanged();
         this.emit("destroyed");
     }
     async save(newData: ArrayBuffer) {
@@ -113,8 +100,19 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     }
     async saveAs(parent: Folder, name: string, newData: ArrayBuffer) {
         const item = this.clone(parent, name, newData);
-        this._fileMgr.putFile(item);
+        await this._fileMgr.putFile(item);
         parent.items.add(item);
+        this.fileMgr.emitTreeChanged();
         return item;
+    }
+    async saveAsSelf(to: Folder, name: string, newData: ArrayBuffer) {
+        const item = this.clone(to, name, newData);
+        await this._fileMgr.putFile(item);
+        const from = this.parent;
+        this.parent = to;
+        this._name = name;
+        this.parent.items.add(this);
+        this.fileMgr.emitTreeChanged();
+        this.emit("pathChanged", { from, to });
     }
 }

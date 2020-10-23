@@ -1,15 +1,14 @@
 import { rgbaMax2Css, isTRect, isRectMovable, isRectResizable } from "../utils/utils";
 import Line from "./Line";
 import Box from "./Box";
-import Env from "./Env";
 import PatcherHistory from "./PatcherHistory";
 import SharedData from "./Shared";
-import { PackageManager } from "./PkgMgr";
 import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode, RawPatcher, TMaxPatcher, TMaxClipboard, TResizeHandlerType, TErrorLevel, TRect, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TPublicPatcherState, TSharedData, TPatcherEnv } from "./types";
 
 import { toFaustDspCode } from "./objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 import FileInstance from "./file/FileInstance";
+import ProjectItem from "./file/ProjectItem";
 
 export default class Patcher extends FileInstance<PatcherEventMap> {
     static props: TPropsMeta<TPublicPatcherProps> = {
@@ -39,7 +38,6 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
             default: false
         }
     };
-    private readonly _env: Env;
     lines: Record<string, Line>;
     boxes: Record<string, Box>;
     props: TPatcherProps;
@@ -47,9 +45,8 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     data: TSharedData;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
-    constructor(envIn: Env) {
-        super();
-        this._env = envIn;
+    constructor(fileIn: ProjectItem) {
+        super(fileIn);
         this.observeGraphChange();
         this.observeChange();
         this._state = {
@@ -71,14 +68,11 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     get state() {
         return this._state;
     }
-    get env() {
-        return this._env;
-    }
     get activePkg() {
-        return this._state.pkgMgr.activePkg;
+        return this._state.pkgMgr.getPkg(this.props.mode);
     }
     get activeLib() {
-        return this._state.pkgMgr.activeLib;
+        return this._state.pkgMgr.getLib(this.props.mode);
     }
     get history(): PatcherHistory {
         return this._state.history;
@@ -118,8 +112,8 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         };
         this.data = {};
         this._state.selected = [];
+        this._state.pkgMgr = this.project.pkgMgr;
         this._state.history = new PatcherHistory(this);
-        this._state.pkgMgr = new PackageManager(this);
         this._state.dataMgr = new SharedData(this);
     }
     async init(data: ArrayBuffer) {
@@ -1002,7 +996,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         return JSON.parse(this.toString());
     }
     toStringEnv(spacing = 4) {
-        return JSON.stringify({ patcher: this, data: this._env.data }, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
+        return JSON.stringify({ patcher: this, data: this.env.data }, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
     }
     serialize() {
         return new Blob([this.toString()]).arrayBuffer();

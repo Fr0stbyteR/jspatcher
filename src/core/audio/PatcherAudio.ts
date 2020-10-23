@@ -1,6 +1,5 @@
 import Waveform from "../../utils/Waveform";
 import { Options } from "../../utils/WavEncoder";
-import Env from "../Env";
 import FileInstance from "../file/FileInstance";
 import AudioHistory from "./AudioHistory";
 import OperableAudioBuffer from "./OperableAudioBuffer";
@@ -25,7 +24,9 @@ export interface PatcherAudioEventMap {
 }
 
 export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
-    readonly env: Env;
+    get audioCtx() {
+        return this.project.audioCtx;
+    }
     _history: AudioHistory = new AudioHistory(this);
     get history() {
         return this._history;
@@ -33,10 +34,6 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     audioBuffer: OperableAudioBuffer;
     waveform: Waveform;
 
-    constructor(envIn: Env) {
-        super();
-        this.env = envIn;
-    }
     get length() {
         return this.audioBuffer.length;
     }
@@ -52,7 +49,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         this.waveform.generateEmpty(numberOfChannels, length);
     }
     async init(data: ArrayBuffer) {
-        const { audioCtx } = this.env;
+        const { audioCtx } = this;
         if (data.byteLength) {
             const audioBuffer = await audioCtx.decodeAudioData(data);
             this.audioBuffer = Object.setPrototypeOf(audioBuffer, OperableAudioBuffer.prototype);
@@ -63,7 +60,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         await this.waveform.generate();
     }
     async initWith(options: Partial<AudioBufferOptions>) {
-        const { length = 1, numberOfChannels = 1, sampleRate = this.env.audioCtx.sampleRate } = options;
+        const { length = 1, numberOfChannels = 1, sampleRate = this.audioCtx.sampleRate } = options;
         this.audioBuffer = new OperableAudioBuffer({ length, numberOfChannels, sampleRate });
         this.waveform = new Waveform(this);
         await this.waveform.generate();
@@ -72,7 +69,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         return this.env.wavEncoderWorker.encode(this.audioBuffer.toArray(true), { sampleRate: this.audioBuffer.sampleRate, bitDepth: 32, float: true, ...options });
     }
     clone() {
-        const audio = new PatcherAudio(this.env);
+        const audio = new PatcherAudio(this.file);
         audio.audioBuffer = this.audioBuffer.clone();
         audio.waveform = this.waveform.clone();
         return audio;
@@ -90,14 +87,14 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         this.waveform.inverse();
     }
     concat(that: PatcherAudio, numberOfChannels = this.audioBuffer.numberOfChannels) {
-        const audio = new PatcherAudio(this.env);
+        const audio = new PatcherAudio(this.file);
         audio.audioBuffer = this.audioBuffer.concat(that.audioBuffer, numberOfChannels);
         audio.waveform = this.waveform.concat(that.waveform, audio, numberOfChannels);
         return audio;
     }
     split(from: number): [PatcherAudio, PatcherAudio] {
-        const audio1 = new PatcherAudio(this.env);
-        const audio2 = new PatcherAudio(this.env);
+        const audio1 = new PatcherAudio(this.file);
+        const audio2 = new PatcherAudio(this.file);
         const [ab1, ab2] = this.audioBuffer.split(from);
         const [wf1, wf2] = this.waveform.split(from, audio1, audio2);
         audio1.setAudio({ audioBuffer: ab1, waveform: wf1 });
@@ -107,7 +104,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     pick(from: number, to: number, clone = false) {
         let picked: PatcherAudio;
         if (from <= 0 && to >= this.length) {
-            picked = new PatcherAudio(this.env);
+            picked = new PatcherAudio(this.file);
             if (clone) picked.audioBuffer = this.audioBuffer.clone();
             else picked.audioBuffer = this.audioBuffer;
         } else if (from <= 0) {

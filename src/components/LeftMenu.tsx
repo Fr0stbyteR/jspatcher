@@ -67,15 +67,18 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
         return list;
     }
     getDescription(path: (string | symbol)[]) {
-        const obj = this.props.patcher._state.pkgMgr.getFromPath(path);
+        const { patcher } = this.props;
+        const obj = patcher._state.pkgMgr.getFromPath(path, patcher.activePkg);
         return typeof obj === "function" && obj.prototype instanceof BaseObject ? obj.description : undefined;
     }
     isFolder(path: (string | symbol)[]) {
-        const obj = this.props.patcher._state.pkgMgr.getFromPath(path);
+        const { patcher } = this.props;
+        const obj = patcher._state.pkgMgr.getFromPath(path, patcher.activePkg);
         return typeof obj === "object";
     }
     isObject(path: (string | symbol)[]) {
-        const obj = this.props.patcher._state.pkgMgr.getFromPath(path);
+        const { patcher } = this.props;
+        const obj = patcher._state.pkgMgr.getFromPath(path, patcher.activePkg);
         return typeof obj === "function" && obj.prototype instanceof BaseObject;
     }
     getObjText(pathIn: (string | symbol)[]) {

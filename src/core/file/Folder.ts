@@ -14,9 +14,9 @@ export default class Folder extends ProjectItem {
         return this;
     }
     getProjectItem(name: string, type: ProjectItemType) {
-        if (type === "folder") return new Folder(this.fileMgr, this, name).init();
-        if (type === "audio") return new AudioFile(this.fileMgr, this, name).init();
-        return new ProjectItem(this.fileMgr, this, name).init();
+        if (type === "folder") return new Folder(this.fileMgr, this.project, this, name).init();
+        if (type === "audio") return new AudioFile(this.fileMgr, this.project, this, name).init();
+        return new ProjectItem(this.fileMgr, this.project, this, name).init();
     }
     findItem(itemIn: string) {
         return Array.from(this.items).find(item => item.name === itemIn);
@@ -26,7 +26,7 @@ export default class Folder extends ProjectItem {
     }
     async addProjectItem(name: string) {
         if (!this.existItem(name)) throw new Error(`${name} already exists.`);
-        const tempItem = new ProjectItem(this.fileMgr, this, name, new ArrayBuffer(0));
+        const tempItem = new ProjectItem(this.fileMgr, this.project, this, name, new ArrayBuffer(0));
         await this.fileMgr.putFile(tempItem);
         const fileDetail = await this.fileMgr.getFileDetails(this.path, name);
         const item = await this.getProjectItem(name, fileDetail.type);
@@ -36,7 +36,7 @@ export default class Folder extends ProjectItem {
     }
     async addFolder(name: string) {
         if (!this.existItem(name)) throw new Error(`${name} already exists.`);
-        const folder = new Folder(this.fileMgr, this, name);
+        const folder = new Folder(this.fileMgr, this.project, this, name);
         await this.fileMgr.putFile(folder);
         this.items.add(folder);
         this.fileMgr.emitTreeChanged();

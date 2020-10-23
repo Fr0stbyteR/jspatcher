@@ -56,7 +56,7 @@ export default class PatcherHistory extends History<PatcherEventMap> {
         this.redoMap[lastKey] = this.undoMap[lastKey];
         delete this.undoMap[lastKey];
         this.capture = true;
-        this.emitDirty();
+        this.emitChanged();
     }
     async redo() {
         if (!this.instance) return;
@@ -106,6 +106,6 @@ export default class PatcherHistory extends History<PatcherEventMap> {
         this.undoMap[nextKey] = this.redoMap[nextKey];
         delete this.redoMap[nextKey];
         this.capture = true;
-        this.emitDirty();
+        this.emitChanged();
     }
 }

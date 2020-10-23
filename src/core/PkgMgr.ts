@@ -1,5 +1,5 @@
 import Env from "./Env";
-import Patcher from "./Patcher";
+import Project from "./Project";
 import Importer from "./objects/importer/Importer";
 import { TFlatPackage, TPackage, PatcherMode } from "./types";
 import Base, { AnyObject, BaseObject } from "./objects/Base";
@@ -19,9 +19,14 @@ import live from "./objects/live/exports";
 import faust from "./objects/faust/exports";
 import SubPatcher from "./objects/SubPatcher";
 import { ImporterDirSelfObject } from "../utils/symbols";
+import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 
-export class PackageManager {
-    private readonly patcher: Patcher;
+export interface PackageManagerEventMap {
+    "libChanged": PatcherMode;
+    "pathDuplicated": string;
+}
+
+export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
     private readonly global: GlobalPackageManager;
     readonly pkgJS: TPackage;
     readonly pkgFaust: TPackage;
@@ -38,9 +43,9 @@ export class PackageManager {
      * @memberof PackageManager
      */
     readonly imported: [string, string][] = [];
-    constructor(patcherIn: Patcher) {
-        this.patcher = patcherIn;
-        this.global = patcherIn.env.pkgMgr;
+    constructor(projectIn: Project) {
+        super();
+        this.global = projectIn.env.pkgMgr;
         const { js, faust, max, gen } = this.global;
         this.pkgJS = { ...js };
         this.pkgFaust = { ...faust };
@@ -50,15 +55,6 @@ export class PackageManager {
         this.libFaust = this.packageRegister(this.pkgFaust);
         this.libMax = this.packageRegister(this.pkgMax);
         this.libGen = this.packageRegister(this.pkgGen);
-    }
-    get patcherMode() {
-        return this.patcher.props.mode;
-    }
-    get activePkg() {
-        return this.getPkg(this.patcherMode);
-    }
-    get activeLib() {
-        return this.getLib(this.patcherMode);
     }
     getLib(lib: PatcherMode) {
         return {
@@ -104,7 +100,7 @@ export class PackageManager {
         }
         Object.assign(pkg, pkgIn);
         this.packageRegister(pkgIn, this.getLib(lib), 2, pathIn);
-        this.patcher.emit("libChanged", { pkg: this.activePkg, lib: this.activeLib });
+        this.emit("libChanged", lib);
     }
     packageRegister(pkg: TPackage, libOut: TFlatPackage = {}, rootifyDepth = Infinity, pathIn?: string[]) {
         const path = pathIn ? pathIn.slice() : [];
@@ -112,7 +108,8 @@ export class PackageManager {
             const el = pkg[ImporterDirSelfObject as any];
             if (typeof el === "function" && el.prototype instanceof BaseObject) {
                 const full = path.join(".");
-                if (full in libOut) this.patcher.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
+                if (full in libOut) this.emit("pathDuplicated", full);
+                // this.patcher.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
                 else libOut[full] = el;
                 const p = path.slice();
                 while (p.length && path.length - p.length < rootifyDepth) {
@@ -128,7 +125,8 @@ export class PackageManager {
                 this.packageRegister(el, libOut, rootifyDepth, [...path, key]);
             } else if (typeof el === "function" && el.prototype instanceof BaseObject) {
                 const full = [...path, key].join(".");
-                if (full in libOut) this.patcher.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
+                if (full in libOut) this.emit("pathDuplicated", full);
+                // this.patcher.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
                 else libOut[full] = el;
                 const p = [...path, key];
                 while (p.length && path.length + 1 - p.length < rootifyDepth) {
@@ -140,7 +138,7 @@ export class PackageManager {
         }
         return libOut;
     }
-    searchInLib(query: string, limit = Infinity, staticMethodOnly = false, lib = this.activeLib) {
+    searchInLib(query: string, limit = Infinity, staticMethodOnly = false, lib: TFlatPackage) {
         const keys = Object.keys(lib).sort();
         const items: { key: string; object: typeof AnyObject }[] = [];
         for (let i = 0; i < keys.length; i++) {
@@ -159,7 +157,7 @@ export class PackageManager {
         }
         return items;
     }
-    searchInPkg(query: string, limit = Infinity, staticMethodOnly = false, pkg = this.activePkg, path: string[] = []): { path: string[]; object?: typeof AnyObject | TPackage }[] {
+    searchInPkg(query: string, limit = Infinity, staticMethodOnly = false, pkg: TPackage, path: string[] = []): { path: string[]; object?: typeof AnyObject | TPackage }[] {
         const outs: { path: string[]; object?: typeof AnyObject | TPackage }[] = [];
         for (const key in pkg) {
             if (outs.length >= limit) break;
@@ -173,7 +171,7 @@ export class PackageManager {
         }
         return outs;
     }
-    getFromPath(pathIn: (string | symbol)[], pkg = this.activePkg) {
+    getFromPath(pathIn: (string | symbol)[], pkg: TPackage) {
         const path = pathIn.slice();
         let o: TPackage | typeof AnyObject = pkg;
         while (path.length) {

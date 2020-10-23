@@ -1,6 +1,6 @@
-import FileInstance from "./FileInstance";
+import FileInstance, { FileInstanceEventMap } from "./FileInstance";
 
-export default class History<EventMap extends Record<string, any> = {}> {
+export default class History<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}> {
     instance: FileInstance<EventMap>;
     saveTime = 0;
     undoMap: Record<number, { type: keyof EventMap; event: any }> = {};
@@ -10,15 +10,20 @@ export default class History<EventMap extends Record<string, any> = {}> {
     constructor(instanceIn: FileInstance<EventMap>) {
         this.instance = instanceIn;
         this.eventListening.forEach(type => this.instance.on(type as Extract<keyof EventMap, string>, event => this.did(type, event)));
+        this.instance.on("saved", this.handleSaved);
     }
     did(type: keyof EventMap, event: any) {
         if (!this.capture) return;
         this.redoMap = {};
         this.undoMap[performance.now()] = { type, event };
+        this.emitChanged();
+    }
+    emitChanged() {
+        this.instance.emit("changed");
         this.emitDirty();
     }
     emitDirty() {
-        this.instance.emit("changed");
+        this.instance.emit("dirty", this.isDirty);
     }
     destroy() {
         this.eventListening.forEach(type => this.instance.off(type as Extract<keyof EventMap, string>, event => this.did(type, event)));
@@ -33,7 +38,7 @@ export default class History<EventMap extends Record<string, any> = {}> {
     get isRedoable() {
         return !!Object.keys(this.redoMap).length;
     }
-    handleSave = () => {
+    handleSaved = () => {
         const lastKey = Object.keys(this.undoMap).map(v => +v).sort((a, b) => b - a)[0];
         this.saveTime = lastKey;
         this.emitDirty();

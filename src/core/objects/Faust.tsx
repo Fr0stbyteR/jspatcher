@@ -1018,7 +1018,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
     }];
     static ui = SubPatcherUI;
     type: "faust" | "gen" = "faust";
-    state: SubPatcherState = { inlets: 0, outlets: 0, defaultArgs: [], patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.env), key: "", cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
+    state: SubPatcherState = { inlets: 0, outlets: 0, defaultArgs: [], patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: "", cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
     subscribePatcher = () => {
         if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
         const { patcher } = this.state;

@@ -73,7 +73,7 @@ export default class AudioHistory extends History<PatcherAudioEventMap> {
         }
         this.redoMap[lastKey] = this.undoMap[lastKey];
         delete this.undoMap[lastKey];
-        this.emitDirty();
+        this.emitChanged();
     }
     async redo() {
         if (!this.instance) return;
@@ -144,6 +144,6 @@ export default class AudioHistory extends History<PatcherAudioEventMap> {
         }
         this.undoMap[nextKey] = this.redoMap[nextKey];
         delete this.redoMap[nextKey];
-        this.emitDirty();
+        this.emitChanged();
     }
 }

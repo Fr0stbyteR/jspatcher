@@ -18,6 +18,7 @@ import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
 import TaskManager from "./TaskMgr";
+import Project from "./Project";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -62,6 +63,7 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     faustLibObjects: TPackage;
     pkgMgr: GlobalPackageManager;
     active: Patcher;
+    currentProject: Project;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;
     constructor(root?: HTMLDivElement) {
@@ -113,7 +115,9 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         this.pkgMgr = new GlobalPackageManager(this);
 
         this.faust = faust;
-        const patcher = new Patcher(this);
+        const project = new Project(this);
+        this.currentProject = project;
+        const patcher = new Patcher(project);
         this.active = patcher;
         window.patcher = patcher;
 

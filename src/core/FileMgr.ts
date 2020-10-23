@@ -4,6 +4,7 @@ import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import { AudioFileExtension, PatcherFileExtension, ProjectItemType, RawProjectItem, TextFileExtension } from "./types";
 import ProjectItem from "./file/ProjectItem";
 import Folder from "./file/Folder";
+import Project from "./Project";
 
 export interface FileManagerEventMap {
     "ready": never;
@@ -28,10 +29,10 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     empty() {
         return this.worker.empty();
     }
-    async init(clean?: boolean) {
+    async init(project: Project, clean?: boolean) {
         await this.worker.init();
         if (clean) await this.worker.empty();
-        this.root = new Folder(this, null, null);
+        this.root = new Folder(this, project, null, null);
         await this.root.init();
         this.projectRoot = this.root.findItem(FileManager.projectFolderName) as Folder;
         if (!this.projectRoot) this.projectRoot.addFolder(FileManager.projectFolderName);
