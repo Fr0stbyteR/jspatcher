@@ -75,7 +75,8 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         const urlParams = new URLSearchParams(window.location.search);
         const urlparamsOptions = {
             noUI: !!urlParams.get("min"),
-            runtime: !!urlParams.get("runtime")
+            runtime: !!urlParams.get("runtime"),
+            init: !!urlParams.get("init")
         };
         this._noUI = urlparamsOptions.noUI;
         if (!this._noUI && this.divRoot) ReactDOM.render(<LoaderUI env={this} />, this.divRoot);
@@ -107,7 +108,8 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         this.faustLibObjects = getFaustLibObjects(this.faustDocs);
 
         this.emit("text", "Loading Files");
-        await this.fileMgr.init();
+        await this.fileMgr.init(urlparamsOptions.init);
+
         this.pkgMgr = new GlobalPackageManager(this);
 
         this.faust = faust;

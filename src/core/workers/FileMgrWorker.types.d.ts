@@ -8,4 +8,5 @@ export interface IFileManagerWorker {
     readFile(path: string): Promise<ArrayBuffer>;
     unlink(path: string): Promise<true>;
     isFile(path: string): Promise<boolean>;
+    empty(): Promise<boolean>;
 }

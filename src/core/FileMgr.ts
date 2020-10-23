@@ -25,8 +25,12 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         this.env = env;
         this.worker = env.fileMgrWorker;
     }
-    async init() {
+    empty() {
+        return this.worker.empty();
+    }
+    async init(clean?: boolean) {
         await this.worker.init();
+        if (clean) await this.worker.empty();
         this.root = new Folder(this, null, null);
         await this.root.init();
         this.projectRoot = this.root.findItem(FileManager.projectFolderName) as Folder;

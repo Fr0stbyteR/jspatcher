@@ -59,4 +59,18 @@ export default class OperableAudioBuffer extends AudioBuffer {
         if (index > this.length) throw new Error(`Index written ${index} out of range ${this.length}`);
         this.getChannelData(channel)[index] = value;
     }
+    toArray(shared = false) {
+        const supportSAB = typeof SharedArrayBuffer !== "undefined";
+        const channelData: Float32Array[] = [];
+        const { numberOfChannels, length } = this;
+        for (let i = 0; i < numberOfChannels; i++) {
+            if (shared && supportSAB) {
+                channelData[i] = new Float32Array(new SharedArrayBuffer(length * Float32Array.BYTES_PER_ELEMENT));
+                channelData[i].set(this.getChannelData(i));
+            } else {
+                channelData[i] = this.getChannelData(i);
+            }
+        }
+        return channelData;
+    }
 }

@@ -1,7 +1,6 @@
 import PatcherAudio from "../core/audio/PatcherAudio";
 import { WaveformData, WaveformStepData } from "../core/types";
 import WaveformWorker from "../core/workers/WaveformWorker";
-import { getAudioChannelData } from "./utils";
 
 export default class Waveform implements WaveformData {
     static stepsFactor = 16;
@@ -34,7 +33,7 @@ export default class Waveform implements WaveformData {
         return new Waveform(this.patcherAudio, this);
     }
     async generate() {
-        const audioChannelData = getAudioChannelData(this.audioBuffer, true);
+        const audioChannelData = this.audioBuffer.toArray(true);
         const data = await this.worker.generate(audioChannelData, Waveform.stepsFactor);
         for (const key in data) {
             this[key] = data[key];

@@ -11,6 +11,7 @@ export interface FileInstanceEventMap {
 }
 
 export default class FileInstance<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}> extends TypedEventEmitter<EventMap & FileInstanceEventMap> {
+    isTemporary = false;
     get isDirty() {
         return this.history.isDirty;
     }
@@ -21,6 +22,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
         throw new Error("Not implemented.");
     }
     async save() {
+        if (this.isTemporary) throw new Error("Cannot save temporary file");
         const data = await this.serialize();
         await this.emit("save", data);
         this.history.handleSave();
@@ -29,6 +31,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
         const data = await this.serialize();
         await this.emit("saveAs", { parent, name, data });
         this.history.handleSave();
+        this.isTemporary = false;
     }
     async destroy() {
         await this.emit("destroy");

@@ -9,7 +9,7 @@ export interface ProjectItemEventMap {
     "renamed": { oldName: string, newName: string };
     "moved": { from: Folder, to: Folder };
     "destroyed": never;
-    "updated": never;
+    "saved": never;
     "dirty": boolean;
 }
 
@@ -27,11 +27,6 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     protected _data: ArrayBuffer;
     get data() {
         return this._data;
-    }
-    async setData(dataIn: ArrayBuffer) {
-        this._data = dataIn;
-        await this.fileMgr.putFile(this);
-        this.emit("updated");
     }
     constructor(fileMgrIn: FileManager, parentIn: Folder, nameIn: string, dataIn?: ArrayBuffer) {
         super();
@@ -63,8 +58,14 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         };
         const handleChange = () => this.emit("dirty", instance.isDirty);
         const handleSave = (data: ArrayBuffer) => this.save(data);
-        const handleSaveAs = ({ parent, name, data }: { parent: Folder, name: string, data: ArrayBuffer }) => {
-            this.saveAs(parent, name, data);
+        const handleSaveAs = async ({ parent, name, data }: { parent: Folder, name: string, data: ArrayBuffer }) => {
+            if (instance.isTemporary) {
+                await this.move(parent);
+                await this.rename(name);
+                await this.save(data);
+            } else {
+                await this.saveAs(parent, name, data);
+            }
         };
         const handleDestroy = () => {
             instance.off("ready", handleReady);
@@ -115,8 +116,5 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         this._fileMgr.putFile(item);
         parent.items.add(item);
         return item;
-    }
-    emitDirty(isDirty: boolean) {
-        this.emit("dirty", isDirty);
     }
 }

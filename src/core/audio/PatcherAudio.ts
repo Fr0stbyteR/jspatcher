@@ -1,4 +1,3 @@
-import { getAudioChannelData } from "../../utils/utils";
 import Waveform from "../../utils/Waveform";
 import { Options } from "../../utils/WavEncoder";
 import Env from "../Env";
@@ -70,7 +69,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         await this.waveform.generate();
     }
     async serialize(options: Omit<Partial<Options>, "sampleRate"> = { bitDepth: 32, float: true }) {
-        return this.env.wavEncoderWorker.encode(getAudioChannelData(this.audioBuffer, true), { sampleRate: this.audioBuffer.sampleRate, bitDepth: 32, float: true, ...options });
+        return this.env.wavEncoderWorker.encode(this.audioBuffer.toArray(true), { sampleRate: this.audioBuffer.sampleRate, bitDepth: 32, float: true, ...options });
     }
     clone() {
         const audio = new PatcherAudio(this.env);

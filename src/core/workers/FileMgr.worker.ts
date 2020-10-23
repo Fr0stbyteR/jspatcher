@@ -9,7 +9,7 @@ import ProxyWorker from "./ProxyWorker";
 class FileMgr extends ProxyWorker<IFileManagerWorker> {
     fs: IndexedDB;
     init() {
-        return new Promise<true>((resolve, reject) => IndexedDB.Create({ storeName: "Sheng" }, (e, r) => {
+        return new Promise<true>((resolve, reject) => IndexedDB.Create({ storeName: "JSPatcher" }, (e, r) => {
             if (e) {
                 reject(e);
             } else {
@@ -48,6 +48,9 @@ class FileMgr extends ProxyWorker<IFileManagerWorker> {
     }
     isFile(path: string) {
         return new Promise<boolean>((resolve, reject) => this.fs.stat(path, false, (e, r) => (e ? reject(e) : resolve(r.isFile()))));
+    }
+    empty() {
+        return new Promise<true>((resolve, reject) => this.fs.empty(e => (e ? reject(e) : resolve(true))));
     }
 }
 new FileMgr();

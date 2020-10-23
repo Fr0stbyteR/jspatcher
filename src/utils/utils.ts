@@ -167,17 +167,3 @@ export const getPropertyDescriptors = (obj: Function | Record<string, any>): Pro
     if (obj !== Object.prototype && proto === Object.prototype) return Object.getOwnPropertyDescriptors(obj);
     return Object.assign(proto ? getPropertyDescriptors(proto) : {}, Object.getOwnPropertyDescriptors(obj));
 };
-export const getAudioChannelData = (audioBuffer: AudioBuffer, shared = false) => {
-    const supportSAB = typeof SharedArrayBuffer !== "undefined";
-    const channelData: Float32Array[] = [];
-    const { numberOfChannels, length } = audioBuffer;
-    for (let i = 0; i < numberOfChannels; i++) {
-        if (shared && supportSAB) {
-            channelData[i] = new Float32Array(new SharedArrayBuffer(length * Float32Array.BYTES_PER_ELEMENT));
-            channelData[i].set(audioBuffer.getChannelData(i));
-        } else {
-            channelData[i] = audioBuffer.getChannelData(i);
-        }
-    }
-    return channelData;
-};
