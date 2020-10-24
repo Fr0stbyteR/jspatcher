@@ -8,10 +8,8 @@ import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
 import { TPackage, TSharedData, TSharedDataConsumers } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
-import Patcher from "./Patcher";
 import Importer from "./objects/importer/Importer";
 import UI from "../components/UI";
-import PatcherUI from "../components/PatcherUI";
 import { GlobalPackageManager } from "./PkgMgr";
 import FileManager from "./FileMgr";
 import FileMgrWorker from "./workers/FileMgrWorker";
@@ -19,6 +17,7 @@ import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
+import FileInstance from "./file/FileInstance";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -62,7 +61,7 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
     pkgMgr: GlobalPackageManager;
-    active: Patcher;
+    activeInstance: FileInstance;
     currentProject: Project;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;
@@ -84,41 +83,44 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         if (!this._noUI && this.divRoot) ReactDOM.render(<LoaderUI env={this} />, this.divRoot);
 
         this.emit("text", "Loading Faust2WebAudio...");
-        const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
-        this.Faust = Faust;
-        this.FaustAudioWorkletNode = FaustAudioWorkletNode;
-
-        this.emit("text", "Loading LibFaust...");
-        const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
-        await faust.ready;
-        this.faustAdditionalObjects = Importer.import("faust", { FaustNode: this.FaustAudioWorkletNode }, true);
-
-        this.emit("text", "Fetching Faust Standard Library...");
-        const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
-        const faustPrimitiveLib = await faustPrimitiveLibFile.text();
-        faust.fs.writeFile("./libraries/primitives.lib", faustPrimitiveLib);
-
-        this.emit("text", "Fetching Gen-to-Faust Library...");
-        const gen2FaustLibFile = await fetch("./deps/gen2faust.lib");
-        const gen2FaustLib = await gen2FaustLibFile.text();
-        faust.fs.writeFile("./libraries/gen2faust.lib", gen2FaustLib);
-
-        this.emit("text", "Loading Monaco Editor...");
-        const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
-        const { providers } = await faustLangRegister(monacoEditor, faust);
-        this.faustDocs = providers.docs;
-        this.faustLibObjects = getFaustLibObjects(this.faustDocs);
-
-        this.emit("text", "Loading Files");
-        await this.fileMgr.init(urlparamsOptions.init);
-
-        this.pkgMgr = new GlobalPackageManager(this);
-
-        this.faust = faust;
-        const project = new Project(this);
-        this.currentProject = project;
-        const patcher = new Patcher(project);
-        this.active = patcher;
+        this.taskMgr.newTask("Env", "Initializing JSPatcher...", async () => {
+            this.taskMgr.newTask("Env", "Loading Faust2WebAudio...", async () => {
+                const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
+                this.Faust = Faust;
+                this.FaustAudioWorkletNode = FaustAudioWorkletNode;
+            });
+            this.taskMgr.newTask("Env", "Loading LibFaust...", async () => {
+                const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
+                await faust.ready;
+                this.faustAdditionalObjects = Importer.import("faust", { FaustNode: this.FaustAudioWorkletNode }, true);
+                this.faust = faust;
+            });
+            this.taskMgr.newTask("Env", "Fetching Faust Standard Library...", async () => {
+                const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
+                const faustPrimitiveLib = await faustPrimitiveLibFile.text();
+                this.faust.fs.writeFile("./libraries/primitives.lib", faustPrimitiveLib);
+            });
+            this.taskMgr.newTask("Env", "Fetching Gen-to-Faust Library...", async () => {
+                const gen2FaustLibFile = await fetch("./deps/gen2faust.lib");
+                const gen2FaustLib = await gen2FaustLibFile.text();
+                this.faust.fs.writeFile("./libraries/gen2faust.lib", gen2FaustLib);
+            });
+        });
+        this.taskMgr.newTask("Env", "Loading Monaco Editor...", async () => {
+            const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
+            const { providers } = await faustLangRegister(monacoEditor, this.faust);
+            this.faustDocs = providers.docs;
+            this.faustLibObjects = getFaustLibObjects(this.faustDocs);
+        });
+        this.taskMgr.newTask("Env", "Loading Files...", async () => {
+            this.pkgMgr = new GlobalPackageManager(this);
+            const project = new Project(this);
+            this.currentProject = project;
+            await this.fileMgr.init(project, urlparamsOptions.init);
+        });
+        /*
+        const patcher = new Patcher(this.currentProject);
+        this.activePatcher = patcher;
         window.patcher = patcher;
 
         this.emit("text", "Loading Patcher...");
@@ -137,7 +139,8 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
             }
         }
         patcher.on("changed", () => localStorage.setItem("__JSPatcher_Patcher", patcher.toStringEnv(null)));
-        if (!this._noUI && this.divRoot) ReactDOM.render(runtime ? <PatcherUI patcher={patcher} runtime /> : <UI patcher={patcher} />, this.divRoot);
+        if (!this._noUI && this.divRoot) ReactDOM.render(urlparamsOptions.runtime ? <PatcherUI patcher={patcher} runtime /> : <UI patcher={patcher} />, this.divRoot);
+        */
         this.loaded = true;
         return this;
     }
@@ -148,6 +151,6 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         if (root === this._divRoot) return;
         if (!this._noUI && this._divRoot) ReactDOM.unmountComponentAtNode(this._divRoot);
         this._divRoot = root;
-        if (!this._noUI && root) ReactDOM.render(this.loaded ? <UI patcher={this.active} /> : <LoaderUI env={this} />, root);
+        // if (!this._noUI && root) ReactDOM.render(this.loaded ? <UI patcher={this.activeInstance} /> : <LoaderUI env={this} />, root);
     }
 }

@@ -25,7 +25,7 @@ export interface PatcherAudioEventMap {
 
 export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     get audioCtx() {
-        return this.project.audioCtx;
+        return this.project?.audioCtx || this.env.audioCtx;
     }
     _history: AudioHistory = new AudioHistory(this);
     get history() {

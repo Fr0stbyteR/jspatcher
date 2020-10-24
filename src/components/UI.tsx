@@ -15,7 +15,7 @@ export default class UI extends React.PureComponent<{ patcher: Patcher }, { load
         // e.nativeEvent.stopImmediatePropagation();
     };
     handleMouseDown = (e: React.MouseEvent) => {
-        this.props.patcher.env.active = this.props.patcher;
+        this.props.patcher.setActive();
         e.stopPropagation();
     };
     handleLoading = (loading?: string[]) => this.setState({ loading: loading ? loading.slice() : undefined });

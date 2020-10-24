@@ -504,7 +504,7 @@ export class DefaultObject<
 export class AnyObject extends BaseObject<Record<string, any>, Record<string, any>, any[], any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> {}
 export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<BaseObjectProps> & Record<string, any> = {}, U extends Partial<BaseUIState> & Record<string, any> = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
     get audioCtx() {
-        return this.patcher.env.audioCtx;
+        return this.patcher.audioCtx;
     }
     applyBPF(param: AudioParam, bpf: number[][]) {
         const { audioCtx } = this;

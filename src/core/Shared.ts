@@ -10,8 +10,8 @@ export default class SharedData {
     private $pData: TSharedDataConsumers;
     private readonly _patcher: Patcher;
     constructor(patcher: Patcher) {
-        this.data = patcher.env.data;
-        this.$data = patcher.env.dataConsumers;
+        this.data = patcher.project?.data || patcher.env.data;
+        this.$data = patcher.project?.dataConsumers || patcher.env.dataConsumers;
         this.pData = patcher.data;
         this.$pData = patcher._state.dataConsumers;
         this._patcher = patcher;

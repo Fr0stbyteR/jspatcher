@@ -24,9 +24,9 @@ export default class Folder extends ProjectItem {
     existItem(itemIn: ProjectItem | string) {
         return typeof itemIn === "string" ? !!this.findItem(itemIn) : this.items.has(itemIn);
     }
-    async addProjectItem(name: string) {
+    async addProjectItem(name: string, data = new ArrayBuffer(0)) {
         if (!this.existItem(name)) throw new Error(`${name} already exists.`);
-        const tempItem = new ProjectItem(this.fileMgr, this.project, this, name, new ArrayBuffer(0));
+        const tempItem = new ProjectItem(this.fileMgr, this.project, this, name, data);
         await this.fileMgr.putFile(tempItem);
         const fileDetail = await this.fileMgr.getFileDetails(this.path, name);
         const item = await this.getProjectItem(name, fileDetail.type);

@@ -306,7 +306,7 @@ class ConfigMenu extends React.PureComponent<{ patcher: Patcher }> {
     }
 }
 export default class LeftMenu extends React.PureComponent<{ patcher: Patcher }, { active: TPanels; codePanel: boolean; audioOn: boolean }> {
-    state = { active: TPanels.None, codePanel: false, audioOn: this.props.patcher.env.audioCtx.state === "running" };
+    state = { active: TPanels.None, codePanel: false, audioOn: this.props.patcher.audioCtx.state === "running" };
     refDivPane = React.createRef<HTMLDivElement>();
     refObjects = React.createRef<Objects>();
     refPackages = React.createRef<Packages>();
@@ -344,12 +344,12 @@ export default class LeftMenu extends React.PureComponent<{ patcher: Patcher }, 
         document.addEventListener("mouseup", handleMouseUp);
     };
     handleAudioSwitch = () => {
-        const audioCtx = this.props.patcher.env.audioCtx;
+        const audioCtx = this.props.patcher.audioCtx;
         if (this.state.audioOn) audioCtx.suspend();
         else audioCtx.resume();
     };
     handleAudioCtxStateChange = () => {
-        const audioCtx = this.props.patcher.env.audioCtx;
+        const audioCtx = this.props.patcher.audioCtx;
         const { state } = audioCtx;
         this.setState({ audioOn: state === "running" });
     };
@@ -359,13 +359,13 @@ export default class LeftMenu extends React.PureComponent<{ patcher: Patcher }, 
         this.setState({ active: TPanels.None, codePanel });
     };
     componentDidMount() {
-        const audioCtx = this.props.patcher.env.audioCtx;
+        const audioCtx = this.props.patcher.audioCtx;
         audioCtx.addEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.on("loading", this.handlePatcherLoading);
         this.handlePatcherLoading();
     }
     componentWillUnmount() {
-        const audioCtx = this.props.patcher.env.audioCtx;
+        const audioCtx = this.props.patcher.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleAudioCtxStateChange);
         this.props.patcher.off("loading", this.handlePatcherLoading);
     }

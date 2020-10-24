@@ -41,8 +41,8 @@ export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], 
         this.on("preInit", () => {
             this.inlets = 2;
             this.outlets = 2;
-            if (!this.patcher.env.audioCtx.audioWorklet) this.error("AudioWorklet not found.");
-            else this.audioWorklet = this.patcher.env.audioCtx.audioWorklet;
+            if (!this.patcher.audioCtx.audioWorklet) this.error("AudioWorklet not found.");
+            else this.audioWorklet = this.patcher.audioCtx.audioWorklet;
         });
         this.on("inlet", this.handleInlet);
     }

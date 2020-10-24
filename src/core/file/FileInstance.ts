@@ -26,6 +26,9 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get file(): ProjectItem {
         return this._file;
     }
+    get isInMemory() {
+        return !this.file;
+    }
     private _isTemporary = false;
     get isTemporary() {
         return this._isTemporary;
@@ -46,11 +49,18 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get history(): History<EventMap> {
         return null;
     }
-    constructor(fileIn?: ProjectItem) {
+    constructor(ctxIn?: ProjectItem | Project | Env) {
         super();
-        this._file = fileIn;
-        this._env = fileIn.env;
-        this._project = fileIn.project;
+        if (ctxIn instanceof ProjectItem) {
+            this._file = ctxIn;
+            this._env = ctxIn.env;
+            this._project = ctxIn.project;
+        } else if (ctxIn instanceof Project) {
+            this._project = ctxIn;
+            this._env = ctxIn.env;
+        } else {
+            this._env = ctxIn;
+        }
         this.on("dirty", isDirty => this.file.emit("dirty", isDirty));
     }
     async serialize(): Promise<ArrayBuffer> {
@@ -59,6 +69,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     async save() {
         if (this.isTemporary) throw new Error("Cannot save temporary file");
         if (this.isReadonly) throw new Error("Cannot save readonly file");
+        if (this.isInMemory) throw new Error("Cannot save in-memory instance");
         const data = await this.serialize();
         await this.file.save(data);
         this.emit("saved");
@@ -70,6 +81,8 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
             await this.file.save(data);
         } else if (this.isReadonly) {
             await this.file.saveAsSelf(parent, name, data);
+        } else if (this.isInMemory) {
+            parent.addProjectItem(name, data);
         } else {
             await this.file.saveAs(parent, name, data);
         }

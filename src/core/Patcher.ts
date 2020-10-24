@@ -9,6 +9,8 @@ import { toFaustDspCode } from "./objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "./objects/SubPatcher";
 import FileInstance from "./file/FileInstance";
 import ProjectItem from "./file/ProjectItem";
+import Env from "./Env";
+import Project from "./Project";
 
 export default class Patcher extends FileInstance<PatcherEventMap> {
     static props: TPropsMeta<TPublicPatcherProps> = {
@@ -45,8 +47,8 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     data: TSharedData;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
-    constructor(fileIn: ProjectItem) {
-        super(fileIn);
+    constructor(ctxIn?: ProjectItem | Project | Env) {
+        super(ctxIn);
         this.observeGraphChange();
         this.observeChange();
         this._state = {
@@ -77,6 +79,9 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     get history(): PatcherHistory {
         return this._state.history;
     }
+    get audioCtx() {
+        return this.project?.audioCtx || this.env.audioCtx;
+    }
     private observeGraphChange() {
         const eventNames = [
             "ready", "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
@@ -91,10 +96,10 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         eventNames.forEach(type => this.on(type, () => this.emit("changed")));
     }
     setActive() {
-        this.env.active = this;
+        this.env.activeInstance = this;
     }
     get isActive() {
-        return this.env.active === this;
+        return this.env.activeInstance === this;
     }
     async clear() {
         if (this.boxes) await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].destroy()));
