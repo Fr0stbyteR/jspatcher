@@ -6,7 +6,7 @@ export interface Task {
     callback: () => void | Promise<void>;
 }
 
-export interface Error {
+export interface TaskError {
     emitter: string;
     message: string;
     error: Error;
@@ -14,7 +14,7 @@ export interface Error {
 
 export interface Tasks { [timestamp: number]: Task }
 
-export interface Errors { [timestamp: number]: Error }
+export interface Errors { [timestamp: number]: TaskError }
 
 export interface TaskManagerEventMap {
     "tasks": Tasks;
@@ -33,6 +33,7 @@ export default class TaskManager extends TypedEventEmitter<TaskManagerEventMap> 
         } catch (error) {
             this.errors = { ...this.errors, [timestamp]: { emitter, message, error } };
             this.emit("error", this.errors);
+            throw error;
         } finally {
             delete this.tasks[timestamp];
             this.tasks = { ...this.tasks };

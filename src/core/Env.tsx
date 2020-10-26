@@ -1,6 +1,5 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Dimmer, Loader } from "semantic-ui-react";
 import { Faust, FaustAudioWorkletNode } from "faust2webaudio";
 import { detectOS, detectBrowserCore } from "../utils/utils";
 import { faustLangRegister } from "../misc/monaco-faust/register";
@@ -9,7 +8,6 @@ import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
 import { TPackage, TSharedData, TSharedDataConsumers } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
 import Importer from "./objects/importer/Importer";
-import UI from "../components/UI";
 import { GlobalPackageManager } from "./PkgMgr";
 import FileManager from "./FileMgr";
 import FileMgrWorker from "./workers/FileMgrWorker";
@@ -17,30 +15,24 @@ import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
-import FileInstance from "./file/FileInstance";
+import { AnyFileInstance } from "./file/FileInstance";
+import UI from "../components/UI";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-export class LoaderUI extends React.PureComponent<{ env: Env }, { text: string }> {
-    state = { text: "Loading..." };
-    handleText = (text: string): void => this.setState({ text });
-    componentDidMount() {
-        this.props.env.on("text", this.handleText);
-    }
-    componentWillUnmount() {
-        this.props.env.off("text", this.handleText);
-    }
-    render() {
-        return <Dimmer active><Loader content={this.state.text} /></Dimmer>;
-    }
+interface EnvEventMap {
+    "ready": never;
+    "activeInstance": AnyFileInstance;
+    "openInstance": AnyFileInstance;
 }
+
 /**
  * Should have maximum 1 instance of Env per page.
  *
  * @export
  * @class Env
  */
-export default class Env extends TypedEventEmitter<{ text: string }> {
+export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly fileMgrWorker = new FileMgrWorker();
     readonly waveformWorker = new WaveformWorker();
     readonly wavEncoderWorker = new WavEncoderWorker();
@@ -61,7 +53,14 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
     faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
     pkgMgr: GlobalPackageManager;
-    activeInstance: FileInstance;
+    private _activeInstance: AnyFileInstance;
+    get activeInstance(): AnyFileInstance {
+        return this._activeInstance;
+    }
+    set activeInstance(value: AnyFileInstance) {
+        this._activeInstance = value;
+        this.emit("activeInstance", value);
+    }
     currentProject: Project;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;
@@ -80,9 +79,8 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
             init: !!urlParams.get("init")
         };
         this._noUI = urlparamsOptions.noUI;
-        if (!this._noUI && this.divRoot) ReactDOM.render(<LoaderUI env={this} />, this.divRoot);
+        if (!this._noUI && this.divRoot) ReactDOM.render(<UI env={this} />, this.divRoot);
 
-        this.emit("text", "Loading Faust2WebAudio...");
         this.taskMgr.newTask("Env", "Initializing JSPatcher...", async () => {
             this.taskMgr.newTask("Env", "Loading Faust2WebAudio...", async () => {
                 const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
@@ -105,19 +103,20 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
                 const gen2FaustLib = await gen2FaustLibFile.text();
                 this.faust.fs.writeFile("./libraries/gen2faust.lib", gen2FaustLib);
             });
+            this.taskMgr.newTask("Env", "Loading Monaco Editor...", async () => {
+                const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
+                const { providers } = await faustLangRegister(monacoEditor, this.faust);
+                this.faustDocs = providers.docs;
+                this.faustLibObjects = getFaustLibObjects(this.faustDocs);
+            });
+            this.taskMgr.newTask("Env", "Loading Files...", async () => {
+                this.pkgMgr = new GlobalPackageManager(this);
+                const project = new Project(this);
+                this.currentProject = project;
+                await this.fileMgr.init(project, urlparamsOptions.init);
+            });
         });
-        this.taskMgr.newTask("Env", "Loading Monaco Editor...", async () => {
-            const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
-            const { providers } = await faustLangRegister(monacoEditor, this.faust);
-            this.faustDocs = providers.docs;
-            this.faustLibObjects = getFaustLibObjects(this.faustDocs);
-        });
-        this.taskMgr.newTask("Env", "Loading Files...", async () => {
-            this.pkgMgr = new GlobalPackageManager(this);
-            const project = new Project(this);
-            this.currentProject = project;
-            await this.fileMgr.init(project, urlparamsOptions.init);
-        });
+        this.emit("ready");
         /*
         const patcher = new Patcher(this.currentProject);
         this.activePatcher = patcher;
@@ -143,6 +142,9 @@ export default class Env extends TypedEventEmitter<{ text: string }> {
         */
         this.loaded = true;
         return this;
+    }
+    openInstance(i: AnyFileInstance) {
+        this.emit("openInstance", i);
     }
     get divRoot(): HTMLDivElement {
         return this._divRoot;

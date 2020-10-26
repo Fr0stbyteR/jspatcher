@@ -3,34 +3,41 @@ import { Menu, Dropdown, Ref } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
 import "./TopMenu.scss";
 import { RawPatcher, TMaxClipboard } from "../core/types";
+import Env from "../core/Env";
 
-class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
+class FileMenu extends React.PureComponent<{ env: Env }, { fileURL: string, fileName: string }> {
     refDownload = React.createRef<HTMLAnchorElement>();
     refOpen = React.createRef<HTMLInputElement>();
-    state = { pAsString: "", pName: this.props.patcher.fileName };
+    state = { fileURL: "", fileName: this.props.env.activeInstance.file?.name };
     handleClickNew = () => {
-        this.props.patcher.load({}, "js");
-        this.setState({ pName: "patcher.json" });
     };
     handleClickNewMax = () => {
-        this.props.patcher.load({}, "max");
-        this.setState({ pName: "patcher.maxpat" });
     };
     handleClickNewGen = () => {
-        this.props.patcher.load({}, "gen");
-        this.setState({ pName: "patcher.gendsp" });
     };
     handleClickNewFaust = () => {
-        this.props.patcher.load({}, "faust");
-        this.setState({ pName: "patcher.dsppat" });
     };
-    handleClickOpen = () => {
+    handleClickNewAudio = () => {
+    };
+    handleClickNewText = () => {
+    };
+    handleClickNewProject = () => {
+    };
+    handleClickReload = () => {
+    };
+    handleClickOpenProject = () => {
         this.refOpen.current.click();
     };
+    handleClickImportFile: () => void;
+    handleClickImportFolder: () => void;
+    handleClickSave: () => void;
     handleClickSaveAs = () => {
-        const p = this.props.patcher.toStringEnv();
+    };
+    handleClickExportProject: () => void;
+    handleClickExportFile = () => {
+        const data = this.props.env.activeInstance.file?.data;
         this.setState({
-            pAsString: "data:application/json;charset=utf-8," + encodeURIComponent(p)
+            fileURL: URL.createObjectURL(new Blob([data], { type: "application/json" }))
         }, () => this.refDownload.current.click());
     };
     onChange = () => {
@@ -57,15 +64,29 @@ class FileMenu extends React.PureComponent<{ patcher: Patcher }> {
             <>
                 <Dropdown item={true} icon={false} text="File">
                     <Dropdown.Menu style={{ minWidth: "max-content" }}>
-                        <Dropdown.Item onClick={this.handleClickNew} text="New Patcher" description={`${ctrl} + Shift + N`} />
+                        <Dropdown.Item onClick={this.handleClickNew} text="New Js Patcher" description={`${ctrl} + Shift + N`} />
                         <Dropdown.Item onClick={this.handleClickNewMax} text="New Max Patcher" />
                         <Dropdown.Item onClick={this.handleClickNewGen} text="New Gen Patcher" />
                         <Dropdown.Item onClick={this.handleClickNewFaust} text="New Faust Patcher" />
-                        <Dropdown.Item onClick={this.handleClickOpen} text="Open..." description={`${ctrl} + O`} />
-                        <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description={`${ctrl} + S`} />
+                        <Dropdown.Item onClick={this.handleClickNewAudio} text="New Audio" />
+                        <Dropdown.Item onClick={this.handleClickNewText} text="New Text" />
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={this.handleClickNewProject} text="New Project" />
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={this.handleClickOpenProject} text="Open Project Zip..." description={`${ctrl} + O`} />
+                        <Dropdown.Item onClick={this.handleClickImportFile} text="Import File..." description={`${ctrl} + Shift + O`} />
+                        <Dropdown.Item onClick={this.handleClickImportFolder} text="Import Folder Zip..." />
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={this.handleClickSave} text="Save" description={`${ctrl} + S`} />
+                        <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description={`${ctrl} + Shift + S`} />
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={this.handleClickExportProject} text="Export Project Zip..." description={`${ctrl} + E`} />
+                        <Dropdown.Item onClick={this.handleClickExportFile} text="Export File..." description={`${ctrl} + Shift + E`} />
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={this.handleClickReload} text="Reload Project" description={`${ctrl} + R`} />
                     </Dropdown.Menu>
                 </Dropdown>
-                <a ref={this.refDownload} target="_blank" rel="noopener noreferrer" href={this.state.pAsString} download={this.state.pName}> </a>
+                <a ref={this.refDownload} target="_blank" rel="noopener noreferrer" href={this.state.fileURL} download={this.state.fileName}> </a>
                 <input ref={this.refOpen} type="file" hidden={true} onChange={this.onChange} accept=".json, .maxpat, .gendsp, .dsppat, application/json" />
             </>
         );
@@ -170,12 +191,13 @@ class EditMenu extends React.PureComponent<{ patcher: Patcher }, { locked: boole
         );
     }
 }
-export default class TopMenu extends React.PureComponent<{ patcher: Patcher }> {
+export default class TopMenu extends React.PureComponent<{ env: Env }> {
     ref = React.createRef<HTMLDivElement>();
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();
     handleKeyDown = (e: KeyboardEvent) => {
-        if (!this.props.patcher.isActive) return;
+        const { activeInstance } = this.props.env;
+        if (!activeInstance) return;
         const fileMenu = this.refFileMenu.current;
         const editMenu = this.refEditMenu.current;
         if (!fileMenu || !editMenu) return;
@@ -183,11 +205,11 @@ export default class TopMenu extends React.PureComponent<{ patcher: Patcher }> {
         if (e.target instanceof HTMLInputElement) return;
         if (e.target instanceof HTMLTextAreaElement) return;
         if ((e.target as HTMLElement).contentEditable === "true") return;
-        const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         if (ctrlKey && e.shiftKey && e.key === "n") fileMenu.handleClickNew();
-        else if (ctrlKey && e.key === "o") fileMenu.handleClickOpen();
+        else if (ctrlKey && e.key === "o") fileMenu.handleClickOpenProject();
         else if (ctrlKey && e.key === "s") fileMenu.handleClickSaveAs();
-        else if (this.props.patcher.state.locked) return;
+        else if (activeInstance instanceof Patcher && activeInstance.state.locked) return;
         else if (ctrlKey && e.key === "z") editMenu.handleClickUndo();
         else if (ctrlKey && e.key === "y") editMenu.handleClickRedo();
         else if (ctrlKey && e.key === "x") editMenu.handleClickCut();

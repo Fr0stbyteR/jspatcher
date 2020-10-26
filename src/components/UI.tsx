@@ -7,41 +7,62 @@ import BottomMenu from "./BottomMenu";
 import RightMenu from "./RightMenu";
 import LeftMenu from "./LeftMenu";
 import "./UI.scss";
+import Env from "../core/Env";
+import { Errors, TaskManagerEventMap, Tasks } from "../core/TaskMgr";
 
-export default class UI extends React.PureComponent<{ patcher: Patcher }, { loading: string[] }> {
-    state = { loading: this.props.patcher.state.isLoading ? [] : undefined as string[] };
+interface State {
+    tasks: Tasks;
+    errors: Errors;
+}
+
+export default class UI extends React.PureComponent<{ env: Env }, State> {
+    state: State = { tasks: this.props.env.taskMgr.tasks, errors: this.props.env.taskMgr.errors };
     handleKeyDown = (e: React.KeyboardEvent) => {
         // e.stopPropagation();
         // e.nativeEvent.stopImmediatePropagation();
     };
+    /*
     handleMouseDown = (e: React.MouseEvent) => {
         this.props.patcher.setActive();
         e.stopPropagation();
     };
-    handleLoading = (loading?: string[]) => this.setState({ loading: loading ? loading.slice() : undefined });
+    */
+    handleTasks = (tasks: TaskManagerEventMap["tasks"]) => {
+        if (this.props.env.loaded) {
+            this.setState({ tasks: {}, errors: {} });
+            this.props.env.taskMgr.on("tasks", this.handleTasks);
+        } else {
+            this.setState({ tasks });
+        }
+    };
+    handleErrors = (errors: TaskManagerEventMap["error"]) => {
+        this.setState({ errors });
+    };
     componentDidMount() {
-        this.props.patcher.on("loading", this.handleLoading);
+        if (!this.props.env.loaded) this.props.env.taskMgr.on("tasks", this.handleTasks);
     }
     componentWillUnmount() {
-        this.props.patcher.off("loading", this.handleLoading);
+        this.props.env.taskMgr.on("tasks", this.handleTasks);
     }
     render() {
         let dimmer: JSX.Element;
-        if (this.state.loading) {
+        if (Object.keys(this.state.tasks)) {
+            const { tasks, errors } = this.state;
             dimmer = <Dimmer active>
                 <Loader>
-                    <p>Loading Patcher...</p>
-                    {this.state.loading.map(e => <p key={e}>Dependency: {e}</p>)}
+                    <p>Initializing JSPatcher Environment...</p>
+                    {Object.keys(tasks).map(t => <p key={t}>{tasks[+t].message}</p>)}
+                    {Object.keys(errors).map(t => <p style={{ color: "red" }} key={t}>Error while: {errors[+t].message}: {errors[+t].error.message}</p>)}
                 </Loader>
             </Dimmer>;
         }
         return (
-            <>
+            <div id="jspatcher-root">
+                <TopMenu {...this.props} />
                 <div className="ui-left" onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseDown}>
                     <LeftMenu {...this.props} />
                 </div>
                 <div className="ui-center" onMouseDown={this.handleMouseDown}>
-                    <TopMenu {...this.props} />
                     <div className="patcher-container">
                         {dimmer}
                         <PatcherUI {...this.props} />
@@ -51,7 +72,7 @@ export default class UI extends React.PureComponent<{ patcher: Patcher }, { load
                 <div className="ui-right" onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseDown}>
                     <RightMenu {...this.props} />
                 </div>
-            </>
+            </div>
         );
     }
 }

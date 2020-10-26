@@ -13,6 +13,8 @@ export interface FileInstanceEventMap {
     "destroy": never;
 }
 
+export type AnyFileInstance = FileInstance<Record<string, any>>;
+
 export default class FileInstance<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}> extends TypedEventEmitter<EventMap & FileInstanceEventMap> {
     private readonly _env: Env;
     get env(): Env {
