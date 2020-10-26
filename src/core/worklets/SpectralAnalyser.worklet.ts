@@ -27,10 +27,10 @@ class SpectralAnalyserAtoms {
      * Atomic Lock
      */
     get lock(): number {
-        return globalThis.Atomics?.load(this._lock, 0);
+        return globalThis.Atomics?.load?.(this._lock, 0);
     }
     set lock(value: number) {
-        if (globalThis.Atomics) Atomics.store(this._lock, 0, value);
+        globalThis.Atomics?.store?.(this._lock, 0, value);
     }
     /**
      * Next audio sample index to write into window

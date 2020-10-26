@@ -1,5 +1,6 @@
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import FileInstance from "../file/FileInstance";
+import TextHistory from "./TextHistory";
 
 export interface PatcherTextEventMap {
     "textModified": { text: string; oldText: string };
@@ -8,8 +9,13 @@ export interface PatcherTextEventMap {
 export default class PatcherText extends FileInstance<PatcherTextEventMap> {
     text: string;
     editor: editor.IStandaloneCodeEditor;
-    async init(data: ArrayBuffer) {
-        this.text = await new Response(data).text();
+    _history: TextHistory = new TextHistory(this);
+    get history() {
+        return this._history;
+    }
+    async init(data?: ArrayBuffer) {
+        if (data) this.text = await new Response(data).text();
+        else this.text = "";
         this.emit("ready");
     }
     async serialize() {

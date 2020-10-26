@@ -1,3 +1,4 @@
+import * as JsZip from "jszip";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import Env from "./Env";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
@@ -20,7 +21,9 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     env: Env;
     worker: FileMgrWorker;
     root: Folder;
-    projectRoot: Folder;
+    get projectRoot() {
+        return this.root.findItem(FileManager.projectFolderName) as Folder;
+    }
     constructor(env: Env) {
         super();
         this.env = env;
@@ -34,7 +37,6 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         if (clean) await this.worker.empty();
         this.root = new Folder(this, project, null, null);
         await this.root.init();
-        this.projectRoot = this.root.findItem(FileManager.projectFolderName) as Folder;
         if (!this.projectRoot) this.projectRoot.addFolder(FileManager.projectFolderName);
         this.emit("ready");
         return this;
@@ -71,13 +73,16 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         const itemPath = `${path}/${name}`;
         const isFile = await this.worker.isFile(itemPath);
         if (!isFile) return { name, type: "folder" };
-        let type: ProjectItemType = isFile ? "unknown" : "folder";
-        if (FileManager.patcherFileExtensions.find(ext => name.endsWith(`.${ext}`))) type = "patcher";
-        else if (FileManager.audioFileExtensions.find(ext => name.endsWith(`.${ext}`))) type = "audio";
-        else if (FileManager.textFileExtensions.find(ext => name.endsWith(`.${ext}`))) type = "text";
-        else type = "unknown";
+        const type: ProjectItemType = isFile ? this.getTypeFromFileName(name) : "folder";
         return { name, type };
     }
+    private getTypeFromFileName(name: string): ProjectItemType {
+        if (FileManager.patcherFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "patcher";
+        if (FileManager.audioFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "audio";
+        if (FileManager.textFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "text";
+        return "unknown";
+    }
+
     async exists(path: string) {
         const multipartFilePath = `${path}.${FileManager.multipartSuffix}`;
         const exist = await this.worker.exists(path);
@@ -89,13 +94,16 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         this.emit("treeChanged", this.projectRoot.getTree());
     }
     async putFile(item: ProjectItem) {
-        const { maxFileSize, multipartSuffix } = FileManager;
         const { data, path, type } = item;
         if (type === "folder") {
             if (this.exists(path)) return;
             this.worker.mkdir(path);
             return;
         }
+        await this.writeFile(path, data);
+    }
+    async writeFile(path: string, data: ArrayBuffer) {
+        const { maxFileSize, multipartSuffix } = FileManager;
         if (this.exists(path)) await this.remove(path);
         if (data.byteLength <= maxFileSize) {
             await this.worker.createFile(path, new Uint8Array(data));
@@ -168,5 +176,53 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     instantiateProjectPath(path: string) {
         const item = this.getProjectItemFromPath(path);
         return item.instantiate();
+    }
+    async importFile(file: File, to: Folder = this.projectRoot) {
+        const name = to.uniqueName(file.name);
+        const data = await file.arrayBuffer();
+        return to.addProjectItem(name, data);
+    }
+    async importFileZip(data: ArrayBuffer, subfolder?: string, to: Folder = this.projectRoot) {
+        return this.env.taskMgr.newTask(this.constructor.name, "Unzipping file...", async (onUpdate) => {
+            let folder = to;
+            if (subfolder) {
+                const name = to.uniqueName(subfolder);
+                folder = await to.addFolder(name);
+            }
+            const jsZip = new JsZip();
+            const zip = await jsZip.loadAsync(data);
+            const unzip = async (zip: JsZip, to: Folder) => {
+                for (const $name in zip.files) {
+                    const $file = zip.files[$name];
+                    if ($file.dir) {
+                        const $zip = zip.folder($name);
+                        const $folder = await to.addFolder($name);
+                        await unzip($zip, $folder);
+                    } else {
+                        const $data = await zip.file($name).async("arraybuffer", state => onUpdate(`${state.percent}% - ${state.currentFile}`));
+                        await to.addProjectItem($name, $data);
+                    }
+                }
+            };
+            await unzip(zip, folder);
+        });
+    }
+    async exportProjectZip() {
+        return this.env.taskMgr.newTask(this.constructor.name, "Zipping project...", async (onUpdate) => {
+            const jsZip = new JsZip();
+            const toZip = (zip: JsZip, item: ProjectItem) => {
+                const { name } = item;
+                if (item.type === "folder") {
+                    const $zip = zip.folder(name);
+                    for (const $item of (item as Folder).items) {
+                        toZip($zip, $item);
+                    }
+                } else {
+                    zip.file(name, item.data);
+                }
+            };
+            toZip(jsZip, this.projectRoot);
+            return jsZip.generateAsync({ type: "arraybuffer" }, state => onUpdate(`${state.percent}% - ${state.currentFile}`));
+        });
     }
 }

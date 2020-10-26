@@ -1,22 +1,28 @@
 import { ProjectItemType, RawProjectItem } from "../types";
 import AudioFile from "../audio/AudioFile";
 import ProjectItem from "./ProjectItem";
+import TextFile from "../text/TextFile";
 
 export default class Folder extends ProjectItem {
     type = "folder" as const;
     items: Set<ProjectItem> = new Set();
     async init() {
         const items = await this.fileMgr.readDir(this.path);
-        for (const item of items) {
-            const { name, type } = item;
-            this.items.add(await this.getProjectItem(name, type));
+        for (const rawItem of items) {
+            const { name, type } = rawItem;
+            const item = this.getProjectItem(name, type);
+            this.items.add(item);
+            this.fileMgr.emitTreeChanged();
+            await item.init();
         }
+        this.emit("ready");
         return this;
     }
-    getProjectItem(name: string, type: ProjectItemType) {
-        if (type === "folder") return new Folder(this.fileMgr, this.project, this, name).init();
-        if (type === "audio") return new AudioFile(this.fileMgr, this.project, this, name).init();
-        return new ProjectItem(this.fileMgr, this.project, this, name).init();
+    getProjectItem(name: string, type: ProjectItemType, data?: ArrayBuffer) {
+        if (type === "folder") return new Folder(this.fileMgr, this.project, this, name, data);
+        if (type === "audio") return new AudioFile(this.fileMgr, this.project, this, name, data);
+        if (type === "text") return new TextFile(this.fileMgr, this.project, this, name, data);
+        return new TextFile(this.fileMgr, this.project, this, name, data);
     }
     findItem(itemIn: string) {
         return Array.from(this.items).find(item => item.name === itemIn);
@@ -24,12 +30,22 @@ export default class Folder extends ProjectItem {
     existItem(itemIn: ProjectItem | string) {
         return typeof itemIn === "string" ? !!this.findItem(itemIn) : this.items.has(itemIn);
     }
+    uniqueName(nameIn: string) {
+        if (!this.existItem(nameIn)) return nameIn;
+        let i = 0;
+        let name;
+        do {
+            i++;
+            name = `nameIn_${i}`;
+        } while (this.existItem(nameIn));
+        return name;
+    }
     async addProjectItem(name: string, data = new ArrayBuffer(0)) {
         if (!this.existItem(name)) throw new Error(`${name} already exists.`);
         const tempItem = new ProjectItem(this.fileMgr, this.project, this, name, data);
         await this.fileMgr.putFile(tempItem);
         const fileDetail = await this.fileMgr.getFileDetails(this.path, name);
-        const item = await this.getProjectItem(name, fileDetail.type);
+        const item = this.getProjectItem(name, fileDetail.type, data);
         this.items.add(item);
         this.fileMgr.emitTreeChanged();
         return item;
@@ -49,5 +65,12 @@ export default class Folder extends ProjectItem {
             items: Array.from(this.items).map(item => (item.type === "folder" ? (item as Folder).getTree() : { type: item.type, name: item.name, data: item.data, items: undefined })),
             data: undefined as never
         };
+    }
+    getDescendantFiles() {
+        return Array.from(this.items).reduce((acc, cur) => {
+            if (cur.type === "folder") acc.push(...(cur as Folder).getDescendantFiles());
+            else acc.push(cur);
+            return acc;
+        }, [] as ProjectItem[]);
     }
 }

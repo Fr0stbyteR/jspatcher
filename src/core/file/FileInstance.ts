@@ -64,7 +64,13 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
             this._env = ctxIn;
         }
         this.on("dirty", isDirty => this.file.emit("dirty", isDirty));
+        if (this.project) {
+            this.project.on("save", this.handleProjectSave);
+            this.project.on("unload", this.handleProjectUnload);
+        }
     }
+    handleProjectSave = async () => this.save();
+    handleProjectUnload = async () => this.destroy();
     async serialize(): Promise<ArrayBuffer> {
         throw new Error("Not implemented.");
     }

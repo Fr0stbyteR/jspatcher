@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 
 export class TypedEventEmitter<M> {
-    private _listeners: { [eventName: string]: ((...e: any[]) => void | Promise<void>)[] } = {};
+    private _listeners: { [eventName: string]: ((...e: any[]) => any | Promise<any>)[] } = {};
     get listeners() {
         return this._listeners;
     }
@@ -23,16 +23,18 @@ export class TypedEventEmitter<M> {
     }
     async emitSerial<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
         const listeners = this.getListeners(eventName);
-        if (!listeners) return;
-        /* eslint-disable no-await-in-loop */
-        for (const listener of listeners) {
-            await listener(eventData);
+        if (!listeners) return [];
+        const returnValues = [];
+        for (let i = 0; i < listeners.length; i++) {
+            const listener = listeners[i];
+            returnValues[i] = await listener(eventData);
         }
+        return returnValues;
     }
     emitSync<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
         const listeners = this.getListeners(eventName);
-        if (!listeners) return;
-        listeners.map(f => f(eventData));
+        if (!listeners) return [];
+        return listeners.map(f => f(eventData));
     }
     removeAllListeners(eventName?: Extract<keyof M, string>) {
         if (eventName) {

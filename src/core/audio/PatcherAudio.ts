@@ -48,9 +48,9 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         this.waveform = new Waveform(this);
         this.waveform.generateEmpty(numberOfChannels, length);
     }
-    async init(data: ArrayBuffer) {
+    async init(data?: ArrayBuffer) {
         const { audioCtx } = this;
-        if (data.byteLength) {
+        if (data?.byteLength) {
             const audioBuffer = await audioCtx.decodeAudioData(data);
             this.audioBuffer = Object.setPrototypeOf(audioBuffer, OperableAudioBuffer.prototype);
         } else {
@@ -74,7 +74,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         audio.waveform = this.waveform.clone();
         return audio;
     }
-    setAudio(that: { audioBuffer: OperableAudioBuffer, waveform: Waveform }) {
+    setAudio(that: { audioBuffer: OperableAudioBuffer; waveform: Waveform }) {
         this.audioBuffer = that.audioBuffer;
         this.waveform = that.waveform;
     }

@@ -36,7 +36,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly fileMgrWorker = new FileMgrWorker();
     readonly waveformWorker = new WaveformWorker();
     readonly wavEncoderWorker = new WavEncoderWorker();
-    loaded = false;
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();
     readonly browser = detectBrowserCore();
@@ -53,6 +52,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
     pkgMgr: GlobalPackageManager;
+    loaded = false;
     private _activeInstance: AnyFileInstance;
     get activeInstance(): AnyFileInstance {
         return this._activeInstance;
@@ -116,6 +116,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
                 await this.fileMgr.init(project, urlparamsOptions.init);
             });
         });
+        this.loaded = true;
         this.emit("ready");
         /*
         const patcher = new Patcher(this.currentProject);
@@ -140,11 +141,29 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         patcher.on("changed", () => localStorage.setItem("__JSPatcher_Patcher", patcher.toStringEnv(null)));
         if (!this._noUI && this.divRoot) ReactDOM.render(urlparamsOptions.runtime ? <PatcherUI patcher={patcher} runtime /> : <UI patcher={patcher} />, this.divRoot);
         */
-        this.loaded = true;
         return this;
     }
     openInstance(i: AnyFileInstance) {
         this.emit("openInstance", i);
+    }
+    async newProject() {
+        await this.currentProject?.unload?.();
+        const project = new Project(this);
+        this.currentProject = project;
+        await project.load(true);
+        return project;
+    }
+    async reload() {
+        await this.currentProject?.unload?.();
+        await this.currentProject?.load?.();
+    }
+    async loadFromZip(data: ArrayBuffer) {
+        await this.currentProject?.unload?.();
+        const project = new Project(this);
+        this.currentProject = project;
+        this.fileMgr.importFileZip(data);
+        await project.load(true);
+        return project;
     }
     get divRoot(): HTMLDivElement {
         return this._divRoot;

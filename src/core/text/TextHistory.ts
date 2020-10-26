@@ -1,7 +1,7 @@
 import History from "../file/History";
 import PatcherText, { PatcherTextEventMap } from "./PatcherText";
 
-export default class AudioHistory extends History<PatcherTextEventMap> {
+export default class TextHistory extends History<PatcherTextEventMap> {
     instance: PatcherText;
     eventListening: (keyof PatcherTextEventMap)[] = ["textModified"];
     async undo() {
