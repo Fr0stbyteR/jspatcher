@@ -13,7 +13,10 @@ export default class TextHistory extends History<PatcherTextEventMap> {
             const e: PatcherTextEventMap[typeof type] = event;
             const { oldText } = e;
             if (this.instance.editor) {
-                this.instance.editor.trigger("", "undo", null);
+                this.instance.editor.focus();
+                if (!document.execCommand("undo")) {
+                    (this.instance.editor.getModel() as any).undo?.();
+                }
                 this.instance.text = this.instance.editor.getValue();
                 e.oldText = this.instance.text;
             } else {
@@ -33,7 +36,10 @@ export default class TextHistory extends History<PatcherTextEventMap> {
             const e: PatcherTextEventMap[typeof type] = event;
             const { text } = e;
             if (this.instance.editor) {
-                this.instance.editor.trigger("", "redo", null);
+                this.instance.editor.focus();
+                if (!document.execCommand("undo")) {
+                    (this.instance.editor.getModel() as any)?.redo?.();
+                }
                 this.instance.text = this.instance.editor.getValue();
                 e.text = this.instance.text;
             } else {

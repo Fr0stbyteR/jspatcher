@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Dimmer, Loader } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
-import TopMenu from "./TopMenu";
+import TopMenu from "./topmenu/TopMenu";
 import PatcherUI from "./PatcherUI";
 import BottomMenu from "./BottomMenu";
 import RightMenu from "./RightMenu";

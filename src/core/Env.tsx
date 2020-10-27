@@ -17,10 +17,11 @@ import TaskManager from "./TaskMgr";
 import Project from "./Project";
 import { AnyFileInstance } from "./file/FileInstance";
 import UI from "../components/UI";
+import PatcherAudio from "./audio/PatcherAudio";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-interface EnvEventMap {
+export interface EnvEventMap {
     "ready": never;
     "activeInstance": AnyFileInstance;
     "openInstance": AnyFileInstance;
@@ -52,6 +53,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
     pkgMgr: GlobalPackageManager;
+    audioClipboard: PatcherAudio;
     loaded = false;
     private _activeInstance: AnyFileInstance;
     get activeInstance(): AnyFileInstance {

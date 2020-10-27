@@ -42,4 +42,28 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
             this.emit("destroy");
         });
     }
+    async copy() {
+        if (!this.editor) return;
+        this.editor.focus();
+        document.execCommand("copy");
+    }
+    async cut() {
+        if (!this.editor) return;
+        this.editor.focus();
+        document.execCommand("cut");
+    }
+    async paste() {
+        if (!this.editor) return;
+        this.editor.focus();
+        document.execCommand("paste");
+    }
+    async deleteSelected() {
+        if (!this.editor) return;
+        this.editor.executeEdits("", [{ range: this.editor.getSelection(), text: null }]);
+    }
+    async selectAll() {
+        if (!this.editor) return;
+        const range = this.editor.getModel().getFullModelRange();
+        this.editor.setSelection(range);
+    }
 }

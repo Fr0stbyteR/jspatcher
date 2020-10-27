@@ -74,6 +74,27 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     async serialize(): Promise<ArrayBuffer> {
         throw new Error("Not implemented.");
     }
+    undo() {
+        return this.history.undo();
+    }
+    redo() {
+        return this.history.redo();
+    }
+    async copy() {
+        throw new Error("Not implemented.");
+    }
+    async cut() {
+        throw new Error("Not implemented.");
+    }
+    async paste() {
+        throw new Error("Not implemented.");
+    }
+    async deleteSelected(): Promise<any> {
+        throw new Error("Not implemented.");
+    }
+    async selectAll() {
+        throw new Error("Not implemented.");
+    }
     async save() {
         if (this.isTemporary) throw new Error("Cannot save temporary file");
         if (this.isReadonly) throw new Error("Cannot save readonly file");

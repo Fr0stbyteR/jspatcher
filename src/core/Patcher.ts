@@ -809,7 +809,41 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         this.emit("tempLine", { findSrc, from });
         return this;
     }
-    async paste(clipboard: RawPatcher | TMaxClipboard) {
+    async cut() {
+        if (this.state.locked) return;
+        await this.copy();
+        this.deleteSelected();
+    }
+    async copy() {
+        if (this.state.locked) return;
+        const s = this.selectedToString();
+        if (!s) return;
+        await navigator.clipboard.writeText(s);
+    }
+    async paste() {
+        if (this.state.locked) return;
+        const s = await navigator.clipboard.readText();
+        if (!s) return;
+        let parsed: RawPatcher | TMaxClipboard;
+        try {
+            parsed = JSON.parse(s);
+        } catch (e) {} // eslint-disable-line no-empty
+        await this.pasteToPatcher(parsed);
+    }
+    async duplicate() {
+        if (this.state.locked) return;
+        const s = this.selectedToString();
+        if (!s) return;
+        let parsed: RawPatcher | TMaxClipboard;
+        try {
+            parsed = JSON.parse(s);
+        } catch (e) {} // eslint-disable-line no-empty
+        await this.pasteToPatcher(parsed);
+    }
+    async selectAll() {
+        this.selectAllBoxes();
+    }
+    async pasteToPatcher(clipboard: RawPatcher | TMaxClipboard) {
         const idMap: Record<string, string> = {};
         const pasted: RawPatcher = { boxes: {}, lines: {} };
         if (!clipboard || !clipboard.boxes) return pasted;
@@ -968,12 +1002,6 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         const deselected = Object.keys(deleted.boxes).concat(Object.keys(deleted.lines));
         this.emit("deselected", deselected);
         this.emit("delete", deleted);
-    }
-    undo() {
-        this._state.history.undo();
-    }
-    redo() {
-        this._state.history.redo();
     }
     toFaustDspCode() {
         const code = toFaustDspCode(this);
