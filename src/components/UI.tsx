@@ -9,14 +9,15 @@ import LeftMenu from "./LeftMenu";
 import "./UI.scss";
 import Env from "../core/Env";
 import { Errors, TaskManagerEventMap, Tasks } from "../core/TaskMgr";
+import StatusBar from "./StatusBar";
 
-interface State {
+interface S {
     tasks: Tasks;
     errors: Errors;
 }
 
-export default class UI extends React.PureComponent<{ env: Env }, State> {
-    state: State = { tasks: this.props.env.taskMgr.tasks, errors: this.props.env.taskMgr.errors };
+export default class UI extends React.PureComponent<{ env: Env }, S> {
+    state: S = { tasks: this.props.env.taskMgr.tasks, errors: this.props.env.taskMgr.errors };
     handleKeyDown = (e: React.KeyboardEvent) => {
         // e.stopPropagation();
         // e.nativeEvent.stopImmediatePropagation();
@@ -72,6 +73,7 @@ export default class UI extends React.PureComponent<{ env: Env }, State> {
                 <div className="ui-right" onKeyDown={this.handleKeyDown} onMouseDown={this.handleMouseDown}>
                     <RightMenu {...this.props} />
                 </div>
+                <StatusBar {...this.props} lang={this.props.env.language} />
             </div>
         );
     }

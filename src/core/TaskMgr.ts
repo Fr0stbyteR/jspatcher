@@ -18,7 +18,7 @@ export interface Errors { [timestamp: number]: TaskError }
 
 export interface TaskManagerEventMap {
     "tasks": Tasks;
-    "error": Errors;
+    "errors": Errors;
 }
 
 export default class TaskManager extends TypedEventEmitter<TaskManagerEventMap> {
@@ -36,7 +36,7 @@ export default class TaskManager extends TypedEventEmitter<TaskManagerEventMap> 
             returnValue = await callback(handleUpdate);
         } catch (error) {
             this.errors = { ...this.errors, [timestamp]: { emitter, message, error } };
-            this.emit("error", this.errors);
+            this.emit("errors", this.errors);
             throw error;
         } finally {
             delete this.tasks[timestamp];
@@ -44,5 +44,29 @@ export default class TaskManager extends TypedEventEmitter<TaskManagerEventMap> 
             this.emit("tasks", this.tasks);
         }
         return returnValue;
+    }
+    get lastError(): TaskError & { timestamp: number } {
+        const timestamps = Object.keys(this.errors);
+        if (!timestamps.length) return null;
+        const timestamp = timestamps.map(v => +v).sort((a, b) => b - a)[0];
+        return { timestamp, ...this.errors[timestamp] };
+    }
+    get lastTask(): Task & { timestamp: number } {
+        const timestamps = Object.keys(this.tasks);
+        if (!timestamps.length) return null;
+        const timestamp = timestamps.map(v => +v).sort((a, b) => b - a)[0];
+        return { timestamp, ...this.tasks[timestamp] };
+    }
+    dismissLastError() {
+        const { lastError } = this;
+        if (!lastError) return;
+        const { timestamp } = lastError;
+        delete this.errors[timestamp];
+        this.errors = { ...this.errors };
+        this.emit("errors", this.errors);
+    }
+    dismissAllErrors() {
+        this.errors = {};
+        this.emit("errors", this.errors);
     }
 }

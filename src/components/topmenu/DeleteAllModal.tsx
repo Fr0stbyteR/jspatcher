@@ -2,7 +2,7 @@ import * as React from "react";
 import { Modal, Button } from "semantic-ui-react";
 import I18n from "../../i18n/I18n";
 
-interface Props {
+interface P {
     lang: string;
     open: boolean;
     count: number;
@@ -10,7 +10,7 @@ interface Props {
     onConfirm: () => any;
 }
 
-export default class DeleteAllModal extends React.PureComponent<Props> {
+export default class DeleteAllModal extends React.PureComponent<P> {
     get strings() {
         return I18n[this.props.lang].DeleteAllModal;
     }

@@ -8,17 +8,18 @@
     position: absolute;
     display: flex;
     flex-direction: column;
-}
-.ui-center {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    flex: 1 1 100%;
-    & > .patcher-container {
+
+    & .ui-center {
+        display: flex;
         position: relative;
-        overflow: auto;
+        flex-direction: column;
         flex: 1 1 100%;
-        display: block;
+        & > .patcher-container {
+            position: relative;
+            overflow: auto;
+            flex: 1 1 100%;
+            display: block;
+        }
     }
 }
 body ::-webkit-scrollbar-corner {

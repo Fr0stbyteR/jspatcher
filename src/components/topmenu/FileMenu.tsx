@@ -6,13 +6,13 @@ import Patcher from "../../core/Patcher";
 import PatcherText from "../../core/text/PatcherText";
 import Folder from "../../core/file/Folder";
 
-interface State {
+interface S {
     fileURL: string;
     fileName: string;
     showSaveAsModal: boolean;
 }
 
-export default class FileMenu extends React.PureComponent<{ env: Env }, State> {
+export default class FileMenu extends React.PureComponent<{ env: Env }, S> {
     refDownload = React.createRef<HTMLAnchorElement>();
     refOpenProject = React.createRef<HTMLInputElement>();
     refOpenFile = React.createRef<HTMLInputElement>();

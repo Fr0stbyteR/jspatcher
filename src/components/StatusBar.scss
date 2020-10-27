@@ -1,0 +1,40 @@
+#jspatcher-root .status-bar {
+    display: flex;
+    position: relative;
+    flex: 0 0 auto;
+    margin: 0px !important;
+    border-radius: 0px !important;
+    padding: 5px;
+    background-color: #1b1c1d;
+    color: white;
+    font-size: 12px;
+
+    & > i.icon {
+        margin: auto 3.5px auto 0px;
+        width: 12px;
+        height: 12px;
+    }
+
+    & > .item:first-child, .item:last-child {
+        border-radius: 0px !important;
+    }
+
+    & > span {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+
+        &.error {
+            color: rgb(255, 128, 128);
+            direction: rtl;
+        }
+        &.dismiss {
+            color: rgb(255, 128, 128);
+            margin-left: auto;
+            padding-left: 12px;
+            text-decoration: underline;
+            overflow: auto;
+            flex: 1 0 auto;
+        }
+    }
+}
