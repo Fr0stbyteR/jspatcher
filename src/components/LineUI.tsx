@@ -180,7 +180,7 @@ export class LineUI extends React.PureComponent<P, S> {
         const dBezierT = Math.min(divStyle.height, dStartT + Math.max(5, (divStyle.height - 20) * 0.2));
         const d = `M ${dStartL} ${dStartT} Q ${dStartL} ${dBezierT} ${dMidL} ${dMidT} T ${dEndL} ${dEndT}`;
         return (
-            <div className={className} tabIndex={0} style={{ transform: `translate(${x}px, ${y}px)` }} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
+            <div className={className} tabIndex={0} data-id={this.props.id} style={{ transform: `translate(${x}px, ${y}px)` }} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
                     <path className="normal" d={d} ref={this.refPath} />
                     {this.state.type === "audio" ? <path className="audio" d={d} /> : undefined}

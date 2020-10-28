@@ -1,0 +1,123 @@
+.ui-left > .left-pane > div.file-manager-container {
+    overflow-x: hidden;
+    color: white;
+
+    & > div.file-manager-item {
+        padding-left: 10px;
+        display: flex;
+        position: relative;
+        cursor: pointer;
+        height: 22px;
+        align-items: center;
+        user-select: none;
+
+        & > span.file-manager-item-icon {
+            flex: 0 0 auto;
+            height: 100%;
+            width: 22px;
+            text-align: center;
+            margin-left: 4px;
+        }
+
+        & > span.file-manager-item-marker {
+            display: inline-block;
+            flex: 0 0 auto;
+            width: 8px;
+            height: 8px;
+            background-color: #ffd700;
+            border-radius: 8px;
+            margin-left: 0px;
+        }
+
+        & > span.file-manager-item-name-container {
+            display: flex;
+            overflow: hidden;
+            flex: 1 1 auto;
+            height: 100%;
+            align-items: center;
+            padding: 0 5px;
+
+            & > span.file-manager-item-name {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 12px;
+            }
+        }
+
+        & > span.file-manager-item-actions {
+            display: none;
+            flex: 0 0 auto;
+            height: 22px;
+
+            & > span {
+                height: 100%;
+                width: 22px;
+                display: inline-block;
+                text-align: center;
+    
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                }
+            }
+        }
+
+        &:nth-child(odd) {
+            background-color: rgba(0, 0, 0, 0.15);        
+        }
+    
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+    
+            & > span.file-manager-item-actions {
+                display: inline-block;
+            }
+        }
+
+        &.renaming {
+            cursor: unset;
+
+            & > span.file-manager-item-name-container {
+                background-color: rgba(0, 0, 0, 0.5);
+                border: 1px #0197fb solid;
+            }
+        }
+        
+        &.selected {
+            background-color: #37373d;
+
+            &:focus {
+                background-color: #094771;
+            }
+        }
+
+        &.loading {
+            pointer-events: none;
+            color: grey;
+            -webkit-animation-duration: 1s;
+            animation-duration: 1s;
+            -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+            -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+            -webkit-animation-name: placeHolderShimmer;
+            animation-name: placeHolderShimmer;
+            -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+            background-size: 1200px 100%;
+            background-image: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.2) 20%, transparent 40%, transparent 200%);
+            @keyframes placeHolderShimmer{
+                0% {
+                    background-position: -1200px 0;
+                }
+                100% {
+                    background-position: 1200px 0;
+                }
+            }
+        }
+    }
+
+    & i.icon {
+        margin: 0;
+    }
+}

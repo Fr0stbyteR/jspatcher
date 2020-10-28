@@ -376,7 +376,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         if (this.state.selected) classArray.push("selected");
         if (this.state.presentation) classArray.push("presentation");
         return (
-            <div className={classArray.join(" ")} tabIndex={0} style={divStyle} ref={this.refDiv} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
+            <div className={classArray.join(" ")} tabIndex={0} style={divStyle} ref={this.refDiv} data-id={this.props.id} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
                 {
                     this.state.inPresentationMode ? undefined : <>
                         <Inlets patcher={this.props.patcher} box={box} runtime={this.props.runtime} />
@@ -592,7 +592,7 @@ class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: n
                     open={this.state.highlight}
                     size="mini"
                     inverted
-                    offset="0px, 5px"
+                    offset={[0, 5]}
                 />
             </div>
         );

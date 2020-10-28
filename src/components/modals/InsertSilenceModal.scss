@@ -1,0 +1,11 @@
+.modal.modal-insert-silence {
+    & .ui.form .inline.field {
+        & > label {
+            width: 30%;
+        }
+        & > .time-input {
+            width: 30%;
+            margin: 2px 10px;
+        }
+    }
+}

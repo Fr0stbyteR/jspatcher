@@ -38,6 +38,10 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     get data() {
         return this._data;
     }
+    private _isDirty: boolean;
+    get isDirty() {
+        return this._isDirty;
+    }
     constructor(fileMgrIn: FileManager, projectIn: Project, parentIn: Folder, nameIn: string, dataIn?: ArrayBuffer) {
         super();
         this._fileMgr = fileMgrIn;
@@ -45,6 +49,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         this._project = projectIn;
         this.parent = parentIn;
         this._name = nameIn;
+        this.on("dirty", dirty => this._isDirty = dirty);
         if (dataIn) this._data = dataIn;
     }
     clone(parentIn = this.parent, nameIn = this._name, dataIn?: ArrayBuffer) {

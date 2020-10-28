@@ -40,7 +40,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();
     readonly browser = detectBrowserCore();
-    readonly language = navigator.language === "zh-CN" ? "zh-CN" : "en";
+    readonly language = /* navigator.language === "zh-CN" ? "zh-CN" : */"en";
     readonly supportAudioWorklet = !!window.AudioWorklet;
     readonly data: TSharedData = {};
     readonly dataConsumers: TSharedDataConsumers = {};

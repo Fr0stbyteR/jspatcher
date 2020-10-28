@@ -36,7 +36,7 @@ export default class UI extends React.PureComponent<{ env: Env }, S> {
             this.setState({ tasks });
         }
     };
-    handleErrors = (errors: TaskManagerEventMap["error"]) => {
+    handleErrors = (errors: TaskManagerEventMap["errors"]) => {
         this.setState({ errors });
     };
     componentDidMount() {

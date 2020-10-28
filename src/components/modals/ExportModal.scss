@@ -1,0 +1,59 @@
+.modal.modal-export {
+    min-width: 600px;
+
+    & .ui.form .inline.field > label {
+        width: 40%;
+    }
+
+    & table.ui.inverted.table.very.compact {
+        margin: auto;
+        background-color: rgba(255, 255, 255, 0.1);
+
+        & thead:not(.full-width) th:first-child {
+            background-color: transparent;
+            box-shadow: none;
+        }
+
+        & thead th, & tbody td {
+            padding: 1px;
+            min-width: 50px;
+        }
+
+        & thead th, & tbody td:first-child {
+            font-size: 12px;
+            padding: 5px;
+            font-weight: normal;
+        }
+        & span.gain-input {
+            width: 100%;
+            text-align: left;
+        }
+    }
+
+    & .ui.checkbox {
+        transform: translateY(2px);
+    }
+
+    & .message {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
+        font-size: 12px;
+    
+        & > i.icon {
+            width: 12px;
+            height: 12px;
+        }
+
+        & > span {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+
+            &.error {
+                color: rgb(255, 128, 128);
+                direction: rtl;
+            }
+        }
+    }
+}
