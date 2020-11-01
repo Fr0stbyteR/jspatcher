@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Icon } from "semantic-ui-react";
-import Env from "../../core/Env";
-import { FileState } from "../../core/FileMgr";
+import Env from "../../core/Env";=
 import NewAudioModal from "../modals/NewAudioModal";
 import DeleteModal from "../modals/DeleteModal";
 import DeleteAllModal from "../modals/DeleteAllModal";
 import "./FileMgr.scss";
 import I18n from "../../i18n/I18n";
+import { ProjectItemUI } from "./FileMgrItem";
 
 interface P {
     env: Env;
@@ -63,67 +63,6 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         const fileName = (e.currentTarget.getElementsByClassName("file-manager-item-name-container")[0].firstChild as HTMLSpanElement).innerText;
         this.props.env.fileMgr.editing = fileName;
     };
-    handleClickRename = (e: React.MouseEvent<HTMLSpanElement>) => {
-        e.stopPropagation();
-        const container = e.currentTarget.parentElement.parentElement.getElementsByClassName("file-manager-item-name-container")[0] as HTMLSpanElement;
-        const span = container.firstChild as HTMLSpanElement;
-        const oldName = span.innerText;
-        const $beforeExt = oldName.lastIndexOf(".");
-        this.setState({ renaming: oldName });
-        container.contentEditable = "true";
-        const range = document.createRange();
-        const selection = window.getSelection();
-        range.setStart(span.childNodes[0], 0);
-        range.setEnd(span.childNodes[0], $beforeExt || oldName.length);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        container.focus();
-        const handleBlur = async (e?: FocusEvent) => {
-            if (e) e.stopPropagation();
-            container.removeEventListener("blur", handleBlur);
-            container.removeEventListener("keydown", handleKeyDown);
-            const newName = span.innerText;
-            try {
-                await this.props.env.fileMgr.renameFile(oldName, newName);
-            } catch (e) {
-                span.innerText = oldName;
-            } finally {
-                container.contentEditable = "false";
-                this.setState({ renaming: undefined });
-            }
-        };
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                handleBlur();
-            }
-            if (e.key === "Escape") {
-                span.innerText = oldName;
-                container.contentEditable = "false";
-                this.setState({ renaming: undefined });
-                container.removeEventListener("blur", handleBlur);
-                container.removeEventListener("keydown", handleKeyDown);
-                container.blur();
-            }
-        };
-        container.addEventListener("blur", handleBlur);
-        container.addEventListener("keydown", handleKeyDown);
-    };
-    handleClickDelete = (e: React.MouseEvent<HTMLSpanElement>) => {
-        e.stopPropagation();
-        const container = e.currentTarget.parentElement.parentElement.getElementsByClassName("file-manager-item-name-container")[0] as HTMLSpanElement;
-        const span = container.firstChild as HTMLSpanElement;
-        const fileName = span.innerText;
-        this.setState({ deleting: fileName });
-    };
-    handleDeleteModalClose = () => {
-        this.setState({ deleting: undefined });
-    };
-    handleDelete = () => {
-        const fileName = this.state.deleting;
-        if (fileName) this.props.env.fileMgr.removeFile(fileName);
-        this.setState({ deleting: undefined });
-    };
     handleClickNewFile = (e: React.MouseEvent<HTMLSpanElement>) => {
         e.stopPropagation();
         this.setState({ newAudioModalOpen: true });
@@ -141,37 +80,6 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
     handleNewAudioModalClose = () => {
         this.setState({ newAudioModalOpen: false });
     };
-    get fileTree() {
-        const elements: JSX.Element[] = [];
-        for (const fileName in this.state.files) {
-            const classNameArray = ["file-manager-item"];
-            const { isLoading, isDirty, isMemoryOnly } = this.state.files[fileName];
-            if (isLoading) classNameArray.push("loading");
-            const renaming = fileName === this.state.renaming;
-            if (renaming) classNameArray.push("renaming");
-            const selected = fileName === this.state.selected;
-            if (selected) classNameArray.push("selected");
-            const editing = fileName === this.state.editing;
-            if (editing) classNameArray.push("editing");
-            const deleting = fileName === this.state.deleting;
-            if (deleting) classNameArray.push("deleting");
-            elements.push(
-                <div key={fileName} className={classNameArray.join(" ")} tabIndex={0} onClick={this.handleClickItem} onDoubleClick={this.handleDoubleClick}>
-                    <span className="file-manager-item-marker" style={{ visibility: isDirty || isMemoryOnly ? "visible" : "hidden" }} />
-                    <span className="file-manager-item-icon"><Icon name="music" inverted size="small" /></span>
-                    <span className="file-manager-item-name-container" {...(renaming ? { tabIndex: 0 } : {})} contentEditable={fileName === this.state.renaming} suppressContentEditableWarning>
-                        <span className="file-manager-item-name" style={{ fontWeight: editing ? 900 : "normal", fontStyle: isMemoryOnly ? "italic" : "normal" }}>{fileName}</span>
-                    </span>
-                    <span className="file-manager-item-actions" hidden={renaming}>
-                        <span className="file-manager-item-actions-rename" title={this.strings.rename} onClick={this.handleClickRename}><Icon name="pencil alternate" inverted size="small" /></span>
-                        <span className="file-manager-item-actions-delete" title={this.strings.delete} onClick={this.handleClickDelete}><Icon name="trash" inverted size="small" /></span>
-                    </span>
-                    <DeleteModal lang={this.props.lang} open={deleting} onClose={this.handleDeleteModalClose} onConfirm={this.handleDelete} fileName={fileName} />
-                </div>
-            );
-        }
-        return elements;
-    }
     render() {
         return (
             <div className="left-pane-component file-manager-container">
@@ -183,7 +91,11 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
                 </div>
                 <NewAudioModal {...this.props} open={this.state.newAudioModalOpen} onClose={this.handleNewAudioModalClose} />
                 <DeleteAllModal lang={this.props.lang} open={this.state.deleteAllModalOpen} onClose={this.handleDeleteAllModalClose} onConfirm={this.handleDeleteAll} count={Object.keys(this.state.files).length} />
-                {this.state.collapsed ? undefined : this.fileTree}
+                {this.state.collapsed
+                    ? undefined
+                    : <div className="file-manager-item-tree">
+                        {Array.from(this.props.env.fileMgr.projectRoot.items).map(item => <ProjectItemUI {...this.props} key={item.path} item={item} />)}
+                    </div>}
             </div>
         );
     }

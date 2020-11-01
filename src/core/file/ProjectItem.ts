@@ -11,6 +11,7 @@ export interface ProjectItemEventMap {
     "instantiated": FileInstance;
     "nameChanged": { oldName: string, newName: string };
     "pathChanged": { from: Folder, to: Folder };
+    "treeChanged": never;
     "destroyed": never;
     "dirty": boolean;
 }
@@ -58,7 +59,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     }
     async init() {
         this._data = await this.fileMgr.readFile(this.path);
-        this.emit("ready");
+        await this.emit("ready");
         return this;
     }
     async instantiate(): Promise<FileInstance<any>> {
@@ -72,13 +73,17 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     get parentPath() {
         return this.parent?.path;
     }
+    async emitTreeChanged() {
+        await this.emit("treeChanged");
+        await (this.parent || this.fileMgr).emitTreeChanged();
+    }
     async rename(newNameIn: string) {
         const newName = newNameIn.trim();
         const oldName = this._name;
         if (newName === oldName) return;
         if (!this.parent.existItem(newNameIn)) throw new Error(`${newName} already exists.`);
         await this.fileMgr.rename(this.path, `${this.parentPath}/${newNameIn}`);
-        this.fileMgr.emitTreeChanged();
+        this.emitTreeChanged();
         this.emit("nameChanged", { oldName, newName });
     }
     async move(to: Folder, newName = this.name) {
@@ -90,14 +95,14 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         this.parent = to;
         this._name = newName;
         this.parent.items.add(this);
-        this.fileMgr.emitTreeChanged();
-        this.emit("pathChanged", { from, to });
+        await this.emitTreeChanged();
+        await this.emit("pathChanged", { from, to });
     }
     async destroy() {
         await this._fileMgr.remove(this.path);
         this.parent.items.delete(this);
-        this.fileMgr.emitTreeChanged();
-        this.emit("destroyed");
+        await this.emitTreeChanged();
+        await this.emit("destroyed");
     }
     async save(newData: ArrayBuffer) {
         this._data = newData;
@@ -107,7 +112,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         const item = this.clone(parent, name, newData);
         await this._fileMgr.putFile(item);
         parent.items.add(item);
-        this.fileMgr.emitTreeChanged();
+        await this.emitTreeChanged();
         return item;
     }
     async saveAsSelf(to: Folder, name: string, newData: ArrayBuffer) {
@@ -117,7 +122,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         this.parent = to;
         this._name = name;
         this.parent.items.add(this);
-        this.fileMgr.emitTreeChanged();
-        this.emit("pathChanged", { from, to });
+        await this.emitTreeChanged();
+        await this.emit("pathChanged", { from, to });
     }
 }

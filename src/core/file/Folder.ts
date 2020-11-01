@@ -12,7 +12,7 @@ export default class Folder extends ProjectItem {
             const { name, type } = rawItem;
             const item = this.getProjectItem(name, type);
             this.items.add(item);
-            this.fileMgr.emitTreeChanged();
+            await this.emitTreeChanged();
             await item.init();
         }
         this.emit("ready");
@@ -47,7 +47,7 @@ export default class Folder extends ProjectItem {
         const fileDetail = await this.fileMgr.getFileDetails(this.path, name);
         const item = this.getProjectItem(name, fileDetail.type, data);
         this.items.add(item);
-        this.fileMgr.emitTreeChanged();
+        await this.emitTreeChanged();
         return item;
     }
     async addFolder(name: string) {
@@ -55,7 +55,7 @@ export default class Folder extends ProjectItem {
         const folder = new Folder(this.fileMgr, this.project, this, name);
         await this.fileMgr.putFile(folder);
         this.items.add(folder);
-        this.fileMgr.emitTreeChanged();
+        await this.emitTreeChanged();
         return folder;
     }
     getTree(): RawProjectItem<"folder"> {
