@@ -78,6 +78,9 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
         await this.env.fileMgr.init(this, clean);
     }
     async unload() {
+        for (const i of this.env.instances) {
+            if (i.project === this) await i.destroy();
+        }
         await this.emit("unload");
     }
 }

@@ -5,7 +5,7 @@ import I18n from "../../i18n/I18n";
 interface P {
     lang: string;
     open: boolean;
-    fileName: string;
+    fileNames: string[];
     onClose: () => any;
     onConfirm: () => any;
 }
@@ -18,7 +18,7 @@ export default class DeleteModal extends React.PureComponent<P> {
         return (
             <Modal className="modal-delete" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
                 <Modal.Header>{this.strings.title}</Modal.Header>
-                <Modal.Content>{this.strings.msg + this.props.fileName}</Modal.Content>
+                <Modal.Content>{this.strings.msg + this.props.fileNames.join(", ")}</Modal.Content>
                 <Modal.Actions>
                     <Button inverted color="grey" size="mini" onClick={this.props.onClose}>{this.strings.cancel}</Button>
                     <Button inverted color="red" size="mini" onClick={this.props.onConfirm}>{this.strings.delete}</Button>

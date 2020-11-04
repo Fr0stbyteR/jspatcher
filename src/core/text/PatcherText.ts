@@ -1,4 +1,5 @@
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import { SemanticICONS } from "semantic-ui-react";
 import FileInstance from "../file/FileInstance";
 import TextHistory from "./TextHistory";
 
@@ -12,6 +13,12 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
     _history: TextHistory = new TextHistory(this);
     get history() {
         return this._history;
+    }
+    get fileExtention() {
+        return "txt";
+    }
+    get fileIcon(): SemanticICONS {
+        return "code";
     }
     async init(data?: ArrayBuffer) {
         if (data) this.text = await new Response(data).text();

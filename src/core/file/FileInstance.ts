@@ -1,3 +1,4 @@
+import { SemanticICONS } from "semantic-ui-react";
 import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import Env from "../Env";
 import Project from "../Project";
@@ -13,7 +14,7 @@ export interface FileInstanceEventMap {
     "destroy": never;
 }
 
-export type AnyFileInstance = FileInstance<Record<string, any>>;
+export type AnyFileInstance = FileInstance<any>;
 
 export default class FileInstance<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}> extends TypedEventEmitter<EventMap & FileInstanceEventMap> {
     private readonly _env: Env;
@@ -45,11 +46,27 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     set isReadonly(value) {
         this._isReadonly = value;
     }
+    protected _isReady = false;
+    get isReady() {
+        return this._isReady;
+    }
     get isDirty() {
         return this.history.isDirty;
     }
     get history(): History<EventMap> {
         return null;
+    }
+    get fileExtention() {
+        return "data";
+    }
+    get fileIcon(): SemanticICONS {
+        return "code";
+    }
+    setActive() {
+        this.env.activeInstance = this;
+    }
+    get isActive(): boolean {
+        return this.env.activeInstance === this;
     }
     constructor(ctxIn?: ProjectItem | Project | Env) {
         super();
@@ -64,6 +81,12 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
             this._env = ctxIn;
         }
         this.on("dirty", isDirty => this.file.emit("dirty", isDirty));
+        const handleReady = () => {
+            this._isReady = true;
+            this.off("ready", handleReady);
+        };
+        this.on("ready", handleReady);
+        this.env.registerInstance(this);
         if (this.project) {
             this.project.on("save", this.handleProjectSave);
             this.project.on("unload", this.handleProjectUnload);

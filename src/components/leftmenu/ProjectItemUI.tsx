@@ -4,14 +4,15 @@ import Env, { EnvEventMap } from "../../core/Env";
 import Folder from "../../core/file/Folder";
 import ProjectItem, { ProjectItemEventMap } from "../../core/file/ProjectItem";
 import I18n from "../../i18n/I18n";
-import DeleteModal from "../modals/DeleteModal";
 
 interface P {
     env: Env;
     lang: string;
     item: ProjectItem;
+    selected: ProjectItem[];
     onClick: (item: ProjectItemUI, ctrl?: boolean, shift?: boolean) => any;
     onDoubleClick: (item: ProjectItemUI) => any;
+    onDelete: (item: ProjectItemUI) => any;
 }
 
 interface S {
@@ -23,7 +24,6 @@ interface S {
     renaming: boolean;
     active: boolean;
     collapsed: boolean;
-    deleteModalOpen: boolean;
     children: ProjectItem[];
 }
 
@@ -37,19 +37,23 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         renaming: false,
         active: false,
         collapsed: false,
-        deleteModalOpen: false,
         children: Array.from((this.props.item as Folder)?.items || [])
     };
+    dragged = false;
     get strings() {
         return I18n[this.props.lang].FileManagerUI;
     }
     handleClickCollapse = () => this.setState(({ collapsed }) => ({ collapsed: !collapsed }));
     handleClickItem = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (this.state.renaming) return;
+        if (this.dragged) return;
         const { shiftKey: shift, metaKey, ctrlKey } = e;
         const ctrl = this.props.env.os === "MacOS" ? metaKey : ctrlKey;
         this.props.onClick(this, ctrl, shift);
     };
     handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (this.state.renaming) return;
+        if (this.dragged) return;
         this.props.onDoubleClick(this);
     };
     handleClickRename = (e: React.MouseEvent<HTMLSpanElement>) => {
@@ -98,18 +102,13 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         container.addEventListener("blur", handleBlur);
         container.addEventListener("keydown", handleKeyDown);
     };
-    handleClickDelete = () => this.setState({ deleteModalOpen: true });
-    handleDeleteModalClose = () => this.setState({ deleteModalOpen: false });
-    handleDeleteModalConfirm = async () => {
-        this.setState({ deleteModalOpen: false });
-        await this.props.item.destroy();
-    };
+    handleClickDelete = () => this.props.onDelete(this);
     handleItemReady = () => this.setState({ loading: true });
     handleItemDirty = (dirty: ProjectItemEventMap["dirty"]) => this.setState({ dirty });
     handleItemNameChanged = ({ newName }: ProjectItemEventMap["nameChanged"]) => this.setState({ fileName: newName, filePath: this.props.item.path });
     handleItemPathChanged = () => this.setState({ filePath: this.props.item.path });
     handleItemTreeChanged = () => this.setState({ children: Array.from((this.props.item as Folder)?.items || []) });
-    handleEnvActiveInstance = (instance: EnvEventMap["activeInstance"]) => this.setState({ active: this.props.item === instance.file });
+    handleEnvActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ active: this.props.item === instance.file });
     componentDidMount() {
         if (!this.props.item.data) this.props.item.on("ready", this.handleItemReady);
         this.props.item.on("dirty", this.handleItemDirty);
@@ -128,17 +127,17 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     }
     render() {
         const classNameArray = ["file-manager-item"];
-        const { fileName, collapsed, loading, dirty, renaming, selected, active, deleteModalOpen } = this.state;
+        const { fileName, collapsed, loading, dirty, renaming, active } = this.state;
+        if (this.props.selected.indexOf(this.props.item) !== -1) classNameArray.push("selected");
         if (loading) classNameArray.push("loading");
         if (renaming) classNameArray.push("renaming");
-        if (selected) classNameArray.push("selected");
         if (active) classNameArray.push("active");
         const { type } = this.props.item;
         if (type === "folder") classNameArray.push("folder");
         return (
             <div key={fileName} className={classNameArray.join(" ")} data-id={this.state.filePath} tabIndex={0} onClick={this.handleClickItem} onDoubleClick={this.handleDoubleClick}>
                 <span className="file-manager-item-marker" style={{ visibility: dirty ? "visible" : "hidden" }} />
-                <span className="file-manager-item-icon"><Icon name={type === "folder" ? collapsed ? "folder" : "folder open" : type === "audio" ? "music" : type === "patcher" ? "boxes" : "code"} inverted size="small" /></span>
+                <span className="file-manager-item-icon"><Icon name={type === "folder" ? collapsed ? "folder" : "folder open" : type === "audio" ? "music" : type === "patcher" ? "sitemap" : "code"} inverted size="small" /></span>
                 <span className="file-manager-item-name-container" {...(renaming ? { tabIndex: 0 } : {})} contentEditable={renaming} suppressContentEditableWarning>
                     <span className="file-manager-item-name" style={{ fontWeight: active ? 900 : "normal" }}>{fileName}</span>
                 </span>
@@ -146,7 +145,6 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                     <span className="file-manager-item-actions-rename" title={this.strings.rename} onClick={this.handleClickRename}><Icon name="pencil alternate" inverted size="small" /></span>
                     <span className="file-manager-item-actions-delete" title={this.strings.delete} onClick={this.handleClickDelete}><Icon name="trash" inverted size="small" /></span>
                 </span>
-                <DeleteModal lang={this.props.lang} open={deleteModalOpen} onClose={this.handleDeleteModalClose} onConfirm={this.handleDeleteModalConfirm} fileName={fileName} />
                 {type === "folder" && !collapsed
                     ? <div className="file-manager-item-tree">
                         {this.state.children.map(item => <ProjectItemUI {...this.props} key={item.path} item={item} />)}

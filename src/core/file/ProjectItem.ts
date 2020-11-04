@@ -65,7 +65,6 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     async instantiate(): Promise<FileInstance<any>> {
         throw new Error("Not implemented.");
         // new instance Patcher / AudioBuffer etc
-        // this.inspectInstance(instance);
     }
     get path(): string {
         return this.parentPath ? `${this.parentPath}/${this._name}` : "";

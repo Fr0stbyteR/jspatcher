@@ -58,6 +58,11 @@ export default class Folder extends ProjectItem {
         await this.emitTreeChanged();
         return folder;
     }
+    async empty() {
+        for (const item of this.items) {
+            await item.destroy();
+        }
+    }
     getTree(): RawProjectItem<"folder"> {
         return {
             type: "folder",

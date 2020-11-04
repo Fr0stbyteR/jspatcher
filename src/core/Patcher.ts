@@ -1,3 +1,4 @@
+import { SemanticICONS } from "semantic-ui-react";
 import { rgbaMax2Css, isTRect, isRectMovable, isRectResizable } from "../utils/utils";
 import Line from "./Line";
 import Box from "./Box";
@@ -82,6 +83,17 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     get audioCtx() {
         return this.project?.audioCtx || this.env.audioCtx;
     }
+    get fileExtention() {
+        return {
+            js: "jspat",
+            max: "maxpat",
+            gen: "gendsp",
+            faust: "dsppat"
+        }[this.props.mode];
+    }
+    get fileIcon(): SemanticICONS {
+        return "sitemap";
+    }
     private observeGraphChange() {
         const eventNames = [
             "ready", "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
@@ -94,12 +106,6 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
             "ready", "graphChanged", "moved", "resized", "propsChanged"
         ] as const;
         eventNames.forEach(type => this.on(type, () => this.emit("changed")));
-    }
-    setActive() {
-        this.env.activeInstance = this;
-    }
-    get isActive() {
-        return this.env.activeInstance === this;
     }
     async clear() {
         if (this.boxes) await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].destroy()));
@@ -189,17 +195,18 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
                 }
                 let depNames = this.props.dependencies.map(t => t[0]);
                 this.emit("loading", depNames);
-                for (let i = 0; i < this.props.dependencies.length; i++) {
-                    const [name, url] = this.props.dependencies[i];
-                    try {
-                        // eslint-disable-next-line no-await-in-loop
-                        await this._state.pkgMgr.importFromURL(url, name);
-                    } catch (e) {
-                        this.error(`Loading dependency: ${name} from ${url} failed`);
+                await this.env.taskMgr.newTask(this, `${this.file?.name || ""} Loading dependencies`, async (onUpdate: (newMsg: string) => any) => {
+                    for (let i = 0; i < this.props.dependencies.length; i++) {
+                        const [name, url] = this.props.dependencies[i];
+                        onUpdate(`${name} from ${url}`);
+                        try {
+                            await this._state.pkgMgr.importFromURL(url, name);
+                        } catch (e) {
+                            throw new Error(`Loading dependency: ${name} from ${url} failed`);
+                        }
+                        depNames = depNames.splice(i, 1);
                     }
-                    depNames = depNames.splice(i, 1);
-                    this.emit("loading", depNames);
-                }
+                });
             }
             if (patcher.boxes) { // Boxes & data
                 for (const id in patcher.boxes) {
@@ -250,7 +257,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         const splitName = file.name.split(".");
         const ext = splitName.pop();
         const name = splitName.join(".");
-        const extMap: Record<string, PatcherMode> = { json: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+        const extMap: Record<string, PatcherMode> = { json: "js", jspat: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
@@ -279,7 +286,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         await this.emit("destroy");
     }
     get fileName() {
-        return `${this._state.name}.${{ js: "json", max: "maxpat", gen: "gendsp", faust: "dsppat" }[this.props.mode]}`;
+        return `${this.file?.name || this._state.name}.${this.fileExtention}`;
     }
     async addPackage(namespace: string, url: string) {
         const { dependencies } = this.props;
@@ -514,6 +521,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any) {
         const log = { errorLevel, title, message, emitter };
         this._state.log.push(log);
+        this.env.newLog(errorLevel, title, message, emitter);
         this.emit("newLog", log);
     }
     setState(state: Partial<TPublicPatcherState>) {

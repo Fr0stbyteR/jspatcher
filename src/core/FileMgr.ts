@@ -183,7 +183,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         return to.addProjectItem(name, data);
     }
     async importFileZip(data: ArrayBuffer, subfolder?: string, to: Folder = this.projectRoot) {
-        return this.env.taskMgr.newTask(this.constructor.name, "Unzipping file...", async (onUpdate) => {
+        return this.env.taskMgr.newTask(this, "Unzipping file...", async (onUpdate) => {
             let folder = to;
             if (subfolder) {
                 const name = to.uniqueName(subfolder);
@@ -208,7 +208,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         });
     }
     async exportProjectZip() {
-        return this.env.taskMgr.newTask(this.constructor.name, "Zipping project...", async (onUpdate) => {
+        return this.env.taskMgr.newTask(this, "Zipping project...", async (onUpdate) => {
             const jsZip = new JsZip();
             const toZip = (zip: JsZip, item: ProjectItem) => {
                 const { name } = item;

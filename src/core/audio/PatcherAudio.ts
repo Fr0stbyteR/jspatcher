@@ -1,3 +1,4 @@
+import { SemanticICONS } from "semantic-ui-react";
 import Waveform from "../../utils/Waveform";
 import { Options } from "../../utils/WavEncoder";
 import FileInstance from "../file/FileInstance";
@@ -31,6 +32,12 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     get history() {
         return this._history;
     }
+    get fileExtention() {
+        return "wav";
+    }
+    get fileIcon(): SemanticICONS {
+        return "music";
+    }
     audioBuffer: OperableAudioBuffer;
     waveform: Waveform;
 
@@ -58,20 +65,28 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         }
         this.waveform = new Waveform(this);
         await this.waveform.generate();
+        this.emit("ready");
     }
-    async initWith(options: Partial<AudioBufferOptions>) {
+    async initWithOptions(options: Partial<AudioBufferOptions>) {
         const { length = 1, numberOfChannels = 1, sampleRate = this.audioCtx.sampleRate } = options;
         this.audioBuffer = new OperableAudioBuffer({ length, numberOfChannels, sampleRate });
         this.waveform = new Waveform(this);
         await this.waveform.generate();
+        this.emit("ready");
+    }
+    initWith(audio: { audioBuffer: OperableAudioBuffer, waveform: Waveform }) {
+        this.setAudio(audio);
+        this.emit("ready");
     }
     async serialize(options: Omit<Partial<Options>, "sampleRate"> = { bitDepth: 32, float: true }) {
         return this.env.wavEncoderWorker.encode(this.audioBuffer.toArray(true), { sampleRate: this.audioBuffer.sampleRate, bitDepth: 32, float: true, ...options });
     }
     clone() {
         const audio = new PatcherAudio(this.file);
-        audio.audioBuffer = this.audioBuffer.clone();
-        audio.waveform = this.waveform.clone();
+        audio.initWith({
+            audioBuffer: this.audioBuffer.clone(),
+            waveform: this.waveform.clone()
+        });
         return audio;
     }
     setAudio(that: { audioBuffer: OperableAudioBuffer; waveform: Waveform }) {
@@ -88,8 +103,10 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     }
     concat(that: PatcherAudio, numberOfChannels = this.audioBuffer.numberOfChannels) {
         const audio = new PatcherAudio(this.file);
-        audio.audioBuffer = this.audioBuffer.concat(that.audioBuffer, numberOfChannels);
-        audio.waveform = this.waveform.concat(that.waveform, audio, numberOfChannels);
+        audio.initWith({
+            audioBuffer: this.audioBuffer.concat(that.audioBuffer, numberOfChannels),
+            waveform: this.waveform.concat(that.waveform, audio, numberOfChannels)
+        });
         return audio;
     }
     split(from: number): [PatcherAudio, PatcherAudio] {
@@ -97,16 +114,26 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         const audio2 = new PatcherAudio(this.file);
         const [ab1, ab2] = this.audioBuffer.split(from);
         const [wf1, wf2] = this.waveform.split(from, audio1, audio2);
-        audio1.setAudio({ audioBuffer: ab1, waveform: wf1 });
-        audio2.setAudio({ audioBuffer: ab2, waveform: wf2 });
+        audio1.initWith({ audioBuffer: ab1, waveform: wf1 });
+        audio2.initWith({ audioBuffer: ab2, waveform: wf2 });
         return [audio1, audio2];
     }
     pick(from: number, to: number, clone = false) {
         let picked: PatcherAudio;
+        let audioBuffer: OperableAudioBuffer;
+        let waveform: Waveform;
         if (from <= 0 && to >= this.length) {
             picked = new PatcherAudio(this.file);
-            if (clone) picked.audioBuffer = this.audioBuffer.clone();
-            else picked.audioBuffer = this.audioBuffer;
+            if (clone) {
+                audioBuffer = this.audioBuffer.clone();
+                waveform = this.waveform.clone();
+            } else {
+                audioBuffer = this.audioBuffer;
+                waveform = this.waveform;
+            }
+            picked.initWith({ audioBuffer, waveform });
+            return picked;
+            // eslint-disable-next-line no-else-return
         } else if (from <= 0) {
             picked = this.split(to)[0];
         } else if (to >= this.length) {
@@ -114,8 +141,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         } else {
             picked = this.split(to)[0].split(from)[1];
         }
-        if (clone) picked.waveform = this.waveform.clone();
-        else picked.waveform = this.waveform;
+        if (clone) picked.waveform = picked.waveform.clone();
         return picked;
     }
     removeFromRange(from: number, to: number) {

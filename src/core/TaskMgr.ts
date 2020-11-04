@@ -1,13 +1,13 @@
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 
 export interface Task {
-    emitter: string;
+    emitter: Object;
     message: string;
     callback: (onUpdate?: (newMsg: string) => any) => any | Promise<any>;
 }
 
 export interface TaskError {
-    emitter: string;
+    emitter: Object;
     message: string;
     error: Error;
 }
@@ -24,7 +24,7 @@ export interface TaskManagerEventMap {
 export default class TaskManager extends TypedEventEmitter<TaskManagerEventMap> {
     tasks: Tasks = {};
     errors: Errors = {};
-    async newTask<T extends Task["callback"] = Task["callback"]>(emitter: string, message: string, callback: T) {
+    async newTask<T extends Task["callback"] = Task["callback"]>(emitter: Object, message: string, callback: T) {
         const timestamp = performance.now();
         this.tasks = { ...this.tasks, [timestamp]: { emitter, message, callback } };
         this.emit("tasks", this.tasks);
@@ -56,6 +56,22 @@ export default class TaskManager extends TypedEventEmitter<TaskManagerEventMap> 
         if (!timestamps.length) return null;
         const timestamp = timestamps.map(v => +v).sort((a, b) => b - a)[0];
         return { timestamp, ...this.tasks[timestamp] };
+    }
+    getTasksFromEmitter(emitter: Object) {
+        const tasks: Tasks = {};
+        for (const taskTs in this.tasks) {
+            const task = this.tasks[taskTs];
+            if (task.emitter === emitter) tasks[taskTs] = task;
+        }
+        return tasks;
+    }
+    getErrorsFromEmitter(emitter: Object) {
+        const errors: Errors = {};
+        for (const errorTs in this.errors) {
+            const error = this.errors[errorTs];
+            if (error.emitter === emitter) errors[errorTs] = error;
+        }
+        return errors;
     }
     dismissLastError() {
         const { lastError } = this;

@@ -50,7 +50,7 @@ export class SpectralAnalyserNode extends DisposableAudioWorkletNode<DataFromPro
         };
     }
     gets(options: Omit<DataToProcessor, "id">) {
-        if (this.destroyed) throw Error("The Node is already destroyed.");
+        if (this.destroyed) throw new Error("The Node is already destroyed.");
         const promise = new Promise<DataFromProcessor>(resolve => this.resolves[this.promiseID] = resolve);
         this.port.postMessage({ id: this.promiseID++, ...options });
         return promise;

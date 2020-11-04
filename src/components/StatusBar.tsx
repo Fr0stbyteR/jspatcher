@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Icon } from "semantic-ui-react";
-import "./BottomMenu.scss";
 import Env from "../core/Env";
 import { Errors, TaskError, Task, TaskManagerEventMap, Tasks } from "../core/TaskMgr";
 
@@ -48,6 +47,7 @@ export default class StatusBar extends React.PureComponent<{ env: Env; lang: str
         return (
             <div className="status-bar">
                 {lastTask ? <Icon loading name="asterisk" size="small" /> : undefined}
+                <span className="status-bar-emitter">{lastTask?.emitter.constructor?.name || lastError?.emitter.constructor?.name || ""}</span>
                 <span className={!lastTask && lastError ? "error" : ""}>{lastTask?.message || lastError?.message || "Ready"}</span>
                 {!lastTask && lastError ? <span className="dismiss" onClick={this.handleClickDismiss}>Dismiss</span> : undefined}
             </div>

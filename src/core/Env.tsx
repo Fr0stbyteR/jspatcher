@@ -5,7 +5,7 @@ import { detectOS, detectBrowserCore } from "../utils/utils";
 import { faustLangRegister } from "../misc/monaco-faust/register";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
-import { TPackage, TSharedData, TSharedDataConsumers } from "./types";
+import { TErrorLevel, TPackage, TPatcherLog, TSharedData, TSharedDataConsumers } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
 import Importer from "./objects/importer/Importer";
 import { GlobalPackageManager } from "./PkgMgr";
@@ -15,16 +15,20 @@ import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
-import { AnyFileInstance } from "./file/FileInstance";
+import FileInstance, { AnyFileInstance } from "./file/FileInstance";
 import UI from "../components/UI";
 import PatcherAudio from "./audio/PatcherAudio";
+import EditorContainer from "./EditorContainer";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 export interface EnvEventMap {
     "ready": never;
-    "activeInstance": AnyFileInstance;
+    "projectChanged": { project: Project; oldProject: Project };
+    "activeInstance": { instance: AnyFileInstance; oldInstance: AnyFileInstance };
     "openInstance": AnyFileInstance;
+    "instances": AnyFileInstance[];
+    "newLog": TPatcherLog;
 }
 
 /**
@@ -46,6 +50,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly dataConsumers: TSharedDataConsumers = {};
     readonly taskMgr = new TaskManager();
     readonly fileMgr = new FileManager(this);
+    readonly editorContainer = new EditorContainer(this);
+    readonly log: TPatcherLog[] = [];
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;
@@ -59,10 +65,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     get activeInstance(): AnyFileInstance {
         return this._activeInstance;
     }
-    set activeInstance(value: AnyFileInstance) {
-        this._activeInstance = value;
-        this.emit("activeInstance", value);
+    set activeInstance(instance: AnyFileInstance) {
+        const oldInstance = this._activeInstance;
+        this._activeInstance = instance;
+        this.emit("activeInstance", { instance, oldInstance });
     }
+    instances = new Set<FileInstance>();
     currentProject: Project;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;
@@ -81,37 +89,37 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
             init: !!urlParams.get("init")
         };
         this._noUI = urlparamsOptions.noUI;
-        if (!this._noUI && this.divRoot) ReactDOM.render(<UI env={this} />, this.divRoot);
+        if (!this._noUI && this.divRoot) ReactDOM.render(<UI env={this} lang={this.language} />, this.divRoot);
 
-        this.taskMgr.newTask("Env", "Initializing JSPatcher...", async () => {
-            this.taskMgr.newTask("Env", "Loading Faust2WebAudio...", async () => {
+        await this.taskMgr.newTask(this, "Initializing JSPatcher...", async () => {
+            await this.taskMgr.newTask("Env", "Loading Faust2WebAudio...", async () => {
                 const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
                 this.Faust = Faust;
                 this.FaustAudioWorkletNode = FaustAudioWorkletNode;
             });
-            this.taskMgr.newTask("Env", "Loading LibFaust...", async () => {
+            await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {
                 const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
                 await faust.ready;
                 this.faustAdditionalObjects = Importer.import("faust", { FaustNode: this.FaustAudioWorkletNode }, true);
                 this.faust = faust;
             });
-            this.taskMgr.newTask("Env", "Fetching Faust Standard Library...", async () => {
+            await this.taskMgr.newTask(this, "Fetching Faust Standard Library...", async () => {
                 const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
                 const faustPrimitiveLib = await faustPrimitiveLibFile.text();
                 this.faust.fs.writeFile("./libraries/primitives.lib", faustPrimitiveLib);
             });
-            this.taskMgr.newTask("Env", "Fetching Gen-to-Faust Library...", async () => {
+            await this.taskMgr.newTask(this, "Fetching Gen-to-Faust Library...", async () => {
                 const gen2FaustLibFile = await fetch("./deps/gen2faust.lib");
                 const gen2FaustLib = await gen2FaustLibFile.text();
                 this.faust.fs.writeFile("./libraries/gen2faust.lib", gen2FaustLib);
             });
-            this.taskMgr.newTask("Env", "Loading Monaco Editor...", async () => {
+            await this.taskMgr.newTask(this, "Loading Monaco Editor...", async () => {
                 const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
                 const { providers } = await faustLangRegister(monacoEditor, this.faust);
                 this.faustDocs = providers.docs;
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
             });
-            this.taskMgr.newTask("Env", "Loading Files...", async () => {
+            await this.taskMgr.newTask(this, "Loading Files...", async () => {
                 this.pkgMgr = new GlobalPackageManager(this);
                 const project = new Project(this);
                 this.currentProject = project;
@@ -148,11 +156,21 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     openInstance(i: AnyFileInstance) {
         this.emit("openInstance", i);
     }
+    registerInstance(i: AnyFileInstance) {
+        this.instances.add(i);
+        i.on("destroy", () => {
+            this.instances.delete(i);
+            this.emit("instances", Array.from(this.instances));
+        });
+        this.emit("instances", Array.from(this.instances));
+    }
     async newProject() {
-        await this.currentProject?.unload?.();
+        const oldProject = this.currentProject;
+        await oldProject?.unload?.();
         const project = new Project(this);
         this.currentProject = project;
         await project.load(true);
+        this.emit("projectChanged", { project, oldProject });
         return project;
     }
     async reload() {
@@ -160,12 +178,19 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         await this.currentProject?.load?.();
     }
     async loadFromZip(data: ArrayBuffer) {
-        await this.currentProject?.unload?.();
+        const oldProject = this.currentProject;
+        await oldProject?.unload?.();
         const project = new Project(this);
         this.currentProject = project;
         this.fileMgr.importFileZip(data);
         await project.load(true);
+        this.emit("projectChanged", { project, oldProject });
         return project;
+    }
+    newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any) {
+        const log = { errorLevel, title, message, emitter };
+        this.log.push(log);
+        this.emit("newLog", log);
     }
     get divRoot(): HTMLDivElement {
         return this._divRoot;

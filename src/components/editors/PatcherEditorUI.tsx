@@ -1,0 +1,63 @@
+import * as React from "react";
+import { Dimmer, Loader } from "semantic-ui-react";
+import Env from "../../core/Env";
+import Patcher from "../../core/Patcher";
+import { Errors, Tasks } from "../../core/TaskMgr";
+import PatcherBottomMenu from "../PatcherBottomMenu";
+import PatcherUI from "../PatcherUI";
+
+interface P {
+    env: Env;
+    lang: string;
+    patcher: Patcher;
+}
+
+interface S {
+    tasks: Tasks;
+    errors: Errors;
+}
+
+export default class PatcherEditorUI extends React.PureComponent<P, S> {
+    state = {
+        tasks: this.props.env.taskMgr.getTasksFromEmitter(this.props.patcher),
+        errors: this.props.env.taskMgr.getErrorsFromEmitter(this.props.patcher)
+    };
+    handleTasks = () => this.setState({ tasks: this.props.env.taskMgr.getTasksFromEmitter(this.props.patcher) });
+    handleErrors = () => this.setState({ errors: this.props.env.taskMgr.getErrorsFromEmitter(this.props.patcher) });
+    handleReady = () => {
+        this.props.env.taskMgr.off("tasks", this.handleTasks);
+        this.props.env.taskMgr.off("errors", this.handleErrors);
+    };
+    componentDidMount() {
+        this.props.patcher.on("ready", this.handleReady);
+        if (this.props.patcher.isReady) return;
+        this.props.env.taskMgr.on("tasks", this.handleTasks);
+        this.props.env.taskMgr.on("errors", this.handleErrors);
+    }
+    componentWillUnmount() {
+        this.props.env.taskMgr.off("tasks", this.handleTasks);
+        this.props.env.taskMgr.off("errors", this.handleErrors);
+    }
+    render() {
+        let dimmer: JSX.Element;
+        if (Object.keys(this.state.tasks)) {
+            const { tasks, errors } = this.state;
+            dimmer = <Dimmer active>
+                <Loader>
+                    <p>Initializing JSPatcher Environment...</p>
+                    {Object.keys(tasks).map(t => <p key={t}>{tasks[+t].message}</p>)}
+                    {Object.keys(errors).map(t => <p style={{ color: "red" }} key={t}>Error while: {errors[+t].message}: {errors[+t].error.message}</p>)}
+                </Loader>
+            </Dimmer>;
+        }
+        return (
+            <>
+                <div className="patcher-container">
+                    {dimmer}
+                    <PatcherUI {...this.props} />
+                </div>
+                <PatcherBottomMenu {...this.props} />
+            </>
+        );
+    }
+}

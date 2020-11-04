@@ -1,11 +1,19 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
 import Patcher from "../core/Patcher";
-import "./BottomMenu.scss";
+import "./PatcherBottomMenu.scss";
 
-type P = { patcher: Patcher };
-type S = { locked: boolean; presentation: boolean; showGrid: boolean };
-export default class BottomMenu extends React.PureComponent<P, S> {
+interface P {
+    patcher: Patcher;
+}
+
+interface S {
+    locked: boolean;
+    presentation: boolean;
+    showGrid: boolean;
+}
+
+export default class PatcherBottomMenu extends React.PureComponent<P, S> {
     state = {
         locked: this.props.patcher.state.locked,
         presentation: this.props.patcher.state.presentation,
@@ -34,7 +42,7 @@ export default class BottomMenu extends React.PureComponent<P, S> {
     };
     render() {
         return (
-            <Menu inverted icon size="mini" className="bottom-menu">
+            <Menu inverted icon size="mini" className="patcher-bottom-menu">
                 <Menu.Item name="lock" onClick={this.handleClickLock} title={this.state.locked ? "Unlock" : "Lock"}>
                     <Icon name={this.state.locked ? "lock" : "unlock"} color="grey" size="small" inverted />
                 </Menu.Item>
