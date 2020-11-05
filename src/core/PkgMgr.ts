@@ -233,14 +233,15 @@ export class GlobalPackageManager {
      * @memberof GlobalPackageManager
      */
     private async fetchModule(url: string) {
+        let exported;
         const toExport = {};
         window.exports = toExport;
         window.module = { exports: toExport } as any;
         const esm = await import(/* webpackIgnore: true */url);
         const esmKeys = Object.keys(esm);
-        if (esmKeys.length === 1 && esmKeys[0] === "default") return esm.default;
-        if (esmKeys.length) return esm;
-        const exported = window.module.exports;
+        if (esmKeys.length === 1 && esmKeys[0] === "default") exported = esm.default;
+        else if (esmKeys.length) exported = esm;
+        else exported = window.module.exports;
         delete window.exports;
         delete window.module;
         return exported;

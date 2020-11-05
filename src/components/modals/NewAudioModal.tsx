@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Modal, Form, Input, Button, Dropdown, DropdownProps, DropdownItemProps, InputOnChangeData } from "semantic-ui-react";
-import Env from "../core/Env";
+import Env from "../../core/Env";
 import "./NewAudioModal.scss";
-import I18n from "../i18n/I18n";
+import I18n from "../../i18n/I18n";
 
 interface Props {
     env: Env;

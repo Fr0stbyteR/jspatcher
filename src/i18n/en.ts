@@ -96,6 +96,12 @@ export default {
         cancel: "Cancel",
         confirm: "Resample"
     },
+    SaveAsModal: {
+        title: "Save As",
+        fileName: "File Name",
+        confirm: "Save",
+        cancel: "Cancel"
+    },
     FileMenu: {
         fileMenu: "File",
         new: "New Audio",

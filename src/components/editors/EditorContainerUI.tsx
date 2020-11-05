@@ -2,6 +2,7 @@ import * as React from "react";
 import { Icon } from "semantic-ui-react";
 import EditorContainer, { EditorContainerState } from "../../core/EditorContainer";
 import Env from "../../core/Env";
+import { AnyFileInstance } from "../../core/file/FileInstance";
 import Patcher from "../../core/Patcher";
 import PatcherEditorUI from "./PatcherEditorUI";
 
@@ -20,6 +21,9 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
         children: this.props.editorContainer.children,
         mode: this.props.editorContainer.mode
     };
+    handleClickClose = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, instance: AnyFileInstance) => {
+        await instance.destroy();
+    };
     render() {
         return (
             <div className="editor-container">
@@ -31,7 +35,7 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
                             <div className="editor-container-tab" key={i}>
                                 <Icon className="editor-container-tab-icon" name={icon} />
                                 <span className="editor-container-tab-name">{name}</span>
-                                <span className="editor-container-tab-close">×</span>
+                                <span className="editor-container-tab-close" onClick={e => this.handleClickClose(e, instance)}>×</span>
                             </div>
                         );
                     })}

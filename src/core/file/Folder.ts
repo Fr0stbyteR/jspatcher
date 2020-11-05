@@ -78,4 +78,12 @@ export default class Folder extends ProjectItem {
             return acc;
         }, [] as ProjectItem[]);
     }
+    isParentOf(item: ProjectItem) {
+        let { parent } = item;
+        while (parent !== this) {
+            if (!parent) return false;
+            parent = parent.parent;
+        }
+        return true;
+    }
 }

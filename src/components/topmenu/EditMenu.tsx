@@ -4,12 +4,17 @@ import Env, { EnvEventMap } from "../../core/Env";
 import { AnyFileInstance } from "../../core/file/FileInstance";
 import Patcher from "../../core/Patcher";
 
+interface P {
+    env: Env;
+    lang: string;
+}
+
 interface S {
     instance: AnyFileInstance;
     locked: boolean;
 }
 
-export default class EditMenu extends React.PureComponent<{ env: Env }, S> {
+export default class EditMenu extends React.PureComponent<P, S> {
     state = {
         instance: this.props.env.activeInstance,
         locked: this.props.env.activeInstance instanceof Patcher ? this.props.env.activeInstance.state.locked : false

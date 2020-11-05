@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Icon } from "semantic-ui-react";
 import Env, { EnvEventMap } from "../../core/Env";
-import NewAudioModal from "../modals/NewAudioModal";
 import DeleteModal from "../modals/DeleteModal";
 import DeleteAllModal from "../modals/DeleteAllModal";
 import "./FileMgrUI.scss";
@@ -14,6 +13,10 @@ import { ProjectEventMap } from "../../core/Project";
 interface P {
     env: Env;
     lang: string;
+    oneSelectionOnly?: true;
+    folderSelectionOnly?: true;
+    noActions?: true;
+    onSelection?: (selection: ProjectItem[]) => any;
 }
 
 interface S {
@@ -63,6 +66,9 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         env.off("instances", this.handleEnvInstances);
         fileMgr.off("treeChanged", this.handleTreeChanged);
     }
+    componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>) {
+        if (this.state.selected !== prevState.selected) this.props.onSelection(this.state.selected);
+    }
     handleClickCollapse = () => this.setState(({ collapsed }) => ({ collapsed: !collapsed }));
     handleClickNewFile = (e: React.MouseEvent<HTMLSpanElement>) => {
         e.stopPropagation();
@@ -75,7 +81,8 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
     handleClickItem = (itemUI: ProjectItemUI, ctrl = false, shift = false) => {
         const item = itemUI.props.item;
         const itemSelected = this.state.selected.indexOf(item) !== -1;
-        if ((!ctrl && !shift) || this.state.selected.length === 0) {
+        if (this.props.oneSelectionOnly || (!ctrl && !shift) || this.state.selected.length === 0) {
+            if (this.props.folderSelectionOnly && item.type !== "folder") return;
             this.setState({ selected: [item] });
         } else if (ctrl) {
             if (itemSelected) this.setState(({ selected }) => ({ selected: selected.filter($item => $item !== item) }));
@@ -104,7 +111,9 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         }
     };
     handleDoubleClickItem = async (itemUI: ProjectItemUI) => {
+        if (this.props.noActions) return;
         const item = itemUI.props.item;
+        if (item.type === "folder") return;
         const instance = await item.instantiate();
         this.props.env.openInstance(instance);
     };
@@ -140,7 +149,6 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
                     <span className="left-pane-component-icon" title={this.strings.newFile} onClick={this.handleClickNewFile}><Icon name="add" inverted size="small" /></span>
                     <span className="left-pane-component-icon" title={this.strings.deleteAll} onClick={this.handleClickDeleteAll}><Icon name="trash" inverted size="small" /></span>
                 </div>
-                <NewAudioModal {...this.props} open={this.state.newAudioModalOpen} onClose={this.handleNewAudioModalClose} />
                 <DeleteModal lang={this.props.lang} open={this.state.deleteModalOpen} onClose={this.handleDeleteModalClose} onConfirm={this.handleDeleteModalConfirm} fileNames={this.state.selected.map(item => item.name)} />
                 <DeleteAllModal lang={this.props.lang} open={this.state.deleteAllModalOpen} onClose={this.handleDeleteAllModalClose} onConfirm={this.handleDeleteAll} count={this.props.env.fileMgr.projectRoot?.getDescendantFiles?.length || 0} />
                 {this.state.collapsed

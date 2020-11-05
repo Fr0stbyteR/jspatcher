@@ -5,7 +5,12 @@ import Env from "../../core/Env";
 import FileMenu from "./FileMenu";
 import EditMenu from "./EditMenu";
 
-export default class TopMenu extends React.PureComponent<{ env: Env }> {
+interface P {
+    env: Env;
+    lang: string;
+}
+
+export default class TopMenu extends React.PureComponent<P> {
     ref = React.createRef<HTMLDivElement>();
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();

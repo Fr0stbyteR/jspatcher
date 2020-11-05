@@ -5,6 +5,12 @@ import PatcherAudio from "../../core/audio/PatcherAudio";
 import Patcher from "../../core/Patcher";
 import PatcherText from "../../core/text/PatcherText";
 import Folder from "../../core/file/Folder";
+import SaveAsModal from "../modals/SaveAsModal";
+
+interface P {
+    env: Env;
+    lang: string;
+}
 
 interface S {
     fileURL: string;
@@ -12,7 +18,7 @@ interface S {
     showSaveAsModal: boolean;
 }
 
-export default class FileMenu extends React.PureComponent<{ env: Env }, S> {
+export default class FileMenu extends React.PureComponent<P, S> {
     refDownload = React.createRef<HTMLAnchorElement>();
     refOpenProject = React.createRef<HTMLInputElement>();
     refOpenFile = React.createRef<HTMLInputElement>();
@@ -159,6 +165,7 @@ export default class FileMenu extends React.PureComponent<{ env: Env }, S> {
                 <input ref={this.refOpenProject} type="file" hidden={true} onChange={this.onChangeProject} accept=".zip, application/zip" />
                 <input ref={this.refOpenFile} type="file" hidden={true} onChange={this.onChangeFile} />
                 <input ref={this.refOpenFolder} type="file" hidden={true} onChange={this.onChangeFolder} accept=".zip, application/zip" />
+                <SaveAsModal {...this.props} open={this.state.showSaveAsModal} fileName={this.props.env.activeInstance.file?.name || `Untitled.${this.props.env.activeInstance.fileExtention}`} folder={this.props.env.activeInstance.file?.parent || this.props.env.fileMgr.projectRoot} onClose={this.handleSaveAsModalClose} onConfirm={this.handleSaveAsModalConfirm} />
             </>
         );
     }

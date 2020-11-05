@@ -98,6 +98,12 @@ export default {
         cancel: "取消",
         confirm: "重采样"
     },
+    SaveAsModal: {
+        title: "另存为",
+        fileName: "文件名",
+        confirm: "保存",
+        cancel: "取消"
+    },
     FileMenu: {
         fileMenu: "文件",
         new: "新音频文件",
