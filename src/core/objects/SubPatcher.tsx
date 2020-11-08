@@ -4,10 +4,10 @@ import { DefaultObject, DefaultAudioObject, BaseAudioObject } from "./Base";
 import Patcher from "../Patcher";
 import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher } from "../types";
 import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState } from "./BaseUI";
-import UI from "../../components/UI";
 import "./SubPatcher.scss";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
 import PatcherUI from "../../components/PatcherUI";
+import PatcherEditorUI from "../../components/editors/PatcherEditorUI";
 
 export class In extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
     static package = "SubPatcher";
@@ -281,7 +281,7 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
         const children = (
             <Modal.Content style={{ height: "100%", width: "100%" }}>
                 <div style={{ height: "100%", width: "100%", display: "flex" }}>
-                    <UI patcher={this.state.patcher} />
+                    <PatcherEditorUI patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
                 </div>
             </Modal.Content>
         );
@@ -514,7 +514,7 @@ export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher }> {
         if (this.props.inDock) {
             return (
                 <div style={{ height: "100%", width: "100%", display: "flex" }}>
-                    <UI patcher={this.state.patcher} />
+                    <PatcherEditorUI patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
                 </div>
             );
         }

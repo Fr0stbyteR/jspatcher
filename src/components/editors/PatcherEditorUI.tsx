@@ -40,11 +40,11 @@ export default class PatcherEditorUI extends React.PureComponent<P, S> {
     }
     render() {
         let dimmer: JSX.Element;
-        if (Object.keys(this.state.tasks)) {
+        if (Object.keys(this.state.tasks).length) {
             const { tasks, errors } = this.state;
             dimmer = <Dimmer active>
                 <Loader>
-                    <p>Initializing JSPatcher Environment...</p>
+                    <p>Loading Patcher...</p>
                     {Object.keys(tasks).map(t => <p key={t}>{tasks[+t].message}</p>)}
                     {Object.keys(errors).map(t => <p style={{ color: "red" }} key={t}>Error while: {errors[+t].message}: {errors[+t].error.message}</p>)}
                 </Loader>

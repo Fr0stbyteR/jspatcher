@@ -111,7 +111,8 @@ export default class RightMenu extends React.PureComponent<P, S> {
             instance.on("inspector", this.handleInspector);
             instance.on("dockUI", this.handleDock);
         }
-        this.setState({ instance, active });
+        const codePanel = instance instanceof Patcher && (instance.props.mode === "faust" || instance.props.mode === "gen");
+        this.setState({ instance, active, codePanel });
     };
     handleInspector = () => this.setState({ active: TPanels.Inspector });
     handleDock = () => this.setState({ active: TPanels.Dock });
@@ -158,18 +159,23 @@ export default class RightMenu extends React.PureComponent<P, S> {
                 </Menu>
                 <div className="right-pane" hidden={this.state.active === TPanels.None} ref={this.refDivPane}>
                     <Header as="h5" inverted color="grey" content={this.state.active} />
-                    <div className="right-pane-code-editor" hidden={this.state.active !== TPanels.Code}>
-                        {this.state.active === TPanels.Code ? <CodeEditor {...this.props} patcher={this.state.instance as Patcher} ref={this.refCode} /> : <></> }
-                    </div>
-                    <div className="right-pane-inspector" hidden={this.state.active !== TPanels.Inspector}>
-                        {this.state.active === TPanels.Inspector ? <Inspector {...this.props} patcher={this.state.instance as Patcher} ref={this.refInspector} /> : <></> }
-                    </div>
                     <div className="right-pane-console" hidden={this.state.active !== TPanels.Console}>
                         <Console {...this.props} ref={this.refConsole} display={this.state.active === TPanels.Console} />
                     </div>
-                    <div className="right-pane-dock" hidden={this.state.active !== TPanels.Dock}>
-                        <UIDock {...this.props} patcher={this.state.instance as Patcher} ref={this.refDock} display={this.state.active === TPanels.Dock} />
-                    </div>
+                    {this.state.instance instanceof Patcher
+                        ? <>
+                            <div className="right-pane-code-editor" hidden={this.state.active !== TPanels.Code}>
+                                {this.state.active === TPanels.Code ? <CodeEditor {...this.props} patcher={this.state.instance} ref={this.refCode} /> : <></> }
+                            </div>
+                            <div className="right-pane-inspector" hidden={this.state.active !== TPanels.Inspector}>
+                                {this.state.active === TPanels.Inspector ? <Inspector {...this.props} patcher={this.state.instance} ref={this.refInspector} /> : <></> }
+                            </div>
+                            <div className="right-pane-dock" hidden={this.state.active !== TPanels.Dock}>
+                                <UIDock {...this.props} patcher={this.state.instance} ref={this.refDock} display={this.state.active === TPanels.Dock} />
+                            </div>
+                        </>
+                        : undefined
+                    }
                 </div>
                 <div className="resize-handler resize-handler-w" onMouseDown={this.handleResizeMouseDown} hidden={this.state.active === TPanels.None}></div>
             </>

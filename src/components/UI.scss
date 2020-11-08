@@ -19,12 +19,16 @@
         flex-direction: column;
     }
 
+    & .ui-flex-full {
+        flex: 1 1 100%;
+    }
+
     & .ui-center {
         display: flex;
         position: relative;
         flex-direction: column;
         flex: 1 1 100%;
-        & > .patcher-container {
+        & .patcher-container {
             position: relative;
             overflow: auto;
             flex: 1 1 100%;

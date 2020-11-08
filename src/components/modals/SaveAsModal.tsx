@@ -42,7 +42,7 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
             <Modal className="modal-delete" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
                 <Modal.Header>{this.strings.title}</Modal.Header>
                 <Modal.Content>
-                    <FileManagerUI {...this.props} oneSelectionOnly={true} folderSelectionOnly={true} onSelection={this.handleSelection} />
+                    <FileManagerUI {...this.props} oneSelectionOnly={true} folderSelectionOnly={true} onSelection={this.handleSelection} noActions />
                     <Form.Field inline error={this.state.fileNameError}>
                         <label>{this.strings.fileName}</label>
                         <Input defaultValue={this.state.fileName} onChange={this.handleFileNameChange} />

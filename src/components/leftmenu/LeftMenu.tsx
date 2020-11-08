@@ -97,7 +97,7 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                 <div className="left-pane" hidden={this.state.active === TPanels.None} ref={this.refDivPane}>
                     <Header as="h5" inverted color="grey" content={this.state.active} />
                     <div className="left-pane-filemanager" hidden={this.state.active !== TPanels.FileMgr}>
-                        {this.state.active === TPanels.Packages ? <FileManagerUI {...this.props} ref={this.refFileMgr} /> : <></> }
+                        <FileManagerUI {...this.props} ref={this.refFileMgr} />
                     </div>
                     <div className="left-pane-objects" hidden={this.state.active !== TPanels.Objects}>
                         {this.state.active === TPanels.Objects ? <Objects {...this.props} patcher={this.state.instance as Patcher} ref={this.refObjects} /> : <></> }
@@ -107,15 +107,20 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                     </div>
                 </div>
                 <Menu icon vertical inverted size="mini" className="left-menu">
+                    <Menu.Item name={TPanels.FileMgr} active={this.state.active === TPanels.FileMgr} onClick={this.handleItemClick} title={TPanels.FileMgr}>
+                        <Icon name="folder" color={this.state.active === TPanels.FileMgr ? "teal" : "grey"} inverted />
+                    </Menu.Item>
                     {this.state.instance instanceof Patcher
-                        ? <Menu.Item name={TPanels.Objects} active={this.state.active === TPanels.Objects} onClick={this.handleItemClick} title={TPanels.Objects}>
-                            <Icon name="add" color={this.state.active === TPanels.Objects ? "teal" : "grey"} inverted />
-                        </Menu.Item>
+                        ? <>
+                            <Menu.Item name={TPanels.Objects} active={this.state.active === TPanels.Objects} onClick={this.handleItemClick} title={TPanels.Objects}>
+                                <Icon name="add" color={this.state.active === TPanels.Objects ? "teal" : "grey"} inverted />
+                            </Menu.Item>
+                            <Menu.Item name={TPanels.Packages} active={this.state.active === TPanels.Packages} onClick={this.handleItemClick} title={TPanels.Packages}>
+                                <Icon name="box" color={this.state.active === TPanels.Packages ? "teal" : "grey"} inverted />
+                            </Menu.Item>
+                        </>
                         : undefined
                     }
-                    <Menu.Item name={TPanels.Packages} active={this.state.active === TPanels.Packages} onClick={this.handleItemClick} title={TPanels.Packages}>
-                        <Icon name="box" color={this.state.active === TPanels.Packages ? "teal" : "grey"} inverted />
-                    </Menu.Item>
                     <div style={{ flex: "1 1 auto" }}></div>
                     <ConfigMenu />
                 </Menu>

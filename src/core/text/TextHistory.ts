@@ -2,8 +2,10 @@ import History from "../file/History";
 import PatcherText, { PatcherTextEventMap } from "./PatcherText";
 
 export default class TextHistory extends History<PatcherTextEventMap> {
-    instance: PatcherText;
-    eventListening: (keyof PatcherTextEventMap)[] = ["textModified"];
+    instance: PatcherText = this.instance;
+    get eventListening(): (keyof PatcherTextEventMap)[] {
+        return ["textModified"];
+    }
     async undo() {
         if (!this.instance) return;
         if (!this.isUndoable) return;

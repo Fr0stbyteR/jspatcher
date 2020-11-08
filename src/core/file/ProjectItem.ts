@@ -67,7 +67,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         // new instance Patcher / AudioBuffer etc
     }
     get path(): string {
-        return this.parentPath ? `${this.parentPath}/${this._name}` : "";
+        return this.parent ? `${this.parentPath}/${this._name}` : "";
     }
     get parentPath() {
         return this.parent?.path;

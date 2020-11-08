@@ -27,7 +27,17 @@ const config = {
           options: {
             name: 'js/[hash].worklet.js'
           }
-        }]
+        }],
+        exclude: /node_modules/
+      }, {
+        test: /\.worker\.(ts|js)$/,
+        use: [{
+          loader: 'worker-loader',
+          options: {
+            filename: 'js/[hash].worker.js'
+          }
+        }],
+        exclude: /node_modules/
       }, {
         test: /\.(ts|js)x?$/,
         use: 'babel-loader',
@@ -81,7 +91,11 @@ const config = {
       maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
     })
     // new BundleAnalyzerPlugin()
-  ]
+  ],
+  // watch: true,
+  watchOptions: {
+    ignored: /node_modules/
+  }
 };
 module.exports = (env, argv) => {
   if (argv.mode === 'development') {

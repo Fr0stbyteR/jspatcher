@@ -39,7 +39,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         deleteModalOpen: false,
         deleteAllModalOpen: false,
         newAudioModalOpen: false,
-        items: []
+        items: Array.from(this.props.env.fileMgr.projectRoot?.items || [])
     };
     get strings() {
         return I18n[this.props.lang].FileManagerUI;
@@ -67,7 +67,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         fileMgr.off("treeChanged", this.handleTreeChanged);
     }
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>) {
-        if (this.state.selected !== prevState.selected) this.props.onSelection(this.state.selected);
+        if (this.state.selected !== prevState.selected) this.props.onSelection?.(this.state.selected);
     }
     handleClickCollapse = () => this.setState(({ collapsed }) => ({ collapsed: !collapsed }));
     handleClickNewFile = (e: React.MouseEvent<HTMLSpanElement>) => {
@@ -146,11 +146,21 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
                 <div className="left-pane-component-header file-manager-header" onClick={this.handleClickCollapse}>
                     <span className="left-pane-component-collapse"><Icon name={this.state.collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
                     <span className="left-pane-component-title">{this.strings.files}</span>
-                    <span className="left-pane-component-icon" title={this.strings.newFile} onClick={this.handleClickNewFile}><Icon name="add" inverted size="small" /></span>
-                    <span className="left-pane-component-icon" title={this.strings.deleteAll} onClick={this.handleClickDeleteAll}><Icon name="trash" inverted size="small" /></span>
+                    {this.props.noActions
+                        ? undefined
+                        : <>
+                            <span className="left-pane-component-icon" title={this.strings.newFile} onClick={this.handleClickNewFile}><Icon name="add" inverted size="small" /></span>
+                            <span className="left-pane-component-icon" title={this.strings.deleteAll} onClick={this.handleClickDeleteAll}><Icon name="trash" inverted size="small" /></span>
+                        </>
+                    }
                 </div>
-                <DeleteModal lang={this.props.lang} open={this.state.deleteModalOpen} onClose={this.handleDeleteModalClose} onConfirm={this.handleDeleteModalConfirm} fileNames={this.state.selected.map(item => item.name)} />
-                <DeleteAllModal lang={this.props.lang} open={this.state.deleteAllModalOpen} onClose={this.handleDeleteAllModalClose} onConfirm={this.handleDeleteAll} count={this.props.env.fileMgr.projectRoot?.getDescendantFiles?.length || 0} />
+                {this.props.noActions
+                    ? undefined
+                    : <>
+                        <DeleteModal lang={this.props.lang} open={this.state.deleteModalOpen} onClose={this.handleDeleteModalClose} onConfirm={this.handleDeleteModalConfirm} fileNames={this.state.selected.map(item => item.name)} />
+                        <DeleteAllModal lang={this.props.lang} open={this.state.deleteAllModalOpen} onClose={this.handleDeleteAllModalClose} onConfirm={this.handleDeleteAll} count={this.props.env.fileMgr.projectRoot?.getDescendantFiles?.length || 0} />
+                    </>
+                }
                 {this.state.collapsed
                     ? undefined
                     : <div className="file-manager-item-tree">

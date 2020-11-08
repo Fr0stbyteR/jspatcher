@@ -5,7 +5,9 @@ export default class History<EventMap extends Record<string, any> & Partial<File
     saveTime = 0;
     undoMap: Record<number, { type: keyof EventMap; event: any }> = {};
     redoMap: Record<number, { type: keyof EventMap; event: any }> = {};
-    eventListening: (keyof EventMap)[] = [];
+    get eventListening(): (keyof EventMap)[] {
+        return [];
+    }
     capture = true;
     constructor(instanceIn: FileInstance<EventMap>) {
         this.instance = instanceIn;

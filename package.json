@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "webpack --mode development",
+    "build-watch": "webpack --mode development --watch",
     "dist": "webpack --mode production"
   },
   "keywords": [

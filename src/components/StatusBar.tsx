@@ -2,6 +2,7 @@ import * as React from "react";
 import { Icon } from "semantic-ui-react";
 import Env from "../core/Env";
 import { Errors, TaskError, Task, TaskManagerEventMap, Tasks } from "../core/TaskMgr";
+import "./StatusBar.scss";
 
 interface S {
     tasks: Tasks;

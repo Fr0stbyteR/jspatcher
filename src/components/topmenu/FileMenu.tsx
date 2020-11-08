@@ -25,7 +25,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
     refOpenFolder = React.createRef<HTMLInputElement>();
     state = {
         fileURL: "",
-        fileName: this.props.env.activeInstance.file?.name,
+        fileName: this.props.env.activeInstance?.file?.name,
         showSaveAsModal: false
     };
     handleClickNewJs = async () => {
@@ -84,6 +84,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
     };
     handleSaveAsModalClose = () => this.setState({ showSaveAsModal: false });
     handleSaveAsModalConfirm = async (folder: Folder, name: string) => {
+        this.setState({ showSaveAsModal: false });
         await this.props.env.activeInstance?.saveAs?.(folder, name);
     };
     handleClickExportProject = async () => {
@@ -165,7 +166,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
                 <input ref={this.refOpenProject} type="file" hidden={true} onChange={this.onChangeProject} accept=".zip, application/zip" />
                 <input ref={this.refOpenFile} type="file" hidden={true} onChange={this.onChangeFile} />
                 <input ref={this.refOpenFolder} type="file" hidden={true} onChange={this.onChangeFolder} accept=".zip, application/zip" />
-                <SaveAsModal {...this.props} open={this.state.showSaveAsModal} fileName={this.props.env.activeInstance.file?.name || `Untitled.${this.props.env.activeInstance.fileExtention}`} folder={this.props.env.activeInstance.file?.parent || this.props.env.fileMgr.projectRoot} onClose={this.handleSaveAsModalClose} onConfirm={this.handleSaveAsModalConfirm} />
+                <SaveAsModal {...this.props} open={this.state.showSaveAsModal} fileName={this.state.fileName || `Untitled.${this.props.env.activeInstance?.fileExtention}`} folder={this.props.env.activeInstance?.file?.parent || this.props.env.fileMgr.projectRoot} onClose={this.handleSaveAsModalClose} onConfirm={this.handleSaveAsModalConfirm} />
             </>
         );
     }

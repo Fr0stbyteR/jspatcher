@@ -2,12 +2,13 @@ import { ProjectItemType, RawProjectItem } from "../types";
 import AudioFile from "../audio/AudioFile";
 import ProjectItem from "./ProjectItem";
 import TextFile from "../text/TextFile";
+import PatcherFile from "../PatcherFile";
 
 export default class Folder extends ProjectItem {
     type = "folder" as const;
     items: Set<ProjectItem> = new Set();
     async init() {
-        const items = await this.fileMgr.readDir(this.path);
+        const items = await this.fileMgr.readDir(this.path || "/");
         for (const rawItem of items) {
             const { name, type } = rawItem;
             const item = this.getProjectItem(name, type);
@@ -20,6 +21,7 @@ export default class Folder extends ProjectItem {
     }
     getProjectItem(name: string, type: ProjectItemType, data?: ArrayBuffer) {
         if (type === "folder") return new Folder(this.fileMgr, this.project, this, name, data);
+        if (type === "patcher") return new PatcherFile(this.fileMgr, this.project, this, name, data);
         if (type === "audio") return new AudioFile(this.fileMgr, this.project, this, name, data);
         if (type === "text") return new TextFile(this.fileMgr, this.project, this, name, data);
         return new TextFile(this.fileMgr, this.project, this, name, data);
@@ -41,7 +43,7 @@ export default class Folder extends ProjectItem {
         return name;
     }
     async addProjectItem(name: string, data = new ArrayBuffer(0)) {
-        if (!this.existItem(name)) throw new Error(`${name} already exists.`);
+        if (this.existItem(name)) throw new Error(`${name} already exists.`);
         const tempItem = new ProjectItem(this.fileMgr, this.project, this, name, data);
         await this.fileMgr.putFile(tempItem);
         const fileDetail = await this.fileMgr.getFileDetails(this.path, name);
@@ -51,7 +53,7 @@ export default class Folder extends ProjectItem {
         return item;
     }
     async addFolder(name: string) {
-        if (!this.existItem(name)) throw new Error(`${name} already exists.`);
+        if (this.existItem(name)) throw new Error(`${name} already exists.`);
         const folder = new Folder(this.fileMgr, this.project, this, name);
         await this.fileMgr.putFile(folder);
         this.items.add(folder);

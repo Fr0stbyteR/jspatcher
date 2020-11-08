@@ -37,7 +37,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         if (clean) await this.worker.empty();
         this.root = new Folder(this, project, null, null);
         await this.root.init();
-        if (!this.projectRoot) this.projectRoot.addFolder(FileManager.projectFolderName);
+        if (!this.projectRoot) this.root.addFolder(FileManager.projectFolderName);
         this.emit("ready");
         return this;
     }
@@ -96,15 +96,15 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     async putFile(item: ProjectItem) {
         const { data, path, type } = item;
         if (type === "folder") {
-            if (this.exists(path)) return;
-            this.worker.mkdir(path);
+            if (await this.exists(path)) return;
+            await this.worker.mkdir(path);
             return;
         }
         await this.writeFile(path, data);
     }
     async writeFile(path: string, data: ArrayBuffer) {
         const { maxFileSize, multipartSuffix } = FileManager;
-        if (this.exists(path)) await this.remove(path);
+        if (await this.exists(path)) await this.remove(path);
         if (data.byteLength <= maxFileSize) {
             await this.worker.createFile(path, new Uint8Array(data));
         } else {

@@ -5,6 +5,7 @@ import "./LeftMenu.scss";
 import { TPackage } from "../../core/types";
 import { BaseObject } from "../../core/objects/Base";
 import { ImporterDirSelfObject } from "../../utils/symbols";
+import Env, { EnvEventMap } from "../../core/Env";
 
 class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage; path: string[]; search?: string }, { selected: (string | symbol)[] }> {
     state = { selected: [] as (string | symbol)[] };
@@ -158,15 +159,25 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
     }
 }
 
-export default class Objects extends React.PureComponent<{ patcher: Patcher }, { pkg: TPackage; search: string }> {
-    state = { pkg: this.props.patcher.activePkg, search: "" };
+export default class Objects extends React.PureComponent<{ env: Env; patcher: Patcher }, { patcher: Patcher; pkg: TPackage; search: string }> {
+    state = { patcher: this.props.env.activeInstance instanceof Patcher ? this.props.env.activeInstance : null, pkg: this.props.env.activeInstance instanceof Patcher ? this.props.env.activeInstance.activePkg : null, search: "" };
     timer: number = undefined;
     handlePkgChanged = ({ pkg }: { pkg: TPackage }) => this.setState({ pkg: {} }, () => this.setState({ pkg }));
+    handleEnvActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
+        this.state.patcher?.off?.("libChanged", this.handlePkgChanged);
+        if (instance instanceof Patcher) {
+            this.state.patcher.on("libChanged", this.handlePkgChanged);
+            this.setState({ patcher: instance, pkg: instance.activePkg });
+        } else {
+            this.setState({ patcher: null, pkg: null });
+        }
+    };
     componentDidMount() {
-        this.props.patcher.on("libChanged", this.handlePkgChanged);
+        this.props.env.on("activeInstance", this.handleEnvActiveInstance);
     }
     componentWillUnmount() {
-        this.props.patcher.off("libChanged", this.handlePkgChanged);
+        this.state.patcher?.off?.("libChanged", this.handlePkgChanged);
+        this.props.env.off("activeInstance", this.handleEnvActiveInstance);
     }
     handleKeyDown = (e: React.KeyboardEvent<Input>) => {
         e.stopPropagation();
@@ -189,6 +200,7 @@ export default class Objects extends React.PureComponent<{ patcher: Patcher }, {
         this.setState({ search: "" });
     };
     render() {
+        if (!this.state.pkg) return <></>;
         return (
             <>
                 <Segment inverted size="mini">

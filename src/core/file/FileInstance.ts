@@ -80,7 +80,8 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
         } else {
             this._env = ctxIn;
         }
-        this.on("dirty", isDirty => this.file.emit("dirty", isDirty));
+        this.on("dirty", isDirty => this.file?.emit?.("dirty", isDirty));
+        this.on("destroy", () => this.file?.emit?.("dirty", false));
         const handleReady = () => {
             this._isReady = true;
             this.off("ready", handleReady);

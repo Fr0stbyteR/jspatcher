@@ -155,6 +155,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     }
     openInstance(i: AnyFileInstance) {
         this.emit("openInstance", i);
+        this.activeInstance = i;
     }
     registerInstance(i: AnyFileInstance) {
         this.instances.add(i);

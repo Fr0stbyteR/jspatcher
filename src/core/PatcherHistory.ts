@@ -3,11 +3,13 @@ import Patcher from "./Patcher";
 import { PatcherEventMap } from "./types";
 
 export default class PatcherHistory extends History<PatcherEventMap> {
-    instance: Patcher;
-    eventListening: (keyof PatcherEventMap)[] = [
-        "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
-        "changeBoxText", "changeLineSrc", "changeLineDest", "moved", "resized"
-    ];
+    instance: Patcher = this.instance;
+    get eventListening(): (keyof PatcherEventMap)[] {
+        return [
+            "createBox", "deleteBox", "createLine", "deleteLine", "create", "delete",
+            "changeBoxText", "changeLineSrc", "changeLineDest", "moved", "resized"
+        ];
+    }
     async undo() {
         if (!this.instance) return;
         if (!this.isUndoable) return;

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Icon } from "semantic-ui-react";
-import EditorContainer, { EditorContainerState } from "../../core/EditorContainer";
+import EditorContainer, { EditorContainerEventMap, EditorContainerState } from "../../core/EditorContainer";
 import Env from "../../core/Env";
 import { AnyFileInstance } from "../../core/file/FileInstance";
 import Patcher from "../../core/Patcher";
@@ -24,9 +24,18 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
     handleClickClose = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, instance: AnyFileInstance) => {
         await instance.destroy();
     };
+    handleState = (state: EditorContainerEventMap["state"]) => {
+        this.setState(state);
+    };
+    componentDidMount() {
+        this.props.editorContainer.on("state", this.handleState);
+    }
+    componentWillUnmount() {
+        this.props.editorContainer.off("state", this.handleState);
+    }
     render() {
         return (
-            <div className="editor-container">
+            <div className="editor-container ui-flex-column ui-flex-full">
                 <div className="editor-container-tabs">
                     {this.state.instances.map((instance, i) => {
                         const name = instance.file?.name || `Untitled${instance.fileExtention}`;
@@ -40,7 +49,7 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
                         );
                     })}
                 </div>
-                <div className="editor-container-body">
+                <div className="editor-container-body ui-flex-column ui-flex-full">
                     {this.state.instances.map((instance, i) => {
                         if (instance instanceof Patcher) {
                             return <PatcherEditorUI {...this.props} patcher={instance} key={i} />;

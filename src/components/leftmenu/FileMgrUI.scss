@@ -1,8 +1,8 @@
-#jspatcher-root div.file-manager-container {
+/* #jspatcher-root  */div.file-manager-container {
     overflow-x: hidden;
     color: white;
 
-    & > div.file-manager-item {
+    & div.file-manager-item {
         padding-left: 10px;
         display: flex;
         position: relative;

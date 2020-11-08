@@ -73,10 +73,13 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
         this.emitState();
     }
     destroy() {
-        if (this.parent) this.parent.unsplit();
-        else this.instances = [];
-        this._env.off("activeInstance", this.handleActiveInstance);
-        this._env.off("openInstance", this.handleOpenInstance);
+        if (this.parent) {
+            this.parent.unsplit();
+            this._env.off("activeInstance", this.handleActiveInstance);
+            this._env.off("openInstance", this.handleOpenInstance);
+        } else {
+            this.instances = [];
+        }
         this.emitState();
     }
     emitState() {
