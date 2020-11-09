@@ -56,9 +56,16 @@ export default class UI extends React.PureComponent<P, S> {
         this.setState({ envTasks: {}, envErrors: {} });
         this.props.env.off("ready", this.handleEnvReady);
     };
+    handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        const { isDirty } = this.props.env.fileMgr.projectRoot;
+        if (!isDirty) return;
+        e.preventDefault();
+        e.returnValue = "";
+    };
     componentDidMount() {
         this.props.env.taskMgr.on("tasks", this.handleTasks);
         this.props.env.on("ready", this.handleEnvReady);
+        window.addEventListener("beforeunload", this.handleBeforeUnload);
     }
     componentWillUnmount() {
         this.props.env.taskMgr.on("tasks", this.handleTasks);
@@ -70,7 +77,6 @@ export default class UI extends React.PureComponent<P, S> {
             const { envTasks, envErrors } = this.state;
             dimmer = <Dimmer active>
                 <Loader>
-                    <p>Loading JSPatcher Environment...</p>
                     {Object.keys(envTasks).map(t => <p key={t}>{envTasks[+t].message}</p>)}
                     {Object.keys(envErrors).map(t => <p style={{ color: "red" }} key={t}>Error while: {envErrors[+t].message}: {envErrors[+t].error.message}</p>)}
                 </Loader>

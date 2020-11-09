@@ -81,7 +81,7 @@ if (!self.define) {
     });
   };
 }
-define("./service-worker.js",['./workbox-5a7cf051'], function (workbox) { 'use strict';
+define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use strict';
 
   /**
   * Welcome to your Workbox-powered service worker!
@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-5a7cf051'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.1.1599331553468"
+    prefix: "0.0.1.1604913982229"
   });
   workbox.skipWaiting();
   workbox.clientsClaim();
@@ -209,9 +209,6 @@ define("./service-worker.js",['./workbox-5a7cf051'], function (workbox) { 'use s
     "url": "assets/89b618086a797a8be0f4549489bb2993.woff",
     "revision": "d878b6c29b10beca227e9eef4246111b"
   }, {
-    "url": "assets/9242107df7da7c6ad3cadf3133abcd37.ttf",
-    "revision": "a609dc0f334a7d4e64205247c4e8b97c"
-  }, {
     "url": "assets/99f63ae7a743f21ab30847ed06a698d9.png",
     "revision": "9c74e172f87984c48ddf5c8108cabe67"
   }, {
@@ -229,6 +226,9 @@ define("./service-worker.js",['./workbox-5a7cf051'], function (workbox) { 'use s
   }, {
     "url": "assets/a6069540692725c247f13984a9598a92.woff2",
     "revision": "8b4f872c5de19974857328d06d3fe48f"
+  }, {
+    "url": "assets/b3726f0165bf67ac68494ee7a1b9f6ce.ttf",
+    "revision": "223490291528837216424bf892a36810"
   }, {
     "url": "assets/b9c017a718cdeb8538b85b43da63bafc.woff2",
     "revision": "0f4fa9755f480e75463e74b3dce5a3ee"
@@ -288,40 +288,49 @@ define("./service-worker.js",['./workbox-5a7cf051'], function (workbox) { 'use s
     "revision": "40eb5c38e88a44fc7415b3a5e3e0ce0b"
   }, {
     "url": "index.html",
-    "revision": "90509a043949258c3c2d90e3e63740d2"
+    "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "fa01c06f7b5ec2bafdfc43decbf8919f"
+    "revision": "ffba6d0aac84f30082a5b22a44867b0c"
   }, {
-    "url": "js/0ee6108f13cf29406a4b.js",
-    "revision": "32fb5ccf63300c96d71f3c431b761953"
+    "url": "js/07c5ee89923a04fabab9.worklet.js",
+    "revision": "8e715a1096442abd25ed2242cb90b645"
   }, {
-    "url": "js/213365a9ec8435040dc4.worklet.js",
-    "revision": "8ea0463f50067a304208495246b48e38"
+    "url": "js/1548880c0da542b2e677.worker.js",
+    "revision": "fffbc73d7e7c383918393bc7be42180a"
   }, {
-    "url": "js/35e7cb03b14b2d305d7a.js",
-    "revision": "a23b3b1e52c13bd42f2de1a163b2b46a"
+    "url": "js/1955f69c56b2d16389d6.js",
+    "revision": "6abf3f35ce5cfb8d9a708af2bc0211c0"
   }, {
-    "url": "js/86485ddb6fbdf2c75d72.js",
-    "revision": "42191b76554549990999b33d1ef8a6ec"
+    "url": "js/478db68858784a6aa5de.js",
+    "revision": "88dfe50584e17560a297c4cd28f5d5a0"
   }, {
-    "url": "js/8d6cf1de192a4d0521761f6e6aa2a82b.worker.js",
-    "revision": "3ffcd4a66c91250c0a377a2432b22e4c"
+    "url": "js/52677a9326afbf1a26dc.worklet.js",
+    "revision": "66bf5fac4c8ff4733c9ab7d761cc105b"
   }, {
-    "url": "js/b63726184b9d553897d6.js",
-    "revision": "2ef1ef726176361e6b7bc92779fbbd60"
+    "url": "js/57adc54a85b1020609544ca7f331b0dc.worker.js",
+    "revision": "ba57e7a245b5ccb699cf0a3552f20db1"
   }, {
-    "url": "js/b71ec475ef3d0545b78f.js",
-    "revision": "88cb0d026125a157fefa9edd9969a710"
+    "url": "js/5cf9663221066915d0d3.js",
+    "revision": "c39de68b3544b3b4f409e6c5d5ddda98"
   }, {
-    "url": "js/c2a8f71a2825ae9f569e.js",
-    "revision": "008c9689723589d8dfc92c68a3cca4d9"
+    "url": "js/648cb04ab75db2ca3372.js",
+    "revision": "70f454fedccada594da6639d8fcf3a57"
   }, {
-    "url": "js/ed71cfee9079b9ca1b44.worklet.js",
-    "revision": "637a11b2ff37b1ffb5ff0bf5af892d02"
+    "url": "js/6627e73b04f12c02c73e.js",
+    "revision": "31c4002e6bd616cb9911e99ab526c492"
   }, {
-    "url": "js/f696421493ec74946f95c102e8f6a657.worker.js",
-    "revision": "a7db7f55944311d08f9a7fcefcc9cee2"
+    "url": "js/870bbf506c802d2ed9f9.js",
+    "revision": "442d37777948d58daf9a8d89dba51b6c"
+  }, {
+    "url": "js/a85ce25ec6767b7d9d2d3d88291dd6eb.worker.js",
+    "revision": "6c36a531f2e5d25503b05f84c81aff8d"
+  }, {
+    "url": "js/b524a450e62c03010536.worker.js",
+    "revision": "50df7e228223e6d108196f55b95809fb"
+  }, {
+    "url": "js/ea75fc3864d451358f55.worker.js",
+    "revision": "d49c9e3c4661dc7017ea4451d3d521ca"
   }, {
     "url": "manifest.json",
     "revision": "1cbaa3cdd5ba147975aa27bb8a1914f4"

@@ -56,6 +56,7 @@ export default {
         delete: "删除",
         files: "文件",
         newFile: "新文件",
+        newFolder: "新文件夹",
         deleteAll: "全部删除"
     },
     InsertSilenceModal: {
@@ -71,6 +72,12 @@ export default {
         addSampleRate: "添加 ",
         channels: "声道数",
         create: "创建"
+    },
+    NewFolderModal: {
+        title: "新文件夹",
+        folderName: "文件夹名称",
+        confirm: "创建",
+        cancel: "取消"
     },
     PluginManagerUI: {
         add: "添加",

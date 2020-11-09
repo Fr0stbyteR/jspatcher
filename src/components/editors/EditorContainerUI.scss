@@ -1,0 +1,52 @@
+#jspatcher-root .editor-container {
+    & .editor-container-tabs-container {
+        display: inline-block;
+        background-color: #333;
+        height: 34px;
+        overflow: auto hidden;
+        position: relative;
+
+        &::-webkit-scrollbar {
+            height: 0px;
+            width: 0px;
+        }
+
+        & .editor-container-tabs {
+            position: absolute;
+            display: inline-flex;
+            color: white;
+            overflow-x: auto;
+
+            & .editor-container-tab {
+                display: inline-flex;
+                cursor: pointer;
+                height: 34px;
+                align-items: center;
+                user-select: none;
+                background-color: #222;
+                padding: 4px;
+
+                &.active {
+                    background-color: #111;
+                }
+        
+                & .editor-container-tab-icon {
+                    margin-left: 4px;
+                    line-height: 100%;
+                }
+    
+                & span.editor-container-tab-name {
+                    font-size: 12px;
+                }
+    
+                & .editor-container-tab-close {
+                    margin-left: 4px;
+                    margin-right: 4px;
+                }
+            }
+        }
+    }
+    & .editor-container-instance-body[hidden] {
+        display: none;
+    }
+}

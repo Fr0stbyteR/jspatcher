@@ -2,6 +2,52 @@
     overflow-x: hidden;
     color: white;
 
+    & div.file-manager-header {
+        display: flex;
+        position: relative;
+        cursor: pointer;
+        height: 22px;
+        align-items: center;
+        user-select: none;
+
+        
+        & > span.file-manager-header-collapse {
+            flex: 0 0 auto;
+            height: 100%;
+            width: 22px;
+            text-align: center;
+        }
+
+        & > span.file-manager-header-title {
+            flex: 1 1 auto;
+            height: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        & > span.file-manager-header-icon {
+            display: none;
+            flex: 0 0 auto;
+            height: 100%;
+            width: 22px;
+            text-align: center;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        &:hover {
+            & > span.file-manager-header-icon {
+                display: inline-block;
+            }
+        }
+    }
+
     & div.file-manager-item {
         padding-left: 10px;
         display: flex;
@@ -10,6 +56,12 @@
         height: 22px;
         align-items: center;
         user-select: none;
+
+        & > span.file-manager-item-collapse {
+            width: 10px;
+            margin-left: -2px;
+            height: 100%;
+        }
 
         & > span.file-manager-item-icon {
             flex: 0 0 auto;
@@ -61,11 +113,11 @@
                 }
             }
         }
-
+/* 
         &:nth-child(odd) {
             background-color: rgba(0, 0, 0, 0.15);        
         }
-    
+ */
         &:hover {
             background-color: rgba(255, 255, 255, 0.1);
     
@@ -115,6 +167,10 @@
                 }
             }
         }
+    }
+
+    & .file-manager-item-tree .file-manager-item-tree {
+        padding-left: 10px;
     }
 
     & i.icon {

@@ -68,6 +68,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get isActive(): boolean {
         return this.env.activeInstance === this;
     }
+    readonly instancId = performance.now();
     constructor(ctxIn?: ProjectItem | Project | Env) {
         super();
         if (ctxIn instanceof ProjectItem) {

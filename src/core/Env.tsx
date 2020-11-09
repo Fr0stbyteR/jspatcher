@@ -91,7 +91,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         this._noUI = urlparamsOptions.noUI;
         if (!this._noUI && this.divRoot) ReactDOM.render(<UI env={this} lang={this.language} />, this.divRoot);
 
-        await this.taskMgr.newTask(this, "Initializing JSPatcher...", async () => {
+        await this.taskMgr.newTask(this, "Initializing JSPatcher Environment...", async () => {
             await this.taskMgr.newTask("Env", "Loading Faust2WebAudio...", async () => {
                 const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
                 this.Faust = Faust;

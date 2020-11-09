@@ -98,7 +98,11 @@ export default class RightMenu extends React.PureComponent<P, S> {
     };
     handleEnvAudioCtxStateChange = () => {
         const { state } = this.props.env.audioCtx;
-        this.props.env.currentProject?.audioCtx.resume();
+        if (state === "running") {
+            this.props.env.currentProject?.audioCtx?.resume?.();
+        } else {
+            this.props.env.currentProject?.audioCtx?.suspend?.();
+        }
         this.setState({ audioOn: state === "running" });
     };
     handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {

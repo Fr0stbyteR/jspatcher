@@ -37,16 +37,23 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
     handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
         this.setState({ fileName: value, fileNameError: !!this.state.folder.findItem(value) });
     };
+    componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>) {
+        if (this.props.fileName !== prevProps.fileName) this.setState({ fileName: this.props.fileName });
+    }
     render() {
         return (
             <Modal className="modal-delete" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
                 <Modal.Header>{this.strings.title}</Modal.Header>
                 <Modal.Content>
-                    <FileManagerUI {...this.props} oneSelectionOnly={true} folderSelectionOnly={true} onSelection={this.handleSelection} noActions />
-                    <Form.Field inline error={this.state.fileNameError}>
-                        <label>{this.strings.fileName}</label>
-                        <Input defaultValue={this.state.fileName} onChange={this.handleFileNameChange} />
-                    </Form.Field>
+                    <Form inverted size="mini">
+                        <Form.Field inline error={this.state.fileNameError}>
+                            <FileManagerUI {...this.props} oneSelectionOnly={true} folderSelectionOnly={true} onSelection={this.handleSelection} noActions />
+                        </Form.Field>
+                        <Form.Field inline error={this.state.fileNameError}>
+                            <label>{this.strings.fileName}</label>
+                            <Input defaultValue={this.state.fileName} onChange={this.handleFileNameChange} />
+                        </Form.Field>
+                    </Form>
                 </Modal.Content>
                 <Modal.Actions>
                     <Button inverted color="grey" size="mini" onClick={this.props.onClose}>{this.strings.cancel}</Button>

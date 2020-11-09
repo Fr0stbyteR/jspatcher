@@ -9,6 +9,8 @@ import { ProjectItemUI } from "./ProjectItemUI";
 import { AnyFileInstance } from "../../core/file/FileInstance";
 import ProjectItem from "../../core/file/ProjectItem";
 import { ProjectEventMap } from "../../core/Project";
+import NewFolderModal from "../modals/NewFolderModal";
+import Folder from "../../core/file/Folder";
 
 interface P {
     env: Env;
@@ -27,7 +29,7 @@ interface S {
     instances: AnyFileInstance[];
     deleteModalOpen: boolean;
     deleteAllModalOpen: boolean;
-    newAudioModalOpen: boolean;
+    newFolderModalOpen: boolean;
 }
 
 export default class FileManagerUI extends React.PureComponent<P, S> {
@@ -38,7 +40,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         instances: [],
         deleteModalOpen: false,
         deleteAllModalOpen: false,
-        newAudioModalOpen: false,
+        newFolderModalOpen: false,
         items: Array.from(this.props.env.fileMgr.projectRoot?.items || [])
     };
     get strings() {
@@ -70,9 +72,9 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         if (this.state.selected !== prevState.selected) this.props.onSelection?.(this.state.selected);
     }
     handleClickCollapse = () => this.setState(({ collapsed }) => ({ collapsed: !collapsed }));
-    handleClickNewFile = (e: React.MouseEvent<HTMLSpanElement>) => {
+    handleClickNewFolder = (e: React.MouseEvent<HTMLSpanElement>) => {
         e.stopPropagation();
-        this.setState({ newAudioModalOpen: true });
+        this.setState({ newFolderModalOpen: true });
     };
     handleDeleteItem = async (itemUI: ProjectItemUI) => {
         const item = itemUI.props.item;
@@ -137,20 +139,24 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
     handleDeleteAllModalClose = () => {
         this.setState({ deleteAllModalOpen: false });
     };
-    handleNewAudioModalClose = () => {
-        this.setState({ newAudioModalOpen: false });
+    handleNewFolderModalClose = () => {
+        this.setState({ newFolderModalOpen: false });
+    };
+    handleNewFolderModalConfirm = async (parent: Folder, folderName: string) => {
+        await parent.addFolder(folderName);
+        this.setState({ newFolderModalOpen: false });
     };
     render() {
         return (
             <div className="left-pane-component file-manager-container">
                 <div className="left-pane-component-header file-manager-header" onClick={this.handleClickCollapse}>
-                    <span className="left-pane-component-collapse"><Icon name={this.state.collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
-                    <span className="left-pane-component-title">{this.strings.files}</span>
+                    <span className="file-manager-header-collapse"><Icon name={this.state.collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
+                    <span className="file-manager-header-title">{this.state.projectName}</span>
                     {this.props.noActions
                         ? undefined
                         : <>
-                            <span className="left-pane-component-icon" title={this.strings.newFile} onClick={this.handleClickNewFile}><Icon name="add" inverted size="small" /></span>
-                            <span className="left-pane-component-icon" title={this.strings.deleteAll} onClick={this.handleClickDeleteAll}><Icon name="trash" inverted size="small" /></span>
+                            <span className="file-manager-header-icon" title={this.strings.newFile} onClick={this.handleClickNewFolder}><Icon name="folder outline" inverted size="small" /></span>
+                            <span className="file-manager-header-icon" title={this.strings.deleteAll} onClick={this.handleClickDeleteAll}><Icon name="trash" inverted size="small" /></span>
                         </>
                     }
                 </div>
@@ -159,6 +165,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
                     : <>
                         <DeleteModal lang={this.props.lang} open={this.state.deleteModalOpen} onClose={this.handleDeleteModalClose} onConfirm={this.handleDeleteModalConfirm} fileNames={this.state.selected.map(item => item.name)} />
                         <DeleteAllModal lang={this.props.lang} open={this.state.deleteAllModalOpen} onClose={this.handleDeleteAllModalClose} onConfirm={this.handleDeleteAll} count={this.props.env.fileMgr.projectRoot?.getDescendantFiles?.length || 0} />
+                        <NewFolderModal lang={this.props.lang} open={this.state.newFolderModalOpen} onClose={this.handleNewFolderModalClose} onConfirm={this.handleNewFolderModalConfirm} folder={this.props.env.fileMgr.projectRoot} />
                     </>
                 }
                 {this.state.collapsed

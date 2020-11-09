@@ -54,6 +54,7 @@ export default {
         delete: "Delete",
         files: "Files",
         newFile: "New File",
+        newFolder: "New Folder",
         deleteAll: "Delete All"
     },
     InsertSilenceModal: {
@@ -69,6 +70,12 @@ export default {
         addSampleRate: "Add ",
         channels: "Channels",
         create: "Create"
+    },
+    NewFolderModal: {
+        title: "Create New Folder",
+        folderName: "Folder Name",
+        confirm: "Create",
+        cancel: "Cancel"
     },
     PluginManagerUI: {
         add: "Add",

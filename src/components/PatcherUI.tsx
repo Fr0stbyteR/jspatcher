@@ -178,6 +178,9 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (runtime) return;
         if (!patcher.isActive) return;
         if (patcher.state.locked) return;
+        if (e.target instanceof HTMLInputElement) return;
+        if (e.target instanceof HTMLTextAreaElement) return;
+        if ((e.target as HTMLElement).contentEditable === "true") return;
         if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
             e.stopPropagation();
             e.preventDefault();

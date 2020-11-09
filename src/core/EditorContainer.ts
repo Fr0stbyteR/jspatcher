@@ -10,6 +10,7 @@ export interface EditorContainerState {
     instances: AnyFileInstance[];
     children: EditorContainer[];
     mode: TSplitMode;
+    activeInstance: AnyFileInstance;
 }
 
 export interface EditorContainerEventMap {
@@ -20,6 +21,7 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
     readonly _env: Env;
     readonly id = performance.now();
     readonly parent: EditorContainer;
+    activeInstance: AnyFileInstance;
     instances: AnyFileInstance[] = [];
     mode: TSplitMode = "none";
     children: EditorContainer[] = [];
@@ -32,22 +34,30 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
         this._env = env;
         this.mode = mode;
         this.instances = instances;
+        this.activeInstance = instances[0];
         this.parent = parent;
         if (!parent) this._active = true;
         this._env.on("activeInstance", this.handleActiveInstance);
         this._env.on("openInstance", this.handleOpenInstance);
     }
     handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
-        if (this.instances.indexOf(instance) !== -1) this._active = true;
-        else this._active = false;
+        if (this.instances.indexOf(instance) !== -1) {
+            this._active = true;
+            this.activeInstance = instance;
+        } else {
+            this._active = false;
+        }
         this.emitState();
     };
     handleOpenInstance = (instance: EnvEventMap["openInstance"]) => {
         if (this.active) this.instances = [...this.instances, instance];
+        this.activeInstance = instance;
         const handleInstanceDestroy = () => {
             this.instances = this.instances.filter(i => i !== instance);
             if (!this.instances.length) this.destroy();
             instance.off("destroy", handleInstanceDestroy);
+            this.activeInstance = this.instances[this.instances.length - 1];
+            this.emitState();
         };
         instance.on("destroy", handleInstanceDestroy);
         this.emitState();
@@ -83,7 +93,7 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
         this.emitState();
     }
     emitState() {
-        const { instances, children, mode } = this;
-        this.emit("state", { instances, children, mode });
+        const { instances, children, mode, activeInstance } = this;
+        this.emit("state", { instances, children, mode, activeInstance });
     }
 }

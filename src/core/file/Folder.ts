@@ -7,6 +7,9 @@ import PatcherFile from "../PatcherFile";
 export default class Folder extends ProjectItem {
     type = "folder" as const;
     items: Set<ProjectItem> = new Set();
+    get isDirty() {
+        return !this.getDescendantFiles().every(f => !f.isDirty);
+    }
     async init() {
         const items = await this.fileMgr.readDir(this.path || "/");
         for (const rawItem of items) {
@@ -16,7 +19,7 @@ export default class Folder extends ProjectItem {
             await this.emitTreeChanged();
             await item.init();
         }
-        this.emit("ready");
+        await this.emit("ready");
         return this;
     }
     getProjectItem(name: string, type: ProjectItemType, data?: ArrayBuffer) {
@@ -57,6 +60,7 @@ export default class Folder extends ProjectItem {
         const folder = new Folder(this.fileMgr, this.project, this, name);
         await this.fileMgr.putFile(folder);
         this.items.add(folder);
+        await folder.init();
         await this.emitTreeChanged();
         return folder;
     }

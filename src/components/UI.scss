@@ -36,15 +36,17 @@
         }
     }
 }
-body ::-webkit-scrollbar-corner {
-    background-color: rgba(61, 65, 70, 0.1);
-}
-body ::-webkit-scrollbar {
-    background-color: rgba(61, 65, 70, 0.1);
-}
-body ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-body ::-webkit-scrollbar-thumb:window-inactive{
-    background-color: rgba(0, 0, 0, 0.5);
+body {
+    & ::-webkit-scrollbar-corner {
+        background-color: rgba(61, 65, 70, 0.1);
+    }
+    & ::-webkit-scrollbar {
+        background-color: rgba(61, 65, 70, 0.1);
+    }
+    & ::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    & ::-webkit-scrollbar-thumb:window-inactive {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
 }
