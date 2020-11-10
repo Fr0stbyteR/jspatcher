@@ -1,4 +1,4 @@
-#jspatcher-root .status-bar {
+.status-bar {
     display: flex;
     position: relative;
     flex: 0 0 auto;
@@ -24,17 +24,21 @@
         overflow: hidden;
         white-space: nowrap;
 
+        &.status-bar-emitter {
+            flex: 0 0 auto;
+        }
         &.error {
             color: rgb(255, 128, 128);
+            margin-left: 4px;
             direction: rtl;
         }
         &.dismiss {
             color: rgb(255, 128, 128);
-            margin-left: auto;
-            padding-left: 12px;
+            margin-left: 12px;
             text-decoration: underline;
             overflow: auto;
-            flex: 1 0 auto;
+            flex: 0 0 auto;
+            cursor: pointer;
         }
     }
 }

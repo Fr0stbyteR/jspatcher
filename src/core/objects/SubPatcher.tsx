@@ -8,6 +8,8 @@ import "./SubPatcher.scss";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
 import PatcherUI from "../../components/PatcherUI";
 import PatcherEditorUI from "../../components/editors/PatcherEditorUI";
+import LeftMenu from "../../components/leftmenu/LeftMenu";
+import RightMenu from "../../components/rightmenu/RightMenu";
 
 export class In extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
     static package = "SubPatcher";
@@ -277,11 +279,26 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
         patcher: this.object.state.patcher
     };
     static dockable = true;
+    handleDoubleClick = () => {
+        if (this.patcher.state.locked) this.setState({ modalOpen: true }, () => this.props.object.patcher.env.activeInstance = this.state.patcher);
+    };
+    handleClose = () => this.setState({ modalOpen: false }, () => this.props.object.patcher.env.activeInstance = this.props.object.patcher);
+    handleMouseDownModal = (e: React.MouseEvent) => e.stopPropagation();
     render() {
         const children = (
-            <Modal.Content style={{ height: "100%", width: "100%" }}>
+            <Modal.Content style={{ height: "100%", width: "100%" }} onMouseDown={this.handleMouseDownModal}>
                 <div style={{ height: "100%", width: "100%", display: "flex" }}>
-                    <PatcherEditorUI patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                    <div className="ui-flex-row" style={{ flex: "1 1 auto", overflow: "auto" }}>
+                        <div className="ui-left">
+                            <LeftMenu env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} noFileMgr />
+                        </div>
+                        <div className="ui-center">
+                            <PatcherEditorUI patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                        </div>
+                        <div className="ui-right" onKeyDown={this.handleKeyDown}>
+                            <RightMenu env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                        </div>
+                    </div>
                 </div>
             </Modal.Content>
         );

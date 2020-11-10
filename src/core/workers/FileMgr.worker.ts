@@ -46,6 +46,9 @@ class FileMgr extends ProxyWorker<IFileManagerWorker> {
     unlink(path: string) {
         return new Promise<true>((resolve, reject) => this.fs.unlink(path, e => (e ? reject(e) : resolve(true))));
     }
+    rmdir(path: string) {
+        return new Promise<true>((resolve, reject) => this.fs.rmdir(path, e => (e ? reject(e) : resolve(true))));
+    }
     isFile(path: string) {
         return new Promise<boolean>((resolve, reject) => this.fs.stat(path, false, (e, r) => (e ? reject(e) : resolve(r.isFile()))));
     }

@@ -4,8 +4,7 @@ import ProjectItem from "../file/ProjectItem";
 export default class AudioFile extends ProjectItem {
     type = "audio" as const;
     async instantiate() {
-        const { env } = this.fileMgr;
-        const audio = new PatcherAudio(env);
+        const audio: PatcherAudio = new PatcherAudio(this);
         await audio.init(this.data);
         return audio;
     }

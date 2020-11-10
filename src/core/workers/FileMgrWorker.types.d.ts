@@ -7,6 +7,7 @@ export interface IFileManagerWorker {
     readdir(path: string): Promise<string[]>;
     readFile(path: string): Promise<ArrayBuffer>;
     unlink(path: string): Promise<true>;
+    rmdir(path: string): Promise<true>;
     isFile(path: string): Promise<boolean>;
     empty(): Promise<boolean>;
 }

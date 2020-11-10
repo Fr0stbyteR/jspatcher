@@ -32,12 +32,15 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     empty() {
         return this.worker.empty();
     }
+    emptyProject() {
+        return this.projectRoot.empty();
+    }
     async init(project: Project, clean?: boolean) {
         await this.worker.init();
         if (clean) await this.worker.empty();
         this.root = new Folder(this, project, null, null);
         await this.root.init();
-        if (!this.projectRoot) this.root.addFolder(FileManager.projectFolderName);
+        if (!this.projectRoot) await this.root.addFolder(FileManager.projectFolderName);
         this.emit("ready");
         return this;
     }
@@ -120,9 +123,12 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
             }
         }
     }
-    async remove(path: string) {
+    async remove(path: string, isFolder = false) {
         const exist = await this.worker.exists(path);
-        if (exist) return this.worker.unlink(path);
+        if (exist) {
+            if (isFolder) return this.worker.rmdir(path);
+            return this.worker.unlink(path);
+        }
         const multipartFilePath = `${path}.${FileManager.multipartSuffix}`;
         const existMultipart = await this.worker.exists(multipartFilePath);
         if (existMultipart) {
@@ -192,15 +198,26 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
             const jsZip = new JsZip();
             const zip = await jsZip.loadAsync(data);
             const unzip = async (zip: JsZip, to: Folder) => {
-                for (const $name in zip.files) {
-                    const $file = zip.files[$name];
+                for (const $nameIn in zip.files) {
+                    const splitted = $nameIn.split("/");
+                    const $file = zip.files[$nameIn];
+                    let $to = to;
                     if ($file.dir) {
-                        const $zip = zip.folder($name);
-                        const $folder = await to.addFolder($name);
-                        await unzip($zip, $folder);
+                        for (let i = 0; i < splitted.length; i++) {
+                            const $name = splitted[i];
+                            if ($to.existItem($name)) $to = $to.findItem($name) as Folder;
+                            else $to = await $to.addFolder($name);
+                        }
                     } else {
+                        for (let i = 0; i < splitted.length - 1; i++) {
+                            const $name = splitted[i];
+                            if ($to.existItem($name)) $to = $to.findItem($name) as Folder;
+                            else $to = await $to.addFolder($name);
+                        }
+                        const $name = splitted[splitted.length - 1];
                         const $data = await zip.file($name).async("arraybuffer", state => onUpdate(`${state.percent}% - ${state.currentFile}`));
-                        await to.addProjectItem($name, $data);
+                        if ($to.existItem($name)) continue;
+                        await $to.addProjectItem($name, $data);
                     }
                 }
             };
@@ -210,15 +227,15 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     async exportProjectZip() {
         return this.env.taskMgr.newTask(this, "Zipping project...", async (onUpdate) => {
             const jsZip = new JsZip();
-            const toZip = (zip: JsZip, item: ProjectItem) => {
-                const { name } = item;
-                if (item.type === "folder") {
-                    const $zip = zip.folder(name);
-                    for (const $item of (item as Folder).items) {
-                        toZip($zip, $item);
+            const toZip = (zip: JsZip, folder: Folder) => {
+                for (const item of folder.items) {
+                    const { name } = item;
+                    if (item.type === "folder") {
+                        const $zip = zip.folder(name);
+                        toZip($zip, item as Folder);
+                    } else {
+                        zip.file(name, item.data);
                     }
-                } else {
-                    zip.file(name, item.data);
                 }
             };
             toZip(jsZip, this.projectRoot);

@@ -93,7 +93,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         const data = await this.props.env.fileMgr.exportProjectZip();
         this.setState({
             fileURL: URL.createObjectURL(new Blob([data])),
-            fileName: name
+            fileName: `${name}.zip`
         }, () => this.refDownload.current.click());
     };
     handleClickExportFile = () => {
@@ -112,7 +112,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         this.refOpenProject.current.value = "";
     };
     onChangeFile = async () => {
-        const files = Array.from(this.refOpenProject.current.files);
+        const files = Array.from(this.refOpenFile.current.files);
         for (const file of files) {
             if (!file) return;
             await this.props.env.fileMgr.importFile(file);
@@ -120,7 +120,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         this.refOpenProject.current.value = "";
     };
     onChangeFolder = async () => {
-        const files = Array.from(this.refOpenProject.current.files);
+        const files = Array.from(this.refOpenFolder.current.dDfiles);
         for (const file of files) {
             if (!file) return;
             const data = await file.arrayBuffer();

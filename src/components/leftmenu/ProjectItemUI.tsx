@@ -117,7 +117,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         await parent.addFolder(folderName);
         this.setState({ newFolderModalOpen: false });
     };
-    handleItemReady = () => this.setState({ loading: true });
+    handleItemReady = () => this.setState({ loading: false });
     handleItemDirty = (dirty: ProjectItemEventMap["dirty"]) => this.setState({ dirty });
     handleItemNameChanged = ({ newName }: ProjectItemEventMap["nameChanged"]) => this.setState({ fileName: newName, filePath: this.props.item.path });
     handleItemPathChanged = () => this.setState({ filePath: this.props.item.path });
@@ -142,12 +142,12 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     render() {
         const classNameArray = ["file-manager-item"];
         const { selected, item, noActions } = this.props;
+        const { type } = item;
         const { fileName, collapsed, loading, dirty, renaming, active, filePath } = this.state;
         if (selected.indexOf(item) !== -1) classNameArray.push("selected");
-        if (loading) classNameArray.push("loading");
+        if (type !== "folder" && loading) classNameArray.push("loading");
         if (renaming) classNameArray.push("renaming");
         if (active) classNameArray.push("active");
-        const { type } = item;
         if (type === "folder") classNameArray.push("folder");
         return (
             <>

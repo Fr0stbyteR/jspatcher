@@ -121,10 +121,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
             });
             await this.taskMgr.newTask(this, "Loading Files...", async () => {
                 this.pkgMgr = new GlobalPackageManager(this);
+                await this.pkgMgr.init();
                 const project = new Project(this);
                 this.currentProject = project;
                 await this.fileMgr.init(project, urlparamsOptions.init);
             });
+            window.jspatcherEnv = this;
         });
         this.loaded = true;
         this.emit("ready");
@@ -181,10 +183,11 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     async loadFromZip(data: ArrayBuffer) {
         const oldProject = this.currentProject;
         await oldProject?.unload?.();
+        await this.fileMgr.emptyProject();
         const project = new Project(this);
         this.currentProject = project;
-        this.fileMgr.importFileZip(data);
-        await project.load(true);
+        await this.fileMgr.importFileZip(data);
+        await project.load();
         this.emit("projectChanged", { project, oldProject });
         return project;
     }

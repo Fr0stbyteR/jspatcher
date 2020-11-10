@@ -98,7 +98,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         await this.emit("pathChanged", { from, to });
     }
     async destroy() {
-        await this._fileMgr.remove(this.path);
+        await this._fileMgr.remove(this.path, this.type === "folder");
         this.parent.items.delete(this);
         await this.emitTreeChanged();
         await this.emit("destroyed");

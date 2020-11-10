@@ -8,32 +8,32 @@
     position: absolute;
     display: flex;
     flex-direction: column;
+}
 
-    & .ui-flex-row {
-        display: flex;
-        flex-direction: row;
-    }
+.ui-flex-row {
+    display: flex;
+    flex-direction: row;
+}
 
-    & .ui-flex-column {
-        display: flex;
-        flex-direction: column;
-    }
+.ui-flex-column {
+    display: flex;
+    flex-direction: column;
+}
 
-    & .ui-flex-full {
-        flex: 1 1 100%;
-    }
+.ui-flex-full {
+    flex: 1 1 100%;
+}
 
-    & .ui-center {
-        display: flex;
+.ui-center {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    flex: 1 1 100%;
+    & .patcher-container {
         position: relative;
-        flex-direction: column;
+        overflow: auto;
         flex: 1 1 100%;
-        & .patcher-container {
-            position: relative;
-            overflow: auto;
-            flex: 1 1 100%;
-            display: block;
-        }
+        display: block;
     }
 }
 body {

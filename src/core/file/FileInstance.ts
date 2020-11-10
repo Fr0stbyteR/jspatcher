@@ -69,7 +69,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
         return this.env.activeInstance === this;
     }
     readonly instancId = performance.now();
-    constructor(ctxIn?: ProjectItem | Project | Env) {
+    constructor(ctxIn: ProjectItem | Project | Env) {
         super();
         if (ctxIn instanceof ProjectItem) {
             this._file = ctxIn;

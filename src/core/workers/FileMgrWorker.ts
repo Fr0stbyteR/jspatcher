@@ -4,5 +4,5 @@ import ProxyMain from "./ProxyMain";
 
 export default class FileManagerWorker extends ProxyMain<{}, IFileManagerWorker> {
     static Worker = Worker;
-    static fnNames: (keyof IFileManagerWorker)[] = ["init", "mkdir", "createFile", "rename", "exists", "readdir", "readFile", "unlink", "isFile", "empty"];
+    static fnNames: (keyof IFileManagerWorker)[] = ["init", "mkdir", "createFile", "rename", "exists", "readdir", "readFile", "unlink", "rmdir", "isFile", "empty"];
 }

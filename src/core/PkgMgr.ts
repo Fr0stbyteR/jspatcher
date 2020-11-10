@@ -2,22 +2,7 @@ import Env from "./Env";
 import Project from "./Project";
 import Importer from "./objects/importer/Importer";
 import { TFlatPackage, TPackage, PatcherMode } from "./types";
-import Base, { AnyObject, BaseObject } from "./objects/Base";
-import Std from "./objects/Std";
-import New from "./objects/importer/New";
-import Gen from "./objects/Gen";
-import Max from "./objects/Max";
-import Faust from "./objects/Faust";
-import UI from "./objects/UI/exports";
-import Op from "./objects/Op";
-import Window from "./objects/Window";
-import WebAudio from "./objects/WebAudio/exports";
-import WebRTC from "./objects/WebRTC/exports";
-import WebMIDI from "./objects/WebMIDI/exports";
-import DSP from "./objects/dsp/exports";
-import live from "./objects/live/exports";
-import faust from "./objects/faust/exports";
-import SubPatcher from "./objects/SubPatcher";
+import { AnyObject, BaseObject } from "./objects/Base";
 import { ImporterDirSelfObject } from "../utils/symbols";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 
@@ -185,32 +170,37 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
 }
 
 export class GlobalPackageManager {
-    readonly js: TPackage = {
-        Base,
-        Std,
-        SubPatcher,
-        Max,
-        UI,
-        Op,
-        WebAudio,
-        WebRTC,
-        WebMIDI,
-        DSP,
-        new: New,
-        live,
-        faust,
-        window: Window
-    };
-    readonly faust: TPackage = Faust;
-    readonly max: TPackage = Max;
-    readonly gen: TPackage = Gen;
+    js: TPackage;
+    faust: TPackage;
+    max: TPackage;
+    gen: TPackage;
     private readonly env: Env;
     externals = new Map<string, Record<string, any>>();
     constructor(envIn: Env) {
         this.env = envIn;
+    }
+    async init() {
+        this.js = {
+            Base: (await import("./objects/Base")).default,
+            Std: await import("./objects/Std"),
+            new: (await import("./objects/importer/New")).default,
+            UI: (await import("./objects/UI/exports")).default,
+            Op: (await import("./objects/Op")).default,
+            window: (await import("./objects/Window")).default,
+            WebAudio: (await import("./objects/WebAudio/exports")).default,
+            WebRTC: (await import("./objects/WebRTC/exports")).default,
+            WebMIDI: (await import("./objects/WebMIDI/exports")).default,
+            DSP: (await import("./objects/dsp/exports")).default,
+            live: (await import("./objects/live/exports")).default,
+            faust: (await import("./objects/faust/exports")).default,
+            SubPatcher: (await import("./objects/SubPatcher")).default
+        };
+        this.faust = (await import("./objects/Faust")).default;
+        this.gen = (await import("./objects/Gen")).default;
+        this.max = (await import("./objects/Max")).default;
         this.add(this.env.faustAdditionalObjects, "js", ["faust"]);
         this.add(this.env.faustLibObjects, "faust");
-        this.add({ window: Window }, "js");
+        // this.add({ window: Window }, "js");
     }
     private add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();

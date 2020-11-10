@@ -32,6 +32,7 @@ class ConfigMenu extends React.PureComponent {
 interface P {
     env: Env;
     lang: string;
+    noFileMgr?: boolean;
 }
 
 interface S {
@@ -41,7 +42,7 @@ interface S {
 
 export default class LeftMenu extends React.PureComponent<P, S> {
     state = {
-        active: TPanels.None,
+        active: this.props.noFileMgr ? TPanels.None : TPanels.FileMgr,
         instance: this.props.env.activeInstance
     };
     refDivPane = React.createRef<HTMLDivElement>();
@@ -96,9 +97,12 @@ export default class LeftMenu extends React.PureComponent<P, S> {
             <>
                 <div className="left-pane" hidden={this.state.active === TPanels.None} ref={this.refDivPane}>
                     <Header as="h5" inverted color="grey" content={this.state.active} />
-                    <div className="left-pane-filemanager" hidden={this.state.active !== TPanels.FileMgr}>
-                        <FileManagerUI {...this.props} ref={this.refFileMgr} />
-                    </div>
+                    {this.props.noFileMgr
+                        ? undefined
+                        : <div className="left-pane-filemanager" hidden={this.state.active !== TPanels.FileMgr}>
+                            <FileManagerUI {...this.props} ref={this.refFileMgr} />
+                        </div>
+                    }
                     <div className="left-pane-objects" hidden={this.state.active !== TPanels.Objects}>
                         {this.state.active === TPanels.Objects ? <Objects {...this.props} patcher={this.state.instance as Patcher} ref={this.refObjects} /> : <></> }
                     </div>
@@ -107,9 +111,12 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                     </div>
                 </div>
                 <Menu icon vertical inverted size="mini" className="left-menu">
-                    <Menu.Item name={TPanels.FileMgr} active={this.state.active === TPanels.FileMgr} onClick={this.handleItemClick} title={TPanels.FileMgr}>
-                        <Icon name="folder" color={this.state.active === TPanels.FileMgr ? "teal" : "grey"} inverted />
-                    </Menu.Item>
+                    {this.props.noFileMgr
+                        ? undefined
+                        : <Menu.Item name={TPanels.FileMgr} active={this.state.active === TPanels.FileMgr} onClick={this.handleItemClick} title={TPanels.FileMgr}>
+                            <Icon name="folder" color={this.state.active === TPanels.FileMgr ? "teal" : "grey"} inverted />
+                        </Menu.Item>
+                    }
                     {this.state.instance instanceof Patcher
                         ? <>
                             <Menu.Item name={TPanels.Objects} active={this.state.active === TPanels.Objects} onClick={this.handleItemClick} title={TPanels.Objects}>

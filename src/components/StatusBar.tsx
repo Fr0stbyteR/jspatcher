@@ -45,12 +45,27 @@ export default class StatusBar extends React.PureComponent<{ env: Env; lang: str
     }
     render() {
         const { lastError, lastTask } = this;
+        if (lastTask) {
+            return (
+                <div className="status-bar">
+                    <Icon loading name="asterisk" size="small" />
+                    <span className="status-bar-emitter">{lastTask.emitter.constructor?.name || ""}</span>
+                    <span>{lastTask.message}</span>
+                </div>
+            );
+        }
+        if (lastError) {
+            return (
+                <div className="status-bar">
+                    <span className="status-bar-emitter">{lastError.emitter.constructor?.name || ""}</span>
+                    <span className="error">{lastError.message}: {lastError.error.message}</span>
+                    <span className="dismiss" onClick={this.handleClickDismiss}>Dismiss</span>
+                </div>
+            );
+        }
         return (
             <div className="status-bar">
-                {lastTask ? <Icon loading name="asterisk" size="small" /> : undefined}
-                <span className="status-bar-emitter">{lastTask?.emitter.constructor?.name || lastError?.emitter.constructor?.name || ""}</span>
-                <span className={!lastTask && lastError ? "error" : ""}>{lastTask?.message || lastError?.message || "Ready"}</span>
-                {!lastTask && lastError ? <span className="dismiss" onClick={this.handleClickDismiss}>Dismiss</span> : undefined}
+                <span>Ready</span>
             </div>
         );
     }

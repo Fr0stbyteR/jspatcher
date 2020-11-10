@@ -1,50 +1,48 @@
-#jspatcher-root {
-    & .patcher {
-        &.unlocked {
-            & > div.boxes {
-                // z-index: 10;
-                & > div.box {
-                    &.selected {
-                        z-index: 40;
-                    }
-                    & > div.box-ports > div.box-port {
-                        z-index: 30;
-                    }
+.patcher {
+    &.unlocked {
+        & > div.boxes {
+            // z-index: 10;
+            & > div.box {
+                &.selected {
+                    z-index: 40;
                 }
-            }
-            & > div.lines {
-                // z-index: 20;
-                & > div.line {
-                    &.selected {
-                        z-index: 50;
-                    }
-                    & > div.line-handler {
-                        z-index: 50;
-                    }
+                & > div.box-ports > div.box-port {
+                    z-index: 30;
                 }
-            }
-            & > div.selection {
-                z-index: 50;
-            }
-            & > div.grid-background {
-                // z-index: 1;
             }
         }
-        &.locked {
-            & > div.boxes {
-                z-index: 20;
-                & > div.box > div.box-ports > div.box-port {
-                    // z-index: 10;
+        & > div.lines {
+            // z-index: 20;
+            & > div.line {
+                &.selected {
+                    z-index: 50;
+                }
+                & > div.line-handler {
+                    z-index: 50;
                 }
             }
-            & > div.lines {
-                z-index: 10;
-            }
+        }
+        & > div.selection {
+            z-index: 50;
+        }
+        & > div.grid-background {
+            // z-index: 1;
         }
     }
-    & .ui.menu {
-        &.top-menu {
-            z-index: 110;
+    &.locked {
+        & > div.boxes {
+            z-index: 20;
+            & > div.box > div.box-ports > div.box-port {
+                // z-index: 10;
+            }
         }
+        & > div.lines {
+            z-index: 10;
+        }
+    }
+}
+.ui.menu {
+    &.top-menu {
+        z-index: 110;
     }
 }

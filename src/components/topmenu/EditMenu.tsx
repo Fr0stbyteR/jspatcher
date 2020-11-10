@@ -73,7 +73,6 @@ export default class EditMenu extends React.PureComponent<P, S> {
         if (this.state.locked) return;
         const { instance: patcher } = this.state;
         if (!(patcher instanceof Patcher)) return;
-        await patcher.duplicate();
         patcher.dockUI();
     };
     handleLocked = (locked: boolean) => this.setState({ locked });
