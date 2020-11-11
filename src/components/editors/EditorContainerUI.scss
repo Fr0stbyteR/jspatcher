@@ -46,6 +46,19 @@
             }
         }
     }
+    & .editor-container-body {
+        & > div.empty {
+            color: white;
+            display: flex;
+            flex: 1 1 auto;
+            background-color: #111;
+
+            & > span {
+                display: flex;
+                margin: auto;
+            }
+        }
+    }
     & .editor-container-instance-body[hidden] {
         display: none;
     }

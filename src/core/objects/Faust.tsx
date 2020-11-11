@@ -101,8 +101,9 @@ export class FaustOp<D extends Record<string, any> = {}, S extends Partial<Faust
         const inlets = new Array(totalInlets);
         const incoming = inletLines.map((set, i) => {
             const lines = Array.from(set);
-            if (lines.length === 0) return `${state.defaultArgs[i]}` || "0";
-            if (lines.length === 1) return lineMap.get(lines[0]) || `${state.defaultArgs[i]}` || "0";
+            const defaultArg = typeof state.defaultArgs[i] === "undefined" ? "0" : `${state.defaultArgs[i]}`;
+            if (lines.length === 0) return defaultArg;
+            if (lines.length === 1) return lineMap.get(lines[0]) || defaultArg;
             return `(${lines.map(line => lineMap.get(line)).filter(line => line !== undefined).join(", ")} :> _)`;
         });
         if (this.reverseApply) {

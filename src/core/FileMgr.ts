@@ -126,7 +126,18 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     async remove(path: string, isFolder = false) {
         const exist = await this.worker.exists(path);
         if (exist) {
-            if (isFolder) return this.worker.rmdir(path);
+            if (isFolder) {
+                const recRmdir = async (path: string) => {
+                    const children = await this.worker.readdir(path);
+                    for (const child of children) {
+                        const $path = `${path}/${child}`;
+                        if (await this.worker.isFile($path)) await this.worker.unlink($path);
+                        else await recRmdir($path);
+                    }
+                    return this.worker.rmdir(path);
+                };
+                return recRmdir(path);
+            }
             return this.worker.unlink(path);
         }
         const multipartFilePath = `${path}.${FileManager.multipartSuffix}`;

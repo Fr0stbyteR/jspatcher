@@ -51,7 +51,7 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
                         </Form.Field>
                         <Form.Field inline error={this.state.fileNameError}>
                             <label>{this.strings.fileName}</label>
-                            <Input defaultValue={this.state.fileName} onChange={this.handleFileNameChange} />
+                            <Input value={this.state.fileName} onChange={this.handleFileNameChange} />
                         </Form.Field>
                     </Form>
                 </Modal.Content>

@@ -4,7 +4,16 @@ import { Loader, Dimmer } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
 import Patcher from "../../core/Patcher";
 
-export default class CodeEditor extends React.PureComponent<{ patcher: Patcher; }, { value: string; editorLoaded: boolean; }> {
+interface P {
+    patcher: Patcher;
+}
+
+interface S {
+    value: string;
+    editorLoaded: boolean;
+}
+
+export default class CodeEditor extends React.PureComponent<P, S> {
     state = { value: this.code, editorLoaded: false };
     codeEditor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
@@ -28,6 +37,9 @@ export default class CodeEditor extends React.PureComponent<{ patcher: Patcher; 
         this.props.patcher.off("loading", this.handleGraphChanged);
         this.props.patcher.off("graphChanged", this.handleGraphChanged);
         window.removeEventListener("resize", this.handleResize);
+    }
+    componentDidUpdate(prevProps: Readonly<P>) {
+        if (prevProps.patcher !== this.props.patcher) this.handleGraphChanged();
     }
     render() {
         return this.state.editorLoaded

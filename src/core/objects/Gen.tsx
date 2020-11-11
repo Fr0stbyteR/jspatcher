@@ -220,7 +220,7 @@ const opMap: TOpMap = {
         Change: { symbol: ["change"], inlets: 1, desc: "Returns the sign of the difference between the current and previous input: 1 if the input is increasing, -1 if decreasing, and 0 if unchanging." },
         Dcblock: { symbol: ["dcblock"], inlets: 1, desc: "A one-pole high-pass filter to remove DC components. Equivalent to the GenExpr: History x1, y1; y = in1 - x1 + y1*0.9997; x1 = in1; y1 = y; out1 = y;" },
         Delta: { symbol: ["delta"], inlets: 1, desc: "Returns the difference between the current and previous input." },
-        Latch: { symbol: ["latch"], inlets: 1, desc: "Conditionally passes or holds input. The first inlet is the 'input' and the second inlet is the 'control'. When the control is non-zero, the input value is passed through. When the control is zero, the previous input value is output. It can be used to periodically sample & hold a source signal with a simpler trigger logic than the sah operator." },
+        Latch: { symbol: ["latch"], inlets: 2, desc: "Conditionally passes or holds input. The first inlet is the 'input' and the second inlet is the 'control'. When the control is non-zero, the input value is passed through. When the control is zero, the previous input value is output. It can be used to periodically sample & hold a source signal with a simpler trigger logic than the sah operator." },
         Phasewrap: { symbol: ["phasewrap"], inlets: 1, desc: "Wrap input to the range -pi to +pi" },
         Sah: { symbol: ["sah"], inlets: 1, desc: "The first inlet is the 'input' and the second inlet is the 'control'. When the control makes a transition from being at or below the trigger value to being above the trigger threshold, the input is sampled. The sampled value is output until another control transition occurs, at which point the input is sampled again. The default threshold value is 0, but can be specified as the last inlet/argument. The @init attribute sets the initial previous value to compare to (default 0)." },
         Slide: { symbol: ["slide"], inlets: 3, defaultArgs: [0, 1, 1], desc: "Use the slide operator for envelope following and lowpass filtering. Related to the MSP slide~ object." },
@@ -294,7 +294,7 @@ for (const category in opMap) {
             get symbol() {
                 return typeof symbol === "string" ? [symbol] : symbol;
             }
-            state: FaustOpState = { ...this.state, inlets, outlets: outlets || 1, defaultArgs };
+            state: FaustOpState = { ...this.state, inlets, outlets: outlets || 1, defaultArgs: defaultArgs || [0] };
             reverseApply = !applyArgsFromStart;
         } as typeof GenLibOp;
         genOps[name] = Op;

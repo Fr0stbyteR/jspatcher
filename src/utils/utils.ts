@@ -1,5 +1,5 @@
 /* eslint-disable arrow-body-style */
-import { TMIDIEvent, TBPF, TRect, TPresentationRect, FileExtension, ProjectItemType } from "../core/types";
+import { TMIDIEvent, TBPF, TRect, TPresentationRect, FileExtension, ProjectItemType, RawPatcher, TMaxPatcher } from "../core/types";
 
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
@@ -43,6 +43,17 @@ export const rgbaMax2Css = (maxColor: number[]) => {
         if (typeof maxColor[3] === "number") cssColor[3] = maxColor[3];
     }
     return `rgba(${cssColor.join(",")})`;
+};
+export const css2RgbaMax = (color: string) => {
+    const maxColor = [0.2, 0.2, 0.2, 1] as TRect;
+    const matched = color.match(/rgba\((.+)\)/);
+    if (!matched) return maxColor;
+    const cssColor = matched[1].split(",").map(s => +s);
+    for (let i = 0; i < 3; i++) {
+        if (typeof cssColor[i] === "number") maxColor[i] = cssColor[i] / 255;
+        if (typeof cssColor[3] === "number") maxColor[3] = cssColor[3];
+    }
+    return maxColor;
 };
 /**
  * A BPF can be described as a succesion of three number tuples.
@@ -173,4 +184,81 @@ export const extToType = (ext: FileExtension): Exclude<ProjectItemType, "folder"
     if (["wav", "aif", "aiff", "mp3", "aac", "flac", "ogg"].indexOf(ext) !== -1) return "audio";
     if (["text", "json"].indexOf(ext) !== -1) return "text";
     return "unknown";
+};
+
+export const max2js = (patcherIn: TMaxPatcher): RawPatcher => {
+    const patcher: RawPatcher = { boxes: {}, lines: {} };
+    const maxPatcher = (patcherIn as TMaxPatcher).patcher;
+    patcher.props = {
+        bgColor: rgbaMax2Css(maxPatcher.bgcolor),
+        editingBgColor: rgbaMax2Css(maxPatcher.editing_bgcolor),
+        dependencies: [],
+        grid: maxPatcher.gridsize,
+        openInPresentation: !!maxPatcher.openinpresentation
+    };
+    const maxBoxes = maxPatcher.boxes;
+    const maxLines = maxPatcher.lines;
+    for (let i = 0; i < maxBoxes.length; i++) {
+        const maxBox = maxBoxes[i].box;
+        const numID = parseInt(maxBox.id.match(/\d+/)[0]);
+        const id = "box-" + numID;
+        patcher.boxes[id] = {
+            id,
+            inlets: maxBox.numinlets,
+            outlets: maxBox.numoutlets,
+            rect: maxBox.patching_rect,
+            presentationRect: maxBox.presentation_rect,
+            background: !!maxBox.background,
+            presentation: !!maxBox.presentation,
+            text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
+        };
+    }
+    for (let i = 0; i < maxLines.length; i++) {
+        const lineArgs = maxLines[i].patchline;
+        const id = "line-" + i;
+        patcher.lines[id] = {
+            id,
+            src: [lineArgs.source[0].replace(/obj/, "box"), lineArgs.source[1]],
+            dest: [lineArgs.destination[0].replace(/obj/, "box"), lineArgs.destination[1]]
+        };
+    }
+    return patcher;
+};
+
+export const js2max = (patcherIn: RawPatcher): TMaxPatcher => {
+    const maxPatcher: TMaxPatcher["patcher"] = {
+        boxes: [],
+        lines: [],
+        rect: undefined,
+        bgcolor: css2RgbaMax(patcherIn.props.bgColor),
+        editing_bgcolor: css2RgbaMax(patcherIn.props.editingBgColor),
+        gridsize: patcherIn.props.grid,
+        openinpresentation: +patcherIn.props.openInPresentation
+    };
+    for (const id in patcherIn.boxes) {
+        const box = patcherIn.boxes[id];
+        const numID = parseInt(id.match(/\d+/)[0]);
+        maxPatcher.boxes.push({
+            box: {
+                id: `obj-${numID}`,
+                maxclass: "newobj",
+                numinlets: box.inlets,
+                numoutlets: box.outlets,
+                patching_rect: box.rect,
+                presentation: +box.presentation,
+                background: +box.background,
+                text: box.text
+            }
+        });
+    }
+    for (const id in patcherIn.lines) {
+        const line = patcherIn.lines[id];
+        maxPatcher.lines.push({
+            patchline: {
+                source: [line.src[0].replace(/box/, "obj"), line.src[1]],
+                destination: [line.dest[0].replace(/box/, "obj"), line.dest[1]]
+            }
+        });
+    }
+    return { patcher: maxPatcher };
 };

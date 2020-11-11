@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
-import Env from "../../core/Env";
+import Env, { EnvEventMap } from "../../core/Env";
 import PatcherAudio from "../../core/audio/PatcherAudio";
 import Patcher from "../../core/Patcher";
 import PatcherText from "../../core/text/PatcherText";
@@ -120,7 +120,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         this.refOpenProject.current.value = "";
     };
     onChangeFolder = async () => {
-        const files = Array.from(this.refOpenFolder.current.dDfiles);
+        const files = Array.from(this.refOpenFolder.current.files);
         for (const file of files) {
             if (!file) return;
             const data = await file.arrayBuffer();
@@ -129,9 +129,12 @@ export default class FileMenu extends React.PureComponent<P, S> {
         }
         this.refOpenProject.current.value = "";
     };
+    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ fileName: instance.file?.name || `Untitiled.${instance.fileExtention}` });
     componentDidMount() {
+        this.props.env.on("activeInstance", this.handleActiveInstance);
     }
     componentWillUnmount() {
+        this.props.env.off("activeInstance", this.handleActiveInstance);
     }
     render() {
         const ctrl = this.props.env.os === "MacOS" ? "Cmd" : "Ctrl";

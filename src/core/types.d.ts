@@ -57,7 +57,7 @@ export interface RawProject {
 export interface RawPatcher {
     lines: Record<string, TLine>;
     boxes: Record<string, TBox>;
-    props?: {};
+    props?: TPublicPatcherProps;
 }
 export interface TPatcherEnv {
     patcher: RawPatcher;
@@ -116,6 +116,7 @@ export interface TMaxPatcher {
         bgcolor: [number, number, number, number];
         editing_bgcolor: [number, number, number, number]; // eslint-disable-line camelcase
         gridsize: [number, number];
+        openinpresentation: number;
         [key: string]: any;
     };
 }
@@ -137,8 +138,10 @@ export interface TMaxLine {
     patchline: {
         destination: [string, number];
         source: [string, number];
-        order: number;
-        midpoints: number[];
+        order?: number;
+        midpoints?: number[];
+        hidden?: number;
+        disabled?: number;
     };
 }
 

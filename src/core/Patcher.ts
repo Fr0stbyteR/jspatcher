@@ -1,5 +1,5 @@
 import { SemanticICONS } from "semantic-ui-react";
-import { rgbaMax2Css, isTRect, isRectMovable, isRectResizable } from "../utils/utils";
+import { isTRect, isRectMovable, isRectResizable, max2js, js2max } from "../utils/utils";
 import Line from "./Line";
 import Box from "./Box";
 import PatcherHistory from "./PatcherHistory";
@@ -127,10 +127,13 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         this._state.history = new PatcherHistory(this);
         this._state.dataMgr = new SharedData(this);
     }
-    async init(data: ArrayBuffer) {
+    async init(data: ArrayBuffer, fileName: string) {
         if (!data.byteLength) return this.load({});
         const patcherIn = await new Response(data).json();
-        return this.load(patcherIn);
+        const splitName = fileName.split(".");
+        const ext = splitName.pop();
+        const extMap: Record<string, PatcherMode> = { json: "js", jspat: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+        return this.load(patcherIn, extMap[ext] || "js");
     }
     async load(patcherIn: RawPatcher | TMaxPatcher | any, modeIn?: PatcherMode, data?: TSharedData) {
         this._state.isLoading = true;
@@ -145,84 +148,56 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         this.props.mode = (patcherIn.props && patcherIn.props.mode ? patcherIn.props.mode : modeIn) || "js";
         const { mode } = this.props;
         const $init: Promise<Box>[] = [];
+        let patcher;
         if (mode === "max" || mode === "gen") {
-            const patcher = (patcherIn as TMaxPatcher).patcher;
-            if (!patcher) {
-                this._state.isLoading = false;
-                this.emit("loading");
-                return this;
-            }
-            this.props.bgColor = rgbaMax2Css(patcher.bgcolor);
-            this.props.editingBgColor = rgbaMax2Css(patcher.editing_bgcolor);
-            const maxBoxes = patcher.boxes;
-            const maxLines = patcher.lines;
-            for (let i = 0; i < maxBoxes.length; i++) {
-                const maxBox = maxBoxes[i].box;
-                const numID = parseInt(maxBox.id.match(/\d+/)[0]);
-                if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
-                const id = "box-" + numID;
-                const $ = this.createBox({
-                    id,
-                    inlets: maxBox.numinlets,
-                    outlets: maxBox.numoutlets,
-                    rect: maxBox.patching_rect,
-                    text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
-                }, true);
-                $init.push($);
-            }
-            await Promise.all($init);
-            for (let i = 0; i < maxLines.length; i++) {
-                const lineArgs = maxLines[i].patchline;
-                const id = "line-" + ++this.props.lineIndexCount;
-                this.createLine({
-                    id,
-                    src: [lineArgs.source[0].replace(/obj/, "box"), lineArgs.source[1]],
-                    dest: [lineArgs.destination[0].replace(/obj/, "box"), lineArgs.destination[1]]
-                });
+            if (!(patcherIn as TMaxPatcher).patcher) {
+                patcher = patcherIn;
+            } else {
+                patcher = max2js(patcherIn as TMaxPatcher);
             }
         } else if (mode === "js" || mode === "faust") {
-            const patcher = patcherIn;
-            if (patcher.props) this.props = { ...this.props, ...patcher.props };
-            if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
-            if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
-            if (mode === "js" && this.props.dependencies) {
-                const { dependencies } = this.props;
-                if (!Array.isArray(dependencies)) {
-                    this.props.dependencies = [];
-                    for (const key in dependencies as Record<string, string>) {
-                        this.props.dependencies.push([key, dependencies[key]]);
-                    }
-                }
-                let depNames = this.props.dependencies.map(t => t[0]);
-                this.emit("loading", depNames);
-                await this.env.taskMgr.newTask(this, `${this.file?.name || ""} Loading dependencies`, async (onUpdate: (newMsg: string) => any) => {
-                    for (let i = 0; i < this.props.dependencies.length; i++) {
-                        const [name, url] = this.props.dependencies[i];
-                        onUpdate(`${name} from ${url}`);
-                        try {
-                            await this._state.pkgMgr.importFromURL(url, name);
-                        } catch (e) {
-                            throw new Error(`Loading dependency: ${name} from ${url} failed`);
-                        }
-                        depNames = depNames.splice(i, 1);
-                    }
-                });
-            }
-            if (patcher.boxes) { // Boxes & data
-                for (const id in patcher.boxes) {
-                    const $ = this.createBox(patcher.boxes[id], true);
-                    $init.push($);
-                    const numID = parseInt(id.match(/\d+/)[0]);
-                    if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
+            patcher = patcherIn;
+        }
+        if (patcher.props) this.props = { ...this.props, ...patcher.props };
+        if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
+        if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
+        if (mode === "js" && this.props.dependencies) {
+            const { dependencies } = this.props;
+            if (!Array.isArray(dependencies)) {
+                this.props.dependencies = [];
+                for (const key in dependencies as Record<string, string>) {
+                    this.props.dependencies.push([key, dependencies[key]]);
                 }
             }
-            await Promise.all($init);
-            if (patcher.lines) { // Lines
-                for (const id in patcher.lines) {
-                    this.createLine(patcher.lines[id]);
-                    const numID = parseInt(id.match(/\d+/)[0]);
-                    if (numID > this.props.lineIndexCount) this.props.lineIndexCount = numID;
+            let depNames = this.props.dependencies.map(t => t[0]);
+            this.emit("loading", depNames);
+            await this.env.taskMgr.newTask(this, `${this.file?.name || ""} Loading dependencies`, async (onUpdate: (newMsg: string) => any) => {
+                for (let i = 0; i < this.props.dependencies.length; i++) {
+                    const [name, url] = this.props.dependencies[i];
+                    onUpdate(`${name} from ${url}`);
+                    try {
+                        await this._state.pkgMgr.importFromURL(url, name);
+                    } catch (e) {
+                        throw new Error(`Loading dependency: ${name} from ${url} failed`);
+                    }
+                    depNames = depNames.splice(i, 1);
                 }
+            });
+        }
+        if (patcher.boxes) { // Boxes & data
+            for (const id in patcher.boxes) {
+                const $ = this.createBox(patcher.boxes[id], true);
+                $init.push($);
+                const numID = parseInt(id.match(/\d+/)[0]);
+                if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
+            }
+        }
+        await Promise.all($init);
+        if (patcher.lines) { // Lines
+            for (const id in patcher.lines) {
+                this.createLine(patcher.lines[id]);
+                const numID = parseInt(id.match(/\d+/)[0]);
+                if (numID > this.props.lineIndexCount) this.props.lineIndexCount = numID;
             }
         }
         this._state.presentation = !!this.props.openInPresentation;
@@ -1031,7 +1006,8 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         }
     }
     toString(spacing?: number) {
-        return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
+        const obj = this.props.mode === "max" || this.props.mode === "gen" ? js2max(this) : this;
+        return JSON.stringify(obj, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
     }
     toSerializable(): RawPatcher {
         return JSON.parse(this.toString());

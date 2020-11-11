@@ -105,7 +105,10 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         container.addEventListener("blur", handleBlur);
         container.addEventListener("keydown", handleKeyDown);
     };
-    handleClickDelete = () => this.props.onDelete(this);
+    handleClickDelete = (e: React.MouseEvent<HTMLSpanElement>) => {
+        e.stopPropagation();
+        this.props.onDelete(this);
+    };
     handleClickNewFolder = (e: React.MouseEvent<HTMLSpanElement>) => {
         e.stopPropagation();
         this.setState({ newFolderModalOpen: true });

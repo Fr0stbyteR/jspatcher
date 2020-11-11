@@ -61,14 +61,17 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
                     </div>
                 </div>
                 <div className="editor-container-body ui-flex-column ui-flex-full">
-                    {this.state.instances.map((instance) => {
-                        if (instance instanceof Patcher) {
-                            return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instancId}>
-                                <PatcherEditorUI {...this.props} patcher={instance} />
-                            </div>;
-                        }
-                        return undefined;
-                    })}
+                    {this.state.instances.length
+                        ? this.state.instances.map((instance) => {
+                            if (instance instanceof Patcher) {
+                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instancId}>
+                                    <PatcherEditorUI {...this.props} patcher={instance} />
+                                </div>;
+                            }
+                            return undefined;
+                        })
+                        : <div className="empty"><span>Double-click to open a file or use File &gt; New to create a File</span></div>
+                    }
                 </div>
             </div>
         );
