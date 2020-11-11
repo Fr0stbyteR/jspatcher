@@ -7,7 +7,7 @@ export default {
     },
     DeleteAllModal: {
         title: "Delete All Files",
-        msg: "Are you sure to delete all {} file(s)?",
+        msg: "Are you sure to delete all files?",
         delete: "Delete All",
         cancel: "Cancel"
     },

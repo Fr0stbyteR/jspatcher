@@ -6,6 +6,7 @@ import Patcher from "../../core/Patcher";
 import PatcherText from "../../core/text/PatcherText";
 import Folder from "../../core/file/Folder";
 import SaveAsModal from "../modals/SaveAsModal";
+import { AnyFileInstance } from "../../core/file/FileInstance";
 
 interface P {
     env: Env;
@@ -13,6 +14,7 @@ interface P {
 }
 
 interface S {
+    instance: AnyFileInstance;
     fileURL: string;
     fileName: string;
     showSaveAsModal: boolean;
@@ -24,6 +26,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
     refOpenFile = React.createRef<HTMLInputElement>();
     refOpenFolder = React.createRef<HTMLInputElement>();
     state = {
+        instance: this.props.env.activeInstance,
         fileURL: "",
         fileName: this.props.env.activeInstance?.file?.name,
         showSaveAsModal: false
@@ -74,7 +77,8 @@ export default class FileMenu extends React.PureComponent<P, S> {
         this.refOpenProject.current.click();
     };
     handleClickSave = async () => {
-        await this.props.env.activeInstance?.save?.();
+        if (this.props.env.activeInstance?.inMemory) this.setState({ showSaveAsModal: true });
+        else await this.props.env.activeInstance?.save?.();
     };
     handleClickSaveAll = async () => {
         await this.props.env.currentProject?.save?.();
@@ -129,7 +133,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         }
         this.refOpenProject.current.value = "";
     };
-    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ fileName: instance.file?.name || `Untitiled.${instance.fileExtention}` });
+    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ instance, fileName: instance?.file?.name || `Untitiled.${instance?.fileExtention}` });
     componentDidMount() {
         this.props.env.on("activeInstance", this.handleActiveInstance);
     }
@@ -155,12 +159,12 @@ export default class FileMenu extends React.PureComponent<P, S> {
                         <Dropdown.Item onClick={this.handleClickImportFile} text="Import File..." description={`${ctrl} + Shift + O`} />
                         <Dropdown.Item onClick={this.handleClickImportFolder} text="Import Folder Zip..." />
                         <Dropdown.Divider />
-                        <Dropdown.Item onClick={this.handleClickSave} text="Save" description={`${ctrl} + S`} />
+                        <Dropdown.Item onClick={this.handleClickSave} text="Save" description={`${ctrl} + S`} disabled={!this.state.instance} />
                         <Dropdown.Item onClick={this.handleClickSaveAll} text="Save All" />
-                        <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description={`${ctrl} + Shift + S`} />
+                        <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description={`${ctrl} + Shift + S`} disabled={!this.state.instance} />
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={this.handleClickExportProject} text="Export Project Zip..." description={`${ctrl} + E`} />
-                        <Dropdown.Item onClick={this.handleClickExportFile} text="Export File..." description={`${ctrl} + Shift + E`} />
+                        <Dropdown.Item onClick={this.handleClickExportFile} text="Export File..." description={`${ctrl} + Shift + E`} disabled={!this.state.instance} />
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={this.handleClickReload} text="Reload Project" description={`${ctrl} + R`} />
                     </Dropdown.Menu>

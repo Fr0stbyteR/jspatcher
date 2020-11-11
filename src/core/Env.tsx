@@ -66,9 +66,21 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         return this._activeInstance;
     }
     set activeInstance(instance: AnyFileInstance) {
+        if (this._activeInstance === instance) return;
         const oldInstance = this._activeInstance;
         this._activeInstance = instance;
         this.emit("activeInstance", { instance, oldInstance });
+    }
+    private _activeEditorContainer = this.editorContainer;
+    get activeEditorContainer(): EditorContainer {
+        return this._activeEditorContainer;
+    }
+    set activeEditorContainer(editorContainer: EditorContainer) {
+        if (this._activeEditorContainer === editorContainer) return;
+        const oldEditorContainer = this._activeEditorContainer;
+        this._activeEditorContainer = editorContainer;
+        this.activeInstance = editorContainer.activeInstance;
+        this.emit("activeEditorContainer", { editorContainer, oldEditorContainer });
     }
     instances = new Set<FileInstance>();
     currentProject: Project;

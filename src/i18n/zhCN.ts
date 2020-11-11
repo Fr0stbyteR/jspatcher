@@ -9,7 +9,7 @@ export default {
     },
     DeleteAllModal: {
         title: "删除所有文件",
-        msg: "确定删除所有 {} 个文件吗？",
+        msg: "确定删除所有文件吗？",
         delete: "全部删除",
         cancel: "取消"
     },

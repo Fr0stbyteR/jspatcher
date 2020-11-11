@@ -125,7 +125,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     handleItemNameChanged = ({ newName }: ProjectItemEventMap["nameChanged"]) => this.setState({ fileName: newName, filePath: this.props.item.path });
     handleItemPathChanged = () => this.setState({ filePath: this.props.item.path });
     handleItemTreeChanged = () => this.setState({ children: Array.from((this.props.item as Folder)?.items || []) });
-    handleEnvActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ active: this.props.item === instance.file });
+    handleEnvActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ active: this.props.item === instance?.file });
     componentDidMount() {
         if (!this.props.item.data) this.props.item.on("ready", this.handleItemReady);
         this.props.item.on("dirty", this.handleItemDirty);

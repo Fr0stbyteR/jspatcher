@@ -5,7 +5,6 @@ import I18n from "../../i18n/I18n";
 interface P {
     lang: string;
     open: boolean;
-    count: number;
     onClose: () => any;
     onConfirm: () => any;
 }
@@ -18,7 +17,7 @@ export default class DeleteAllModal extends React.PureComponent<P> {
         return (
             <Modal className="modal-delete-all" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
                 <Modal.Header>{this.strings.title}</Modal.Header>
-                <Modal.Content>{this.strings.msg.replace("{}", this.props.count.toString())}</Modal.Content>
+                <Modal.Content>{this.strings.msg}</Modal.Content>
                 <Modal.Actions>
                     <Button inverted color="grey" size="mini" onClick={this.props.onClose}>{this.strings.cancel}</Button>
                     <Button inverted color="red" size="mini" onClick={this.props.onConfirm}>{this.strings.delete}</Button>

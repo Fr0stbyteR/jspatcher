@@ -25,9 +25,12 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get project(): Project {
         return this._project;
     }
-    private readonly _file?: ProjectItem;
+    private _file?: ProjectItem;
     get file(): ProjectItem {
         return this._file;
+    }
+    set file(value: ProjectItem) {
+        this._file = value;
     }
     get isInMemory() {
         return !this.file;
@@ -136,7 +139,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
         } else if (this.isReadonly) {
             await this.file.saveAsSelf(parent, name, data);
         } else if (this.isInMemory) {
-            parent.addProjectItem(name, data);
+            this.file = await parent.addProjectItem(name, data);
         } else {
             await this.file.saveAs(parent, name, data);
         }

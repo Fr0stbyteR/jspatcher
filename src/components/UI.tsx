@@ -57,7 +57,7 @@ export default class UI extends React.PureComponent<P, S> {
         this.props.env.off("ready", this.handleEnvReady);
     };
     handleBeforeUnload = (e: BeforeUnloadEvent) => {
-        const { isDirty } = this.props.env.fileMgr.projectRoot;
+        const { isDirty } = this.props.env.editorContainer;
         if (!isDirty) return;
         e.preventDefault();
         e.returnValue = "";
