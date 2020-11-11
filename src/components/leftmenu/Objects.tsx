@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Menu, Icon, Segment, List, Input } from "semantic-ui-react";
-import Patcher from "../../core/Patcher";
+import Patcher from "../../core/patcher/Patcher";
 import "./LeftMenu.scss";
 import { TPackage } from "../../core/types";
 import { BaseObject } from "../../core/objects/Base";

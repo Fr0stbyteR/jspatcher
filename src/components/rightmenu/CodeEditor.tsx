@@ -2,9 +2,11 @@ import * as React from "react";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Loader, Dimmer } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
-import Patcher from "../../core/Patcher";
+import Patcher from "../../core/patcher/Patcher";
+import Env from "../../core/Env";
 
 interface P {
+    env: Env;
     patcher: Patcher;
 }
 

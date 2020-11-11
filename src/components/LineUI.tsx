@@ -1,5 +1,5 @@
 import * as React from "react";
-import Patcher from "../core/Patcher";
+import Patcher from "../core/patcher/Patcher";
 import "./LineUI.scss";
 import { TLineType } from "../core/types";
 

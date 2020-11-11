@@ -47,8 +47,8 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
     }
     handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
         if (this.instances.indexOf(instance) !== -1) {
-            this.setActive();
             this.activeInstance = instance;
+            this.setActive();
         }
         this.emitState();
     };

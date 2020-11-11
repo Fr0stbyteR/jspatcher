@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Dimmer, Loader } from "semantic-ui-react";
 import Env from "../../core/Env";
-import Patcher from "../../core/Patcher";
+import Patcher from "../../core/patcher/Patcher";
 import { Errors, Tasks } from "../../core/TaskMgr";
 import PatcherBottomMenu from "../PatcherBottomMenu";
 import PatcherUI from "../PatcherUI";

@@ -186,14 +186,14 @@ export class GlobalPackageManager {
             new: (await import("./objects/importer/New")).default,
             UI: (await import("./objects/UI/exports")).default,
             Op: (await import("./objects/Op")).default,
-            window: (await import("./objects/Window")).default,
             WebAudio: (await import("./objects/WebAudio/exports")).default,
             WebRTC: (await import("./objects/WebRTC/exports")).default,
             WebMIDI: (await import("./objects/WebMIDI/exports")).default,
             DSP: (await import("./objects/dsp/exports")).default,
             live: (await import("./objects/live/exports")).default,
             faust: (await import("./objects/faust/exports")).default,
-            SubPatcher: (await import("./objects/SubPatcher")).default
+            SubPatcher: (await import("./objects/SubPatcher")).default,
+            window: (await import("./objects/Window")).default
         };
         this.faust = (await import("./objects/Faust")).default;
         this.gen = (await import("./objects/Gen")).default;

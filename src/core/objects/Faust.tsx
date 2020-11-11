@@ -1,7 +1,7 @@
 import { DefaultObject } from "./Base";
-import Patcher from "../Patcher";
-import Box from "../Box";
-import Line from "../Line";
+import Patcher from "../patcher/Patcher";
+import Box from "../patcher/Box";
+import Line from "../patcher/Line";
 import { TPackage, TMeta, TPropsMeta, RawPatcher } from "../types";
 import { SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";

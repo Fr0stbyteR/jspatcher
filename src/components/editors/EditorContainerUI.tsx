@@ -3,7 +3,7 @@ import { Icon } from "semantic-ui-react";
 import EditorContainer, { EditorContainerEventMap, EditorContainerState } from "../../core/EditorContainer";
 import Env from "../../core/Env";
 import { AnyFileInstance } from "../../core/file/FileInstance";
-import Patcher from "../../core/Patcher";
+import Patcher from "../../core/patcher/Patcher";
 import PatcherEditorUI from "./PatcherEditorUI";
 import "./EditorContainerUI.scss";
 

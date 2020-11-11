@@ -1,5 +1,5 @@
 import * as Util from "util";
-import Patcher from "../Patcher";
+import Patcher from "../patcher/Patcher";
 import { DefaultObject, Bang } from "./Base";
 import { TMeta } from "../types";
 import { SharedDataNoValue } from "../../utils/symbols";

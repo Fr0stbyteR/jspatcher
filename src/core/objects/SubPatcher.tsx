@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StrictModalProps, Modal } from "semantic-ui-react";
 import { DefaultObject, DefaultAudioObject, BaseAudioObject } from "./Base";
-import Patcher from "../Patcher";
+import Patcher from "../patcher/Patcher";
 import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher } from "../types";
 import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState } from "./BaseUI";
 import "./SubPatcher.scss";

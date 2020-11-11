@@ -2,7 +2,7 @@ import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
 import Env, { EnvEventMap } from "../../core/Env";
 import { AnyFileInstance } from "../../core/file/FileInstance";
-import Patcher from "../../core/Patcher";
+import Patcher from "../../core/patcher/Patcher";
 
 interface P {
     env: Env;

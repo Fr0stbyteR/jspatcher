@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Popup } from "semantic-ui-react";
-import Patcher from "../core/Patcher";
-import Box from "../core/Box";
+import Patcher from "../core/patcher/Patcher";
+import Box from "../core/patcher/Box";
 import "./BoxUI.scss";
 import { TResizeHandlerType, BoxEventMap, TRect, PatcherEventMap, TPresentationRect } from "../core/types";
 import { BaseUI } from "../core/objects/BaseUI";

@@ -27,6 +27,7 @@ export interface EnvEventMap {
     "projectChanged": { project: Project; oldProject: Project };
     "activeInstance": { instance: AnyFileInstance; oldInstance: AnyFileInstance };
     "openInstance": AnyFileInstance;
+    "activeEditorContainer": { editorContainer: EditorContainer; oldEditorContainer: EditorContainer ;}
     "instances": AnyFileInstance[];
     "newLog": TPatcherLog;
 }
@@ -76,7 +77,10 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         return this._activeEditorContainer;
     }
     set activeEditorContainer(editorContainer: EditorContainer) {
-        if (this._activeEditorContainer === editorContainer) return;
+        if (this._activeEditorContainer === editorContainer) {
+            this.activeInstance = editorContainer.activeInstance;
+            return;
+        }
         const oldEditorContainer = this._activeEditorContainer;
         this._activeEditorContainer = editorContainer;
         this.activeInstance = editorContainer.activeInstance;

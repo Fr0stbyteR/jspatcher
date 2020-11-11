@@ -1,8 +1,8 @@
 import * as React from "react";
 import { ColorResult, ChromePicker } from "react-color";
 import { Checkbox, DropdownProps, DropdownItemProps, Dropdown, Table, Menu, Label } from "semantic-ui-react";
-import Box from "../../core/Box";
-import Patcher from "../../core/Patcher";
+import Box from "../../core/patcher/Box";
+import Patcher from "../../core/patcher/Patcher";
 import { TArgsMeta, TPropsMeta, TMeta, TPublicPatcherProps, TRect, TPresentationRect, TPatcherProps } from "../../core/types";
 
 class InspectorBooleanItem extends React.PureComponent<{ itemKey: number | string; value: boolean; onChange: (value: boolean, key: number | string) => any }> {

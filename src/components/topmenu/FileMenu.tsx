@@ -2,7 +2,7 @@ import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
 import Env, { EnvEventMap } from "../../core/Env";
 import PatcherAudio from "../../core/audio/PatcherAudio";
-import Patcher from "../../core/Patcher";
+import Patcher from "../../core/patcher/Patcher";
 import PatcherText from "../../core/text/PatcherText";
 import Folder from "../../core/file/Folder";
 import SaveAsModal from "../modals/SaveAsModal";

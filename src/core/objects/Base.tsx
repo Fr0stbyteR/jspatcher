@@ -1,9 +1,9 @@
 import { SemanticICONS } from "semantic-ui-react";
 import { stringifyError } from "../../utils/utils";
 import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
-import Patcher from "../Patcher";
-import Box from "../Box";
-import Line from "../Line";
+import Patcher from "../patcher/Patcher";
+import Box from "../patcher/Box";
+import Line from "../patcher/Line";
 import "./Default.scss";
 import "./Base.scss";
 import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect } from "../types";

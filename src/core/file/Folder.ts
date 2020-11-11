@@ -2,7 +2,7 @@ import { ProjectItemType, RawProjectItem } from "../types";
 import AudioFile from "../audio/AudioFile";
 import ProjectItem from "./ProjectItem";
 import TextFile from "../text/TextFile";
-import PatcherFile from "../PatcherFile";
+import PatcherFile from "../patcher/PatcherFile";
 
 export default class Folder extends ProjectItem {
     type = "folder" as const;

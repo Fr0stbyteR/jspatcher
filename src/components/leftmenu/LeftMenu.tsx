@@ -5,7 +5,7 @@ import Objects from "./Objects";
 import Packages from "./Packages";
 import VERSION from "../../scripts/version";
 import Env, { EnvEventMap } from "../../core/Env";
-import Patcher from "../../core/Patcher";
+import Patcher from "../../core/patcher/Patcher";
 import { AnyFileInstance } from "../../core/file/FileInstance";
 import FileManagerUI from "./FileMgrUI";
 

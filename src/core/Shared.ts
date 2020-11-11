@@ -1,6 +1,6 @@
 import { BaseObject } from "./objects/Base";
 import { TSharedData, TSharedDataConsumers } from "./types";
-import Patcher from "./Patcher";
+import Patcher from "./patcher/Patcher";
 import { SharedDataNoValue } from "../utils/symbols";
 
 export default class SharedData {

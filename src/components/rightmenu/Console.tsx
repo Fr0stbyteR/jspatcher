@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Menu, Icon, Table, Ref } from "semantic-ui-react";
-import Box from "../../core/Box";
+import Box from "../../core/patcher/Box";
 import { TPatcherLog } from "../../core/types";
 import { BaseObject } from "../../core/objects/Base";
 import Env from "../../core/Env";

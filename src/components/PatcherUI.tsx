@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as Color from "color-js";
-import Patcher from "../core/Patcher";
-import Box from "../core/Box";
-import Line from "../core/Line";
+import Patcher from "../core/patcher/Patcher";
+import Box from "../core/patcher/Box";
+import Line from "../core/patcher/Line";
 import "./PatcherUI.scss";
 import "./zIndex.scss";
 import BoxUI from "./BoxUI";

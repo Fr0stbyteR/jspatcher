@@ -3,7 +3,7 @@ import * as Color from "color-js";
 import { Icon, SemanticICONS, StrictModalProps, Modal, Dimmer, Loader, Button } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import Box from "../Box";
+import Box from "../patcher/Box";
 import "./Default.scss";
 import "./Base.scss";
 import { AbstractObject, BaseObject, AnyObject, DefaultObject, DefaultObjectUIProps } from "./Base";

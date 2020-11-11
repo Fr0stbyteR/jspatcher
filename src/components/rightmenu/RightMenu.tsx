@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Menu, Icon, MenuItemProps, Header } from "semantic-ui-react";
-import Patcher from "../../core/Patcher";
+import Patcher from "../../core/patcher/Patcher";
 import "./RightMenu.scss";
 import Console from "./Console";
 import Inspector from "./Inspector";

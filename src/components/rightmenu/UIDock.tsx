@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
-import Patcher from "../../core/Patcher";
-import Box from "../../core/Box";
+import Patcher from "../../core/patcher/Patcher";
+import Box from "../../core/patcher/Box";
 import { BaseUI } from "../../core/objects/BaseUI";
 
 export default class UIDock extends React.PureComponent<{ patcher: Patcher; display: boolean; }, { box: Box; }> {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Menu, Input, Table, Button } from "semantic-ui-react";
-import Patcher from "../../core/Patcher";
+import Patcher from "../../core/patcher/Patcher";
 
 export default class Packages extends React.PureComponent<{ patcher: Patcher; }, { imports: [string, string][]; adding: boolean; }> {
     state = { imports: this.props.patcher.state.pkgMgr.imported.slice(), adding: false };

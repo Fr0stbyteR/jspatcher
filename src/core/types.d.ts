@@ -1,9 +1,9 @@
 import { SemanticICONS } from "semantic-ui-react";
 import { BaseObject, AnyObject, AbstractObject } from "./objects/Base";
-import Patcher from "./Patcher";
-import Box from "./Box";
-import Line from "./Line";
-import PatcherHistory from "./PatcherHistory";
+import Patcher from "./patcher/Patcher";
+import Box from "./patcher/Box";
+import Line from "./patcher/Line";
+import PatcherHistory from "./patcher/PatcherHistory";
 import Env from "./Env";
 import SharedData from "./Shared";
 import { PackageManager } from "./PkgMgr";
