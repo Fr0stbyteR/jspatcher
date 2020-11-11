@@ -10,6 +10,13 @@ div.file-manager-container {
         align-items: center;
         user-select: none;
 
+        &.selected {
+            background-color: #37373d;
+
+            &:focus {
+                background-color: #094771;
+            }
+        }
         
         & > span.file-manager-header-collapse {
             flex: 0 0 auto;
@@ -42,6 +49,8 @@ div.file-manager-container {
         }
 
         &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+
             & > span.file-manager-header-icon {
                 display: inline-block;
             }
@@ -58,8 +67,7 @@ div.file-manager-container {
         user-select: none;
 
         & > span.file-manager-item-collapse {
-            width: 10px;
-            margin-left: -2px;
+            width: 12px;
             height: 100%;
         }
 
@@ -68,7 +76,6 @@ div.file-manager-container {
             height: 100%;
             width: 22px;
             text-align: center;
-            margin-left: 4px;
         }
 
         & > span.file-manager-item-marker {
@@ -79,6 +86,7 @@ div.file-manager-container {
             background-color: #ffd700;
             border-radius: 8px;
             margin-left: 0px;
+            margin-right: 4px;
         }
 
         & > span.file-manager-item-name-container {
@@ -141,6 +149,11 @@ div.file-manager-container {
             &:focus {
                 background-color: #094771;
             }
+        }
+
+        &.disabled {
+            pointer-events: none;
+            color: grey
         }
 
         &.loading {

@@ -107,6 +107,7 @@ export default {
     },
     SaveAsModal: {
         title: "另存为",
+        path: "路径",
         fileName: "文件名",
         confirm: "保存",
         cancel: "取消"

@@ -11,7 +11,7 @@ import FileManagerUI from "./FileMgrUI";
 
 enum TPanels {
     None = "None",
-    FileMgr = "FileMgr",
+    FileMgr = "Files",
     Objects = "Objects",
     Packages = "Packages"
 }

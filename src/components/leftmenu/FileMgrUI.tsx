@@ -76,12 +76,10 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         e.stopPropagation();
         this.setState({ newFolderModalOpen: true });
     };
-    handleDeleteItem = async (itemUI: ProjectItemUI) => {
-        const item = itemUI.props.item;
+    handleDeleteItem = async (item: ProjectItem) => {
         this.setState({ selected: [item] }, () => this.setState({ deleteModalOpen: true }));
     };
-    handleClickItem = (itemUI: ProjectItemUI, ctrl = false, shift = false) => {
-        const item = itemUI.props.item;
+    handleClickItem = (item: ProjectItem, ctrl = false, shift = false) => {
         const itemSelected = this.state.selected.indexOf(item) !== -1;
         if (this.props.oneSelectionOnly || (!ctrl && !shift) || this.state.selected.length === 0) {
             if (this.props.folderSelectionOnly && item.type !== "folder") return;
@@ -112,9 +110,13 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
             }
         }
     };
-    handleDoubleClickItem = async (itemUI: ProjectItemUI) => {
+    handleClickHeader = (e: React.MouseEvent<HTMLDivElement>) => {
+        const { shiftKey: shift, metaKey, ctrlKey } = e;
+        const ctrl = this.props.env.os === "MacOS" ? metaKey : ctrlKey;
+        this.handleClickItem(this.props.env.fileMgr.projectRoot, ctrl, shift);
+    };
+    handleDoubleClickItem = async (item: ProjectItem) => {
         if (this.props.noActions) return;
-        const item = itemUI.props.item;
         if (item.type === "folder") return;
         const instance = await item.instantiate();
         this.props.env.openInstance(instance);
@@ -147,10 +149,12 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         this.setState({ newFolderModalOpen: false });
     };
     render() {
+        const classNameArray = ["left-pane-component-header", "file-manager-header"];
+        if (this.state.selected.indexOf(this.props.env.fileMgr.projectRoot) !== -1) classNameArray.push("selected");
         return (
             <div className="left-pane-component file-manager-container">
-                <div className="left-pane-component-header file-manager-header" onClick={this.handleClickCollapse}>
-                    <span className="file-manager-header-collapse"><Icon name={this.state.collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
+                <div className={classNameArray.join(" ")} onClick={this.handleClickHeader} tabIndex={0}>
+                    <span className="file-manager-header-collapse" onClick={this.handleClickCollapse}><Icon name={this.state.collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
                     <span className="file-manager-header-title">{this.state.projectName}</span>
                     {this.props.noActions
                         ? undefined

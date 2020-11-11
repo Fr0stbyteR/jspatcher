@@ -11,10 +11,11 @@ interface P {
     lang: string;
     item: ProjectItem;
     selected: ProjectItem[];
-    onClick: (item: ProjectItemUI, ctrl?: boolean, shift?: boolean) => any;
-    onDoubleClick: (item: ProjectItemUI) => any;
-    onDelete: (item: ProjectItemUI) => any;
+    onClick: (item: ProjectItem, ctrl?: boolean, shift?: boolean) => any;
+    onDoubleClick: (item: ProjectItem) => any;
+    onDelete: (item: ProjectItem) => any;
     noActions?: true;
+    folderSelectionOnly?: true;
 }
 
 interface S {
@@ -49,15 +50,14 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     handleClickItem = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.state.renaming) return;
         if (this.dragged) return;
-        if (this.props.item.type === "folder") this.handleClickCollapse();
         const { shiftKey: shift, metaKey, ctrlKey } = e;
         const ctrl = this.props.env.os === "MacOS" ? metaKey : ctrlKey;
-        this.props.onClick(this, ctrl, shift);
+        this.props.onClick(this.props.item, ctrl, shift);
     };
     handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.state.renaming) return;
         if (this.dragged) return;
-        this.props.onDoubleClick(this);
+        this.props.onDoubleClick(this.props.item);
     };
     handleClickRename = (e: React.MouseEvent<HTMLSpanElement>) => {
         e.stopPropagation();
@@ -107,7 +107,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     };
     handleClickDelete = (e: React.MouseEvent<HTMLSpanElement>) => {
         e.stopPropagation();
-        this.props.onDelete(this);
+        this.props.onDelete(this.props.item);
     };
     handleClickNewFolder = (e: React.MouseEvent<HTMLSpanElement>) => {
         e.stopPropagation();
@@ -144,7 +144,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     }
     render() {
         const classNameArray = ["file-manager-item"];
-        const { selected, item, noActions } = this.props;
+        const { selected, item, noActions, folderSelectionOnly } = this.props;
         const { type } = item;
         const { fileName, collapsed, loading, dirty, renaming, active, filePath } = this.state;
         if (selected.indexOf(item) !== -1) classNameArray.push("selected");
@@ -152,14 +152,13 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         if (renaming) classNameArray.push("renaming");
         if (active) classNameArray.push("active");
         if (type === "folder") classNameArray.push("folder");
+        if (folderSelectionOnly && type !== "folder") classNameArray.push("disabled");
         return (
             <>
                 <div key={fileName} className={classNameArray.join(" ")} data-id={filePath} tabIndex={0} onClick={this.handleClickItem} onDoubleClick={this.handleDoubleClick}>
-                    {noActions
-                        ? undefined
-                        : type === "folder"
-                            ? <span className="file-manager-item-collapse"><Icon name={collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
-                            : <span className="file-manager-item-marker" style={{ visibility: dirty ? "visible" : "hidden" }} />
+                    {type === "folder"
+                        ? <span className="file-manager-item-collapse" onClick={this.handleClickCollapse}><Icon name={collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
+                        : <span className="file-manager-item-marker" style={{ visibility: noActions ? "hidden" : dirty ? "visible" : "hidden" }} />
                     }
                     <span className="file-manager-item-icon"><Icon name={type === "folder" ? collapsed ? "folder" : "folder open" : type === "audio" ? "music" : type === "patcher" ? "sitemap" : "code"} inverted size="small" /></span>
                     <span className="file-manager-item-name-container" {...(renaming ? { tabIndex: 0 } : {})} contentEditable={renaming} suppressContentEditableWarning>

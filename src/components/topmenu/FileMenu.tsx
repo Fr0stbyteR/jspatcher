@@ -77,7 +77,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         this.refOpenProject.current.click();
     };
     handleClickSave = async () => {
-        if (this.props.env.activeInstance?.inMemory) this.setState({ showSaveAsModal: true });
+        if (this.props.env.activeInstance?.isInMemory) this.setState({ showSaveAsModal: true });
         else await this.props.env.activeInstance?.save?.();
     };
     handleClickSaveAll = async () => {
@@ -133,7 +133,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         }
         this.refOpenProject.current.value = "";
     };
-    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ instance, fileName: instance?.file?.name || `Untitiled.${instance?.fileExtention}` });
+    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ instance, fileName: instance?.file?.name || `Untitled.${instance?.fileExtention}` });
     componentDidMount() {
         this.props.env.on("activeInstance", this.handleActiveInstance);
     }

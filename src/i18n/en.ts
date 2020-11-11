@@ -105,6 +105,7 @@ export default {
     },
     SaveAsModal: {
         title: "Save As",
+        path: "Path",
         fileName: "File Name",
         confirm: "Save",
         cancel: "Cancel"

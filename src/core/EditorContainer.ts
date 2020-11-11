@@ -31,7 +31,7 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
     get active() {
         return this._env.activeEditorContainer === this;
     }
-    get isDirty() {
+    get isDirty(): boolean {
         return !this.instances.every(i => !i.isDirty) && this.children.every(c => !c.isDirty);
     }
     constructor(env: Env, parent: EditorContainer = null, mode: TSplitMode = "none", instances: AnyFileInstance[] = []) {

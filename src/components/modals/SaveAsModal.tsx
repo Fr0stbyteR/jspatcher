@@ -5,6 +5,7 @@ import Folder from "../../core/file/Folder";
 import ProjectItem from "../../core/file/ProjectItem";
 import I18n from "../../i18n/I18n";
 import FileManagerUI from "../leftmenu/FileMgrUI";
+import "./SaveAsModal.scss";
 
 interface P {
     env: Env;
@@ -37,21 +38,29 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
     handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
         this.setState({ fileName: value, fileNameError: !!this.state.folder.findItem(value) });
     };
+    handleKeyDown = (e: React.KeyboardEvent<HTMLLabelElement>) => {
+        e.stopPropagation();
+        if (e.key === "Enter") this.props.onConfirm(this.state.folder, this.state.fileName);
+    };
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>) {
         if (this.props.fileName !== prevProps.fileName) this.setState({ fileName: this.props.fileName });
     }
     render() {
         return (
-            <Modal className="modal-delete" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
+            <Modal className="modal-saveas" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
                 <Modal.Header>{this.strings.title}</Modal.Header>
                 <Modal.Content>
                     <Form inverted size="mini">
-                        <Form.Field inline error={this.state.fileNameError}>
+                        <Form.Field inline style={{ height: "300px" }}>
                             <FileManagerUI {...this.props} oneSelectionOnly={true} folderSelectionOnly={true} onSelection={this.handleSelection} noActions />
+                        </Form.Field>
+                        <Form.Field inline>
+                            <label>{this.strings.path}</label>
+                            <span>{this.state.folder.path}/</span>
                         </Form.Field>
                         <Form.Field inline error={this.state.fileNameError}>
                             <label>{this.strings.fileName}</label>
-                            <Input value={this.state.fileName} onChange={this.handleFileNameChange} />
+                            <Input value={this.state.fileName} onChange={this.handleFileNameChange} onKeyDown={this.handleKeyDown} />
                         </Form.Field>
                     </Form>
                 </Modal.Content>
