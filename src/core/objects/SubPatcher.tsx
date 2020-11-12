@@ -418,7 +418,9 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
         this.on("destroy", unsubscribePatcher);
     }
 }
-interface FaustPatcherState extends FaustNodeState, SubPatcherState {}
+interface FaustPatcherState extends FaustNodeState, SubPatcherState {
+    code: string;
+}
 export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherState, [string, number], { patcher: Patcher }> {
     static package = "SubPatcher";
     static description = "Faust Sub-patcher, compiled to AudioNode";
@@ -434,7 +436,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         description: "Polyphonic instrument voices count"
     }];
     static ui = SubPatcherUI;
-    state = { merger: undefined, splitter: undefined, node: undefined, voices: 0, patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: "" } as FaustPatcherState;
+    state = { code: undefined, merger: undefined, splitter: undefined, node: undefined, voices: 0, patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: "" } as FaustPatcherState;
     subscribePatcher = () => {
         if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
@@ -454,7 +456,10 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
     handleGraphChanged = async (passive?: boolean) => {
         if (!passive && this.state.key) this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
         const code = this.state.patcher.toFaustDspCode();
-        if (code) await this.newNode(code, this.state.voices);
+        if (code && code !== this.state.code) {
+            this.state.code = code;
+            await this.newNode(code, this.state.voices);
+        }
         this.patcher.emit("graphChanged");
     };
     handlePatcherChanged = () => this.patcher.emit("changed");
@@ -495,7 +500,10 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
                         this.state.voices = voices;
                         this.disconnectAudio();
                         const code = this.state.patcher.toFaustDspCode();
-                        if (code) await this.newNode(code, this.state.voices);
+                        if (code && code !== this.state.code) {
+                            this.state.code = code;
+                            await this.newNode(code, this.state.voices);
+                        }
                         this.connectAudio();
                     }
                 }

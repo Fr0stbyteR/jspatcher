@@ -17,8 +17,14 @@ export default class ui extends BaseObject<{}, { faustUI: FaustUI }, [FaustAudio
         type: "object",
         description: "Changed parameter name-value map"
     }];
-    static ui = DOMUI;
-    state: { faustUI: FaustUI } = { faustUI: undefined };
+    static ui = class extends DOMUI<ui> {
+        state: DOMUIState = { ...this.state, children: this.props.object.state.root ? [this.props.object.state.root] : [] };
+        componentDidMount() {
+            super.componentDidMount();
+            this.props.object.state.faustUI?.resize?.();
+        }
+    };
+    state: { faustUI: FaustUI; root: HTMLDivElement } = { faustUI: undefined, root: undefined };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -44,6 +50,7 @@ export default class ui extends BaseObject<{}, { faustUI: FaustUI }, [FaustAudio
                         this.outlet(0, { [path]: value });
                     };
                     this.updateUI({ children: [root] });
+                    this.state.root = root;
                     faustUI.resize();
                 }
             }
