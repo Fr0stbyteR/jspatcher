@@ -88,7 +88,7 @@ export default class EditMenu extends React.PureComponent<P, S> {
     }
     render() {
         const ctrlKey = this.props.env.os === "MacOS" ? "Cmd" : "Ctrl";
-        const { locked } = this.state;
+        const locked = this.state.locked || !this.state.instance;
         return (
             <Dropdown item={true} icon={false} text="Edit">
                 <Dropdown.Menu style={{ minWidth: "max-content" }}>
