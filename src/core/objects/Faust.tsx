@@ -407,6 +407,22 @@ class TGroup extends HGroup {
     }
 }
 
+class Import extends FaustOp {
+    static description = "Import a library";
+    static args: TMeta["args"] = [{
+        type: "string",
+        optional: true,
+        default: "stdfaust.lib",
+        description: "imported library"
+    }];
+    get symbol() {
+        return ["import"];
+    }
+    state: FaustOpState = { ...this.state, inlets: 0, outlets: 0, defaultArgs: [Import.args[0].default] };
+    toOnceExpr(): string[] {
+        return [`${this.symbol[0]}("${this.box.args[0] || this.state.defaultArgs[0]}");`];
+    }
+}
 export class In extends FaustOp {
     static description = "Signal Input";
     static args: TMeta["args"] = [{
@@ -1190,6 +1206,7 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
 }
 
 const faustOps: TPackage = {
+    import: Import,
     in: In,
     out: Out,
     _: Pass,
@@ -1415,14 +1432,17 @@ export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: str
 };
 export const toFaustDspCode = (patcher: Patcher) => inspectFaustPatcher(patcher).code;
 export const inspectFaustPatcher = (patcher: Patcher) => {
+    const imports: Import[] = [];
     let outs: Out[] = [];
-    // Find outs
+    // Find outs and imports
     for (const boxID in patcher.boxes) {
         const box = patcher.boxes[boxID];
         if (box.object instanceof Out) outs.push(box.object);
+        if (box.object instanceof Import) imports.push(box.object);
     }
     outs = outs.sort((a, b) => a.index - b.index);
     const { onces, exprs, ins } = toFaustLambda(patcher, outs, "process");
+    imports.map(i => i.toOnceExpr()).forEach(o => onces.push(...o.filter(v => onces.indexOf(v) === -1)));
     const code = `${onces.join("\n")}${onces.length ? "\n" : ""}${exprs.join("\n")}\n`;
     return { code, onces, exprs, ins, outs };
 };
