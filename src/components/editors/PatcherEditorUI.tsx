@@ -5,6 +5,7 @@ import Patcher from "../../core/patcher/Patcher";
 import { Errors, Tasks } from "../../core/TaskMgr";
 import PatcherBottomMenu from "../PatcherBottomMenu";
 import PatcherUI from "../PatcherUI";
+import PatcherRightMenu from "../rightmenu/PatcherRightMenu";
 
 interface P {
     env: Env;
@@ -51,13 +52,18 @@ export default class PatcherEditorUI extends React.PureComponent<P, S> {
             </Dimmer>;
         }
         return (
-            <>
-                <div className="patcher-container">
-                    {dimmer}
-                    <PatcherUI {...this.props} />
+            <div className="ui-flex-row ui-flex-full" style={{ overflow: "auto" }}>
+                <div className="ui-flex-column ui-flex-full" style={{ overflow: "auto" }}>
+                    <div className="patcher-container">
+                        {dimmer}
+                        <PatcherUI {...this.props} />
+                    </div>
+                    <PatcherBottomMenu {...this.props} />
                 </div>
-                <PatcherBottomMenu {...this.props} />
-            </>
+                <div className="ui-right">
+                    <PatcherRightMenu {...this.props} />
+                </div>
+            </div>
         );
     }
 }

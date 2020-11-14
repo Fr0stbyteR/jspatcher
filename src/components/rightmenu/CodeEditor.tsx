@@ -44,9 +44,14 @@ export default class CodeEditor extends React.PureComponent<P, S> {
         if (prevProps.patcher !== this.props.patcher) this.handleGraphChanged();
     }
     render() {
-        return this.state.editorLoaded
-            ? <this.editorJSX value={this.state.value} language="faust" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
-            : <Dimmer active><Loader content="Loading" /></Dimmer>;
+        return (
+            <div className="code-editor-container" style={{ position: "absolute", width: "100%", height: "100%" }}>
+                {this.state.editorLoaded
+                    ? <this.editorJSX value={this.state.value} language="faust" theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
+                    : <Dimmer active><Loader content="Loading" /></Dimmer>
+                }
+            </div>
+        );
     }
     get code() {
         const { patcher } = this.props;
