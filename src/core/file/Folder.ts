@@ -92,4 +92,10 @@ export default class Folder extends ProjectItem {
         }
         return true;
     }
+    getOrderedItems() {
+        const items = Array.from(this.items);
+        const folders = items.filter(i => i.type === "folder").sort((a, b) => a.name.localeCompare(b.name));
+        const files = items.filter(i => i.type !== "folder").sort((a, b) => a.name.localeCompare(b.name));
+        return [...folders, ...files];
+    }
 }

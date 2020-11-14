@@ -41,7 +41,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         deleteModalOpen: false,
         deleteAllModalOpen: false,
         newFolderModalOpen: false,
-        items: Array.from(this.props.env.fileMgr.projectRoot?.items || [])
+        items: this.props.env.fileMgr.projectRoot?.getOrderedItems?.() || []
     };
     get strings() {
         return I18n[this.props.lang].FileManagerUI;
@@ -52,7 +52,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         project.on("propsChanged", this.handleProjectPropsChanged);
     };
     handleEnvInstances = (instances: EnvEventMap["instances"]) => this.setState({ instances });
-    handleTreeChanged = () => this.setState({ items: Array.from(this.props.env.fileMgr.projectRoot?.items || []) });
+    handleTreeChanged = () => this.setState({ items: this.props.env.fileMgr.projectRoot?.getOrderedItems?.() || [] });
 
     componentDidMount() {
         const { env } = this.props;
@@ -93,11 +93,11 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
             if (from === to) return;
             const parent = from.parent;
             if (to.parent === parent) {
-                const items = Array.from(parent.items);
+                const items = parent.getOrderedItems();
                 let $from = items.indexOf(from);
                 let $to = items.indexOf(to);
                 if ($from > $to) [$from, $to] = [$to, $from];
-                const selected = this.state.selected.slice();
+                const selected = [];
                 for (let i = $from; i <= $to; i++) {
                     const $item = items[i];
                     const found = selected.indexOf($item);

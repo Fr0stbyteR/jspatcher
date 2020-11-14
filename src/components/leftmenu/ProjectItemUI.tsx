@@ -39,7 +39,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         renaming: false,
         active: this.props.item === this.props.env.activeInstance?.file,
         collapsed: this.props.item.type === "folder" && !!this.props.selected.find(item => (this.props.item as Folder).isParentOf(item)),
-        children: Array.from((this.props.item as Folder)?.items || []),
+        children: (this.props.item as Folder)?.getOrderedItems?.() || [],
         newFolderModalOpen: false
     };
     dragged = false;
@@ -124,7 +124,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     handleItemDirty = (dirty: ProjectItemEventMap["dirty"]) => this.setState({ dirty });
     handleItemNameChanged = ({ newName }: ProjectItemEventMap["nameChanged"]) => this.setState({ fileName: newName, filePath: this.props.item.path });
     handleItemPathChanged = () => this.setState({ filePath: this.props.item.path });
-    handleItemTreeChanged = () => this.setState({ children: Array.from((this.props.item as Folder)?.items || []) });
+    handleItemTreeChanged = () => this.setState({ children: (this.props.item as Folder)?.getOrderedItems?.() || [] });
     handleEnvActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ active: this.props.item === instance?.file });
     componentDidMount() {
         if (!this.props.item.data) this.props.item.on("ready", this.handleItemReady);
