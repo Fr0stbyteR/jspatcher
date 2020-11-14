@@ -8,6 +8,10 @@
     position: absolute;
     display: flex;
     flex-direction: column;
+
+    &.filedropping {
+        filter: contrast(0.5);
+    }
 }
 
 .ui-flex-row {

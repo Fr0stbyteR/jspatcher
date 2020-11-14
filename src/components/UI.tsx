@@ -18,6 +18,7 @@ interface S {
     errors: Errors;
     envTasks: Tasks;
     envErrors: Errors;
+    fileDropping: boolean;
 }
 
 export default class UI extends React.PureComponent<P, S> {
@@ -25,7 +26,8 @@ export default class UI extends React.PureComponent<P, S> {
         tasks: this.props.env.taskMgr.tasks,
         errors: this.props.env.taskMgr.errors,
         envTasks: this.props.env.taskMgr.getTasksFromEmitter(this.props.env),
-        envErrors: this.props.env.taskMgr.getErrorsFromEmitter(this.props.env)
+        envErrors: this.props.env.taskMgr.getErrorsFromEmitter(this.props.env),
+        fileDropping: false
     };
     handleKeyDown = (e: React.KeyboardEvent) => {
         // e.stopPropagation();
@@ -61,6 +63,36 @@ export default class UI extends React.PureComponent<P, S> {
         e.preventDefault();
         e.returnValue = "";
     };
+    handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+        if (!this.props.env.loaded) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.state.fileDropping) return;
+        const { dataTransfer } = e;
+        if (dataTransfer && dataTransfer.items.length && dataTransfer.items[0].kind === "file") this.setState({ fileDropping: true });
+    };
+    handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        if (!this.props.env.loaded) return;
+        this.handleDragEnter(e);
+    };
+    handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        if (!this.props.env.loaded) return;
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({ fileDropping: false });
+    };
+    handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+        if (!this.props.env.loaded) return;
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({ fileDropping: false });
+        const { dataTransfer } = e;
+        if (dataTransfer && dataTransfer.files.length) {
+            for (const file of e.dataTransfer.files) {
+                await this.props.env.fileMgr.importFile(file);
+            }
+        }
+    };
     componentDidMount() {
         this.props.env.taskMgr.on("tasks", this.handleTasks);
         this.props.env.on("ready", this.handleEnvReady);
@@ -82,7 +114,7 @@ export default class UI extends React.PureComponent<P, S> {
             </Dimmer>;
         }
         return (
-            <div id="jspatcher-root">
+            <div id="jspatcher-root" className={this.state.fileDropping ? "filedropping" : ""} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
                 {
                     dimmer
                     || <>

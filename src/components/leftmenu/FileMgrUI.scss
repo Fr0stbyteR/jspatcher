@@ -2,6 +2,10 @@ div.file-manager-container {
     overflow-x: hidden;
     color: white;
 
+    &.filedropping, & .filedropping {
+        background-color: #555;
+    }
+
     & div.file-manager-header {
         display: flex;
         position: relative;

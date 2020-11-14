@@ -10,8 +10,22 @@ import { LineUI, TempLineUI } from "./LineUI";
 import { RawPatcher, TRect } from "../core/types";
 import { round } from "../utils/math";
 
-type P = { patcher: Patcher; transparent?: boolean; runtime?: boolean };
-type S = { locked: boolean; presentation: boolean; showGrid: boolean; fileDropping: boolean; bgColor: string; editingBgColor: string; selectionRect: TRect };
+interface P {
+    patcher: Patcher;
+    transparent?: boolean;
+    runtime?: boolean;
+}
+
+interface S {
+    locked: boolean;
+    presentation: boolean;
+    showGrid: boolean;
+    fileDropping: boolean;
+    bgColor: string;
+    editingBgColor: string;
+    selectionRect: TRect;
+}
+
 export default class PatcherUI extends React.PureComponent<P, S> {
     state: S = {
         locked: this.props.runtime || this.props.patcher.state.locked,
@@ -72,6 +86,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             // if (lines) lines.setState(newState);
         }
     };
+    /*
     handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -94,6 +109,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             this.props.patcher.loadFromFile(file);
         }
     };
+     */
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
         this.props.patcher.setActive();
@@ -250,7 +266,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         if (this.state.fileDropping) classArray.push("filedropping");
         const backgroundColor = this.props.transparent ? "transparent" : this.state.locked ? this.state.bgColor : this.state.editingBgColor;
         return (
-            <div ref={this.refDiv} className={classArray.join(" ")} style={{ backgroundColor }} onMouseDown={this.handleMouseDown} onMouseMove={this.handleMouseMove} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} onScroll={this.handleScroll} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
+            <div ref={this.refDiv} className={classArray.join(" ")} style={{ backgroundColor }} onMouseDown={this.handleMouseDown} onMouseMove={this.handleMouseMove} onDoubleClick={this.handleDoubleClick} onClick={this.handleClick} onScroll={this.handleScroll}/*  onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop} */>
                 <Grid {...this.props} ref={this.refGrid} />
                 <Boxes {...this.props} ref={this.refBoxes} />
                 {this.state.presentation ? <></> : <Lines {...this.props} ref={this.refLines} />}

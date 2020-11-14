@@ -28,6 +28,7 @@ interface S {
     collapsed: boolean;
     children: ProjectItem[];
     newFolderModalOpen: boolean;
+    fileDropping: boolean;
 }
 
 export class ProjectItemUI extends React.PureComponent<P, S> {
@@ -40,7 +41,8 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         active: this.props.item === this.props.env.activeInstance?.file,
         collapsed: this.props.item.type === "folder" && !!this.props.selected.find(item => (this.props.item as Folder).isParentOf(item)),
         children: (this.props.item as Folder)?.getOrderedItems?.() || [],
-        newFolderModalOpen: false
+        newFolderModalOpen: false,
+        fileDropping: false
     };
     dragged = false;
     get strings() {
@@ -126,6 +128,37 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     handleItemPathChanged = () => this.setState({ filePath: this.props.item.path });
     handleItemTreeChanged = () => this.setState({ children: (this.props.item as Folder)?.getOrderedItems?.() || [] });
     handleEnvActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ active: this.props.item === instance?.file });
+    handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+        if (this.props.item.type !== "folder") return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.state.fileDropping) return;
+        const { dataTransfer } = e;
+        if (dataTransfer && dataTransfer.items.length && dataTransfer.items[0].kind === "file") this.setState({ fileDropping: true });
+    };
+    handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        if (this.props.item.type !== "folder") return;
+        this.handleDragEnter(e);
+    };
+    handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        if (this.props.item.type !== "folder") return;
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({ fileDropping: false });
+    };
+    handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+        if (this.props.item.type !== "folder") return;
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({ fileDropping: false });
+        const { dataTransfer } = e;
+        if (dataTransfer && dataTransfer.files.length) {
+            for (const file of e.dataTransfer.files) {
+                await this.props.env.fileMgr.importFile(file, this.props.item as Folder);
+            }
+        }
+    };
+
     componentDidMount() {
         if (!this.props.item.data) this.props.item.on("ready", this.handleItemReady);
         this.props.item.on("dirty", this.handleItemDirty);
@@ -146,7 +179,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         const classNameArray = ["file-manager-item"];
         const { selected, item, noActions, folderSelectionOnly } = this.props;
         const { type } = item;
-        const { fileName, collapsed, loading, dirty, renaming, active, filePath } = this.state;
+        const { fileName, collapsed, loading, dirty, renaming, active, filePath, fileDropping } = this.state;
         if (selected.indexOf(item) !== -1) classNameArray.push("selected");
         if (type !== "folder" && loading) classNameArray.push("loading");
         if (renaming) classNameArray.push("renaming");
@@ -154,7 +187,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         if (type === "folder") classNameArray.push("folder");
         if (folderSelectionOnly && type !== "folder") classNameArray.push("disabled");
         return (
-            <>
+            <div className={fileDropping ? "filedropping" : ""} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
                 <div key={fileName} className={classNameArray.join(" ")} data-id={filePath} tabIndex={0} onClick={this.handleClickItem} onDoubleClick={this.handleDoubleClick}>
                     {type === "folder"
                         ? <span className="file-manager-item-collapse" onClick={this.handleClickCollapse}><Icon name={collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
@@ -180,7 +213,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                     </div>
                     : undefined
                 }
-            </>
+            </div>
         );
     }
 }
