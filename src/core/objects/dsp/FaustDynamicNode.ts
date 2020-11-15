@@ -2,7 +2,12 @@ import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio"
 import { DefaultAudioObject } from "../Base";
 import { DefaultUIState } from "../BaseUI";
 
-export type DefaultFaustDynamicNodeState = { merger: ChannelMergerNode; splitter: ChannelSplitterNode; node: FaustAudioWorkletNode | FaustScriptProcessorNode };
+export interface DefaultFaustDynamicNodeState {
+    merger: ChannelMergerNode;
+    splitter: ChannelSplitterNode;
+    node: (FaustAudioWorkletNode | FaustScriptProcessorNode) & { dspCode?: string }
+}
+
 export default abstract class FaustDynamicNode<D extends {} = {}, S extends Partial<DefaultFaustDynamicNodeState> & Record<string, any> = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<DefaultUIState> & Record<string, any> = {}, U extends Partial<DefaultUIState> & Record<string, any> = {}, E extends {} = {}> extends DefaultAudioObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
     async getFaustNode(code: string, voices: number) {
         const { audioCtx } = this.patcher;
@@ -12,9 +17,10 @@ export default abstract class FaustDynamicNode<D extends {} = {}, S extends Part
     async compile(code: string, voices: number) {
         let splitter: ChannelSplitterNode;
         let merger: ChannelMergerNode;
-        const node = await this.getFaustNode(code, voices);
+        const node: DefaultFaustDynamicNodeState["node"] = await this.getFaustNode(code, voices);
         if (!node) throw new Error("Cannot compile Faust code");
         node.channelInterpretation = "discrete";
+        node.dspCode = code;
         const { audioCtx } = this.patcher;
         const inlets = node.getNumInputs();
         const outlets = node.getNumOutputs();

@@ -1,9 +1,10 @@
 import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
-import FaustDynamicNode from "../dsp/FaustDynamicNode";
+import FaustDynamicNode, { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
 import { Bang } from "../Base";
 import { TMeta, TBPF, TMIDIEvent, TInletMeta, TOutletMeta } from "../../types";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 import { CodePopupUI, DefaultUI } from "../BaseUI";
+import { UnPromisifiedFunction } from "../../workers/Worker";
 
 class FaustNodeUI extends CodePopupUI<FaustNode> {
     editorLanguage = "faust";
@@ -19,10 +20,7 @@ const AWN: typeof AudioWorkletNode = window.AudioWorkletNode ? AudioWorkletNode 
 export interface FaustNodeData {
     code?: string;
 }
-export interface FaustNodeState {
-    merger: ChannelMergerNode;
-    splitter: ChannelSplitterNode;
-    node: FaustAudioWorkletNode | FaustScriptProcessorNode;
+export interface FaustNodeState extends DefaultFaustDynamicNodeState {
     voices: number;
 }
 type Args = [number];
@@ -52,7 +50,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
     static ui: typeof DefaultUI = FaustNodeUI;
     state = { merger: undefined, splitter: undefined, node: undefined, voices: 0 } as S & FaustNodeState;
     async newNode(code: string, voices: number) {
-        let compiled: { inlets: number; outlets: number; node: FaustAudioWorkletNode | FaustScriptProcessorNode; splitter: ChannelSplitterNode; merger: ChannelMergerNode };
+        let compiled: ReturnType<UnPromisifiedFunction<FaustNode["compile"]>>;
         try {
             compiled = await this.compile(code, voices);
         } catch (e) {

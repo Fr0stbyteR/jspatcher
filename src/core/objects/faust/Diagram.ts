@@ -1,21 +1,24 @@
 import { Bang, BaseObject } from "../Base";
 import { TMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
+import { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
 
-export default class diagram extends BaseObject<{}, { svg: string }, [Bang | string], [string], [], {}, DOMUIState> {
+export default class diagram extends BaseObject<{}, { svg: string, container: HTMLDivElement }, [Bang | string | DefaultFaustDynamicNodeState["node"]], [string], [], {}, DOMUIState> {
     static package = "Faust";
     static description = "Get Faust code diagram";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "string",
-        description: "Code to compile, bang to output only"
+        description: "Code or FaustNode to compile, bang to output only"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "string",
         description: "SVG code"
     }];
-    static ui = DOMUI;
-    state = { svg: "" };
+    static ui = class extends DOMUI<diagram> {
+        state: DOMUIState = { ...this.state, children: this.props.object.state.container ? [this.props.object.state.container] : [] };
+    };
+    state = { svg: "", container: undefined as HTMLDivElement };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -27,7 +30,7 @@ export default class diagram extends BaseObject<{}, { svg: string }, [Bang | str
             if (inlet === 0) {
                 if (!(data instanceof Bang)) {
                     try {
-                        this.state.svg = faust.getDiagram(data, { "-I": ["libraries/", "project/"] });
+                        this.state.svg = faust.getDiagram(typeof data === "string" ? data : data.dspCode, { "-I": ["libraries/", "project/"] });
                     } catch (e) {
                         this.error(e);
                         return;
@@ -52,6 +55,7 @@ export default class diagram extends BaseObject<{}, { svg: string }, [Bang | str
                     });
                     template.appendChild(container);
                     container.innerHTML = this.state.svg;
+                    this.state.container = container;
                     this.updateUI({ children: [container] });
                 }
             }
