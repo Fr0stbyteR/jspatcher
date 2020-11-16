@@ -32,7 +32,9 @@ export default class PatcherHistory extends History<PatcherEventMap> {
         } else if (type === "moved") {
             const e: PatcherEventMap[typeof type] = event;
             const { selected, delta, presentation } = e;
-            this.instance.move(selected, { x: -1 * delta.x, y: -1 * delta.y }, presentation);
+            const d = { x: -1 * delta.x, y: -1 * delta.y };
+            this.instance.move(selected, d, presentation);
+            this.instance.moveEnd(d);
         } else if (type === "changeLineSrc") {
             const e: PatcherEventMap[typeof type] = event;
             const { line, oldSrc } = e;
@@ -83,6 +85,7 @@ export default class PatcherHistory extends History<PatcherEventMap> {
             const e: PatcherEventMap[typeof type] = event;
             const { selected, delta, presentation } = e;
             this.instance.move(selected, delta, presentation);
+            this.instance.moveEnd(delta);
         } else if (type === "changeLineSrc") {
             const e: PatcherEventMap[typeof type] = event;
             const { line, src } = e;
