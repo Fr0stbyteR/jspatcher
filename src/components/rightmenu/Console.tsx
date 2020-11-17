@@ -51,13 +51,17 @@ export default class Console extends React.PureComponent<P, S> {
         ));
         return (
             <>
-                <Ref innerRef={this.refTable}>
-                    <Table inverted celled striped selectable unstackable size="small" compact="very">
-                        <Table.Body>
-                            {logs}
-                        </Table.Body>
-                    </Table>
-                </Ref>
+                <div className="console-table-container">
+                    <div className="console-table">
+                        <Ref innerRef={this.refTable}>
+                            <Table inverted celled striped selectable unstackable size="small" compact="very">
+                                <Table.Body>
+                                    {logs}
+                                </Table.Body>
+                            </Table>
+                        </Ref>
+                    </div>
+                </div>
                 <Menu icon inverted size="mini">
                     <Menu.Item onClick={this.handleClear} title="Clear">
                         <Icon name="delete" inverted />

@@ -5,7 +5,13 @@ import { TMeta } from "../../types";
 import { BaseObject } from "../Base";
 import { DOMUI, DOMUIState } from "../BaseUI";
 
-export default class ui extends BaseObject<{}, { faustUI: FaustUI }, [FaustAudioWorkletNode], [Record<string, number>], [], {}, DOMUIState> {
+interface S {
+    node: FaustAudioWorkletNode;
+    faustUI: FaustUI;
+    root: HTMLDivElement;
+}
+
+export default class ui extends BaseObject<{}, S, [FaustAudioWorkletNode], [Record<string, number>], [], {}, DOMUIState> {
     static package = "faust";
     static description = "Display a Faust UI";
     static inlets: TMeta["inlets"] = [{
@@ -24,7 +30,7 @@ export default class ui extends BaseObject<{}, { faustUI: FaustUI }, [FaustAudio
             this.props.object.state.faustUI?.resize?.();
         }
     };
-    state: { faustUI: FaustUI; root: HTMLDivElement } = { faustUI: undefined, root: undefined };
+    state: S = { node: undefined, faustUI: undefined, root: undefined };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -32,9 +38,17 @@ export default class ui extends BaseObject<{}, { faustUI: FaustUI }, [FaustAudio
             this.outlets = 1;
         });
         this.on("postInit", () => this.updateUI({ shadow: false }));
+        const handleParamChangedByDSP = (e: CustomEvent<{ path: string, value: number }>) => {
+            this.state.faustUI?.paramChangeByDSP?.(e.detail.path, e.detail.value);
+        };
+        const handleDestroyDSP = (e: CustomEvent<{ target: FaustAudioWorkletNode }>) => {
+            e.detail.target?.removeEventListener?.("paramChanged", handleParamChangedByDSP);
+            e.detail.target?.removeEventListener?.("destroy", handleDestroyDSP);
+        };
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 if (data instanceof FaustAudioWorkletNode) {
+                    this.state.node?.removeEventListener?.("paramChanged", handleParamChangedByDSP);
                     const ui = data.getUI() as TFaustUI;
                     const root = document.createElement("div");
                     root.style.width = "100%";
@@ -49,11 +63,25 @@ export default class ui extends BaseObject<{}, { faustUI: FaustUI }, [FaustAudio
                     faustUI.paramChangeByUI = (path: string, value: number) => {
                         this.outlet(0, { [path]: value });
                     };
+                    if (!data.outputHandler) data.outputHandler = (path, value) => data.dispatchEvent(new CustomEvent("paramChanged", { detail: { path, value } }));
+                    data.destroy = () => {
+                        data.dispatchEvent(new CustomEvent("destroy", { detail: { target: data } }));
+                        data.port.postMessage({ type: "destroy" });
+                        data.port.close();
+                        delete data.plotHandler;
+                        delete data.outputHandler;
+                    };
+                    data.addEventListener("paramChanged", handleParamChangedByDSP);
+                    data.addEventListener("destroy", handleDestroyDSP);
                     this.updateUI({ children: [root] });
                     this.state.root = root;
                     faustUI.resize();
                 }
             }
+        });
+        this.on("destroy", () => {
+            this.state.node?.removeEventListener?.("paramChanged", handleParamChangedByDSP);
+            this.state.node?.removeEventListener?.("destroy", handleDestroyDSP);
         });
         const handleResize = () => {
             if (this.state.faustUI) this.state.faustUI.resize();

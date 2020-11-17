@@ -46,22 +46,36 @@
             &.right-pane-code-editor {
                 overflow: hidden;
             }
-            & > table {
-                word-break: break-all;
-                flex: 1 1 auto;
-                overflow: auto;
-                display: block;
-                margin: 0px;
-                border-radius: 0px;
-                & tbody {
-                    display: table;
-                    width: 100%;
-                }
-                & td:empty::before {
-                    content: "\200b";
-                }
-                & tr.tr-placeholder {
-                    overflow: hidden;
+            &.right-pane-console {
+                & > .console-table-container {
+                    position: relative;
+                    flex: 1 1 auto;
+                    overflow: auto;
+
+                    & > .console-table {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+
+                        & > table {
+                            word-break: break-all;
+                            flex: 1 1 auto;
+                            overflow: auto;
+                            display: block;
+                            margin: 0px;
+                            border-radius: 0px;
+                            & tbody {
+                                display: table;
+                                width: 100%;
+                            }
+                            & td:empty::before {
+                                content: "\200b";
+                            }
+                            & tr.tr-placeholder {
+                                overflow: hidden;
+                            }
+                        }
+                    }
                 }
             }
             & > .menu {
@@ -89,90 +103,121 @@
             }
         }
         & > div.right-pane-inspector {
-            & .division-name {
-                font-weight: 600;
-                padding-left: 30px;
-                line-height: 12px;
-            }
-            & .group-name {
-                font-weight: 600;
-                padding-left: 20px;
-                line-height: 12px;
-            }
-            & .inspector-value-cell {
-                vertical-align: initial;
-            }
-            & table:not(.last-table) {
-                flex: 0 0 auto;
-            }
-            & .inspector-value {
-                &.number, &.string, &.object, &.anything {
-                    display: inline-block;
-                    padding: 0em 0.6em;
-                    line-height: 28px;
-                    width: calc(100% + 1.2em);
-                    margin: -0.4em -0.6em;
-                    cursor: pointer;
-                    &:hover {
-                        background-color: rgba(245, 245, 245, 0.2);
+
+            & > .inspector-table-container {
+                position: relative;
+                flex: 1 1 auto;
+                overflow: auto;
+
+                & > .inspector-table {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+
+                    & > table {
+                        word-break: break-all;
+                        flex: 1 1 auto;
+                        overflow: auto;
+                        display: block;
+                        margin: 0px;
+                        border-radius: 0px;
+                        & tbody {
+                            display: table;
+                            width: 100%;
+                        }
+                        & td:empty::before {
+                            content: "\200b";
+                        }
+                        & tr.tr-placeholder {
+                            overflow: hidden;
+                        }
                     }
-                    &::before {
-                        content: "\200b";
+                    & table:not(.last-table) {
+                        // flex: 0 0 auto;
                     }
-                    &::selection {
-                        background-color: #004eff;
-                        color: white;
+                    & .division-name {
+                        font-weight: 600;
+                        padding-left: 30px;
+                        line-height: 12px;
+                    }
+                    & .group-name {
+                        font-weight: 600;
+                        padding-left: 20px;
+                        line-height: 12px;
+                    }
+                    & .inspector-value-cell {
+                        vertical-align: initial;
+                    }
+                    & .inspector-value {
+                        &.number, &.string, &.object, &.anything {
+                            display: inline-block;
+                            padding: 0em 0.6em;
+                            line-height: 28px;
+                            width: calc(100% + 1.2em);
+                            margin: -0.4em -0.6em;
+                            cursor: pointer;
+                            &:hover {
+                                background-color: rgba(245, 245, 245, 0.2);
+                            }
+                            &::before {
+                                content: "\200b";
+                            }
+                            &::selection {
+                                background-color: #004eff;
+                                color: white;
+                            }
+                        }
+                        &.color {
+                            width: 40px;
+                            height: 18px;
+                            cursor: pointer;
+                            display: inline-block;
+                            border: 3px solid whitesmoke;
+                            border-radius: 4px;
+                            line-height: 12px;
+                            &::before {
+                                content: "\200b";
+                            }
+                        }
+                    }
+                    & input.inspector-input {
+                        display: inline-block;
+                        background-color: rgba(0, 0, 0, 0.5);
+                        font-size: unset;
+                        font-family: unset;
+                        border: unset;
+                        color: unset;
+                        padding: 0em 0.6em;
+                        line-height: 28px;
+                        width: calc(100% + 1.2em);
+                        margin: -0.4em -0.6em;
+                        &::selection {
+                            background-color: #004eff;
+                            color: white;
+                        }
+                    }
+                    & div.color-picker-fullscreen-cover {
+                        position: fixed;
+                        top: 0px;
+                        right: 0px;
+                        bottom: 0px;
+                        left: 0px;
+                        z-index: 1;
+                    }
+                    & div.chrome-picker {
+                        position: absolute;
+                        left: calc(50% - 60px);
+                        bottom: calc(50% - 100px);
+                        width: 150px!important;
+                        z-index: 2;
+                    }
+                    & div.checkbox {
+                        vertical-align: top;
+                    }
+                    & .ui.dropdown .menu > .item {
+                        font-size: 1em !important;
                     }
                 }
-                &.color {
-                    width: 40px;
-                    height: 18px;
-                    cursor: pointer;
-                    display: inline-block;
-                    border: 3px solid whitesmoke;
-                    border-radius: 4px;
-                    line-height: 12px;
-                    &::before {
-                        content: "\200b";
-                    }
-                }
-            }
-            & input.inspector-input {
-                display: inline-block;
-                background-color: rgba(0, 0, 0, 0.5);
-                font-size: unset;
-                font-family: unset;
-                border: unset;
-                color: unset;
-                padding: 0em 0.6em;
-                line-height: 28px;
-                width: calc(100% + 1.2em);
-                margin: -0.4em -0.6em;
-                &::selection {
-                    background-color: #004eff;
-                    color: white;
-                }
-            }
-            & div.color-picker-fullscreen-cover {
-                position: fixed;
-                top: 0px;
-                right: 0px;
-                bottom: 0px;
-                left: 0px;
-                z-index: 1;
-            }
-            & div.chrome-picker {
-                position: absolute;
-                left: calc(50% - 60px);
-                bottom: calc(50% - 100px);
-                width: 150px!important;
-                z-index: 2;
-            }
-            & div.checkbox {
-                vertical-align: top;
-            }
-            & .ui.dropdown .menu > .item {
-                font-size: 1em !important;
             }
         }
     }

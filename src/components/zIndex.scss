@@ -6,7 +6,7 @@
                 &.selected {
                     z-index: 40;
                 }
-                & > div.box-ports > div.box-port {
+                & > div.box-ports > div.box-port:hover {
                     z-index: 30;
                 }
             }

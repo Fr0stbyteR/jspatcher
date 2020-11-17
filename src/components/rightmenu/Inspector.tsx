@@ -395,11 +395,15 @@ export default class Inspector extends React.PureComponent<{ patcher: Patcher },
         const boxIDs = this.props.patcher.state.selected.filter(id => id.startsWith("box")).map(s => +s.slice(4)).sort((a, b) => a - b);
         return (
             <>
-                <Table className="last-table" inverted celled striped selectable unstackable size="small" compact="very">
-                    <Table.Body>
-                        {table}
-                    </Table.Body>
-                </Table>
+                <div className="inspector-table-container">
+                    <div className="inspector-table">
+                        <Table className="last-table" inverted celled striped selectable unstackable size="small" compact="very">
+                            <Table.Body>
+                                {table}
+                            </Table.Body>
+                        </Table>
+                    </div>
+                </div>
                 <Menu icon inverted size="mini">
                     <Label.Group size="mini" color="grey">
                         {boxIDs.length ? boxIDs.map(id => <Label style={{ margin: ".5em" }} key={id} content={id} />) : <Label style={{ margin: ".5em" }} content="Patcher" />}
