@@ -99,12 +99,13 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     }
     async init() {
         const urlParams = new URLSearchParams(window.location.search);
-        const urlparamsOptions = {
+        const urlParamsOptions = {
             noUI: !!urlParams.get("min"),
             runtime: !!urlParams.get("runtime"),
-            init: !!urlParams.get("init")
+            init: !!urlParams.get("init"),
+            projectZip: urlParams.get("projectZip")
         };
-        this._noUI = urlparamsOptions.noUI;
+        this._noUI = urlParamsOptions.noUI;
         if (!this._noUI && this.divRoot) ReactDOM.render(<UI env={this} lang={this.language} />, this.divRoot);
 
         await this.taskMgr.newTask(this, "Initializing JSPatcher Environment...", async () => {
@@ -135,12 +136,25 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
                 this.faustDocs = providers.docs;
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
             });
-            await this.taskMgr.newTask(this, "Loading Files...", async () => {
+            await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);
                 await this.pkgMgr.init();
                 const project = new Project(this);
                 this.currentProject = project;
-                await this.fileMgr.init(project, urlparamsOptions.init);
+                const { projectZip } = urlParamsOptions;
+                if (projectZip) {
+                    await this.fileMgr.init(project, true);
+                    onUpdate(projectZip);
+                    try {
+                        const response = await fetch(projectZip);
+                        const data = await response.arrayBuffer();
+                        await this.loadFromZip(data);
+                    } catch (error) {
+                        await this.fileMgr.init(project, urlParamsOptions.init);
+                    }
+                } else {
+                    await this.fileMgr.init(project, urlParamsOptions.init);
+                }
             });
             window.jspatcherEnv = this;
         });

@@ -82,6 +82,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         if (newName === oldName) return;
         if (this.parent.existItem(newNameIn)) throw new Error(`${newName} already exists.`);
         await this.fileMgr.rename(this.path, `${this.parentPath}/${newNameIn}`);
+        this._name = newName;
         this.emitTreeChanged();
         this.emit("nameChanged", { oldName, newName });
     }
