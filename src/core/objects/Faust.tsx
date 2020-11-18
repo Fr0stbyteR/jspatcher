@@ -1055,6 +1055,8 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         const { ins, outs, exprs, onces } = inspectFaustPatcher(this.state.patcher);
         this.inlets = ins.length;
         this.outlets = outs.length;
+        this.state.inlets = ins.length;
+        this.state.outlets = outs.length;
         this.state.defaultArgs = new Array(this.inlets).fill(0);
         this.state.cachedCode = { exprs, onces, ins: ins.length, outs: outs.length };
         this.data = this.state.patcher.toSerializable();
