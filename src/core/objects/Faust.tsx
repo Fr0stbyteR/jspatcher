@@ -1035,7 +1035,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
     }];
     static ui = SubPatcherUI;
     type: "faust" | "gen" = "faust";
-    state: SubPatcherState = { inlets: 0, outlets: 0, defaultArgs: [], patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: "", cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
+    state: SubPatcherState = { inlets: 0, outlets: 0, defaultArgs: [], patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: this.box.args[0], cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
     subscribePatcher = () => {
         if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
@@ -1045,7 +1045,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
         patcher.off("graphChanged", this.handleGraphChanged);
-        await patcher.unload();
+        await patcher.load({}, this.type);
     };
     handlePatcherReset = () => {
         this.updateUI({ patcher: this.state.patcher });
@@ -1057,6 +1057,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         this.outlets = outs.length;
         this.state.defaultArgs = new Array(this.inlets).fill(0);
         this.state.cachedCode = { exprs, onces, ins: ins.length, outs: outs.length };
+        this.data = this.state.patcher.toSerializable();
         this.patcher.emit("graphChanged");
     };
     reload = async () => {
@@ -1088,14 +1089,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         }
     };
     handlePostInit = async () => {
-        if (!this.state.key) {
-            const { data } = this;
-            await this.state.patcher.load(data, this.type);
-            this.data = this.state.patcher.toSerializable();
-            this.handlePatcherReset();
-            this.subscribePatcher();
-            this.handleGraphChanged();
-        }
+        await this.reload();
     };
     subscribe() {
         super.subscribe();

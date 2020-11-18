@@ -81,6 +81,7 @@ export default class comment extends UIObject<{ value: string }, {}, [string], [
     static args: TMeta["args"] = [{
         type: "string",
         optional: true,
+        varLength: true,
         description: "Initial text"
     }];
     static props: TPropsMeta<CommentProps> = {

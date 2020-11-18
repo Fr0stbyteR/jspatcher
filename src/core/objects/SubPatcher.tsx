@@ -319,7 +319,7 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
         default: "",
         description: "Name of the subpatcher"
     }];
-    state: SubPatcherState = { patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: "" };
+    state: SubPatcherState = { patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: this.box.args[0] };
     static ui = SubPatcherUI;
     subscribe() {
         super.subscribe();
@@ -384,7 +384,7 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
             } else {
                 const { data } = this;
                 await this.state.patcher.load(data, "js");
-                this.data = this.state.patcher;
+                this.data = this.state.patcher.toSerializable();
             }
             handlePatcherReset();
             subscribePatcher();
@@ -401,14 +401,7 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
             }
         });
         this.on("postInit", async () => {
-            if (!this.state.key) {
-                const { data } = this;
-                await this.state.patcher.load(data, "js");
-                this.data = this.state.patcher;
-                handlePatcherReset();
-                subscribePatcher();
-                this.connectAudio();
-            }
+            await reload();
         });
         this.on("inlet", ({ data, inlet }) => this.state.patcher.fn(data, inlet));
         this.on("sharedDataUpdated", reload);
@@ -433,7 +426,8 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         description: "Polyphonic instrument voices count"
     }];
     static ui = SubPatcherUI;
-    state = { code: undefined, merger: undefined, splitter: undefined, node: undefined, voices: 0, patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: "" } as FaustPatcherState;
+    type: "faust" | "gen" = "faust";
+    state = { code: undefined, merger: undefined, splitter: undefined, node: undefined, voices: 0, patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: this.box.args[0] } as FaustPatcherState;
     subscribePatcher = () => {
         if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
         const { patcher } = this.state;
@@ -445,7 +439,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         const { patcher } = this.state;
         patcher.off("graphChanged", this.handleGraphChanged);
         patcher.off("changed", this.handlePatcherChanged);
-        await patcher.load({}, "faust");
+        await patcher.load({}, this.type);
     };
     handlePatcherReset = () => {
         this.updateUI({ patcher: this.state.patcher });
@@ -470,12 +464,12 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         if (key) {
             this.data = {};
             const shared: RawPatcher = this.sharedData.get("patcher", key);
-            if (typeof shared === "object") await this.state.patcher.load(shared, "faust");
+            if (typeof shared === "object") await this.state.patcher.load(shared, this.type);
             else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
         } else {
             const { data } = this;
-            await this.state.patcher.load(data, "faust");
-            this.data = this.state.patcher;
+            await this.state.patcher.load(data, this.type);
+            this.data = this.state.patcher.toSerializable();
         }
         this.handlePatcherReset();
         this.subscribePatcher();
@@ -483,7 +477,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         this.connectAudio();
     };
     handlePreInit = async () => {
-        await this.state.patcher.load({}, "faust");
+        await this.state.patcher.load({}, this.type);
     };
     handleUpdateArgs = async (args: Partial<[string, number]>): Promise<void> => {
         if (typeof args[0] === "string" || typeof args[0] === "undefined") {
@@ -508,21 +502,17 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         }
     };
     handlePostInit = async () => {
-        if (!this.state.key) {
-            const { data } = this;
-            await this.state.patcher.load(data, "faust");
-            this.data = this.state.patcher;
-            this.handlePatcherReset();
-            this.subscribePatcher();
-            await this.handleGraphChanged();
-            this.connectAudio();
-        }
+        await this.reload();
     };
     subscribe() {
         super.subscribe();
         this.on("sharedDataUpdated", this.reload);
         this.on("destroy", this.unsubscribePatcher);
     }
+}
+export class gen extends faustPatcher {
+    static description = "Gen Sub-patcher, compiled to AudioNode";
+    type: "faust" | "gen" = "gen";
 }
 export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher }> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
@@ -557,7 +547,7 @@ export class bpatcher extends BaseAudioObject<Partial<RawPatcher>, SubPatcherSta
         default: "",
         description: "Name of the subpatcher"
     }];
-    state: SubPatcherState = { patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: "" };
+    state: SubPatcherState = { patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: this.box.args[0] };
     static ui = BPatcherUI;
     subscribe() {
         super.subscribe();
@@ -622,7 +612,7 @@ export class bpatcher extends BaseAudioObject<Partial<RawPatcher>, SubPatcherSta
             } else {
                 const { data } = this;
                 await this.state.patcher.load(data, "js");
-                this.data = this.state.patcher;
+                this.data = this.state.patcher.toSerializable();
             }
             handlePatcherReset();
             subscribePatcher();
@@ -639,14 +629,7 @@ export class bpatcher extends BaseAudioObject<Partial<RawPatcher>, SubPatcherSta
             }
         });
         this.on("postInit", async () => {
-            if (!this.state.key) {
-                const { data } = this;
-                await this.state.patcher.load(data, "js");
-                this.data = this.state.patcher;
-                handlePatcherReset();
-                subscribePatcher();
-                this.connectAudio();
-            }
+            await reload();
         });
         this.on("inlet", ({ data, inlet }) => this.state.patcher.fn(data, inlet));
         this.on("sharedDataUpdated", reload);
@@ -663,5 +646,6 @@ export default {
     p: patcher,
     faustPatcher,
     pfaust: faustPatcher,
+    gen,
     bpatcher
 };
