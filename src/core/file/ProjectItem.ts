@@ -95,6 +95,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         this.parent = to;
         this._name = newName;
         this.parent.items.add(this);
+        await from.emitTreeChanged();
         await this.emitTreeChanged();
         await this.emit("pathChanged", { from, to });
     }

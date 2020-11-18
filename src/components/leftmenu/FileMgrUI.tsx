@@ -31,6 +31,7 @@ interface S {
     deleteAllModalOpen: boolean;
     newFolderModalOpen: boolean;
     fileDropping: boolean;
+    moving: ProjectItem;
 }
 
 export default class FileManagerUI extends React.PureComponent<P, S> {
@@ -43,7 +44,8 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         deleteAllModalOpen: false,
         newFolderModalOpen: false,
         items: this.props.env.fileMgr.projectRoot?.getOrderedItems?.() || [],
-        fileDropping: false
+        fileDropping: false,
+        moving: undefined
     };
     get strings() {
         return I18n[this.props.lang].FileManagerUI;
@@ -80,6 +82,37 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
                 await this.props.env.fileMgr.importFile(file);
             }
         }
+    };
+    mouseMoveSubscribed = false;
+    handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (!this.state.moving) return;
+        if (this.state.moving.parent === this.props.env.fileMgr.projectRoot) return;
+        if (this.mouseMoveSubscribed) return;
+        this.mouseMoveSubscribed = true;
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState({ fileDropping: true });
+        const handleMouseUp = (e: MouseEvent) => {
+            document.removeEventListener("mouseup", handleMouseUp);
+            document.removeEventListener("mousemove", handleMouseMove);
+            this.setState({ fileDropping: false });
+            this.mouseMoveSubscribed = false;
+        };
+        const handleMouseMove = (e: MouseEvent) => {
+            const { target } = e;
+            let parent = target as HTMLElement;
+            while (!(parent.firstChild as HTMLElement)?.classList?.contains?.("folder") && parent !== document.body) parent = parent.parentElement;
+            if (parent === document.body) {
+                this.setState({ fileDropping: false });
+            } else {
+                const path = (parent.firstChild as HTMLElement).getAttribute("data-id");
+                if (this.props.env.fileMgr.projectRoot.path === path) this.setState({ fileDropping: true });
+                else this.setState({ fileDropping: false });
+            }
+        };
+        handleMouseMove(e.nativeEvent);
+        document.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener("mousemove", handleMouseMove);
     };
 
     componentDidMount() {
@@ -176,14 +209,23 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         await parent.addFolder(folderName);
         this.setState({ newFolderModalOpen: false });
     };
+    handleMoving = (moving: ProjectItem) => {
+        if (this.state.moving !== moving) this.setState({ moving });
+    };
+    handleMoveTo = async (item?: ProjectItem, folder?: Folder) => {
+        if (this.props.noActions) return;
+        this.setState({ moving: undefined });
+        if (!item) return;
+        await item.move(folder);
+    };
     render() {
         const classNameArray = ["left-pane-component", "file-manager-container"];
-        const headerClassNameArray = ["left-pane-component-header", "file-manager-header"];
+        const headerClassNameArray = ["left-pane-component-header", "file-manager-header", "folder"];
         if (this.state.fileDropping) classNameArray.push("filedropping");
         if (this.state.selected.indexOf(this.props.env.fileMgr.projectRoot) !== -1) headerClassNameArray.push("selected");
         return (
-            <div className={classNameArray.join(" ")} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
-                <div className={headerClassNameArray.join(" ")} onClick={this.handleClickHeader} tabIndex={0}>
+            <div className={classNameArray.join(" ")} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop} onMouseMove={this.handleMouseMove}>
+                <div className={headerClassNameArray.join(" ")} onClick={this.handleClickHeader} tabIndex={0} data-id={this.props.env.fileMgr.projectRoot.path}>
                     <span className="file-manager-header-collapse" onClick={this.handleClickCollapse}><Icon name={this.state.collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
                     <span className="file-manager-header-title">{this.state.projectName}</span>
                     {this.props.noActions
@@ -205,7 +247,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
                 {this.state.collapsed
                     ? undefined
                     : <div className="file-manager-item-tree">
-                        {this.state.items.map(item => <ProjectItemUI {...this.props} key={item.path} item={item} selected={this.state.selected} onDelete={this.handleDeleteItem} onClick={this.handleClickItem} onDoubleClick={this.handleDoubleClickItem} />)}
+                        {this.state.items.map(item => <ProjectItemUI {...this.props} key={item.path} item={item} selected={this.state.selected} onDelete={this.handleDeleteItem} onClick={this.handleClickItem} onDoubleClick={this.handleDoubleClickItem} moving={this.state.moving} onMoveTo={this.handleMoveTo} onMoving={this.handleMoving} />)}
                     </div>}
             </div>
         );

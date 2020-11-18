@@ -14,6 +14,9 @@ interface P {
     onClick: (item: ProjectItem, ctrl?: boolean, shift?: boolean) => any;
     onDoubleClick: (item: ProjectItem) => any;
     onDelete: (item: ProjectItem) => any;
+    onMoving: (item: ProjectItem) => any;
+    onMoveTo: (item?: ProjectItem, folder?: Folder) => any;
+    moving: ProjectItem;
     noActions?: true;
     folderSelectionOnly?: true;
 }
@@ -158,6 +161,78 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
             }
         }
     };
+    mouseMoveSubscribed = false;
+    handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (this.props.item.type !== "folder") return;
+        if (!this.props.moving) return;
+        if (this.props.moving === this.props.item) return;
+        if (this.props.moving.parent === this.props.item) return;
+        if (this.mouseMoveSubscribed) return;
+        this.mouseMoveSubscribed = true;
+        e.preventDefault();
+        e.stopPropagation();
+        const handleMouseUp = (e: MouseEvent) => {
+            document.removeEventListener("mouseup", handleMouseUp);
+            document.removeEventListener("mousemove", handleMouseMove);
+            this.setState({ fileDropping: false });
+            this.mouseMoveSubscribed = false;
+        };
+        const handleMouseMove = (e: MouseEvent) => {
+            const { target } = e;
+            let parent = target as HTMLElement;
+            while (!(parent.firstChild as HTMLElement)?.classList?.contains?.("folder") && parent !== document.body) parent = parent.parentElement;
+            if (parent === document.body) {
+                this.setState({ fileDropping: false });
+            } else {
+                const path = (parent.firstChild as HTMLElement).getAttribute("data-id");
+                if (this.props.item.path === path) this.setState({ fileDropping: true });
+                else this.setState({ fileDropping: false });
+            }
+        };
+        handleMouseMove(e.nativeEvent);
+        document.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener("mousemove", handleMouseMove);
+    };
+
+    handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (this.props.moving) return;
+        e.stopPropagation();
+        e.preventDefault();
+        const { currentTarget } = e;
+        // Clone Node to follow cursor
+        const cloned = currentTarget.cloneNode(true) as HTMLDivElement;
+        cloned.style.position = "fixed";
+        cloned.style.display = "none";
+        cloned.style.zIndex = "1000";
+        cloned.style.width = `${currentTarget.clientWidth}px`;
+        cloned.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        currentTarget.parentElement.appendChild(cloned);
+        this.props.onMoving(this.props.item);
+        const handleMouseMove = (e: MouseEvent) => {
+            if (cloned) {
+                cloned.style.display = "block";
+                cloned.style.left = `${e.clientX + 10}px`;
+                cloned.style.top = `${e.clientY + 10}px`;
+            }
+        };
+        const handleMouseUp = (e: MouseEvent) => {
+            if (cloned) cloned.remove();
+            const { target } = e;
+            let parent = target as HTMLElement;
+            while (!(parent.firstChild as HTMLElement)?.classList?.contains?.("folder") && parent !== document.body) parent = parent.parentElement;
+            if (parent === document.body) {
+                this.props.onMoveTo();
+            } else {
+                const path = (parent.firstChild as HTMLElement).getAttribute("data-id");
+                if (!path) this.props.onMoveTo();
+                else this.props.onMoveTo(this.props.item, this.props.env.fileMgr.getProjectItemFromPath(path.replace(/^\/project/, "")) as Folder);
+            }
+            document.removeEventListener("mousemove", handleMouseMove);
+            document.removeEventListener("mouseup", handleMouseUp);
+        };
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+    };
 
     componentDidMount() {
         if (!this.props.item.data) this.props.item.on("ready", this.handleItemReady);
@@ -187,7 +262,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         if (type === "folder") classNameArray.push("folder");
         if (folderSelectionOnly && type !== "folder") classNameArray.push("disabled");
         return (
-            <div className={fileDropping ? "filedropping" : ""} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop}>
+            <div className={fileDropping ? "filedropping" : ""} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop} onMouseMove={this.handleMouseMove} onMouseDown={this.handleMouseDown}>
                 <div key={fileName} className={classNameArray.join(" ")} data-id={filePath} tabIndex={0} onClick={this.handleClickItem} onDoubleClick={this.handleDoubleClick}>
                     {type === "folder"
                         ? <span className="file-manager-item-collapse" onClick={this.handleClickCollapse}><Icon name={collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
