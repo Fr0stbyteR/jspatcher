@@ -226,7 +226,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
                             else $to = await $to.addFolder($name);
                         }
                         const $name = splitted[splitted.length - 1];
-                        const $data = await zip.file($name).async("arraybuffer", state => onUpdate(`${state.percent}% - ${state.currentFile}`));
+                        const $data = await $file.async("arraybuffer", state => onUpdate(`${state.percent}% - ${state.currentFile}`));
                         if ($to.existItem($name)) continue;
                         await $to.addProjectItem($name, $data);
                     }
