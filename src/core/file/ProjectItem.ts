@@ -131,5 +131,6 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         await this.emitTreeChanged();
         await this.emit("pathChanged", { from, to });
         await this.emit("saved");
+        return item;
     }
 }

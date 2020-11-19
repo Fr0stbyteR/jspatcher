@@ -328,6 +328,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     }
     deleteLine(lineID: string) {
         const line = this.lines[lineID];
+        if (line) return null;
         line.destroy();
         this.deselect(lineID);
         this.emit("deleteLine", line);

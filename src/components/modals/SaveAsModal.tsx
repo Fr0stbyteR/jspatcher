@@ -51,7 +51,7 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
                 <Modal.Header>{this.strings.title}</Modal.Header>
                 <Modal.Content>
                     <Form inverted size="mini">
-                        <Form.Field inline style={{ height: "300px" }}>
+                        <Form.Field inline style={{ height: "300px", overflow: "auto" }}>
                             <FileManagerUI {...this.props} oneSelectionOnly={true} folderSelectionOnly={true} onSelection={this.handleSelection} noActions />
                         </Form.Field>
                         <Form.Field inline>
