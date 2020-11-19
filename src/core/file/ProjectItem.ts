@@ -87,8 +87,8 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         if (this.parent.existItem(newNameIn)) throw new Error(`${newName} already exists.`);
         await this.fileMgr.rename(this.path, `${this.parentPath}/${newNameIn}`);
         this._name = newName;
-        this.emitTreeChanged();
-        this.emit("nameChanged", { oldName, newName });
+        await this.emitTreeChanged();
+        await this.emit("nameChanged", { oldName, newName });
     }
     async move(to: Folder, newName = this.name) {
         if (to === this.parent) return;
@@ -97,11 +97,13 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         const from = this.parent;
         from.items.delete(this);
         this.parent = to;
+        const oldName = this._name;
         this._name = newName;
         this.parent.items.add(this);
         await from.emitTreeChanged();
         await this.emitTreeChanged();
         await this.emit("pathChanged", { from, to });
+        if (oldName !== newName) await this.emit("nameChanged", { oldName, newName });
     }
     async destroy() {
         await this._fileMgr.remove(this.path, this.type === "folder");

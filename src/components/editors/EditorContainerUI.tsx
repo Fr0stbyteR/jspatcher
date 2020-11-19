@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Icon } from "semantic-ui-react";
 import EditorContainer, { EditorContainerEventMap, EditorContainerState } from "../../core/EditorContainer";
 import Env from "../../core/Env";
 import { AnyFileInstance } from "../../core/file/FileInstance";
 import Patcher from "../../core/patcher/Patcher";
 import PatcherEditorUI from "./PatcherEditorUI";
 import "./EditorContainerUI.scss";
+import { EditorContainerTabUI } from "./EditorContainerTabUI";
 
 interface P {
     env: Env;
@@ -23,10 +23,10 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
         mode: this.props.editorContainer.mode,
         activeInstance: this.props.editorContainer.activeInstance
     };
-    handleClickClose = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, instance: AnyFileInstance) => {
+    handleCloseTab = async (instance: AnyFileInstance) => {
         await instance.destroy();
     };
-    handleMouseDownTab = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, instance: AnyFileInstance) => {
+    handleActiveTab = async (instance: AnyFileInstance) => {
         this.setState({ activeInstance: instance });
         this.props.env.activeInstance = instance;
     };
@@ -44,20 +44,7 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
             <div className="editor-container ui-flex-column ui-flex-full">
                 <div className="editor-container-tabs-container">
                     <div className="editor-container-tabs">
-                        {this.state.instances.map((instance) => {
-                            const name = instance.file?.name || `Untitled.${instance.fileExtention}`;
-                            const icon = instance.fileIcon;
-                            const active = this.state.activeInstance === instance;
-                            const classArray = ["editor-container-tab"];
-                            if (active) classArray.push("active");
-                            return (
-                                <div className={classArray.join(" ")} key={instance.instancId} onMouseDown={e => this.handleMouseDownTab(e, instance)}>
-                                    <Icon className="editor-container-tab-icon" name={icon} />
-                                    <span className="editor-container-tab-name">{name}</span>
-                                    <span className="editor-container-tab-close" onClick={e => this.handleClickClose(e, instance)}>×</span>
-                                </div>
-                            );
-                        })}
+                        {this.state.instances.map(instance => <EditorContainerTabUI key={instance.instancId} instance={instance} active={this.state.activeInstance === instance} onActive={this.handleActiveTab} onClose={this.handleCloseTab} lang={this.props.lang} />)}
                     </div>
                 </div>
                 <div className="editor-container-body ui-flex-column ui-flex-full">
