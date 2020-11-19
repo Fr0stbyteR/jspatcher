@@ -8,6 +8,7 @@ import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
 import { CodeUI } from "./UI/code";
 import comment from "./UI/comment";
 import { ImporterDirSelfObject } from "../../utils/symbols";
+import PatcherFile from "../patcher/PatcherFile";
 
 type TObjectExpr = {
     exprs?: string[];
@@ -880,7 +881,7 @@ export class Effect extends Iterator {
     }
     toExpr(lineMap: TLineMap): TObjectExpr {
         const exprs: string[] = [];
-        const { inletLines, outletLines, box, resultID } = this;
+        const { inletLines, outletLines, resultID } = this;
         const inlet0Lines = inletLines[0];
         const { exprs: lExprs, onces } = toFaustLambda(this.patcher, [this], "lambda");
         const lambda = inlet0Lines.size ? `lambda with {
@@ -1093,22 +1094,52 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
     static ui = SubPatcherUI;
     type: "faust" | "gen" = "faust";
     state: SubPatcherState = { inlets: 0, outlets: 0, defaultArgs: [], patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: this.box.args[0], cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
+    handleFilePathChanged = () => {
+        this.state.key = this.state.patcher.file.projectPath;
+    };
     subscribePatcher = () => {
-        if (this.state.key) this.sharedData.subscribe("patcher", this.state.key, this);
-        const { patcher } = this.state;
+        const { patcher, key } = this.state;
         patcher.on("graphChanged", this.handleGraphChanged);
+        if (key) {
+            const patcherFile = patcher.file;
+            if (patcherFile) {
+                patcherFile.on("destroyed", this.reload);
+                patcherFile.on("nameChanged", this.handleFilePathChanged);
+                patcherFile.on("pathChanged", this.handleFilePathChanged);
+                patcherFile.on("saved", this.reload);
+            } else {
+                this.sharedData.subscribe("patcher", key, this);
+            }
+        }
     };
     unsubscribePatcher = async () => {
-        if (this.state.key) this.sharedData.unsubscribe("patcher", this.state.key, this);
-        const { patcher } = this.state;
+        const { patcher, key } = this.state;
         patcher.off("graphChanged", this.handleGraphChanged);
-        await patcher.load({}, this.type);
+        await patcher.unload();
+        if (key) {
+            const patcherFile = this.state.patcher.file;
+            if (patcherFile) {
+                patcherFile.off("destroyed", this.reload);
+                patcherFile.off("nameChanged", this.handleFilePathChanged);
+                patcherFile.off("pathChanged", this.handleFilePathChanged);
+                patcherFile.off("saved", this.reload);
+            } else {
+                this.sharedData.unsubscribe("patcher", this.state.key, this);
+            }
+        }
+        const newPatcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
+        await newPatcher.load({}, this.type);
+        this.state.patcher = newPatcher;
     };
     handlePatcherReset = () => {
         this.updateUI({ patcher: this.state.patcher });
     };
     handleGraphChanged = (passive?: boolean) => {
-        if (!passive && this.state.key) this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
+        if (!passive && this.state.key) {
+            if (!this.state.patcher.file) {
+                this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
+            }
+        }
         const { ins, outs, exprs, onces } = inspectFaustPatcher(this.state.patcher);
         this.inlets = ins.length;
         this.outlets = outs.length;
@@ -1126,12 +1157,29 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         const { key } = this.state;
         if (key) {
             this.data = {};
-            const shared: RawPatcher = this.sharedData.get("patcher", key);
-            if (typeof shared === "object") await this.state.patcher.load(shared, this.type);
-            else this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
+            try {
+                if (key.match(/\//)) {
+                    const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
+                    const patcher = await patcherFile.instantiate();
+                    this.state.patcher = patcher;
+                } else {
+                    throw new Error(`${key} is not a path`);
+                }
+            } catch {
+                const shared: RawPatcher = this.sharedData.get("patcher", key);
+                if (typeof shared === "object") {
+                    const patcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
+                    await patcher.load(shared, this.type);
+                    this.state.patcher = patcher;
+                } else {
+                    this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
+                }
+            }
         } else {
             const { data } = this;
-            await this.state.patcher.load(data, this.type);
+            const patcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
+            await patcher.load(data, this.type);
+            this.state.patcher = patcher;
             this.data = this.state.patcher.toSerializable();
         }
         this.handlePatcherReset();
@@ -1156,6 +1204,30 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         this.on("postInit", this.handlePostInit);
         this.on("sharedDataUpdated", this.reload);
         this.on("destroy", this.unsubscribePatcher);
+    }
+    toInletsExpr(lineMap: TLineMap) {
+        const { inletLines, box, state } = this;
+        const { args } = box;
+        const { inlets: totalInlets } = state;
+        const inlets = new Array(totalInlets);
+        const incoming = inletLines.map((set, i) => {
+            const lines = Array.from(set);
+            const defaultArg = typeof state.defaultArgs[i] === "undefined" ? "0" : `${state.defaultArgs[i]}`;
+            if (lines.length === 0) return defaultArg;
+            if (lines.length === 1) return lineMap.get(lines[0]) || defaultArg;
+            return `(${lines.map(line => lineMap.get(line)).filter(line => line !== undefined).join(", ")} :> _)`;
+        });
+        for (let i = 0; i < totalInlets; i++) {
+            if (i + 1 < args.length) {
+                const arg = args[i + 1];
+                if (arg !== "_") {
+                    inlets[i] = arg;
+                    continue;
+                }
+            }
+            inlets[i] = incoming.shift() || "0";
+        }
+        return inlets.join(", ");
     }
     toMainExpr(out: string, inlets: string) {
         const { exprs, outs } = this.state.cachedCode;

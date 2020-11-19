@@ -14,6 +14,7 @@ export interface ProjectItemEventMap {
     "treeChanged": never;
     "destroyed": never;
     "dirty": boolean;
+    "saved": never;
 }
 
 export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> {
@@ -72,6 +73,9 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     get parentPath() {
         return this.parent?.path;
     }
+    get projectPath() {
+        return this.path.replace(/^\/project/, "");
+    }
     async emitTreeChanged() {
         await this.emit("treeChanged");
         await (this.parent || this.fileMgr).emitTreeChanged();
@@ -108,6 +112,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     async save(newData: ArrayBuffer) {
         this._data = newData;
         await this._fileMgr.putFile(this);
+        await this.emit("saved");
     }
     async saveAs(parent: Folder, name: string, newData: ArrayBuffer) {
         const item = this.clone(parent, name, newData);
@@ -125,5 +130,6 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         this.parent.items.add(this);
         await this.emitTreeChanged();
         await this.emit("pathChanged", { from, to });
+        await this.emit("saved");
     }
 }

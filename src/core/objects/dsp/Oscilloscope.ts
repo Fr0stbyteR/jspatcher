@@ -61,7 +61,6 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         const ctx = this.ctx;
         if (!ctx) return;
 
-
         const left = 0;
         const bottom = 0;
 
@@ -136,24 +135,26 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         ctx.setLineDash([]);
         ctx.lineWidth = 2;
         const channelColor: string[] = [];
+        let $zerox = 0; // First Zero-crossing of first channel
+        const period = sampleRate / estimatedFreq[0];
+        const times = Math.floor(l / period) - 1;
         for (let i = 0; i < channels; i++) {
             // Horizontal Range
             let $0 = 0; // Draw start
             let $1 = l; // Draw End
-            let $zerox = 0; // First Zero-crossing
             let drawL = l; // Length to draw
             if (stablize) { // Stablization
-                const thresh = (min + max) * 0.5 + 0.001; // the zero-crossing with "offset"
-                const period = sampleRate / estimatedFreq[i];
-                const times = Math.floor(l / period) - 1;
-                while ($zerox < l && t[i][($ + $zerox++) % l] > thresh); // Find first raise
-                if ($zerox >= l - 1) { // Found nothing, no stablization
-                    $zerox = 0;
-                } else {
-                    while ($zerox < l && t[i][($ + $zerox++) % l] < thresh); // Find first drop
-                    $zerox--;
-                    if ($zerox >= l - 1 || $zerox < 0) {
+                if (i === 0) {
+                    const thresh = (min + max) * 0.5 + 0.001; // the zero-crossing with "offset"
+                    while ($zerox < l && t[i][($ + $zerox++) % l] > thresh); // Find first raise
+                    if ($zerox >= l - 1) { // Found nothing, no stablization
                         $zerox = 0;
+                    } else {
+                        while ($zerox < l && t[i][($ + $zerox++) % l] < thresh); // Find first drop
+                        $zerox--;
+                        if ($zerox >= l - 1 || $zerox < 0) {
+                            $zerox = 0;
+                        }
                     }
                 }
                 drawL = times > 0 && isFinite(period) ? ~~Math.min(period * times, l - $zerox) : l - $zerox; // length to draw

@@ -254,6 +254,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     }
     async unload() {
         await this.emit("unload");
+        this.history.capture = false;
         await this.clear();
     }
     async destroy() {
