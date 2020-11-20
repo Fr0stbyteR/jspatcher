@@ -58,6 +58,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         const { shiftKey: shift, metaKey, ctrlKey } = e;
         const ctrl = this.props.env.os === "MacOS" ? metaKey : ctrlKey;
         this.props.onClick(this.props.item, ctrl, shift);
+        e.currentTarget.focus();
     };
     handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.state.renaming) return;
@@ -193,9 +194,9 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         document.addEventListener("mouseup", handleMouseUp);
         document.addEventListener("mousemove", handleMouseMove);
     };
-
     handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (this.props.moving) return;
+        this.dragged = false;
         e.stopPropagation();
         e.preventDefault();
         const { currentTarget } = e;
@@ -209,6 +210,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         currentTarget.parentElement.appendChild(cloned);
         this.props.onMoving(this.props.item);
         const handleMouseMove = (e: MouseEvent) => {
+            this.dragged = true;
             if (cloned) {
                 cloned.style.display = "block";
                 cloned.style.left = `${e.clientX + 10}px`;
@@ -216,7 +218,14 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
             }
         };
         const handleMouseUp = (e: MouseEvent) => {
+            document.removeEventListener("mousemove", handleMouseMove);
+            document.removeEventListener("mouseup", handleMouseUp);
             if (cloned) cloned.remove();
+            if (!this.dragged) {
+                this.props.onMoveTo();
+                return;
+            }
+            this.dragged = false;
             const { target } = e;
             let parent = target as HTMLElement;
             while (!(parent.firstChild as HTMLElement)?.classList?.contains?.("folder") && parent !== document.body) parent = parent.parentElement;
@@ -227,8 +236,6 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                 if (!path) this.props.onMoveTo();
                 else this.props.onMoveTo(this.props.item, this.props.env.fileMgr.getProjectItemFromPath(path.replace(/^\/project/, "")) as Folder);
             }
-            document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", handleMouseUp);
         };
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
