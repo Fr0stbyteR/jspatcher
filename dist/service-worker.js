@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.1.1605882944714"
+    prefix: "0.0.1.1605947671555"
   });
   workbox.skipWaiting();
   workbox.clientsClaim();
@@ -270,10 +270,10 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
     "revision": "6024187832c1ad7af33a5103e57bcfc8"
   }, {
     "url": "deps/libfaust-wasm.data",
-    "revision": "70394d335820f113268e9764eb113fe5"
+    "revision": "93d4a7c87f8501bcfc88e82e14a26b18"
   }, {
     "url": "deps/libfaust-wasm.wasm",
-    "revision": "24c91c59ae7966e3461f5aae8a287c19"
+    "revision": "8c3ed9cb62e381b57734705dc3d2aefa"
   }, {
     "url": "deps/primitives.lib",
     "revision": "27152c0ce5169d607ce0667196b1b858"
@@ -291,7 +291,7 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "87f87aa9ca9b313a5946cc54e2e34d45"
+    "revision": "ee0c4a1cc1e8ad37c8a98b5ae779bf6d"
   }, {
     "url": "js/06974dc2d38c64a776e5.js",
     "revision": "13ddebe9c17739e4566e587d740165e2"
