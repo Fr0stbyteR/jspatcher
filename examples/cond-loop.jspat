@@ -1,0 +1,838 @@
+{
+    "patcher": {
+        "lines": {
+            "line-65": {
+                "id": "line-65",
+                "src": [
+                    "box-89",
+                    0
+                ],
+                "dest": [
+                    "box-88",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-66": {
+                "id": "line-66",
+                "src": [
+                    "box-88",
+                    0
+                ],
+                "dest": [
+                    "box-90",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-71": {
+                "id": "line-71",
+                "src": [
+                    "box-93",
+                    0
+                ],
+                "dest": [
+                    "box-89",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-75": {
+                "id": "line-75",
+                "src": [
+                    "box-90",
+                    0
+                ],
+                "dest": [
+                    "box-92",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-76": {
+                "id": "line-76",
+                "src": [
+                    "box-89",
+                    0
+                ],
+                "dest": [
+                    "box-92",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-77": {
+                "id": "line-77",
+                "src": [
+                    "box-92",
+                    0
+                ],
+                "dest": [
+                    "box-89",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-78": {
+                "id": "line-78",
+                "src": [
+                    "box-99",
+                    0
+                ],
+                "dest": [
+                    "box-98",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-79": {
+                "id": "line-79",
+                "src": [
+                    "box-98",
+                    1
+                ],
+                "dest": [
+                    "box-100",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-80": {
+                "id": "line-80",
+                "src": [
+                    "box-102",
+                    0
+                ],
+                "dest": [
+                    "box-101",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-81": {
+                "id": "line-81",
+                "src": [
+                    "box-103",
+                    0
+                ],
+                "dest": [
+                    "box-101",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-82": {
+                "id": "line-82",
+                "src": [
+                    "box-101",
+                    0
+                ],
+                "dest": [
+                    "box-104",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-83": {
+                "id": "line-83",
+                "src": [
+                    "box-105",
+                    0
+                ],
+                "dest": [
+                    "box-107",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-84": {
+                "id": "line-84",
+                "src": [
+                    "box-106",
+                    0
+                ],
+                "dest": [
+                    "box-107",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-85": {
+                "id": "line-85",
+                "src": [
+                    "box-107",
+                    0
+                ],
+                "dest": [
+                    "box-108",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-63": {
+                "id": "line-63",
+                "src": [
+                    "box-114",
+                    0
+                ],
+                "dest": [
+                    "box-87",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-64": {
+                "id": "line-64",
+                "src": [
+                    "box-87",
+                    0
+                ],
+                "dest": [
+                    "box-115",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-58": {
+                "id": "line-58",
+                "src": [
+                    "box-80",
+                    0
+                ],
+                "dest": [
+                    "box-78",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-57": {
+                "id": "line-57",
+                "src": [
+                    "box-78",
+                    0
+                ],
+                "dest": [
+                    "box-79",
+                    1
+                ],
+                "disabled": false
+            }
+        },
+        "boxes": {
+            "box-88": {
+                "id": "box-88",
+                "text": "< 20",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    135,
+                    90,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    165,
+                    75,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    20
+                ],
+                "props": {}
+            },
+            "box-89": {
+                "id": "box-89",
+                "text": "+ 1",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    90,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    75,
+                    75,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    1
+                ],
+                "props": {}
+            },
+            "box-90": {
+                "id": "box-90",
+                "text": "sel true",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    135,
+                    135,
+                    60,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    165,
+                    120,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    true
+                ],
+                "props": {}
+            },
+            "box-93": {
+                "id": "box-93",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    45,
+                    45,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    75,
+                    15,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "0"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-92": {
+                "id": "box-92",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    135,
+                    180,
+                    45,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    225,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "20"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-98": {
+                "id": "box-98",
+                "text": "for 0 20",
+                "inlets": 4,
+                "outlets": 2,
+                "rect": [
+                    210,
+                    90,
+                    90,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    270,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    0,
+                    20
+                ],
+                "props": {}
+            },
+            "box-99": {
+                "id": "box-99",
+                "text": "live.button",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    210,
+                    45,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    75,
+                    210,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-100": {
+                "id": "box-100",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    255,
+                    180,
+                    45,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    225,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "19"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-101": {
+                "id": "box-101",
+                "text": "gate",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    420,
+                    60,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    285,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-102": {
+                "id": "box-102",
+                "text": "toggle",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    135,
+                    420,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    120,
+                    285,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-103": {
+                "id": "box-103",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    375,
+                    75,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    45,
+                    255,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "something"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-104": {
+                "id": "box-104",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    465,
+                    75,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    45,
+                    345,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": ""
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-105": {
+                "id": "box-105",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    180,
+                    375,
+                    75,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    45,
+                    255,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "something"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-106": {
+                "id": "box-106",
+                "text": "toggle",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    270,
+                    420,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    120,
+                    285,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [
+                    1
+                ],
+                "props": {}
+            },
+            "box-107": {
+                "id": "box-107",
+                "text": "gate",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    180,
+                    420,
+                    60,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    285,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-108": {
+                "id": "box-108",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    180,
+                    465,
+                    75,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    45,
+                    345,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "something"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-113": {
+                "id": "box-113",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    210,
+                    255,
+                    90,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    690,
+                    135,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "This outputs 1"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-114": {
+                "id": "box-114",
+                "text": "live.toggle",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    180,
+                    255,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    585,
+                    60,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [
+                    1
+                ],
+                "props": {}
+            },
+            "box-86": {
+                "id": "box-86",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    75,
+                    255,
+                    90,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    690,
+                    135,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "This outputs 0"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-87": {
+                "id": "box-87",
+                "text": "? 42 43",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    180,
+                    300,
+                    60,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    420,
+                    225,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    42,
+                    43
+                ],
+                "props": {}
+            },
+            "box-78": {
+                "id": "box-78",
+                "text": "? 42 43",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    300,
+                    60,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    420,
+                    225,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    42,
+                    43
+                ],
+                "props": {}
+            },
+            "box-79": {
+                "id": "box-79",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    330,
+                    45,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    30,
+                    375,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "43"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-115": {
+                "id": "box-115",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    180,
+                    330,
+                    45,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    30,
+                    375,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "42"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-80": {
+                "id": "box-80",
+                "text": "live.toggle",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    45,
+                    255,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    585,
+                    60,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            }
+        },
+        "props": {
+            "mode": "js",
+            "dependencies": [],
+            "bgColor": "rgba(255, 255, 255, 1)",
+            "editingBgColor": "rgba(189, 189, 189, 1)",
+            "grid": [
+                15,
+                15
+            ],
+            "openInPresentation": false,
+            "boxIndexCount": 115,
+            "lineIndexCount": 88
+        },
+        "data": {}
+    },
+    "data": {
+        "patcher": {}
+    }
+}

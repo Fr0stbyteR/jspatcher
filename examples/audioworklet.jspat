@@ -1,0 +1,391 @@
+{
+    "lines": {
+        "line-1": {
+            "id": "line-1",
+            "src": [
+                "box-3",
+                1
+            ],
+            "dest": [
+                "box-7",
+                0
+            ],
+            "disabled": false
+        },
+        "line-2": {
+            "id": "line-2",
+            "src": [
+                "box-7",
+                0
+            ],
+            "dest": [
+                "box-6",
+                1
+            ],
+            "disabled": false
+        },
+        "line-4": {
+            "id": "line-4",
+            "src": [
+                "box-2",
+                0
+            ],
+            "dest": [
+                "box-3",
+                1
+            ],
+            "disabled": false
+        },
+        "line-7": {
+            "id": "line-7",
+            "src": [
+                "box-10",
+                0
+            ],
+            "dest": [
+                "box-6",
+                0
+            ],
+            "disabled": false
+        },
+        "line-9": {
+            "id": "line-9",
+            "src": [
+                "box-3",
+                1
+            ],
+            "dest": [
+                "box-10",
+                0
+            ],
+            "disabled": false
+        },
+        "line-5": {
+            "id": "line-5",
+            "src": [
+                "box-6",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-11": {
+            "id": "line-11",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-11",
+                0
+            ],
+            "disabled": false
+        },
+        "line-12": {
+            "id": "line-12",
+            "src": [
+                "box-11",
+                0
+            ],
+            "dest": [
+                "box-9",
+                0
+            ],
+            "disabled": false
+        },
+        "line-13": {
+            "id": "line-13",
+            "src": [
+                "box-12",
+                0
+            ],
+            "dest": [
+                "box-11",
+                1
+            ],
+            "disabled": false
+        },
+        "line-14": {
+            "id": "line-14",
+            "src": [
+                "box-13",
+                0
+            ],
+            "dest": [
+                "box-2",
+                0
+            ],
+            "disabled": false
+        },
+        "line-15": {
+            "id": "line-15",
+            "src": [
+                "box-13",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-7": {
+            "id": "box-7",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                210,
+                345,
+                139,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                210,
+                345,
+                139,
+                22
+            ],
+            "data": {
+                "text": "white-noise-processor"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-2": {
+            "id": "box-2",
+            "text": "code",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                210,
+                75,
+                400,
+                225
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                210,
+                75,
+                400,
+                225
+            ],
+            "data": {
+                "value": "// white-noise-processor.js\r\nclass WhiteNoiseProcessor extends AudioWorkletProcessor {\r\n  process (inputs, outputs, parameters) {\r\n    const output = outputs[0]\r\n    output.forEach(channel => {\r\n      for (let i = 0; i < channel.length; i++) {\r\n        channel[i] = Math.random() * 2 - 1\r\n      }\r\n    })\r\n    return true\r\n  }\r\n}\r\n\r\nregisterProcessor('white-noise-processor', WhiteNoiseProcessor)"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-6": {
+            "id": "box-6",
+            "text": "new AudioWorkletNode",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                45,
+                375,
+                150,
+                23
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                45,
+                375,
+                150,
+                22
+            ],
+            "data": {},
+            "args": [
+                "AudioWorkletNode"
+            ],
+            "props": {}
+        },
+        "box-3": {
+            "id": "box-3",
+            "text": "audioWorklet",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                45,
+                315,
+                90,
+                23
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                45,
+                315,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-10": {
+            "id": "box-10",
+            "text": "audioContext",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                45,
+                345,
+                90,
+                23
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                45,
+                345,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-1": {
+            "id": "box-1",
+            "text": "node~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                45,
+                405,
+                165,
+                23
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                45,
+                405,
+                165,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-9": {
+            "id": "box-9",
+            "text": "destination~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                45,
+                465,
+                90,
+                23
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                45,
+                465,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-11": {
+            "id": "box-11",
+            "text": "biquad~",
+            "inlets": 6,
+            "outlets": 2,
+            "rect": [
+                45,
+                435,
+                90,
+                23
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                45,
+                435,
+                90,
+                22
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-12": {
+            "id": "box-12",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                150,
+                435,
+                120,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                150,
+                435,
+                120,
+                22
+            ],
+            "data": {
+                "text": "300 0 3000 4 300 4"
+            },
+            "args": [
+                "300, 3000 4, 300 4"
+            ],
+            "props": {}
+        },
+        "box-13": {
+            "id": "box-13",
+            "text": "loadbang",
+            "inlets": 0,
+            "outlets": 1,
+            "rect": [
+                45,
+                30,
+                90,
+                23
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                75,
+                45,
+                0,
+                0
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        }
+    },
+    "props": {
+        "mode": "js",
+        "dependencies": {},
+        "bgColor": "rgba(61, 65, 70, 1)",
+        "editingBgColor": "rgba(82, 87, 94, 1)",
+        "grid": [
+            15,
+            15
+        ],
+        "openInPresentation": false,
+        "boxIndexCount": 13,
+        "lineIndexCount": 15
+    }
+}

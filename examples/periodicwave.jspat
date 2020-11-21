@@ -1,0 +1,484 @@
+{
+    "lines": {
+        "line-2": {
+            "id": "line-2",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        },
+        "line-3": {
+            "id": "line-3",
+            "src": [
+                "box-3",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-6": {
+            "id": "line-6",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-8",
+                0
+            ],
+            "disabled": false
+        },
+        "line-7": {
+            "id": "line-7",
+            "src": [
+                "box-8",
+                0
+            ],
+            "dest": [
+                "box-9",
+                0
+            ],
+            "disabled": false
+        },
+        "line-8": {
+            "id": "line-8",
+            "src": [
+                "box-9",
+                0
+            ],
+            "dest": [
+                "box-10",
+                0
+            ],
+            "disabled": false
+        },
+        "line-9": {
+            "id": "line-9",
+            "src": [
+                "box-12",
+                0
+            ],
+            "dest": [
+                "box-11",
+                0
+            ],
+            "disabled": false
+        },
+        "line-10": {
+            "id": "line-10",
+            "src": [
+                "box-13",
+                0
+            ],
+            "dest": [
+                "box-12",
+                0
+            ],
+            "disabled": false
+        },
+        "line-11": {
+            "id": "line-11",
+            "src": [
+                "box-10",
+                0
+            ],
+            "dest": [
+                "box-1",
+                1
+            ],
+            "disabled": false
+        },
+        "line-12": {
+            "id": "line-12",
+            "src": [
+                "box-11",
+                0
+            ],
+            "dest": [
+                "box-1",
+                2
+            ],
+            "disabled": false
+        },
+        "line-15": {
+            "id": "line-15",
+            "src": [
+                "box-1",
+                1
+            ],
+            "dest": [
+                "box-15",
+                1
+            ],
+            "disabled": false
+        },
+        "line-23": {
+            "id": "line-23",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-13",
+                0
+            ],
+            "disabled": false
+        },
+        "line-27": {
+            "id": "line-27",
+            "src": [
+                "box-21",
+                0
+            ],
+            "dest": [
+                "box-16",
+                0
+            ],
+            "disabled": false
+        },
+        "line-28": {
+            "id": "line-28",
+            "src": [
+                "box-21",
+                1
+            ],
+            "dest": [
+                "box-15",
+                0
+            ],
+            "disabled": false
+        },
+        "line-29": {
+            "id": "line-29",
+            "src": [
+                "box-4",
+                0
+            ],
+            "dest": [
+                "box-21",
+                0
+            ],
+            "disabled": false
+        },
+        "line-30": {
+            "id": "line-30",
+            "src": [
+                "box-22",
+                0
+            ],
+            "dest": [
+                "box-10",
+                2
+            ],
+            "disabled": false
+        },
+        "line-31": {
+            "id": "line-31",
+            "src": [
+                "box-23",
+                0
+            ],
+            "dest": [
+                "box-10",
+                2
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-1": {
+            "id": "box-1",
+            "text": "BaseAudioContext..createPeriodicWave",
+            "inlets": 4,
+            "outlets": 5,
+            "rect": [
+                255,
+                285,
+                255,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {
+                "args": 3
+            }
+        },
+        "box-3": {
+            "id": "box-3",
+            "text": "audioContext",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                255,
+                195,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-4": {
+            "id": "box-4",
+            "text": "live.button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                30,
+                120,
+                30,
+                30
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-8": {
+            "id": "box-8",
+            "text": "new Float32Array 2",
+            "inlets": 3,
+            "outlets": 4,
+            "rect": [
+                360,
+                195,
+                124,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                "Float32Array",
+                2
+            ],
+            "props": {}
+        },
+        "box-9": {
+            "id": "box-9",
+            "text": "set 0 0",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                360,
+                225,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                0,
+                0
+            ],
+            "props": {}
+        },
+        "box-10": {
+            "id": "box-10",
+            "text": "set 1 0",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                360,
+                255,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                1,
+                0
+            ],
+            "props": {}
+        },
+        "box-11": {
+            "id": "box-11",
+            "text": "set 1 0",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                495,
+                255,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                1,
+                0
+            ],
+            "props": {}
+        },
+        "box-12": {
+            "id": "box-12",
+            "text": "set 0 0",
+            "inlets": 3,
+            "outlets": 1,
+            "rect": [
+                495,
+                225,
+                45,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                0,
+                0
+            ],
+            "props": {}
+        },
+        "box-13": {
+            "id": "box-13",
+            "text": "new Float32Array 2",
+            "inlets": 3,
+            "outlets": 4,
+            "rect": [
+                495,
+                195,
+                124,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                "Float32Array",
+                2
+            ],
+            "props": {}
+        },
+        "box-15": {
+            "id": "box-15",
+            "text": "OscillatorNode..setPeriodicWave",
+            "inlets": 2,
+            "outlets": 3,
+            "rect": [
+                135,
+                315,
+                195,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-16": {
+            "id": "box-16",
+            "text": "destination~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                30,
+                315,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-21": {
+            "id": "box-21",
+            "text": "oscillator~",
+            "inlets": 4,
+            "outlets": 2,
+            "rect": [
+                30,
+                285,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                null,
+                "sine"
+            ],
+            "props": {}
+        },
+        "box-22": {
+            "id": "box-22",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                450,
+                225,
+                23,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "1"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-23": {
+            "id": "box-23",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                420,
+                225,
+                23,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "0"
+            },
+            "args": [],
+            "props": {}
+        }
+    },
+    "props": {
+        "mode": "js",
+        "bgColor": [
+            61,
+            65,
+            70,
+            1
+        ],
+        "editingBgColor": [
+            82,
+            87,
+            94,
+            1
+        ],
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 23,
+        "lineIndexCount": 31
+    }
+}

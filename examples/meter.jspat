@@ -1,0 +1,619 @@
+{
+    "lines": {
+        "line-2": {
+            "id": "line-2",
+            "src": [
+                "box-6",
+                0
+            ],
+            "dest": [
+                "box-9",
+                0
+            ],
+            "disabled": false
+        },
+        "line-3": {
+            "id": "line-3",
+            "src": [
+                "box-9",
+                0
+            ],
+            "dest": [
+                "box-12",
+                1
+            ],
+            "disabled": false
+        },
+        "line-4": {
+            "id": "line-4",
+            "src": [
+                "box-6",
+                0
+            ],
+            "dest": [
+                "box-5",
+                0
+            ],
+            "disabled": false
+        },
+        "line-5": {
+            "id": "line-5",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-13",
+                0
+            ],
+            "disabled": false
+        },
+        "line-6": {
+            "id": "line-6",
+            "src": [
+                "box-13",
+                0
+            ],
+            "dest": [
+                "box-6",
+                0
+            ],
+            "disabled": false
+        },
+        "line-7": {
+            "id": "line-7",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-13",
+                1
+            ],
+            "disabled": false
+        },
+        "line-8": {
+            "id": "line-8",
+            "src": [
+                "box-19",
+                0
+            ],
+            "dest": [
+                "box-13",
+                5
+            ],
+            "disabled": false
+        },
+        "line-10": {
+            "id": "line-10",
+            "src": [
+                "box-7",
+                0
+            ],
+            "dest": [
+                "box-6",
+                0
+            ],
+            "disabled": false
+        },
+        "line-12": {
+            "id": "line-12",
+            "src": [
+                "box-18",
+                0
+            ],
+            "dest": [
+                "box-16",
+                0
+            ],
+            "disabled": false
+        },
+        "line-15": {
+            "id": "line-15",
+            "src": [
+                "box-16",
+                0
+            ],
+            "dest": [
+                "box-17",
+                1
+            ],
+            "disabled": false
+        },
+        "line-14": {
+            "id": "line-14",
+            "src": [
+                "box-13",
+                0
+            ],
+            "dest": [
+                "box-16",
+                0
+            ],
+            "disabled": false
+        },
+        "line-19": {
+            "id": "line-19",
+            "src": [
+                "box-6",
+                0
+            ],
+            "dest": [
+                "box-20",
+                0
+            ],
+            "disabled": false
+        },
+        "line-21": {
+            "id": "line-21",
+            "src": [
+                "box-6",
+                0
+            ],
+            "dest": [
+                "box-22",
+                0
+            ],
+            "disabled": false
+        },
+        "line-24": {
+            "id": "line-24",
+            "src": [
+                "box-19",
+                0
+            ],
+            "dest": [
+                "box-25",
+                0
+            ],
+            "disabled": false
+        },
+        "line-25": {
+            "id": "line-25",
+            "src": [
+                "box-26",
+                0
+            ],
+            "dest": [
+                "box-19",
+                1
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-7": {
+            "id": "box-7",
+            "text": "live.dial",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                150,
+                210,
+                75,
+                75
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                212,
+                293.578125,
+                45,
+                60
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "max": 6,
+                "step": 0.01,
+                "type": "float",
+                "unitStyle": "float",
+                "min": -70
+            }
+        },
+        "box-9": {
+            "id": "box-9",
+            "text": "meter~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                300,
+                435,
+                45,
+                150
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                78,
+                302.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "mode": "deciBel",
+                "orientation": "vertical"
+            }
+        },
+        "box-5": {
+            "id": "box-5",
+            "text": "meter~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                60,
+                435,
+                225,
+                45
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                60,
+                435,
+                225,
+                45
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "mode": "deciBel"
+            }
+        },
+        "box-1": {
+            "id": "box-1",
+            "text": "oscillator~ ",
+            "inlets": 4,
+            "outlets": 2,
+            "rect": [
+                15,
+                15,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                271,
+                167.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-6": {
+            "id": "box-6",
+            "text": "live.gain~",
+            "inlets": 1,
+            "outlets": 4,
+            "rect": [
+                15,
+                255,
+                195,
+                165
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                15,
+                255,
+                195,
+                165
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-12": {
+            "id": "box-12",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                165,
+                600,
+                570,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                692,
+                657.578125,
+                90,
+                20
+            ],
+            "data": {
+                "text": "[ -3.0570099522270033,\n  -3.0570099522270033,\n  -Infinity,\n  -Infinity,\n  -Infinity,\n  -2.9954853004157327 ]"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-13": {
+            "id": "box-13",
+            "text": "merger~",
+            "inlets": 6,
+            "outlets": 2,
+            "rect": [
+                15,
+                210,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                252,
+                169.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-15": {
+            "id": "box-15",
+            "text": "destination~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                15,
+                600,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                427,
+                719.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-18": {
+            "id": "box-18",
+            "text": "live.button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                255,
+                15,
+                30,
+                30
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                438,
+                122.578125,
+                20,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-17": {
+            "id": "box-17",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                375,
+                60,
+                525,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                460,
+                291.578125,
+                90,
+                20
+            ],
+            "data": {
+                "text": "{ centroid: \n   [ 440.1756236038841,\n     440.1756236038841,\n     0,\n     0,\n     0,\n     4816.0110122662345 ] }"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-19": {
+            "id": "box-19",
+            "text": "oscillator~  100",
+            "inlets": 4,
+            "outlets": 2,
+            "rect": [
+                120,
+                15,
+                120,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                271,
+                167.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [
+                100
+            ],
+            "props": {}
+        },
+        "box-16": {
+            "id": "box-16",
+            "text": "spectralAnalyser~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                255,
+                60,
+                105,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "presentationRect": [
+                419,
+                242.578125,
+                90,
+                20
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "continuous": true,
+                "lastAmplitudes": false,
+                "estimatedFreq": false,
+                "centroid": true,
+                "flatness": false,
+                "flux": false,
+                "kurtosis": false,
+                "skewness": false,
+                "rolloff": false,
+                "slope": false,
+                "spread": false
+            }
+        },
+        "box-20": {
+            "id": "box-20",
+            "text": "scope~",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                375,
+                90,
+                525,
+                270
+            ],
+            "background": false,
+            "presentation": true,
+            "presentationRect": [
+                0,
+                60,
+                525,
+                270
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "windowSize": 1024,
+                "stablize": true,
+                "showStats": false
+            }
+        },
+        "box-22": {
+            "id": "box-22",
+            "text": "spectroscope~",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                375,
+                375,
+                525,
+                210
+            ],
+            "background": false,
+            "presentation": true,
+            "presentationRect": [
+                0,
+                345,
+                525,
+                210
+            ],
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-25": {
+            "id": "box-25",
+            "text": "spectrogram~",
+            "inlets": 1,
+            "outlets": 0,
+            "rect": [
+                930,
+                90,
+                210,
+                495
+            ],
+            "background": false,
+            "presentation": true,
+            "presentationRect": [
+                525,
+                60,
+                210,
+                495
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "windowSize": 40960
+            }
+        },
+        "box-26": {
+            "id": "box-26",
+            "text": "live.dial",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                120,
+                45,
+                45,
+                60
+            ],
+            "background": false,
+            "presentation": true,
+            "presentationRect": [
+                0,
+                0,
+                45,
+                60
+            ],
+            "data": {},
+            "args": [],
+            "props": {
+                "max": 24000,
+                "step": 0.01,
+                "type": "float",
+                "unitStyle": "hertz",
+                "min": 20,
+                "shortName": "Freq",
+                "longName": "Freq"
+            }
+        }
+    },
+    "props": {
+        "mode": "js",
+        "dependencies": {},
+        "bgColor": [
+            61,
+            65,
+            70,
+            1
+        ],
+        "editingBgColor": [
+            82,
+            87,
+            94,
+            1
+        ],
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 26,
+        "lineIndexCount": 25
+    }
+}

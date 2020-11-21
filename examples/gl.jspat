@@ -1,0 +1,1769 @@
+{
+    "patcher": {
+        "lines": {
+            "line-34": {
+                "id": "line-34",
+                "src": [
+                    "box-62",
+                    0
+                ],
+                "dest": [
+                    "box-49",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-35": {
+                "id": "line-35",
+                "src": [
+                    "box-49",
+                    0
+                ],
+                "dest": [
+                    "box-51",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-36": {
+                "id": "line-36",
+                "src": [
+                    "box-55",
+                    0
+                ],
+                "dest": [
+                    "box-53",
+                    2
+                ],
+                "disabled": false
+            },
+            "line-37": {
+                "id": "line-37",
+                "src": [
+                    "box-62",
+                    0
+                ],
+                "dest": [
+                    "box-54",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-38": {
+                "id": "line-38",
+                "src": [
+                    "box-54",
+                    0
+                ],
+                "dest": [
+                    "box-53",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-41": {
+                "id": "line-41",
+                "src": [
+                    "box-51",
+                    0
+                ],
+                "dest": [
+                    "box-55",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-43": {
+                "id": "line-43",
+                "src": [
+                    "box-57",
+                    0
+                ],
+                "dest": [
+                    "box-58",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-44": {
+                "id": "line-44",
+                "src": [
+                    "box-58",
+                    0
+                ],
+                "dest": [
+                    "box-59",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-45": {
+                "id": "line-45",
+                "src": [
+                    "box-59",
+                    0
+                ],
+                "dest": [
+                    "box-60",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-46": {
+                "id": "line-46",
+                "src": [
+                    "box-50",
+                    0
+                ],
+                "dest": [
+                    "box-62",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-47": {
+                "id": "line-47",
+                "src": [
+                    "box-53",
+                    0
+                ],
+                "dest": [
+                    "box-52",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-48": {
+                "id": "line-48",
+                "src": [
+                    "box-50",
+                    0
+                ],
+                "dest": [
+                    "box-57",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-49": {
+                "id": "line-49",
+                "src": [
+                    "box-50",
+                    0
+                ],
+                "dest": [
+                    "box-63",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-50": {
+                "id": "line-50",
+                "src": [
+                    "box-63",
+                    0
+                ],
+                "dest": [
+                    "box-64",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-51": {
+                "id": "line-51",
+                "src": [
+                    "box-50",
+                    0
+                ],
+                "dest": [
+                    "box-65",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-52": {
+                "id": "line-52",
+                "src": [
+                    "box-65",
+                    0
+                ],
+                "dest": [
+                    "box-66",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-54": {
+                "id": "line-54",
+                "src": [
+                    "box-69",
+                    0
+                ],
+                "dest": [
+                    "box-67",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-56": {
+                "id": "line-56",
+                "src": [
+                    "box-66",
+                    0
+                ],
+                "dest": [
+                    "box-70",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-57": {
+                "id": "line-57",
+                "src": [
+                    "box-67",
+                    0
+                ],
+                "dest": [
+                    "box-71",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-60": {
+                "id": "line-60",
+                "src": [
+                    "box-70",
+                    0
+                ],
+                "dest": [
+                    "box-73",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-62": {
+                "id": "line-62",
+                "src": [
+                    "box-52",
+                    0
+                ],
+                "dest": [
+                    "box-74",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-65": {
+                "id": "line-65",
+                "src": [
+                    "box-81",
+                    0
+                ],
+                "dest": [
+                    "box-75",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-66": {
+                "id": "line-66",
+                "src": [
+                    "box-75",
+                    0
+                ],
+                "dest": [
+                    "box-76",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-64": {
+                "id": "line-64",
+                "src": [
+                    "box-83",
+                    0
+                ],
+                "dest": [
+                    "box-76",
+                    3
+                ],
+                "disabled": false
+            },
+            "line-67": {
+                "id": "line-67",
+                "src": [
+                    "box-81",
+                    0
+                ],
+                "dest": [
+                    "box-76",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-59": {
+                "id": "line-59",
+                "src": [
+                    "box-64",
+                    0
+                ],
+                "dest": [
+                    "box-72",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-61": {
+                "id": "line-61",
+                "src": [
+                    "box-73",
+                    0
+                ],
+                "dest": [
+                    "box-72",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-63": {
+                "id": "line-63",
+                "src": [
+                    "box-82",
+                    0
+                ],
+                "dest": [
+                    "box-76",
+                    2
+                ],
+                "disabled": false
+            },
+            "line-70": {
+                "id": "line-70",
+                "src": [
+                    "box-71",
+                    0
+                ],
+                "dest": [
+                    "box-70",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-71": {
+                "id": "line-71",
+                "src": [
+                    "box-80",
+                    0
+                ],
+                "dest": [
+                    "box-79",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-72": {
+                "id": "line-72",
+                "src": [
+                    "box-79",
+                    0
+                ],
+                "dest": [
+                    "box-84",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-73": {
+                "id": "line-73",
+                "src": [
+                    "box-79",
+                    0
+                ],
+                "dest": [
+                    "box-85",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-74": {
+                "id": "line-74",
+                "src": [
+                    "box-88",
+                    2
+                ],
+                "dest": [
+                    "box-87",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-75": {
+                "id": "line-75",
+                "src": [
+                    "box-87",
+                    0
+                ],
+                "dest": [
+                    "box-85",
+                    2
+                ],
+                "disabled": false
+            },
+            "line-76": {
+                "id": "line-76",
+                "src": [
+                    "box-87",
+                    0
+                ],
+                "dest": [
+                    "box-84",
+                    2
+                ],
+                "disabled": false
+            },
+            "line-77": {
+                "id": "line-77",
+                "src": [
+                    "box-88",
+                    1
+                ],
+                "dest": [
+                    "box-80",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-78": {
+                "id": "line-78",
+                "src": [
+                    "box-90",
+                    0
+                ],
+                "dest": [
+                    "box-81",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-79": {
+                "id": "line-79",
+                "src": [
+                    "box-90",
+                    0
+                ],
+                "dest": [
+                    "box-82",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-80": {
+                "id": "line-80",
+                "src": [
+                    "box-90",
+                    0
+                ],
+                "dest": [
+                    "box-83",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-81": {
+                "id": "line-81",
+                "src": [
+                    "box-88",
+                    0
+                ],
+                "dest": [
+                    "box-89",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-82": {
+                "id": "line-82",
+                "src": [
+                    "box-88",
+                    1
+                ],
+                "dest": [
+                    "box-88",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-83": {
+                "id": "line-83",
+                "src": [
+                    "box-50",
+                    0
+                ],
+                "dest": [
+                    "box-88",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-85": {
+                "id": "line-85",
+                "src": [
+                    "box-88",
+                    1
+                ],
+                "dest": [
+                    "box-90",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-87": {
+                "id": "line-87",
+                "src": [
+                    "box-50",
+                    0
+                ],
+                "dest": [
+                    "box-69",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-88": {
+                "id": "line-88",
+                "src": [
+                    "box-50",
+                    0
+                ],
+                "dest": [
+                    "box-92",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-89": {
+                "id": "line-89",
+                "src": [
+                    "box-92",
+                    0
+                ],
+                "dest": [
+                    "box-93",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-90": {
+                "id": "line-90",
+                "src": [
+                    "box-94",
+                    0
+                ],
+                "dest": [
+                    "box-95",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-92": {
+                "id": "line-92",
+                "src": [
+                    "box-93",
+                    0
+                ],
+                "dest": [
+                    "box-96",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-93": {
+                "id": "line-93",
+                "src": [
+                    "box-96",
+                    0
+                ],
+                "dest": [
+                    "box-94",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-94": {
+                "id": "line-94",
+                "src": [
+                    "box-72",
+                    1
+                ],
+                "dest": [
+                    "box-97",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-95": {
+                "id": "line-95",
+                "src": [
+                    "box-96",
+                    0
+                ],
+                "dest": [
+                    "box-97",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-40": {
+                "id": "line-40",
+                "src": [
+                    "box-55",
+                    0
+                ],
+                "dest": [
+                    "box-40",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-96": {
+                "id": "line-96",
+                "src": [
+                    "box-98",
+                    0
+                ],
+                "dest": [
+                    "box-50",
+                    0
+                ],
+                "disabled": false
+            }
+        },
+        "boxes": {
+            "box-49": {
+                "id": "box-49",
+                "text": "document",
+                "inlets": 1,
+                "outlets": 1,
+                "rect": [
+                    135,
+                    120,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    555,
+                    675,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-50": {
+                "id": "box-50",
+                "text": "live.button",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    15,
+                    45,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    540,
+                    615,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-51": {
+                "id": "box-51",
+                "text": "Document..createElement canvas",
+                "inlets": 2,
+                "outlets": 3,
+                "rect": [
+                    135,
+                    150,
+                    195,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    540,
+                    705,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "canvas"
+                ],
+                "props": {}
+            },
+            "box-52": {
+                "id": "box-52",
+                "text": "new three.WebGLRenderer",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    45,
+                    240,
+                    165,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    540,
+                    720,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "three.WebGLRenderer"
+                ],
+                "props": {}
+            },
+            "box-53": {
+                "id": "box-53",
+                "text": "set canvas",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    210,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    765,
+                    720,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "canvas"
+                ],
+                "props": {}
+            },
+            "box-54": {
+                "id": "box-54",
+                "text": "new Object",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    45,
+                    120,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    555,
+                    660,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "Object"
+                ],
+                "props": {}
+            },
+            "box-55": {
+                "id": "box-55",
+                "text": "v canvas",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    135,
+                    180,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    750,
+                    735,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "canvas"
+                ],
+                "props": {}
+            },
+            "box-57": {
+                "id": "box-57",
+                "text": "new three.PerspectiveCamera 75 2 0.1 5",
+                "inlets": 4,
+                "outlets": 5,
+                "rect": [
+                    1065,
+                    90,
+                    225,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    735,
+                    765,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "three.PerspectiveCamera",
+                    75,
+                    2,
+                    0.1,
+                    5
+                ],
+                "props": {}
+            },
+            "box-58": {
+                "id": "box-58",
+                "text": "v camera",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    1065,
+                    120,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    750,
+                    735,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "camera"
+                ],
+                "props": {}
+            },
+            "box-59": {
+                "id": "box-59",
+                "text": "get position",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    1065,
+                    150,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    285,
+                    405,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "position"
+                ],
+                "props": {}
+            },
+            "box-60": {
+                "id": "box-60",
+                "text": "set z 2",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    1065,
+                    180,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    300,
+                    465,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "z",
+                    2
+                ],
+                "props": {}
+            },
+            "box-62": {
+                "id": "box-62",
+                "text": "bang",
+                "inlets": 1,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    90,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    615,
+                    75,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-63": {
+                "id": "box-63",
+                "text": "new three.Scene",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    360,
+                    90,
+                    105,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    345,
+                    330,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "three.Scene"
+                ],
+                "props": {}
+            },
+            "box-64": {
+                "id": "box-64",
+                "text": "v scene",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    360,
+                    120,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    270,
+                    180,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "scene"
+                ],
+                "props": {}
+            },
+            "box-65": {
+                "id": "box-65",
+                "text": "new three.BoxGeometry 1 1 1",
+                "inlets": 6,
+                "outlets": 7,
+                "rect": [
+                    495,
+                    90,
+                    165,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    180,
+                    180,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "three.BoxGeometry",
+                    1,
+                    1,
+                    1
+                ],
+                "props": {}
+            },
+            "box-66": {
+                "id": "box-66",
+                "text": "v geometry",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    495,
+                    120,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    180,
+                    240,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "geometry"
+                ],
+                "props": {}
+            },
+            "box-67": {
+                "id": "box-67",
+                "text": "new three.MeshPhongMaterial",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    675,
+                    120,
+                    180,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    225,
+                    285,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "three.MeshPhongMaterial"
+                ],
+                "props": {}
+            },
+            "box-69": {
+                "id": "box-69",
+                "text": "eval ({color:0x44aa88})",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    675,
+                    90,
+                    150,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    285,
+                    240,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "({color:0x44aa88})"
+                ],
+                "props": {}
+            },
+            "box-70": {
+                "id": "box-70",
+                "text": "new three.Mesh",
+                "inlets": 2,
+                "outlets": 3,
+                "rect": [
+                    495,
+                    180,
+                    105,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    60,
+                    225,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "three.Mesh"
+                ],
+                "props": {}
+            },
+            "box-71": {
+                "id": "box-71",
+                "text": "v material",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    675,
+                    150,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    315,
+                    180,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "material"
+                ],
+                "props": {}
+            },
+            "box-73": {
+                "id": "box-73",
+                "text": "v cube",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    495,
+                    210,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    135,
+                    255,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "cube"
+                ],
+                "props": {}
+            },
+            "box-74": {
+                "id": "box-74",
+                "text": "v renderer",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    270,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    765,
+                    285,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "renderer"
+                ],
+                "props": {}
+            },
+            "box-75": {
+                "id": "box-75",
+                "text": "get render",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    510,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    30,
+                    345,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "render"
+                ],
+                "props": {}
+            },
+            "box-76": {
+                "id": "box-76",
+                "text": "Function..call @args 3",
+                "inlets": 4,
+                "outlets": 5,
+                "rect": [
+                    45,
+                    540,
+                    180,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    45,
+                    405,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {
+                    "args": 3
+                }
+            },
+            "box-72": {
+                "id": "box-72",
+                "text": "three.Object3D..add",
+                "inlets": 2,
+                "outlets": 3,
+                "rect": [
+                    360,
+                    240,
+                    120,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    30,
+                    210,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-79": {
+                "id": "box-79",
+                "text": "get rotation",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    300,
+                    480,
+                    90,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    495,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "rotation"
+                ],
+                "props": {}
+            },
+            "box-80": {
+                "id": "box-80",
+                "text": "v cube",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    300,
+                    450,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    435,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "cube"
+                ],
+                "props": {}
+            },
+            "box-81": {
+                "id": "box-81",
+                "text": "v renderer",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    480,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    765,
+                    285,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "renderer"
+                ],
+                "props": {}
+            },
+            "box-82": {
+                "id": "box-82",
+                "text": "v scene",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    135,
+                    510,
+                    60,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    270,
+                    180,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "scene"
+                ],
+                "props": {}
+            },
+            "box-83": {
+                "id": "box-83",
+                "text": "v camera",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    210,
+                    510,
+                    60,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    750,
+                    735,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "camera"
+                ],
+                "props": {}
+            },
+            "box-84": {
+                "id": "box-84",
+                "text": "set x",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    300,
+                    510,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    540,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "x"
+                ],
+                "props": {}
+            },
+            "box-85": {
+                "id": "box-85",
+                "text": "set y",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    360,
+                    510,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    540,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "y"
+                ],
+                "props": {}
+            },
+            "box-87": {
+                "id": "box-87",
+                "text": "* 0.001",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    390,
+                    450,
+                    60,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    210,
+                    495,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    0.001
+                ],
+                "props": {}
+            },
+            "box-88": {
+                "id": "box-88",
+                "text": "lambda 1",
+                "inlets": 2,
+                "outlets": 3,
+                "rect": [
+                    15,
+                    420,
+                    90,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    210,
+                    420,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    1
+                ],
+                "props": {}
+            },
+            "box-89": {
+                "id": "box-89",
+                "text": "requestAnimationFrame",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    15,
+                    570,
+                    150,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    210,
+                    630,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-90": {
+                "id": "box-90",
+                "text": "bang",
+                "inlets": 1,
+                "outlets": 1,
+                "rect": [
+                    45,
+                    450,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    420,
+                    390,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-92": {
+                "id": "box-92",
+                "text": "eval 0xFFFFFF",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    870,
+                    90,
+                    105,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    915,
+                    120,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "0xFFFFFF"
+                ],
+                "props": {}
+            },
+            "box-93": {
+                "id": "box-93",
+                "text": "new three.DirectionalLight 0 1",
+                "inlets": 2,
+                "outlets": 3,
+                "rect": [
+                    870,
+                    120,
+                    180,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    930,
+                    150,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "three.DirectionalLight",
+                    0,
+                    1
+                ],
+                "props": {
+                    "args": 2
+                }
+            },
+            "box-94": {
+                "id": "box-94",
+                "text": "get position",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    870,
+                    180,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    870,
+                    225,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "position"
+                ],
+                "props": {}
+            },
+            "box-95": {
+                "id": "box-95",
+                "text": "Vector3..set -1 2 4",
+                "inlets": 4,
+                "outlets": 5,
+                "rect": [
+                    870,
+                    210,
+                    105,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    900,
+                    270,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    -1,
+                    2,
+                    4
+                ],
+                "props": {}
+            },
+            "box-96": {
+                "id": "box-96",
+                "text": "v light",
+                "inlets": 3,
+                "outlets": 1,
+                "rect": [
+                    870,
+                    150,
+                    75,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    930,
+                    165,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "light"
+                ],
+                "props": {}
+            },
+            "box-97": {
+                "id": "box-97",
+                "text": "three.Object3D..add",
+                "inlets": 2,
+                "outlets": 3,
+                "rect": [
+                    360,
+                    270,
+                    120,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    30,
+                    210,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-40": {
+                "id": "box-40",
+                "text": "view",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    510,
+                    375,
+                    315,
+                    165
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    330,
+                    630,
+                    210,
+                    90
+                ],
+                "data": {},
+                "args": [],
+                "props": {
+                    "shadow": true,
+                    "containerProps": {
+                        "style": {
+                            "display": "flex"
+                        }
+                    }
+                }
+            },
+            "box-98": {
+                "id": "box-98",
+                "text": "loadbang",
+                "inlets": 0,
+                "outlets": 1,
+                "rect": [
+                    15,
+                    15,
+                    90,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    105,
+                    45,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            }
+        },
+        "props": {
+            "mode": "js",
+            "dependencies": [
+                [
+                    "three",
+                    "https://unpkg.com/three"
+                ]
+            ],
+            "bgColor": "#3d4146",
+            "editingBgColor": "rgba(82, 87, 94, 1)",
+            "grid": [
+                15,
+                15
+            ],
+            "openInPresentation": false,
+            "boxIndexCount": 98,
+            "lineIndexCount": 96
+        },
+        "data": {}
+    },
+    "data": {
+        "patcher": {}
+    }
+}

@@ -1,0 +1,868 @@
+{
+    "patcher": {
+        "lines": {
+            "line-1": {
+                "id": "line-1",
+                "src": [
+                    "box-2",
+                    0
+                ],
+                "dest": [
+                    "box-4",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-2": {
+                "id": "line-2",
+                "src": [
+                    "box-2",
+                    0
+                ],
+                "dest": [
+                    "box-3",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-3": {
+                "id": "line-3",
+                "src": [
+                    "box-7",
+                    0
+                ],
+                "dest": [
+                    "box-8",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-4": {
+                "id": "line-4",
+                "src": [
+                    "box-7",
+                    0
+                ],
+                "dest": [
+                    "box-9",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-5": {
+                "id": "line-5",
+                "src": [
+                    "box-11",
+                    0
+                ],
+                "dest": [
+                    "box-10",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-7": {
+                "id": "line-7",
+                "src": [
+                    "box-10",
+                    0
+                ],
+                "dest": [
+                    "box-18",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-8": {
+                "id": "line-8",
+                "src": [
+                    "box-17",
+                    0
+                ],
+                "dest": [
+                    "box-16",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-9": {
+                "id": "line-9",
+                "src": [
+                    "box-16",
+                    0
+                ],
+                "dest": [
+                    "box-16",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-10": {
+                "id": "line-10",
+                "src": [
+                    "box-16",
+                    0
+                ],
+                "dest": [
+                    "box-19",
+                    1
+                ],
+                "disabled": false
+            },
+            "line-13": {
+                "id": "line-13",
+                "src": [
+                    "box-22",
+                    0
+                ],
+                "dest": [
+                    "box-22",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-14": {
+                "id": "line-14",
+                "src": [
+                    "box-27",
+                    0
+                ],
+                "dest": [
+                    "box-28",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-15": {
+                "id": "line-15",
+                "src": [
+                    "box-31",
+                    0
+                ],
+                "dest": [
+                    "box-32",
+                    0
+                ],
+                "disabled": false
+            },
+            "line-16": {
+                "id": "line-16",
+                "src": [
+                    "box-30",
+                    0
+                ],
+                "dest": [
+                    "box-31",
+                    0
+                ],
+                "disabled": false
+            }
+        },
+        "boxes": {
+            "box-2": {
+                "id": "box-2",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    30,
+                    105,
+                    60,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    150,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "anything"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-3": {
+                "id": "box-3",
+                "text": "print A",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    30,
+                    150,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    60,
+                    165,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "A"
+                ],
+                "props": {}
+            },
+            "box-4": {
+                "id": "box-4",
+                "text": "print B",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    90,
+                    150,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    60,
+                    165,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "B"
+                ],
+                "props": {}
+            },
+            "box-5": {
+                "id": "box-5",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    30,
+                    30,
+                    120,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    135,
+                    0,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "Messaging priority"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-6": {
+                "id": "box-6",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    30,
+                    60,
+                    165,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    120,
+                    165,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "B will receive earlier than A"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-7": {
+                "id": "box-7",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    165,
+                    105,
+                    60,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    150,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "anything"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-8": {
+                "id": "box-8",
+                "text": "print B",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    165,
+                    195,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    60,
+                    165,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "B"
+                ],
+                "props": {}
+            },
+            "box-9": {
+                "id": "box-9",
+                "text": "print A",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    165,
+                    150,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    60,
+                    165,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    "A"
+                ],
+                "props": {}
+            },
+            "box-10": {
+                "id": "box-10",
+                "text": "+ 2 @textAlign right",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    255,
+                    150,
+                    135,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    60,
+                    270,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    2
+                ],
+                "props": {
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                    "textAlign": "right"
+                }
+            },
+            "box-11": {
+                "id": "box-11",
+                "text": "numbox",
+                "inlets": 2,
+                "outlets": 2,
+                "rect": [
+                    255,
+                    105,
+                    90,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    75,
+                    240,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {
+                    "appearance": "slider"
+                }
+            },
+            "box-13": {
+                "id": "box-13",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    255,
+                    30,
+                    225,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    135,
+                    0,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "A box has its arguments and properties"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-14": {
+                "id": "box-14",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    255,
+                    60,
+                    270,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    135,
+                    0,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "They can be changed dynamically via inspector ->"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-16": {
+                "id": "box-16",
+                "text": "+ 1",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    30,
+                    345,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    60,
+                    285,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    1
+                ],
+                "props": {}
+            },
+            "box-17": {
+                "id": "box-17",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    30,
+                    300,
+                    45,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    255,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "1"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-18": {
+                "id": "box-18",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    255,
+                    195,
+                    90,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    255,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "2"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-19": {
+                "id": "box-19",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    30,
+                    390,
+                    45,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    90,
+                    255,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "2"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-20": {
+                "id": "box-20",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    30,
+                    255,
+                    195,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    135,
+                    0,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "You can build a loop with cold inlet"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-22": {
+                "id": "box-22",
+                "text": "+ 1",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    255,
+                    345,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    60,
+                    285,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [
+                    1
+                ],
+                "props": {}
+            },
+            "box-24": {
+                "id": "box-24",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    255,
+                    255,
+                    195,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    135,
+                    0,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "But don't do it with hot ones"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-26": {
+                "id": "box-26",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    30,
+                    435,
+                    120,
+                    36
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    135,
+                    0,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "You can unlock the patcher to edit it ↓"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-27": {
+                "id": "box-27",
+                "text": "live.button",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    255,
+                    435,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    45,
+                    435,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-28": {
+                "id": "box-28",
+                "text": "live.button",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    255,
+                    495,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    45,
+                    495,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-29": {
+                "id": "box-29",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    30,
+                    480,
+                    120,
+                    50
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    135,
+                    0,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "You can switch to the presentation mode ↓"
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            },
+            "box-30": {
+                "id": "box-30",
+                "text": "live.button",
+                "inlets": 1,
+                "outlets": 2,
+                "rect": [
+                    30,
+                    585,
+                    30,
+                    30
+                ],
+                "background": false,
+                "presentation": true,
+                "presentationRect": [
+                    45,
+                    435,
+                    30,
+                    30
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-31": {
+                "id": "box-31",
+                "text": "message",
+                "inlets": 2,
+                "outlets": 1,
+                "rect": [
+                    30,
+                    630,
+                    90,
+                    22
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    30,
+                    645,
+                    90,
+                    20
+                ],
+                "data": {
+                    "text": "Do something"
+                },
+                "args": [],
+                "props": {}
+            },
+            "box-32": {
+                "id": "box-32",
+                "text": "alert",
+                "inlets": 1,
+                "outlets": 1,
+                "rect": [
+                    30,
+                    675,
+                    45,
+                    23
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    30,
+                    705,
+                    90,
+                    20
+                ],
+                "data": {},
+                "args": [],
+                "props": {}
+            },
+            "box-33": {
+                "id": "box-33",
+                "text": "comment",
+                "inlets": 1,
+                "outlets": 0,
+                "rect": [
+                    135,
+                    615,
+                    120,
+                    50
+                ],
+                "background": false,
+                "presentation": false,
+                "presentationRect": [
+                    135,
+                    0,
+                    90,
+                    20
+                ],
+                "data": {
+                    "value": "The button outputs a Bang. Bang acts like triggers everywhere."
+                },
+                "args": [],
+                "props": {
+                    "textColor": "rgba(0, 0, 0, 1)"
+                }
+            }
+        },
+        "props": {
+            "mode": "js",
+            "dependencies": [],
+            "bgColor": "rgba(255, 255, 255, 1)",
+            "editingBgColor": "rgba(189, 189, 189, 1)",
+            "grid": [
+                15,
+                15
+            ],
+            "openInPresentation": false,
+            "boxIndexCount": 33,
+            "lineIndexCount": 16
+        },
+        "data": {}
+    },
+    "data": {}
+}

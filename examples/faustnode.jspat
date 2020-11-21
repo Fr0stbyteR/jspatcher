@@ -1,0 +1,382 @@
+{
+    "lines": {
+        "line-24": {
+            "id": "line-24",
+            "src": [
+                "box-3",
+                0
+            ],
+            "dest": [
+                "box-1",
+                0
+            ],
+            "disabled": false
+        },
+        "line-25": {
+            "id": "line-25",
+            "src": [
+                "box-24",
+                0
+            ],
+            "dest": [
+                "box-1",
+                6
+            ],
+            "disabled": false
+        },
+        "line-26": {
+            "id": "line-26",
+            "src": [
+                "box-27",
+                0
+            ],
+            "dest": [
+                "box-1",
+                6
+            ],
+            "disabled": false
+        },
+        "line-27": {
+            "id": "line-27",
+            "src": [
+                "box-30",
+                0
+            ],
+            "dest": [
+                "box-18",
+                0
+            ],
+            "disabled": false
+        },
+        "line-28": {
+            "id": "line-28",
+            "src": [
+                "box-29",
+                0
+            ],
+            "dest": [
+                "box-3",
+                0
+            ],
+            "disabled": false
+        },
+        "line-30": {
+            "id": "line-30",
+            "src": [
+                "box-7",
+                0
+            ],
+            "dest": [
+                "box-5",
+                1
+            ],
+            "disabled": false
+        },
+        "line-31": {
+            "id": "line-31",
+            "src": [
+                "box-5",
+                1
+            ],
+            "dest": [
+                "box-10",
+                0
+            ],
+            "disabled": false
+        },
+        "line-32": {
+            "id": "line-32",
+            "src": [
+                "box-8",
+                0
+            ],
+            "dest": [
+                "box-7",
+                0
+            ],
+            "disabled": false
+        },
+        "line-33": {
+            "id": "line-33",
+            "src": [
+                "box-10",
+                0
+            ],
+            "dest": [
+                "box-11",
+                1
+            ],
+            "disabled": false
+        },
+        "line-34": {
+            "id": "line-34",
+            "src": [
+                "box-1",
+                0
+            ],
+            "dest": [
+                "box-30",
+                0
+            ],
+            "disabled": false
+        },
+        "line-35": {
+            "id": "line-35",
+            "src": [
+                "box-1",
+                1
+            ],
+            "dest": [
+                "box-30",
+                1
+            ],
+            "disabled": false
+        }
+    },
+    "boxes": {
+        "box-1": {
+            "id": "box-1",
+            "text": "faust.faustnode~",
+            "inlets": 7,
+            "outlets": 3,
+            "rect": [
+                30,
+                315,
+                210,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "code": "declare name \"bubble\";\r\ndeclare description \"Production of a water drop bubble sound.\";\r\ndeclare license \"MIT\";\r\ndeclare copyright \"(c) 2017: Yann Orlarey, GRAME\";\r\n\r\nimport(\"stdfaust.lib\");\r\n\r\n\r\n//---------------------------`bubble`--------------------------\r\n// bubble(f0, trig) : produces a water drop bubble sound\r\n//\r\n// #### Usage\r\n//\r\n// ```\r\n// bubble(f0, trig) : _\r\n// ```\r\n//\r\n// Where:\r\n//\r\n// * ` f0 `: base frequency of bubble sound\r\n// * `trig`: trigs the bubble sound on the rising front\r\n//\r\n// #### Example\r\n//\r\n// ```\r\n// button(\"drop\") : bubble(600) : _\r\n// ```\r\n//\r\n// #### Reference:\r\n//\r\n// <http://www.cs.ubc.ca/~kvdoel/publications/tap05.pdf>\r\n//------------------------------------------------------------\r\n\r\nbubble(f0,trig) = os.osc(f) * (exp(-damp*time) : si.smooth(0.99))\r\n\twith {\r\n\t\tdamp = 0.043*f0 + 0.0014*f0^(3/2);\r\n\t\tf = f0*(1+sigma*time);\r\n\t\tsigma = eta * damp;\r\n\t\teta = 0.075;\r\n\t\ttime = 0 : (select2(trig>trig'):+(1)) ~ _ : ba.samp2sec;\r\n\t};\r\n\r\nprocess = button(\"drop\") : bubble(hslider(\"v:bubble/freq\", 600, 150, 2000, 1)) <: dm.freeverb_demo;\r\n"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-3": {
+            "id": "box-3",
+            "text": "code",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                30,
+                75,
+                375,
+                120
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "value": "declare name \"bubble\";\r\ndeclare description \"Production of a water drop bubble sound.\";\r\ndeclare license \"MIT\";\r\ndeclare copyright \"(c) 2017: Yann Orlarey, GRAME\";\r\n\r\nimport(\"stdfaust.lib\");\r\n\r\n\r\n//---------------------------`bubble`--------------------------\r\n// bubble(f0, trig) : produces a water drop bubble sound\r\n//\r\n// #### Usage\r\n//\r\n// ```\r\n// bubble(f0, trig) : _\r\n// ```\r\n//\r\n// Where:\r\n//\r\n// * ` f0 `: base frequency of bubble sound\r\n// * `trig`: trigs the bubble sound on the rising front\r\n//\r\n// #### Example\r\n//\r\n// ```\r\n// button(\"drop\") : bubble(600) : _\r\n// ```\r\n//\r\n// #### Reference:\r\n//\r\n// <http://www.cs.ubc.ca/~kvdoel/publications/tap05.pdf>\r\n//------------------------------------------------------------\r\n\r\nbubble(f0,trig) = os.osc(f) * (exp(-damp*time) : si.smooth(0.99))\r\n\twith {\r\n\t\tdamp = 0.043*f0 + 0.0014*f0^(3/2);\r\n\t\tf = f0*(1+sigma*time);\r\n\t\tsigma = eta * damp;\r\n\t\teta = 0.075;\r\n\t\ttime = 0 : (select2(trig>trig'):+(1)) ~ _ : ba.samp2sec;\r\n\t};\r\n\r\nprocess = button(\"drop\") : bubble(hslider(\"v:bubble/freq\", 600, 150, 2000, 1)) <: dm.freeverb_demo;\r\n"
+            },
+            "args": [
+                "faust"
+            ],
+            "props": {}
+        },
+        "box-5": {
+            "id": "box-5",
+            "text": "analyser~",
+            "inlets": 6,
+            "outlets": 6,
+            "rect": [
+                285,
+                300,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-7": {
+            "id": "box-7",
+            "text": "new Float32Array 2048",
+            "inlets": 3,
+            "outlets": 4,
+            "rect": [
+                285,
+                270,
+                150,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                "Float32Array",
+                2048
+            ],
+            "props": {}
+        },
+        "box-8": {
+            "id": "box-8",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                285,
+                240,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": ""
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-10": {
+            "id": "box-10",
+            "text": "get 0",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                285,
+                330,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                0
+            ],
+            "props": {}
+        },
+        "box-11": {
+            "id": "box-11",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                285,
+                360,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "0"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-18": {
+            "id": "box-18",
+            "text": "destination~",
+            "inlets": 1,
+            "outlets": 1,
+            "rect": [
+                30,
+                435,
+                105,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-24": {
+            "id": "box-24",
+            "text": "toggle",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                195,
+                210,
+                30,
+                30
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-27": {
+            "id": "box-27",
+            "text": "message",
+            "inlets": 2,
+            "outlets": 1,
+            "rect": [
+                233,
+                211.71875,
+                90,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {
+                "text": "1 0.1 0 0.1"
+            },
+            "args": [],
+            "props": {}
+        },
+        "box-29": {
+            "id": "box-29",
+            "text": "button",
+            "inlets": 1,
+            "outlets": 2,
+            "rect": [
+                30,
+                30,
+                30,
+                30
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [],
+            "props": {}
+        },
+        "box-30": {
+            "id": "box-30",
+            "text": "merger~ 2",
+            "inlets": 2,
+            "outlets": 2,
+            "rect": [
+                30,
+                375,
+                105,
+                22
+            ],
+            "background": false,
+            "presentation": false,
+            "data": {},
+            "args": [
+                2
+            ],
+            "props": {}
+        }
+    },
+    "props": {
+        "mode": "js",
+        "bgColor": [
+            61,
+            65,
+            70,
+            1
+        ],
+        "editingBgColor": [
+            82,
+            87,
+            94,
+            1
+        ],
+        "grid": [
+            15,
+            15
+        ],
+        "boxIndexCount": 31,
+        "lineIndexCount": 37
+    }
+}

@@ -12,7 +12,7 @@ export class GenLibOp<P extends Record<string, any> = {}> extends LibOp<P> {
         return ['import("gen2faust.lib");'];
     }
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
-        if (e.args.length || "ins" in e.props || "outs" in e.props) {
+        if (e.args || "ins" in e.props || "outs" in e.props) {
             this.inlets = ~~this.state.inlets - Math.min(~~this.state.inlets, this.constArgsCount);
             this.outlets = ~~this.state.outlets;
         }
@@ -294,7 +294,7 @@ for (const category in opMap) {
             get symbol() {
                 return typeof symbol === "string" ? [symbol] : symbol;
             }
-            state: FaustOpState = { ...this.state, inlets, outlets: outlets || 1, defaultArgs: defaultArgs || [0] };
+            state: FaustOpState = { ...this.state, inlets, outlets: outlets || 1, defaultArgs: defaultArgs || new Array(inlets).fill(0) };
             reverseApply = !applyArgsFromStart;
         } as typeof GenLibOp;
         genOps[name] = Op;

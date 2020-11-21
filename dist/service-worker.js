@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.1.1605947671555"
+    prefix: "0.0.1.1605957935311"
   });
   workbox.skipWaiting();
   workbox.clientsClaim();
@@ -291,7 +291,7 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "ee0c4a1cc1e8ad37c8a98b5ae779bf6d"
+    "revision": "8e59c9410f355adbe8d51c7e5696ef57"
   }, {
     "url": "js/06974dc2d38c64a776e5.js",
     "revision": "13ddebe9c17739e4566e587d740165e2"
@@ -322,9 +322,6 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
   }, {
     "url": "js/57adc54a85b1020609544ca7f331b0dc.worker.js",
     "revision": "ba57e7a245b5ccb699cf0a3552f20db1"
-  }, {
-    "url": "js/607770a9322b5c142cd0.js",
-    "revision": "25bf984b8baa7d8f26edf8c55d8eac5e"
   }, {
     "url": "js/6c74c1a3f009d1037f95.worklet.js",
     "revision": "4c97d606116c0facb80fb9a302552f11"
@@ -370,6 +367,9 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
   }, {
     "url": "js/ea75fc3864d451358f55.worker.js",
     "revision": "d49c9e3c4661dc7017ea4451d3d521ca"
+  }, {
+    "url": "js/f8cf1c4786c5aa6d500b.js",
+    "revision": "d9a78784c1971077d5dd103d8d8232ed"
   }, {
     "url": "js/f93eeb8c3f3b608a3d74.worker.js",
     "revision": "7843ceeadca1e8b7a695dccd1a46b56f"
