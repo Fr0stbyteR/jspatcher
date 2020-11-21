@@ -276,8 +276,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     }
 }
 
-class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean }, { width: string; height: string }> {
-    state = { width: "100%", height: "100%" };
+class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean }, { width: string; height: string; timestamp: number }> {
+    state = { width: "100%", height: "100%", timestamp: performance.now() };
     lines: Record<string, JSX.Element> = {};
     componentDidMount() {
         this.handleLoading();
@@ -298,39 +298,37 @@ class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
     }
     handleCreateLine = (line: Line) => {
         if (this.props.patcher.state.isLoading) return;
-        this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
-        this.forceUpdate();
+        this.lines[line.id] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
+        this.setState({ timestamp: performance.now() });
     };
     handleCreate = (created: RawPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(created.lines).forEach((id) => {
             const line = created.lines[id];
-            this.lines[line.id] = <LineUI {...this.props} id={line.id} key={line.id} />;
+            this.lines[line.id] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
         });
-        this.forceUpdate();
+        this.setState({ timestamp: performance.now() });
     };
     handleDeleteLine = (line: Line) => {
         if (this.props.patcher.state.isLoading) return;
         delete this.lines[line.id];
-        this.forceUpdate();
+        this.setState({ timestamp: performance.now() });
     };
     handleDelete = (deleted: RawPatcher) => {
         if (this.props.patcher.state.isLoading) return;
         Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
-        this.forceUpdate();
+        this.setState({ timestamp: performance.now() });
     };
     handleLoading = (loading?: string[]) => {
         if (loading) return;
         for (const lineID in this.lines) {
             delete this.lines[lineID];
         }
-        this.forceUpdate(() => { // Unmount All of them, please.
-            for (const lineID in this.props.patcher.lines) {
-                const line = this.props.patcher.lines[lineID];
-                this.lines[lineID] = <LineUI {...this.props} id={line.id} key={line.id} />;
-            }
-            this.forceUpdate();
-        });
+        for (const lineID in this.props.patcher.lines) {
+            const line = this.props.patcher.lines[lineID];
+            this.lines[lineID] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
+        }
+        this.setState({ timestamp: performance.now() });
     };
     render() {
         return (

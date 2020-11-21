@@ -913,7 +913,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         await Promise.all($postInit);
         for (const lineID in clipboard.lines) {
             const line = clipboard.lines[lineID];
-            if (this.lines[line.id]) line.id = "line-" + ++this.props.lineIndexCount;
+            line.id = "line-" + ++this.props.lineIndexCount;
             line.src[0] = idMap[line.src[0]];
             line.dest[0] = idMap[line.dest[0]];
             const createdLine = this.createLine(line);
