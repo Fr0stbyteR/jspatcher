@@ -2,6 +2,7 @@ import { Bang, BaseObject } from "../Base";
 import { TMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
+import "./Diagram.scss";
 
 export default class diagram extends BaseObject<{}, { svg: string, container: HTMLDivElement }, [Bang | string | DefaultFaustDynamicNodeState["node"]], [string], [], {}, DOMUIState> {
     static package = "Faust";

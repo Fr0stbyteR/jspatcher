@@ -1,0 +1,6 @@
+.patcher div.box-ui > div.package-faust-diagram {
+    & > div > div > svg {
+        height: 100%;
+        width: 100%;
+    }
+}
