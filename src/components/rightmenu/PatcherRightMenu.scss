@@ -121,6 +121,8 @@
                         display: block;
                         margin: 0px;
                         border-radius: 0px;
+                        min-height: 100%;
+
                         & tbody {
                             display: table;
                             width: 100%;

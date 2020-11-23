@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.1.1605957935311"
+    prefix: "0.0.1.1606136661604"
   });
   workbox.skipWaiting();
   workbox.clientsClaim();
@@ -270,10 +270,10 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
     "revision": "6024187832c1ad7af33a5103e57bcfc8"
   }, {
     "url": "deps/libfaust-wasm.data",
-    "revision": "93d4a7c87f8501bcfc88e82e14a26b18"
+    "revision": "70394d335820f113268e9764eb113fe5"
   }, {
     "url": "deps/libfaust-wasm.wasm",
-    "revision": "8c3ed9cb62e381b57734705dc3d2aefa"
+    "revision": "24c91c59ae7966e3461f5aae8a287c19"
   }, {
     "url": "deps/primitives.lib",
     "revision": "27152c0ce5169d607ce0667196b1b858"
@@ -291,7 +291,7 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "8c84858de9e0b40395435f78f2b648c5"
+    "revision": "9ca0dd935c50a3191f537a4a91551c9b"
   }, {
     "url": "js/06974dc2d38c64a776e5.js",
     "revision": "13ddebe9c17739e4566e587d740165e2"
@@ -307,9 +307,6 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
   }, {
     "url": "js/1548880c0da542b2e677.worker.js",
     "revision": "fffbc73d7e7c383918393bc7be42180a"
-  }, {
-    "url": "js/1823c4e6e179e841d27e.js",
-    "revision": "9e4ec7b576647e773f84be4853848239"
   }, {
     "url": "js/1a0ca93a78e125883b52.js",
     "revision": "930c93fdbdbf82afa730f9ff033e6b4e"
@@ -367,6 +364,9 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
   }, {
     "url": "js/ea75fc3864d451358f55.worker.js",
     "revision": "d49c9e3c4661dc7017ea4451d3d521ca"
+  }, {
+    "url": "js/f5d262f7b3aebb72366f.js",
+    "revision": "e10a7e0a829395b400eb33006fe63764"
   }, {
     "url": "js/f8cf1c4786c5aa6d500b.js",
     "revision": "d9a78784c1971077d5dd103d8d8232ed"

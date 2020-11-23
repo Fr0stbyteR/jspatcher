@@ -62,7 +62,8 @@ class CommentUI extends BaseUI<comment, {}, { value: string }> {
         const spanStyle: React.CSSProperties = {
             color: this.state.textColor,
             fontFamily: `${this.state.fontFamily}, Tahoma, sans-serif`,
-            fontSize: this.state.fontSize,
+            fontSize: `${this.state.fontSize}px`,
+            lineHeight: `${this.state.fontSize}px`,
             fontWeight: this.state.fontWeight,
             fontStyle: this.state.fontStyle,
             textAlign: this.state.textAlign

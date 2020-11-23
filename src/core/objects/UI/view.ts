@@ -4,13 +4,13 @@ import { TMeta, TPropsMeta } from "../../types";
 import { Bang } from "../Base";
 
 export class ViewUI extends DOMUI<view> {
-    state: DOMUIState = { ...this.state, children: this.object.state.children };
+    state: DOMUIState = { ...this.state, children: this.object.state.children, containerProps: this.object.getProp("containerProps") };
 }
 export interface ViewProps {
     shadow: boolean;
     containerProps: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;
 }
-export default class view extends UIObject<{}, { children: ChildNode[] }, [string | Element], [], [string], {}, DOMUIState> {
+export default class view extends UIObject<{}, { children: ChildNode[] }, [string | Element], [], [string], ViewProps, DOMUIState> {
     static description = "View HTML Element";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
