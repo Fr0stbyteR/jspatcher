@@ -273,10 +273,11 @@ export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [
     }
 }
 
-export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher }> {
-    state: { patcher: Patcher } & DefaultPopupUIState = {
+export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher; timestamp: number }> {
+    state: { patcher: Patcher; timestamp: number } & DefaultPopupUIState = {
         ...this.state,
-        patcher: this.object.state.patcher
+        patcher: this.object.state.patcher,
+        timestamp: performance.now()
     };
     static dockable = true;
     handleDoubleClick = () => {
@@ -284,6 +285,9 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
     };
     handleClose = () => this.setState({ modalOpen: false }, () => this.props.object.patcher.env.activeInstance = this.props.object.patcher);
     handleMouseDownModal = (e: React.MouseEvent) => e.stopPropagation();
+    componentDidUpdate(prevProps: any, prevState: Readonly<{ patcher: Patcher; timestamp: number } & BaseUIState>) {
+        if (prevState.patcher !== this.state.patcher) this.setState({ timestamp: performance.now() });
+    }
     render() {
         const content = <div style={{ height: "100%", width: "100%", display: "flex", position: "relative" }}>
             <div className="ui-flex-row" style={{ flex: "1 1 auto", overflow: "auto" }}>
@@ -291,7 +295,7 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
                     <LeftMenu env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} noFileMgr />
                 </div>
                 <div className="ui-center">
-                    <PatcherEditorUI patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                    <PatcherEditorUI key={this.state.timestamp} patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
                 </div>
             </div>
         </div>;
@@ -610,25 +614,29 @@ export class gen extends faustPatcher {
     static description = "Gen Sub-patcher, compiled to AudioNode";
     type: "faust" | "gen" = "gen";
 }
-export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher }> {
+export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher; timestamp: number }> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     static defaultSize: [number, number] = [210, 90];
-    state: { patcher: Patcher } & BaseUIState = {
+    state: { patcher: Patcher; timestamp: number } & BaseUIState = {
         ...this.state,
-        patcher: this.object.state.patcher
+        patcher: this.object.state.patcher,
+        timestamp: performance.now()
     };
+    componentDidUpdate(prevProps: any, prevState: Readonly<{ patcher: Patcher; timestamp: number } & BaseUIState>) {
+        if (prevState.patcher !== this.state.patcher) this.setState({ timestamp: performance.now() });
+    }
     static dockable = true;
     render() {
         if (this.props.inDock) {
             return (
                 <div style={{ height: "100%", width: "100%", display: "flex" }}>
-                    <PatcherEditorUI patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                    <PatcherEditorUI key={this.state.timestamp} patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
                 </div>
             );
         }
         const children = (
             <div style={{ height: "100%", width: "100%", display: "flex" }}>
-                <PatcherUI patcher={this.state.patcher} transparent runtime />
+                <PatcherUI key={this.state.timestamp} patcher={this.state.patcher} transparent runtime />
             </div>
         );
         return <BaseUI {...this.props} children={children} />;

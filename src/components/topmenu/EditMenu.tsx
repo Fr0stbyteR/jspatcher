@@ -78,6 +78,7 @@ export default class EditMenu extends React.PureComponent<P, S> {
     handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
         if (this.state.instance instanceof Patcher) this.state.instance.off("locked", this.handleLocked);
         this.setState({ instance });
+        instance.on("locked", this.handleLocked);
     };
     componentDidMount() {
         this.props.env.on("activeInstance", this.handleActiveInstance);
