@@ -871,6 +871,22 @@ class Par extends Iterator {
 }
 export class Effect extends Iterator {
     static description = "Effect processor";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "number",
+        description: "Effect output 1"
+    }, {
+        isHot: true,
+        type: "number",
+        description: "Effect output 2"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "number",
+        description: "Effect input 1"
+    }, {
+        type: "number",
+        description: "Effect input 2"
+    }];
     get symbol() {
         return ["effect"];
     }
