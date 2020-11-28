@@ -81,7 +81,7 @@ const config = {
     }),
     new MonacoWebpackPlugin({
       filename : 'js/[hash].worker.js',
-      languages: ['javascript', 'html']
+      languages: ['javascript', 'html', 'json']
     }),
     new WorkboxWebpackPlugin.GenerateSW({
       cacheId: VERSION,

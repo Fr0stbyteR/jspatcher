@@ -1174,13 +1174,9 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         if (key) {
             this.data = {};
             try {
-                if (key.match(/\//)) {
-                    const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
-                    const patcher = await patcherFile.instantiate();
-                    this.state.patcher = patcher;
-                } else {
-                    throw new Error(`${key} is not a path`);
-                }
+                const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
+                const patcher = await patcherFile.instantiate();
+                this.state.patcher = patcher;
             } catch {
                 const shared: RawPatcher = this.sharedData.get("patcher", key);
                 if (typeof shared === "object") {

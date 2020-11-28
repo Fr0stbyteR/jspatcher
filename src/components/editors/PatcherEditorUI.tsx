@@ -36,6 +36,7 @@ export default class PatcherEditorUI extends React.PureComponent<P, S> {
         this.props.env.taskMgr.on("errors", this.handleErrors);
     }
     componentWillUnmount() {
+        this.props.patcher.off("ready", this.handleReady);
         this.props.env.taskMgr.off("tasks", this.handleTasks);
         this.props.env.taskMgr.off("errors", this.handleErrors);
     }

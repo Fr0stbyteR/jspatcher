@@ -1,4 +1,5 @@
-import { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import MonacoEditor from "react-monaco-editor";
+import { editor, KeyCode, KeyMod } from "monaco-editor/esm/vs/editor/editor.api";
 import { SemanticICONS } from "semantic-ui-react";
 import FileInstance from "../file/FileInstance";
 import TextHistory from "./TextHistory";
@@ -10,6 +11,7 @@ export interface PatcherTextEventMap {
 export default class PatcherText extends FileInstance<PatcherTextEventMap> {
     text: string;
     editor: editor.IStandaloneCodeEditor;
+    editorJSX: typeof MonacoEditor;
     _history: TextHistory = new TextHistory(this);
     get history() {
         return this._history;
@@ -33,6 +35,14 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
         patcherText.text = this.text;
         return patcherText;
     }
+    get editorLanguage() {
+        if (!this.file) return "none";
+        if (this.file.name.endsWith(".js")) return "js";
+        if (this.file.name.endsWith(".json")) return "json";
+        if (this.file.name.endsWith(".html")) return "html";
+        if (this.file.name.endsWith(".dsp")) return "faust";
+        return "none";
+    }
     bindEditor(editor: editor.IStandaloneCodeEditor) {
         this.editor = editor;
         const didChanged = editor.onDidChangeModelContent((e) => {
@@ -48,6 +58,12 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
             this.editor = undefined;
             this.emit("destroy");
         });
+        editor.addAction({
+            id: "editor.action.save",
+            label: "Save",
+            keybindings: [KeyMod.CtrlCmd | KeyCode.KEY_S],
+            run: () => this.save()
+        });
     }
     async copy() {
         if (!this.editor) return;
@@ -62,7 +78,8 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
     async paste() {
         if (!this.editor) return;
         this.editor.focus();
-        document.execCommand("paste");
+        const text = await navigator.clipboard.readText();
+        this.editor.executeEdits("", [{ range: this.editor.getSelection(), text, forceMoveMarkers: true }]);
     }
     async deleteSelected() {
         if (!this.editor) return;

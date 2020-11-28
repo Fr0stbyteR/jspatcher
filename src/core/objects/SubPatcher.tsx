@@ -415,13 +415,9 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
             if (key) {
                 this.data = {};
                 try {
-                    if (key.match(/\//)) {
-                        const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
-                        const patcher = await patcherFile.instantiate();
-                        this.state.patcher = patcher;
-                    } else {
-                        throw new Error(`${key} is not a path`);
-                    }
+                    const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
+                    const patcher = await patcherFile.instantiate();
+                    this.state.patcher = patcher;
                 } catch {
                     const shared: RawPatcher = this.sharedData.get("patcher", key);
                     if (typeof shared === "object") {
@@ -547,13 +543,9 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         if (key) {
             this.data = {};
             try {
-                if (key.match(/\//)) {
-                    const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
-                    const patcher = await patcherFile.instantiate();
-                    this.state.patcher = patcher;
-                } else {
-                    throw new Error(`${key} is not a path`);
-                }
+                const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
+                const patcher = await patcherFile.instantiate();
+                this.state.patcher = patcher;
             } catch {
                 const shared: RawPatcher = this.sharedData.get("patcher", key);
                 if (typeof shared === "object") {
@@ -742,13 +734,9 @@ export class bpatcher extends BaseAudioObject<Partial<RawPatcher>, SubPatcherSta
             if (key) {
                 this.data = {};
                 try {
-                    if (key.match(/\//)) {
-                        const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
-                        const patcher = await patcherFile.instantiate();
-                        this.state.patcher = patcher;
-                    } else {
-                        throw new Error(`${key} is not a path`);
-                    }
+                    const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
+                    const patcher = await patcherFile.instantiate();
+                    this.state.patcher = patcher;
                 } catch {
                     const shared: RawPatcher = this.sharedData.get("patcher", key);
                     if (typeof shared === "object") {
