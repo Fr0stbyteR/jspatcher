@@ -1,5 +1,5 @@
 import comment from "./UI/comment";
-import { LibOp, EmptyObject, InvalidObject, Const, In, Out, Rec, Send, Receive, SubPatcher, Param, Expr, LibOpProps, FaustOpState } from "./Faust";
+import { LibOp, EmptyObject, InvalidObject, Const, In, Out, Rec, Send, Receive, Param, Expr, LibOpProps, FaustOpState, Gen } from "./Faust";
 import { TPackage, TPropsMeta } from "../types";
 import "./Gen.scss";
 
@@ -17,9 +17,6 @@ export class GenLibOp<P extends Record<string, any> = {}> extends LibOp<P> {
             this.outlets = ~~this.state.outlets;
         }
     };
-}
-export class Gen extends SubPatcher {
-    type = "gen" as const;
 }
 export class GenExpr extends Expr {
     toOnceExpr(): string[] {

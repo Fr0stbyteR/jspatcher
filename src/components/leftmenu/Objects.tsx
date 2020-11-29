@@ -103,12 +103,7 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
         if (this.props.patcher.state.locked) return;
         const currentTarget = e.currentTarget as HTMLDivElement;
         // Find Patcher Div
-        let patcherDiv = currentTarget.parentElement;
-        while (!patcherDiv.classList.contains("ui-left") && patcherDiv !== document.body) patcherDiv = patcherDiv.parentElement;
-        if (patcherDiv === document.body) return;
-        patcherDiv = Array.from(patcherDiv.parentElement.children).find(e => e.classList.contains("ui-center")) as HTMLElement;
-        if (!patcherDiv) return;
-        patcherDiv = patcherDiv.getElementsByClassName("patcher-container")[0] as HTMLElement;
+        const patcherDiv = document.body.querySelector(`.patcher-container[data-id="${this.props.patcher.instanceId}"]`);
         if (!patcherDiv) return;
         const patcherRect = patcherDiv.getBoundingClientRect();
         // Clone Node to follow cursor

@@ -11,6 +11,7 @@ import ProjectItem from "../../core/file/ProjectItem";
 import { ProjectEventMap } from "../../core/Project";
 import NewFolderModal from "../modals/NewFolderModal";
 import Folder from "../../core/file/Folder";
+import { findFromAscendants } from "../../utils/utils";
 
 interface P {
     env: Env;
@@ -100,9 +101,8 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         };
         const handleMouseMove = (e: MouseEvent) => {
             const { target } = e;
-            let parent = target as HTMLElement;
-            while (!(parent.firstChild as HTMLElement)?.classList?.contains?.("folder") && parent !== document.body) parent = parent.parentElement;
-            if (parent === document.body) {
+            const parent = findFromAscendants(target as HTMLElement, e => e.firstElementChild.classList.contains("folder"));
+            if (!parent) {
                 this.setState({ fileDropping: false });
             } else {
                 const path = (parent.firstChild as HTMLElement).getAttribute("data-id");

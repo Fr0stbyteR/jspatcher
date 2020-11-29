@@ -34,6 +34,14 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
     get isDirty(): boolean {
         return !this.instances.every(i => !i.isDirty) && this.children.every(c => !c.isDirty);
     }
+    getDescendantInstances() {
+        if (this.instances) return this.instances.slice();
+        const instances: AnyFileInstance[] = [];
+        for (const container of this.children) {
+            instances.push(...container.getDescendantInstances());
+        }
+        return instances;
+    }
     constructor(env: Env, parent: EditorContainer = null, mode: TSplitMode = "none", instances: AnyFileInstance[] = []) {
         super();
         this._env = env;
@@ -44,6 +52,9 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
         if (!parent) this.setActive();
         this._env.on("activeInstance", this.handleActiveInstance);
         this._env.on("openInstance", this.handleOpenInstance);
+    }
+    findInstanceFromId(id: number) {
+        return this.getDescendantInstances().find(i => i.instanceId === id);
     }
     handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
         if (this.instances.indexOf(instance) !== -1) {

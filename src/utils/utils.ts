@@ -168,6 +168,15 @@ export const selectElementPos = (e: HTMLElement, pos: number) => {
     selection.removeAllRanges();
     selection.addRange(range);
 };
+export const findFromAscendants = (e: HTMLElement, predict: (e: HTMLElement) => boolean) => {
+    const ascendants = [];
+    let parent = e.parentElement;
+    while (parent !== document.body) {
+        ascendants.push(parent);
+        parent = parent.parentElement;
+    }
+    return ascendants.find(predict);
+};
 // eslint-disable-next-line arrow-body-style
 export const getPropertyDescriptor = (obj: Record<string, any>, key: string): PropertyDescriptor => {
     return Object.getOwnPropertyDescriptor(obj, key) || getPropertyDescriptor(Object.getPrototypeOf(obj), key);

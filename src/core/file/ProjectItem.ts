@@ -76,6 +76,10 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     get projectPath() {
         return this.path.replace(/^\/project/, "");
     }
+    get fileExtension() {
+        const splitted = this.name.split(".");
+        return splitted[splitted.length - 1];
+    }
     async emitTreeChanged() {
         await this.emit("treeChanged");
         await (this.parent || this.fileMgr).emitTreeChanged();

@@ -83,7 +83,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     get audioCtx() {
         return this.project?.audioCtx || this.env.audioCtx;
     }
-    get fileExtention() {
+    get fileExtension() {
         return {
             js: "jspat",
             max: "maxpat",
@@ -267,7 +267,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         await this.emit("destroy");
     }
     get fileName() {
-        return `${this.file?.name || this._state.name}.${this.fileExtention}`;
+        return `${this.file?.name || this._state.name}.${this.fileExtension}`;
     }
     async addPackage(namespace: string, url: string) {
         const { dependencies } = this.props;
@@ -291,6 +291,22 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         if (!this._state.isLoading) this.emit("createBox", box);
         if (!noPostInit) await box.postInit();
         return box;
+    }
+    async createBoxFromFile(file: ProjectItem, boxIn: Omit<TBox, "text">) {
+        const path = file.projectPath;
+        const type = file.type;
+        const ext = file.fileExtension;
+        if (type === "patcher") {
+            const extMap: Record<string, string> = this.props.mode === "js"
+                ? { json: "p", jspat: "p", maxpat: "max", gendsp: "gen", dsppat: "pfaust" }
+                : this.props.mode === "faust"
+                    ? { gendsp: "gen", dsppat: "p" }
+                    : this.props.mode === "gen"
+                        ? { gendsp: "gen" }
+                        : {};
+            const obj = extMap[ext];
+            if (obj) await this.createBox({ text: `${obj} ${path}`, ...boxIn });
+        }
     }
     getObjectConstructor(parsed: { class: string; args: any[]; props: Record<string, any> }) {
         const className = parsed.class;

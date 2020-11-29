@@ -1258,6 +1258,9 @@ ${expr}
         return this.state.cachedCode.onces;
     }
 }
+export class Gen extends SubPatcher {
+    type = "gen" as const;
+}
 class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { language: string; value: string }, { editorBlur: string; editorLoaded: never }> {
     static description = "Code block a sub-process";
     static inlets: TMeta["inlets"] = [{
@@ -1381,6 +1384,7 @@ const faustOps: TPackage = {
     r: Receive,
     patcher: SubPatcher,
     p: SubPatcher,
+    gen: Gen,
     code: Code,
     comment,
     EmptyObject,

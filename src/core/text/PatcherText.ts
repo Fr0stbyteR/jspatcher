@@ -16,7 +16,7 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
     get history() {
         return this._history;
     }
-    get fileExtention() {
+    get fileExtension() {
         return "txt";
     }
     get fileIcon(): SemanticICONS {

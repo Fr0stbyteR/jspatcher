@@ -55,7 +55,7 @@ export default class PatcherEditorUI extends React.PureComponent<P, S> {
         return (
             <div className="ui-flex-row ui-flex-full" style={{ overflow: "auto" }}>
                 <div className="ui-flex-column ui-flex-full" style={{ overflow: "auto" }}>
-                    <div className="patcher-container">
+                    <div className="patcher-container" data-id={this.props.patcher.instanceId}>
                         {dimmer}
                         <PatcherUI {...this.props} />
                     </div>

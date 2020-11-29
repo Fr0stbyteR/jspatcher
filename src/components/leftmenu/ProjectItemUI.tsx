@@ -3,7 +3,9 @@ import { Icon } from "semantic-ui-react";
 import Env, { EnvEventMap } from "../../core/Env";
 import Folder from "../../core/file/Folder";
 import ProjectItem, { ProjectItemEventMap } from "../../core/file/ProjectItem";
+import Patcher from "../../core/patcher/Patcher";
 import I18n from "../../i18n/I18n";
+import { findFromAscendants } from "../../utils/utils";
 import NewFolderModal from "../modals/NewFolderModal";
 
 interface P {
@@ -180,9 +182,8 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         };
         const handleMouseMove = (e: MouseEvent) => {
             const { target } = e;
-            let parent = target as HTMLElement;
-            while (!(parent.firstChild as HTMLElement)?.classList?.contains?.("folder") && parent !== document.body) parent = parent.parentElement;
-            if (parent === document.body) {
+            const parent = findFromAscendants(target as HTMLElement, e => e.firstElementChild.classList.contains("folder"));
+            if (!parent) {
                 this.setState({ fileDropping: false });
             } else {
                 const path = (parent.firstChild as HTMLElement).getAttribute("data-id");
@@ -226,11 +227,29 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                 return;
             }
             this.dragged = false;
-            const { target } = e;
-            let parent = target as HTMLElement;
-            while (!(parent.firstChild as HTMLElement)?.classList?.contains?.("folder") && parent !== document.body) parent = parent.parentElement;
-            if (parent === document.body) {
+            const { target, clientX, clientY } = e;
+            const parent = findFromAscendants(target as HTMLElement, e => e.firstElementChild.classList.contains("folder"));
+            if (!parent) {
                 this.props.onMoveTo();
+                const patcherDiv = findFromAscendants(target as HTMLElement, e => e.classList.contains("patcher-container"));
+                if (patcherDiv) {
+                    const patcherId = +patcherDiv.getAttribute("data-id");
+                    const patcher = this.props.env.editorContainer.findInstanceFromId(patcherId);
+                    if (patcher instanceof Patcher) {
+                        if (patcher.state.locked) return;
+                        const patcherRect = patcherDiv.getBoundingClientRect();
+                        const { left, top, width, height } = patcherRect;
+                        if (clientX < left) return;
+                        if (clientX > left + width) return;
+                        if (clientY < top) return;
+                        if (clientY > top + height) return;
+                        const { scrollLeft, scrollTop } = patcherDiv;
+                        const x = clientX - left + scrollLeft;
+                        const y = clientY - top + scrollTop;
+                        const { presentation } = patcher._state;
+                        patcher.createBoxFromFile(this.props.item, { inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
+                    }
+                }
             } else {
                 const path = (parent.firstChild as HTMLElement).getAttribute("data-id");
                 if (!path) this.props.onMoveTo();

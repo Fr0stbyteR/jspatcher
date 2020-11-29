@@ -15,7 +15,7 @@ interface S {
 }
 
 export class EditorContainerTabUI extends React.PureComponent<P, S> {
-    state = { fileName: this.props.instance.file?.name || `Untitled.${this.props.instance.fileExtention}` };
+    state = { fileName: this.props.instance.file?.name || `Untitled.${this.props.instance.fileExtension}` };
     handleMouseDownTab = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         this.props.onActive(this.props.instance);
     };
@@ -53,7 +53,7 @@ export class EditorContainerTabUI extends React.PureComponent<P, S> {
         const classArray = ["editor-container-tab"];
         if (active) classArray.push("active");
         return (
-            <div className={classArray.join(" ")} key={instance.instancId} onMouseDown={this.handleMouseDownTab}>
+            <div className={classArray.join(" ")} key={instance.instanceId} onMouseDown={this.handleMouseDownTab}>
                 <Icon className="editor-container-tab-icon" name={icon} />
                 <span className="editor-container-tab-name">{name}</span>
                 <span className="editor-container-tab-close" onClick={this.handleClickClose}>×</span>

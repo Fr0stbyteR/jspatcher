@@ -32,7 +32,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     get history() {
         return this._history;
     }
-    get fileExtention() {
+    get fileExtension() {
         return "wav";
     }
     get fileIcon(): SemanticICONS {

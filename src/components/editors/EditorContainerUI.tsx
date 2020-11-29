@@ -46,19 +46,19 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
             <div className="editor-container ui-flex-column ui-flex-full">
                 <div className="editor-container-tabs-container">
                     <div className="editor-container-tabs">
-                        {this.state.instances.map(instance => <EditorContainerTabUI key={instance.instancId} instance={instance} active={this.state.activeInstance === instance} onActive={this.handleActiveTab} onClose={this.handleCloseTab} lang={this.props.lang} />)}
+                        {this.state.instances.map(instance => <EditorContainerTabUI key={instance.instanceId} instance={instance} active={this.state.activeInstance === instance} onActive={this.handleActiveTab} onClose={this.handleCloseTab} lang={this.props.lang} />)}
                     </div>
                 </div>
                 <div className="editor-container-body ui-flex-column ui-flex-full">
                     {this.state.instances.length
                         ? this.state.instances.map((instance) => {
                             if (instance instanceof Patcher) {
-                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instancId}>
+                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instanceId}>
                                     <PatcherEditorUI {...this.props} patcher={instance} />
                                 </div>;
                             }
                             if (instance instanceof PatcherText) {
-                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instancId}>
+                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instanceId}>
                                     <TextEditorUI {...this.props} text={instance} />
                                 </div>;
                             }

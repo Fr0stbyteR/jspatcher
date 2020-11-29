@@ -133,7 +133,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         }
         this.refOpenProject.current.value = "";
     };
-    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ instance, fileName: instance?.file?.name || `Untitled.${instance?.fileExtention}` });
+    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ instance, fileName: instance?.file?.name || `Untitled.${instance?.fileExtension}` });
     componentDidMount() {
         this.props.env.on("activeInstance", this.handleActiveInstance);
     }
@@ -173,7 +173,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
                 <input ref={this.refOpenProject} type="file" hidden={true} onChange={this.onChangeProject} accept=".zip, application/zip" />
                 <input ref={this.refOpenFile} type="file" hidden={true} onChange={this.onChangeFile} />
                 <input ref={this.refOpenFolder} type="file" hidden={true} onChange={this.onChangeFolder} accept=".zip, application/zip" />
-                <SaveAsModal {...this.props} open={this.state.showSaveAsModal} fileName={this.state.fileName || `Untitled.${this.props.env.activeInstance?.fileExtention}`} folder={this.props.env.activeInstance?.file?.parent || this.props.env.fileMgr.projectRoot} onClose={this.handleSaveAsModalClose} onConfirm={this.handleSaveAsModalConfirm} />
+                <SaveAsModal {...this.props} open={this.state.showSaveAsModal} fileName={this.state.fileName || `Untitled.${this.props.env.activeInstance?.fileExtension}`} folder={this.props.env.activeInstance?.file?.parent || this.props.env.fileMgr.projectRoot} onClose={this.handleSaveAsModalClose} onConfirm={this.handleSaveAsModalConfirm} />
             </>
         );
     }

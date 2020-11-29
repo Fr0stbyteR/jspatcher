@@ -70,7 +70,7 @@ export default class TextEditorUI extends React.PureComponent<P, S> {
         return (
             <div className="ui-flex-row ui-flex-full" style={{ overflow: "auto", position: "relative" }}>
                 <div className="ui-flex-column ui-flex-full" style={{ overflow: "auto", position: "relative" }}>
-                    <div className="text-editor-container" style={{ position: "absolute", width: "100%", height: "100%", overflow: "hidden" }}>
+                    <div className="text-editor-container" style={{ position: "absolute", width: "100%", height: "100%", overflow: "hidden" }} data-id={this.props.text.instanceId}>
                         {
                             this.state.editorLoaded
                                 ? <this.props.text.editorJSX value={this.props.text.text} language={this.state.language} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} onChange={this.handleChange} options={{ fontSize: 12 }} />

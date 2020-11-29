@@ -59,7 +59,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get history(): History<EventMap> {
         return null;
     }
-    get fileExtention() {
+    get fileExtension() {
         return "data";
     }
     get fileIcon(): SemanticICONS {
@@ -71,7 +71,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get isActive(): boolean {
         return this.env.activeInstance === this;
     }
-    readonly instancId = performance.now();
+    readonly instanceId = performance.now();
     constructor(ctxIn: ProjectItem | Project | Env) {
         super();
         if (ctxIn instanceof ProjectItem) {
