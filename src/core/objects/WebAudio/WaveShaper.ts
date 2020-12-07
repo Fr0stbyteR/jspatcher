@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 type I = [Bang, Float32Array, OverSampleType];
@@ -53,7 +53,7 @@ export default class WaveShaper extends JSPAudioNode<WaveShaperNode, {}, I, [nul
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(1, this.node);
+                if (isBang(data)) this.outlet(1, this.node);
             } else if (inlet === 1) {
                 try {
                     if (data instanceof Float32Array) this.node.curve = data;

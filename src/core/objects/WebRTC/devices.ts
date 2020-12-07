@@ -1,5 +1,5 @@
 import { StrictDropdownItemProps } from "semantic-ui-react";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { DefaultWebRTCObject } from "./Base";
 import { TMeta, TPropsMeta } from "../../types";
 
@@ -56,7 +56,7 @@ export class mediaDevices extends DefaultWebRTCObject<{}, {}, [Bang | MediaDevic
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
                 let filters: MediaDeviceKind[];
-                if (data instanceof Bang) {
+                if (isBang(data)) {
                     filters = this.box.args.slice();
                     if (!filters.length) filters.push("audioinput", "audiooutput", "videoinput");
                 } else {

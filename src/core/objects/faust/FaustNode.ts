@@ -1,6 +1,6 @@
 import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
 import FaustDynamicNode, { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta, TBPF, TMIDIEvent, TInletMeta, TOutletMeta } from "../../types";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 import { CodePopupUI, DefaultUI } from "../BaseUI";
@@ -105,7 +105,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
     };
     handleInlet = async ({ data, inlet }: { data: I[number]; inlet: number }) => {
         if (inlet === 0) {
-            if (data instanceof Bang) {
+            if (isBang(data)) {
                 if (this.state.node) this.outlet(this.outlets - 1, this.state.node);
             } else if (typeof data === "string") {
                 this.setData({ code: data } as D);

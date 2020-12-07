@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 type I = [Bang | MediaStream];
@@ -26,7 +26,7 @@ export default class StreamSrc extends JSPAudioNode<MediaStreamAudioSourceNode, 
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     this.state.stream = data;
                     this.resetNode();
                 }

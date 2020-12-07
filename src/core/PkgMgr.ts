@@ -2,7 +2,7 @@ import Env from "./Env";
 import Project from "./Project";
 import Importer from "./objects/importer/Importer";
 import { TFlatPackage, TPackage, PatcherMode } from "./types";
-import { AnyObject, BaseObject } from "./objects/Base";
+import { AnyObject, isJSPatcherObjectConstructor } from "./objects/Base";
 import { ImporterDirSelfObject } from "../utils/symbols";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 
@@ -80,7 +80,7 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
         while (path.length) {
             const key = path.shift();
             if (!pkg[key]) pkg[key] = {};
-            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof BaseObject) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
+            else if (isJSPatcherObjectConstructor(pkg[key])) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
             pkg = pkg[key] as TPackage;
         }
         Object.assign(pkg, pkgIn);
@@ -91,7 +91,7 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
         const path = pathIn ? pathIn.slice() : [];
         if (path.length && ImporterDirSelfObject in pkg) {
             const el = pkg[ImporterDirSelfObject as any];
-            if (typeof el === "function" && el.prototype instanceof BaseObject) {
+            if (isJSPatcherObjectConstructor(el)) {
                 const full = path.join(".");
                 if (full in libOut) this.emit("pathDuplicated", full);
                 // this.patcher.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
@@ -108,7 +108,7 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
             const el = pkg[key];
             if (typeof el === "object") {
                 this.packageRegister(el, libOut, rootifyDepth, [...path, key]);
-            } else if (typeof el === "function" && el.prototype instanceof BaseObject) {
+            } else if (isJSPatcherObjectConstructor(el)) {
                 const full = [...path, key].join(".");
                 if (full in libOut) this.emit("pathDuplicated", full);
                 // this.patcher.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
@@ -163,7 +163,7 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
             const key = path.shift() as any;
             o = (o as TPackage)[key];
             if (!o) return null;
-            if (typeof o !== "object" && !(o.prototype instanceof BaseObject)) return null;
+            if (typeof o !== "object" && !isJSPatcherObjectConstructor(o)) return null;
         }
         return o;
     }
@@ -208,7 +208,7 @@ export class GlobalPackageManager {
         while (path.length) {
             const key = path.shift();
             if (!pkg[key]) pkg[key] = {};
-            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof BaseObject) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
+            else if (isJSPatcherObjectConstructor(pkg[key])) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
             pkg = pkg[key] as TPackage;
         }
         Object.assign(pkg, pkgIn);

@@ -1,6 +1,6 @@
 import * as Util from "util";
 import Patcher from "../patcher/Patcher";
-import { DefaultObject, Bang } from "./Base";
+import { DefaultObject, Bang, isBang } from "./Base";
 import { TMeta } from "../types";
 import { SharedDataNoValue } from "../../utils/symbols";
 
@@ -36,7 +36,7 @@ class print extends StdObject<{}, { title: string }, [any], [], [string]> {
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) {
+                if (isBang(data)) {
                     this.patcher.newLog("none", this.state.title, "Bang", this.box);
                 } else {
                     this.patcher.newLog("none", this.state.title, typeof data === "string" ? data : Util.inspect(data), this.box);
@@ -161,7 +161,7 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) {
+                if (isBang(data)) {
                     const { start, end, step } = this.state;
                     const times = (end - start) / step;
                     if (!isFinite(times) || times < 0) {
@@ -215,7 +215,7 @@ class ForIn extends StdObject<{}, { buffer: any }, [any, any], [Bang, string | n
         this.on("updateArgs", args => this.state.buffer = args[0]);
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) this.state.buffer = data;
+                if (!isBang(data)) this.state.buffer = data;
                 for (const key in this.state.buffer) {
                     this.outletAll([, key, this.state.buffer[key]]);
                 }
@@ -530,7 +530,7 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any, str
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     this.state.value = data;
                     if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
                 }
@@ -606,7 +606,7 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(0, this.lambda);
+                if (isBang(data)) this.outlet(0, this.lambda);
             } else if (inlet === 1) this.state.result = data;
         });
     }
@@ -726,7 +726,7 @@ export class call extends DefaultObject<{}, CallState, [any | Bang, ...any[]], a
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) this.state.instance = data;
+                if (!isBang(data)) this.state.instance = data;
                 if (this.execute()) this.output();
             } else {
                 this.state.inputs[inlet - 1] = data;

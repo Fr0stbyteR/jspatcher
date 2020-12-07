@@ -1,6 +1,6 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta, TRect } from "../../types";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 
 interface LiveTabProps extends LiveUIProps {
     bgColor: string;
@@ -323,7 +323,7 @@ export class LiveTab extends LiveObject<{}, {}, [number | Bang, number], [number
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     const value = +data;
                     this.state.value = value;
                     this.validateValue();

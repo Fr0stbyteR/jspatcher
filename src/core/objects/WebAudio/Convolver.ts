@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 type I = [Bang, AudioBuffer, boolean];
@@ -52,7 +52,7 @@ export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [],
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(1, this.node);
+                if (isBang(data)) this.outlet(1, this.node);
             } else if (inlet === 1) {
                 if (data instanceof AudioBuffer) {
                     try {

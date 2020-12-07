@@ -1,4 +1,4 @@
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
 import { TMeta } from "../../types";
@@ -53,7 +53,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
     initialOutlets = 2;
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
-            if (!(data instanceof Bang)) this.state.instance = data;
+            if (!isBang(data)) this.state.instance = data;
             if (this.execute()) this.output();
         } else {
             this.state.inputs[inlet - 1] = data;

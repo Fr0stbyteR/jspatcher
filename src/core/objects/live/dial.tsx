@@ -1,6 +1,6 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta } from "../../types";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { roundedRect, fillRoundedRect } from "../../../utils/utils";
 import { normExp, toRad } from "../../../utils/math";
 
@@ -445,7 +445,7 @@ export class LiveDial extends LiveObject<{}, {}, [number | Bang, number], [numbe
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     const value = +data;
                     this.state.value = value;
                     this.validateValue();

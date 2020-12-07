@@ -1,4 +1,4 @@
-import { Bang, BaseObject } from "../Base";
+import { Bang, BaseObject, isBang } from "../Base";
 import { TMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
@@ -29,7 +29,7 @@ export default class diagram extends BaseObject<{}, { svg: string, container: HT
         this.on("inlet", ({ data, inlet }) => {
             const { faust } = this.patcher.env;
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     try {
                         this.state.svg = faust.getDiagram(typeof data === "string" ? data : data.dspCode, { "-I": ["libraries/", "project/"] });
                     } catch (e) {

@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class Destination extends JSPAudioNode<AudioDestinationNode, {}, [Bang], [AudioDestinationNode]> {
@@ -24,7 +24,7 @@ export default class Destination extends JSPAudioNode<AudioDestinationNode, {}, 
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(0, this.node);
+                if (isBang(data)) this.outlet(0, this.node);
             }
         });
     }

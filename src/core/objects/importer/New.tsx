@@ -1,5 +1,5 @@
 import { StaticMethod } from "./StaticMethod";
-import { DefaultObject, Bang } from "../Base";
+import { DefaultObject, Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { TMeta } from "../../types";
 
@@ -84,7 +84,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) this.state.inputs[inlet] = data;
+                if (!isBang(data)) this.state.inputs[inlet] = data;
                 if (this.execute()) this.output();
             } else {
                 this.state.inputs[inlet] = data;

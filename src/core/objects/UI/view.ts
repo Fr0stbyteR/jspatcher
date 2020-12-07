@@ -1,7 +1,7 @@
 import UIObject from "./Base";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { TMeta, TPropsMeta } from "../../types";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 
 export class ViewUI extends DOMUI<view> {
     state: DOMUIState = { ...this.state, children: this.object.state.children, containerProps: this.object.getProp("containerProps") };
@@ -54,7 +54,7 @@ export default class view extends UIObject<{}, { children: ChildNode[] }, [strin
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     if (typeof data === "string") {
                         const template = document.createElement("template");
                         template.innerHTML = data;

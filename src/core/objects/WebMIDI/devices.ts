@@ -1,5 +1,5 @@
 import { StrictDropdownItemProps } from "semantic-ui-react";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { DefaultWebMIDIObject } from "./Base";
 import { TMeta, TPropsMeta } from "../../types";
 
@@ -70,7 +70,7 @@ export class midiDevices extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
                 let filters: WebMidi.MIDIPortType[];
-                if (data instanceof Bang) {
+                if (isBang(data)) {
                     filters = this.box.args.slice();
                     if (!filters.length) filters.push("input", "output");
                 } else {

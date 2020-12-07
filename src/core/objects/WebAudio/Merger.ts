@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | number, ...null[]], [null, ChannelMergerNode], [number]> {
@@ -42,7 +42,7 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | 
                     const channelCount = ~~data > 0 ? ~~data : 6;
                     if (this.node && channelCount !== this.node.numberOfInputs) this.resetNode(channelCount);
                     this.outlet(1, this.node);
-                } else if (data instanceof Bang) this.outlet(1, this.node);
+                } else if (isBang(data)) this.outlet(1, this.node);
             }
         });
     }

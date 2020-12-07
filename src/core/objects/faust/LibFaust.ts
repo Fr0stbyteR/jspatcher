@@ -1,5 +1,5 @@
 import { Faust } from "faust2webaudio";
-import { Bang, DefaultObject } from "../Base";
+import { Bang, DefaultObject, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class libFaust extends DefaultObject<{}, {}, [Bang], [Faust]> {
@@ -23,7 +23,7 @@ export default class libFaust extends DefaultObject<{}, {}, [Bang], [Faust]> {
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(0, this.patcher.env.faust);
+                if (isBang(data)) this.outlet(0, this.patcher.env.faust);
             }
         });
     }

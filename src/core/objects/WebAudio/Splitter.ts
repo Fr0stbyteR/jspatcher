@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Bang], (null | ChannelSplitterNode)[], [number]> {
@@ -38,7 +38,7 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
                     const channelCount = ~~data > 0 ? ~~data : 6;
                     if (this.node && channelCount !== this.node.numberOfOutputs) this.resetNode(channelCount);
                     this.outlet(this.outlets - 1, this.node);
-                } else if (data instanceof Bang) this.outlet(this.outlets - 1, this.node);
+                } else if (isBang(data)) this.outlet(this.outlets - 1, this.node);
             }
         });
     }

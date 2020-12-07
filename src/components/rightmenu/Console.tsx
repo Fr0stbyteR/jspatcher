@@ -2,8 +2,8 @@ import * as React from "react";
 import { Menu, Icon, Table, Ref } from "semantic-ui-react";
 import Box from "../../core/patcher/Box";
 import { TPatcherLog } from "../../core/types";
-import { BaseObject } from "../../core/objects/Base";
 import Env from "../../core/Env";
+import { isJSPatcherObject } from "../../core/objects/Base";
 
 interface P {
     env: Env;
@@ -30,7 +30,7 @@ export default class Console extends React.PureComponent<P, S> {
         if (bottom) table.scrollTop = table.scrollHeight;
     };
     handleHighlight = (emitter: any) => {
-        if ((emitter instanceof BaseObject) || (emitter instanceof Box)) emitter.highlight();
+        if ((isJSPatcherObject(emitter)) || (emitter instanceof Box)) emitter.highlight();
     };
     componentDidUpdate(prevProps: Readonly<P>) {
         if (this.props.display && this.props.display !== prevProps.display) this.scrollToEnd();

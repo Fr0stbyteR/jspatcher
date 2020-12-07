@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { isNumberArray } from "../../../utils/utils";
 import { TMeta } from "../../types";
 
@@ -51,7 +51,7 @@ export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(1, this.node);
+                if (isBang(data)) this.outlet(1, this.node);
             } else if (inlet === 1) {
                 if (isNumberArray(data)) this.state.feedforward = data;
                 this.resetNode();

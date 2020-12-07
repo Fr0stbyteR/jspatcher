@@ -1,5 +1,5 @@
 import { SemanticICONS } from "semantic-ui-react";
-import { DefaultObject, Bang } from "../Base";
+import { DefaultObject, Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class Buffer extends DefaultObject<{}, { key: string; value: AudioBuffer }, [Bang | File | ArrayBuffer, File | ArrayBuffer, string | number], [AudioBuffer], [string | number, number, number, number]> {
@@ -91,7 +91,7 @@ export default class Buffer extends DefaultObject<{}, { key: string; value: Audi
         });
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     let audioBuffer: AudioBuffer;
                     try {
                         const ab = data instanceof ArrayBuffer ? data : await (data as File).arrayBuffer();

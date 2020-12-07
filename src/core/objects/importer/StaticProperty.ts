@@ -1,4 +1,4 @@
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { ImportedObjectUI } from "./ImportedObject";
 import { Property } from "./Property";
 import { TMeta } from "../../types";
@@ -32,7 +32,7 @@ export class StaticProperty extends Property<true> {
     };
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(0, this.imported);
+            if (isBang(data)) this.outlet(0, this.imported);
         } else if (inlet === 1) {
             this.imported = data;
         }

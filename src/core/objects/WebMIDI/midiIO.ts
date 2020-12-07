@@ -1,6 +1,6 @@
 import { DefaultWebMIDIObject } from "./Base";
 import { TMeta } from "../../types";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 
 export class midiIn extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIAccess; search: string; port: WebMidi.MIDIInput }, [string | Bang], [Uint8Array, WebMidi.MIDIInput], [string]> {
     static description = "Get MIDI input from device name or ID";
@@ -83,7 +83,7 @@ export class midiIn extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIA
         });
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     await this.newSearch(data);
                 }
                 if (this.state.port) this.outlet(1, this.state.port);
@@ -169,7 +169,7 @@ export class midiOut extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDI
         });
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     if (typeof data === "string") {
                         await this.newSearch(data);
                     } else {

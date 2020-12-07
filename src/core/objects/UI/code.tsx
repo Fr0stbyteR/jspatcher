@@ -4,7 +4,7 @@ import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Dimmer, Loader } from "semantic-ui-react";
 import UIObject from "./Base";
 import { BaseUIState, BaseUI } from "../BaseUI";
-import { AnyObject, Bang } from "../Base";
+import { AnyObject, Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 type CodeUIState = { language: string; value: string; editorLoaded: boolean; editing: boolean } & BaseUIState;
@@ -84,7 +84,7 @@ export default class code extends UIObject<{ value: string }, {}, [Bang, string]
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(0, this.data.value);
+                if (isBang(data)) this.outlet(0, this.data.value);
             } else if (inlet === 1) {
                 const value = typeof data === "string" ? data : `${data}`;
                 this.updateUI({ value });

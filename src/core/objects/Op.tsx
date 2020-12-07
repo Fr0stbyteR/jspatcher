@@ -1,4 +1,4 @@
-import { DefaultObject, Bang } from "./Base";
+import { DefaultObject, isBang } from "./Base";
 import { TMeta } from "../types";
 
 abstract class JSOp<S = {}, I extends any[] = any[], O extends any[] = [any], A extends any[] = any[], P = {}> extends DefaultObject<{}, S, I, O, A, P> {
@@ -26,7 +26,7 @@ class JSUnaryOp extends JSOp<{ result: any }, [any]> {
         this.on("update", () => this.state.result = 0);
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     try {
                         this.state.result = (this.constructor as typeof JSUnaryOp).execute(data);
                     } catch (e) {
@@ -77,7 +77,7 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     try {
                         this.state.result = (this.constructor as typeof JSBinaryOp).execute(data, this.state.arg);
                     } catch (e) {
@@ -139,7 +139,7 @@ class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [a
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     try {
                         this.state.result = data ? this.state.args[0] : this.state.args[1];
                     } catch (e) {

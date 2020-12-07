@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
 import { TMeta, TBPF } from "../../types";
 
@@ -150,7 +150,7 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
             const paramMap = ["orientationX", "orientationY", "orientationZ", "positionX", "positionY", "positionZ"] as const;
             const numberParamMap = ["coneInnerAngle", "coneOuterAngle", "coneOuterGain", "maxDistance", "refDistance", "rolloffFactor"] as const;
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(1, this.node);
+                if (isBang(data)) this.outlet(1, this.node);
             } else if (inlet > 0 && inlet < 7) {
                 try {
                     const bpf = decodeLine(data as TBPF);

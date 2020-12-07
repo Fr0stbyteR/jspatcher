@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 type TOptions = {
@@ -100,7 +100,7 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(5, this.node);
+                if (isBang(data)) this.outlet(5, this.node);
             } else if (inlet === 5) {
                 if (typeof data === "object") {
                     const props = data as I[5];

@@ -1,6 +1,6 @@
 import * as React from "react";
 import UIObject from "./Base";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { BaseUI, BaseUIState } from "../BaseUI";
 import { TBPF, TStrictBPF, TBPFPoint, TMeta, TPropsMeta } from "../../types";
 import { decodeBPF } from "../../../utils/utils";
@@ -410,7 +410,7 @@ export default class bpf extends UIObject<BPFData, {}, [TBPF | Bang], [TStrictBP
             }
         });
         this.on("inlet", ({ data, inlet }) => {
-            if (data instanceof Bang) {
+            if (isBang(data)) {
                 if (inlet === 0) {
                     const { points } = this.data;
                     this.outlet(0, points.map((p, i) => [p[1], p[0] - (i > 0 ? points[i - 1][0] : 0), p[2]]));

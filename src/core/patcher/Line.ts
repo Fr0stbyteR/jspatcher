@@ -1,12 +1,12 @@
 import Patcher from "./Patcher";
 import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import { LineEventMap, TLine, TLineType, TMetaType } from "../types";
-import { BaseAudioObject, AnyObject } from "../objects/Base";
+import { BaseAudioObject, AnyObject, isJSPatcherAudioObject } from "../objects/Base";
 
 export default class Line extends TypedEventEmitter<LineEventMap> {
     static isConnectableByAudio(from: AnyObject, outlet: number, to: AnyObject, inlet: number) {
-        if (!(from instanceof BaseAudioObject)) return false;
-        if (!(to instanceof BaseAudioObject)) return false;
+        if (!isJSPatcherAudioObject(from)) return false;
+        if (!isJSPatcherAudioObject(to)) return false;
         const fromConnection = from.outletConnections[outlet];
         const toConnection = to.inletConnections[inlet];
         if (!fromConnection) return false;

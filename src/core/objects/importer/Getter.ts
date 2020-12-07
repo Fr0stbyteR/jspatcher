@@ -1,4 +1,4 @@
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
 import { TMeta } from "../../types";
@@ -34,7 +34,7 @@ export class Getter<Static extends boolean = false> extends ImportedObject<any, 
     };
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
-            if (!(data instanceof Bang)) this.state.instance = data;
+            if (!isBang(data)) this.state.instance = data;
             if (this.execute()) this.output();
         }
     };

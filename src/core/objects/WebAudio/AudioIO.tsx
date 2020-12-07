@@ -1,7 +1,7 @@
 import * as React from "react";
 import JSPAudioNode from "./AudioNode";
 import { TMeta, TPropsMeta } from "../../types";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { DefaultUI } from "../BaseUI";
 
 interface Constraints extends MediaTrackConstraintSet {
@@ -109,7 +109,7 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
         });
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     await this.newSearch(data);
                 }
                 if (this.node) this.outlet(1, this.node);
@@ -232,7 +232,7 @@ export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | Aud
         });
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     await this.newSearch(data);
                 }
                 if (this.node) this.outlet(1, this.node);

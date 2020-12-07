@@ -1,4 +1,4 @@
-import { Bang, DefaultObject } from "../Base";
+import { Bang, DefaultObject, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], [AudioWorklet, Bang]> {
@@ -23,7 +23,7 @@ export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], 
     audioWorklet: AudioWorklet;
     handleInlet: (e: { data: any; inlet: number }) => Promise<void> = async ({ data, inlet }) => {
         if (inlet === 0) {
-            if (data instanceof Bang) this.outlet(0, this.audioWorklet);
+            if (isBang(data)) this.outlet(0, this.audioWorklet);
         } else if (inlet === 1) {
             if (typeof data === "string") {
                 try {

@@ -1,7 +1,7 @@
 import { DefaultDSP } from "./Base";
 import { TemporalAnalyserRegister, TemporalAnalyserNode, DataToProcessor, DataFromProcessor } from "./AudioWorklet/TemporalAnalyser";
 import { TMeta, TPropsMeta } from "../../types";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 
 export interface Props extends Omit<DataToProcessor, "id"> {
     speedLim: number;
@@ -101,7 +101,7 @@ export class TemporalAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
             if (this.getProp("continuous")) startRequest();
             this.on("inlet", (e) => {
                 if (e.inlet === 0) {
-                    if (e.data instanceof Bang) startRequest();
+                    if (isBang(e.data)) startRequest();
                 }
             });
         });

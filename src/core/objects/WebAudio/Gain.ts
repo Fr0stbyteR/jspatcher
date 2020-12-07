@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
 import { TMeta, TBPF } from "../../types";
 
@@ -47,7 +47,7 @@ export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, TBPF], [null
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(1, this.node);
+                if (isBang(data)) this.outlet(1, this.node);
             } else if (inlet === 1) {
                 try {
                     const bpf = decodeLine(data as TBPF);

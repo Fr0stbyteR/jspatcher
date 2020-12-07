@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 export default class StreamDest extends JSPAudioNode<MediaStreamAudioDestinationNode, {}, [Bang], [MediaStreamAudioDestinationNode, MediaStream]> {
@@ -27,7 +27,7 @@ export default class StreamDest extends JSPAudioNode<MediaStreamAudioDestination
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.outletAll([this.node, this.node.stream]);
+                if (isBang(data)) this.outletAll([this.node, this.node.stream]);
             }
         });
     }

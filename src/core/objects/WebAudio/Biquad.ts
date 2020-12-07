@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
 import { TMeta, TBPF } from "../../types";
 
@@ -98,7 +98,7 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
         this.on("inlet", ({ data, inlet }) => {
             const paramMap = ["frequency", "detune", "Q", "gain"] as const;
             if (inlet === 0) {
-                if (data instanceof Bang) this.outlet(1, this.node);
+                if (isBang(data)) this.outlet(1, this.node);
             } else if (inlet === 5) {
                 if (Biquad.isBiquadFilterType(data)) this.node.type = data;
             } else if (inlet > 0 && inlet < 5) {

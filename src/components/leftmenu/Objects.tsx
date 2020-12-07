@@ -3,9 +3,9 @@ import { Menu, Icon, Segment, List, Input } from "semantic-ui-react";
 import Patcher from "../../core/patcher/Patcher";
 import "./LeftMenu.scss";
 import { TPackage } from "../../core/types";
-import { BaseObject } from "../../core/objects/Base";
 import { ImporterDirSelfObject } from "../../utils/symbols";
 import Env, { EnvEventMap } from "../../core/Env";
+import { isJSPatcherObjectConstructor } from "../../core/objects/Base";
 
 class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage; path: string[]; search?: string }, { selected: (string | symbol)[] }> {
     state = { selected: [] as (string | symbol)[] };
@@ -64,7 +64,7 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
     getDescription(path: (string | symbol)[]) {
         const { patcher } = this.props;
         const obj = patcher._state.pkgMgr.getFromPath(path, patcher.activePkg);
-        return typeof obj === "function" && obj.prototype instanceof BaseObject ? obj.description : undefined;
+        return isJSPatcherObjectConstructor(obj) ? obj.description : undefined;
     }
     isFolder(path: (string | symbol)[]) {
         const { patcher } = this.props;
@@ -74,7 +74,7 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
     isObject(path: (string | symbol)[]) {
         const { patcher } = this.props;
         const obj = patcher._state.pkgMgr.getFromPath(path, patcher.activePkg);
-        return typeof obj === "function" && obj.prototype instanceof BaseObject;
+        return isJSPatcherObjectConstructor(obj);
     }
     getObjText(pathIn: (string | symbol)[]) {
         const path = pathIn.slice();

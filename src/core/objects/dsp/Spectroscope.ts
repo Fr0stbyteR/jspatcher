@@ -3,7 +3,7 @@ import { CanvasUI } from "../BaseUI";
 import { SpectralAnalyserRegister, SpectralAnalyserNode, TWindowFunction } from "./AudioWorklet/SpectralAnalyser";
 import { TMeta, TPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { atodb } from "../../../utils/math";
 
 export interface SpectroscopeUIState {
@@ -242,7 +242,7 @@ export class Spectroscope extends BaseDSP<{}, State, [Bang], [], [], Props, Spec
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) this.updateUI({ paint: {} });
+                if (isBang(data)) this.updateUI({ paint: {} });
             }
         });
         this.on("destroy", () => {

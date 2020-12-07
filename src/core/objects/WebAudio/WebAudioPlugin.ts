@@ -1,5 +1,5 @@
 import { WebAudioModule } from "sdk";
-import { Bang, BaseAudioObject } from "../Base";
+import { Bang, BaseAudioObject, isBang } from "../Base";
 import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
@@ -101,7 +101,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
     };
     handleInlet = async ({ data, inlet }: { data: I[number]; inlet: number }) => {
         if (inlet === 0) {
-            if (data instanceof Bang) {
+            if (isBang(data)) {
                 if (this.state.node) this.outlet(this.outlets - 1, this.state.node);
             } else if (typeof data === "string") {
                 await this.load(data);

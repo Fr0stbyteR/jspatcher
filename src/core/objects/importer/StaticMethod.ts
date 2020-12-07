@@ -1,4 +1,4 @@
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { StaticPropertyUI } from "./StaticProperty";
 import { Method } from "./Method";
 import { TMeta } from "../../types";
@@ -25,7 +25,7 @@ export class StaticMethod extends Method<true> {
     initialOutlets = 1;
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
-            if (!(data instanceof Bang)) this.state.inputs[inlet] = data;
+            if (!isBang(data)) this.state.inputs[inlet] = data;
             if (this.execute()) this.output();
         } else {
             this.state.inputs[inlet] = data;

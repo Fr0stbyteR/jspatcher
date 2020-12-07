@@ -4,7 +4,7 @@ import { LiveUIState, LiveUI, LiveObject, LiveObjectState } from "./Base";
 import { TMeta } from "../../types";
 import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
 import { atodb, dbtoa, normExp } from "../../../utils/math";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 
 interface LiveGainProps extends Omit<LiveSliderProps, "sliderColor">, LiveMeterProps {
     metering: "postFader" | "preFader";
@@ -592,7 +592,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     const value = +data;
                     this.state.value = value;
                     this.validateValue();

@@ -1,6 +1,6 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { TMeta } from "../../types";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { normExp } from "../../../utils/math";
 
 interface LiveNumboxProps extends LiveUIProps {
@@ -271,7 +271,7 @@ export class LiveNumbox extends LiveObject<{}, {}, [number | Bang, number], [num
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (!(data instanceof Bang)) {
+                if (!isBang(data)) {
                     const value = +data;
                     this.state.value = value;
                     this.validateValue();

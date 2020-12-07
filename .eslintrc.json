@@ -98,7 +98,7 @@
         "no-param-reassign": ["error", { "props": false }],
         "no-plusplus": "off",
         "no-prototype-builtins": "off",
-        "no-redeclare": ["warn", { "builtinGlobals": false }],
+        "no-redeclare": "off",
         "no-regex-spaces": "warn",
         "no-restricted-globals": "off",
         "no-restricted-properties": [

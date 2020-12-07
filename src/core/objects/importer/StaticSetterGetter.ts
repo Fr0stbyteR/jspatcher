@@ -1,4 +1,4 @@
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { SetterGetter } from "./SetterGetter";
 import { StaticPropertyUI } from "./StaticProperty";
 import { TMeta } from "../../types";
@@ -22,7 +22,7 @@ export class StaticSetterGetter extends SetterGetter<true> {
     initialOutlets = 1;
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
-            if (!(data instanceof Bang)) return;
+            if (!isBang(data)) return;
             if (typeof this.state.input !== "undefined") {
                 try {
                     this.imported = this.state.input;

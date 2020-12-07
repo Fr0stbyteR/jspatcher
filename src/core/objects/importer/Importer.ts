@@ -10,15 +10,9 @@ import { Getter } from "./Getter";
 import { Property } from "./Property";
 import { TPackage } from "../../types";
 import { AnyImportedObject } from "./ImportedObject";
-import { BaseObject } from "../Base";
 import { ImporterDirSelfObject } from "../../../utils/symbols";
 import { getPropertyDescriptors } from "../../../utils/utils";
-
-type TImportedModule = Record<string, any>;
-declare interface Window {
-    module: { exports: TImportedModule };
-    exports: TImportedModule;
-}
+import { isJSPatcherObjectConstructor } from "../Base";
 
 export default class Importer {
     static $self = ImporterDirSelfObject;
@@ -71,7 +65,7 @@ export default class Importer {
         while (path.length > 1) {
             const key = path.shift();
             if (!pkg[key]) pkg[key] = {};
-            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof BaseObject) pkg[key] = { [this.$self]: pkg[key] };
+            else if (isJSPatcherObjectConstructor(pkg[key])) pkg[key] = { [this.$self]: pkg[key] };
             pkg = pkg[key] as TPackage;
         }
         pkg[path[0]] = object;

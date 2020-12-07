@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 
 type I = [Bang | HTMLMediaElement];
@@ -26,7 +26,7 @@ export default class Media extends JSPAudioNode<MediaElementAudioSourceNode, { e
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof Bang) {
+                if (isBang(data)) {
                     if (this.node) this.outlet(1, this.node);
                 } else if (data instanceof HTMLMediaElement) {
                     this.state.element = data;

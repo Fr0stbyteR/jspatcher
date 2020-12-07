@@ -9,12 +9,22 @@ import "./Base.scss";
 import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect } from "../types";
 import { BaseUI, DefaultUI, BaseUIState, DefaultUIState } from "./BaseUI";
 
+export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject => typeof x === "function" && x?.isJSPatcherObjectConstructor;
+
+export const isJSPatcherObject = (x: any): x is AbstractObject => typeof x === "object" && x?.isJSPatcherObject;
+
+export const isJSPatcherAudioObjectConstructor = (x: any): x is typeof BaseAudioObject => typeof x === "function" && x?.isJSPatcherAudioObjectConstructor;
+
+export const isJSPatcherAudioObject = (x: any): x is BaseAudioObject => typeof x === "object" && x?.isJSPatcherAudioObject;
+
 export abstract class AbstractObject<
     D extends {} = {}, S extends {} = {},
     I extends any[] = any[], O extends any[] = any[],
     A extends any[] = any[], P extends {} = {},
     U extends {} = {}, E extends Partial<ObjectEventMap<D, S, I, A, P, U, {}>> & Record<string, any> = {}
 > extends TypedEventEmitter<ObjectEventMap<D, S, I, A, P, U, E>> {
+    static isJSPatcherObjectConstructor = true as const;
+    static isJSPatcherAudioObjectConstructor = false;
     static package = "Base"; // div will have class "packageName" "packageName-objectName"
     static get _name() {
         return this.name;
@@ -41,6 +51,8 @@ export abstract class AbstractObject<
             props: this.props
         };
     }
+    isJSPatcherObject = true as const;
+    isJSPatcherAudioObject = false;
     private _meta = (this.constructor as typeof AbstractObject).meta;
     get meta() {
         return this._meta;
@@ -503,6 +515,8 @@ export class DefaultObject<
 }
 export class AnyObject extends BaseObject<Record<string, any>, Record<string, any>, any[], any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> {}
 export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<BaseObjectProps> & Record<string, any> = {}, U extends Partial<BaseUIState> & Record<string, any> = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
+    static isJSPatcherAudioObjectConstructor = true as const;
+    isJSPatcherAudioObject = true as const;
     get audioCtx() {
         return this.patcher.audioCtx;
     }
@@ -615,8 +629,10 @@ export class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
     }
 }
 export class Bang {
+    isBang = true;
     toString() {
         return "bang";
     }
 }
+export const isBang = (x: any): x is Bang => typeof x === "object" && x?.isBang;
 export default { BaseObject, EmptyObject, InvalidObject };
