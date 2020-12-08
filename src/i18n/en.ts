@@ -110,6 +110,13 @@ export default {
         confirm: "Save",
         cancel: "Cancel"
     },
+    TabCloseModal: {
+        title: "Save Changes",
+        msg: "Changes to file {} are not saved yet.",
+        confirm: "Save",
+        discard: "Discard",
+        cancel: "Cancel"
+    },
     FileMenu: {
         fileMenu: "File",
         new: "New Audio",

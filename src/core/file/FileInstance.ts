@@ -14,7 +14,7 @@ export interface FileInstanceEventMap {
     "destroy": never;
 }
 
-export type AnyFileInstance = FileInstance<any>;
+export type AnyFileInstance = FileInstance<Record<string, any>>;
 
 export default class FileInstance<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}> extends TypedEventEmitter<EventMap & FileInstanceEventMap> {
     private readonly _env: Env;
@@ -66,7 +66,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
         return "code";
     }
     setActive() {
-        this.env.activeInstance = this;
+        this.env.activeInstance = this as AnyFileInstance;
     }
     get isActive(): boolean {
         return this.env.activeInstance === this;
@@ -91,7 +91,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
             this.off("ready", handleReady);
         };
         this.on("ready", handleReady);
-        this.env.registerInstance(this);
+        this.env.registerInstance(this as AnyFileInstance);
         if (this.project) {
             this.project.on("save", this.handleProjectSave);
             this.project.on("unload", this.handleProjectUnload);

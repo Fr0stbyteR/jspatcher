@@ -327,6 +327,11 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
     state: SubPatcherState = { patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: this.box.args[0] };
     static ui = SubPatcherUI;
     type: PatcherMode = "js";
+    get storageType() {
+        if (!this.state.key) return "standalone";
+        if (this.state.patcher?.file) return "file";
+        return "shared";
+    }
     subscribe() {
         super.subscribe();
         const handlePatcherOutlet = ({ outlet, data }: PatcherEventMap["outlet"]) => this.outlet(outlet, data);
@@ -342,19 +347,23 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
             const { inlets, outlets } = meta;
             this.meta = { ...this.meta, inlets, outlets, args: patcher.args };
         };
-        const handlePatcherGraphChanged = (passive?: boolean) => {
-            if (!passive && this.state.key) {
-                if (!this.state.patcher.file) {
-                    this.sharedData.set("patcher", this.state.key, this.state.patcher.toSerializable(), this);
-                }
-            }
+        const handlePatcherGraphChanged = () => {
             this.patcher.emit("graphChanged");
         };
-        const handlePatcherChanged = () => this.patcher.emit("changed");
+        const handlePatcherChanged = () => {
+            const { storageType } = this;
+            if (storageType === "shared" || storageType === "standalone") {
+                const rawPatcher = this.state.patcher.toSerializable();
+                this.setData(rawPatcher);
+                if (storageType === "shared") this.sharedData.set("patcher", this.state.key, rawPatcher, this);
+            }
+            this.patcher.emit("changed");
+        };
         const handleFilePathChanged = () => {
             this.state.key = this.state.patcher.file.projectPath;
         };
         const subscribePatcher = () => {
+            const { storageType } = this;
             const { patcher, key } = this.state;
             patcher.on("outlet", handlePatcherOutlet);
             patcher.on("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
@@ -364,19 +373,18 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
             patcher.on("ioChanged", handlePatcherIOChanged);
             patcher.on("graphChanged", handlePatcherGraphChanged);
             patcher.on("changed", handlePatcherChanged);
-            if (key) {
-                const patcherFile = patcher.file;
-                if (patcherFile) {
-                    patcherFile.on("destroyed", reload);
-                    patcherFile.on("nameChanged", handleFilePathChanged);
-                    patcherFile.on("pathChanged", handleFilePathChanged);
-                    patcherFile.on("saved", reload);
-                } else {
-                    this.sharedData.subscribe("patcher", key, this);
-                }
+            if (storageType === "file") {
+                const { file } = patcher;
+                file.on("destroyed", reload);
+                file.on("nameChanged", handleFilePathChanged);
+                file.on("pathChanged", handleFilePathChanged);
+                file.on("saved", reload);
+            } else if (storageType === "shared") {
+                this.sharedData.subscribe("patcher", key, this);
             }
         };
         const unsubscribePatcher = async () => {
+            const { storageType } = this;
             const { patcher, key } = this.state;
             patcher.off("outlet", handlePatcherOutlet);
             patcher.off("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
@@ -387,16 +395,14 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
             patcher.off("graphChanged", handlePatcherGraphChanged);
             patcher.off("changed", handlePatcherChanged);
             await patcher.unload();
-            if (key) {
-                const patcherFile = this.state.patcher.file;
-                if (patcherFile) {
-                    patcherFile.off("destroyed", reload);
-                    patcherFile.off("nameChanged", handleFilePathChanged);
-                    patcherFile.off("pathChanged", handleFilePathChanged);
-                    patcherFile.off("saved", reload);
-                } else {
-                    this.sharedData.unsubscribe("patcher", this.state.key, this);
-                }
+            if (storageType === "file") {
+                const { file } = patcher;
+                file.off("destroyed", reload);
+                file.off("nameChanged", handleFilePathChanged);
+                file.off("pathChanged", handleFilePathChanged);
+                file.off("saved", reload);
+            } else if (storageType === "shared") {
+                this.sharedData.unsubscribe("patcher", key, this);
             }
             const newPatcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
             await newPatcher.load({}, this.type);
@@ -413,31 +419,34 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
             if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
             const { key } = this.state;
             if (key) {
-                this.data = {};
                 try {
                     const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
                     const patcher = await patcherFile.instantiate();
                     this.state.patcher = patcher;
+                    this.data = {};
                 } catch {
                     const shared: RawPatcher = this.sharedData.get("patcher", key);
+                    const patcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
+                    this.state.patcher = patcher;
                     if (typeof shared === "object") {
-                        const patcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
                         await patcher.load(shared, this.type);
-                        this.state.patcher = patcher;
+                        this.setData(patcher.toSerializable());
                     } else {
-                        this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
+                        await patcher.load(this.data, this.type);
+                        const rawPatcher = patcher.toSerializable();
+                        this.sharedData.set("patcher", key, rawPatcher, this);
+                        this.setData(rawPatcher);
                     }
                 }
             } else {
-                const { data } = this;
                 const patcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
-                await patcher.load(data, this.type);
+                await patcher.load(this.data, this.type);
                 this.state.patcher = patcher;
-                this.data = this.state.patcher.toSerializable();
+                this.setData(patcher.toSerializable());
             }
             handlePatcherReset();
             subscribePatcher();
-            handlePatcherGraphChanged(true);
+            this.patcher.emit("graphChanged");
             this.connectAudio();
         };
         this.on("preInit", async () => {

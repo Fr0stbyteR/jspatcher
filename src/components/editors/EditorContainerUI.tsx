@@ -46,7 +46,7 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
             <div className="editor-container ui-flex-column ui-flex-full">
                 <div className="editor-container-tabs-container">
                     <div className="editor-container-tabs">
-                        {this.state.instances.map(instance => <EditorContainerTabUI key={instance.instanceId} instance={instance} active={this.state.activeInstance === instance} onActive={this.handleActiveTab} onClose={this.handleCloseTab} lang={this.props.lang} />)}
+                        {this.state.instances.map(instance => <EditorContainerTabUI {...this.props} key={instance.instanceId} instance={instance} active={this.state.activeInstance === instance} onActive={this.handleActiveTab} onClose={this.handleCloseTab} />)}
                     </div>
                 </div>
                 <div className="editor-container-body ui-flex-column ui-flex-full">

@@ -29,6 +29,17 @@
                 &.active {
                     background-color: #111;
                 }
+
+                & .editor-container-tab-dirty {
+                    position: absolute;
+                    display: block;
+                    border-radius: 50%;
+                    top: 4px;
+                    left: 4px;
+                    width: 4px;
+                    height: 4px;
+                    background-color: #ffd700;
+                }
         
                 & .editor-container-tab-icon {
                     margin-left: 4px;
@@ -37,11 +48,15 @@
     
                 & span.editor-container-tab-name {
                     font-size: 12px;
+                    margin: 0px 2px;
                 }
     
                 & .editor-container-tab-close {
-                    margin-left: 4px;
-                    margin-right: 4px;
+                    padding: 0px 4px;
+
+                    &:hover {
+                        background-color: rgba(255, 255, 255, 0.25);
+                    }
                 }
             }
         }

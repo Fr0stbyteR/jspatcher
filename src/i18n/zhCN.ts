@@ -112,6 +112,13 @@ export default {
         confirm: "保存",
         cancel: "取消"
     },
+    TabCloseModal: {
+        title: "保存更改",
+        msg: "文件 {} 的更改尚未保存",
+        confirm: "保存",
+        discard: "放弃更改",
+        cancel: "取消"
+    },
     FileMenu: {
         fileMenu: "文件",
         new: "新音频文件",
