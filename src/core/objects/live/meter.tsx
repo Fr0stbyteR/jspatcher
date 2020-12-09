@@ -1,5 +1,5 @@
 import { LiveObject, LiveUI } from "./Base";
-import { BaseAudioObject } from "../Base";
+import { BaseObject } from "../Base";
 import { TMeta } from "../../types";
 import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
 import { atodb } from "../../../utils/math";
@@ -140,7 +140,7 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
     }
 }
 export type LiveMeterState = { node: InstanceType<typeof TemporalAnalyserRegister["Node"]>; $requestTimer: number };
-export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]], [], LiveMeterProps, LiveMeterUIState> {
+export class LiveMeter extends BaseObject<{}, LiveMeterState, [], [number[]], [], LiveMeterProps, LiveMeterUIState> {
     static package = LiveObject.package;
     static author = LiveObject.author;
     static version = LiveObject.version;
@@ -256,7 +256,7 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             description: "Redraw Threshold in Linear"
         }
     };
-    static ui = LiveMeterUI;
+    static UI = LiveMeterUI;
     state: LiveMeterState = { node: undefined, $requestTimer: -1 };
     subscribe() {
         super.subscribe();
@@ -293,7 +293,7 @@ export class LiveMeter extends BaseAudioObject<{}, LiveMeterState, [], [number[]
             this.state.node = new TemporalAnalyserRegister.Node(this.audioCtx);
             this.applyBPF(this.state.node.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
-            this.inletConnections[0] = { node: this.state.node, index: 0 };
+            this.inletAudioConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();
             startRequest();
         });

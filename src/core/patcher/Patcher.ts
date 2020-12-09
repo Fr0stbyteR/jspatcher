@@ -744,8 +744,8 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         if (type === "se" || type === "s" || type === "sw") delta.y = Math.max(delta.y, 15 - height);
         if (type === "nw" || type === "n" || type === "ne") delta.y = Math.min(delta.y, height - 15);
         boxes.forEach((box) => {
-            const sizingX = box.uiComponent.sizing === "horizontal" || box.uiComponent.sizing === "both";
-            const sizingY = box.uiComponent.sizing === "vertical" || box.uiComponent.sizing === "both";
+            const sizingX = box.UI.sizing === "horizontal" || box.UI.sizing === "both";
+            const sizingY = box.UI.sizing === "vertical" || box.UI.sizing === "both";
             if (delta.x && sizingX) {
                 if (type === "ne" || type === "e" || type === "se") (box[rectKey] as TRect)[2] += delta.x;
                 if (type === "sw" || type === "w" || type === "nw") {
@@ -1022,10 +1022,10 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         }
     }
     dockUI(box?: Box) {
-        if (box && box.uiComponent.dockable) this.emit("dockUI", box);
+        if (box && box.UI.dockable) this.emit("dockUI", box);
         else if (this._state.selected.length) {
             const found = this._state.selected.find(id => id.startsWith("box"));
-            if (found && this.boxes[found] && this.boxes[found].uiComponent.dockable) this.emit("dockUI", this.boxes[found]);
+            if (found && this.boxes[found] && this.boxes[found].UI.dockable) this.emit("dockUI", this.boxes[found]);
         }
     }
     toString(spacing?: number) {

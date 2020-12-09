@@ -27,8 +27,8 @@ export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Ba
         description: "Initial pan"
     }];
     state = { node: this.audioCtx.createStereoPanner() };
-    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.pan }];
-    outletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.pan }];
+    outletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

@@ -13,18 +13,16 @@ export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject
 
 export const isJSPatcherObject = (x: any): x is AbstractObject => typeof x === "object" && x?.isJSPatcherObject;
 
-export const isJSPatcherAudioObjectConstructor = (x: any): x is typeof BaseAudioObject => typeof x === "function" && x?.isJSPatcherAudioObjectConstructor;
-
-export const isJSPatcherAudioObject = (x: any): x is BaseAudioObject => typeof x === "object" && x?.isJSPatcherAudioObject;
-
 export abstract class AbstractObject<
     D extends {} = {}, S extends {} = {},
     I extends any[] = any[], O extends any[] = any[],
     A extends any[] = any[], P extends {} = {},
     U extends {} = {}, E extends Partial<ObjectEventMap<D, S, I, A, P, U, {}>> & Record<string, any> = {}
 > extends TypedEventEmitter<ObjectEventMap<D, S, I, A, P, U, E>> {
+    /**
+     * Should be true in the JSPatcher Object Constructor
+     */
     static isJSPatcherObjectConstructor = true as const;
-    static isJSPatcherAudioObjectConstructor = false;
     static package = "Base"; // div will have class "packageName" "packageName-objectName"
     static get _name() {
         return this.name;
@@ -51,8 +49,38 @@ export abstract class AbstractObject<
             props: this.props
         };
     }
+    /**
+     * The UI that the object uses to display in the patcher
+     */
+    static UI: typeof BaseUI = BaseUI;
+
+    /**
+     * should be true in a JSPatcher object instance
+     */
     isJSPatcherObject = true as const;
-    isJSPatcherAudioObject = false;
+    protected readonly _patcher: Patcher;
+    /**
+     * the patcher that the object lives in
+     */
+    get patcher() {
+        return this._patcher;
+    }
+    /**
+     * Patcher constructor
+     */
+    get Patcher() {
+        return this._patcher.constructor as typeof Patcher;
+    }
+    protected readonly _box: Box<this>;
+    /**
+     * the box that the object lives in
+     */
+    get box() {
+        return this._box;
+    }
+    get audioCtx() {
+        return this.patcher.audioCtx;
+    }
     private _meta = (this.constructor as typeof AbstractObject).meta;
     get meta() {
         return this._meta;
@@ -66,213 +94,14 @@ export abstract class AbstractObject<
     }
     /**
      * should save all temporary variables here
-     *
-     * @type {S}
-     * @memberof AbstractBaseObject
      */
     state: S;
     setState(stateIn: Partial<S>) {
         this.state = Object.assign(this.state, stateIn);
         this.emit("stateUpdated", this.state);
     }
-    protected readonly _patcher: Patcher;
-    protected readonly _box: Box<this>;
-    constructor(box: Box, patcher: Patcher) {
-        super();
-        // line connected = metaChange event subscribed
-        // patcher object outside, use _ for prevent recursive stringify
-        this._patcher = patcher;
-        // the box which create this instance, use _ for prevent recursive stringify
-        this._box = box as Box<this>;
-    }
-    /**
-     * Will be called just after constructed
-     *
-     * @memberof AbstractObject
-     */
-    async init() {
-        // process args and props
-        this.subscribe();
-        await this.emit("preInit");
-        await this.update(this.box.args, this.box.props);
-        return this;
-    }
-    /**
-     * Will be called after the object attached to box
-     *
-     * @memberof AbstractObject
-     */
-    async postInit() {
-        await this.emit("postInit");
-    }
-    /**
-     * Do everything here
-     *
-     * @returns {void}
-     * @memberof AbstractObject
-     */
-    subscribe(): void {}
-    /**
-     * React.PureComponent related
-     *
-     * @type {typeof BaseUI}
-     * @memberof AbstractObject
-     */
-    static ui: typeof BaseUI = BaseUI;
-    /**
-     * Update UI's React State
-     *
-     * @param {(Partial<U>)} state
-     * @returns {this}
-     * @memberof AbstractObject
-     */
-    updateUI(state: Partial<U>): this {
-        this.emit("uiUpdate", state);
-        return this;
-    }
-    /**
-     * Store the input args and props with the box
-     *
-     * @returns {this}
-     * @memberof AbstractObject
-     */
-    updateBox = (e: { args?: Partial<A>; props?: Partial<P> }): this => {
-        this.box.update(e);
-        return this;
-    };
-    /**
-     * Will be called when arguments and properties are changed
-     *
-     * @param {Partial<A>} [args]
-     * @param {Partial<P>} [props]
-     * @returns {Promise<this>}
-     * @memberof AbstractObject
-     */
-    async update(args?: Partial<A>, props?: Partial<P>): Promise<this> {
-        const promises: Promise<void[]>[] = [];
-        promises.push(this.emit("update", { args, props }));
-        if (args && args.length) promises.push(this.emit("updateArgs", args));
-        if (props && Object.keys(props).length) promises.push(this.emit("updateProps", props));
-        await Promise.all(promises);
-        return this;
-    }
-    /**
-     * Main function when receive data from a inlet (base 0)
-     *
-     * @private
-     * @template $
-     * @param {I[$]} data
-     * @param {$} inlet
-     * @returns {Promise<this>}
-     * @memberof AbstractObject
-     */
-    fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(data: I[$], inlet: $): this {
-        if (inlet === 0) { // allow change props via first inlet with an props object
-            if (typeof data === "object") {
-                const propsInKeys = Object.keys(data);
-                const propsKeys = Object.keys(this.meta.props);
-                if (propsInKeys.length && propsInKeys.every(k => propsKeys.indexOf(k) !== -1)) {
-                    this.update(undefined, data);
-                    return this;
-                }
-            }
-        }
-        this.emit("inlet", { data, inlet });
-        return this;
-    }
-    /**
-     * Output data with ith outlet.
-     *
-     * @template $
-     * @param {$} outlet
-     * @param {O[$]} data
-     * @returns {this}
-     * @memberof AbstractObject
-     */
-    outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]): this {
-        if (outlet >= this.outlets) return this;
-        Array.from(this.outletLines[outlet]).sort(Line.compare).map(line => line.pass(data));
-        return this;
-    }
-    /**
-     * Outlet all values in an array with corresponding index,
-     * use sparse array to omit an outlet,
-     * `[, 1]` will outlet 1 on second outlet,
-     * but `[undefined, 1]` will also outlet undefined on first outlet
-     *
-     * @param {Partial<O>} outputs
-     * @returns {Promise<this>}
-     * @memberof AbstractObject
-     */
-    outletAll(outputs: Partial<O>): this {
-        for (let i = outputs.length - 1; i >= 0; i--) {
-            if (i in outputs) this.outlet(i, outputs[i]);
-        }
-        return this;
-    }
-    /**
-     * Called when object will be destroyed
-     *
-     * @returns {Promise<this>}
-     * @memberof AbstractObject
-     */
-    async destroy(): Promise<this> {
-        await this.emit("destroy", this);
-        return this;
-    }
-    // called when inlet or outlet are connected or disconnected
-    connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
-        this.emit("connectedOutlet", { outlet, destBox, destInlet, lineID });
-        return this;
-    }
-    connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
-        this.emit("connectedInlet", { inlet, srcBox, srcOutlet, lineID });
-        return this;
-    }
-    disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
-        this.emit("disconnectedOutlet", { outlet, destBox, destInlet, lineID });
-        return this;
-    }
-    disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
-        this.emit("disconnectedInlet", { inlet, srcBox, srcOutlet, lineID });
-        return this;
-    }
-    // output to console
-    post(data: any) {
-        this._patcher.newLog("none", this.meta.name, stringifyError(data), this._box);
-        return this;
-    }
-    error(data: any) {
-        const s = stringifyError(data);
-        this._patcher.newLog("error", this.meta.name, s, this._box);
-        this._box.error(s);
-        return this;
-    }
-    info(data: any) {
-        this._patcher.newLog("info", this.meta.name, stringifyError(data), this._box);
-        return this;
-    }
-    warn(data: any) {
-        this._patcher.newLog("warn", this.meta.name, stringifyError(data), this._box);
-        return this;
-    }
-    /**
-     * Highlight the UI box
-     *
-     * @returns
-     * @memberof AbstractObject
-     */
-    highlight() {
-        this._box.highlight();
-        return this;
-    }
-    get patcher() {
-        return this._patcher;
-    }
     /**
      * this will be stored with patcher
-     *
-     * @memberof BaseObject
      */
     get data() {
         return this._box.data;
@@ -286,20 +115,12 @@ export abstract class AbstractObject<
     }
     /**
      * Get the shared data manager
-     *
-     * @readonly
-     * @memberof AbstractObject
      */
     get sharedData() {
         return this._patcher.state.dataMgr;
     }
     /**
      * Get prop value from box, if not defined, get from metadata default
-     *
-     * @template K
-     * @param {K} key
-     * @returns {P[K]}
-     * @memberof AbstractObject
      */
     getProp<K extends keyof P = keyof P>(key: K): P[K] {
         if (key === "rect") return this.box.rect as any;
@@ -310,9 +131,6 @@ export abstract class AbstractObject<
     }
     /**
      * Get all props from box, if not defined, get from metadata default
-     *
-     * @readonly
-     * @memberof AbstractObject
      */
     get props(): Partial<P> {
         const props: Partial<P> = {};
@@ -320,9 +138,6 @@ export abstract class AbstractObject<
             props[key as keyof P] = this.getProp(key as keyof P);
         }
         return props;
-    }
-    get box() {
-        return this._box;
     }
     get inlets() {
         return this._box.inlets;
@@ -342,8 +157,183 @@ export abstract class AbstractObject<
     get inletLines() {
         return this._box.inletLines;
     }
+    /**
+     * constructor (class) name
+     */
     get class() {
         return this.constructor.name;
+    }
+    constructor(box: Box, patcher: Patcher) {
+        super();
+        // line connected = metaChange event subscribed
+        // patcher object outside, use _ for prevent recursive stringify
+        this._patcher = patcher;
+        // the box which create this instance, use _ for prevent recursive stringify
+        this._box = box as Box<this>;
+    }
+    /**
+     * Will be called just after constructed
+     */
+    async init() {
+        // process args and props
+        this.subscribe();
+        await this.emit("preInit");
+        await this.update(this.box.args, this.box.props);
+        return this;
+    }
+    /**
+     * Will be called after the object attached to box
+     */
+    async postInit() {
+        await this.emit("postInit");
+    }
+    /**
+     * Do everything here
+     */
+    subscribe(): void {}
+    /**
+     * Update UI's React State
+     */
+    updateUI(state: Partial<U>) {
+        this.emit("uiUpdate", state);
+    }
+    /**
+     * Store the input args and props with the box
+     */
+    updateBox = (e: { args?: Partial<A>; props?: Partial<P> }) => {
+        this.box.update(e);
+    };
+    /**
+     * Will be called when arguments and properties are changed
+     */
+    async update(args?: Partial<A>, props?: Partial<P>): Promise<this> {
+        const promises: Promise<void[]>[] = [];
+        promises.push(this.emit("update", { args, props }));
+        if (args && args.length) promises.push(this.emit("updateArgs", args));
+        if (props && Object.keys(props).length) promises.push(this.emit("updateProps", props));
+        await Promise.all(promises);
+        return this;
+    }
+    /**
+     * Main function when receive data from a inlet (base 0)
+     */
+    fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(inlet: $, data: I[$]): this {
+        if (inlet === 0) { // allow change props via first inlet with an props object
+            if (typeof data === "object") {
+                const propsInKeys = Object.keys(data);
+                const propsKeys = Object.keys(this.meta.props);
+                if (propsInKeys.length && propsInKeys.every(k => propsKeys.indexOf(k) !== -1)) {
+                    this.update(undefined, data);
+                    return this;
+                }
+            }
+        }
+        this.emit("inlet", { data, inlet });
+        return this;
+    }
+    /**
+     * Output data with ith outlet.
+     */
+    outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]): this {
+        if (outlet >= this.outlets) return this;
+        Array.from(this.outletLines[outlet]).sort(Line.compare).map(line => line.pass(data));
+        return this;
+    }
+    /**
+     * Outlet all values in an array with corresponding index,
+     * use sparse array to omit an outlet,
+     * `[, 1]` will outlet 1 on second outlet,
+     * but `[undefined, 1]` will also outlet undefined on first outlet
+     */
+    outletAll(outputs: Partial<O>): this {
+        for (let i = outputs.length - 1; i >= 0; i--) {
+            if (i in outputs) this.outlet(i, outputs[i]);
+        }
+        return this;
+    }
+    /**
+     * Called when object will be destroyed
+     */
+    async destroy() {
+        await this.emit("destroy", this);
+    }
+    // called when inlet or outlet are connected or disconnected
+    connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
+        this.emit("connectedOutlet", { outlet, destBox, destInlet, lineID });
+    }
+    connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        this.emit("connectedInlet", { inlet, srcBox, srcOutlet, lineID });
+    }
+    disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
+        this.emit("disconnectedOutlet", { outlet, destBox, destInlet, lineID });
+    }
+    disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
+        this.emit("disconnectedInlet", { inlet, srcBox, srcOutlet, lineID });
+    }
+    // output to console
+    post(data: any) {
+        this._patcher.newLog("none", this.meta.name, stringifyError(data), this._box);
+    }
+    error(data: any) {
+        const s = stringifyError(data);
+        this._patcher.newLog("error", this.meta.name, s, this._box);
+        this._box.error(s);
+    }
+    info(data: any) {
+        this._patcher.newLog("info", this.meta.name, stringifyError(data), this._box);
+    }
+    warn(data: any) {
+        this._patcher.newLog("warn", this.meta.name, stringifyError(data), this._box);
+    }
+    /**
+     * Highlight the UI box
+     */
+    highlight() {
+        this._box.highlight();
+    }
+
+    inletAudioConnections: TAudioNodeInletConnection[] = [];
+    outletAudioConnections: TAudioNodeOutletConnection[] = [];
+    connectAudio() {
+        this.box.allLines.forEach(line => line.enable());
+    }
+    connectAudioInlet(portIn?: number) {
+        this.inletLines.forEach((lines, port) => {
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.enable());
+        });
+    }
+    connectAudioOutlet(portIn?: number) {
+        this.outletLines.forEach((lines, port) => {
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.enable());
+        });
+    }
+    disconnectAudio() {
+        this.box.allLines.forEach(line => line.disable());
+    }
+    disconnectAudioInlet(portIn?: number) {
+        this.inletLines.forEach((lines, port) => {
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.disable());
+        });
+    }
+    disconnectAudioOutlet(portIn?: number) {
+        this.outletLines.forEach((lines, port) => {
+            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.disable());
+        });
+    }
+    applyBPF(param: AudioParam, bpf: number[][]) {
+        const { audioCtx } = this;
+        const { currentTime } = audioCtx;
+        param.cancelScheduledValues(currentTime);
+        param.setValueAtTime(param.value, currentTime);
+        let t = 0;
+        bpf.forEach((a) => {
+            if (a.length === 1) {
+                param.setValueAtTime(a[0], currentTime + t);
+            } else if (a.length > 1) {
+                t += a[1];
+                param.linearRampToValueAtTime(a[0], currentTime + t);
+            }
+        });
     }
 }
 export interface BaseObjectAdditionalProps {
@@ -511,73 +501,10 @@ export class DefaultObject<
             isUIState: true
         }
     };
-    static ui = DefaultUI;
+    static UI = DefaultUI;
 }
 export class AnyObject extends BaseObject<Record<string, any>, Record<string, any>, any[], any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> {}
-export class BaseAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<BaseObjectProps> & Record<string, any> = {}, U extends Partial<BaseUIState> & Record<string, any> = {}, E extends {} = {}> extends BaseObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
-    static isJSPatcherAudioObjectConstructor = true as const;
-    isJSPatcherAudioObject = true as const;
-    get audioCtx() {
-        return this.patcher.audioCtx;
-    }
-    applyBPF(param: AudioParam, bpf: number[][]) {
-        const { audioCtx } = this;
-        const { currentTime } = audioCtx;
-        param.cancelScheduledValues(currentTime);
-        param.setValueAtTime(param.value, currentTime);
-        let t = 0;
-        bpf.forEach((a) => {
-            if (a.length === 1) {
-                param.setValueAtTime(a[0], currentTime + t);
-            } else if (a.length > 1) {
-                t += a[1];
-                if (a.length === 3 && a[2] === 1) {
-                    param.exponentialRampToValueAtTime(a[0], currentTime + t);
-                } else {
-                    param.linearRampToValueAtTime(a[0], currentTime + t);
-                }
-            }
-        });
-    }
-    inletConnections: TAudioNodeInletConnection[] = [];
-    outletConnections: TAudioNodeOutletConnection[] = [];
-    connectAudio() {
-        this.box.allLines.forEach(line => line.enable());
-        return this;
-    }
-    connectAudioInlet(portIn?: number) {
-        this.inletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.enable());
-        });
-        return this;
-    }
-    connectAudioOutlet(portIn?: number) {
-        this.outletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.enable());
-        });
-        return this;
-    }
-    disconnectAudio() {
-        this.box.allLines.forEach(line => line.disable());
-        return this;
-    }
-    disconnectAudioInlet(portIn?: number) {
-        this.inletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.disable());
-        });
-        return this;
-    }
-    disconnectAudioOutlet(portIn?: number) {
-        this.outletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.disable());
-        });
-        return this;
-    }
-}
-export class DefaultAudioObject<D extends {} = {}, S extends {} = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<DefaultUIState> & Record<string, any> = {}, U extends Partial<DefaultUIState> & Record<string, any> = {}, E extends {} = {}> extends BaseAudioObject<D, S, I, O, A, P, U & DefaultUIState, E> {
-    static props = DefaultObject.props;
-    static ui = DefaultUI;
-}
+
 class EmptyObjectUI extends DefaultUI<EmptyObject> {}
 export class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
     static author = "Fr0stbyteR";
@@ -601,7 +528,7 @@ export class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], 
         });
         this.on("inlet", ({ data }) => this.outlet(0, data));
     }
-    static ui: typeof DefaultUI = EmptyObjectUI;
+    static UI: typeof DefaultUI = EmptyObjectUI;
 }
 export class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
     static description = "invalid object";

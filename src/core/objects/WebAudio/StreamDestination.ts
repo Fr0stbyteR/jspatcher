@@ -17,7 +17,7 @@ export default class StreamDest extends JSPAudioNode<MediaStreamAudioDestination
         description: "Stream"
     }];
     state = { node: this.audioCtx.createMediaStreamDestination() };
-    inletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

@@ -26,7 +26,7 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | 
         description: "Number of Inputs"
     }];
     state = { node: null as ChannelMergerNode };
-    outletConnections = [{ node: this.node, index: 0 }];
+    outletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -53,12 +53,12 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | 
         const factoryMeta = Merger.meta;
         const bangInlet = factoryMeta.inlets[0];
         const siganlInlet = factoryMeta.inlets[1];
-        this.inletConnections = [{ node: this.node, index: 0 }];
-        this.outletConnections = [{ node: this.node, index: 0 }];
+        this.inletAudioConnections = [{ node: this.node, index: 0 }];
+        this.outletAudioConnections = [{ node: this.node, index: 0 }];
         factoryMeta.inlets = [bangInlet];
         for (let i = 1; i < channelCount; i++) {
             factoryMeta.inlets[i] = siganlInlet;
-            this.inletConnections[i] = { node: this.node, index: i };
+            this.inletAudioConnections[i] = { node: this.node, index: i };
         }
         this.meta = factoryMeta;
         this.inlets = channelCount;

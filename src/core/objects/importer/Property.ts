@@ -56,5 +56,5 @@ export class Property<Static extends boolean = false> extends ImportedObject<any
         this.on("preInit", this.handlePreInit);
         this.on("inlet", this.handleInlet);
     }
-    static ui: typeof ImportedObjectUI = PropertyUI;
+    static UI: typeof ImportedObjectUI = PropertyUI;
 }

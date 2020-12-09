@@ -1,14 +1,12 @@
 import Patcher from "./Patcher";
 import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import { LineEventMap, TLine, TLineType, TMetaType } from "../types";
-import { BaseAudioObject, AnyObject, isJSPatcherAudioObject } from "../objects/Base";
+import { AnyObject } from "../objects/Base";
 
 export default class Line extends TypedEventEmitter<LineEventMap> {
     static isConnectableByAudio(from: AnyObject, outlet: number, to: AnyObject, inlet: number) {
-        if (!isJSPatcherAudioObject(from)) return false;
-        if (!isJSPatcherAudioObject(to)) return false;
-        const fromConnection = from.outletConnections[outlet];
-        const toConnection = to.inletConnections[inlet];
+        const fromConnection = from.outletAudioConnections[outlet];
+        const toConnection = to.inletAudioConnections[inlet];
         if (!fromConnection) return false;
         if (!toConnection) return false;
         if (!fromConnection.node) return false;
@@ -98,8 +96,8 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         const { srcBox, destBox } = this;
         if (this._patcher.getLinesByBox(this.srcID, this.destID, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
         if (this.isConnectableByAudio) {
-            const from = (this.srcBox.object as BaseAudioObject).outletConnections[this.srcOutlet];
-            const to = (this.destBox.object as BaseAudioObject).inletConnections[this.destInlet];
+            const from = this.srcBox.object.outletAudioConnections[this.srcOutlet];
+            const to = this.destBox.object.inletAudioConnections[this.destInlet];
             if (from && to && from.node && to.node) {
                 const isAudioParam = to.node instanceof AudioParam;
                 try {
@@ -121,8 +119,8 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         if (this.srcOutlet >= srcBox.outlets || this.destInlet >= destBox.inlets) return this._patcher.deleteLine(this.id);
         if (this._patcher.getLinesByBox(this.srcID, this.destID, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
         if (this.isConnectableByAudio) {
-            const from = (this.srcBox.object as BaseAudioObject).outletConnections[this.srcOutlet];
-            const to = (this.destBox.object as BaseAudioObject).inletConnections[this.destInlet];
+            const from = this.srcBox.object.outletAudioConnections[this.srcOutlet];
+            const to = this.destBox.object.inletAudioConnections[this.destInlet];
             if (from && to && from.node && to.node) {
                 const isAudioParam = to.node instanceof AudioParam;
                 try {
@@ -149,7 +147,7 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
     }
     pass(data: any) {
         this.emit("passData", data);
-        return this.disabled ? this : this.destBox.fn(data, this.destInlet);
+        return this.disabled ? this : this.destBox.fn(this.destInlet, data);
     }
     get positionHash() {
         const { top, left } = this._patcher.boxes[this.dest[0]].getInletPos(this.dest[1]);

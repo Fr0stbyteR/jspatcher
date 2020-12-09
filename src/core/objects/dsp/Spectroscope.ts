@@ -211,7 +211,7 @@ export class Spectroscope extends BaseDSP<{}, State, [Bang], [], [], Props, Spec
             isUIState: true
         }
     };
-    static ui = SpectroscopeUI;
+    static UI = SpectroscopeUI;
     state: State = { node: undefined };
     subscribe() {
         super.subscribe();
@@ -237,7 +237,7 @@ export class Spectroscope extends BaseDSP<{}, State, [Bang], [], [], Props, Spec
             this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
             this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
-            this.inletConnections[0] = { node: this.state.node, index: 0 };
+            this.inletAudioConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();
         });
         this.on("inlet", ({ data, inlet }) => {

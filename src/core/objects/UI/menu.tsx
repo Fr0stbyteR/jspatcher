@@ -252,7 +252,7 @@ export default class menu extends UIObject<{}, {}, [number | string | number[] |
             isUIState: true
         }
     };
-    static ui = MenuUI;
+    static UI = MenuUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

@@ -279,7 +279,7 @@ export default class waveform extends UIObject<{}, WaveformState, [AudioBuffer, 
             isUIState: true
         }
     };
-    static ui = WaveformUI;
+    static UI = WaveformUI;
     state: WaveformState = { key: undefined as string, value: undefined as AudioBuffer };
     subscribe() {
         super.subscribe();

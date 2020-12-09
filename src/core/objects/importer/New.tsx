@@ -46,7 +46,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
             description: "arguments count for method"
         }
     };
-    static ui = NewUI;
+    static UI = NewUI;
     state: S = { Wrapper: null, inputs: [], result: null };
     subscribe() {
         super.subscribe();

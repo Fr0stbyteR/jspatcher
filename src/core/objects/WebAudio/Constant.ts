@@ -27,8 +27,8 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
         description: "Initial offset"
     }];
     state = { node: this.audioCtx.createConstantSource() };
-    inletConnections = [null, { node: this.node.offset }];
-    outletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [null, { node: this.node.offset }];
+    outletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

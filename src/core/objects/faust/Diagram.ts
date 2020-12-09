@@ -16,7 +16,7 @@ export default class diagram extends BaseObject<{}, { svg: string, container: HT
         type: "string",
         description: "SVG code"
     }];
-    static ui = class extends DOMUI<diagram> {
+    static UI = class extends DOMUI<diagram> {
         state: DOMUIState = { ...this.state, children: this.props.object.state.container ? [this.props.object.state.container] : [] };
     };
     state = { svg: "", container: undefined as HTMLDivElement };

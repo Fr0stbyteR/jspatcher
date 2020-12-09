@@ -23,7 +23,7 @@ export default class ui extends BaseObject<{}, S, [FaustAudioWorkletNode], [Reco
         type: "object",
         description: "Changed parameter name-value map"
     }];
-    static ui = class extends DOMUI<ui> {
+    static UI = class extends DOMUI<ui> {
         state: DOMUIState = { ...this.state, children: this.props.object.state.root ? [this.props.object.state.root] : [] };
         componentDidMount() {
             super.componentDidMount();

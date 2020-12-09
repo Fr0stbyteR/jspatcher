@@ -121,8 +121,8 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
         }
     };
     state = { node: this.audioCtx.createPanner() };
-    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.orientationX }, { node: this.node.orientationY }, { node: this.node.orientationZ }, null, { node: this.node.positionX }, { node: this.node.positionY }, { node: this.node.positionZ }];
-    outletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.orientationX }, { node: this.node.orientationY }, { node: this.node.orientationZ }, null, { node: this.node.positionX }, { node: this.node.positionY }, { node: this.node.positionZ }];
+    outletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { StrictModalProps, Modal } from "semantic-ui-react";
-import { DefaultObject, DefaultAudioObject, BaseAudioObject, BaseObject } from "./Base";
+import { DefaultObject, BaseObject } from "./Base";
 import Patcher from "../patcher/Patcher";
 import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
 import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState } from "./BaseUI";
@@ -130,7 +130,7 @@ export class Out extends DefaultObject<{}, { index: number }, [any], [], [number
     }
 }
 
-export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any], [number], { description: string }> {
+export class AudioIn extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string }> {
     static package = "SubPatcher";
     static description = "Patcher inlet (audio)";
     static args: TMeta["args"] = [{
@@ -150,7 +150,7 @@ export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any]
         type: "signal",
         description: ""
     }];
-    outletConnections: TAudioNodeOutletConnection[] = [{ node: undefined as GainNode, index: 0 }];
+    outletAudioConnections: TAudioNodeOutletConnection[] = [{ node: undefined as GainNode, index: 0 }];
     _duringInit = true;
     state = { index: undefined as number };
     subscribe() {
@@ -180,7 +180,7 @@ export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any]
                     this.patcher.inletAudioConnections[$ - 1] = { node, index: 0 };
                 }
                 const { node } = this.patcher.inletAudioConnections[$ - 1];
-                this.outletConnections[0].node = node;
+                this.outletAudioConnections[0].node = node;
                 if (!this._duringInit) {
                     this.connectAudio();
                     this.patcher.changeIO();
@@ -201,7 +201,7 @@ export class AudioIn extends DefaultAudioObject<{}, { index: number }, [], [any]
     }
 }
 
-export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [], [number], { description: string }> {
+export class AudioOut extends DefaultObject<{}, { index: number }, [any], [], [number], { description: string }> {
     static package = "SubPatcher";
     static description = "Patcher outlet (audio)";
     static args: TMeta["args"] = [{
@@ -222,7 +222,7 @@ export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [
         description: "",
         isHot: true
     }];
-    inletConnections: TAudioNodeInletConnection[] = [{ node: undefined as GainNode, index: 0 }];
+    inletAudioConnections: TAudioNodeInletConnection[] = [{ node: undefined as GainNode, index: 0 }];
     _duringInit = true;
     state = { index: undefined as number };
     subscribe() {
@@ -252,7 +252,7 @@ export class AudioOut extends DefaultAudioObject<{}, { index: number }, [any], [
                     this.patcher.outletAudioConnections[$ - 1] = { node, index: 0 };
                 }
                 const { node } = this.patcher.outletAudioConnections[$ - 1];
-                this.inletConnections[0].node = node;
+                this.inletAudioConnections[0].node = node;
                 if (!this._duringInit) {
                     this.connectAudio();
                     this.patcher.changeIO();
@@ -315,7 +315,7 @@ interface SubPatcherState {
     patcher: Patcher;
     key: string;
 }
-export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherState, any[], any[], [string], {}, { patcher: Patcher }> {
+export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState, any[], any[], [string], {}, { patcher: Patcher }> {
     static package = "SubPatcher";
     static description = "Sub-patcher";
     static args: TMeta["args"] = [{
@@ -325,7 +325,7 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
         description: "Name of the subpatcher"
     }];
     state: SubPatcherState = { patcher: undefined, key: this.box.args[0] };
-    static ui = SubPatcherUI;
+    static UI = SubPatcherUI;
     type: PatcherMode = "js";
     get storageType() {
         if (!this.state.key) return "standalone";
@@ -340,8 +340,8 @@ export class patcher extends DefaultAudioObject<Partial<RawPatcher>, SubPatcherS
         const handlePatcherConnectAudioInlet = (port: number) => this.connectAudioInlet(port);
         const handlePatcherConnectAudioOutlet = (port: number) => this.connectAudioOutlet(port);
         const handlePatcherIOChanged = (meta: TMeta) => {
-            this.inletConnections = this.state.patcher.inletAudioConnections.slice();
-            this.outletConnections = this.state.patcher.outletAudioConnections.slice();
+            this.inletAudioConnections = this.state.patcher.inletAudioConnections.slice();
+            this.outletAudioConnections = this.state.patcher.outletAudioConnections.slice();
             this.inlets = meta.inlets.length;
             this.outlets = meta.outlets.length;
             const { inlets, outlets } = meta;
@@ -478,7 +478,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         description: "Polyphonic instrument voices count"
     }];
     state = { code: undefined, merger: undefined, splitter: undefined, node: undefined, voices: 0, patcher: undefined, key: this.box.args[0] } as FaustPatcherState;
-    static ui = SubPatcherUI;
+    static UI = SubPatcherUI;
     type: "faust" | "gen" = "faust";
     get storageType() {
         if (!this.state.key) return "standalone";
@@ -651,7 +651,7 @@ export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher; timestam
 }
 export class bpatcher extends patcher {
     static props = BaseObject.props;
-    static ui = BPatcherUI as any;
+    static UI = BPatcherUI as any;
 }
 
 export default {

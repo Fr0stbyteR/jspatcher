@@ -379,7 +379,7 @@ export default class bpf extends UIObject<BPFData, {}, [TBPF | Bang], [TStrictBP
             isUIState: true
         }
     };
-    static ui = BPFUI;
+    static UI = BPFUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

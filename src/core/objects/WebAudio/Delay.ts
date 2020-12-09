@@ -27,8 +27,8 @@ export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, TBPF], [nu
         description: "Initial delayTime"
     }];
     state = { node: this.audioCtx.createDelay() };
-    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.delayTime }];
-    outletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.delayTime }];
+    outletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

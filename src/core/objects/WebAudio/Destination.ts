@@ -14,7 +14,7 @@ export default class Destination extends JSPAudioNode<AudioDestinationNode, {}, 
         description: "Instance: DestinationNode"
     }];
     state = { node: this.audioCtx.destination };
-    inletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

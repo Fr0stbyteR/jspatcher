@@ -236,7 +236,7 @@ export default class keyboard extends UIObject<{}, KeyboardState, [TMIDIEvent | 
             isUIState: true
         }
     };
-    static ui = KeyboardUI;
+    static UI = KeyboardUI;
     state: KeyboardState = { keys: this.flushed, selected: undefined };
     get flushed() {
         const keys: KeyMap = [];

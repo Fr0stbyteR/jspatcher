@@ -54,7 +54,7 @@ export default class UIDock extends React.PureComponent<{ patcher: Patcher; disp
             <>
                 <div className="dock-ui" ref={this.refDiv}>
                     {box
-                        ? <box.uiComponent object={box.object} editing={false} onEditEnd={() => undefined} inDock ref={this.refUI} />
+                        ? <box.UI object={box.object} editing={false} onEditEnd={() => undefined} inDock ref={this.refUI} />
                         : <div className="dock-ui-default">{ctrlKey} + Enter on selected box to dock UI</div>}
                 </div>
                 <Menu icon inverted size="mini">

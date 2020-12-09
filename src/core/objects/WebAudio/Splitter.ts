@@ -22,7 +22,7 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
         description: "Number of Outputs"
     }];
     state = { node: null as ChannelSplitterNode };
-    inletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -49,11 +49,11 @@ export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Ban
         const factoryMeta = Splitter.meta;
         const signalOutlet = factoryMeta.outlets[0];
         const nodeOutlet = factoryMeta.outlets[1];
-        this.inletConnections = [{ node: this.node, index: 0 }];
-        this.outletConnections = [];
+        this.inletAudioConnections = [{ node: this.node, index: 0 }];
+        this.outletAudioConnections = [];
         for (let i = 0; i < channelCount; i++) {
             factoryMeta.outlets[i] = signalOutlet;
-            this.outletConnections[i] = { node: this.node, index: i };
+            this.outletAudioConnections[i] = { node: this.node, index: i };
         }
         factoryMeta.outlets[channelCount] = nodeOutlet;
         this.meta = factoryMeta;

@@ -83,5 +83,5 @@ export default class message extends UIObject<{ text: string }, { buffer: any; e
             return Util.inspect(o);
         }
     }
-    static ui: typeof BaseUI = MessageUI;
+    static UI: typeof BaseUI = MessageUI;
 }

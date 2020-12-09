@@ -1,6 +1,6 @@
 import * as React from "react";
 import { toMIDI, iNormExp } from "../../../utils/math";
-import { BaseAudioObject } from "../Base";
+import { BaseObject } from "../Base";
 import { TMeta } from "../../types";
 import { BaseUI, BaseUIState, CanvasUI } from "../BaseUI";
 
@@ -165,7 +165,7 @@ export class LiveUI<T extends LiveObject, S extends Partial<LiveUIState> & Recor
 }
 export type LiveObjectState = { value: number; displayValue: string };
 export type LiveObjectEventMap = { "changeFromUI": { value: number; displayValue: string } };
-export class LiveObject<D = {}, S extends Partial<LiveObjectState> & Record<string, any> = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<Omit<LiveUIState, "value">> & Record<string, any> = {}, U extends Partial<LiveUIState> & Record<string, any> = {}> extends BaseAudioObject<D, S & LiveObjectState, I, O, A, P & Omit<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
+export class LiveObject<D = {}, S extends Partial<LiveObjectState> & Record<string, any> = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<Omit<LiveUIState, "value">> & Record<string, any> = {}, U extends Partial<LiveUIState> & Record<string, any> = {}> extends BaseObject<D, S & LiveObjectState, I, O, A, P & Omit<LiveUIState, "value">, U & LiveUIState, LiveObjectEventMap> {
     static package = "live";
     static author = "Fr0stbyteR";
     static version = "1.0.0";
@@ -265,7 +265,7 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & Record<stri
         }
     };
     state = { value: 0, displayValue: "0" } as S & LiveObjectState;
-    static ui: typeof LiveUI;
+    static UI: typeof LiveUI;
     /**
      * Get a nearest valid number
      *

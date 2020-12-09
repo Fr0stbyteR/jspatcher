@@ -255,7 +255,7 @@ export class LiveNumbox extends LiveObject<{}, {}, [number | Bang, number], [num
             isUIState: true
         }
     };
-    static ui = LiveNumboxUI;
+    static UI = LiveNumboxUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

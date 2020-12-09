@@ -20,7 +20,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
     _editing: boolean;
     private _parsed: { class: string; args: Args<T>; props: Props<T> };
     private _object: T;
-    private _objectConstructor: typeof AnyObject;
+    private _Object: typeof AnyObject;
     private readonly _patcher: Patcher;
     private readonly _inletLines: Set<Line>[];
     private readonly _outletLines: Set<Line>[];
@@ -54,7 +54,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         if (this._parsed.args.length) this.args = this._parsed.args;
         Object.assign(this.props, this._parsed.props);
         const Constructor = this._patcher.getObjectConstructor(this._parsed);
-        this._objectConstructor = Constructor;
+        this._Object = Constructor;
         if (!this.size.every(v => v > 0)) this.size = this.defaultSize;
         if (!isTPresentationRect(this.presentationRect) || !this.presentationSize.every(v => v > 0)) this.presentationSize = this.defaultSize;
         this._object = new Constructor(this, this._patcher) as T;
@@ -74,15 +74,15 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
      * @returns
      * @memberof Box
      */
-    fn<I extends keyof Pick<Inputs<T>, number>>(data: Inputs<T>[I], inlet: I) {
-        this._object.fn(data, inlet);
+    fn<I extends keyof Pick<Inputs<T>, number>>(inlet: I, data: Inputs<T>[I]) {
+        this._object.fn(inlet, data);
         return this;
     }
-    get uiComponent() {
-        return this._objectConstructor.ui;
+    get UI() {
+        return this._Object.UI;
     }
     get defaultSize() {
-        return this.uiComponent.defaultSize;
+        return this.UI.defaultSize;
     }
     get meta() {
         return this._object.meta;
@@ -99,8 +99,8 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
     set object(oIn: T) {
         this._object = oIn;
     }
-    get objectConstructor() {
-        return this._objectConstructor;
+    get Object() {
+        return this._Object;
     }
     get parsed() {
         return this._parsed;

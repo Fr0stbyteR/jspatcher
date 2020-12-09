@@ -34,8 +34,8 @@ export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [],
         }
     };
     state = { node: this.audioCtx.createConvolver() };
-    inletConnections = [{ node: this.node, index: 0 }];
-    outletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [{ node: this.node, index: 0 }];
+    outletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

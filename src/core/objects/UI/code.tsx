@@ -92,5 +92,5 @@ export default class code extends UIObject<{ value: string }, {}, [Bang, string]
             }
         });
     }
-    static ui: typeof BaseUI = CodeUI;
+    static UI: typeof BaseUI = CodeUI;
 }

@@ -38,7 +38,7 @@ export default class StreamSrc extends JSPAudioNode<MediaStreamAudioSourceNode, 
         this.disconnectAudio();
         this.node = this.audioCtx.createMediaStreamSource(this.state.stream);
         this.node.channelInterpretation = "discrete";
-        this.outletConnections[0] = { node: this.node, index: 0 };
+        this.outletAudioConnections[0] = { node: this.node, index: 0 };
         this.connectAudio();
     }
 }

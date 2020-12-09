@@ -47,7 +47,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
         default: 0,
         description: "Polyphonic instrument voices count"
     }];
-    static ui: typeof DefaultUI = FaustNodeUI;
+    static UI: typeof DefaultUI = FaustNodeUI;
     state = { merger: undefined, splitter: undefined, node: undefined, voices: 0 } as S & FaustNodeState;
     async newNode(code: string, voices: number) {
         let compiled: ReturnType<UnPromisifiedFunction<FaustNode["compile"]>>;
@@ -72,11 +72,11 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
         for (let i = 0; i < inlets; i++) {
             if (i === 0) factoryMeta.inlets[i] = compiled.inlets ? firstInletSignalMeta : firstInletMeta;
             else factoryMeta.inlets[i] = inletMeta;
-            this.inletConnections[i] = { node: merger, index: i };
+            this.inletAudioConnections[i] = { node: merger, index: i };
         }
         for (let i = 0; i < outlets; i++) {
             factoryMeta.outlets[i] = outletMeta;
-            this.outletConnections[i] = { node: splitter, index: i };
+            this.outletAudioConnections[i] = { node: splitter, index: i };
         }
         factoryMeta.outlets[outlets] = lastOutletMeta;
         if (node instanceof AWN) {
@@ -87,7 +87,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
                 const param = node.parameters.get(path);
                 const { defaultValue, minValue, maxValue } = param;
                 factoryMeta.inlets[i] = { ...audioParamInletMeta, description: `${path}${audioParamInletMeta.description}: ${defaultValue} (${minValue} - ${maxValue})` };
-                this.inletConnections[i] = { node: param };
+                this.inletAudioConnections[i] = { node: param };
             }
         }
         this.meta = factoryMeta;
@@ -128,7 +128,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
                 }
             }
         } else if (this.state.node instanceof AWN) {
-            const con = this.inletConnections[inlet].node;
+            const con = this.inletAudioConnections[inlet].node;
             if (con instanceof AudioParam) {
                 try {
                     const bpf = decodeLine(data as TBPF);

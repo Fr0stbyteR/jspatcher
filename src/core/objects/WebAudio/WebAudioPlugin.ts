@@ -1,5 +1,5 @@
 import { WebAudioModule } from "sdk";
-import { Bang, BaseAudioObject, isBang } from "../Base";
+import { Bang, BaseObject, isBang } from "../Base";
 import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
@@ -11,7 +11,7 @@ class PluginUI extends DOMUI<Plugin> {
 export type S = { node: AudioNode; plugin: WebAudioModule; children: ChildNode[] };
 type I = [Bang | number | string | TMIDIEvent | Record<string, TBPF>, ...TBPF[]];
 type O = (null | AudioNode)[];
-export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, DOMUIState> {
+export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIState> {
     static description = "Dynamically load WebAudioModule";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -27,7 +27,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
         optional: false,
         description: "WebAudioModule URL"
     }];
-    static ui = PluginUI;
+    static UI = PluginUI;
     state = { merger: undefined, splitter: undefined, node: undefined, plugin: undefined, children: [] } as S;
     async load(url: string) {
         let WAPCtor: typeof WebAudioModule;
@@ -66,11 +66,11 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
         for (let i = 0; i < inlets; i++) {
             if (i === 0) factoryMeta.inlets[i] = inlets ? firstInletSignalMeta : firstInletMeta;
             else factoryMeta.inlets[i] = inletMeta;
-            this.inletConnections[i] = { node, index: i };
+            this.inletAudioConnections[i] = { node, index: i };
         }
         for (let i = 0; i < outlets; i++) {
             factoryMeta.outlets[i] = outletMeta;
-            this.outletConnections[i] = { node, index: i };
+            this.outletAudioConnections[i] = { node, index: i };
         }
         factoryMeta.outlets[outlets] = lastOutletMeta;
         const paramInfo = await plugin.audioNode.getParameterInfo();
@@ -125,7 +125,7 @@ export default class Plugin extends BaseAudioObject<{}, S, I, O, [string], {}, D
                 }
             }
         } else {
-            const con = this.inletConnections[inlet].node;
+            const con = this.inletAudioConnections[inlet].node;
             if (con instanceof AudioParam) {
                 try {
                     const bpf = decodeLine(data as TBPF);

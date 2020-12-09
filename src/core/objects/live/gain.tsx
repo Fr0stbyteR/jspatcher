@@ -507,7 +507,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             description: "Ramp time"
         }
     };
-    static ui = LiveGainUI;
+    static UI = LiveGainUI;
     state: LiveGainState = {
         ...this.state,
         rmsNode: undefined,
@@ -515,8 +515,8 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
         bypassNode: this.audioCtx.createGain(),
         $requestTimer: -1
     };
-    inletConnections = [{ node: this.state.bypassNode, index: 0 }];
-    outletConnections = [{ node: this.state.gainNode, index: 0 }];
+    inletAudioConnections = [{ node: this.state.bypassNode, index: 0 }];
+    outletAudioConnections = [{ node: this.state.gainNode, index: 0 }];
     subscribe() {
         super.subscribe();
         const startRequest = () => {

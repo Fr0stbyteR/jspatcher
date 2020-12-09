@@ -96,7 +96,7 @@ export class TemporalAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
             const { parameters } = this.state.node;
             this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
-            this.inletConnections[0] = { node: this.state.node, index: 0 };
+            this.inletAudioConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();
             if (this.getProp("continuous")) startRequest();
             this.on("inlet", (e) => {

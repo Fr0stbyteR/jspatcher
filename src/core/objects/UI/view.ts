@@ -36,7 +36,7 @@ export default class view extends UIObject<{}, { children: ChildNode[] }, [strin
             isUIState: true
         }
     };
-    static ui = ViewUI;
+    static UI = ViewUI;
     state = { children: [] as ChildNode[] };
     subscribe() {
         super.subscribe();

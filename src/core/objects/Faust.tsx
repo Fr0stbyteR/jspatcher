@@ -1107,7 +1107,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         default: "",
         description: "Name of the subpatcher"
     }];
-    static ui = SubPatcherUI;
+    static UI = SubPatcherUI;
     type: "faust" | "gen" = "faust";
     state: SubPatcherState = { inlets: 0, outlets: 0, defaultArgs: [], patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: this.box.args[0], cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
     handleFilePathChanged = () => {
@@ -1286,7 +1286,7 @@ class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { la
             description: "Force function outputs count"
         }
     };
-    static ui = CodeUI as any;
+    static UI = CodeUI as any;
     state = { inlets: undefined, outlets: undefined, defaultArgs: [] } as FaustOpState;
     handlePostInit = async () => {
         const definedInlets = this.getProp("ins");

@@ -22,8 +22,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
         presentationRect: this.box.presentationRect.slice() as TPresentationRect,
         presentation: this.box.presentation,
         inPresentationMode: this.props.patcher.state.presentation,
-        uiComponent: this.box.uiComponent,
-        editing: this.box.uiComponent.editableOnUnlock && this.box._editing,
+        uiComponent: this.box.UI,
+        editing: this.box.UI.editableOnUnlock && this.box._editing,
         highlight: false,
         error: false,
         key: performance.now().toString()
@@ -40,7 +40,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         const { box } = this;
         if (!box) return;
         this.textChanged = true;
-        const { uiComponent, presentation, _editing } = box;
+        const { UI: uiComponent, presentation, _editing } = box;
         let { rect, presentationRect } = box;
         rect = rect.slice() as TRect;
         presentationRect = presentationRect.slice() as TRect;

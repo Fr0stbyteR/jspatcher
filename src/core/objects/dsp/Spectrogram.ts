@@ -230,7 +230,7 @@ export class Spectrogram extends BaseDSP<{}, State, [Bang], [], [], Props, Spect
             isUIState: true
         }
     };
-    static ui = SpectrogramUI;
+    static UI = SpectrogramUI;
     state: State = { node: undefined };
     subscribe() {
         super.subscribe();
@@ -256,7 +256,7 @@ export class Spectrogram extends BaseDSP<{}, State, [Bang], [], [], Props, Spect
             this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
             this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
-            this.inletConnections[0] = { node: this.state.node, index: 0 };
+            this.inletAudioConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();
         });
         this.on("inlet", ({ data, inlet }) => {

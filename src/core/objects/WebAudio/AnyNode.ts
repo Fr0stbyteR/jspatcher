@@ -29,7 +29,7 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
                     const inlet0 = factoryMeta.inlets[0];
                     const inlet1 = factoryMeta.inlets[1];
                     const outlet0 = factoryMeta.inlets[0];
-                    this.inletConnections = [{ node: this.node, index: 0 }];
+                    this.inletAudioConnections = [{ node: this.node, index: 0 }];
                     factoryMeta.inlets = [inlet0];
                     for (let i = 1; i < inlets; i++) {
                         factoryMeta.inlets[i] = inlet1;
@@ -38,10 +38,10 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
                         factoryMeta.outlets[i] = outlet0;
                     }
                     for (let i = 0; i < this.node.numberOfInputs; i++) {
-                        this.inletConnections[i] = { node: this.node, index: i };
+                        this.inletAudioConnections[i] = { node: this.node, index: i };
                     }
                     for (let i = 0; i < this.node.numberOfOutputs; i++) {
-                        this.outletConnections[i] = { node: this.node, index: i };
+                        this.outletAudioConnections[i] = { node: this.node, index: i };
                     }
                     this.meta = factoryMeta;
                     this.inlets = inlets;

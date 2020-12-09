@@ -148,5 +148,5 @@ export default class comment extends UIObject<{ value: string }, {}, [string], [
             }
         });
     }
-    static ui: typeof BaseUI = CommentUI;
+    static UI: typeof BaseUI = CommentUI;
 }

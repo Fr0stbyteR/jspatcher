@@ -1,5 +1,5 @@
 import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
-import { DefaultAudioObject } from "../Base";
+import { DefaultObject } from "../Base";
 import { DefaultUIState } from "../BaseUI";
 
 export interface DefaultFaustDynamicNodeState {
@@ -8,7 +8,7 @@ export interface DefaultFaustDynamicNodeState {
     node: (FaustAudioWorkletNode | FaustScriptProcessorNode) & { dspCode?: string }
 }
 
-export default abstract class FaustDynamicNode<D extends {} = {}, S extends Partial<DefaultFaustDynamicNodeState> & Record<string, any> = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<DefaultUIState> & Record<string, any> = {}, U extends Partial<DefaultUIState> & Record<string, any> = {}, E extends {} = {}> extends DefaultAudioObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
+export default abstract class FaustDynamicNode<D extends {} = {}, S extends Partial<DefaultFaustDynamicNodeState> & Record<string, any> = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<DefaultUIState> & Record<string, any> = {}, U extends Partial<DefaultUIState> & Record<string, any> = {}, E extends {} = {}> extends DefaultObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
     async getFaustNode(code: string, voices: number) {
         const { audioCtx } = this.patcher;
         const { faust, supportAudioWorklet } = this.patcher.env;

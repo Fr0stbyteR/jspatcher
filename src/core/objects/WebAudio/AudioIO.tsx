@@ -137,7 +137,7 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
             this.node = this.audioCtx.createMediaStreamSource(this.state.stream);
             this.node.channelInterpretation = "discrete";
         }
-        this.outletConnections[0] = { node: this.node, index: 0 };
+        this.outletAudioConnections[0] = { node: this.node, index: 0 };
         this.connectAudio();
     }
 }
@@ -155,7 +155,7 @@ export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | Aud
     }];
     static args = supportSetSinkId ? AudioIn.args : [];
     static props = supportSetSinkId ? AudioIn.props : {};
-    static ui = supportSetSinkId ? class AudioOutUI extends DefaultUI<AudioOut> {
+    static UI = supportSetSinkId ? class AudioOutUI extends DefaultUI<AudioOut> {
         refContainer = React.createRef<HTMLDivElement>();
         componentDidMount() {
             super.componentDidMount();
@@ -174,7 +174,7 @@ export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | Aud
         }
     } : DefaultUI;
     state = supportSetSinkId ? { node: this.audioCtx.destination, msadn: this.audioCtx.createMediaStreamDestination(), audio: new Audio(), search: undefined as string } : { node: this.audioCtx.destination };
-    inletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [{ node: this.node, index: 0 }];
     handleDeviceChange = async () => {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const enums = devices.filter(d => d.kind === "audiooutput").map(d => d.label || d.deviceId);
@@ -256,14 +256,14 @@ export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | Aud
             if (this.node !== this.state.msadn) {
                 this.disconnectAudio();
                 this.node = this.state.msadn;
-                this.inletConnections[0] = { node: this.node, index: 0 };
+                this.inletAudioConnections[0] = { node: this.node, index: 0 };
                 this.connectAudio();
             }
         } else {
             if (this.node !== this.audioCtx.destination) {
                 this.disconnectAudio();
                 this.node = this.audioCtx.destination;
-                this.inletConnections[0] = { node: this.node, index: 0 };
+                this.inletAudioConnections[0] = { node: this.node, index: 0 };
                 this.connectAudio();
             }
         }

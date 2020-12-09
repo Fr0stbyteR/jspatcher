@@ -27,8 +27,8 @@ export default class Gain extends JSPAudioNode<GainNode, {}, [Bang, TBPF], [null
         description: "Initial gain"
     }];
     state = { node: this.audioCtx.createGain() };
-    inletConnections = [{ node: this.node, index: 0 }, { node: this.node.gain }];
-    outletConnections = [{ node: this.node, index: 0 }];
+    inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.gain }];
+    outletAudioConnections = [{ node: this.node, index: 0 }];
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

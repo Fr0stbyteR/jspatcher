@@ -44,5 +44,5 @@ export class StaticProperty extends Property<true> {
         });
         this.on("inlet", this.handleInlet);
     }
-    static ui = StaticPropertyUI;
+    static UI = StaticPropertyUI;
 }

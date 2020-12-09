@@ -330,7 +330,7 @@ export class LiveSlider extends LiveObject<{}, {}, [number | Bang, number], [num
             isUIState: true
         }
     };
-    static ui = LiveSliderUI;
+    static UI = LiveSliderUI;
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {

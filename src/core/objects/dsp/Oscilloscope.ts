@@ -333,7 +333,7 @@ export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, Osci
             isUIState: true
         }
     };
-    static ui = OscilloscopeUI;
+    static UI = OscilloscopeUI;
     state: State = { node: undefined };
     subscribe() {
         super.subscribe();
@@ -359,7 +359,7 @@ export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, Osci
             this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
             this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
-            this.inletConnections[0] = { node: this.state.node, index: 0 };
+            this.inletAudioConnections[0] = { node: this.state.node, index: 0 };
             this.connectAudioInlet();
         });
         this.on("inlet", ({ data, inlet }) => {
