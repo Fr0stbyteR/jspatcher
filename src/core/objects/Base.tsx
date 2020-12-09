@@ -13,6 +13,18 @@ export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject
 
 export const isJSPatcherObject = (x: any): x is AbstractObject => typeof x === "object" && x?.isJSPatcherObject;
 
+/**
+ * All JSPatcher Object should extends this class
+ *
+ * @template D type of `data` property
+ * @template S type of `state` property
+ * @template I type of inlets as an array
+ * @template O type of outlets as an array
+ * @template A type of args as an array
+ * @template P type of props as a map
+ * @template U type of UI state as a map
+ * @template E type of additional event map
+ */
 export abstract class AbstractObject<
     D extends {} = {}, S extends {} = {},
     I extends any[] = any[], O extends any[] = any[],
