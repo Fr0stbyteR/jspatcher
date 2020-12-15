@@ -50,7 +50,7 @@ export default class StatusBar extends React.PureComponent<{ env: Env; lang: str
                 <div className="status-bar">
                     <Icon loading name="asterisk" size="small" />
                     <span className="status-bar-emitter">{lastTask.emitter.constructor?.name || ""}</span>
-                    <span>{lastTask.message}</span>
+                    <span className="status-bar-task">{lastTask.message}</span>
                 </div>
             );
         }
@@ -58,8 +58,8 @@ export default class StatusBar extends React.PureComponent<{ env: Env; lang: str
             return (
                 <div className="status-bar">
                     <span className="status-bar-emitter">{lastError.emitter.constructor?.name || ""}</span>
-                    <span className="error">{lastError.message}: {lastError.error.message}</span>
-                    <span className="dismiss" onClick={this.handleClickDismiss}>Dismiss</span>
+                    <span className="status-bar-task error">{lastError.message}: {lastError.error.message}</span>
+                    <span className="status-bar-dismiss" onClick={this.handleClickDismiss}>Dismiss</span>
                 </div>
             );
         }

@@ -27,12 +27,14 @@
         &.status-bar-emitter {
             flex: 0 0 auto;
         }
+        &.status-bar-task {
+            margin-left: 4px;
+        }
         &.error {
             color: rgb(255, 128, 128);
-            margin-left: 4px;
             direction: rtl;
         }
-        &.dismiss {
+        &.status-bar-dismiss {
             color: rgb(255, 128, 128);
             margin-left: 12px;
             text-decoration: underline;
