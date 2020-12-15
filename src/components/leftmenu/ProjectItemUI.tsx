@@ -82,8 +82,12 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         selection.removeAllRanges();
         selection.addRange(range);
         container.focus();
+        const handleMouseDown = (e: MouseEvent) => {
+            e.stopPropagation();
+        }
         const handleBlur = async (e?: FocusEvent) => {
             if (e) e.stopPropagation();
+            container.removeEventListener("mousedown", handleMouseDown);
             container.removeEventListener("blur", handleBlur);
             container.removeEventListener("keydown", handleKeyDown);
             const newName = span.innerText;
@@ -105,11 +109,13 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                 span.innerText = oldName;
                 container.contentEditable = "false";
                 this.setState({ renaming: false });
+                container.removeEventListener("mousedown", handleMouseDown);
                 container.removeEventListener("blur", handleBlur);
                 container.removeEventListener("keydown", handleKeyDown);
                 container.blur();
             }
         };
+        container.addEventListener("mousedown", handleMouseDown);
         container.addEventListener("blur", handleBlur);
         container.addEventListener("keydown", handleKeyDown);
     };
