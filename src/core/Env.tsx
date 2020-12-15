@@ -103,7 +103,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
             noUI: !!urlParams.get("min"),
             runtime: !!urlParams.get("runtime"),
             init: !!urlParams.get("init"),
-            projectZip: urlParams.get("projectZip")
+            projectZip: urlParams.get("projectZip"),
+            file: urlParams.get("file")
         };
         this._noUI = urlParamsOptions.noUI;
         if (!this._noUI && this.divRoot) ReactDOM.render(<UI env={this} lang={this.language} />, this.divRoot);
@@ -159,7 +160,17 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
             window.jspatcherEnv = this;
         });
         this.loaded = true;
-        this.emit("ready");
+        await this.emit("ready");
+        const { file } = urlParamsOptions;
+        if (file) {
+            try {
+                const item = this.fileMgr.getProjectItemFromPath(file);
+                if (item.type !== "folder") {
+                    const instance = await item.instantiate();
+                    this.openInstance(instance);
+                }
+            } catch {}
+        }
         /*
         const patcher = new Patcher(this.currentProject);
         this.activePatcher = patcher;
