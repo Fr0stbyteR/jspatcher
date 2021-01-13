@@ -5,7 +5,7 @@ import { detectOS, detectBrowserCore } from "../utils/utils";
 import { faustLangRegister } from "../misc/monaco-faust/register";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
-import { TErrorLevel, TPackage, TPatcherLog, TSharedData, TSharedDataConsumers } from "./types";
+import { EnvOptions, TErrorLevel, TPackage, TPatcherLog, TSharedData, TSharedDataConsumers } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
 import Importer from "./objects/importer/Importer";
 import { GlobalPackageManager } from "./PkgMgr";
@@ -30,6 +30,7 @@ export interface EnvEventMap {
     "activeEditorContainer": { editorContainer: EditorContainer; oldEditorContainer: EditorContainer ;}
     "instances": AnyFileInstance[];
     "newLog": TPatcherLog;
+    "options": { options: EnvOptions; oldOptions: EnvOptions };
 }
 
 /**
@@ -90,6 +91,32 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     currentProject: Project;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;
+    private _options: EnvOptions = {
+        language: "en",
+        audioUnit: "time",
+        audioUnitOptions: {
+            bpm: 60,
+            beatsPerMeasure: 4,
+            division: 16
+        },
+        audioDisplayOptions: {
+            frameRate: 60,
+            bgColor: "black",
+            gridColor: "rgb(0, 53, 0)",
+            phosphorColor: "rgb(67, 217, 150)",
+            hueOffset: 0,
+            seperatorColor: "grey",
+            cursorColor: "rgba(191, 0, 0)"
+        },
+    };
+    set options(options: EnvOptions) {
+        const oldOptions = this._options;
+        this._options = options;
+        this.emit("options", { oldOptions, options });
+    }
+    get options() {
+        return this._options;
+    }
     constructor(root?: HTMLDivElement) {
         super();
         this._divRoot = root;

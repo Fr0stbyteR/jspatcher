@@ -32,6 +32,9 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     set file(value: ProjectItem) {
         this._file = value;
     }
+    get ctx() {
+        return this.file || this.project || this.env;
+    }
     get isInMemory() {
         return !this.file;
     }

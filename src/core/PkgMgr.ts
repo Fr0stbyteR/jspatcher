@@ -63,6 +63,8 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
         return this.importFromURL(url, id);
     }
     async importFromURL(url: string, id: string) {
+        if (this.imported.find(([$id, $url]) => $id === id && $url === url)) return;
+        if (this.imported.find(([$id, $url]) => $id === id && $url !== url)) throw new Error(`Package with ID ${id} already exists.`);
         const jsModule = await this.global.getModuleFromURL(url, id);
         const pkg = Importer.import(id, jsModule);
         this.imported.push([id, url]);

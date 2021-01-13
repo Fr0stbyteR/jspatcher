@@ -176,18 +176,22 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
             }
             let depNames = this.props.dependencies.map(t => t[0]);
             this.emit("loading", depNames);
-            await this.env.taskMgr.newTask(this, `${this.file?.name || ""} Loading dependencies`, async (onUpdate: (newMsg: string) => any) => {
-                for (let i = 0; i < this.props.dependencies.length; i++) {
-                    const [name, url] = this.props.dependencies[i];
-                    onUpdate(`${name} from ${url}`);
-                    try {
-                        await this._state.pkgMgr.importFromURL(url, name);
-                    } catch (e) {
-                        throw new Error(`Loading dependency: ${name} from ${url} failed`);
+            try {
+                await this.env.taskMgr.newTask(this, `${this.file?.name || ""} Loading dependencies`, async (onUpdate: (newMsg: string) => any) => {
+                    for (let i = 0; i < this.props.dependencies.length; i++) {
+                        const [name, url] = this.props.dependencies[i];
+                        onUpdate(`${name} from ${url}`);
+                        try {
+                            await this._state.pkgMgr.importFromURL(url, name);
+                        } catch (e) {
+                            throw new Error(`Loading dependency: ${name} from ${url} failed`);
+                        }
+                        depNames = depNames.splice(i, 1);
                     }
-                    depNames = depNames.splice(i, 1);
-                }
-            });
+                });
+            } catch (error) {
+                this.error((error as Error).message);
+            }
         }
         if (patcher.boxes) { // Boxes & data
             for (const id in patcher.boxes) {

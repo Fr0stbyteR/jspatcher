@@ -20,6 +20,13 @@ declare global {
     }
 }
 
+export interface EnvOptions {
+    language: "en" | "zh-CN";
+    audioUnit: TAudioUnit;
+    audioUnitOptions: AudioUnitOptions;
+    audioDisplayOptions: AudioDisplayOptions;
+}
+
 export type PatcherMode = "max" | "gen" | "faust" | "js";
 
 export type PatcherFileExtension = "jspat" | "maxpat" | "gendsp" | "dsppat";
@@ -385,6 +392,22 @@ export type TBPF = string | number | number[] | number[][];
 export type TBPFPoint = [number, number, number];
 export type TStrictBPF = TBPFPoint[];
 export type TMIDIEvent = [number, number, number] | (Uint8Array & { length: 3 });
+export type TAudioUnit = "time" | "sample" | "measure";
+export type TAudioPlayingState = "stopped" | "paused" | "playing";
+export interface AudioUnitOptions {
+    bpm: number;
+    beatsPerMeasure: number;
+    division: number;
+}
+export interface AudioDisplayOptions {
+    frameRate: number;
+    bgColor: string;
+    gridColor: string;
+    phosphorColor: string;
+    hueOffset: number;
+    seperatorColor: string;
+    cursorColor: string;
+}
 
 export interface WaveformMinMaxData {
     min: Float32Array;

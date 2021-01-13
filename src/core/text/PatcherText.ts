@@ -31,7 +31,7 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
         return new Blob([this.text]).arrayBuffer();
     }
     clone() {
-        const patcherText = new PatcherText(this.file);
+        const patcherText = new PatcherText(this.ctx);
         patcherText.text = this.text;
         return patcherText;
     }
