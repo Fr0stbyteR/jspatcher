@@ -1,5 +1,5 @@
 import { SemanticICONS } from "semantic-ui-react";
-import { WebAudioModule } from "wamsdk/src/api/types";
+import { WebAudioModule } from "wamsdk/src/api";
 import { dbtoa, isIdentityMatrix, normExp } from "../../utils/math";
 import Waveform from "../../utils/Waveform";
 import { Options } from "../../utils/WavEncoder";
@@ -167,8 +167,9 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
         if (from === 0 && to === this.length) {
             const old = this.clone();
             const { numberOfChannels, sampleRate } = this.audioBuffer;
-            this.audioBuffer = new OperableAudioBuffer({ length: 1, numberOfChannels, sampleRate });
-            this.waveform = new Waveform(this);
+            const audioBuffer = new OperableAudioBuffer({ length: 1, numberOfChannels, sampleRate });
+            const waveform = new Waveform(this);
+            this.setAudio({ audioBuffer, waveform });
             this.setCursor(from);
             return old;
         // eslint-disable-next-line no-else-return

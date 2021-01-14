@@ -20,7 +20,7 @@ export default {
     DeviceSelector: {
         input: "Input"
     },
-    EditorMainControlsUI: {
+    AudioEditorMainControlsUI: {
         stop: "Stop",
         play: "Play",
         pause: "Pause",
@@ -28,7 +28,7 @@ export default {
         record: "Record",
         monitor: "Monitor"
     },
-    EditorMonitorUI: {
+    AudioEditorMonitorUI: {
         start: "Start",
         end: "End",
         duration: "Duration",

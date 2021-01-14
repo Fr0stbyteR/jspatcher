@@ -1,4 +1,4 @@
-import { WebAudioModule } from "wamsdk/src/api/types";
+import { WebAudioModule } from "wamsdk/src/api";
 import PatcherAudio from "../../../core/audio/PatcherAudio";
 import { TAudioPlayingState } from "../../../core/types";
 import { dbtoa } from "../../../utils/math";
@@ -18,6 +18,8 @@ export interface AudioEditorEventMap {
     "recording": boolean;
     "pluginsChanged": { plugins: WebAudioModule[]; pluginsEnabled: boolean[]; pluginsShowing: boolean[] };
     "pluginsApplied": { range?: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
+    "uiResized": never;
+    "ready": never;
 }
 export interface AudioEditorState {
     playing: TAudioPlayingState;
@@ -65,6 +67,7 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         this.env.audioClipboard = audio;
     }
 
+    isReady = false;
     handleSetAudio = () => {
         const { cursor, selRange, viewRange } = this.state;
         const { length, numberOfChannels } = this.audio;
@@ -102,10 +105,27 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         this.audio.on("cursor", this.handleCursor);
         this.audio.on("selRange", this.handleSelRange);
         this.player = new AudioPlayer(this);
+        this.recorder = new AudioRecorder(this);
+    }
+    async init() {
+        const init = async () => {
+            await this.player.init();
+            await this.recorder.init();
+            this.isReady = true;
+            this.emit("ready");
+        }
+        if (this.audio.isReady) await init();
+        else this.audio.on("ready", init);
     }
     emitPluginsChanged() {
         const { plugins, pluginsEnabled, pluginsShowing } = this.state;
         this.emit("pluginsChanged", { plugins: plugins.slice(), pluginsEnabled: plugins.map(p => pluginsEnabled.has(p)), pluginsShowing: plugins.map(p => pluginsShowing.has(p)) });
+    }
+    emitUIResized() {
+        this.emit("uiResized");
+    }
+    emitSelRangeToPlay() {
+        this.emit("selRangeToPlay", this.state.selRange);
     }
     zoomH(refIn: number, factor: number) { // factor = 1 as zoomIn, -1 as zoomOut
         const { viewRange } = this.state;
@@ -150,9 +170,6 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
     setRecording(recording: boolean) {
         this.setState({ recording });
         this.emit("recording", recording);
-    }
-    emitSelRangeToPlay() {
-        this.emit("selRangeToPlay", this.state.selRange);
     }
     setState(state: Partial<AudioEditorState>) {
         Object.assign(this.state, state);
@@ -388,5 +405,16 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         this.state.postFxGain = gain;
         const { playing, monitoring } = this.state;
         if (monitoring || playing === "playing") this.player.postFxGainNode.gain.setTargetAtTime(dbtoa(gain), this.env.audioCtx.currentTime, 0.01);
+    }
+
+    async destroy() {
+        this.isReady = false;
+        await this.stopRecord();
+        this.stop();
+        for (let i = 0; i < this.state.plugins.length; i++) {
+            this.removePlugin(i);
+        }
+        await this.recorder.destroy();
+        await this.player.destroy();
     }
 }

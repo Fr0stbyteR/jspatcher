@@ -1,4 +1,4 @@
-import { WebAudioModule } from "wamsdk/src/api/types";
+import { WebAudioModule } from "wamsdk/src/api";
 import * as TemporalAnalyserRegister from "../../../core/worklets/TemporalAnalyser";
 import { TemporalAnalyserNode } from "../../../core/worklets/TemporalAnalyser";
 import { dbtoa } from "../../../utils/math";
@@ -133,6 +133,10 @@ export default class AudioPlayer {
         await TemporalAnalyserRegister.register(audioWorklet);
         this.postAnalyserNode = new TemporalAnalyserRegister.Node(this.audioCtx);
         this.postFxGainNode.connect(this.postAnalyserNode);
+    }
+    async destroy() {
+        this.stop();
+        await this.postAnalyserNode.destroy();
     }
     getCurrentSample() {
         const { buffer } = this.bufferSourceNode;

@@ -8,6 +8,8 @@ import "./EditorContainerUI.scss";
 import { EditorContainerTabUI } from "./EditorContainerTabUI";
 import PatcherText from "../../core/text/PatcherText";
 import TextEditorUI from "./TextEditorUI";
+import PatcherAudio from "../../core/audio/PatcherAudio";
+import AudioEditorUI from "./audio/AudioEditorUI";
 
 interface P {
     env: Env;
@@ -60,6 +62,11 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
                             if (instance instanceof PatcherText) {
                                 return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instanceId}>
                                     <TextEditorUI {...this.props} text={instance} />
+                                </div>;
+                            }
+                            if (instance instanceof PatcherAudio) {
+                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instanceId}>
+                                    <AudioEditorUI {...this.props} audio={instance} />
                                 </div>;
                             }
                             return undefined;

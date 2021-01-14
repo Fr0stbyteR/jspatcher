@@ -1,0 +1,8 @@
+.editor-container .audio-editor-container {
+    padding: 8px;
+    background-color: #141414;
+
+    & > :not(:last-child) {
+        padding-bottom: 6px;
+    }
+}

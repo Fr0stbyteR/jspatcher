@@ -208,21 +208,6 @@ export interface TSharedDataConsumers {
     };
 }
 
-export interface EditorEventMap {
-    "status": { busy: boolean; error?: boolean; message?: string };
-    "editFile": { fileName: string; data: Patcher };
-    "stopEditFile": { fileName: string };
-    "undo": never;
-    "redo": never;
-}
-
-export interface EditorState {
-    env: Env;
-    fileName: string;
-    clipboard: RawPatcher;
-    editing: string[];
-    fileState: Record<string, Patcher>;
-}
 export interface FileEventMap {
     "ready": boolean;
     "changed": never;

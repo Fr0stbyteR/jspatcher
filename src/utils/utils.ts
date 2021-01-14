@@ -1,5 +1,5 @@
 /* eslint-disable arrow-body-style */
-import { TMIDIEvent, TBPF, TRect, TPresentationRect, FileExtension, ProjectItemType, RawPatcher, TMaxPatcher } from "../core/types";
+import { TMIDIEvent, TBPF, TRect, TPresentationRect, FileExtension, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit } from "../core/types";
 
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
@@ -270,4 +270,63 @@ export const js2max = (patcherIn: RawPatcher): TMaxPatcher => {
         });
     }
     return { patcher: maxPatcher };
+};
+
+export const convertSampleToUnit = (sample: number, unit: TAudioUnit, { sampleRate = 48000, bpm = 60, beatsPerMeasure = 4, division = 16 }) => {
+    if (unit === "sample") return { unit, str: sample.toString(), value: sample, values: [sample] };
+    const milliseconds = sample * 1000 / sampleRate;
+    const roundedMs = Math.round(milliseconds);
+    if (unit === "measure") {
+        const dpms = bpm * division / 60000;
+        const totalDivisions = dpms * milliseconds;
+        const roundedTotalDivisions = dpms * milliseconds;
+        const divisions = ~~(roundedTotalDivisions % division);
+        const beats = ~~(roundedTotalDivisions / division) % beatsPerMeasure + 1;
+        const measure = ~~(roundedTotalDivisions / beatsPerMeasure / division) + 1;
+        const str = `${measure}:${beats}.${divisions.toString().padStart(2, "0")}`;
+        return { unit, str, value: totalDivisions / division, values: [measure, beats, divisions] };
+    }
+    // if (unit === "time")
+    const ms = roundedMs % 1000;
+    const s = ~~(roundedMs / 1000) % 60;
+    const min = ~~(roundedMs / 60000) % 60;
+    const h = ~~(roundedMs / 3600000);
+    const str = !min ? `${s}.${ms.toString().padStart(3, "0")}`
+        : !h ? `${min}:${s.toString().padStart(2, "0")}.${ms.toString().padStart(3, "0")}`
+            : `${h}:${min.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}.${ms.toString().padStart(3, "0")}`;
+    return { unit, str, value: milliseconds / 1000, values: [h, min, s, ms] };
+};
+export const MEASURE_UNIT_REGEX = /^((\d+):)?(\d+)\.?(\d+)?$/;
+export const TIME_UNIT_REGEX = /^((\d+):)??((\d+):)?(\d+)\.?(\d+)?$/;
+export const convertUnitToSample = (str: string, unit: TAudioUnit, { sampleRate = 48000, bpm = 60, beatsPerMeasure = 4, division = 16 }) => {
+    if (unit === "sample") return +str || 0;
+    if (unit === "measure") {
+        const matched = str.match(MEASURE_UNIT_REGEX);
+        if (!matched) throw new Error(`String ${str} cannot be parsed to ${unit}`);
+        const [, , measureIn, beatsIn, divisionsIn] = matched;
+        const bps = bpm / 60;
+        const samplesPerBeat = sampleRate / bps;
+        let measures = +measureIn || 0;
+        let beats = +beatsIn || 0;
+        let divisions = +divisionsIn || 0;
+        beats += ~~(divisions / division);
+        divisions %= division;
+        measures += ~~(beats / beatsPerMeasure);
+        beats %= beatsPerMeasure;
+        return (measures * beatsPerMeasure + beats + divisions / division) * samplesPerBeat;
+    }
+    const matched = str.match(TIME_UNIT_REGEX);
+    if (!matched) throw new Error(`String ${str} cannot be parsed to ${unit}`);
+    const [, , hIn, , minIn, sIn, msIn] = matched;
+    let h = +hIn || 0;
+    let min = +minIn || 0;
+    let s = +sIn || 0;
+    let ms = +msIn || 0;
+    s += ~~(ms / 1000);
+    ms %= 1000;
+    min += ~~(s / 60);
+    s %= 60;
+    h += ~~(min / 60);
+    min %= 60;
+    return (h * 3600 + min * 60 + s + ms / 1000) * sampleRate;
 };

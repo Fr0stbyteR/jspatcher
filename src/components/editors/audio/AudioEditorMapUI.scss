@@ -1,0 +1,78 @@
+div.editor {
+    & > div.editor-map {
+        flex: 0 0 auto;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        min-height: 30px;
+
+        & > .editor-map-canvas-container {
+            display: inline-block;
+            flex: 1 1 auto;
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+
+            & > canvas {
+                position: absolute;
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+
+            & > div.editor-map-selrange {
+                position: absolute;
+                display: block;
+                height: 100%;
+                width: 0%;
+                backdrop-filter: invert(1) hue-rotate(180deg) saturate(0.5) opacity(0.8);
+                pointer-events: none;
+            }
+
+            & > div.editor-map-viewrange {
+                position: absolute;
+                display: block;
+                height: 100%;
+                width: 100%;
+                background-color: rgba(255, 255, 255, 0.1);
+                border: 1px solid white;
+                border-radius: 4px;
+                cursor: grab;
+                box-shadow: inset 0px 0px 6px 0px black;
+
+                & > div.resize-handler-w {
+                    position: absolute;
+                    display: block;
+                    top: 0;
+                    left: -2px;
+                    width: 4px;
+                    height: 100%;
+                    cursor: ew-resize;
+                }
+    
+                & > div.resize-handler-e {
+                    position: absolute;
+                    display: block;
+                    top: 0;
+                    right: -2px;
+                    width: 4px;
+                    height: 100%;
+                    cursor: ew-resize;
+                }
+            }
+        }
+
+        & > .editor-map-controls {
+            display: flex;
+            flex: 0 0 auto;
+            height: 100%;
+            align-items: center;
+            padding-left: 4px;
+            width: 80px;
+
+            & > span {
+                align-self: center;
+            }
+        }
+    }
+}

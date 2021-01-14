@@ -22,7 +22,7 @@ export default {
     DeviceSelector: {
         input: "输入设备"
     },
-    EditorMainControlsUI: {
+    AudioEditorMainControlsUI: {
         stop: "停止",
         play: "播放",
         pause: "暂停",
@@ -30,7 +30,7 @@ export default {
         record: "录音",
         monitor: "监听"
     },
-    EditorMonitorUI: {
+    AudioEditorMonitorUI: {
         start: "起始",
         end: "结束",
         duration: "时长",

@@ -32,6 +32,10 @@ export default class AudioRecorder {
         this.transmitter.handleReceiveBuffer = this.handleReceiveBuffer;
         await this.newSearch();
     }
+    async destroy() {
+        await this.stop();
+        await this.transmitter.destroy();
+    }
     handleDeviceChange = async () => {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const enums = devices.filter(d => d.kind === "audioinput").map(d => d.label || d.deviceId);
