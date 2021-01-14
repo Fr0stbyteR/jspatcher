@@ -1,5 +1,5 @@
 import * as React from "react";
-import AudioEditor from "./AudioEditor";
+import AudioEditor from "../../../core/audio/AudioEditor";
 import { TAudioUnit, AudioUnitOptions } from "../../../core/types";
 
 interface P {

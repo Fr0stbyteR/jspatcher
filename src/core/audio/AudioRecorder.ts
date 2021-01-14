@@ -1,7 +1,7 @@
-import OperableAudioBuffer from "../../../core/audio/OperableAudioBuffer";
-import PatcherAudio from "../../../core/audio/PatcherAudio";
-import * as TransmitterRegister from "../../../core/worklets/Transmitter";
-import { TransmitterNode } from "../../../core/worklets/Transmitter";
+import OperableAudioBuffer from "./OperableAudioBuffer";
+import PatcherAudio from "./PatcherAudio";
+import * as TransmitterRegister from "../worklets/Transmitter";
+import { TransmitterNode } from "../worklets/Transmitter";
 import AudioEditor from "./AudioEditor";
 
 export default class AudioRecorder {
@@ -14,7 +14,6 @@ export default class AudioRecorder {
     audio: PatcherAudio;
     overwrittenAudio: PatcherAudio;
     recording = false;
-    buffer: AudioBuffer;
     $: number;
     $start: number;
     $end: number;
@@ -33,6 +32,7 @@ export default class AudioRecorder {
         await this.newSearch();
     }
     async destroy() {
+        navigator.mediaDevices.removeEventListener("devicechange", this.handleDeviceChange);
         await this.stop();
         await this.transmitter.destroy();
     }
@@ -85,7 +85,7 @@ export default class AudioRecorder {
         this.$ += copyLength;
         audio.emit("setAudio");
         this.editor.setCursor(this.$);
-        if (extended) this.editor.setViewRange([this.editor.state.viewRange[0], this.buffer.length]);
+        if (extended) this.editor.setViewRange([this.editor.state.viewRange[0], this.audio.length]);
         if (inPlace && this.$ === $end) {
             this.editor.setRecording(false);
             await this.stop();
@@ -167,7 +167,7 @@ export default class AudioRecorder {
         if (!this.node) return;
         if (!this.editor.player.monitoring) this.node.disconnect(this.editor.player.postAnalyserNode);
         await this.transmitter.stop();
-        if (!this.inPlace && this.$ > this.$end && this.$ < this.buffer.length) {
+        if (!this.inPlace && this.$ > this.$end && this.$ < this.audio.length) {
             const [audio] = this.audio.split(this.$);
             this.audio.setAudio(audio);
             if (this.overwrittenAudio) this.overwrittenAudio.waveform.update();

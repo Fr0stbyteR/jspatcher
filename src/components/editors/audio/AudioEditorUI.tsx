@@ -2,7 +2,7 @@ import * as React from "react";
 import PatcherAudio from "../../../core/audio/PatcherAudio";
 import Env, { EnvEventMap } from "../../../core/Env";
 import { EnvOptions } from "../../../core/types";
-import AudioEditor, { AudioEditorEventMap, AudioEditorState } from "./AudioEditor";
+import AudioEditor, { AudioEditorEventMap, AudioEditorState } from "../../../core/audio/AudioEditor";
 import AudioEditorMapUI from "./AudioEditorMapUI";
 import AudioEditorMainUI from "./AudioEditorMainUI";
 import AudioEditorMonitorUI from "./AudioEditorMonitorUI";

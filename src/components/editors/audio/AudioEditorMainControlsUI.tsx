@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button } from "semantic-ui-react";
-import AudioEditor from "./AudioEditor";
+import AudioEditor from "../../../core/audio/AudioEditor";
 import TimeInputUI from "./TimeInput";
 import { TAudioUnit, AudioUnitOptions, TAudioPlayingState } from "../../../core/types";
 import I18n from "../../../i18n/I18n";

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Button, Icon } from "semantic-ui-react";
 import * as Color from "color-js";
 import Env from "../../../core/Env";
-import AudioEditor, { AudioEditorState } from "./AudioEditor";
+import AudioEditor, { AudioEditorState } from "../../../core/audio/AudioEditor";
 import GainInputUI from "./GainInput";
 import AudioEditorVerticalRulerUI from "./AudioEditorVerticalRulerUI";
 import AudioEditorHorizontalRulerUI from "./AudioEditorHorizontalRulerUI";

@@ -1,8 +1,8 @@
 import { WebAudioModule } from "wamsdk/src/api";
-import PatcherAudio from "../../../core/audio/PatcherAudio";
-import { TAudioPlayingState } from "../../../core/types";
-import { dbtoa } from "../../../utils/math";
-import { TypedEventEmitter } from "../../../utils/TypedEventEmitter";
+import PatcherAudio from "./PatcherAudio";
+import { TAudioPlayingState } from "../types";
+import { dbtoa } from "../../utils/math";
+import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import AudioPlayer from "./AudioPlayer";
 import AudioRecorder from "./AudioRecorder";
 
@@ -93,6 +93,12 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         await this.recorder.newSearch(deviceId);
         if (this.state.monitoring) this.player.startMonitoring();
     };
+    handleCopy = () => this.copy();
+    handleCut = () => this.cut();
+    handlePaste = () => this.paste();
+    handleSelectAll = () => this.setSelRangeToAll();
+    handleDeleteSelected = () => this.delete();
+    handleDestroy = () => this.destroy();
 
     constructor(audioIn: PatcherAudio) {
         super();
@@ -104,6 +110,12 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         this.audio.on("setAudio", this.handleSetAudio);
         this.audio.on("cursor", this.handleCursor);
         this.audio.on("selRange", this.handleSelRange);
+        this.audio.on("copy", this.handleCopy);
+        this.audio.on("cut", this.handleCut);
+        this.audio.on("paste", this.handlePaste);
+        this.audio.on("selectAll", this.handleSelectAll);
+        this.audio.on("deleteSelected", this.handleDeleteSelected);
+        this.audio.on("destroy", this.handleDestroy);
         this.player = new AudioPlayer(this);
         this.recorder = new AudioRecorder(this);
     }
@@ -409,6 +421,15 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
 
     async destroy() {
         this.isReady = false;
+        this.audio.off("setAudio", this.handleSetAudio);
+        this.audio.off("cursor", this.handleCursor);
+        this.audio.off("selRange", this.handleSelRange);
+        this.audio.off("copy", this.handleCopy);
+        this.audio.off("cut", this.handleCut);
+        this.audio.off("paste", this.handlePaste);
+        this.audio.off("selectAll", this.handleSelectAll);
+        this.audio.off("deleteSelected", this.handleDeleteSelected);
+        this.audio.off("destroy", this.handleDestroy);
         await this.stopRecord();
         this.stop();
         for (let i = 0; i < this.state.plugins.length; i++) {

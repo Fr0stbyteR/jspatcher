@@ -24,6 +24,11 @@ export interface PatcherAudioEventMap {
     "remixed": { audio: PatcherAudio; oldAudio: PatcherAudio };
     "selRange": [number, number];
     "cursor": number;
+    "copy": never;
+    "cut": never;
+    "paste": never;
+    "deleteSelected": never;
+    "selectAll": never;
 }
 
 export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
@@ -122,16 +127,18 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     }
     concat(that: PatcherAudio, numberOfChannels = this.audioBuffer.numberOfChannels) {
         const audio = new PatcherAudio(this.ctx);
-        audio.initWith({
-            audioBuffer: this.audioBuffer.concat(that.audioBuffer, numberOfChannels),
-            waveform: this.waveform.concat(that.waveform, audio, numberOfChannels)
-        });
+        const audioBuffer = this.audioBuffer.concat(that.audioBuffer, numberOfChannels);
+        audio.audioBuffer = audioBuffer;
+        const waveform = this.waveform.concat(that.waveform, audio, numberOfChannels);
+        audio.initWith({ audioBuffer, waveform });
         return audio;
     }
     split(from: number): [PatcherAudio, PatcherAudio] {
         const audio1 = new PatcherAudio(this.ctx);
         const audio2 = new PatcherAudio(this.ctx);
         const [ab1, ab2] = this.audioBuffer.split(from);
+        audio1.audioBuffer = ab1;
+        audio2.audioBuffer = ab2;
         const [wf1, wf2] = this.waveform.split(from, audio1, audio2);
         audio1.initWith({ audioBuffer: ab1, waveform: wf1 });
         audio2.initWith({ audioBuffer: ab2, waveform: wf2 });
@@ -353,5 +360,20 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     }
     setSelRangeToAll() {
         this.emit("selRange", [0, this.length]);
+    }
+    async copy() {
+        this.emit("copy");
+    }
+    async cut() {
+        this.emit("cut");
+    }
+    async paste() {
+        this.emit("paste");
+    }
+    async selectAll() {
+        this.emit("selectAll");
+    }
+    async deleteSelected() {
+        this.emit("deleteSelected");
     }
 }

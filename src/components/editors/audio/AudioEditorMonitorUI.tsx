@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Table } from "semantic-ui-react";
-import AudioEditor from "./AudioEditor";
+import AudioEditor from "../../../core/audio/AudioEditor";
 import { atodb } from "../../../utils/math";
 import TimeInputUI from "./TimeInput";
 import { AudioUnitOptions, TAudioPlayingState, TAudioUnit } from "../../../core/types";

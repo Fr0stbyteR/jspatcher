@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Button } from "semantic-ui-react";
 import * as Color from "color-js";
-import AudioEditor from "./AudioEditor";
+import AudioEditor from "../../../core/audio/AudioEditor";
 import { AudioDisplayOptions } from "../../../core/types";
 import "./AudioEditorMapUI.scss";
 

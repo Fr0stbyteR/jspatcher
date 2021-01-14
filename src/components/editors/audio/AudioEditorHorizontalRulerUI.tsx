@@ -1,5 +1,5 @@
 import * as React from "react";
-import AudioEditor from "./AudioEditor";
+import AudioEditor from "../../../core/audio/AudioEditor";
 import { dbtoa } from "../../../utils/math";
 
 interface P {

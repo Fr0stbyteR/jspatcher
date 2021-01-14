@@ -1,7 +1,7 @@
 import { WebAudioModule } from "wamsdk/src/api";
-import * as TemporalAnalyserRegister from "../../../core/worklets/TemporalAnalyser";
-import { TemporalAnalyserNode } from "../../../core/worklets/TemporalAnalyser";
-import { dbtoa } from "../../../utils/math";
+import * as TemporalAnalyserRegister from "../worklets/TemporalAnalyser";
+import { TemporalAnalyserNode } from "../worklets/TemporalAnalyser";
+import { dbtoa } from "../../utils/math";
 import AudioEditor from "./AudioEditor";
 
 export default class AudioPlayer {
