@@ -1,7 +1,6 @@
 import OperableAudioBuffer from "./OperableAudioBuffer";
 import PatcherAudio from "./PatcherAudio";
-import * as TransmitterRegister from "../worklets/Transmitter";
-import { TransmitterNode } from "../worklets/Transmitter";
+import TransmitterNode from "../worklets/Transmitter";
 import AudioEditor from "./AudioEditor";
 
 export default class AudioRecorder {
@@ -26,8 +25,8 @@ export default class AudioRecorder {
         navigator.mediaDevices.addEventListener("devicechange", this.handleDeviceChange);
     }
     async init() {
-        await TransmitterRegister.register(this.audioCtx.audioWorklet);
-        this.transmitter = new TransmitterRegister.Node(this.audioCtx);
+        await TransmitterNode.register(this.audioCtx.audioWorklet);
+        this.transmitter = new TransmitterNode(this.audioCtx);
         this.transmitter.handleReceiveBuffer = this.handleReceiveBuffer;
         await this.newSearch();
     }

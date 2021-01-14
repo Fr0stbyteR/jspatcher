@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
 import { ProxyMain } from "./ProxyMain.types";
-import { TypedMessageEvent, MessagePortResponse } from "../worklets/AudioWorklet";
+import { TypedMessageEvent, MessagePortResponse } from "./Worker";
 
 const Main = class {
     static get Worker(): typeof WebpackWorker {

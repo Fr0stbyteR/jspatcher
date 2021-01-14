@@ -1,11 +1,12 @@
-// import { TContext } from "standardized-audio-context";
 import processorURL from "./TemporalAnalyser.worklet.ts"; // eslint-disable-line import/extensions
 import AudioWorkletProxyNode from "./AudioWorkletProxyNode";
 import { ITemporalAnalyserNode, ITemporalAnalyserProcessor, TemporalAnalyserParameters } from "./TemporalAnalyserWorklet.types";
 import AudioWorkletRegister from "./AudioWorkletRegister";
 
-export const processorID = "__Sheng_TemporalAnalyser";
-export class TemporalAnalyserNode extends AudioWorkletProxyNode<ITemporalAnalyserNode, ITemporalAnalyserProcessor, TemporalAnalyserParameters> implements ITemporalAnalyserNode {
+export const processorID = "__JSPatcher_TemporalAnalyser";
+export default class TemporalAnalyserNode extends AudioWorkletProxyNode<ITemporalAnalyserNode, ITemporalAnalyserProcessor, TemporalAnalyserParameters> implements ITemporalAnalyserNode {
+    static processorID = processorID;
+    static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorID, processorURL);
     static fnNames: (keyof ITemporalAnalyserProcessor)[] = ["getRMS", "getAbsMax", "getZCR", "getEstimatedFreq", "getBuffer", "destroy"];
     constructor(context: BaseAudioContext) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
@@ -16,5 +17,3 @@ export class TemporalAnalyserNode extends AudioWorkletProxyNode<ITemporalAnalyse
         };
     }
 }
-export const register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorID, processorURL);
-export const Node = TemporalAnalyserNode;

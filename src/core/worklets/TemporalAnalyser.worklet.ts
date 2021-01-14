@@ -1,10 +1,10 @@
 import { rms, zcr, setTypedArray, absMax } from "../../utils/buffer";
 import yinEstimate from "../../utils/yin";
-import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./AudioWorklet";
+import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./TypedAudioWorklet";
 import { ITemporalAnalyserProcessor, ITemporalAnalyserNode, TemporalAnalyserParameters } from "./TemporalAnalyserWorklet.types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 
-const processorID = "__Sheng_TemporalAnalyser";
+const processorID = "__JSPatcher_TemporalAnalyser";
 declare const globalThis: AudioWorkletGlobalScope & { SharedArrayBuffer: typeof SharedArrayBuffer | typeof ArrayBuffer; Atomics: typeof Atomics };
 if (!globalThis.SharedArrayBuffer) globalThis.SharedArrayBuffer = ArrayBuffer;
 const { registerProcessor, sampleRate } = globalThis;
@@ -199,4 +199,9 @@ class TemporalAnalyserProcessor extends AudioWorkletProxyProcessor<ITemporalAnal
         return true;
     }
 }
-registerProcessor(processorID, TemporalAnalyserProcessor);
+try {
+    registerProcessor(processorID, TemporalAnalyserProcessor);
+} catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn(error);
+}

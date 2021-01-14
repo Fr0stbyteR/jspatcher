@@ -3,12 +3,12 @@ import { blackman, hamming, hann, triangular } from "window-function";
 import { RFFT } from "fftw-js";
 import { setTypedArray, getSubTypedArray, indexToFreq, centroid, estimateFreq, fftw2Amp } from "../../utils/buffer";
 import { ceil } from "../../utils/math";
-import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./AudioWorklet";
+import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./TypedAudioWorklet";
 import { ISpectralAnalyserProcessor, ISpectralAnalyserNode, SpectralAnalyserParameters } from "./SpectralAnalyserWorklet.types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 import { windowEnergyFactor } from "../../utils/windowEnergy";
 
-const processorID = "__Sheng_SpectralAnalyser";
+const processorID = "__JSPatcher_SpectralAnalyser";
 declare const globalThis: AudioWorkletGlobalScope & { SharedArrayBuffer: typeof SharedArrayBuffer | typeof ArrayBuffer; Atomics: typeof Atomics };
 if (!globalThis.SharedArrayBuffer) globalThis.SharedArrayBuffer = ArrayBuffer;
 const { registerProcessor, sampleRate } = globalThis;
@@ -380,4 +380,9 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
         return true;
     }
 }
-registerProcessor(processorID, SpectralAnalyserProcessor);
+try {
+    registerProcessor(processorID, SpectralAnalyserProcessor);
+} catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn(error);
+}

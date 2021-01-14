@@ -1,4 +1,3 @@
-/* eslint-disable no-new */
 import WavEncoder, { Options } from "../../utils/WavEncoder";
 import { IWavEncoderWorker } from "./WavEncoderWorker.types";
 import ProxyWorker from "./ProxyWorker";

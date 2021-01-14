@@ -2,9 +2,9 @@ import { LiveSliderProps } from "./slider";
 import { LiveMeterProps } from "./meter";
 import { LiveUIState, LiveUI, LiveObject, LiveObjectState } from "./Base";
 import { TMeta } from "../../types";
-import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
 import { atodb, dbtoa, normExp } from "../../../utils/math";
 import { Bang, isBang } from "../Base";
+import TemporalAnalyserNode from "../../worklets/TemporalAnalyser";
 
 interface LiveGainProps extends Omit<LiveSliderProps, "sliderColor">, LiveMeterProps {
     metering: "postFader" | "preFader";
@@ -273,7 +273,13 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
     };
 }
 
-export type LiveGainState = { rmsNode: InstanceType<typeof TemporalAnalyserRegister["Node"]>; bypassNode: GainNode; gainNode: GainNode; $requestTimer: number } & LiveObjectState;
+export interface LiveGainState extends LiveObjectState {
+    analyserNode: TemporalAnalyserNode;
+    bypassNode: GainNode;
+    gainNode: GainNode;
+    $requestTimer: number
+}
+
 export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undefined, number, string, number[]], [number], LiveGainProps, LiveGainUIState> {
     static description = "Gain slider and monitor";
     static inlets: TMeta["inlets"] = [{
@@ -510,7 +516,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
     static UI = LiveGainUI;
     state: LiveGainState = {
         ...this.state,
-        rmsNode: undefined,
+        analyserNode: undefined,
         gainNode: this.audioCtx.createGain(),
         bypassNode: this.audioCtx.createGain(),
         $requestTimer: -1
@@ -522,11 +528,11 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
         const startRequest = () => {
             let lastResult: number[] = [];
             const request = async () => {
-                if (this.state.rmsNode && !this.state.rmsNode.destroyed) {
-                    const { rms } = await this.state.rmsNode.gets({ rms: true });
+                if (this.state.analyserNode && !this.state.analyserNode.destroyed) {
+                    const absMax = await this.state.analyserNode.getAbsMax();
                     const mode = this.getProp("mode");
                     const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
-                    const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
+                    const result = mode === "deciBel" ? absMax.map(v => atodb(v)) : absMax;
                     if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
                         this.outlet(3, result);
                         this.updateUI({ levels: result });
@@ -554,15 +560,15 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
         let lastMetering: "preFader" | "postFader";
         let lastMode: "deciBel" | "linear";
         this.on("updateProps", async (props) => {
-            if (props.windowSize && this.state.rmsNode) this.applyBPF(this.state.rmsNode.parameters.get("windowSize"), [[props.windowSize]]);
-            if (props.metering && lastMetering !== props.metering && this.state.rmsNode) {
+            if (props.windowSize && this.state.analyserNode) this.applyBPF(this.state.analyserNode.parameters.get("windowSize"), [[props.windowSize]]);
+            if (props.metering && lastMetering !== props.metering && this.state.analyserNode) {
                 if (lastMetering) {
-                    if (lastMetering === "postFader") this.state.gainNode.disconnect(this.state.rmsNode);
-                    else this.state.bypassNode.disconnect(this.state.rmsNode);
+                    if (lastMetering === "postFader") this.state.gainNode.disconnect(this.state.analyserNode);
+                    else this.state.bypassNode.disconnect(this.state.analyserNode);
                 }
                 lastMetering = props.metering;
-                if (props.metering === "preFader") this.state.bypassNode.connect(this.state.rmsNode, 0, 0);
-                else this.state.gainNode.connect(this.state.rmsNode, 0, 0);
+                if (props.metering === "preFader") this.state.bypassNode.connect(this.state.analyserNode, 0, 0);
+                else this.state.gainNode.connect(this.state.analyserNode, 0, 0);
             }
             if (props.mode && lastMode && lastMode !== props.mode) {
                 lastMode = props.mode;
@@ -583,11 +589,11 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             lastMode = this.getProp("mode");
             this.applyBPF(this.state.gainNode.gain, [[this.getProp("mode") === "deciBel" ? dbtoa(this.state.value) : this.state.value]]);
             this.state.bypassNode.connect(this.state.gainNode);
-            await TemporalAnalyserRegister.register(this.audioCtx.audioWorklet);
-            this.state.rmsNode = new TemporalAnalyserRegister.Node(this.audioCtx);
-            this.applyBPF(this.state.rmsNode.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
-            if (this.getProp("metering") === "preFader") this.state.bypassNode.connect(this.state.rmsNode, 0, 0);
-            else this.state.gainNode.connect(this.state.rmsNode, 0, 0);
+            await TemporalAnalyserNode.register(this.audioCtx.audioWorklet);
+            this.state.analyserNode = new TemporalAnalyserNode(this.audioCtx);
+            this.applyBPF(this.state.analyserNode.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
+            if (this.getProp("metering") === "preFader") this.state.bypassNode.connect(this.state.analyserNode, 0, 0);
+            else this.state.gainNode.connect(this.state.analyserNode, 0, 0);
             startRequest();
         });
         this.on("inlet", ({ data, inlet }) => {
@@ -610,11 +616,11 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
             this.applyBPF(this.state.gainNode.gain, [[paramValue, this.getProp("interp")]]);
             this.outletAll([, this.state.value, this.state.displayValue]);
         });
-        this.on("destroy", () => {
+        this.on("destroy", async () => {
             this.state.bypassNode.disconnect();
             this.state.gainNode.disconnect();
             window.clearTimeout(this.state.$requestTimer);
-            if (this.state.rmsNode) this.state.rmsNode.destroy();
+            if (this.state.analyserNode) await this.state.analyserNode.destroy();
         });
     }
 }

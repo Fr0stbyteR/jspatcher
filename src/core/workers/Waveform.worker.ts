@@ -1,9 +1,7 @@
-/* eslint-disable no-new */
 import { IWaveformWorker } from "./WaveformWorker.types";
 import { WaveformData, WaveformStepData } from "../types";
 import ProxyWorker from "./ProxyWorker";
 
-// eslint-disable-next-line no-undef
 const SAB = globalThis.SharedArrayBuffer || globalThis.ArrayBuffer;
 class Waveform extends ProxyWorker<IWaveformWorker> {
     generate(buffer: Float32Array[], stepsFactor = 16) {

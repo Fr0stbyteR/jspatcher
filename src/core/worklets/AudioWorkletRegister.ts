@@ -1,14 +1,17 @@
-export const registeredProcessors = new WeakMap();
-export const registeringProcessors = new WeakMap();
+
+export const registeredProcessors: WeakMap<AudioWorklet, Set<string>> = window.jspatcherEnv?.AudioWorkletRegister?.registeredProcessors || new WeakMap();
+export const registeringProcessors: WeakMap<AudioWorklet, Set<string>> = window.jspatcherEnv?.AudioWorkletRegister?.registeringProcessors || new WeakMap();
+export const resolves: Record<string, ((value?: void | PromiseLike<void>) => void)[]> = window.jspatcherEnv?.AudioWorkletRegister?.resolves || {};
+export const rejects: Record<string, ((reason?: any) => void)[]> = window.jspatcherEnv?.AudioWorkletRegister?.rejects || {};
 
 export default class AudioWorkletRegister {
     static registeredProcessors = registeredProcessors;
 
     static registeringProcessors = registeringProcessors;
 
-    private static resolves: Record<string, ((value?: void | PromiseLike<void>) => void)[]> = {};
+    static resolves = resolves;
 
-    private static rejects: Record<string, ((reason?: any) => void)[]> = {};
+    static rejects = rejects;
 
     private static async registerProcessor(audioWorklet: AudioWorklet, processorId: string, processor: string | ((id: string, ...injections: any[]) => void), ...injection: any[]) {
         this.registeringProcessors.get(audioWorklet).add(processorId);
@@ -48,3 +51,7 @@ export default class AudioWorkletRegister {
         return promise;
     }
 }
+
+if (!window.jspatcherEnv) window.jspatcherEnv = { AudioWorkletRegister } as any;
+if (!window.jspatcherEnv.AudioWorkletRegister) (window.jspatcherEnv as any).AudioWorkletRegister = AudioWorkletRegister;
+

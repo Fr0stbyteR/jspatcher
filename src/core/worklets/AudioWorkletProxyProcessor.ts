@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { AudioWorkletGlobalScope, MessagePortResponse, TypedMessageEvent } from "./AudioWorklet";
+import { AudioWorkletGlobalScope, MessagePortResponse, TypedMessageEvent } from "./TypedAudioWorklet";
 import { AudioWorkletProxyProcessor } from "./AudioWorkletProxyProcessor.types";
 
 declare const globalThis: AudioWorkletGlobalScope;

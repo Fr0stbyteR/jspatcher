@@ -1,6 +1,6 @@
 // import { AudioWorkletNode, TContext, IAudioWorklet } from "standardized-audio-context";
 
-import { TypedMessageEvent, MessagePortResponse } from "./AudioWorklet";
+import { TypedMessageEvent, MessagePortResponse } from "./TypedAudioWorklet";
 import { AudioWorkletProxyNode } from "./AudioWorkletProxyNode.types";
 
 const Node = class extends AudioWorkletNode {

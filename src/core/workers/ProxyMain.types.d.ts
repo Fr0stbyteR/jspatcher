@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { PromisifiedFunctionMap } from "./Worker";
 
 export type ProxyMain<IMain extends {} = {}, IWorker extends {} = {}> = PromisifiedFunctionMap<IWorker> & IMain;

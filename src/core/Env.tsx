@@ -19,6 +19,7 @@ import FileInstance, { AnyFileInstance } from "./file/FileInstance";
 import UI from "../components/UI";
 import PatcherAudio from "./audio/PatcherAudio";
 import EditorContainer from "./EditorContainer";
+import AudioWorkletRegister from "./worklets/AudioWorkletRegister";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -54,6 +55,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly fileMgr = new FileManager(this);
     readonly editorContainer = new EditorContainer(this);
     readonly log: TPatcherLog[] = [];
+    readonly AudioWorkletRegister = AudioWorkletRegister;
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;

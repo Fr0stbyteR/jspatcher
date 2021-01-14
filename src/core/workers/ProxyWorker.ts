@@ -1,5 +1,5 @@
-import { TypedMessageEvent, MessagePortResponse } from "../worklets/AudioWorklet";
 import { ProxyWorker } from "./ProxyWorker.types";
+import { TypedMessageEvent, MessagePortResponse } from "./Worker";
 
 const Worker = class {
     static get fnNames(): string[] {
