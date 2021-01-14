@@ -10,7 +10,7 @@ import AudioEditorMainControlsUI from "./AudioEditorMainControlsUI";
 import { EnvOptions, TAudioUnit } from "../../../core/types";
 import { normExp, dbtoa } from "../../../utils/math";
 import { convertSampleToUnit } from "../../../utils/utils";
-import "./AudioEditorMapUI.scss";
+import "./AudioEditorMainUI.scss";
 
 interface P extends AudioEditorState, EnvOptions {
     env: Env;

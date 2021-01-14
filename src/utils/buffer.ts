@@ -40,6 +40,15 @@ export const energy = (signal: TypedArray | number[]) => {
     return sum;
 };
 export const rms = (signal: TypedArray | number[]) => Math.sqrt(energy(signal) / signal.length);
+export const absMax = (signal: TypedArray | number[]) => {
+    let max = 0;
+    let sample = 0;
+    for (let i = 0; i < signal.length; i++) {
+        sample = Math.abs(signal[i]);
+        if (sample > max) max = sample;
+    }
+    return max;
+};
 export const zcr = (signal: TypedArray | number[]) => {
     let zcr = 0;
     let lastPositive = true;

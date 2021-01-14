@@ -3,6 +3,7 @@ import PatcherAudio from "../../../core/audio/PatcherAudio";
 import Env, { EnvEventMap } from "../../../core/Env";
 import { EnvOptions } from "../../../core/types";
 import AudioEditor, { AudioEditorEventMap, AudioEditorState } from "./AudioEditor";
+import AudioEditorMapUI from "./AudioEditorMapUI";
 import AudioEditorMainUI from "./AudioEditorMainUI";
 import AudioEditorMonitorUI from "./AudioEditorMonitorUI";
 import "./AudioEditorUI.scss";
@@ -45,6 +46,7 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
     handleEnvOptions = ({ options }: EnvEventMap["options"]) => this.setState(options);
     handleEditorReady = () => {
         const { editor } = this.state;
+        editor.off("ready", this.handleEditorReady);
         this.editorEventsListening.forEach(eventName => editor.on(eventName, this.editorEventListeners[eventName]));
         editor.audio.on("setAudio", this.handleAudio);
         this.setState({ editorReady: editor.isReady });
@@ -53,10 +55,12 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
         this.props.env.on("options", this.handleEnvOptions);
         const { editor, editorReady } = this.state;
         if (!editorReady) editor.init();
+        editor.on("ready", this.handleEditorReady);
     }
     async componentWillUnmount() {
         this.props.env.off("options", this.handleEnvOptions);
         const { editor, editorReady } = this.state;
+        editor.off("ready", this.handleEditorReady);
         if (editorReady) {
             this.editorEventsListening.forEach(eventName => editor.off(eventName, this.editorEventListeners[eventName]));
             editor.audio.off("setAudio", this.handleAudio);
@@ -67,7 +71,7 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
         return this.state.editorReady
             ? (
                 <div className="audio-editor-container ui-flex-column ui-flex-full">
-                    <AudioEditorMainUI {...this.state} {...this.props} />
+                    <AudioEditorMapUI {...this.state} {...this.props} />
                     <AudioEditorMainUI {...this.state} {...this.props} />
                     <AudioEditorMonitorUI {...this.state} {...this.props} {...this.state.audioDisplayOptions} />
                 </div>
