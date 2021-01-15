@@ -1,4 +1,4 @@
-import { Bang, isBang } from "../Base";
+import { isBang } from "../Base";
 import { ImportedObjectUI } from "./ImportedObject";
 import { Property } from "./Property";
 import { TMeta } from "../../types";

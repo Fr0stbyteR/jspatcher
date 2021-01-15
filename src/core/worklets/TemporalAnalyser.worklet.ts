@@ -1,7 +1,7 @@
 import { rms, zcr, setTypedArray, absMax } from "../../utils/buffer";
 import yinEstimate from "../../utils/yin";
 import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./TypedAudioWorklet";
-import { ITemporalAnalyserProcessor, ITemporalAnalyserNode, TemporalAnalyserParameters } from "./TemporalAnalyserWorklet.types";
+import { ITemporalAnalyserProcessor, ITemporalAnalyserNode, TemporalAnalyserParameters, TemporalAnalysis } from "./TemporalAnalyserWorklet.types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 
 const processorID = "__JSPatcher_TemporalAnalyser";
@@ -115,13 +115,13 @@ class TemporalAnalyserProcessor extends AudioWorkletProxyProcessor<ITemporalAnal
     wait() {
         this.atoms.wait();
     }
-    getRMS() {
+    getRms() {
         return this.window.map(rms);
     }
     getAbsMax() {
         return this.window.map(absMax);
     }
-    getZCR() {
+    getZcr() {
         return this.window.map(zcr);
     }
     getEstimatedFreq(threshold?: number, probabilityThreshold?: number) {
@@ -131,6 +131,15 @@ class TemporalAnalyserProcessor extends AudioWorkletProxyProcessor<ITemporalAnal
         const data = this.window;
         const { $, $total, lock } = this.atoms.asObject;
         return { data, $, $total, lock };
+    }
+    gets<K extends keyof TemporalAnalysis>(...analysis: K[]) {
+        const result: Partial<TemporalAnalysis> = {};
+        for (const key of analysis) {
+            if (typeof key !== "string" || !key.length) continue;
+            const method = `get${key.charAt(0).toUpperCase()}${key.slice(1)}` as `get${Capitalize<string & K>}`;
+            if (this[method]) result[key] = this[method]() as TemporalAnalysis[K];
+        }
+        return result;
     }
     destroy() {
         this.destroyed = true;

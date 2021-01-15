@@ -1,6 +1,7 @@
 import * as Color from "color-js";
 import { CanvasUI } from "../BaseUI";
-import { SpectralAnalyserRegister, SpectralAnalyserNode, TWindowFunction } from "./AudioWorklet/SpectralAnalyser";
+import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
+import { TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
 import { TMeta, TPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
 import { Bang, isBang } from "../Base";
@@ -53,7 +54,7 @@ export class SpectroscopeUI extends CanvasUI<Spectroscope, {}, SpectroscopeUISta
         const left = 0;
         const bottom = 0;
 
-        const { lastAmplitudes } = await this.object.state.node.gets({ lastAmplitudes: true });
+        const lastAmplitudes = await this.object.state.node.getLastAmplitudes();
 
         // Background
         const [width, height] = this.fullSize();
@@ -229,8 +230,8 @@ export class Spectroscope extends BaseDSP<{}, State, [Bang], [], [], Props, Spec
             }
         });
         this.on("postInit", async () => {
-            await SpectralAnalyserRegister.register(this.audioCtx.audioWorklet);
-            this.state.node = new SpectralAnalyserRegister.Node(this.audioCtx);
+            await SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
+            this.state.node = new SpectralAnalyserNode(this.audioCtx);
             const { parameters } = this.state.node;
             this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
             this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);

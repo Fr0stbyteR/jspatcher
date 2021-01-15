@@ -84,7 +84,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         container.focus();
         const handleMouseDown = (e: MouseEvent) => {
             e.stopPropagation();
-        }
+        };
         const handleBlur = async (e?: FocusEvent) => {
             if (e) e.stopPropagation();
             container.removeEventListener("mousedown", handleMouseDown);

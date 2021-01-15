@@ -1,4 +1,4 @@
-import { WebAudioModule } from "sdk";
+import { WebAudioModule } from "wamsdk/src/api";
 import { Bang, BaseObject, isBang } from "../Base";
 import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";

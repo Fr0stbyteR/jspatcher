@@ -1,10 +1,10 @@
 import apply from "window-function/apply";
 import { blackman, hamming, hann, triangular } from "window-function";
 import { RFFT } from "fftw-js";
-import { setTypedArray, getSubTypedArray, indexToFreq, centroid, estimateFreq, fftw2Amp } from "../../utils/buffer";
+import { setTypedArray, getSubTypedArray, indexToFreq, sum, centroid, estimateFreq, fftw2Amp, flatness, flux, kurtosis, rolloff, skewness, slope, spread } from "../../utils/buffer";
 import { ceil } from "../../utils/math";
 import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./TypedAudioWorklet";
-import { ISpectralAnalyserProcessor, ISpectralAnalyserNode, SpectralAnalyserParameters } from "./SpectralAnalyserWorklet.types";
+import { ISpectralAnalyserProcessor, ISpectralAnalyserNode, SpectralAnalyserParameters, SpectralAnalysis } from "./SpectralAnalyserWorklet.types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 import { windowEnergyFactor } from "../../utils/windowEnergy";
 
@@ -200,8 +200,33 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
         const { frames, fftBins, fftHopSize } = this;
         return { $frame, data, frames, fftBins, fftHopSize, $totalFrames, lock };
     }
+    getAmplitude() {
+        return this.lastFrame.map(channel => sum(channel));
+    }
     getCentroid() {
         return this.lastFrame.map(channel => indexToFreq(centroid(channel), this.fftBins, sampleRate));
+    }
+    getFlatness() {
+        return this.lastFrame.map(channel => flatness(channel));
+    }
+    getFlux() {
+        const secondLastFrame = this.getLastFrame(2);
+        return this.lastFrame.map((channel, i) => flux(channel, secondLastFrame[i]));
+    }
+    getKurtosis() {
+        return this.lastFrame.map(channel => kurtosis(channel));
+    }
+    getSkewness() {
+        return this.lastFrame.map(channel => skewness(channel));
+    }
+    getRolloff() {
+        return this.lastFrame.map(channel => indexToFreq(rolloff(channel), this.fftBins, sampleRate));
+    }
+    getSlope() {
+        return this.lastFrame.map(channel => slope(channel)/* / (sampleRate / 2 / this.fftBins)*/);
+    }
+    getSpread() {
+        return this.lastFrame.map(channel => spread(channel));
     }
     getEstimatedFreq() {
         return this.lastFrame.map(channel => estimateFreq(channel, sampleRate));
@@ -218,6 +243,15 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
         const data = this.window;
         const { $, $total, lock } = this.atoms.asObject;
         return { data, $, $total, lock };
+    }
+    gets<K extends keyof SpectralAnalysis>(...analysis: K[]) {
+        const result: Partial<SpectralAnalysis> = {};
+        for (const key of analysis) {
+            if (typeof key !== "string" || !key.length) continue;
+            const method = `get${key.charAt(0).toUpperCase()}${key.slice(1)}` as `get${Capitalize<string & K>}`;
+            if (this[method]) result[key] = this[method]() as SpectralAnalysis[K];
+        }
+        return result;
     }
     destroy() {
         this.destroyed = true;

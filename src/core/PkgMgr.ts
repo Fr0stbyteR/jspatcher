@@ -68,7 +68,7 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
         const jsModule = await this.global.getModuleFromURL(url, id);
         const pkg = Importer.import(id, jsModule);
         this.imported.push([id, url]);
-        return this.add(pkg, "js", [id]);
+        this.add(pkg, "js", [id]);
     }
     remove(url: string) {
         const { imported } = this;

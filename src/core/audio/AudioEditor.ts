@@ -125,7 +125,7 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
             await this.recorder.init();
             this.isReady = true;
             this.emit("ready");
-        }
+        };
         if (this.audio.isReady) await init();
         else this.audio.on("ready", init);
     }
@@ -310,17 +310,13 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         if (to <= 0) return;
         const { audio: oldAudio } = this;
         if (oldAudio.sampleRate === to) return;
-        const audio = await this.env.taskMgr.newTask(this, "Resampling Audio...", () => {
-            return this.audio.render(to);
-        });
+        const audio = await this.env.taskMgr.newTask(this, "Resampling Audio...", () => this.audio.render(to));
         this.audio.setAudio(audio);
         this.audio.emit("resampled", { audio, oldAudio });
     }
     async remixChannels(mix: number[][]) {
         const { audio: oldAudio } = this;
-        const audio = await this.env.taskMgr.newTask(this, "Remixing Audio...", () => {
-            return this.audio.render(undefined, mix);
-        });
+        const audio = await this.env.taskMgr.newTask(this, "Remixing Audio...", () => this.audio.render(undefined, mix));
         this.audio.setAudio(audio);
         this.audio.emit("remixed", { audio, oldAudio });
     }
@@ -339,7 +335,7 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         });
         this.emit("pluginsApplied", { ...(selected ? { range: selRange } : {}), audio, oldAudio });
     }
-    
+
     play() {
         const playing: TAudioPlayingState = "playing";
         this.setState({ playing });

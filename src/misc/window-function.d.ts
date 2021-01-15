@@ -1,4 +1,3 @@
-
 declare module "window-function" {
     export function bartlett(i: number, N: number): number;
     export function bartlettHann(i: number, N: number): number;

@@ -1,9 +1,9 @@
 import { LiveObject, LiveUI } from "./Base";
 import { BaseObject } from "../Base";
 import { TMeta } from "../../types";
-import { TemporalAnalyserRegister } from "../dsp/AudioWorklet/TemporalAnalyser";
 import { atodb } from "../../../utils/math";
 import { CanvasUI, CanvasUIState } from "../BaseUI";
+import TemporalAnalyserNode from "../../worklets/TemporalAnalyser";
 
 export interface LiveMeterProps {
     active: boolean;
@@ -139,7 +139,11 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
         if (orientation === "vertical") ctx.restore();
     }
 }
-export type LiveMeterState = { node: InstanceType<typeof TemporalAnalyserRegister["Node"]>; $requestTimer: number };
+export interface LiveMeterState {
+    node: TemporalAnalyserNode;
+    $requestTimer: number;
+}
+
 export class LiveMeter extends BaseObject<{}, LiveMeterState, [], [number[]], [], LiveMeterProps, LiveMeterUIState> {
     static package = LiveObject.package;
     static author = LiveObject.author;
@@ -264,10 +268,10 @@ export class LiveMeter extends BaseObject<{}, LiveMeterState, [], [number[]], []
             let lastResult: number[] = [];
             const request = async () => {
                 if (this.state.node && !this.state.node.destroyed) {
-                    const { rms } = await this.state.node.gets({ rms: true });
+                    const absMax = await this.state.node.getAbsMax();
                     const mode = this.getProp("mode");
                     const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
-                    const result = mode === "deciBel" ? rms.map(v => atodb(v)) : rms;
+                    const result = mode === "deciBel" ? absMax.map(v => atodb(v)) : absMax;
                     if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
                         this.outlet(0, result);
                         this.updateUI({ value: result });
@@ -289,8 +293,8 @@ export class LiveMeter extends BaseObject<{}, LiveMeterState, [], [number[]], []
             if (props.windowSize && this.state.node) this.applyBPF(this.state.node.parameters.get("windowSize"), [[props.windowSize]]);
         });
         this.on("postInit", async () => {
-            await TemporalAnalyserRegister.register(this.audioCtx.audioWorklet);
-            this.state.node = new TemporalAnalyserRegister.Node(this.audioCtx);
+            await TemporalAnalyserNode.register(this.audioCtx.audioWorklet);
+            this.state.node = new TemporalAnalyserNode(this.audioCtx);
             this.applyBPF(this.state.node.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
             this.disconnectAudioInlet();
             this.inletAudioConnections[0] = { node: this.state.node, index: 0 };

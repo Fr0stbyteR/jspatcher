@@ -7,7 +7,7 @@ export const processorID = "__JSPatcher_TemporalAnalyser";
 export default class TemporalAnalyserNode extends AudioWorkletProxyNode<ITemporalAnalyserNode, ITemporalAnalyserProcessor, TemporalAnalyserParameters> implements ITemporalAnalyserNode {
     static processorID = processorID;
     static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorID, processorURL);
-    static fnNames: (keyof ITemporalAnalyserProcessor)[] = ["getRMS", "getAbsMax", "getZCR", "getEstimatedFreq", "getBuffer", "destroy"];
+    static fnNames: (keyof ITemporalAnalyserProcessor)[] = ["getRms", "getAbsMax", "getZcr", "getEstimatedFreq", "getBuffer", "gets", "destroy"];
     constructor(context: BaseAudioContext) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         const _destroy = this.destroy;

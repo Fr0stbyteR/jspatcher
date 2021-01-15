@@ -4,10 +4,10 @@ import { ISpectralAnalyserNode, ISpectralAnalyserProcessor, SpectralAnalyserPara
 import AudioWorkletRegister from "./AudioWorkletRegister";
 
 export const processorID = "__JSPatcher_SpectralAnalyser";
-export class SpectralAnalyserNode extends AudioWorkletProxyNode<ISpectralAnalyserNode, ISpectralAnalyserProcessor, SpectralAnalyserParameters> implements ISpectralAnalyserNode {
+export default class SpectralAnalyserNode extends AudioWorkletProxyNode<ISpectralAnalyserNode, ISpectralAnalyserProcessor, SpectralAnalyserParameters> implements ISpectralAnalyserNode {
     static processorID = processorID;
     static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorID, processorURL);
-    static fnNames: (keyof ISpectralAnalyserProcessor)[] = ["getAllAmplitudes", "getLastAmplitudes", "getCentroid", "getEstimatedFreq", "getEstimatedFreq", "getBuffer", "destroy"];
+    static fnNames: (keyof ISpectralAnalyserProcessor)[] = ["getBuffer", "getLastAmplitudes", "getAllAmplitudes", "getAllAmplitudes", "getEstimatedFreq", "getCentroid", "getFlatness", "getFlux", "getKurtosis", "getSkewness", "getRolloff", "getSlope", "getSpread", "gets", "destroy"];
     constructor(context: BaseAudioContext) {
         super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
         const _destroy = this.destroy;

@@ -661,7 +661,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
         const { bgColor } = audioDisplayOptions;
         const sampleRate = editor.audio.sampleRate ?? env.audioCtx.sampleRate;
         const l = editor.audio.length || 0;
-        /* 
+        /*
         if (!this.props.editor.audio.audioBuffer) {
             return (
                 <div className="editor-main">

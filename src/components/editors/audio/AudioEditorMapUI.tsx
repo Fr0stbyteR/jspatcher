@@ -283,7 +283,7 @@ export default class EditorMapUI extends React.PureComponent<P> {
     };
     handleClickSelectAll = () => this.props.editor.setViewRangeToAll();
     render() {
-        /* 
+        /*
         if (!this.props.buffer) {
             return (
                 <div className="editor-map">

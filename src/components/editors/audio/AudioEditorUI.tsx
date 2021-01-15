@@ -29,19 +29,17 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
             ...this.props.env.options,
             $audio: performance.now(),
             editorReady: editor.isReady
-        }
+        };
     })();
     editorEventsListening: (keyof (AudioEditorEventMap | S))[] = ["cursor", "enabledChannels", "loop", "monitoring", "playing", "recording", "selRange", "viewRange"];
     editorEventListeners: Record<keyof (AudioEditorEventMap | S), (...args: any[]) => any>
-        = this.editorEventsListening.reduce<Record<keyof (AudioEditorEventMap | S), (...args: any[]) => any>>(
+        = this.editorEventsListening.reduce<Record<keyof(AudioEditorEventMap | S), (...args: any[]) => any>>(
             (acc, cur) => {
-                acc[cur]
-                    = <K extends keyof (AudioEditorEventMap | S)>
+                acc[cur] = <K extends keyof (AudioEditorEventMap | S)>
                     (event: (AudioEditorEventMap | S)[K]) => this.setState<K>({ [cur]: event } as Pick<S, K>);
                 return acc;
             },
-            {} as Record<keyof (AudioEditorEventMap | S), (...args: any[]) => any>
-        );
+            {} as Record<keyof (AudioEditorEventMap | S), (...args: any[]) => any>);
     handleAudio = () => this.setState({ $audio: performance.now() });
     handleEnvOptions = ({ options }: EnvEventMap["options"]) => this.setState(options);
     handleEditorReady = () => {
@@ -50,7 +48,7 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
         this.editorEventsListening.forEach(eventName => editor.on(eventName, this.editorEventListeners[eventName]));
         editor.audio.on("setAudio", this.handleAudio);
         this.setState({ editorReady: editor.isReady });
-    }
+    };
     componentDidMount() {
         this.props.env.on("options", this.handleEnvOptions);
         const { editor, editorReady } = this.state;
@@ -64,7 +62,7 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
         if (editorReady) {
             this.editorEventsListening.forEach(eventName => editor.off(eventName, this.editorEventListeners[eventName]));
             editor.audio.off("setAudio", this.handleAudio);
-            await editor.destroy()
+            await editor.destroy();
         }
     }
     render() {

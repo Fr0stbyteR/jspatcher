@@ -1,9 +1,10 @@
 import { DefaultDSP } from "./Base";
-import { TWindowFunction, SpectralAnalyserRegister, SpectralAnalyserNode, DataFromProcessor, DataToProcessor } from "./AudioWorklet/SpectralAnalyser";
+import { SpectralAnalysis, TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
+import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
 import { TMeta, TPropsMeta } from "../../types";
 import { Bang, isBang } from "../Base";
 
-export interface Props extends Omit<DataToProcessor, "id"> {
+export interface Props extends Record<keyof SpectralAnalysis, boolean> {
     speedLim: number;
     windowSize: number;
     fftSize: number;
@@ -15,7 +16,7 @@ export interface State {
     node: SpectralAnalyserNode;
     $requestTimer: number;
 }
-type Outlet0 = Omit<DataFromProcessor, "id">;
+type Outlet0 = Partial<SpectralAnalysis>;
 export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [], Props> {
     static description = "Spectral feature extractor";
     static inlets: TMeta["inlets"] = [{
@@ -145,10 +146,12 @@ export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
                         "rolloff",
                         "slope",
                         "spread"
-                    ] as (keyof Omit<DataToProcessor, "id">)[];
-                    const gets: Omit<DataToProcessor, "id"> = {};
-                    extractorKeys.forEach(key => gets[key] = this.getProp(key));
-                    const got = await this.state.node.gets(gets);
+                    ] as (keyof SpectralAnalysis)[];
+                    const gets: (keyof SpectralAnalysis)[] = [];
+                    extractorKeys.forEach(key => {
+                        if (this.getProp(key)) gets.push(key);
+                    });
+                    const got = await this.state.node.gets(...gets);
                     this.outlet(0, got);
                 }
                 if (this.getProp("continuous")) scheduleRequest();
@@ -173,8 +176,8 @@ export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
             }
         });
         this.on("postInit", async () => {
-            await SpectralAnalyserRegister.register(this.audioCtx.audioWorklet);
-            this.state.node = new SpectralAnalyserRegister.Node(this.audioCtx);
+            await SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
+            this.state.node = new SpectralAnalyserNode(this.audioCtx);
             const { parameters } = this.state.node;
             this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
             this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);

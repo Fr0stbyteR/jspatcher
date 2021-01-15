@@ -72,4 +72,5 @@ class Waveform extends ProxyWorker<IWaveformWorker> {
         return waveformData;
     }
 }
+// eslint-disable-next-line no-new
 new Waveform();

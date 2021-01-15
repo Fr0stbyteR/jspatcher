@@ -1,10 +1,16 @@
-export interface ITemporalAnalyserProcessor {
-    getRMS(): number[];
-    getAbsMax(): number[];
-    getZCR(): number[];
+type Getters<T> = {
+    [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];
+};
+export interface ITemporalAnalyserProcessor extends Getters<TemporalAnalysis> {
     getEstimatedFreq(threshold?: number, probabilityThreshold?: number): number[];
-    getBuffer(): { data: Float32Array[]; $: Uint32Array; $total: Uint32Array; lock: Int32Array };
+    gets(...data: (keyof TemporalAnalysis)[]): Partial<TemporalAnalysis>;
     destroy(): void;
 }
 export interface ITemporalAnalyserNode {}
 export type TemporalAnalyserParameters = "windowSize";
+export interface TemporalAnalysis {
+    rms: number[];
+    absMax: number[];
+    zcr: number[];
+    buffer: { data: Float32Array[]; $: Uint32Array; $total: Uint32Array; lock: Int32Array };
+}

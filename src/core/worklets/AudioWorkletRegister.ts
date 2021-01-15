@@ -1,4 +1,3 @@
-
 export const registeredProcessors: WeakMap<AudioWorklet, Set<string>> = window.jspatcherEnv?.AudioWorkletRegister?.registeredProcessors || new WeakMap();
 export const registeringProcessors: WeakMap<AudioWorklet, Set<string>> = window.jspatcherEnv?.AudioWorkletRegister?.registeringProcessors || new WeakMap();
 export const resolves: Record<string, ((value?: void | PromiseLike<void>) => void)[]> = window.jspatcherEnv?.AudioWorkletRegister?.resolves || {};
@@ -54,4 +53,3 @@ export default class AudioWorkletRegister {
 
 if (!window.jspatcherEnv) window.jspatcherEnv = { AudioWorkletRegister } as any;
 if (!window.jspatcherEnv.AudioWorkletRegister) (window.jspatcherEnv as any).AudioWorkletRegister = AudioWorkletRegister;
-

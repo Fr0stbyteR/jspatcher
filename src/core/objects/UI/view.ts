@@ -1,7 +1,7 @@
 import UIObject from "./Base";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { TMeta, TPropsMeta } from "../../types";
-import { Bang, isBang } from "../Base";
+import { isBang } from "../Base";
 
 export class ViewUI extends DOMUI<view> {
     state: DOMUIState = { ...this.state, children: this.object.state.children, containerProps: this.object.getProp("containerProps") };

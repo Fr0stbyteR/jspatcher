@@ -277,7 +277,7 @@ export interface LiveGainState extends LiveObjectState {
     analyserNode: TemporalAnalyserNode;
     bypassNode: GainNode;
     gainNode: GainNode;
-    $requestTimer: number
+    $requestTimer: number;
 }
 
 export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undefined, number, string, number[]], [number], LiveGainProps, LiveGainUIState> {

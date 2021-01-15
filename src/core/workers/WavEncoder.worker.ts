@@ -7,4 +7,5 @@ class WavEncoderWorker extends ProxyWorker<IWavEncoderWorker> {
         return WavEncoder.encode(audioBuffer, options);
     }
 }
+// eslint-disable-next-line no-new
 new WavEncoderWorker();

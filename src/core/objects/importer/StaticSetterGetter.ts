@@ -1,4 +1,4 @@
-import { Bang, isBang } from "../Base";
+import { isBang } from "../Base";
 import { SetterGetter } from "./SetterGetter";
 import { StaticPropertyUI } from "./StaticProperty";
 import { TMeta } from "../../types";

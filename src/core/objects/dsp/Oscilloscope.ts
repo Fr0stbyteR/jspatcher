@@ -1,6 +1,7 @@
 import * as Color from "color-js";
 import { CanvasUI } from "../BaseUI";
-import { SpectralAnalyserRegister, SpectralAnalyserNode, TWindowFunction } from "./AudioWorklet/SpectralAnalyser";
+import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
+import { TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
 import { TMeta, TPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
 import { Bang, isBang } from "../Base";
@@ -64,7 +65,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         const left = 0;
         const bottom = 0;
 
-        const { estimatedFreq, buffer } = await this.object.state.node.gets({ estimatedFreq: true, buffer: true });
+        const { estimatedFreq, buffer } = await this.object.state.node.gets("estimatedFreq", "buffer");
         const { sampleRate } = this.object.audioCtx;
 
         // Background
@@ -351,8 +352,8 @@ export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, Osci
             }
         });
         this.on("postInit", async () => {
-            await SpectralAnalyserRegister.register(this.audioCtx.audioWorklet);
-            this.state.node = new SpectralAnalyserRegister.Node(this.audioCtx);
+            await SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
+            this.state.node = new SpectralAnalyserNode(this.audioCtx);
             const { parameters } = this.state.node;
             this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
             this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);

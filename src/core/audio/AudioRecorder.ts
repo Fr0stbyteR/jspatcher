@@ -181,7 +181,7 @@ export default class AudioRecorder {
             }
         }
         const audio = this.audio.pick(this.$start, this.$, true);
-        this.editor.audio.emit("recorded", { range: (this.inPlace || this.overwrittenAudio) ? [this.$start, this.$] : undefined, cursor: (this.inPlace || this.overwrittenAudio) ? undefined : this.$start,audio, oldAudio: this.overwrittenAudio });
+        this.editor.audio.emit("recorded", { range: (this.inPlace || this.overwrittenAudio) ? [this.$start, this.$] : undefined, cursor: (this.inPlace || this.overwrittenAudio) ? undefined : this.$start, audio, oldAudio: this.overwrittenAudio });
         this.editor.setSelRange([this.$start, this.$]);
     }
 }

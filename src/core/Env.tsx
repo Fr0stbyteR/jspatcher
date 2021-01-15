@@ -109,7 +109,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
             hueOffset: 0,
             seperatorColor: "grey",
             cursorColor: "rgba(191, 0, 0)"
-        },
+        }
     };
     set options(options: EnvOptions) {
         const oldOptions = this._options;
