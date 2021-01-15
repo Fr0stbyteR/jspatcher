@@ -1045,4 +1045,5 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     serialize() {
         return new Blob([this.toString()]).arrayBuffer();
     }
+    onUiResized() {}
 }

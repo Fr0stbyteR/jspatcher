@@ -29,6 +29,7 @@ export interface PatcherAudioEventMap {
     "paste": never;
     "deleteSelected": never;
     "selectAll": never;
+    "uiResized": never;
 }
 
 export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
@@ -375,5 +376,8 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     }
     async deleteSelected() {
         this.emit("deleteSelected");
+    }
+    onUiResized() {
+        this.emit("uiResized");
     }
 }

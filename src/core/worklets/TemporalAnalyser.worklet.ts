@@ -143,7 +143,7 @@ class TemporalAnalyserProcessor extends AudioWorkletProxyProcessor<ITemporalAnal
     }
     destroy() {
         this.destroyed = true;
-        this.port.close();
+        this._disposed = true;
     }
     private _windowSize = 1024;
     get windowSize() {

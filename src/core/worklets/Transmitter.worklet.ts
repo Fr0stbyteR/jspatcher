@@ -28,7 +28,7 @@ class TransmitterProcessor extends AudioWorkletProxyProcessor<ITransmitterProces
     }
     destroy() {
         this.destroyed = true;
-        this.port.close();
+        this._disposed = true;
     }
     get windowSize() {
         return this._windowSize;

@@ -90,4 +90,5 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
         const range = this.editor.getModel().getFullModelRange();
         this.editor.setSelection(range);
     }
+    onUiResized() {}
 }

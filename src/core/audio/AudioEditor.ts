@@ -99,6 +99,7 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
     handleSelectAll = () => this.setSelRangeToAll();
     handleDeleteSelected = () => this.delete();
     handleDestroy = () => this.destroy();
+    handleUiResized = () => this.emit("uiResized");
 
     constructor(audioIn: PatcherAudio) {
         super();
@@ -115,6 +116,7 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         this.audio.on("paste", this.handlePaste);
         this.audio.on("selectAll", this.handleSelectAll);
         this.audio.on("deleteSelected", this.handleDeleteSelected);
+        this.audio.on("uiResized", this.handleUiResized);
         this.audio.on("destroy", this.handleDestroy);
         this.player = new AudioPlayer(this);
         this.recorder = new AudioRecorder(this);

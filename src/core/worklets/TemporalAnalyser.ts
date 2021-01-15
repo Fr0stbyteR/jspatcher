@@ -13,7 +13,7 @@ export default class TemporalAnalyserNode extends AudioWorkletProxyNode<ITempora
         const _destroy = this.destroy;
         this.destroy = async () => {
             await _destroy.call(this);
-            this.port.close();
+            this._disposed = true;
         };
     }
 }

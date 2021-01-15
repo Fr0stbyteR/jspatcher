@@ -49,11 +49,13 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
         editor.audio.on("setAudio", this.handleAudio);
         this.setState({ editorReady: editor.isReady });
     };
+    handleResize = () => this.props.audio.onUiResized();
     componentDidMount() {
         this.props.env.on("options", this.handleEnvOptions);
         const { editor, editorReady } = this.state;
         if (!editorReady) editor.init();
         editor.on("ready", this.handleEditorReady);
+        window.addEventListener("resize", this.handleResize);
     }
     async componentWillUnmount() {
         this.props.env.off("options", this.handleEnvOptions);
@@ -64,6 +66,7 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
             editor.audio.off("setAudio", this.handleAudio);
             await editor.destroy();
         }
+        window.removeEventListener("resize", this.handleResize);
     }
     render() {
         return this.state.editorReady

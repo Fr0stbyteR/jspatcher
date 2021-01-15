@@ -255,7 +255,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
     }
     destroy() {
         this.destroyed = true;
-        this.port.close();
+        this._disposed = true;
     }
     /**
      * Total FFT frames in fftWindow

@@ -14,7 +14,7 @@ export default class TransmitterNode extends AudioWorkletProxyNode<ITransmitterN
         const _destroy = this.destroy;
         this.destroy = async () => {
             await _destroy.call(this);
-            this.port.close();
+            this._disposed = true;
         };
     }
     setBuffer({ buffer, $total }: { buffer: Float32Array[]; $total: number }) {

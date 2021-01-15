@@ -71,6 +71,7 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                     if (this.state.active === TPanels.None) this.setState({ active: panel });
                     this.refDivPane.current.style.width = width + "px";
                 }
+                this.state.instance?.onUiResized();
             }
         };
         const handleMouseUp = (e: MouseEvent) => {

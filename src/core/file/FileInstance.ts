@@ -126,6 +126,9 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     async selectAll() {
         throw new Error("Not implemented.");
     }
+    onUiResized() {
+        throw new Error("Not implemented.");
+    }
     async save() {
         if (this.isTemporary) throw new Error("Cannot save temporary file");
         if (this.isReadonly) throw new Error("Cannot save readonly file");

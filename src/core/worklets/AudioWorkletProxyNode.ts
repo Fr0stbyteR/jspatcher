@@ -1,5 +1,3 @@
-// import { AudioWorkletNode, TContext, IAudioWorklet } from "standardized-audio-context";
-
 import { TypedMessageEvent, MessagePortResponse } from "./TypedAudioWorklet";
 import { AudioWorkletProxyNode } from "./AudioWorkletProxyNode.types";
 
@@ -7,10 +5,15 @@ const Node = class extends AudioWorkletNode {
     static get fnNames(): string[] {
         return [];
     }
+    _disposed = false;
     constructor(context: AudioContext, name: string, options?: AudioWorkletNodeOptions) {
         super(context, name, options);
         const resolves: Record<number, ((...args: any[]) => any)> = {};
         const rejects: Record<number, ((...args: any[]) => any)> = {};
+        const handleDisposed = () => {
+            this.port.removeEventListener("message", handleMessage);
+            this.port.close();
+        }
         const handleMessage = async (e: TypedMessageEvent) => {
             const { id, call, args, value, error } = e.data;
             if (call) {
@@ -21,6 +24,7 @@ const Node = class extends AudioWorkletNode {
                     r.error = e;
                 }
                 this.port.postMessage(r);
+                if (this._disposed) handleDisposed();
             } else {
                 if (error) {
                     if (rejects[id]) rejects[id](error);
