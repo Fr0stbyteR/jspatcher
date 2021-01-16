@@ -148,7 +148,7 @@ export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
                         "spread"
                     ] as (keyof SpectralAnalysis)[];
                     const gets: (keyof SpectralAnalysis)[] = [];
-                    extractorKeys.forEach(key => {
+                    extractorKeys.forEach((key) => {
                         if (this.getProp(key)) gets.push(key);
                     });
                     const got = await this.state.node.gets(...gets);

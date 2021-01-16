@@ -52,7 +52,7 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
     handleResize = () => this.props.audio.onUiResized();
     handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
         if (instance === this.props.audio) this.handleResize();
-    }
+    };
     componentDidMount() {
         this.props.env.on("options", this.handleEnvOptions);
         this.props.env.on("activeInstance", this.handleActiveInstance);

@@ -13,7 +13,7 @@ const Node = class extends AudioWorkletNode {
         const handleDisposed = () => {
             this.port.removeEventListener("message", handleMessage);
             this.port.close();
-        }
+        };
         const handleMessage = async (e: TypedMessageEvent) => {
             const { id, call, args, value, error } = e.data;
             if (call) {

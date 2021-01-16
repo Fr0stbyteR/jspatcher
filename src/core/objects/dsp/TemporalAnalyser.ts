@@ -75,7 +75,7 @@ export class TemporalAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [
                         "absMax"
                     ] as (keyof TemporalAnalysis)[];
                     const gets: (keyof TemporalAnalysis)[] = [];
-                    extractorKeys.forEach(key => {
+                    extractorKeys.forEach((key) => {
                         if (this.getProp(key)) gets.push(key);
                     });
                     const got = await this.state.node.gets(...gets);

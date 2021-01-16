@@ -18,6 +18,7 @@
             overflow-x: auto;
 
             & .editor-container-tab {
+                position: relative;
                 display: inline-flex;
                 cursor: pointer;
                 height: 34px;
