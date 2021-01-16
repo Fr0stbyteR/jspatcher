@@ -81,7 +81,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     }
     async init(data?: ArrayBuffer) {
         const { audioCtx } = this;
-        this.env.taskMgr.newTask(this, "Initializing Audio", async (onUpdate) => {
+        await this.env.taskMgr.newTask(this, "Initializing Audio", async (onUpdate) => {
             onUpdate("Decoding Audio...");
             if (data?.byteLength) {
                 const audioBuffer = await audioCtx.decodeAudioData(data);

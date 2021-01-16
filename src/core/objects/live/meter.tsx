@@ -25,14 +25,14 @@ export interface LiveMeterProps {
     overloadColor: string;
 }
 interface LiveMeterUIState extends Omit<LiveMeterProps, "thresholdLinear" | "thresholdDB" | "windowSize" | "speedLim">, CanvasUIState {
-    value: number[];
+    levels: number[];
 }
 export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
     state: LiveMeterUIState = {
         ...this.state,
-        value: []
+        levels: this.object.state.levels
     };
-    values: number[] = [];
+    levels: number[] = [];
     maxValues: number[] = [];
     maxTimer: number;
     paint() {
@@ -41,7 +41,7 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
             // height,
             active,
             mode,
-            value,
+            levels,
             min,
             max,
             orientation,
@@ -59,24 +59,24 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
         let [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
 
-        this.values = value.slice();
-        if (this.values.length === 0) this.values = [min];
-        if (this.values.find((v, i) => typeof this.maxValues[i] === "undefined" || v > this.maxValues[i])) {
-            this.maxValues = [...this.values];
+        this.levels = levels.slice();
+        if (this.levels.length === 0) this.levels = [min];
+        if (this.levels.find((v, i) => typeof this.maxValues[i] === "undefined" || v > this.maxValues[i])) {
+            this.maxValues = [...this.levels];
             if (this.maxTimer) window.clearTimeout(this.maxTimer);
             this.maxTimer = window.setTimeout(() => {
-                this.maxValues = [...this.values];
+                this.maxValues = [...this.levels];
                 this.maxTimer = undefined;
                 this.schedulePaint();
             }, 1000);
-        } else if (this.values.find((v, i) => v < this.maxValues[i]) && typeof this.maxTimer === "undefined") {
+        } else if (this.levels.find((v, i) => v < this.maxValues[i]) && typeof this.maxTimer === "undefined") {
             this.maxTimer = window.setTimeout(() => {
-                this.maxValues = [...this.values];
+                this.maxValues = [...this.levels];
                 this.maxTimer = undefined;
                 this.schedulePaint();
             }, 1000);
         }
-        const channels = this.values.length;
+        const channels = this.levels.length;
         const clipValue = +(mode === "linear");
         if (orientation === "vertical") {
             ctx.save();
@@ -84,18 +84,18 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
             ctx.rotate(-Math.PI * 0.5);
             [height, width] = [width, height];
         }
-        const $height = (height - channels - 1) / this.values.length;
+        const $height = (height - channels - 1) / this.levels.length;
         ctx.fillStyle = bgColor;
         if (min >= clipValue || clipValue >= max) {
             const fgColor = min >= clipValue ? active ? overloadColor : inactiveWarmColor : active ? coldColor : inactiveColdColor;
             let $top = 0;
-            this.values.forEach((v) => {
+            this.levels.forEach((v) => {
                 if (v < max) ctx.fillRect(0, $top, width, $height);
                 $top += $height + 1;
             });
             $top = 0;
             ctx.fillStyle = fgColor;
-            this.values.forEach((v, i) => {
+            this.levels.forEach((v, i) => {
                 const distance = LiveUI.getDistance({ type: "float", value: v, min, max, exponent: 0 });
                 if (distance > 0) ctx.fillRect(0, $top, distance * width, $height);
                 const histMax = this.maxValues[i];
@@ -116,14 +116,14 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
             gradient.addColorStop(hotStop / width, active ? hotColor : inactiveWarmColor);
             gradient.addColorStop(1, active ? overloadColor : inactiveWarmColor);
             let $top = 0;
-            this.values.forEach((v) => {
+            this.levels.forEach((v) => {
                 if (v < clipValue) ctx.fillRect(0, $top, warmStop, $height);
                 if (v < max) ctx.fillRect(hotStop, $top, clip, $height);
                 $top += $height + 1;
             });
             $top = 0;
             ctx.fillStyle = gradient;
-            this.values.forEach((v, i) => {
+            this.levels.forEach((v, i) => {
                 const distance = LiveUI.getDistance({ type: "float", value: v, min, max, exponent: 0 });
                 if (distance > 0) ctx.fillRect(0, $top, Math.min(warmStop, distance * width), $height);
                 if (distance > clipDistance) ctx.fillRect(hotStop, $top, Math.min(clip, (distance - clipDistance) * width), $height);
@@ -142,6 +142,7 @@ export class LiveMeterUI extends CanvasUI<LiveMeter, {}, LiveMeterUIState> {
 export interface LiveMeterState {
     node: TemporalAnalyserNode;
     $requestTimer: number;
+    levels: number[];
 }
 
 export class LiveMeter extends BaseObject<{}, LiveMeterState, [], [number[]], [], LiveMeterProps, LiveMeterUIState> {
@@ -261,7 +262,7 @@ export class LiveMeter extends BaseObject<{}, LiveMeterState, [], [number[]], []
         }
     };
     static UI = LiveMeterUI;
-    state: LiveMeterState = { node: undefined, $requestTimer: -1 };
+    state: LiveMeterState = { node: undefined, $requestTimer: -1, levels: [] };
     subscribe() {
         super.subscribe();
         const startRequest = () => {
@@ -274,7 +275,8 @@ export class LiveMeter extends BaseObject<{}, LiveMeterState, [], [number[]], []
                     const result = mode === "deciBel" ? absMax.map(v => atodb(v)) : absMax;
                     if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
                         this.outlet(0, result);
-                        this.updateUI({ value: result });
+                        this.setState({ levels: result });
+                        this.updateUI({ levels: result });
                         lastResult = result;
                     }
                 }

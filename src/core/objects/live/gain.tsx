@@ -18,7 +18,7 @@ class LiveGainUI extends LiveUI<LiveGain, LiveGainUIState> {
     static defaultSize: [number, number] = [120, 45];
     state: LiveGainUIState = {
         ...this.state,
-        levels: [],
+        levels: this.object.state.levels,
         inputBuffer: ""
     };
     className = "live-gain";
@@ -278,9 +278,10 @@ export interface LiveGainState extends LiveObjectState {
     bypassNode: GainNode;
     gainNode: GainNode;
     $requestTimer: number;
+    levels: number[];
 }
 
-export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undefined, number, string, number[]], [number], LiveGainProps, LiveGainUIState> {
+export class LiveGain extends LiveObject<{}, LiveGainState, [number | Bang, number], [undefined, number, string, number[]], [number], LiveGainProps, LiveGainUIState> {
     static description = "Gain slider and monitor";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -519,7 +520,8 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
         analyserNode: undefined,
         gainNode: this.audioCtx.createGain(),
         bypassNode: this.audioCtx.createGain(),
-        $requestTimer: -1
+        $requestTimer: -1,
+        levels: []
     };
     inletAudioConnections = [{ node: this.state.bypassNode, index: 0 }];
     outletAudioConnections = [{ node: this.state.gainNode, index: 0 }];
@@ -535,6 +537,7 @@ export class LiveGain extends LiveObject<{}, {}, [number | Bang, number], [undef
                     const result = mode === "deciBel" ? absMax.map(v => atodb(v)) : absMax;
                     if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
                         this.outlet(3, result);
+                        this.setState({ levels: result });
                         this.updateUI({ levels: result });
                         lastResult = result;
                     }
