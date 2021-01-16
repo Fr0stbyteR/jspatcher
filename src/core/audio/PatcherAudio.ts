@@ -81,14 +81,18 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap> {
     }
     async init(data?: ArrayBuffer) {
         const { audioCtx } = this;
-        if (data?.byteLength) {
-            const audioBuffer = await audioCtx.decodeAudioData(data);
-            this.audioBuffer = Object.setPrototypeOf(audioBuffer, OperableAudioBuffer.prototype);
-        } else {
-            this.audioBuffer = new OperableAudioBuffer({ length: 1, numberOfChannels: 1, sampleRate: audioCtx.sampleRate });
-        }
-        this.waveform = new Waveform(this);
-        await this.waveform.generate();
+        this.env.taskMgr.newTask(this, "Initializing Audio", async (onUpdate) => {
+            onUpdate("Decoding Audio...");
+            if (data?.byteLength) {
+                const audioBuffer = await audioCtx.decodeAudioData(data);
+                this.audioBuffer = Object.setPrototypeOf(audioBuffer, OperableAudioBuffer.prototype);
+            } else {
+                this.audioBuffer = new OperableAudioBuffer({ length: 1, numberOfChannels: 1, sampleRate: audioCtx.sampleRate });
+            }
+            onUpdate("Generating Waveform...");
+            this.waveform = new Waveform(this);
+            await this.waveform.generate();
+        });
         this.emit("ready");
     }
     async initWithOptions(options: Partial<AudioBufferOptions>) {

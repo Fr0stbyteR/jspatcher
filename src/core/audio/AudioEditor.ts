@@ -428,8 +428,8 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         this.audio.off("selectAll", this.handleSelectAll);
         this.audio.off("deleteSelected", this.handleDeleteSelected);
         this.audio.off("destroy", this.handleDestroy);
-        await this.stopRecord();
-        this.stop();
+        if (this.state.recording) await this.stopRecord();
+        if (this.state.playing !== "stopped") this.stop();
         for (let i = 0; i < this.state.plugins.length; i++) {
             this.removePlugin(i);
         }

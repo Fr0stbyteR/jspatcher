@@ -134,7 +134,7 @@ export default class AudioPlayer {
         this.postFxGainNode.connect(this.postAnalyserNode);
     }
     async destroy() {
-        this.stop();
+        if (this.playing) this.stop();
         await this.postAnalyserNode.destroy();
     }
     getCurrentSample() {

@@ -32,7 +32,7 @@ export default class AudioRecorder {
     }
     async destroy() {
         navigator.mediaDevices.removeEventListener("devicechange", this.handleDeviceChange);
-        await this.stop();
+        if (this.recording) await this.stop();
         await this.transmitter.destroy();
     }
     handleDeviceChange = async () => {
