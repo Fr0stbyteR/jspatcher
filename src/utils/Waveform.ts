@@ -5,8 +5,20 @@ import WaveformWorker from "../core/workers/WaveformWorker";
 export default class Waveform implements WaveformData {
     static stepsFactor = 16;
     [step: number]: WaveformStepData;
-    worker: WaveformWorker;
-    private readonly patcherAudio: PatcherAudio;
+    private readonly worker: WaveformWorker;
+    private _patcherAudio: PatcherAudio;
+    get patcherAudio() {
+        return this._patcherAudio;
+    }
+    set patcherAudio(audio: PatcherAudio) {
+        this._patcherAudio = audio;
+    }
+    get audioBuffer() {
+        return this.patcherAudio.audioBuffer;
+    }
+    get length() {
+        return this.audioBuffer.length;
+    }
 
     constructor(patcherAudioIn: PatcherAudio, waveformDataIn?: WaveformData) {
         this.worker = patcherAudioIn.env.waveformWorker;
@@ -22,12 +34,6 @@ export default class Waveform implements WaveformData {
                 newStepData[c] = { min: min.slice(), max: max.slice() };
             }
         });
-    }
-    get audioBuffer() {
-        return this.patcherAudio.audioBuffer;
-    }
-    get length() {
-        return this.audioBuffer.length;
     }
     clone() {
         return new Waveform(this.patcherAudio, this);

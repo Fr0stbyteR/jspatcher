@@ -69,7 +69,7 @@ export default class EditorHorizontalRulerUI extends React.PureComponent<P> {
         } = this.props;
         const { ctx } = this;
         const [width, height] = this.fullSize();
-        const channels = editor.audio.numberOfChannels;
+        const channels = editor.numberOfChannels;
         const channelHeight = height / channels;
 
         ctx.clearRect(0, 0, width, height);

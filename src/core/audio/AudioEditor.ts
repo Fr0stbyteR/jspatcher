@@ -2,7 +2,6 @@ import { WebAudioModule } from "wamsdk/src/api";
 import PatcherAudio from "./PatcherAudio";
 import { TAudioPlayingState } from "../types";
 import { dbtoa } from "../../utils/math";
-import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import AudioPlayer from "./AudioPlayer";
 import AudioRecorder from "./AudioRecorder";
 
@@ -37,10 +36,9 @@ export interface AudioEditorState {
     postFxGain: number;
 }
 
-export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> {
-    readonly audio: PatcherAudio;
-    readonly player: AudioPlayer;
-    readonly recorder: AudioRecorder;
+export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
+    readonly player = new AudioPlayer(this);
+    readonly recorder = new AudioRecorder(this);
     readonly state: AudioEditorState = {
         playing: "stopped",
         monitoring: false,
@@ -57,9 +55,6 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         postFxGain: 0
     };
 
-    get env() {
-        return this.audio.env;
-    }
     get clipboard() {
         return this.env.audioClipboard;
     }
@@ -67,10 +62,9 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         this.env.audioClipboard = audio;
     }
 
-    isReady = false;
     handleSetAudio = () => {
         const { cursor, selRange, viewRange } = this.state;
-        const { length, numberOfChannels } = this.audio;
+        const { length, numberOfChannels } = this;
         if (cursor > length) this.setCursor(length);
         if (selRange && selRange[1] > length) this.setSelRange(selRange);
         if (viewRange[1] > length) this.setViewRange(viewRange);
@@ -81,8 +75,6 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
             this.emit("enabledChannels", enabledChannels);
         }
     };
-    handleCursor = (cursor: number) => this.setCursor(cursor);
-    handleSelRange = (range: [number, number]) => this.setSelRange(range);
     handlePlayerEnded = (cursor: number) => {
         const playing: TAudioPlayingState = "stopped";
         this.setState({ playing });
@@ -93,43 +85,22 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         await this.recorder.newSearch(deviceId);
         if (this.state.monitoring) this.player.startMonitoring();
     };
-    handleCopy = () => this.copy();
-    handleCut = () => this.cut();
-    handlePaste = () => this.paste();
-    handleSelectAll = () => this.setSelRangeToAll();
-    handleDeleteSelected = () => this.delete();
-    handleDestroy = () => this.destroy();
-    handleUiResized = () => this.emit("uiResized");
-
-    constructor(audioIn: PatcherAudio) {
-        super();
-        this.audio = audioIn;
-        this.setState({
-            viewRange: [0, audioIn.length],
-            enabledChannels: new Array(audioIn.numberOfChannels).fill(true)
-        });
-        this.audio.on("setAudio", this.handleSetAudio);
-        this.audio.on("cursor", this.handleCursor);
-        this.audio.on("selRange", this.handleSelRange);
-        this.audio.on("copy", this.handleCopy);
-        this.audio.on("cut", this.handleCut);
-        this.audio.on("paste", this.handlePaste);
-        this.audio.on("selectAll", this.handleSelectAll);
-        this.audio.on("deleteSelected", this.handleDeleteSelected);
-        this.audio.on("uiResized", this.handleUiResized);
-        this.audio.on("destroy", this.handleDestroy);
-        this.player = new AudioPlayer(this);
-        this.recorder = new AudioRecorder(this);
+    onUiResized() {
+        this.emit("uiResized");
     }
-    async init() {
-        const init = async () => {
-            await this.player.init();
-            await this.recorder.init();
-            this.isReady = true;
-            this.emit("ready");
-        };
-        if (this.audio.isReady) await init();
-        else this.audio.on("ready", init);
+    handlePostInit = async () => {
+        this.setState({
+            viewRange: [0, this.length],
+            enabledChannels: new Array(this.numberOfChannels).fill(true)
+        });
+        this.on("setAudio", this.handleSetAudio);
+        await this.player.init();
+        await this.recorder.init();
+        this._isReady = true;
+    };
+    constructor(...args: ConstructorParameters<typeof PatcherAudio>) {
+        super(...args);
+        this.on("postInit", this.handlePostInit);
     }
     emitPluginsChanged() {
         const { plugins, pluginsEnabled, pluginsShowing } = this.state;
@@ -143,7 +114,7 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
     }
     zoomH(refIn: number, factor: number) { // factor = 1 as zoomIn, -1 as zoomOut
         const { viewRange } = this.state;
-        const { length } = this.audio;
+        const { length } = this;
         const [viewStart, viewEnd] = viewRange;
         const viewLength = viewEnd - viewStart;
         const minRange = Math.min(length, 5);
@@ -163,7 +134,7 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
     }
     scrollH(speed: number) { // spped = 1 as one full viewRange
         const { viewRange } = this.state;
-        const { length } = this.audio;
+        const { length } = this;
         const [viewStart, viewEnd] = viewRange;
         const viewLength = viewEnd - viewStart;
         const deltaSamples = viewLength * speed;
@@ -191,7 +162,7 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
     setCursor(cursorIn: number, fromPlayer?: boolean) {
         const shouldReplay = !fromPlayer && this.state.playing === "playing";
         if (shouldReplay) this.stop();
-        const { length } = this.audio.audioBuffer;
+        const { length } = this.audioBuffer;
         const cursor = Math.max(0, Math.min(length, Math.round(cursorIn)));
         this.setState({ cursor });
         this.emit("cursor", cursor);
@@ -203,7 +174,7 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
             this.emit("selRange", null);
             return;
         }
-        const { length } = this.audio.audioBuffer;
+        const { length } = this.audioBuffer;
         let [start, end] = range;
         if (end < start) [start, end] = [end, start];
         start = Math.max(0, Math.min(length - 1, Math.round(start)));
@@ -219,14 +190,20 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         this.emit("cursor", start);
     }
     setSelRangeToAll() {
-        const { length } = this.audio.audioBuffer;
+        const { length } = this.audioBuffer;
         const selRange: [number, number] = [0, length];
         this.setState({ selRange });
         this.emit("selRange", selRange);
         this.emitSelRangeToPlay();
     }
+    async selectAll() {
+        this.setSelRangeToAll();
+    }
+    async deleteSelected() {
+        this.delete();
+    }
     setViewRange(range: [number, number]) {
-        const { length } = this.audio;
+        const { length } = this;
         let [start, end] = range;
         if (end < start) [start, end] = [end, start];
         const minRange = Math.min(length, 5);
@@ -237,100 +214,99 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         this.emit("viewRange", viewRange);
     }
     setViewRangeToAll() {
-        const { length } = this.audio;
+        const { length } = this;
         const viewRange: [number, number] = [0, length];
         this.setState({ viewRange });
         this.emit("viewRange", viewRange);
     }
 
-    cut() {
+    async cut() {
         const { selRange } = this.state;
         if (!selRange) return;
         const [selStart, selEnd] = selRange;
         this.setSelRange(null);
-        this.env.audioClipboard = this.audio.removeFromRange(selStart, selEnd);
+        this.env.audioClipboard = await this.removeFromRange(selStart, selEnd);
         const oldAudio = this.env.audioClipboard;
-        this.audio.emit("cutEnd", { range: [selStart, selEnd], oldAudio });
+        this.emit("cutEnd", { range: [selStart, selEnd], oldAudio });
     }
-    copy() {
+    async copy() {
         const { selRange } = this.state;
         if (!selRange) return;
         const [selStart, selEnd] = selRange;
-        this.env.audioClipboard = this.audio.pick(selStart, selEnd, true);
+        this.env.audioClipboard = await this.pick(selStart, selEnd, true);
     }
-    paste() {
+    async paste() {
         const { audioClipboard } = this.env;
         if (!audioClipboard) return;
         const { cursor, selRange } = this.state;
         if (selRange) {
             const [selStart, selEnd] = selRange;
-            const oldAudio = this.audio.pasteToRange(audioClipboard, selStart, selEnd);
-            this.audio.emit("pasted", { range: [selStart, selEnd], audio: audioClipboard, oldAudio });
+            const oldAudio = await this.pasteToRange(audioClipboard, selStart, selEnd);
+            this.emit("pasted", { range: [selStart, selEnd], audio: audioClipboard, oldAudio });
         } else {
-            this.audio.insertToCursor(audioClipboard, cursor);
-            this.audio.emit("pasted", { cursor, audio: audioClipboard });
+            this.insertToCursor(audioClipboard, cursor);
+            this.emit("pasted", { cursor, audio: audioClipboard });
         }
     }
-    delete() {
+    async delete() {
         const { selRange } = this.state;
         if (!selRange) return;
         const [selStart, selEnd] = selRange;
         this.setSelRange(null);
-        const oldAudio = this.audio.removeFromRange(selStart, selEnd);
-        this.audio.emit("deleted", { range: [selStart, selEnd], oldAudio });
+        const oldAudio = await this.removeFromRange(selStart, selEnd);
+        this.emit("deleted", { range: [selStart, selEnd], oldAudio });
     }
-    reverse() {
+    async reverse() {
         const { selRange } = this.state;
-        const [selStart, selEnd] = selRange || [0, this.audio.length];
-        const audio = this.audio.pick(selStart, selEnd, true);
+        const [selStart, selEnd] = selRange || [0, this.length];
+        const audio = await this.pick(selStart, selEnd, true);
         audio.reverse();
-        const oldAudio = this.audio.pasteToRange(audio, selStart, selEnd);
-        this.audio.emit("reversed", { range: [0, this.audio.length], audio, oldAudio });
+        const oldAudio = await this.pasteToRange(audio, selStart, selEnd);
+        this.emit("reversed", { range: [0, this.length], audio, oldAudio });
     }
-    inverse() {
+    async inverse() {
         const { selRange } = this.state;
-        const [selStart, selEnd] = selRange || [0, this.audio.length];
-        const audio = this.audio.pick(selStart, selEnd, true);
+        const [selStart, selEnd] = selRange || [0, this.length];
+        const audio = await this.pick(selStart, selEnd, true);
         audio.inverse();
-        const oldAudio = this.audio.pasteToRange(audio, selStart, selEnd);
-        this.audio.emit("inversed", { range: [selStart, selEnd], audio, oldAudio });
+        const oldAudio = await this.pasteToRange(audio, selStart, selEnd);
+        this.emit("inversed", { range: [selStart, selEnd], audio, oldAudio });
     }
-    fade(gain: number) {
+    async fade(gain: number) {
         const { selRange, enabledChannels } = this.state;
         if (!selRange) return;
-        this.audio.fade(gain, ...selRange, enabledChannels);
+        await super.fade(gain, ...selRange, enabledChannels);
     }
-    fadeIn(length: number, exponent: number) {
+    async fadeIn(length: number, exponent: number) {
         const { enabledChannels } = this.state;
-        this.audio.fadeIn(length, exponent, enabledChannels);
+        await super.fadeIn(length, exponent, enabledChannels);
     }
-    fadeOut(length: number, exponent: number) {
+    async fadeOut(length: number, exponent: number) {
         const { enabledChannels } = this.state;
-        this.audio.fadeOut(length, exponent, enabledChannels);
+        await super.fadeOut(length, exponent, enabledChannels);
     }
     async resample(to: number) {
         if (to <= 0) return;
-        const { audio: oldAudio } = this;
+        const oldAudio = await super.clone();
         if (oldAudio.sampleRate === to) return;
-        const audio = await this.env.taskMgr.newTask(this, "Resampling Audio...", () => this.audio.render(to));
-        this.audio.setAudio(audio);
-        this.audio.emit("resampled", { audio, oldAudio });
+        const audio = await this.render(to);
+        this.setAudio(audio);
+        this.emit("resampled", { audio, oldAudio });
     }
     async remixChannels(mix: number[][]) {
-        const { audio: oldAudio } = this;
-        const audio = await this.env.taskMgr.newTask(this, "Remixing Audio...", () => this.audio.render(undefined, mix));
-        this.audio.setAudio(audio);
-        this.audio.emit("remixed", { audio, oldAudio });
+        const oldAudio = await super.clone();
+        const audio = await this.render(undefined, mix);
+        this.setAudio(audio);
+        this.emit("remixed", { audio, oldAudio });
     }
     async applyPlugins(selected?: boolean) {
         const { selRange, plugins, pluginsEnabled, preFxGain, postFxGain } = this.state;
         if (plugins.every(p => !p || !pluginsEnabled.has(p))) return;
         if (selected && !selRange) return;
-        let { audio: oldAudio } = this;
-        if (selected) oldAudio = this.audio.pick(...selRange);
+        const oldAudio = selected ? await this.pick(...selRange) : await super.clone();
         const audio = await oldAudio.render(undefined, undefined, true, { plugins, pluginsEnabled, preFxGain, postFxGain });
-        if (selected) this.audio.pasteToRange(audio, ...selRange);
-        else this.audio.setAudio(audio);
+        if (selected) await this.pasteToRange(audio, ...selRange);
+        else this.setAudio(audio);
         plugins.forEach((p, i) => {
             if (!p) return;
             this.setPluginEnabled(i, false);
@@ -418,16 +394,8 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
     }
 
     async destroy() {
-        this.isReady = false;
-        this.audio.off("setAudio", this.handleSetAudio);
-        this.audio.off("cursor", this.handleCursor);
-        this.audio.off("selRange", this.handleSelRange);
-        this.audio.off("copy", this.handleCopy);
-        this.audio.off("cut", this.handleCut);
-        this.audio.off("paste", this.handlePaste);
-        this.audio.off("selectAll", this.handleSelectAll);
-        this.audio.off("deleteSelected", this.handleDeleteSelected);
-        this.audio.off("destroy", this.handleDestroy);
+        this._isReady = false;
+        this.off("setAudio", this.handleSetAudio);
         if (this.state.recording) await this.stopRecord();
         if (this.state.playing !== "stopped") this.stop();
         for (let i = 0; i < this.state.plugins.length; i++) {
@@ -435,5 +403,6 @@ export default class AudioEditor extends TypedEventEmitter<AudioEditorEventMap> 
         }
         await this.recorder.destroy();
         await this.player.destroy();
+        await super.destroy();
     }
 }

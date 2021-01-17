@@ -21,7 +21,7 @@ export default class AudioPlayer {
     offset: number;
     duration: number;
     get audioCtx() {
-        return this.editor.audio.audioCtx;
+        return this.editor.audioCtx;
     }
     get destination() {
         return this.audioCtx.destination;
@@ -152,7 +152,7 @@ export default class AudioPlayer {
     }
     play() {
         this.stop();
-        const { audio } = this.editor;
+        const audio = this.editor;
         const { cursor, selRange, enabledChannels, preFxGain, postFxGain, loop } = this.editor.state;
         const { sampleRate, numberOfChannels, audioBuffer } = audio;
         const offset = (selRange ? selRange[0] : cursor) / sampleRate;

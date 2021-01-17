@@ -231,7 +231,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
             seperatorColor,
             cursorColor
         } = audioDisplayOptions;
-        const { audioBuffer: buffer, waveform } = editor.audio;
+        const { audioBuffer: buffer, waveform } = editor;
         const { ctx } = this;
         const [width, height] = this.fullSize();
 
@@ -501,7 +501,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
         const parentRect = this.refCanvas.current.getBoundingClientRect();
         const rect = this.refDivSelRange.current.getBoundingClientRect();
         const curLeft = rect.left - parentRect.left;
-        const { length } = this.props.editor.audio;
+        const { length } = this.props.editor;
         const selLength = this.props.selRange[1] - this.props.selRange[0];
         this.refDivSelRange.current.style.cursor = "grabbing";
         const handleMouseMove = (e: MouseEvent) => {
@@ -601,17 +601,17 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
             e.preventDefault();
             if (this.refDivSelRange.current && (e.movementX || e.movementY)) {
                 const x = e.clientX;
-                const l = this.props.editor.audio.length;
+                const l = this.props.editor.length;
                 const fadeInTo = Math.max(0, Math.min(l, (x - offsetX - rect.left) / rect.width * l));
                 const fadeInExp = (e.clientY - originY) / 20;
                 this.setState({ fadeInTo, fadeInExp });
             }
         };
-        const handleMouseUp = (e: MouseEvent) => {
+        const handleMouseUp = async (e: MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
             const { fadeInTo: length, fadeInExp: exponent } = this.state;
-            if (length) this.props.editor.fadeIn(length, exponent);
+            if (length) await this.props.editor.fadeIn(length, exponent);
             this.setState({ fadeInTo: undefined });
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
@@ -630,18 +630,18 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
             e.preventDefault();
             if (this.refDivSelRange.current && (e.movementX || e.movementY)) {
                 const x = e.clientX;
-                const l = this.props.editor.audio.length;
+                const l = this.props.editor.length;
                 const fadeOutFrom = Math.max(0, Math.min(l, (x + offsetX - rect.left) / rect.width * l));
                 const fadeOutExp = (e.clientY - originY) / 20;
                 this.setState({ fadeOutFrom, fadeOutExp });
             }
         };
-        const handleMouseUp = (e: MouseEvent) => {
+        const handleMouseUp = async (e: MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
             const { fadeOutFrom: from, fadeOutExp: exponent } = this.state;
-            const l = this.props.editor.audio.length;
-            if (typeof from === "number" && from !== l) this.props.editor.fadeOut(l - from, exponent);
+            const l = this.props.editor.length;
+            if (typeof from === "number" && from !== l) await this.props.editor.fadeOut(l - from, exponent);
             this.setState({ fadeOutFrom: undefined });
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
@@ -652,15 +652,15 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
     handleFadeAdjust = (gain: number) => {
         this.setState({ fade: gain });
     };
-    handleFadeChange = (gain: number) => {
-        if (gain) this.props.editor.fade(gain);
+    handleFadeChange = async (gain: number) => {
+        if (gain) await this.props.editor.fade(gain);
         this.setState({ fade: undefined });
     };
     render() {
         const { env, editor, audioUnit, viewRange, audioUnitOptions, selRange, cursor, audioDisplayOptions } = this.props;
         const { bgColor } = audioDisplayOptions;
-        const sampleRate = editor.audio.sampleRate ?? env.audioCtx.sampleRate;
-        const l = editor.audio.length || 0;
+        const sampleRate = editor.sampleRate ?? env.audioCtx.sampleRate;
+        const l = editor.length || 0;
         /*
         if (!this.props.editor.audio.audioBuffer) {
             return (

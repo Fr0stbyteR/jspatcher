@@ -37,7 +37,7 @@ export default {
         selection: "已选",
         view: "视图"
     },
-    ExportModal: {
+    AudioExportModal: {
         title: "导出",
         fileName: "文件名",
         type: "文件类型",

@@ -7,10 +7,11 @@ import History from "./History";
 import ProjectItem from "./ProjectItem";
 
 export interface FileInstanceEventMap {
-    "ready": FileInstance;
+    "ready": never;
     "changed": never;
     "dirty": boolean;
     "saved": never;
+    "locked": boolean;
     "destroy": never;
 }
 
@@ -58,6 +59,9 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     }
     get isDirty() {
         return this.history.isDirty;
+    }
+    get isLocked() {
+        return false;
     }
     get history(): History<EventMap> {
         return null;

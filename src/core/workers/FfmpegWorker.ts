@@ -17,7 +17,7 @@ export default class FfmpegWorker extends TypedEventEmitter<FfmpegWorkerEventMap
     isBusy = true;
     isReady = false;
     async init() {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             try {
                 const handleReady = () => {
                     this.off("ready", handleReady);

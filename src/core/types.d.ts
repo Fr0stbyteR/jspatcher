@@ -230,9 +230,6 @@ export interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherStat
     "loading": string[] | undefined;
     "ready": never;
     "unload": never;
-    "locked": boolean;
-    "presentation": boolean;
-    "showGrid": boolean;
     "create": RawPatcher;
     "delete": RawPatcher;
     "createBox": Box;

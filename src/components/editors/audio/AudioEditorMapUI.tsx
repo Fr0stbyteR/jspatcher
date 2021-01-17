@@ -75,7 +75,7 @@ export default class EditorMapUI extends React.PureComponent<P> {
             seperatorColor,
             cursorColor
         } = audioDisplayOptions;
-        const { audioBuffer: buffer, waveform, numberOfChannels } = editor.audio;
+        const { audioBuffer: buffer, waveform, numberOfChannels } = editor;
         const { ctx } = this;
         const [width, height] = this.fullSize();
 
@@ -193,7 +193,7 @@ export default class EditorMapUI extends React.PureComponent<P> {
         const parentRect = this.refCanvas.current.getBoundingClientRect();
         const rect = this.refDivViewRange.current.getBoundingClientRect();
         const curLeft = rect.left - parentRect.left;
-        const { length } = this.props.editor.audio;
+        const { length } = this.props.editor;
         const viewLength = this.props.viewRange[1] - this.props.viewRange[0];
         this.refDivViewRange.current.style.cursor = "grabbing";
         const handleMouseMove = (e: MouseEvent) => {
@@ -231,7 +231,7 @@ export default class EditorMapUI extends React.PureComponent<P> {
             e.preventDefault();
             if (this.refDivViewRange.current && e.movementX) {
                 const left = Math.max(0, Math.min(parentRect.width - curRight - 10, curLeft + (e.clientX - origin.x)));
-                const startSample = left / parentRect.width * this.props.editor.audio.length;
+                const startSample = left / parentRect.width * this.props.editor.length;
                 this.props.editor.setViewRange([startSample, this.props.viewRange[1]]);
             }
         };
@@ -258,7 +258,7 @@ export default class EditorMapUI extends React.PureComponent<P> {
             e.preventDefault();
             if (this.refDivViewRange.current && e.movementX) {
                 const width = Math.max(10, Math.min(parentRect.width - curLeft, curWidth - (origin.x - e.clientX)));
-                const length = width / parentRect.width * this.props.editor.audio.length;
+                const length = width / parentRect.width * this.props.editor.length;
                 this.props.editor.setViewRange([this.props.viewRange[0], this.props.viewRange[0] + length]);
             }
         };
@@ -278,7 +278,7 @@ export default class EditorMapUI extends React.PureComponent<P> {
         }
         const origin = { x: e.clientX, y: e.clientY };
         const rect = e.currentTarget.getBoundingClientRect();
-        const ref = (origin.x - rect.left) / rect.width * this.props.editor.audio.length;
+        const ref = (origin.x - rect.left) / rect.width * this.props.editor.length;
         this.props.editor.zoomH(ref, e.deltaY < 0 ? 1 : -1);
     };
     handleClickSelectAll = () => this.props.editor.setViewRangeToAll();
@@ -298,7 +298,7 @@ export default class EditorMapUI extends React.PureComponent<P> {
         }
          */
         const { editor, viewRange, selRange } = this.props;
-        const { length } = editor.audio;
+        const { length } = editor;
         const [viewStart, viewEnd] = viewRange;
         const viewLeft = `${viewStart / length * 100}%`;
         const viewWidth = `${(viewEnd - viewStart) / length * 100}%`;

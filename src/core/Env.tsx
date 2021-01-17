@@ -13,6 +13,7 @@ import FileManager from "./FileMgr";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
+import FfmpegWorker from "./workers/FfmpegWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
 import FileInstance, { AnyFileInstance } from "./file/FileInstance";
@@ -44,6 +45,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly fileMgrWorker = new FileMgrWorker();
     readonly waveformWorker = new WaveformWorker();
     readonly wavEncoderWorker = new WavEncoderWorker();
+    readonly ffmpegWorker = new FfmpegWorker();
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();
     readonly browser = detectBrowserCore();
@@ -165,6 +167,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
                 const { providers } = await faustLangRegister(monacoEditor, this.faust);
                 this.faustDocs = providers.docs;
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
+            });
+            await this.taskMgr.newTask(this, "Loading ffmpeg...", async () => {
+                await this.ffmpegWorker.init();
             });
             await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);

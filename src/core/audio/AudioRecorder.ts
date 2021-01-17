@@ -10,7 +10,6 @@ export default class AudioRecorder {
     constraints: MediaTrackConstraintSet = { echoCancellation: false, noiseSuppression: false, autoGainControl: false };
     node: MediaStreamAudioSourceNode;
     transmitter: TransmitterNode;
-    audio: PatcherAudio;
     overwrittenAudio: PatcherAudio;
     recording = false;
     $: number;
@@ -18,7 +17,10 @@ export default class AudioRecorder {
     $end: number;
     inPlace: boolean;
     get audioCtx() {
-        return this.editor.audio.audioCtx;
+        return this.editor.audioCtx;
+    }
+    get audio() {
+        return this.editor;
     }
     constructor(editor: AudioEditor) {
         this.editor = editor;
@@ -122,8 +124,8 @@ export default class AudioRecorder {
     getConstraints(deviceId?: string): MediaTrackConstraintSet {
         return {
             deviceId,
-            sampleRate: this.editor.audio.sampleRate || this.audioCtx.sampleRate,
-            channelCount: this.editor.audio.numberOfChannels || undefined,
+            sampleRate: this.editor.sampleRate || this.audioCtx.sampleRate,
+            channelCount: this.editor.numberOfChannels || undefined,
             ...this.constraints
         };
     }
@@ -137,9 +139,8 @@ export default class AudioRecorder {
         if (!this.node) return false;
         this.node.connect(this.transmitter);
         if (!this.editor.player.monitoring) this.node.connect(this.editor.player.postAnalyserNode);
-        const { audio, state } = this.editor;
+        const { state, ctx, length, numberOfChannels, sampleRate } = this.editor;
         const { cursor, selRange } = state;
-        const { ctx, length, numberOfChannels, sampleRate } = audio;
         if (selRange) {
             const [$start, $end] = selRange;
             this.inPlace = true;
@@ -152,9 +153,8 @@ export default class AudioRecorder {
             this.$end = length;
             this.$ = cursor;
         }
-        this.audio = audio;
         const overwrittenBufferLength = this.$end - this.$start;
-        if (overwrittenBufferLength) this.overwrittenAudio = PatcherAudio.fromSilence(ctx, numberOfChannels, overwrittenBufferLength, sampleRate);
+        if (overwrittenBufferLength) this.overwrittenAudio = await PatcherAudio.fromSilence(ctx, numberOfChannels, overwrittenBufferLength, sampleRate);
         else this.overwrittenAudio = undefined;
         this.recording = true;
         await this.transmitter.reset();
@@ -167,21 +167,21 @@ export default class AudioRecorder {
         if (!this.editor.player.monitoring) this.node.disconnect(this.editor.player.postAnalyserNode);
         await this.transmitter.stop();
         if (!this.inPlace && this.$ > this.$end && this.$ < this.audio.length) {
-            const [audio] = this.audio.split(this.$);
+            const [audio] = await this.audio.split(this.$);
             this.audio.setAudio(audio);
             if (this.overwrittenAudio) this.overwrittenAudio.waveform.update();
         } else {
             if (this.overwrittenAudio) {
                 if (this.$ < this.$end) {
-                    const [audio] = this.overwrittenAudio.split(this.$ - this.$start);
-                    this.audio.setAudio(audio);
+                    const [audio] = await this.overwrittenAudio.split(this.$ - this.$start);
+                    this.overwrittenAudio.setAudio(audio);
                 } else {
                     this.overwrittenAudio.waveform.update();
                 }
             }
         }
-        const audio = this.audio.pick(this.$start, this.$, true);
-        this.editor.audio.emit("recorded", { range: (this.inPlace || this.overwrittenAudio) ? [this.$start, this.$] : undefined, cursor: (this.inPlace || this.overwrittenAudio) ? undefined : this.$start, audio, oldAudio: this.overwrittenAudio });
+        const audio = await this.audio.pick(this.$start, this.$, true);
+        this.editor.emit("recorded", { range: (this.inPlace || this.overwrittenAudio) ? [this.$start, this.$] : undefined, cursor: (this.inPlace || this.overwrittenAudio) ? undefined : this.$start, audio, oldAudio: this.overwrittenAudio });
         this.editor.setSelRange([this.$start, this.$]);
     }
 }

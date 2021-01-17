@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.1.1610733174157"
+    prefix: "0.0.1.1610911336634"
   });
   workbox.skipWaiting();
   workbox.clientsClaim();
@@ -265,6 +265,12 @@ define("./service-worker.js",['./workbox-11808712'], function (workbox) { 'use s
   }, {
     "url": "assets/ed49088eb627c1c0155d8b711767f15c.woff",
     "revision": "b55e385f24f0f9f724dac935fe292ecf"
+  }, {
+    "url": "deps/ffmpeg.js-audio/ffmpeg-audio.js",
+    "revision": "13b48111ac06afa7d52607a883de72b8"
+  }, {
+    "url": "deps/ffmpeg.js-audio/ffmpeg-worker-audio.js",
+    "revision": "3a5dfa433edc561d9017cd6e6b18dec7"
   }, {
     "url": "deps/gen2faust.lib",
     "revision": "6024187832c1ad7af33a5103e57bcfc8"

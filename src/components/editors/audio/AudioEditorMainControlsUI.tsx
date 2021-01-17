@@ -24,7 +24,7 @@ export default class AudioEditorMainControlsUI extends React.PureComponent<P> {
     }
     handleCursorChanged = (cursor: number) => this.props.editor.setCursor(cursor);
     cursorBeforePlay: number;
-    resumeAudioContext = () => this.props.editor.audio.audioCtx.resume();
+    resumeAudioContext = () => this.props.editor.audioCtx.resume();
     handleClickPlay = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.currentTarget.blur();
         this.resumeAudioContext();
@@ -71,7 +71,7 @@ export default class AudioEditorMainControlsUI extends React.PureComponent<P> {
     };
     render() {
         const { editor, audioUnit, audioUnitOptions, cursor, playing, loop, recording, monitoring } = this.props;
-        const sampleRate = editor.audio.sampleRate;
+        const sampleRate = editor.sampleRate;
         return (
             <div className="editor-main-controls">
                 <span className="editor-main-player-controls-container">

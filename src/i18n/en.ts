@@ -35,7 +35,7 @@ export default {
         selection: "Selection",
         view: "View"
     },
-    ExportModal: {
+    AudioExportModal: {
         title: "Export",
         fileName: "File Name",
         type: "File Type",

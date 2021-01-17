@@ -77,6 +77,9 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     get activeLib() {
         return this._state.pkgMgr.getLib(this.props.mode);
     }
+    get isLocked() {
+        return this.state.locked;
+    }
     get history(): PatcherHistory {
         return this._state.history;
     }

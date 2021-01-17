@@ -1,8 +1,11 @@
 import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
+import PatcherAudio from "../../core/audio/PatcherAudio";
 import Env, { EnvEventMap } from "../../core/Env";
 import { AnyFileInstance } from "../../core/file/FileInstance";
 import Patcher from "../../core/patcher/Patcher";
+import AudioEditMenu from "./AudioEditMenu";
+import PatcherEditMenu from "./PatcherEditMenu";
 
 interface P {
     env: Env;
@@ -17,8 +20,9 @@ interface S {
 export default class EditMenu extends React.PureComponent<P, S> {
     state = {
         instance: this.props.env.activeInstance,
-        locked: this.props.env.activeInstance instanceof Patcher ? this.props.env.activeInstance.state.locked : false
+        locked: !!this.props.env.activeInstance?.isLocked
     };
+    refInstanceEditMenu = React.createRef<PatcherEditMenu>();
     handleClickUndo = async () => {
         if (this.state.locked) return;
         this.state.instance.undo();
@@ -26,15 +30,6 @@ export default class EditMenu extends React.PureComponent<P, S> {
     handleClickRedo = async () => {
         if (this.state.locked) return;
         this.state.instance.redo();
-    };
-    handleClickNewBox = () => {
-        if (this.state.locked) return;
-        const { instance: patcher } = this.state;
-        if (!(patcher instanceof Patcher)) return;
-        const { presentation } = patcher._state;
-        const [gridX, gridY] = patcher.props.grid;
-        const text = "";
-        patcher.createBox({ text, inlets: 0, outlets: 0, rect: [gridX, gridY, 0, 0], presentation, _editing: true });
     };
     handleClickCut = async () => {
         if (this.state.locked) return;
@@ -52,33 +47,27 @@ export default class EditMenu extends React.PureComponent<P, S> {
         if (this.state.locked) return;
         this.state.instance.deleteSelected();
     };
-    handleClickDuplicate = async () => {
-        if (this.state.locked) return;
-        const { instance: patcher } = this.state;
-        if (!(patcher instanceof Patcher)) return;
-        await patcher.duplicate();
-    };
     handleClickSelectAll = () => {
         if (this.state.locked) return;
         this.state.instance.selectAll();
     };
-    handleClickInspector = async () => {
+    onShortKey(e: KeyboardEvent) {
         if (this.state.locked) return;
-        const { instance: patcher } = this.state;
-        if (!(patcher instanceof Patcher)) return;
-        patcher.inspector();
-    };
-    handleClickDock = async () => {
-        if (this.state.locked) return;
-        const { instance: patcher } = this.state;
-        if (!(patcher instanceof Patcher)) return;
-        patcher.dockUI();
-    };
+        const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        if (ctrlKey && e.key === "z") this.handleClickUndo();
+        else if (ctrlKey && e.key === "y") this.handleClickRedo();
+        else if (ctrlKey && e.key === "x") this.handleClickCut();
+        else if (ctrlKey && e.key === "c") this.handleClickCopy();
+        else if (ctrlKey && e.key === "v") this.handleClickPaste();
+        else if (e.key === "Delete" || e.key === "Backspace") this.handleClickDelete();
+        else if (ctrlKey && e.key === "a") this.handleClickSelectAll();
+        else this.refInstanceEditMenu.current?.onShortKey?.(e);
+    }
     handleLocked = (locked: boolean) => this.setState({ locked });
     handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
-        if (this.state.instance instanceof Patcher) this.state.instance.off("locked", this.handleLocked);
-        this.setState({ instance, locked: instance instanceof Patcher ? instance.state.locked : false });
-        if (instance instanceof Patcher) instance.on("locked", this.handleLocked);
+        this.state.instance?.off?.("locked", this.handleLocked);
+        this.setState({ instance, locked: !!instance?.isLocked });
+        instance?.on?.("locked", this.handleLocked);
     };
     componentDidMount() {
         this.props.env.on("activeInstance", this.handleActiveInstance);
@@ -95,17 +84,19 @@ export default class EditMenu extends React.PureComponent<P, S> {
                     <Dropdown.Item onClick={this.handleClickUndo} text="Undo" description={`${ctrlKey} + Z`} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickRedo} text="Redo" description={`${ctrlKey} + Y`} disabled={locked} />
                     <Dropdown.Divider />
-                    <Dropdown.Item onClick={this.handleClickNewBox} text="New Box" description={"N"} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickCut} text="Cut" description={`${ctrlKey} + X`} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickCopy} text="Copy" description={`${ctrlKey} + C`} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickPaste} text="Paste" description={`${ctrlKey} + V`} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickDelete} text="Delete" description="Del" disabled={locked} />
-                    <Dropdown.Divider />
-                    <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description={`${ctrlKey} + D`} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description={`${ctrlKey} + A`} disabled={locked} />
-                    <Dropdown.Divider />
-                    <Dropdown.Item onClick={this.handleClickInspector} text="Inspector" description={`${ctrlKey} + I`} disabled={locked} />
-                    <Dropdown.Item onClick={this.handleClickDock} text="Dock UI" description={`${ctrlKey} + Enter`} disabled={locked} />
+                    {this.state.instance ? <Dropdown.Divider /> : undefined}
+                    {
+                        this.state.instance instanceof Patcher
+                            ? <PatcherEditMenu ref={this.refInstanceEditMenu} {...this.props} locked={this.state.locked} instance={this.state.instance} />
+                            /* : this.state.instance instanceof PatcherAudio
+                                ? <AudioEditMenu ref={this.refInstanceEditMenu} {...this.props} locked={this.state.locked} instance={this.state.instance} />
+                            */: undefined
+                    }
                 </Dropdown.Menu>
             </Dropdown>
         );

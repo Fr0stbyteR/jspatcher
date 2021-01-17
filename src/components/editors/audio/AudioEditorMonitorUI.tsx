@@ -88,11 +88,11 @@ export default class AudioEditorMonitorUI extends React.PureComponent<P> {
         const overloadColor = "rgb(255, 10, 10)";
         const { editor, phosphorColor, playing, monitoring } = this.props;
         const { ctx } = this;
-        const [width, height] = this.fullSize();
         const absMax = await editor.player.postAnalyserNode.getAbsMax();
         const value = absMax.map(atodb);
-
         this.values = value.slice();
+
+        const [width, height] = this.fullSize();
         ctx.clearRect(0, 0, width, height);
         if (this.values.length === 0) this.values = [min];
         if (this.values.find((v, i) => typeof this.maxValues[i] === "undefined" || v > this.maxValues[i])) {
@@ -204,7 +204,7 @@ export default class AudioEditorMonitorUI extends React.PureComponent<P> {
         this.props.editor.setViewRange([this.props.viewRange[0], this.props.viewRange[0] + samples]);
     };
     render() {
-        const sampleRate = this.props.editor.audio.sampleRate;
+        const sampleRate = this.props.editor.sampleRate;
         return (
             <div className="editor-monitor">
                 <div className="editor-monitor-meter-container">
