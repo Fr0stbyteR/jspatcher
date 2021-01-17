@@ -29,9 +29,12 @@ export default class PatcherEditMenu extends React.PureComponent<P> {
     };
     onShortKey(e: KeyboardEvent) {
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        let performed = true;
         if (ctrlKey && e.key === "d") this.handleClickDuplicate();
         else if (ctrlKey && e.key === "i") this.handleClickInspector();
         else if (ctrlKey && e.key === "Enter") this.handleClickDock();
+        else performed = false;
+        return performed;
     }
     render() {
         const ctrlKey = this.props.env.os === "MacOS" ? "Cmd" : "Ctrl";

@@ -1,6 +1,12 @@
 .modal.modal-audio-export {
     min-width: 600px;
 
+    & .ui.mini .ui.dropdown .menu > .item {
+        font-size: 1em;
+        padding: 6px 10px !important;
+    }
+    
+
     & .ui.form .inline.field > label {
         width: 40%;
     }

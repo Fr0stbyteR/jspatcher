@@ -135,13 +135,16 @@ export default {
         copy: "复制",
         paste: "粘贴",
         delete: "删除",
+        selectAll: "全选"
+    },
+    AudioEditMenu: {
+        bounce: "混缩文件...",
         silence: "静音",
-        insertSilence: "插入静音",
+        insertSilence: "插入静音...",
         reverse: "反向",
         inverse: "反相",
-        resample: "重采样",
-        remixChannels: "声道重混",
-        selectAll: "全选",
+        resample: "重采样...",
+        remixChannels: "声道重混...",
         playStop: "播放/停止"
     },
     TopMenu: {

@@ -256,6 +256,16 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         const oldAudio = await this.removeFromRange(selStart, selEnd);
         this.emit("deleted", { range: [selStart, selEnd], oldAudio });
     }
+    async silence() {
+        const { selRange } = this.state;
+        if (!selRange) return;
+        await super.silence(selRange);
+    }
+    async insertSilence(length: number) {
+        if (!length) return;
+        const { cursor } = this.state;
+        await super.insertSilence(length, cursor);
+    }
     async reverse() {
         const { selRange } = this.state;
         const [selStart, selEnd] = selRange || [0, this.length];

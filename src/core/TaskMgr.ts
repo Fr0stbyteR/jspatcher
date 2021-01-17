@@ -31,6 +31,7 @@ export default class TaskManager extends TypedEventEmitter<TaskManagerEventMap> 
         let returnValue: ReturnType<T> extends Promise<infer R> ? R : ReturnType<T>;
         const handleUpdate = (msg: string) => {
             this.tasks = { ...this.tasks, [timestamp]: { emitter, message: `${message}: ${msg}`, callback } };
+            this.emit("tasks", this.tasks);
         };
         try {
             returnValue = await callback(handleUpdate);

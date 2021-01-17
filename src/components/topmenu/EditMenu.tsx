@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
-import PatcherAudio from "../../core/audio/PatcherAudio";
+import AudioEditor from "../../core/audio/AudioEditor";
 import Env, { EnvEventMap } from "../../core/Env";
 import { AnyFileInstance } from "../../core/file/FileInstance";
 import Patcher from "../../core/patcher/Patcher";
@@ -22,7 +22,7 @@ export default class EditMenu extends React.PureComponent<P, S> {
         instance: this.props.env.activeInstance,
         locked: !!this.props.env.activeInstance?.isLocked
     };
-    refInstanceEditMenu = React.createRef<PatcherEditMenu>();
+    refInstanceEditMenu = React.createRef<PatcherEditMenu & AudioEditMenu>();
     handleClickUndo = async () => {
         if (this.state.locked) return;
         this.state.instance.undo();
@@ -54,6 +54,8 @@ export default class EditMenu extends React.PureComponent<P, S> {
     onShortKey(e: KeyboardEvent) {
         if (this.state.locked) return;
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        const performed = this.refInstanceEditMenu.current?.onShortKey?.(e);
+        if (performed) return;
         if (ctrlKey && e.key === "z") this.handleClickUndo();
         else if (ctrlKey && e.key === "y") this.handleClickRedo();
         else if (ctrlKey && e.key === "x") this.handleClickCut();
@@ -61,7 +63,6 @@ export default class EditMenu extends React.PureComponent<P, S> {
         else if (ctrlKey && e.key === "v") this.handleClickPaste();
         else if (e.key === "Delete" || e.key === "Backspace") this.handleClickDelete();
         else if (ctrlKey && e.key === "a") this.handleClickSelectAll();
-        else this.refInstanceEditMenu.current?.onShortKey?.(e);
     }
     handleLocked = (locked: boolean) => this.setState({ locked });
     handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
@@ -93,9 +94,9 @@ export default class EditMenu extends React.PureComponent<P, S> {
                     {
                         this.state.instance instanceof Patcher
                             ? <PatcherEditMenu ref={this.refInstanceEditMenu} {...this.props} locked={this.state.locked} instance={this.state.instance} />
-                            /* : this.state.instance instanceof PatcherAudio
+                            : this.state.instance instanceof AudioEditor
                                 ? <AudioEditMenu ref={this.refInstanceEditMenu} {...this.props} locked={this.state.locked} instance={this.state.instance} />
-                            */: undefined
+                                : undefined
                     }
                 </Dropdown.Menu>
             </Dropdown>

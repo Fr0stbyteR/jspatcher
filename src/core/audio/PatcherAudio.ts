@@ -128,7 +128,6 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
     private encodeFfmpegWorker(wav: Uint8Array, inputFileName: string, outputFileName: string, ...args: string[]) {
         return this.env.taskMgr.newTask(this, `Encoding audio ${outputFileName}...`, async (onUpdate) => {
             const { ffmpegWorker } = this.env;
-            const print = (s: string) => onUpdate(s);
             const onExit = (code: number) => onUpdate(`ffmpeg process exited with code ${code}`);
             ffmpegWorker.on("stdout", onUpdate);
             ffmpegWorker.on("stderr", onUpdate);
@@ -140,8 +139,8 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
                 });
                 return result.MEMFS[0].data.buffer;
             } finally {
-                ffmpegWorker.off("stdout", print);
-                ffmpegWorker.off("stderr", print);
+                ffmpegWorker.off("stdout", onUpdate);
+                ffmpegWorker.off("stderr", onUpdate);
                 ffmpegWorker.off("exit", onExit);
             }
         });
@@ -171,6 +170,19 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
         this.waveform = that.waveform;
         this.waveform.patcherAudio = this;
         this.emit("setAudio");
+    }
+    async silence(range: [number, number]) {
+        const [selStart, selEnd] = range;
+        const length = selEnd - selStart;
+        const audio = await PatcherAudio.fromSilence(this.ctx, this.numberOfChannels, length, this.sampleRate);
+        const oldAudio = await this.pasteToRange(audio, selStart, selEnd);
+        this.emit("silenced", { range: [selStart, selEnd], audio, oldAudio });
+    }
+    async insertSilence(length: number, from: number) {
+        if (!length) return;
+        const audio = await PatcherAudio.fromSilence(this.ctx, this.numberOfChannels, length, this.sampleRate);
+        this.insertToCursor(audio, from);
+        this.emit("insertedSilence", { range: [from, from + length], audio });
     }
     reverse() {
         this.audioBuffer.reverse();

@@ -133,13 +133,16 @@ export default {
         copy: "Copy",
         paste: "Paste",
         delete: "Delete",
+        selectAll: "Select All"
+    },
+    AudioEditMenu: {
+        bounce: "Bounce...",
         silence: "Silence",
-        insertSilence: "Insert Silence",
+        insertSilence: "Insert Silence...",
         reverse: "Reverse",
         inverse: "Inverse",
-        resample: "Resample",
-        remixChannels: "Remix Channels",
-        selectAll: "Select All",
+        resample: "Resample...",
+        remixChannels: "Remix Channels...",
         playStop: "Play/Stop"
     },
     TopMenu: {
