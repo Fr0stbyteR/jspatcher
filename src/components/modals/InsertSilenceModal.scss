@@ -8,4 +8,9 @@
             margin: 2px 10px;
         }
     }
+
+    & .ui.mini .ui.dropdown .menu > .item {
+        font-size: 1em;
+        padding: 6px 10px !important;
+    }
 }

@@ -1,34 +1,40 @@
 import * as React from "react";
 import { Modal, Form, Input, Button, Dropdown, DropdownProps, DropdownItemProps, InputOnChangeData } from "semantic-ui-react";
 import Env from "../../core/Env";
-import "./NewAudioModal.scss";
+import TimeInputUI from "../editors/audio/TimeInput";
 import I18n from "../../i18n/I18n";
+import { TAudioUnit } from "../../core/types";
+import "./NewAudioModal.scss";
 
 interface Props {
     env: Env;
     lang: string;
     open: boolean;
     onClose: () => any;
+    onConfirm: (numberOfChannels: number, sampleRate: number, length: number) => any;
 }
 
 interface State {
-    fileNameValue: string;
-    fileNameError: boolean;
     sampleRateOptions: DropdownItemProps[];
     sampleRateValue: number;
     numberOfChannelsValue: number;
+    audioUnit: TAudioUnit;
+    samples: number;
 }
 
 export default class NewAudioModal extends React.PureComponent<Props, State> {
     state: State = {
-        fileNameValue: "untitled.wav",
-        fileNameError: false,
         sampleRateOptions: this.sampleRateOptions,
         sampleRateValue: this.props.env.audioCtx.sampleRate,
-        numberOfChannelsValue: 1
+        numberOfChannelsValue: 1,
+        audioUnit: this.props.env.options.audioUnit,
+        samples: 1
     };
     get strings() {
-        return I18n[this.props.lang].NewAudioModal;
+        return {
+            ...I18n[this.props.lang].NewAudioModal,
+            ...I18n[this.props.lang].UnitOptions
+        };
     }
     get sampleRates() {
         const defaults = [6000, 8000, 11025, 16000, 22050, 32000, 44100, 48000, 64000, 88200, 96000, 176400, 192000];
@@ -39,9 +45,10 @@ export default class NewAudioModal extends React.PureComponent<Props, State> {
     get sampleRateOptions(): DropdownItemProps[] {
         return this.sampleRates.reverse().map(value => ({ key: value, text: value, value }));
     }
-    handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
-        this.setState({ fileNameValue: value, fileNameError: false });
-    };
+    get unitOptions(): DropdownItemProps[] {
+        const unit = ["time", "sample", "measure"] as const;
+        return unit.map(value => ({ key: value, text: this.strings[value], value }));
+    }
     handleSampleRateAddition = (e: React.KeyboardEvent<HTMLElement>, { value: valueIn }: DropdownProps) => {
         const value = ~~Math.max(1, +valueIn) || this.props.env.audioCtx.sampleRate;
         if (this.state.sampleRateOptions.find(option => option.value === value)) return;
@@ -56,29 +63,19 @@ export default class NewAudioModal extends React.PureComponent<Props, State> {
     handleNumberOfChannelsChange = (e: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
         this.setState({ numberOfChannelsValue: ~~Math.max(1, +value) });
     };
+    handleUnitChange = (e: React.SyntheticEvent<HTMLElement, Event>, { value }: DropdownProps) => this.setState({ audioUnit: value as TAudioUnit });
+    handleTimeChange = (samples: number) => this.setState({ samples: Math.max(1, samples) });
     handleClickCreate = async () => {
-        const { fileMgr } = this.props.env;
-        const { fileNameValue, numberOfChannelsValue, sampleRateValue } = this.state;
-        const exist = await fileMgr.state.worker.exists(`/${fileNameValue}`);
-        if (exist) {
-            this.setState({ fileNameError: true });
-            return;
-        }
-        this.props.onClose();
-        try {
-            await fileMgr.newFile(fileNameValue, numberOfChannelsValue, 1, sampleRateValue);
-        } catch {}
+        const { numberOfChannelsValue, sampleRateValue, samples } = this.state;
+        this.props.onConfirm(numberOfChannelsValue, sampleRateValue, samples);
     };
+    handleClick = (e: React.MouseEvent) => e.stopPropagation();
     render() {
         return (
-            <Modal className="modal-new-audio" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
+            <Modal className="modal-new-audio" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon onClick={this.handleClick}>
                 <Modal.Header>{this.strings.createNewAudio}</Modal.Header>
                 <Modal.Content>
                     <Form inverted size="mini">
-                        <Form.Field inline error={this.state.fileNameError}>
-                            <label>{this.strings.fileName}</label>
-                            <Input defaultValue={this.state.fileNameValue} onChange={this.handleFileNameChange} />
-                        </Form.Field>
                         <Form.Field inline>
                             <label>{this.strings.sampleRate}</label>
                             <Dropdown
@@ -96,6 +93,11 @@ export default class NewAudioModal extends React.PureComponent<Props, State> {
                         <Form.Field inline>
                             <label>{this.strings.channels}</label>
                             <Input type="number" defaultValue={this.state.numberOfChannelsValue} step={1} min={1} max={128} onChange={this.handleNumberOfChannelsChange} />
+                        </Form.Field>
+                        <Form.Field inline>
+                            <label>{this.strings.length}</label>
+                            <TimeInputUI audioUnit={this.state.audioUnit} {...this.props.env.options.audioUnitOptions} samples={this.state.samples} sampleRate={this.state.sampleRateValue} onChange={this.handleTimeChange} style={{ marginLeft: "7px", textAlign: "left" }} />
+                            <Dropdown options={this.unitOptions} value={this.state.audioUnit} onChange={this.handleUnitChange} />
                         </Form.Field>
                     </Form>
                 </Modal.Content>

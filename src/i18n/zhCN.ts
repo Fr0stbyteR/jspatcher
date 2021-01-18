@@ -71,6 +71,7 @@ export default {
         sampleRate: "采样率",
         addSampleRate: "添加 ",
         channels: "声道数",
+        length: "时长",
         create: "创建"
     },
     NewFolderModal: {
@@ -153,5 +154,10 @@ export default {
     UI: {
         drop: "拖拽文件到此处加载...",
         start: "双击文件名或拖拽文件到此处开始编辑..."
+    },
+    UnitOptions: {
+        time: "时间单位",
+        sample: "采样数",
+        measure: "小节"
     }
 } as typeof en;

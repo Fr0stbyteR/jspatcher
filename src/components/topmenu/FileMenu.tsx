@@ -1,12 +1,13 @@
 import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
 import Env, { EnvEventMap } from "../../core/Env";
-import PatcherAudio from "../../core/audio/PatcherAudio";
+import AudioEditor from "../../core/audio/AudioEditor";
 import Patcher from "../../core/patcher/Patcher";
 import PatcherText from "../../core/text/PatcherText";
 import Folder from "../../core/file/Folder";
 import SaveAsModal from "../modals/SaveAsModal";
 import { AnyFileInstance } from "../../core/file/FileInstance";
+import NewAudioModal from "../modals/NewAudioModal";
 
 interface P {
     env: Env;
@@ -18,6 +19,7 @@ interface S {
     fileURL: string;
     fileName: string;
     showSaveAsModal: boolean;
+    showNewAudioModal: boolean;
 }
 
 export default class FileMenu extends React.PureComponent<P, S> {
@@ -29,7 +31,8 @@ export default class FileMenu extends React.PureComponent<P, S> {
         instance: this.props.env.activeInstance,
         fileURL: "",
         fileName: this.props.env.activeInstance?.file?.name,
-        showSaveAsModal: false
+        showSaveAsModal: false,
+        showNewAudioModal: false
     };
     handleClickNewJs = async () => {
         const patcher = new Patcher(this.props.env.currentProject);
@@ -50,11 +53,6 @@ export default class FileMenu extends React.PureComponent<P, S> {
         const patcher = new Patcher(this.props.env.currentProject);
         await patcher.load({}, "faust");
         this.props.env.openInstance(patcher);
-    };
-    handleClickNewAudio = async () => {
-        const audio = new PatcherAudio(this.props.env.currentProject);
-        await audio.init();
-        this.props.env.openInstance(audio);
     };
     handleClickNewText = async () => {
         const text = new PatcherText(this.props.env.currentProject);
@@ -82,6 +80,14 @@ export default class FileMenu extends React.PureComponent<P, S> {
     };
     handleClickSaveAll = async () => {
         await this.props.env.currentProject?.save?.();
+    };
+    handleClickNewAudio = () => this.setState({ showNewAudioModal: true });
+    handleNewAudioModalClose = () => this.setState({ showNewAudioModal: false });
+    handleNewAudioModalConfirm = async (numberOfChannels: number, sampleRate: number, length: number) => {
+        this.setState({ showNewAudioModal: false });
+        const audio = new AudioEditor(this.props.env.currentProject);
+        await audio.initWithOptions({ numberOfChannels, sampleRate, length });
+        this.props.env.openInstance(audio);
     };
     handleClickSaveAs = async () => {
         this.setState({ showSaveAsModal: true });
@@ -150,7 +156,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
                         {/* <Dropdown.Item onClick={this.handleClickNewMax} text="New Max Patcher" /> */}
                         <Dropdown.Item onClick={this.handleClickNewGen} text="New Gen Patcher" />
                         <Dropdown.Item onClick={this.handleClickNewFaust} text="New Faust Patcher" />
-                        <Dropdown.Item onClick={this.handleClickNewAudio} text="New Audio" />
+                        <Dropdown.Item onClick={this.handleClickNewAudio} text="New Audio..." />
                         <Dropdown.Item onClick={this.handleClickNewText} text="New Text" />
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={this.handleClickNewProject} text="New Project" />
@@ -174,6 +180,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
                 <input ref={this.refOpenFile} type="file" hidden={true} onChange={this.onChangeFile} />
                 <input ref={this.refOpenFolder} type="file" hidden={true} onChange={this.onChangeFolder} accept=".zip, application/zip" />
                 <SaveAsModal {...this.props} open={this.state.showSaveAsModal} fileName={this.state.fileName || `Untitled.${this.props.env.activeInstance?.fileExtension}`} folder={this.props.env.activeInstance?.file?.parent || this.props.env.fileMgr.projectRoot} onClose={this.handleSaveAsModalClose} onConfirm={this.handleSaveAsModalConfirm} />
+                <NewAudioModal {...this.props} open={this.state.showNewAudioModal} onClose={this.handleNewAudioModalClose} onConfirm={this.handleNewAudioModalConfirm} />
             </>
         );
     }

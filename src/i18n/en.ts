@@ -69,6 +69,7 @@ export default {
         sampleRate: "Sample Rate",
         addSampleRate: "Add ",
         channels: "Channels",
+        length: "Length",
         create: "Create"
     },
     NewFolderModal: {
@@ -151,5 +152,10 @@ export default {
     UI: {
         drop: "Drop Files to load them...",
         start: "Select or drop a file to start..."
+    },
+    UnitOptions: {
+        time: "time",
+        sample: "sample",
+        measure: "measure"
     }
 };

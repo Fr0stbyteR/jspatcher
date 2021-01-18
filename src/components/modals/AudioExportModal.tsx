@@ -185,9 +185,7 @@ export default class AudioExportModal extends React.PureComponent<P, S> {
         const timestamp = timestamps.map(v => +v).sort((a, b) => b - a)[0];
         return { timestamp, ...this.state.tasks[timestamp] };
     }
-    handleClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-    };
+    handleClick = (e: React.MouseEvent) => e.stopPropagation();
     render() {
         const { lastError, lastTask } = this;
         return (
