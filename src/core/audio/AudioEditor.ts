@@ -94,8 +94,10 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
             enabledChannels: new Array(this.numberOfChannels).fill(true)
         });
         this.on("setAudio", this.handleSetAudio);
-        await this.player.init();
-        await this.recorder.init();
+        await this.env.taskMgr.newTask(this, "Initializing Audio Editor...", async () => {
+            await this.player.init();
+            await this.recorder.init();
+        });
         this._isReady = true;
     };
     constructor(...args: ConstructorParameters<typeof PatcherAudio>) {

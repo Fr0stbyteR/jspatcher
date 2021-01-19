@@ -466,13 +466,15 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
         e.stopPropagation();
         e.preventDefault();
         const rect = this.refCanvas.current.getBoundingClientRect();
-        if (e.currentTarget.classList.contains("editor-main-vertical-ruler-area")) {
+        const { currentTarget } = e;
+        if (currentTarget.classList.contains("editor-main-vertical-ruler-area")) {
             const { viewRange } = this.props;
             const [viewStart, viewEnd] = viewRange;
             const viewLength = viewEnd - viewStart;
             const cursor = viewStart + (e.clientX - rect.left) / rect.width * viewLength;
             this.props.editor.setCursor(cursor);
         }
+        if (currentTarget.classList.contains("editor-main-cursor-handler")) currentTarget.style.cursor = "grabbing";
         const handleMouseMove = (e: MouseEvent) => {
             e.stopPropagation();
             e.preventDefault();
@@ -486,6 +488,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
             this.props.editor.setCursor(cursor);
         };
         const handleMouseUp = (e: MouseEvent) => {
+            if (currentTarget.classList.contains("editor-main-cursor-handler")) currentTarget.style.cursor = "";
             e.stopPropagation();
             e.preventDefault();
             document.removeEventListener("mousemove", handleMouseMove);

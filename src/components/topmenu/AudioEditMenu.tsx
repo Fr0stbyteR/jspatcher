@@ -5,6 +5,8 @@ import AudioEditor from "../../core/audio/AudioEditor";
 import AudioExportModal from "../modals/AudioExportModal";
 import I18n from "../../i18n/I18n";
 import InsertSilenceModal from "../modals/InsertSilenceModal";
+import ResampleModal from "../modals/ResampleModal";
+import RemixModal from "../modals/RemixModal";
 
 interface P {
     env: Env;
@@ -79,9 +81,26 @@ export default class AudioEditMenu extends React.PureComponent<P, S> {
         else performed = false;
         return performed;
     }
+    get modals() {
+        return (
+            <>
+                <AudioExportModal {...this.props} open={this.state.bounceModalOpen} onClose={this.handleExportModalClose} />
+                <InsertSilenceModal {...this.props} open={this.state.insertSilenceModelOpen} onClose={this.handleInsertSilenceModalClose} />
+                <ResampleModal {...this.props} open={this.state.resampleModelOpen} onClose={this.handleResampleModalClose} />
+                <RemixModal {...this.props} open={this.state.remixModelOpen} onClose={this.handleRemixModalClose} />
+            </>
+        );
+    }
     render() {
         const ctrlKey = this.props.env.os === "MacOS" ? "Cmd" : "Ctrl";
         const locked = this.props.locked;
+        const eventDisabler = (["onClick", "onMouseDown", "onKeyDown", "onFocus", "onBlur"] as const).reduce<React.DOMAttributes<HTMLDivElement>>((acc, cur) => {
+            const eventHandler: React.EventHandler<React.SyntheticEvent<any, Event>> = (e) => {
+                e.stopPropagation();
+            };
+            acc[cur] = eventHandler;
+            return acc;
+        }, {});
         return (
             <>
                 <Dropdown.Item onClick={this.handleClickPlayStop} text={this.strings.playStop} description="Space" disabled={locked} />
@@ -90,9 +109,12 @@ export default class AudioEditMenu extends React.PureComponent<P, S> {
                 <Dropdown.Item onClick={this.handleClickInverse} text={this.strings.inverse} disabled={locked} />
                 <Dropdown.Divider />
                 <Dropdown.Item onClick={this.handleClickInsertSilence} text={this.strings.insertSilence} disabled={locked} />
+                <Dropdown.Item onClick={this.handleClickResample} text={this.strings.resample} disabled={locked} />
+                <Dropdown.Item onClick={this.handleClickRemix} text={this.strings.remixChannels} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickBounce} text={this.strings.bounce} disabled={locked} />
-                <AudioExportModal {...this.props} open={this.state.bounceModalOpen} onClose={this.handleExportModalClose} />
-                <InsertSilenceModal {...this.props} open={this.state.insertSilenceModelOpen} onClose={this.handleInsertSilenceModalClose} />
+                <div {...eventDisabler}>
+                    {this.modals}
+                </div>
             </>
         );
     }

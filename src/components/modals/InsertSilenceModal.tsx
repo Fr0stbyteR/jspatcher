@@ -38,10 +38,9 @@ export default class InsertSilenceModal extends React.PureComponent<Props, State
         this.props.instance.insertSilence(this.state.samples);
         this.props.onClose();
     };
-    handleClick = (e: React.MouseEvent) => e.stopPropagation();
     render() {
         return (
-            <Modal className="modal-insert-silence" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon onClick={this.handleClick}>
+            <Modal className="modal-insert-silence" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
                 <Modal.Header>{this.strings.title}</Modal.Header>
                 <Modal.Content>
                     <Form inverted size="mini">

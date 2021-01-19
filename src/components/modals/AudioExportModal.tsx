@@ -185,11 +185,10 @@ export default class AudioExportModal extends React.PureComponent<P, S> {
         const timestamp = timestamps.map(v => +v).sort((a, b) => b - a)[0];
         return { timestamp, ...this.state.tasks[timestamp] };
     }
-    handleClick = (e: React.MouseEvent) => e.stopPropagation();
     render() {
         const { lastError, lastTask } = this;
         return (
-            <Modal className="modal-audio-export" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon onClick={this.handleClick}>
+            <Modal className="modal-audio-export" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
                 <Modal.Header>{this.strings.title}</Modal.Header>
                 <Modal.Content>
                     <Form inverted size="mini">

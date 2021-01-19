@@ -1,11 +1,11 @@
 import * as React from "react";
 import { DropdownItemProps, Modal, Form, Dropdown, Button, DropdownProps } from "semantic-ui-react";
-import Env from "../core/Env";
+import AudioEditor from "../../core/audio/AudioEditor";
+import I18n from "../../i18n/I18n";
 import "./ResampleModal.scss";
-import I18n from "../i18n/I18n";
 
 interface Props {
-    env: Env;
+    instance: AudioEditor;
     lang: string;
     open: boolean;
     onClose: () => any;
@@ -19,16 +19,16 @@ interface State {
 export default class ResampleModal extends React.PureComponent<Props, State> {
     state: State = {
         sampleRateOptions: this.sampleRateOptions,
-        sampleRateValue: this.props.env.editor.currentFileState?.buffer.sampleRate || this.props.env.audioCtx.sampleRate
+        sampleRateValue: this.props.instance.sampleRate || this.props.instance.audioCtx.sampleRate
     };
     get strings() {
         return I18n[this.props.lang].ResampleModal;
     }
     get sampleRates() {
         const defaults = [6000, 8000, 11025, 16000, 22050, 32000, 44100, 48000, 64000, 88200, 96000, 176400, 192000];
-        const ctx = this.props.env.audioCtx.sampleRate;
+        const ctx = this.props.instance.sampleRate;
         if (ctx && defaults.indexOf(ctx) === -1) defaults.push(ctx);
-        const buffer = this.props.env.editor.currentFileState?.buffer.sampleRate;
+        const buffer = this.props.instance.sampleRate;
         if (buffer && defaults.indexOf(buffer) === -1) defaults.push(buffer);
         return defaults;
     }
@@ -36,18 +36,18 @@ export default class ResampleModal extends React.PureComponent<Props, State> {
         return this.sampleRates.reverse().map(value => ({ key: value, text: value, value }));
     }
     handleSampleRateAddition = (e: React.KeyboardEvent<HTMLElement>, { value: valueIn }: DropdownProps) => {
-        const value = ~~Math.max(1, +valueIn) || this.props.env.audioCtx.sampleRate;
+        const value = ~~Math.max(1, +valueIn) || this.props.instance.audioCtx.sampleRate;
         if (this.state.sampleRateOptions.find(option => option.value === value)) return;
         this.setState(({ sampleRateOptions }) => ({
             sampleRateOptions: [...sampleRateOptions, { key: value, text: value, value }]
         }));
     };
     handleSampleRateChange = (e: React.SyntheticEvent<HTMLElement, Event>, { value: valueIn }: DropdownProps) => {
-        const value = ~~Math.max(1, +valueIn) || this.props.env.audioCtx.sampleRate;
+        const value = ~~Math.max(1, +valueIn) || this.props.instance.audioCtx.sampleRate;
         this.setState({ sampleRateValue: value });
     };
-    handleEditFile = () => {
-        const sampleRate = this.props.env.editor.currentFileState?.buffer.sampleRate || this.props.env.audioCtx.sampleRate;
+    handleSetAudio = () => {
+        const sampleRate = this.props.instance.sampleRate || this.props.instance.audioCtx.sampleRate;
         if (this.state.sampleRateOptions.find(option => option.value === sampleRate)) {
             this.setState({ sampleRateValue: sampleRate });
             return;
@@ -58,19 +58,14 @@ export default class ResampleModal extends React.PureComponent<Props, State> {
         }));
     };
     handleClickConfirm = async () => {
-        if (!this.props.env.editor.currentFileState) return;
-        await this.props.env.editor.resample(this.state.sampleRateValue);
+        await this.props.instance.resample(this.state.sampleRateValue);
         this.props.onClose();
     };
     componentDidMount() {
-        this.props.env.editor.on("editFile", this.handleEditFile);
-        this.props.env.editor.on("stopEditFile", this.handleEditFile);
-        this.props.env.editor.on("buffer", this.handleEditFile);
+        this.props.instance.on("setAudio", this.handleSetAudio);
     }
     componentWillUnmount() {
-        this.props.env.editor.off("editFile", this.handleEditFile);
-        this.props.env.editor.off("stopEditFile", this.handleEditFile);
-        this.props.env.editor.off("buffer", this.handleEditFile);
+        this.props.instance.off("setAudio", this.handleSetAudio);
     }
     render() {
         return (
@@ -80,7 +75,7 @@ export default class ResampleModal extends React.PureComponent<Props, State> {
                     <Form inverted size="mini">
                         <Form.Field inline>
                             <label>{this.strings.from}</label>
-                            <span>{this.props.env.editor.currentFileState?.buffer.sampleRate}</span>
+                            <span>{this.props.instance.sampleRate}</span>
                         </Form.Field>
                         <Form.Field inline>
                             <label>{this.strings.to}</label>

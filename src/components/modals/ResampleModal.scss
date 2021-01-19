@@ -1,5 +1,12 @@
 .modal.modal-resample {
-    & .ui.form .inline.field > label {
-        width: 30%;
+    & .ui.form .inline.field {
+        & > label {
+            width: 30%;
+        }
+    }
+
+    & .ui.mini .ui.dropdown .menu > .item {
+        font-size: 1em;
+        padding: 6px 10px !important;
     }
 }

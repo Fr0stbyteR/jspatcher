@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Modal, Button, Form, Table, Input, InputOnChangeData } from "semantic-ui-react";
-import GainInputUI from "./GainInput";
-import Env from "../core/Env";
-import { identityMatrix } from "../utils/math";
+import GainInputUI from "../editors/audio/GainInput";
+import AudioEditor from "../../core/audio/AudioEditor";
+import { identityMatrix } from "../../utils/math";
+import I18n from "../../i18n/I18n";
 import "./RemixModal.scss";
-import I18n from "../i18n/I18n";
 
 interface Props {
-    env: Env
+    instance: AudioEditor;
     lang: string;
     open: boolean;
     onClose: () => any;
@@ -17,15 +17,14 @@ interface State {
 }
 
 export default class RemixModal extends React.PureComponent<Props, State> {
-    state: State = { mix: identityMatrix(this.props.env.editor.currentFileState?.buffer.numberOfChannels || 1) };
+    state: State = { mix: identityMatrix(this.props.instance.numberOfChannels || 1) };
     get strings() {
         return I18n[this.props.lang].RemixModal;
     }
     handleNumberOfChannelsChange = (event: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
-        if (!this.props.env.editor.currentFileState) return;
         const outs = +~~value || this.state.mix.length;
         if (outs === this.state.mix.length) return;
-        const ins = this.props.env.editor.currentFileState.buffer.numberOfChannels;
+        const ins = this.props.instance.numberOfChannels;
         const mix = identityMatrix(Math.max(ins, outs)).slice(0, outs).map(v => v.slice(0, ins));
         mix.forEach((x, i) => {
             if (i >= this.state.mix.length) return;
@@ -44,20 +43,15 @@ export default class RemixModal extends React.PureComponent<Props, State> {
         this.setState({ mix });
     };
     handleConfirm = async () => {
-        if (!this.props.env.editor.currentFileState) return;
-        await this.props.env.editor.remixChannels(this.state.mix);
+        await this.props.instance.remixChannels(this.state.mix);
         this.props.onClose();
     };
-    handleEditFile = () => this.setState({ mix: identityMatrix(this.props.env.editor.currentFileState?.buffer.numberOfChannels || 1) });
+    handleSetAudio = () => this.setState({ mix: identityMatrix(this.props.instance.numberOfChannels || 1) });
     componentDidMount() {
-        this.props.env.editor.on("editFile", this.handleEditFile);
-        this.props.env.editor.on("stopEditFile", this.handleEditFile);
-        this.props.env.editor.on("buffer", this.handleEditFile);
+        this.props.instance.on("setAudio", this.handleSetAudio);
     }
     componentWillUnmount() {
-        this.props.env.editor.off("editFile", this.handleEditFile);
-        this.props.env.editor.off("stopEditFile", this.handleEditFile);
-        this.props.env.editor.off("buffer", this.handleEditFile);
+        this.props.instance.off("setAudio", this.handleSetAudio);
     }
     get matrix() {
         const { mix } = this.state;
@@ -81,7 +75,6 @@ export default class RemixModal extends React.PureComponent<Props, State> {
         );
     }
     render() {
-        if (!this.props.env.editor.currentFileState) return <></>;
         return (
             <Modal className="modal-remix" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
                 <Modal.Header>{this.strings.title}</Modal.Header>
