@@ -1,9 +1,10 @@
 import * as React from "react";
-import { Button } from "semantic-ui-react";
+import { Button, Menu } from "semantic-ui-react";
 import AudioEditor from "../../../core/audio/AudioEditor";
 import TimeInputUI from "./TimeInput";
 import { TAudioUnit, AudioUnitOptions, TAudioPlayingState } from "../../../core/types";
 import I18n from "../../../i18n/I18n";
+import DeviceSelector from "./DeviceSelector";
 
 interface P {
     editor: AudioEditor;
@@ -84,6 +85,9 @@ export default class AudioEditorMainControlsUI extends React.PureComponent<P> {
                             <Button title={this.strings.record} icon="circle" color="red" basic={!recording} onClick={this.handleClickRecord} />
                             <Button title={this.strings.monitor} icon="microphone" color="teal" basic={!monitoring} onClick={this.handleClickMonitor} />
                         </Button.Group>
+                        <Menu size="mini" inverted>
+                            <DeviceSelector {...this.props} />
+                        </Menu>
                     </span>
                 </span>
                 <TimeInputUI samples={cursor} sampleRate={sampleRate} audioUnit={audioUnit} {...audioUnitOptions} onChange={this.handleCursorChanged} />

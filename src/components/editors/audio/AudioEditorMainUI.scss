@@ -300,8 +300,34 @@
                 & > span.editor-main-player-controls {
                     flex: 1 1 auto;
 
-                    & > .ui.buttons > button.ui.button {
-                        margin: 0;
+                    & > .ui.buttons {
+                        height: 30px;
+
+                        & > button.ui.button {
+                            margin: 0;
+
+                            &:last-child {
+                                border-top-right-radius: 0px;
+                                border-bottom-right-radius: 0px;
+                            }
+                        }
+                    }
+
+                    & > .menu {
+                        display: inline-flex;
+                        
+                        & > .audio-editor-device-selector {
+                            display: inline-flex;
+                            width: 300px;
+                            border-top-left-radius: 0px;
+                            border-bottom-left-radius: 0px;
+
+                            & > div:first-child {
+                                text-overflow: ellipsis;
+                                overflow: hidden;
+                                white-space: nowrap;
+                            }
+                        }
                     }
                 }
             }
