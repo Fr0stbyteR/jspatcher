@@ -1,17 +1,25 @@
 const path = require('path');
+const { DefinePlugin, ProvidePlugin } = require('webpack');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const VERSION = require("./src/scripts/version");
 
+/** @type {import('webpack').Configuration} */
 const config = {
   entry: './src/index.tsx',
   resolve: {
+    fallback: {
+      "path": require.resolve("path"),
+      "buffer": require.resolve("buffer"),
+      "util": require.resolve("util"),
+      "fs": false,
+      "stream": require.resolve("stream-browserify")
+    },
     extensions: ['.tsx', '.ts', '.js']
   },
   node: {
-    fs: 'empty'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -25,7 +33,7 @@ const config = {
         use: [{
           loader: 'worklet-loader',
           options: {
-            name: 'js/[hash].worklet.js'
+            name: 'js/[fullhash].worklet.js'
           }
         }],
         exclude: /node_modules/
@@ -34,7 +42,7 @@ const config = {
         use: [{
           loader: 'worker-loader',
           options: {
-            filename: 'js/[hash].worker.js'
+            filename: 'js/[fullhash].worker.js'
           }
         }],
         exclude: /node_modules/
@@ -70,13 +78,22 @@ const config = {
     ]
   },
   plugins: [
+    new DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development')
+      },
+      'process.platform': {}
+    }),
+    new ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin({
       patterns: [
         { from: './src/html', to: './' },
         { from: './src/misc/monaco-faust/primitives.lib', to: './deps/' },
         { from: './src/misc/gen2faust.lib', to: './deps/' },
-        { from: './node_modules/faust2webaudio/dist/libfaust-wasm.*', to: './deps/', flatten: true }
+        { from: './node_modules/faust2webaudio/dist/libfaust-wasm.*', to: './deps/[name].[ext]' }
       ]
     }),
     new MonacoWebpackPlugin({
@@ -88,7 +105,7 @@ const config = {
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       skipWaiting: true,
-      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+      maximumFileSizeToCacheInBytes: 16 * 1024 * 1024,
     })
     // new BundleAnalyzerPlugin()
   ],

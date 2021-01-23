@@ -18,6 +18,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     static patcherFileExtensions: PatcherFileExtension[] = ["jspat", "maxpat", "gendsp", "dsppat"];
     static audioFileExtensions: AudioFileExtension[] = ["wav", "mp3", "aif", "aiff", "aac", "flac", "ogg"];
     static textFileExtensions: TextFileExtension[] = ["txt", "json"];
+    JsZip: typeof JsZip;
     env: Env;
     worker: FileMgrWorker;
     root: Folder;
@@ -36,6 +37,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         return this.projectRoot.empty();
     }
     async init(project: Project, clean?: boolean) {
+        this.JsZip = await import("jszip");
         await this.worker.init();
         if (clean) await this.worker.empty();
         this.root = new Folder(this, project, null, null);
@@ -206,7 +208,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
                 const name = to.uniqueName(subfolder);
                 folder = await to.addFolder(name);
             }
-            const jsZip = new JsZip();
+            const jsZip = new this.JsZip();
             const zip = await jsZip.loadAsync(data);
             const unzip = async (zip: JsZip, to: Folder) => {
                 for (const $nameIn in zip.files) {
@@ -237,7 +239,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     }
     async exportProjectZip() {
         return this.env.taskMgr.newTask(this, "Zipping project...", async (onUpdate) => {
-            const jsZip = new JsZip();
+            const jsZip = new this.JsZip();
             const toZip = (zip: JsZip, folder: Folder) => {
                 for (const item of folder.items) {
                     const { name } = item;

@@ -1,5 +1,5 @@
 import MonacoEditor from "react-monaco-editor";
-import { editor, KeyCode, KeyMod } from "monaco-editor/esm/vs/editor/editor.api";
+import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { SemanticICONS } from "semantic-ui-react";
 import FileInstance from "../file/FileInstance";
 import TextHistory from "./TextHistory";
@@ -61,7 +61,7 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
         editor.addAction({
             id: "editor.action.save",
             label: "Save",
-            keybindings: [KeyMod.CtrlCmd | KeyCode.KEY_S],
+            keybindings: [/* KeyMod.CtrlCmd */2048 | /* KeyCode.KEY_S */49],
             run: () => this.save()
         });
     }

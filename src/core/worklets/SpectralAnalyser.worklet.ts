@@ -1,6 +1,6 @@
 import apply from "window-function/apply";
 import { blackman, hamming, hann, triangular } from "window-function";
-import { RFFT } from "fftw-js";
+import { RFFT } from "../../utils/fftw";
 import { setTypedArray, getSubTypedArray, indexToFreq, sum, centroid, estimateFreq, fftw2Amp, flatness, flux, kurtosis, rolloff, skewness, slope, spread } from "../../utils/buffer";
 import { ceil } from "../../utils/math";
 import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./TypedAudioWorklet";

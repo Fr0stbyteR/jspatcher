@@ -175,9 +175,8 @@ export default class AudioRecorder {
                 if (this.$ < this.$end) {
                     const [audio] = await this.overwrittenAudio.split(this.$ - this.$start);
                     this.overwrittenAudio.setAudio(audio);
-                } else {
-                    this.overwrittenAudio.waveform.update();
                 }
+                this.overwrittenAudio.waveform.update();
             }
         }
         const audio = await this.audio.pick(this.$start, this.$, true);

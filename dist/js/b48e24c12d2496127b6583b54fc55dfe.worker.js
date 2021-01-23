@@ -1,121 +1,37 @@
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./node_modules/monaco-editor/esm/vs/language/json/json.worker.js");
-/******/ })
-/************************************************************************/
-/******/ ({
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
 
 /***/ "./node_modules/monaco-editor/esm/vs/base/common/arrays.js":
 /*!*****************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/arrays.js ***!
   \*****************************************************************/
-/*! exports provided: tail, tail2, equals, binarySearch, findFirstInSorted, mergeSort, groupBy, coalesce, isFalsyOrEmpty, isNonEmptyArray, distinct, distinctES6, firstIndex, first, firstOrDefault, flatten, range, arrayInsert, pushToStart, pushToEnd, asArray */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tail", function() { return tail; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tail2", function() { return tail2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "binarySearch", function() { return binarySearch; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findFirstInSorted", function() { return findFirstInSorted; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mergeSort", function() { return mergeSort; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "groupBy", function() { return groupBy; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "coalesce", function() { return coalesce; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isFalsyOrEmpty", function() { return isFalsyOrEmpty; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isNonEmptyArray", function() { return isNonEmptyArray; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "distinct", function() { return distinct; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "distinctES6", function() { return distinctES6; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "firstIndex", function() { return firstIndex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "first", function() { return first; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "firstOrDefault", function() { return firstOrDefault; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "flatten", function() { return flatten; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "range", function() { return range; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "arrayInsert", function() { return arrayInsert; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pushToStart", function() { return pushToStart; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pushToEnd", function() { return pushToEnd; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "asArray", function() { return asArray; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "tail": () => /* binding */ tail,
+/* harmony export */   "tail2": () => /* binding */ tail2,
+/* harmony export */   "equals": () => /* binding */ equals,
+/* harmony export */   "binarySearch": () => /* binding */ binarySearch,
+/* harmony export */   "findFirstInSorted": () => /* binding */ findFirstInSorted,
+/* harmony export */   "mergeSort": () => /* binding */ mergeSort,
+/* harmony export */   "groupBy": () => /* binding */ groupBy,
+/* harmony export */   "coalesce": () => /* binding */ coalesce,
+/* harmony export */   "isFalsyOrEmpty": () => /* binding */ isFalsyOrEmpty,
+/* harmony export */   "isNonEmptyArray": () => /* binding */ isNonEmptyArray,
+/* harmony export */   "distinct": () => /* binding */ distinct,
+/* harmony export */   "distinctES6": () => /* binding */ distinctES6,
+/* harmony export */   "firstIndex": () => /* binding */ firstIndex,
+/* harmony export */   "first": () => /* binding */ first,
+/* harmony export */   "firstOrDefault": () => /* binding */ firstOrDefault,
+/* harmony export */   "flatten": () => /* binding */ flatten,
+/* harmony export */   "range": () => /* binding */ range,
+/* harmony export */   "arrayInsert": () => /* binding */ arrayInsert,
+/* harmony export */   "pushToStart": () => /* binding */ pushToStart,
+/* harmony export */   "pushToEnd": () => /* binding */ pushToEnd,
+/* harmony export */   "asArray": () => /* binding */ asArray
+/* harmony export */ });
 /**
  * Returns the last element of an array.
  * @param array The array.
@@ -375,13 +291,13 @@ function asArray(x) {
 /*!***********************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/cancellation.js ***!
   \***********************************************************************/
-/*! exports provided: CancellationToken, CancellationTokenSource */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CancellationToken", function() { return CancellationToken; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CancellationTokenSource", function() { return CancellationTokenSource; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CancellationToken": () => /* binding */ CancellationToken,
+/* harmony export */   "CancellationTokenSource": () => /* binding */ CancellationTokenSource
+/* harmony export */ });
 /* harmony import */ var _event_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./event.js */ "./node_modules/monaco-editor/esm/vs/base/common/event.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -410,7 +326,7 @@ var CancellationToken;
     CancellationToken.isCancellationToken = isCancellationToken;
     CancellationToken.None = Object.freeze({
         isCancellationRequested: false,
-        onCancellationRequested: _event_js__WEBPACK_IMPORTED_MODULE_0__["Event"].None
+        onCancellationRequested: _event_js__WEBPACK_IMPORTED_MODULE_0__.Event.None
     });
     CancellationToken.Cancelled = Object.freeze({
         isCancellationRequested: true,
@@ -439,7 +355,7 @@ class MutableToken {
             return shortcutEvent;
         }
         if (!this._emitter) {
-            this._emitter = new _event_js__WEBPACK_IMPORTED_MODULE_0__["Emitter"]();
+            this._emitter = new _event_js__WEBPACK_IMPORTED_MODULE_0__.Emitter();
         }
         return this._emitter.event;
     }
@@ -501,16 +417,16 @@ class CancellationTokenSource {
 /*!********************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js ***!
   \********************************************************************/
-/*! exports provided: StringDiffSequence, stringDiff, Debug, MyArray, LcsDiff */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StringDiffSequence", function() { return StringDiffSequence; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stringDiff", function() { return stringDiff; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Debug", function() { return Debug; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MyArray", function() { return MyArray; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LcsDiff", function() { return LcsDiff; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "StringDiffSequence": () => /* binding */ StringDiffSequence,
+/* harmony export */   "stringDiff": () => /* binding */ stringDiff,
+/* harmony export */   "Debug": () => /* binding */ Debug,
+/* harmony export */   "MyArray": () => /* binding */ MyArray,
+/* harmony export */   "LcsDiff": () => /* binding */ LcsDiff
+/* harmony export */ });
 /* harmony import */ var _diffChange_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diffChange.js */ "./node_modules/monaco-editor/esm/vs/base/common/diff/diffChange.js");
 /* harmony import */ var _hash_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../hash.js */ "./node_modules/monaco-editor/esm/vs/base/common/hash.js");
 /*---------------------------------------------------------------------------------------------
@@ -598,7 +514,7 @@ class DiffChangeHelper {
         // Only add to the list if there is something to add
         if (this.m_originalCount > 0 || this.m_modifiedCount > 0) {
             // Add the new change to our list
-            this.m_changes.push(new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__["DiffChange"](this.m_originalStart, this.m_originalCount, this.m_modifiedStart, this.m_modifiedCount));
+            this.m_changes.push(new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__.DiffChange(this.m_originalStart, this.m_originalCount, this.m_modifiedStart, this.m_modifiedCount));
         }
         // Reset for the next change
         this.m_originalCount = 0;
@@ -682,7 +598,7 @@ class LcsDiff {
         if (LcsDiff._isStringArray(elements)) {
             const hashes = new Int32Array(elements.length);
             for (let i = 0, len = elements.length; i < len; i++) {
-                hashes[i] = Object(_hash_js__WEBPACK_IMPORTED_MODULE_1__["stringHash"])(elements[i], 0);
+                hashes[i] = (0,_hash_js__WEBPACK_IMPORTED_MODULE_1__.stringHash)(elements[i], 0);
             }
             return [elements, hashes, true];
         }
@@ -755,14 +671,14 @@ class LcsDiff {
                 Debug.Assert(originalStart === originalEnd + 1, 'originalStart should only be one more than originalEnd');
                 // All insertions
                 changes = [
-                    new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__["DiffChange"](originalStart, 0, modifiedStart, modifiedEnd - modifiedStart + 1)
+                    new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__.DiffChange(originalStart, 0, modifiedStart, modifiedEnd - modifiedStart + 1)
                 ];
             }
             else if (originalStart <= originalEnd) {
                 Debug.Assert(modifiedStart === modifiedEnd + 1, 'modifiedStart should only be one more than modifiedEnd');
                 // All deletions
                 changes = [
-                    new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__["DiffChange"](originalStart, originalEnd - originalStart + 1, modifiedStart, 0)
+                    new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__.DiffChange(originalStart, originalEnd - originalStart + 1, modifiedStart, 0)
                 ];
             }
             else {
@@ -798,14 +714,14 @@ class LcsDiff {
                 // We did't have time to finish the first half, so we don't have time to compute this half.
                 // Consider the entire rest of the sequence different.
                 rightChanges = [
-                    new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__["DiffChange"](midOriginal + 1, originalEnd - (midOriginal + 1) + 1, midModified + 1, modifiedEnd - (midModified + 1) + 1)
+                    new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__.DiffChange(midOriginal + 1, originalEnd - (midOriginal + 1) + 1, midModified + 1, modifiedEnd - (midModified + 1) + 1)
                 ];
             }
             return this.ConcatenateChanges(leftChanges, rightChanges);
         }
         // If we hit here, we quit early, and so can't return anything meaningful
         return [
-            new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__["DiffChange"](originalStart, originalEnd - originalStart + 1, modifiedStart, modifiedEnd - modifiedStart + 1)
+            new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__.DiffChange(originalStart, originalEnd - originalStart + 1, modifiedStart, modifiedEnd - modifiedStart + 1)
         ];
     }
     WALKTRACE(diagonalForwardBase, diagonalForwardStart, diagonalForwardEnd, diagonalForwardOffset, diagonalReverseBase, diagonalReverseStart, diagonalReverseEnd, diagonalReverseOffset, forwardPoints, reversePoints, originalIndex, originalEnd, midOriginalArr, modifiedIndex, modifiedEnd, midModifiedArr, deltaIsEven, quitEarlyArr) {
@@ -865,7 +781,7 @@ class LcsDiff {
                 modifiedStartPoint = Math.max(modifiedStartPoint, lastForwardChange.getModifiedEnd());
             }
             reverseChanges = [
-                new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__["DiffChange"](originalStartPoint, originalEnd - originalStartPoint + 1, modifiedStartPoint, modifiedEnd - modifiedStartPoint + 1)
+                new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__.DiffChange(originalStartPoint, originalEnd - originalStartPoint + 1, modifiedStartPoint, modifiedEnd - modifiedStartPoint + 1)
             ];
         }
         else {
@@ -1051,7 +967,7 @@ class LcsDiff {
                     originalStart++;
                     modifiedStart++;
                     return [
-                        new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__["DiffChange"](originalStart, originalEnd - originalStart + 1, modifiedStart, modifiedEnd - modifiedStart + 1)
+                        new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__.DiffChange(originalStart, originalEnd - originalStart + 1, modifiedStart, modifiedEnd - modifiedStart + 1)
                     ];
                 }
             }
@@ -1280,7 +1196,7 @@ class LcsDiff {
             if (left.modifiedStart + left.modifiedLength >= right.modifiedStart) {
                 modifiedLength = right.modifiedStart + right.modifiedLength - left.modifiedStart;
             }
-            mergedChangeArr[0] = new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__["DiffChange"](originalStart, originalLength, modifiedStart, modifiedLength);
+            mergedChangeArr[0] = new _diffChange_js__WEBPACK_IMPORTED_MODULE_0__.DiffChange(originalStart, originalLength, modifiedStart, modifiedLength);
             return true;
         }
         else {
@@ -1328,12 +1244,12 @@ class LcsDiff {
 /*!**************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/diff/diffChange.js ***!
   \**************************************************************************/
-/*! exports provided: DiffChange */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DiffChange", function() { return DiffChange; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "DiffChange": () => /* binding */ DiffChange
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -1374,20 +1290,20 @@ class DiffChange {
 /*!*****************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/errors.js ***!
   \*****************************************************************/
-/*! exports provided: ErrorHandler, errorHandler, onUnexpectedError, onUnexpectedExternalError, transformErrorForSerialization, isPromiseCanceledError, canceled, illegalArgument, illegalState */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrorHandler", function() { return ErrorHandler; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "errorHandler", function() { return errorHandler; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onUnexpectedError", function() { return onUnexpectedError; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onUnexpectedExternalError", function() { return onUnexpectedExternalError; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transformErrorForSerialization", function() { return transformErrorForSerialization; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPromiseCanceledError", function() { return isPromiseCanceledError; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "canceled", function() { return canceled; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "illegalArgument", function() { return illegalArgument; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "illegalState", function() { return illegalState; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ErrorHandler": () => /* binding */ ErrorHandler,
+/* harmony export */   "errorHandler": () => /* binding */ errorHandler,
+/* harmony export */   "onUnexpectedError": () => /* binding */ onUnexpectedError,
+/* harmony export */   "onUnexpectedExternalError": () => /* binding */ onUnexpectedExternalError,
+/* harmony export */   "transformErrorForSerialization": () => /* binding */ transformErrorForSerialization,
+/* harmony export */   "isPromiseCanceledError": () => /* binding */ isPromiseCanceledError,
+/* harmony export */   "canceled": () => /* binding */ canceled,
+/* harmony export */   "illegalArgument": () => /* binding */ illegalArgument,
+/* harmony export */   "illegalState": () => /* binding */ illegalState
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -1487,16 +1403,16 @@ function illegalState(name) {
 /*!****************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/event.js ***!
   \****************************************************************/
-/*! exports provided: Event, Emitter, PauseableEmitter, EventBufferer, Relay */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Event", function() { return Event; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Emitter", function() { return Emitter; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PauseableEmitter", function() { return PauseableEmitter; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventBufferer", function() { return EventBufferer; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Relay", function() { return Relay; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Event": () => /* binding */ Event,
+/* harmony export */   "Emitter": () => /* binding */ Emitter,
+/* harmony export */   "PauseableEmitter": () => /* binding */ PauseableEmitter,
+/* harmony export */   "EventBufferer": () => /* binding */ EventBufferer,
+/* harmony export */   "Relay": () => /* binding */ Relay
+/* harmony export */ });
 /* harmony import */ var _errors_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./errors.js */ "./node_modules/monaco-editor/esm/vs/base/common/errors.js");
 /* harmony import */ var _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lifecycle.js */ "./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js");
 /* harmony import */ var _linkedList_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./linkedList.js */ "./node_modules/monaco-editor/esm/vs/base/common/linkedList.js");
@@ -1509,7 +1425,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var Event;
 (function (Event) {
-    Event.None = () => _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__["Disposable"].None;
+    Event.None = () => _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__.Disposable.None;
     /**
      * Given an event, returns another event which only fires once.
      */
@@ -1565,7 +1481,7 @@ var Event;
     }
     Event.signal = signal;
     function any(...events) {
-        return (listener, thisArgs = null, disposables) => Object(_lifecycle_js__WEBPACK_IMPORTED_MODULE_1__["combinedDisposable"])(...events.map(event => event(e => listener.call(thisArgs, e), null, disposables)));
+        return (listener, thisArgs = null, disposables) => (0,_lifecycle_js__WEBPACK_IMPORTED_MODULE_1__.combinedDisposable)(...events.map(event => event(e => listener.call(thisArgs, e), null, disposables)));
     }
     Event.any = any;
     /**
@@ -1878,7 +1794,7 @@ class Emitter {
         if (!this._event) {
             this._event = (listener, thisArgs, disposables) => {
                 if (!this._listeners) {
-                    this._listeners = new _linkedList_js__WEBPACK_IMPORTED_MODULE_2__["LinkedList"]();
+                    this._listeners = new _linkedList_js__WEBPACK_IMPORTED_MODULE_2__.LinkedList();
                 }
                 const firstListener = this._listeners.isEmpty();
                 if (firstListener && this._options && this._options.onFirstListenerAdd) {
@@ -1914,7 +1830,7 @@ class Emitter {
                         }
                     }
                 };
-                if (disposables instanceof _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__["DisposableStore"]) {
+                if (disposables instanceof _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__.DisposableStore) {
                     disposables.add(result);
                 }
                 else if (Array.isArray(disposables)) {
@@ -1935,7 +1851,7 @@ class Emitter {
             // then emit all event. an inner/nested event might be
             // the driver of this
             if (!this._deliveryQueue) {
-                this._deliveryQueue = new _linkedList_js__WEBPACK_IMPORTED_MODULE_2__["LinkedList"]();
+                this._deliveryQueue = new _linkedList_js__WEBPACK_IMPORTED_MODULE_2__.LinkedList();
             }
             for (let listener of this._listeners) {
                 this._deliveryQueue.push([listener, event]);
@@ -1951,7 +1867,7 @@ class Emitter {
                     }
                 }
                 catch (e) {
-                    Object(_errors_js__WEBPACK_IMPORTED_MODULE_0__["onUnexpectedError"])(e);
+                    (0,_errors_js__WEBPACK_IMPORTED_MODULE_0__.onUnexpectedError)(e);
                 }
             }
         }
@@ -1974,7 +1890,7 @@ class PauseableEmitter extends Emitter {
     constructor(options) {
         super(options);
         this._isPaused = 0;
-        this._eventQueue = new _linkedList_js__WEBPACK_IMPORTED_MODULE_2__["LinkedList"]();
+        this._eventQueue = new _linkedList_js__WEBPACK_IMPORTED_MODULE_2__.LinkedList();
         this._mergeFn = options && options.merge;
     }
     pause() {
@@ -2065,7 +1981,7 @@ class Relay {
     constructor() {
         this.listening = false;
         this.inputEvent = Event.None;
-        this.inputEventListener = _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__["Disposable"].None;
+        this.inputEventListener = _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__.Disposable.None;
         this.emitter = new Emitter({
             onFirstListenerDidAdd: () => {
                 this.listening = true;
@@ -2098,15 +2014,15 @@ class Relay {
 /*!***************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/hash.js ***!
   \***************************************************************/
-/*! exports provided: hash, doHash, stringHash, StringSHA1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hash", function() { return hash; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "doHash", function() { return doHash; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stringHash", function() { return stringHash; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StringSHA1", function() { return StringSHA1; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "hash": () => /* binding */ hash,
+/* harmony export */   "doHash": () => /* binding */ doHash,
+/* harmony export */   "stringHash": () => /* binding */ stringHash,
+/* harmony export */   "StringSHA1": () => /* binding */ StringSHA1
+/* harmony export */ });
 /* harmony import */ var _strings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./strings.js */ "./node_modules/monaco-editor/esm/vs/base/common/strings.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -2225,12 +2141,12 @@ class StringSHA1 {
         }
         while (true) {
             let codePoint = charCode;
-            if (_strings_js__WEBPACK_IMPORTED_MODULE_0__["isHighSurrogate"](charCode)) {
+            if (_strings_js__WEBPACK_IMPORTED_MODULE_0__.isHighSurrogate(charCode)) {
                 if (offset + 1 < strLen) {
                     const nextCharCode = str.charCodeAt(offset + 1);
-                    if (_strings_js__WEBPACK_IMPORTED_MODULE_0__["isLowSurrogate"](nextCharCode)) {
+                    if (_strings_js__WEBPACK_IMPORTED_MODULE_0__.isLowSurrogate(nextCharCode)) {
                         offset++;
-                        codePoint = _strings_js__WEBPACK_IMPORTED_MODULE_0__["computeCodePoint"](charCode, nextCharCode);
+                        codePoint = _strings_js__WEBPACK_IMPORTED_MODULE_0__.computeCodePoint(charCode, nextCharCode);
                     }
                     else {
                         // illegal => unicode replacement character
@@ -2243,7 +2159,7 @@ class StringSHA1 {
                     break;
                 }
             }
-            else if (_strings_js__WEBPACK_IMPORTED_MODULE_0__["isLowSurrogate"](charCode)) {
+            else if (_strings_js__WEBPACK_IMPORTED_MODULE_0__.isLowSurrogate(charCode)) {
                 // illegal => unicode replacement character
                 codePoint = 65533 /* UNICODE_REPLACEMENT */;
             }
@@ -2371,12 +2287,12 @@ StringSHA1._bigBlock32 = new DataView(new ArrayBuffer(320)); // 80 * 4 = 320
 /*!*******************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/iterator.js ***!
   \*******************************************************************/
-/*! exports provided: Iterable */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Iterable", function() { return Iterable; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Iterable": () => /* binding */ Iterable
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -2464,19 +2380,19 @@ var Iterable;
 /*!*******************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/keyCodes.js ***!
   \*******************************************************************/
-/*! exports provided: KeyCodeUtils, KeyChord, createKeybinding, createSimpleKeybinding, SimpleKeybinding, ChordKeybinding, ResolvedKeybindingPart, ResolvedKeybinding */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "KeyCodeUtils", function() { return KeyCodeUtils; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "KeyChord", function() { return KeyChord; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createKeybinding", function() { return createKeybinding; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createSimpleKeybinding", function() { return createSimpleKeybinding; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SimpleKeybinding", function() { return SimpleKeybinding; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ChordKeybinding", function() { return ChordKeybinding; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ResolvedKeybindingPart", function() { return ResolvedKeybindingPart; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ResolvedKeybinding", function() { return ResolvedKeybinding; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "KeyCodeUtils": () => /* binding */ KeyCodeUtils,
+/* harmony export */   "KeyChord": () => /* binding */ KeyChord,
+/* harmony export */   "createKeybinding": () => /* binding */ createKeybinding,
+/* harmony export */   "createSimpleKeybinding": () => /* binding */ createSimpleKeybinding,
+/* harmony export */   "SimpleKeybinding": () => /* binding */ SimpleKeybinding,
+/* harmony export */   "ChordKeybinding": () => /* binding */ ChordKeybinding,
+/* harmony export */   "ResolvedKeybindingPart": () => /* binding */ ResolvedKeybindingPart,
+/* harmony export */   "ResolvedKeybinding": () => /* binding */ ResolvedKeybinding
+/* harmony export */ });
 /* harmony import */ var _errors_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./errors.js */ "./node_modules/monaco-editor/esm/vs/base/common/errors.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -2709,7 +2625,7 @@ class SimpleKeybinding {
 class ChordKeybinding {
     constructor(parts) {
         if (parts.length === 0) {
-            throw Object(_errors_js__WEBPACK_IMPORTED_MODULE_0__["illegalArgument"])(`parts`);
+            throw (0,_errors_js__WEBPACK_IMPORTED_MODULE_0__.illegalArgument)(`parts`);
         }
         this.parts = parts;
     }
@@ -2737,20 +2653,20 @@ class ResolvedKeybinding {
 /*!********************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js ***!
   \********************************************************************/
-/*! exports provided: MultiDisposeError, isDisposable, dispose, combinedDisposable, toDisposable, DisposableStore, Disposable, MutableDisposable, ImmortalReference */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MultiDisposeError", function() { return MultiDisposeError; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isDisposable", function() { return isDisposable; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dispose", function() { return dispose; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "combinedDisposable", function() { return combinedDisposable; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toDisposable", function() { return toDisposable; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DisposableStore", function() { return DisposableStore; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Disposable", function() { return Disposable; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MutableDisposable", function() { return MutableDisposable; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ImmortalReference", function() { return ImmortalReference; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MultiDisposeError": () => /* binding */ MultiDisposeError,
+/* harmony export */   "isDisposable": () => /* binding */ isDisposable,
+/* harmony export */   "dispose": () => /* binding */ dispose,
+/* harmony export */   "combinedDisposable": () => /* binding */ combinedDisposable,
+/* harmony export */   "toDisposable": () => /* binding */ toDisposable,
+/* harmony export */   "DisposableStore": () => /* binding */ DisposableStore,
+/* harmony export */   "Disposable": () => /* binding */ Disposable,
+/* harmony export */   "MutableDisposable": () => /* binding */ MutableDisposable,
+/* harmony export */   "ImmortalReference": () => /* binding */ ImmortalReference
+/* harmony export */ });
 /* harmony import */ var _iterator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./iterator.js */ "./node_modules/monaco-editor/esm/vs/base/common/iterator.js");
 
 /**
@@ -2797,7 +2713,7 @@ function isDisposable(thing) {
     return typeof thing.dispose === 'function' && thing.dispose.length === 0;
 }
 function dispose(arg) {
-    if (_iterator_js__WEBPACK_IMPORTED_MODULE_0__["Iterable"].is(arg)) {
+    if (_iterator_js__WEBPACK_IMPORTED_MODULE_0__.Iterable.is(arg)) {
         let errors = [];
         for (const d of arg) {
             if (d) {
@@ -2955,12 +2871,12 @@ class ImmortalReference {
 /*!*********************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/linkedList.js ***!
   \*********************************************************************/
-/*! exports provided: LinkedList */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LinkedList", function() { return LinkedList; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LinkedList": () => /* binding */ LinkedList
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -3093,20 +3009,20 @@ class LinkedList {
 /*!***************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/path.js ***!
   \***************************************************************/
-/*! exports provided: win32, posix, normalize, resolve, relative, dirname, basename, extname, sep */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "win32", function() { return win32; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "posix", function() { return posix; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "normalize", function() { return normalize; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resolve", function() { return resolve; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "relative", function() { return relative; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dirname", function() { return dirname; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "basename", function() { return basename; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "extname", function() { return extname; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sep", function() { return sep; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "win32": () => /* binding */ win32,
+/* harmony export */   "posix": () => /* binding */ posix,
+/* harmony export */   "normalize": () => /* binding */ normalize,
+/* harmony export */   "resolve": () => /* binding */ resolve,
+/* harmony export */   "relative": () => /* binding */ relative,
+/* harmony export */   "dirname": () => /* binding */ dirname,
+/* harmony export */   "basename": () => /* binding */ basename,
+/* harmony export */   "extname": () => /* binding */ extname,
+/* harmony export */   "sep": () => /* binding */ sep
+/* harmony export */ });
 /* harmony import */ var _process_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./process.js */ "./node_modules/monaco-editor/esm/vs/base/common/process.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -3281,7 +3197,7 @@ const win32 = {
                 }
             }
             else if (resolvedDevice.length === 0) {
-                path = _process_js__WEBPACK_IMPORTED_MODULE_0__["cwd"]();
+                path = _process_js__WEBPACK_IMPORTED_MODULE_0__.cwd();
             }
             else {
                 // Windows has the concept of drive-specific current working
@@ -3289,7 +3205,7 @@ const win32 = {
                 // absolute path, get cwd for that drive, or the process cwd if
                 // the drive cwd is not available. We're sure the device is not
                 // a UNC path at this points, because UNC paths are always absolute.
-                path = _process_js__WEBPACK_IMPORTED_MODULE_0__["env"][`=${resolvedDevice}`] || _process_js__WEBPACK_IMPORTED_MODULE_0__["cwd"]();
+                path = ({"NODE_ENV":"development"})[`=${resolvedDevice}`] || _process_js__WEBPACK_IMPORTED_MODULE_0__.cwd();
                 // Verify that a cwd was found and that it actually points
                 // to our drive. If not, default to the drive's root.
                 if (path === undefined ||
@@ -4095,7 +4011,7 @@ const posix = {
         let resolvedPath = '';
         let resolvedAbsolute = false;
         for (let i = pathSegments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-            const path = i >= 0 ? pathSegments[i] : _process_js__WEBPACK_IMPORTED_MODULE_0__["cwd"]();
+            const path = i >= 0 ? pathSegments[i] : _process_js__WEBPACK_IMPORTED_MODULE_0__.cwd();
             validateString(path, 'path');
             // Skip empty entries
             if (path.length === 0) {
@@ -4480,13 +4396,13 @@ const posix = {
 };
 posix.win32 = win32.win32 = win32;
 posix.posix = win32.posix = posix;
-const normalize = (_process_js__WEBPACK_IMPORTED_MODULE_0__["platform"] === 'win32' ? win32.normalize : posix.normalize);
-const resolve = (_process_js__WEBPACK_IMPORTED_MODULE_0__["platform"] === 'win32' ? win32.resolve : posix.resolve);
-const relative = (_process_js__WEBPACK_IMPORTED_MODULE_0__["platform"] === 'win32' ? win32.relative : posix.relative);
-const dirname = (_process_js__WEBPACK_IMPORTED_MODULE_0__["platform"] === 'win32' ? win32.dirname : posix.dirname);
-const basename = (_process_js__WEBPACK_IMPORTED_MODULE_0__["platform"] === 'win32' ? win32.basename : posix.basename);
-const extname = (_process_js__WEBPACK_IMPORTED_MODULE_0__["platform"] === 'win32' ? win32.extname : posix.extname);
-const sep = (_process_js__WEBPACK_IMPORTED_MODULE_0__["platform"] === 'win32' ? win32.sep : posix.sep);
+const normalize = (({}) === 'win32' ? win32.normalize : posix.normalize);
+const resolve = (({}) === 'win32' ? win32.resolve : posix.resolve);
+const relative = (({}) === 'win32' ? win32.relative : posix.relative);
+const dirname = (({}) === 'win32' ? win32.dirname : posix.dirname);
+const basename = (({}) === 'win32' ? win32.basename : posix.basename);
+const extname = (({}) === 'win32' ? win32.extname : posix.extname);
+const sep = (({}) === 'win32' ? win32.sep : posix.sep);
 
 
 /***/ }),
@@ -4495,21 +4411,21 @@ const sep = (_process_js__WEBPACK_IMPORTED_MODULE_0__["platform"] === 'win32' ? 
 /*!*******************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/platform.js ***!
   \*******************************************************************/
-/*! exports provided: isWindows, isMacintosh, isLinux, isNative, isWeb, isIOS, globals, setImmediate, OS, isLittleEndian */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(process, global) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isWindows", function() { return isWindows; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isMacintosh", function() { return isMacintosh; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isLinux", function() { return isLinux; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isNative", function() { return isNative; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isWeb", function() { return isWeb; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isIOS", function() { return isIOS; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "globals", function() { return globals; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setImmediate", function() { return setImmediate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "OS", function() { return OS; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isLittleEndian", function() { return isLittleEndian; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isWindows": () => /* binding */ isWindows,
+/* harmony export */   "isMacintosh": () => /* binding */ isMacintosh,
+/* harmony export */   "isLinux": () => /* binding */ isLinux,
+/* harmony export */   "isNative": () => /* binding */ isNative,
+/* harmony export */   "isWeb": () => /* binding */ isWeb,
+/* harmony export */   "isIOS": () => /* binding */ isIOS,
+/* harmony export */   "globals": () => /* binding */ globals,
+/* harmony export */   "setImmediate": () => /* binding */ setImmediate,
+/* harmony export */   "OS": () => /* binding */ OS,
+/* harmony export */   "isLittleEndian": () => /* binding */ isLittleEndian
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -4538,12 +4454,12 @@ if (typeof navigator === 'object' && !isElectronRenderer) {
     _language = _locale;
 }
 else if (typeof process === 'object') {
-    _isWindows = (process.platform === 'win32');
-    _isMacintosh = (process.platform === 'darwin');
-    _isLinux = (process.platform === 'linux');
+    _isWindows = (({}) === 'win32');
+    _isMacintosh = (({}) === 'darwin');
+    _isLinux = (({}) === 'linux');
     _locale = LANGUAGE_DEFAULT;
     _language = LANGUAGE_DEFAULT;
-    const rawNlsConfig = process.env['VSCODE_NLS_CONFIG'];
+    const rawNlsConfig = ({"NODE_ENV":"development"})['VSCODE_NLS_CONFIG'];
     if (rawNlsConfig) {
         try {
             const nlsConfig = JSON.parse(rawNlsConfig);
@@ -4574,7 +4490,7 @@ const isLinux = _isLinux;
 const isNative = _isNative;
 const isWeb = _isWeb;
 const isIOS = _isIOS;
-const _globals = (typeof self === 'object' ? self : typeof global === 'object' ? global : {});
+const _globals = (typeof self === 'object' ? self : typeof __webpack_require__.g === 'object' ? __webpack_require__.g : {});
 const globals = _globals;
 const setImmediate = (function defineSetImmediate() {
     if (globals.setImmediate) {
@@ -4625,7 +4541,6 @@ function isLittleEndian() {
     return _isLittleEndian;
 }
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../../../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -4633,14 +4548,14 @@ function isLittleEndian() {
 /*!******************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/process.js ***!
   \******************************************************************/
-/*! exports provided: cwd, env, platform */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cwd", function() { return cwd; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "env", function() { return env; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "platform", function() { return platform; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "cwd": () => /* binding */ cwd,
+/* harmony export */   "env": () => /* binding */ env,
+/* harmony export */   "platform": () => /* binding */ platform
+/* harmony export */ });
 /* harmony import */ var _platform_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -4650,14 +4565,13 @@ __webpack_require__.r(__webpack_exports__);
 const safeProcess = (typeof process === 'undefined') ? {
     cwd() { return '/'; },
     env: Object.create(null),
-    get platform() { return _platform_js__WEBPACK_IMPORTED_MODULE_0__["isWindows"] ? 'win32' : _platform_js__WEBPACK_IMPORTED_MODULE_0__["isMacintosh"] ? 'darwin' : 'linux'; },
-    nextTick(callback) { return Object(_platform_js__WEBPACK_IMPORTED_MODULE_0__["setImmediate"])(callback); }
+    get platform() { return _platform_js__WEBPACK_IMPORTED_MODULE_0__.isWindows ? 'win32' : _platform_js__WEBPACK_IMPORTED_MODULE_0__.isMacintosh ? 'darwin' : 'linux'; },
+    nextTick(callback) { return (0,_platform_js__WEBPACK_IMPORTED_MODULE_0__.setImmediate)(callback); }
 } : process;
 const cwd = safeProcess.cwd;
 const env = safeProcess.env;
 const platform = safeProcess.platform;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -4665,60 +4579,60 @@ const platform = safeProcess.platform;
 /*!******************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/strings.js ***!
   \******************************************************************/
-/*! exports provided: isFalsyOrWhitespace, pad, format, escape, escapeRegExpCharacters, trim, ltrim, rtrim, convertSimple2RegExpPattern, stripWildcards, startsWith, endsWith, createRegExp, regExpLeadsToEndlessLoop, regExpFlags, firstNonWhitespaceIndex, getLeadingWhitespace, lastNonWhitespaceIndex, compare, compareSubstring, compareIgnoreCase, compareSubstringIgnoreCase, isLowerAsciiLetter, isUpperAsciiLetter, equalsIgnoreCase, startsWithIgnoreCase, commonPrefixLength, commonSuffixLength, isHighSurrogate, isLowSurrogate, computeCodePoint, getNextCodePoint, nextCharLength, prevCharLength, decodeUTF8, containsRTL, containsEmoji, isBasicASCII, UNUSUAL_LINE_TERMINATORS, containsUnusualLineTerminators, containsFullWidthCharacter, isFullWidthCharacter, isEmojiImprecise, UTF8_BOM_CHARACTER, startsWithUTF8BOM, containsUppercaseCharacter, singleLetterHash, getGraphemeBreakType, breakBetweenGraphemeBreakType */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isFalsyOrWhitespace", function() { return isFalsyOrWhitespace; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pad", function() { return pad; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "format", function() { return format; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "escape", function() { return escape; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "escapeRegExpCharacters", function() { return escapeRegExpCharacters; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trim", function() { return trim; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ltrim", function() { return ltrim; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rtrim", function() { return rtrim; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "convertSimple2RegExpPattern", function() { return convertSimple2RegExpPattern; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stripWildcards", function() { return stripWildcards; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "startsWith", function() { return startsWith; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "endsWith", function() { return endsWith; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createRegExp", function() { return createRegExp; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "regExpLeadsToEndlessLoop", function() { return regExpLeadsToEndlessLoop; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "regExpFlags", function() { return regExpFlags; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "firstNonWhitespaceIndex", function() { return firstNonWhitespaceIndex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLeadingWhitespace", function() { return getLeadingWhitespace; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lastNonWhitespaceIndex", function() { return lastNonWhitespaceIndex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "compare", function() { return compare; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "compareSubstring", function() { return compareSubstring; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "compareIgnoreCase", function() { return compareIgnoreCase; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "compareSubstringIgnoreCase", function() { return compareSubstringIgnoreCase; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isLowerAsciiLetter", function() { return isLowerAsciiLetter; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isUpperAsciiLetter", function() { return isUpperAsciiLetter; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equalsIgnoreCase", function() { return equalsIgnoreCase; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "startsWithIgnoreCase", function() { return startsWithIgnoreCase; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "commonPrefixLength", function() { return commonPrefixLength; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "commonSuffixLength", function() { return commonSuffixLength; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isHighSurrogate", function() { return isHighSurrogate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isLowSurrogate", function() { return isLowSurrogate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "computeCodePoint", function() { return computeCodePoint; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNextCodePoint", function() { return getNextCodePoint; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "nextCharLength", function() { return nextCharLength; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "prevCharLength", function() { return prevCharLength; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "decodeUTF8", function() { return decodeUTF8; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "containsRTL", function() { return containsRTL; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "containsEmoji", function() { return containsEmoji; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isBasicASCII", function() { return isBasicASCII; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UNUSUAL_LINE_TERMINATORS", function() { return UNUSUAL_LINE_TERMINATORS; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "containsUnusualLineTerminators", function() { return containsUnusualLineTerminators; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "containsFullWidthCharacter", function() { return containsFullWidthCharacter; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isFullWidthCharacter", function() { return isFullWidthCharacter; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEmojiImprecise", function() { return isEmojiImprecise; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UTF8_BOM_CHARACTER", function() { return UTF8_BOM_CHARACTER; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "startsWithUTF8BOM", function() { return startsWithUTF8BOM; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "containsUppercaseCharacter", function() { return containsUppercaseCharacter; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "singleLetterHash", function() { return singleLetterHash; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGraphemeBreakType", function() { return getGraphemeBreakType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "breakBetweenGraphemeBreakType", function() { return breakBetweenGraphemeBreakType; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isFalsyOrWhitespace": () => /* binding */ isFalsyOrWhitespace,
+/* harmony export */   "pad": () => /* binding */ pad,
+/* harmony export */   "format": () => /* binding */ format,
+/* harmony export */   "escape": () => /* binding */ escape,
+/* harmony export */   "escapeRegExpCharacters": () => /* binding */ escapeRegExpCharacters,
+/* harmony export */   "trim": () => /* binding */ trim,
+/* harmony export */   "ltrim": () => /* binding */ ltrim,
+/* harmony export */   "rtrim": () => /* binding */ rtrim,
+/* harmony export */   "convertSimple2RegExpPattern": () => /* binding */ convertSimple2RegExpPattern,
+/* harmony export */   "stripWildcards": () => /* binding */ stripWildcards,
+/* harmony export */   "startsWith": () => /* binding */ startsWith,
+/* harmony export */   "endsWith": () => /* binding */ endsWith,
+/* harmony export */   "createRegExp": () => /* binding */ createRegExp,
+/* harmony export */   "regExpLeadsToEndlessLoop": () => /* binding */ regExpLeadsToEndlessLoop,
+/* harmony export */   "regExpFlags": () => /* binding */ regExpFlags,
+/* harmony export */   "firstNonWhitespaceIndex": () => /* binding */ firstNonWhitespaceIndex,
+/* harmony export */   "getLeadingWhitespace": () => /* binding */ getLeadingWhitespace,
+/* harmony export */   "lastNonWhitespaceIndex": () => /* binding */ lastNonWhitespaceIndex,
+/* harmony export */   "compare": () => /* binding */ compare,
+/* harmony export */   "compareSubstring": () => /* binding */ compareSubstring,
+/* harmony export */   "compareIgnoreCase": () => /* binding */ compareIgnoreCase,
+/* harmony export */   "compareSubstringIgnoreCase": () => /* binding */ compareSubstringIgnoreCase,
+/* harmony export */   "isLowerAsciiLetter": () => /* binding */ isLowerAsciiLetter,
+/* harmony export */   "isUpperAsciiLetter": () => /* binding */ isUpperAsciiLetter,
+/* harmony export */   "equalsIgnoreCase": () => /* binding */ equalsIgnoreCase,
+/* harmony export */   "startsWithIgnoreCase": () => /* binding */ startsWithIgnoreCase,
+/* harmony export */   "commonPrefixLength": () => /* binding */ commonPrefixLength,
+/* harmony export */   "commonSuffixLength": () => /* binding */ commonSuffixLength,
+/* harmony export */   "isHighSurrogate": () => /* binding */ isHighSurrogate,
+/* harmony export */   "isLowSurrogate": () => /* binding */ isLowSurrogate,
+/* harmony export */   "computeCodePoint": () => /* binding */ computeCodePoint,
+/* harmony export */   "getNextCodePoint": () => /* binding */ getNextCodePoint,
+/* harmony export */   "nextCharLength": () => /* binding */ nextCharLength,
+/* harmony export */   "prevCharLength": () => /* binding */ prevCharLength,
+/* harmony export */   "decodeUTF8": () => /* binding */ decodeUTF8,
+/* harmony export */   "containsRTL": () => /* binding */ containsRTL,
+/* harmony export */   "containsEmoji": () => /* binding */ containsEmoji,
+/* harmony export */   "isBasicASCII": () => /* binding */ isBasicASCII,
+/* harmony export */   "UNUSUAL_LINE_TERMINATORS": () => /* binding */ UNUSUAL_LINE_TERMINATORS,
+/* harmony export */   "containsUnusualLineTerminators": () => /* binding */ containsUnusualLineTerminators,
+/* harmony export */   "containsFullWidthCharacter": () => /* binding */ containsFullWidthCharacter,
+/* harmony export */   "isFullWidthCharacter": () => /* binding */ isFullWidthCharacter,
+/* harmony export */   "isEmojiImprecise": () => /* binding */ isEmojiImprecise,
+/* harmony export */   "UTF8_BOM_CHARACTER": () => /* binding */ UTF8_BOM_CHARACTER,
+/* harmony export */   "startsWithUTF8BOM": () => /* binding */ startsWithUTF8BOM,
+/* harmony export */   "containsUppercaseCharacter": () => /* binding */ containsUppercaseCharacter,
+/* harmony export */   "singleLetterHash": () => /* binding */ singleLetterHash,
+/* harmony export */   "getGraphemeBreakType": () => /* binding */ getGraphemeBreakType,
+/* harmony export */   "breakBetweenGraphemeBreakType": () => /* binding */ breakBetweenGraphemeBreakType
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -5476,27 +5390,27 @@ function getGraphemeBreakRawData() {
 /*!****************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/types.js ***!
   \****************************************************************/
-/*! exports provided: isArray, isString, isObject, isNumber, isBoolean, isUndefined, isUndefinedOrNull, assertType, assertIsDefined, isFunction, validateConstraints, validateConstraint, getAllPropertyNames, getAllMethodNames, createProxyObject, withNullAsUndefined */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isArray", function() { return isArray; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isString", function() { return isString; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isObject", function() { return isObject; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isNumber", function() { return isNumber; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isBoolean", function() { return isBoolean; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isUndefined", function() { return isUndefined; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isUndefinedOrNull", function() { return isUndefinedOrNull; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "assertType", function() { return assertType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "assertIsDefined", function() { return assertIsDefined; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isFunction", function() { return isFunction; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateConstraints", function() { return validateConstraints; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateConstraint", function() { return validateConstraint; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAllPropertyNames", function() { return getAllPropertyNames; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAllMethodNames", function() { return getAllMethodNames; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createProxyObject", function() { return createProxyObject; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "withNullAsUndefined", function() { return withNullAsUndefined; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isArray": () => /* binding */ isArray,
+/* harmony export */   "isString": () => /* binding */ isString,
+/* harmony export */   "isObject": () => /* binding */ isObject,
+/* harmony export */   "isNumber": () => /* binding */ isNumber,
+/* harmony export */   "isBoolean": () => /* binding */ isBoolean,
+/* harmony export */   "isUndefined": () => /* binding */ isUndefined,
+/* harmony export */   "isUndefinedOrNull": () => /* binding */ isUndefinedOrNull,
+/* harmony export */   "assertType": () => /* binding */ assertType,
+/* harmony export */   "assertIsDefined": () => /* binding */ assertIsDefined,
+/* harmony export */   "isFunction": () => /* binding */ isFunction,
+/* harmony export */   "validateConstraints": () => /* binding */ validateConstraints,
+/* harmony export */   "validateConstraint": () => /* binding */ validateConstraint,
+/* harmony export */   "getAllPropertyNames": () => /* binding */ getAllPropertyNames,
+/* harmony export */   "getAllMethodNames": () => /* binding */ getAllMethodNames,
+/* harmony export */   "createProxyObject": () => /* binding */ createProxyObject,
+/* harmony export */   "withNullAsUndefined": () => /* binding */ withNullAsUndefined
+/* harmony export */ });
 /**
  * @returns whether the provided parameter is a JavaScript Array or not.
  */
@@ -5644,13 +5558,13 @@ function withNullAsUndefined(x) {
 /*!***************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/uint.js ***!
   \***************************************************************/
-/*! exports provided: toUint8, toUint32 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toUint8", function() { return toUint8; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toUint32", function() { return toUint32; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "toUint8": () => /* binding */ toUint8,
+/* harmony export */   "toUint32": () => /* binding */ toUint32
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -5681,13 +5595,13 @@ function toUint32(v) {
 /*!**************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/uri.js ***!
   \**************************************************************/
-/*! exports provided: URI, uriToFsPath */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "URI", function() { return URI; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uriToFsPath", function() { return uriToFsPath; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "URI": () => /* binding */ URI,
+/* harmony export */   "uriToFsPath": () => /* binding */ uriToFsPath
+/* harmony export */ });
 /* harmony import */ var _platform_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
 /* harmony import */ var _path_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./path.js */ "./node_modules/monaco-editor/esm/vs/base/common/path.js");
 /*---------------------------------------------------------------------------------------------
@@ -5932,7 +5846,7 @@ class URI {
         // normalize to fwd-slashes on windows,
         // on other systems bwd-slashes are valid
         // filename character, eg /f\oo/ba\r.txt
-        if (_platform_js__WEBPACK_IMPORTED_MODULE_0__["isWindows"]) {
+        if (_platform_js__WEBPACK_IMPORTED_MODULE_0__.isWindows) {
             path = path.replace(/\\/g, _slash);
         }
         // check for authority as used in UNC shares
@@ -5965,11 +5879,11 @@ class URI {
             throw new Error(`[UriError]: cannot call joinPaths on URI without path`);
         }
         let newPath;
-        if (_platform_js__WEBPACK_IMPORTED_MODULE_0__["isWindows"] && uri.scheme === 'file') {
-            newPath = URI.file(_path_js__WEBPACK_IMPORTED_MODULE_1__["win32"].join(uriToFsPath(uri, true), ...pathFragment)).path;
+        if (_platform_js__WEBPACK_IMPORTED_MODULE_0__.isWindows && uri.scheme === 'file') {
+            newPath = URI.file(_path_js__WEBPACK_IMPORTED_MODULE_1__.win32.join(uriToFsPath(uri, true), ...pathFragment)).path;
         }
         else {
-            newPath = _path_js__WEBPACK_IMPORTED_MODULE_1__["posix"].join(uri.path, ...pathFragment);
+            newPath = _path_js__WEBPACK_IMPORTED_MODULE_1__.posix.join(uri.path, ...pathFragment);
         }
         return uri.with({ path: newPath });
     }
@@ -6006,7 +5920,7 @@ class URI {
         }
     }
 }
-const _pathSepMarker = _platform_js__WEBPACK_IMPORTED_MODULE_0__["isWindows"] ? 1 : undefined;
+const _pathSepMarker = _platform_js__WEBPACK_IMPORTED_MODULE_0__.isWindows ? 1 : undefined;
 // This class exists so that URI is compatibile with vscode.Uri (API).
 class Uri extends URI {
     constructor() {
@@ -6178,7 +6092,7 @@ function uriToFsPath(uri, keepDriveLetterCasing) {
         // other path
         value = uri.path;
     }
-    if (_platform_js__WEBPACK_IMPORTED_MODULE_0__["isWindows"]) {
+    if (_platform_js__WEBPACK_IMPORTED_MODULE_0__.isWindows) {
         value = value.replace(/\//g, '\\');
     }
     return value;
@@ -6285,15 +6199,15 @@ function percentDecode(str) {
 /*!******************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js ***!
   \******************************************************************************/
-/*! exports provided: logOnceWebWorkerWarning, SimpleWorkerClient, SimpleWorkerServer, create */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "logOnceWebWorkerWarning", function() { return logOnceWebWorkerWarning; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SimpleWorkerClient", function() { return SimpleWorkerClient; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SimpleWorkerServer", function() { return SimpleWorkerServer; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "logOnceWebWorkerWarning": () => /* binding */ logOnceWebWorkerWarning,
+/* harmony export */   "SimpleWorkerClient": () => /* binding */ SimpleWorkerClient,
+/* harmony export */   "SimpleWorkerServer": () => /* binding */ SimpleWorkerServer,
+/* harmony export */   "create": () => /* binding */ create
+/* harmony export */ });
 /* harmony import */ var _errors_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../errors.js */ "./node_modules/monaco-editor/esm/vs/base/common/errors.js");
 /* harmony import */ var _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../lifecycle.js */ "./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js");
 /* harmony import */ var _platform_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
@@ -6309,7 +6223,7 @@ __webpack_require__.r(__webpack_exports__);
 const INITIALIZE = '$initialize';
 let webWorkerWarningLogged = false;
 function logOnceWebWorkerWarning(err) {
-    if (!_platform_js__WEBPACK_IMPORTED_MODULE_2__["isWeb"]) {
+    if (!_platform_js__WEBPACK_IMPORTED_MODULE_2__.isWeb) {
         // running tests
         return;
     }
@@ -6389,13 +6303,13 @@ class SimpleWorkerProtocol {
         }, (e) => {
             if (e.detail instanceof Error) {
                 // Loading errors have a detail property that points to the actual error
-                e.detail = Object(_errors_js__WEBPACK_IMPORTED_MODULE_0__["transformErrorForSerialization"])(e.detail);
+                e.detail = (0,_errors_js__WEBPACK_IMPORTED_MODULE_0__.transformErrorForSerialization)(e.detail);
             }
             this._send({
                 vsWorker: this._workerId,
                 seq: req,
                 res: undefined,
-                err: Object(_errors_js__WEBPACK_IMPORTED_MODULE_0__["transformErrorForSerialization"])(e)
+                err: (0,_errors_js__WEBPACK_IMPORTED_MODULE_0__.transformErrorForSerialization)(e)
             });
         });
     }
@@ -6421,7 +6335,7 @@ class SimpleWorkerProtocol {
 /**
  * Main thread side
  */
-class SimpleWorkerClient extends _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__["Disposable"] {
+class SimpleWorkerClient extends _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__.Disposable {
     constructor(workerFactory, moduleId, host) {
         super();
         let lazyProxyReject = null;
@@ -6461,7 +6375,7 @@ class SimpleWorkerClient extends _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__["Dis
             // Get the configuration from requirejs
             loaderConfiguration = self.requirejs.s.contexts._.config;
         }
-        const hostMethods = _types_js__WEBPACK_IMPORTED_MODULE_3__["getAllMethodNames"](host);
+        const hostMethods = _types_js__WEBPACK_IMPORTED_MODULE_3__.getAllMethodNames(host);
         // Send initialize message
         this._onModuleLoaded = this._protocol.sendMessage(INITIALIZE, [
             this._worker.getId(),
@@ -6476,7 +6390,7 @@ class SimpleWorkerClient extends _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__["Dis
         this._lazyProxy = new Promise((resolve, reject) => {
             lazyProxyReject = reject;
             this._onModuleLoaded.then((availableMethods) => {
-                resolve(_types_js__WEBPACK_IMPORTED_MODULE_3__["createProxyObject"](availableMethods, proxyMethodRequest));
+                resolve(_types_js__WEBPACK_IMPORTED_MODULE_3__.createProxyObject(availableMethods, proxyMethodRequest));
             }, (e) => {
                 reject(e);
                 this._onError('Worker failed to load ' + moduleId, e);
@@ -6534,11 +6448,11 @@ class SimpleWorkerServer {
         const proxyMethodRequest = (method, args) => {
             return this._protocol.sendMessage(method, args);
         };
-        const hostProxy = _types_js__WEBPACK_IMPORTED_MODULE_3__["createProxyObject"](hostMethods, proxyMethodRequest);
+        const hostProxy = _types_js__WEBPACK_IMPORTED_MODULE_3__.createProxyObject(hostMethods, proxyMethodRequest);
         if (this._requestHandlerFactory) {
             // static request handler
             this._requestHandler = this._requestHandlerFactory(hostProxy);
-            return Promise.resolve(_types_js__WEBPACK_IMPORTED_MODULE_3__["getAllMethodNames"](this._requestHandler));
+            return Promise.resolve(_types_js__WEBPACK_IMPORTED_MODULE_3__.getAllMethodNames(this._requestHandler));
         }
         if (loaderConfig) {
             // Remove 'baseUrl', handling it is beyond scope for now
@@ -6562,7 +6476,7 @@ class SimpleWorkerServer {
                     reject(new Error(`No RequestHandler!`));
                     return;
                 }
-                resolve(_types_js__WEBPACK_IMPORTED_MODULE_3__["getAllMethodNames"](this._requestHandler));
+                resolve(_types_js__WEBPACK_IMPORTED_MODULE_3__.getAllMethodNames(this._requestHandler));
             }, reject);
         });
     }
@@ -6581,13 +6495,13 @@ function create(postMessage) {
 /*!*************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/characterClassifier.js ***!
   \*************************************************************************************/
-/*! exports provided: CharacterClassifier, CharacterSet */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CharacterClassifier", function() { return CharacterClassifier; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CharacterSet", function() { return CharacterSet; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CharacterClassifier": () => /* binding */ CharacterClassifier,
+/* harmony export */   "CharacterSet": () => /* binding */ CharacterSet
+/* harmony export */ });
 /* harmony import */ var _base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/uint.js */ "./node_modules/monaco-editor/esm/vs/base/common/uint.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -6599,7 +6513,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 class CharacterClassifier {
     constructor(_defaultValue) {
-        let defaultValue = Object(_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__["toUint8"])(_defaultValue);
+        let defaultValue = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint8)(_defaultValue);
         this._defaultValue = defaultValue;
         this._asciiMap = CharacterClassifier._createAsciiMap(defaultValue);
         this._map = new Map();
@@ -6612,7 +6526,7 @@ class CharacterClassifier {
         return asciiMap;
     }
     set(charCode, _value) {
-        let value = Object(_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__["toUint8"])(_value);
+        let value = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint8)(_value);
         if (charCode >= 0 && charCode < 256) {
             this._asciiMap[charCode] = value;
         }
@@ -6648,12 +6562,12 @@ class CharacterSet {
 /*!**************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/position.js ***!
   \**************************************************************************/
-/*! exports provided: Position */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Position", function() { return Position; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Position": () => /* binding */ Position
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -6796,12 +6710,12 @@ class Position {
 /*!***********************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/range.js ***!
   \***********************************************************************/
-/*! exports provided: Range */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Range", function() { return Range; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Range": () => /* binding */ Range
+/* harmony export */ });
 /* harmony import */ var _position_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./position.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -7017,7 +6931,7 @@ class Range {
      * Return the end position (which will be after or equal to the start position)
      */
     static getEndPosition(range) {
-        return new _position_js__WEBPACK_IMPORTED_MODULE_0__["Position"](range.endLineNumber, range.endColumn);
+        return new _position_js__WEBPACK_IMPORTED_MODULE_0__.Position(range.endLineNumber, range.endColumn);
     }
     /**
      * Return the start position (which will be before or equal to the end position)
@@ -7029,7 +6943,7 @@ class Range {
      * Return the start position (which will be before or equal to the end position)
      */
     static getStartPosition(range) {
-        return new _position_js__WEBPACK_IMPORTED_MODULE_0__["Position"](range.startLineNumber, range.startColumn);
+        return new _position_js__WEBPACK_IMPORTED_MODULE_0__.Position(range.startLineNumber, range.startColumn);
     }
     /**
      * Transform to a user presentable string representation.
@@ -7171,12 +7085,12 @@ class Range {
 /*!***************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/selection.js ***!
   \***************************************************************************/
-/*! exports provided: Selection */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Selection", function() { return Selection; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Selection": () => /* binding */ Selection
+/* harmony export */ });
 /* harmony import */ var _position_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./position.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
 /* harmony import */ var _range_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./range.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
 /*---------------------------------------------------------------------------------------------
@@ -7189,7 +7103,7 @@ __webpack_require__.r(__webpack_exports__);
  * A selection in the editor.
  * The selection is a range that has an orientation.
  */
-class Selection extends _range_js__WEBPACK_IMPORTED_MODULE_1__["Range"] {
+class Selection extends _range_js__WEBPACK_IMPORTED_MODULE_1__.Range {
     constructor(selectionStartLineNumber, selectionStartColumn, positionLineNumber, positionColumn) {
         super(selectionStartLineNumber, selectionStartColumn, positionLineNumber, positionColumn);
         this.selectionStartLineNumber = selectionStartLineNumber;
@@ -7240,7 +7154,7 @@ class Selection extends _range_js__WEBPACK_IMPORTED_MODULE_1__["Range"] {
      * Get the position at `positionLineNumber` and `positionColumn`.
      */
     getPosition() {
-        return new _position_js__WEBPACK_IMPORTED_MODULE_0__["Position"](this.positionLineNumber, this.positionColumn);
+        return new _position_js__WEBPACK_IMPORTED_MODULE_0__.Position(this.positionLineNumber, this.positionColumn);
     }
     /**
      * Create a new selection with a different `selectionStartLineNumber` and `selectionStartColumn`.
@@ -7312,14 +7226,14 @@ class Selection extends _range_js__WEBPACK_IMPORTED_MODULE_1__["Range"] {
 /*!***********************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/core/token.js ***!
   \***********************************************************************/
-/*! exports provided: Token, TokenizationResult, TokenizationResult2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Token", function() { return Token; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TokenizationResult", function() { return TokenizationResult; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TokenizationResult2", function() { return TokenizationResult2; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Token": () => /* binding */ Token,
+/* harmony export */   "TokenizationResult": () => /* binding */ TokenizationResult,
+/* harmony export */   "TokenizationResult2": () => /* binding */ TokenizationResult2
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -7354,12 +7268,12 @@ class TokenizationResult2 {
 /*!******************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/diff/diffComputer.js ***!
   \******************************************************************************/
-/*! exports provided: DiffComputer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DiffComputer", function() { return DiffComputer; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "DiffComputer": () => /* binding */ DiffComputer
+/* harmony export */ });
 /* harmony import */ var _base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/diff/diff.js */ "./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js");
 /* harmony import */ var _base_common_strings_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/strings.js */ "./node_modules/monaco-editor/esm/vs/base/common/strings.js");
 /*---------------------------------------------------------------------------------------------
@@ -7370,7 +7284,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const MINIMUM_MATCHING_CHARACTER_LENGTH = 3;
 function computeDiff(originalSequence, modifiedSequence, continueProcessingPredicate, pretty) {
-    const diffAlgo = new _base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_0__["LcsDiff"](originalSequence, modifiedSequence, continueProcessingPredicate);
+    const diffAlgo = new _base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_0__.LcsDiff(originalSequence, modifiedSequence, continueProcessingPredicate);
     return diffAlgo.ComputeDiff(pretty);
 }
 class LineSequence {
@@ -7729,14 +7643,14 @@ class DiffComputer {
     }
 }
 function getFirstNonBlankColumn(txt, defaultValue) {
-    const r = _base_common_strings_js__WEBPACK_IMPORTED_MODULE_1__["firstNonWhitespaceIndex"](txt);
+    const r = _base_common_strings_js__WEBPACK_IMPORTED_MODULE_1__.firstNonWhitespaceIndex(txt);
     if (r === -1) {
         return defaultValue;
     }
     return r + 1;
 }
 function getLastNonBlankColumn(txt, defaultValue) {
-    const r = _base_common_strings_js__WEBPACK_IMPORTED_MODULE_1__["lastNonWhitespaceIndex"](txt);
+    const r = _base_common_strings_js__WEBPACK_IMPORTED_MODULE_1__.lastNonWhitespaceIndex(txt);
     if (r === -1) {
         return defaultValue;
     }
@@ -7759,12 +7673,12 @@ function createContinueProcessingPredicate(maximumRuntime) {
 /*!**********************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/model/mirrorTextModel.js ***!
   \**********************************************************************************/
-/*! exports provided: MirrorTextModel */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MirrorTextModel", function() { return MirrorTextModel; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MirrorTextModel": () => /* binding */ MirrorTextModel
+/* harmony export */ });
 /* harmony import */ var _core_position_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/position.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
 /* harmony import */ var _viewModel_prefixSumComputer_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../viewModel/prefixSumComputer.js */ "./node_modules/monaco-editor/esm/vs/editor/common/viewModel/prefixSumComputer.js");
 /*---------------------------------------------------------------------------------------------
@@ -7800,7 +7714,7 @@ class MirrorTextModel {
         const changes = e.changes;
         for (const change of changes) {
             this._acceptDeleteRange(change.range);
-            this._acceptInsertText(new _core_position_js__WEBPACK_IMPORTED_MODULE_0__["Position"](change.range.startLineNumber, change.range.startColumn), change.text);
+            this._acceptInsertText(new _core_position_js__WEBPACK_IMPORTED_MODULE_0__.Position(change.range.startLineNumber, change.range.startColumn), change.text);
         }
         this._versionId = e.versionId;
         this._cachedTextValue = null;
@@ -7813,7 +7727,7 @@ class MirrorTextModel {
             for (let i = 0; i < linesLength; i++) {
                 lineStartValues[i] = this._lines[i].length + eolLength;
             }
-            this._lineStarts = new _viewModel_prefixSumComputer_js__WEBPACK_IMPORTED_MODULE_1__["PrefixSumComputer"](lineStartValues);
+            this._lineStarts = new _viewModel_prefixSumComputer_js__WEBPACK_IMPORTED_MODULE_1__.PrefixSumComputer(lineStartValues);
         }
     }
     /**
@@ -7885,15 +7799,15 @@ class MirrorTextModel {
 /*!*****************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/model/wordHelper.js ***!
   \*****************************************************************************/
-/*! exports provided: USUAL_WORD_SEPARATORS, DEFAULT_WORD_REGEXP, ensureValidWordDefinition, getWordAtText */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "USUAL_WORD_SEPARATORS", function() { return USUAL_WORD_SEPARATORS; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DEFAULT_WORD_REGEXP", function() { return DEFAULT_WORD_REGEXP; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ensureValidWordDefinition", function() { return ensureValidWordDefinition; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getWordAtText", function() { return getWordAtText; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "USUAL_WORD_SEPARATORS": () => /* binding */ USUAL_WORD_SEPARATORS,
+/* harmony export */   "DEFAULT_WORD_REGEXP": () => /* binding */ DEFAULT_WORD_REGEXP,
+/* harmony export */   "ensureValidWordDefinition": () => /* binding */ ensureValidWordDefinition,
+/* harmony export */   "getWordAtText": () => /* binding */ getWordAtText
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -8019,15 +7933,15 @@ function _findRegexMatchEnclosingPosition(wordDefinition, text, pos, stopPos) {
 /*!*******************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/modes/linkComputer.js ***!
   \*******************************************************************************/
-/*! exports provided: Uint8Matrix, StateMachine, LinkComputer, computeLinks */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Uint8Matrix", function() { return Uint8Matrix; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StateMachine", function() { return StateMachine; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LinkComputer", function() { return LinkComputer; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "computeLinks", function() { return computeLinks; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Uint8Matrix": () => /* binding */ Uint8Matrix,
+/* harmony export */   "StateMachine": () => /* binding */ StateMachine,
+/* harmony export */   "LinkComputer": () => /* binding */ LinkComputer,
+/* harmony export */   "computeLinks": () => /* binding */ computeLinks
+/* harmony export */ });
 /* harmony import */ var _core_characterClassifier_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/characterClassifier.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/characterClassifier.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -8118,7 +8032,7 @@ function getStateMachine() {
 let _classifier = null;
 function getClassifier() {
     if (_classifier === null) {
-        _classifier = new _core_characterClassifier_js__WEBPACK_IMPORTED_MODULE_0__["CharacterClassifier"](0 /* None */);
+        _classifier = new _core_characterClassifier_js__WEBPACK_IMPORTED_MODULE_0__.CharacterClassifier(0 /* None */);
         const FORCE_TERMINATION_CHARACTERS = ' \t<>\'\"、。｡､，．：；‘“〈《「『【〔（［｛｢｣｝］）〕】』」》〉”’｀～…';
         for (let i = 0; i < FORCE_TERMINATION_CHARACTERS.length; i++) {
             _classifier.set(FORCE_TERMINATION_CHARACTERS.charCodeAt(i), 1 /* ForceTermination */);
@@ -8301,12 +8215,12 @@ function computeLinks(model) {
 /*!*************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/modes/supports/inplaceReplaceSupport.js ***!
   \*************************************************************************************************/
-/*! exports provided: BasicInplaceReplace */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BasicInplaceReplace", function() { return BasicInplaceReplace; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "BasicInplaceReplace": () => /* binding */ BasicInplaceReplace
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -8400,13 +8314,13 @@ BasicInplaceReplace.INSTANCE = new BasicInplaceReplace();
 /*!****************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/services/editorSimpleWorker.js ***!
   \****************************************************************************************/
-/*! exports provided: EditorSimpleWorker, create */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditorSimpleWorker", function() { return EditorSimpleWorker; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "EditorSimpleWorker": () => /* binding */ EditorSimpleWorker,
+/* harmony export */   "create": () => /* binding */ create
+/* harmony export */ });
 /* harmony import */ var _base_common_arrays_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/arrays.js */ "./node_modules/monaco-editor/esm/vs/base/common/arrays.js");
 /* harmony import */ var _base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/diff/diff.js */ "./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js");
 /* harmony import */ var _base_common_platform_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../base/common/platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
@@ -8449,7 +8363,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 /**
  * @internal
  */
-class MirrorModel extends _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_7__["MirrorTextModel"] {
+class MirrorModel extends _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_7__.MirrorTextModel {
     get uri() {
         return this._uri;
     }
@@ -8472,9 +8386,9 @@ class MirrorModel extends _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_7__
         return this._lines[lineNumber - 1];
     }
     getWordAtPosition(position, wordDefinition) {
-        let wordAtText = Object(_model_wordHelper_js__WEBPACK_IMPORTED_MODULE_8__["getWordAtText"])(position.column, Object(_model_wordHelper_js__WEBPACK_IMPORTED_MODULE_8__["ensureValidWordDefinition"])(wordDefinition), this._lines[position.lineNumber - 1], 0);
+        let wordAtText = (0,_model_wordHelper_js__WEBPACK_IMPORTED_MODULE_8__.getWordAtText)(position.column, (0,_model_wordHelper_js__WEBPACK_IMPORTED_MODULE_8__.ensureValidWordDefinition)(wordDefinition), this._lines[position.lineNumber - 1], 0);
         if (wordAtText) {
-            return new _core_range_js__WEBPACK_IMPORTED_MODULE_5__["Range"](position.lineNumber, wordAtText.startColumn, position.lineNumber, wordAtText.endColumn);
+            return new _core_range_js__WEBPACK_IMPORTED_MODULE_5__.Range(position.lineNumber, wordAtText.startColumn, position.lineNumber, wordAtText.endColumn);
         }
         return null;
     }
@@ -8584,7 +8498,7 @@ class MirrorModel extends _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_7__
         return range;
     }
     _validatePosition(position) {
-        if (!_core_position_js__WEBPACK_IMPORTED_MODULE_4__["Position"].isIPosition(position)) {
+        if (!_core_position_js__WEBPACK_IMPORTED_MODULE_4__.Position.isIPosition(position)) {
             throw new Error('bad position');
         }
         let { lineNumber, column } = position;
@@ -8640,7 +8554,7 @@ class EditorSimpleWorker {
         return all;
     }
     acceptNewModel(data) {
-        this._models[data.url] = new MirrorModel(_base_common_uri_js__WEBPACK_IMPORTED_MODULE_3__["URI"].parse(data.url), data.lines, data.EOL, data.versionId);
+        this._models[data.url] = new MirrorModel(_base_common_uri_js__WEBPACK_IMPORTED_MODULE_3__.URI.parse(data.url), data.lines, data.EOL, data.versionId);
     }
     acceptModelChanged(strURL, e) {
         if (!this._models[strURL]) {
@@ -8665,7 +8579,7 @@ class EditorSimpleWorker {
             }
             const originalLines = original.getLinesContent();
             const modifiedLines = modified.getLinesContent();
-            const diffComputer = new _diff_diffComputer_js__WEBPACK_IMPORTED_MODULE_6__["DiffComputer"](originalLines, modifiedLines, {
+            const diffComputer = new _diff_diffComputer_js__WEBPACK_IMPORTED_MODULE_6__.DiffComputer(originalLines, modifiedLines, {
                 shouldComputeCharChanges: true,
                 shouldPostProcessCharChanges: true,
                 shouldIgnoreTrimWhitespace: ignoreTrimWhitespace,
@@ -8704,9 +8618,9 @@ class EditorSimpleWorker {
             }
             const result = [];
             let lastEol = undefined;
-            edits = Object(_base_common_arrays_js__WEBPACK_IMPORTED_MODULE_0__["mergeSort"])(edits, (a, b) => {
+            edits = (0,_base_common_arrays_js__WEBPACK_IMPORTED_MODULE_0__.mergeSort)(edits, (a, b) => {
                 if (a.range && b.range) {
-                    return _core_range_js__WEBPACK_IMPORTED_MODULE_5__["Range"].compareRangesUsingStarts(a.range, b.range);
+                    return _core_range_js__WEBPACK_IMPORTED_MODULE_5__.Range.compareRangesUsingStarts(a.range, b.range);
                 }
                 // eol only changes should go to the end
                 let aRng = a.range ? 0 : 1;
@@ -8717,7 +8631,7 @@ class EditorSimpleWorker {
                 if (typeof eol === 'number') {
                     lastEol = eol;
                 }
-                if (_core_range_js__WEBPACK_IMPORTED_MODULE_5__["Range"].isEmpty(range) && !text) {
+                if (_core_range_js__WEBPACK_IMPORTED_MODULE_5__.Range.isEmpty(range) && !text) {
                     // empty change
                     continue;
                 }
@@ -8733,8 +8647,8 @@ class EditorSimpleWorker {
                     continue;
                 }
                 // compute diff between original and edit.text
-                const changes = Object(_base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_1__["stringDiff"])(original, text, false);
-                const editOffset = model.offsetAt(_core_range_js__WEBPACK_IMPORTED_MODULE_5__["Range"].lift(range).getStartPosition());
+                const changes = (0,_base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_1__.stringDiff)(original, text, false);
+                const editOffset = model.offsetAt(_core_range_js__WEBPACK_IMPORTED_MODULE_5__.Range.lift(range).getStartPosition());
                 for (const change of changes) {
                     const start = model.positionAt(editOffset + change.originalStart);
                     const end = model.positionAt(editOffset + change.originalStart + change.originalLength);
@@ -8760,7 +8674,7 @@ class EditorSimpleWorker {
             if (!model) {
                 return null;
             }
-            return Object(_modes_linkComputer_js__WEBPACK_IMPORTED_MODULE_9__["computeLinks"])(model);
+            return (0,_modes_linkComputer_js__WEBPACK_IMPORTED_MODULE_9__.computeLinks)(model);
         });
     }
     textualSuggest(modelUrl, position, wordDef, wordDefFlags) {
@@ -8846,7 +8760,7 @@ class EditorSimpleWorker {
                 return null;
             }
             let word = model.getValueInRange(wordRange);
-            let result = _modes_supports_inplaceReplaceSupport_js__WEBPACK_IMPORTED_MODULE_10__["BasicInplaceReplace"].INSTANCE.navigateValueSet(range, selectionText, wordRange, word, up);
+            let result = _modes_supports_inplaceReplaceSupport_js__WEBPACK_IMPORTED_MODULE_10__.BasicInplaceReplace.INSTANCE.navigateValueSet(range, selectionText, wordRange, word, up);
             return result;
         });
     }
@@ -8855,7 +8769,7 @@ class EditorSimpleWorker {
         const proxyMethodRequest = (method, args) => {
             return this._host.fhr(method, args);
         };
-        const foreignHost = _base_common_types_js__WEBPACK_IMPORTED_MODULE_12__["createProxyObject"](foreignHostMethods, proxyMethodRequest);
+        const foreignHost = _base_common_types_js__WEBPACK_IMPORTED_MODULE_12__.createProxyObject(foreignHostMethods, proxyMethodRequest);
         let ctx = {
             host: foreignHost,
             getMirrorModels: () => {
@@ -8865,7 +8779,7 @@ class EditorSimpleWorker {
         if (this._foreignModuleFactory) {
             this._foreignModule = this._foreignModuleFactory(ctx, createData);
             // static foreing module
-            return Promise.resolve(_base_common_types_js__WEBPACK_IMPORTED_MODULE_12__["getAllMethodNames"](this._foreignModule));
+            return Promise.resolve(_base_common_types_js__WEBPACK_IMPORTED_MODULE_12__.getAllMethodNames(this._foreignModule));
         }
         // ESM-comment-begin
         // 		return new Promise<any>((resolve, reject) => {
@@ -8908,7 +8822,7 @@ function create(host) {
 }
 if (typeof importScripts === 'function') {
     // Running in a web worker
-    _base_common_platform_js__WEBPACK_IMPORTED_MODULE_2__["globals"].monaco = Object(_standalone_standaloneBase_js__WEBPACK_IMPORTED_MODULE_11__["createMonacoBaseAPI"])();
+    _base_common_platform_js__WEBPACK_IMPORTED_MODULE_2__.globals.monaco = (0,_standalone_standaloneBase_js__WEBPACK_IMPORTED_MODULE_11__.createMonacoBaseAPI)();
 }
 
 
@@ -8918,13 +8832,13 @@ if (typeof importScripts === 'function') {
 /*!**************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneBase.js ***!
   \**************************************************************************************/
-/*! exports provided: KeyMod, createMonacoBaseAPI */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "KeyMod", function() { return KeyMod; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createMonacoBaseAPI", function() { return createMonacoBaseAPI; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "KeyMod": () => /* binding */ KeyMod,
+/* harmony export */   "createMonacoBaseAPI": () => /* binding */ createMonacoBaseAPI
+/* harmony export */ });
 /* harmony import */ var _base_common_cancellation_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/cancellation.js */ "./node_modules/monaco-editor/esm/vs/base/common/cancellation.js");
 /* harmony import */ var _base_common_event_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/event.js */ "./node_modules/monaco-editor/esm/vs/base/common/event.js");
 /* harmony import */ var _base_common_keyCodes_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../base/common/keyCodes.js */ "./node_modules/monaco-editor/esm/vs/base/common/keyCodes.js");
@@ -8949,7 +8863,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class KeyMod {
     static chord(firstPart, secondPart) {
-        return Object(_base_common_keyCodes_js__WEBPACK_IMPORTED_MODULE_2__["KeyChord"])(firstPart, secondPart);
+        return (0,_base_common_keyCodes_js__WEBPACK_IMPORTED_MODULE_2__.KeyChord)(firstPart, secondPart);
     }
 }
 KeyMod.CtrlCmd = 2048 /* CtrlCmd */;
@@ -8960,18 +8874,18 @@ function createMonacoBaseAPI() {
     return {
         editor: undefined,
         languages: undefined,
-        CancellationTokenSource: _base_common_cancellation_js__WEBPACK_IMPORTED_MODULE_0__["CancellationTokenSource"],
-        Emitter: _base_common_event_js__WEBPACK_IMPORTED_MODULE_1__["Emitter"],
-        KeyCode: _standaloneEnums_js__WEBPACK_IMPORTED_MODULE_8__["KeyCode"],
+        CancellationTokenSource: _base_common_cancellation_js__WEBPACK_IMPORTED_MODULE_0__.CancellationTokenSource,
+        Emitter: _base_common_event_js__WEBPACK_IMPORTED_MODULE_1__.Emitter,
+        KeyCode: _standaloneEnums_js__WEBPACK_IMPORTED_MODULE_8__.KeyCode,
         KeyMod: KeyMod,
-        Position: _core_position_js__WEBPACK_IMPORTED_MODULE_4__["Position"],
-        Range: _core_range_js__WEBPACK_IMPORTED_MODULE_5__["Range"],
-        Selection: _core_selection_js__WEBPACK_IMPORTED_MODULE_6__["Selection"],
-        SelectionDirection: _standaloneEnums_js__WEBPACK_IMPORTED_MODULE_8__["SelectionDirection"],
-        MarkerSeverity: _standaloneEnums_js__WEBPACK_IMPORTED_MODULE_8__["MarkerSeverity"],
-        MarkerTag: _standaloneEnums_js__WEBPACK_IMPORTED_MODULE_8__["MarkerTag"],
-        Uri: _base_common_uri_js__WEBPACK_IMPORTED_MODULE_3__["URI"],
-        Token: _core_token_js__WEBPACK_IMPORTED_MODULE_7__["Token"]
+        Position: _core_position_js__WEBPACK_IMPORTED_MODULE_4__.Position,
+        Range: _core_range_js__WEBPACK_IMPORTED_MODULE_5__.Range,
+        Selection: _core_selection_js__WEBPACK_IMPORTED_MODULE_6__.Selection,
+        SelectionDirection: _standaloneEnums_js__WEBPACK_IMPORTED_MODULE_8__.SelectionDirection,
+        MarkerSeverity: _standaloneEnums_js__WEBPACK_IMPORTED_MODULE_8__.MarkerSeverity,
+        MarkerTag: _standaloneEnums_js__WEBPACK_IMPORTED_MODULE_8__.MarkerTag,
+        Uri: _base_common_uri_js__WEBPACK_IMPORTED_MODULE_3__.URI,
+        Token: _core_token_js__WEBPACK_IMPORTED_MODULE_7__.Token
     };
 }
 
@@ -8982,44 +8896,44 @@ function createMonacoBaseAPI() {
 /*!***************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneEnums.js ***!
   \***************************************************************************************/
-/*! exports provided: AccessibilitySupport, CompletionItemInsertTextRule, CompletionItemKind, CompletionItemTag, CompletionTriggerKind, ContentWidgetPositionPreference, CursorChangeReason, DefaultEndOfLine, DocumentHighlightKind, EditorAutoIndentStrategy, EditorOption, EndOfLinePreference, EndOfLineSequence, IndentAction, KeyCode, MarkerSeverity, MarkerTag, MinimapPosition, MouseTargetType, OverlayWidgetPositionPreference, OverviewRulerLane, RenderLineNumbersType, RenderMinimap, ScrollType, ScrollbarVisibility, SelectionDirection, SignatureHelpTriggerKind, SymbolKind, SymbolTag, TextEditorCursorBlinkingStyle, TextEditorCursorStyle, TrackedRangeStickiness, WrappingIndent */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AccessibilitySupport", function() { return AccessibilitySupport; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CompletionItemInsertTextRule", function() { return CompletionItemInsertTextRule; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CompletionItemKind", function() { return CompletionItemKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CompletionItemTag", function() { return CompletionItemTag; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CompletionTriggerKind", function() { return CompletionTriggerKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ContentWidgetPositionPreference", function() { return ContentWidgetPositionPreference; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CursorChangeReason", function() { return CursorChangeReason; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DefaultEndOfLine", function() { return DefaultEndOfLine; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DocumentHighlightKind", function() { return DocumentHighlightKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditorAutoIndentStrategy", function() { return EditorAutoIndentStrategy; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditorOption", function() { return EditorOption; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EndOfLinePreference", function() { return EndOfLinePreference; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EndOfLineSequence", function() { return EndOfLineSequence; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "IndentAction", function() { return IndentAction; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "KeyCode", function() { return KeyCode; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MarkerSeverity", function() { return MarkerSeverity; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MarkerTag", function() { return MarkerTag; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MinimapPosition", function() { return MinimapPosition; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MouseTargetType", function() { return MouseTargetType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "OverlayWidgetPositionPreference", function() { return OverlayWidgetPositionPreference; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "OverviewRulerLane", function() { return OverviewRulerLane; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenderLineNumbersType", function() { return RenderLineNumbersType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenderMinimap", function() { return RenderMinimap; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ScrollType", function() { return ScrollType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ScrollbarVisibility", function() { return ScrollbarVisibility; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SelectionDirection", function() { return SelectionDirection; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SignatureHelpTriggerKind", function() { return SignatureHelpTriggerKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SymbolKind", function() { return SymbolKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SymbolTag", function() { return SymbolTag; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TextEditorCursorBlinkingStyle", function() { return TextEditorCursorBlinkingStyle; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TextEditorCursorStyle", function() { return TextEditorCursorStyle; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TrackedRangeStickiness", function() { return TrackedRangeStickiness; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappingIndent", function() { return WrappingIndent; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "AccessibilitySupport": () => /* binding */ AccessibilitySupport,
+/* harmony export */   "CompletionItemInsertTextRule": () => /* binding */ CompletionItemInsertTextRule,
+/* harmony export */   "CompletionItemKind": () => /* binding */ CompletionItemKind,
+/* harmony export */   "CompletionItemTag": () => /* binding */ CompletionItemTag,
+/* harmony export */   "CompletionTriggerKind": () => /* binding */ CompletionTriggerKind,
+/* harmony export */   "ContentWidgetPositionPreference": () => /* binding */ ContentWidgetPositionPreference,
+/* harmony export */   "CursorChangeReason": () => /* binding */ CursorChangeReason,
+/* harmony export */   "DefaultEndOfLine": () => /* binding */ DefaultEndOfLine,
+/* harmony export */   "DocumentHighlightKind": () => /* binding */ DocumentHighlightKind,
+/* harmony export */   "EditorAutoIndentStrategy": () => /* binding */ EditorAutoIndentStrategy,
+/* harmony export */   "EditorOption": () => /* binding */ EditorOption,
+/* harmony export */   "EndOfLinePreference": () => /* binding */ EndOfLinePreference,
+/* harmony export */   "EndOfLineSequence": () => /* binding */ EndOfLineSequence,
+/* harmony export */   "IndentAction": () => /* binding */ IndentAction,
+/* harmony export */   "KeyCode": () => /* binding */ KeyCode,
+/* harmony export */   "MarkerSeverity": () => /* binding */ MarkerSeverity,
+/* harmony export */   "MarkerTag": () => /* binding */ MarkerTag,
+/* harmony export */   "MinimapPosition": () => /* binding */ MinimapPosition,
+/* harmony export */   "MouseTargetType": () => /* binding */ MouseTargetType,
+/* harmony export */   "OverlayWidgetPositionPreference": () => /* binding */ OverlayWidgetPositionPreference,
+/* harmony export */   "OverviewRulerLane": () => /* binding */ OverviewRulerLane,
+/* harmony export */   "RenderLineNumbersType": () => /* binding */ RenderLineNumbersType,
+/* harmony export */   "RenderMinimap": () => /* binding */ RenderMinimap,
+/* harmony export */   "ScrollType": () => /* binding */ ScrollType,
+/* harmony export */   "ScrollbarVisibility": () => /* binding */ ScrollbarVisibility,
+/* harmony export */   "SelectionDirection": () => /* binding */ SelectionDirection,
+/* harmony export */   "SignatureHelpTriggerKind": () => /* binding */ SignatureHelpTriggerKind,
+/* harmony export */   "SymbolKind": () => /* binding */ SymbolKind,
+/* harmony export */   "SymbolTag": () => /* binding */ SymbolTag,
+/* harmony export */   "TextEditorCursorBlinkingStyle": () => /* binding */ TextEditorCursorBlinkingStyle,
+/* harmony export */   "TextEditorCursorStyle": () => /* binding */ TextEditorCursorStyle,
+/* harmony export */   "TrackedRangeStickiness": () => /* binding */ TrackedRangeStickiness,
+/* harmony export */   "WrappingIndent": () => /* binding */ WrappingIndent
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9836,13 +9750,13 @@ var WrappingIndent;
 /*!****************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/common/viewModel/prefixSumComputer.js ***!
   \****************************************************************************************/
-/*! exports provided: PrefixSumIndexOfResult, PrefixSumComputer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PrefixSumIndexOfResult", function() { return PrefixSumIndexOfResult; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PrefixSumComputer", function() { return PrefixSumComputer; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "PrefixSumIndexOfResult": () => /* binding */ PrefixSumIndexOfResult,
+/* harmony export */   "PrefixSumComputer": () => /* binding */ PrefixSumComputer
+/* harmony export */ });
 /* harmony import */ var _base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/uint.js */ "./node_modules/monaco-editor/esm/vs/base/common/uint.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -9863,7 +9777,7 @@ class PrefixSumComputer {
         this.prefixSumValidIndex[0] = -1;
     }
     insertValues(insertIndex, insertValues) {
-        insertIndex = Object(_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__["toUint32"])(insertIndex);
+        insertIndex = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(insertIndex);
         const oldValues = this.values;
         const oldPrefixSum = this.prefixSum;
         const insertValuesLen = insertValues.length;
@@ -9884,8 +9798,8 @@ class PrefixSumComputer {
         return true;
     }
     changeValue(index, value) {
-        index = Object(_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__["toUint32"])(index);
-        value = Object(_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__["toUint32"])(value);
+        index = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(index);
+        value = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(value);
         if (this.values[index] === value) {
             return false;
         }
@@ -9896,8 +9810,8 @@ class PrefixSumComputer {
         return true;
     }
     removeValues(startIndex, cnt) {
-        startIndex = Object(_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__["toUint32"])(startIndex);
-        cnt = Object(_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__["toUint32"])(cnt);
+        startIndex = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(startIndex);
+        cnt = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(cnt);
         const oldValues = this.values;
         const oldPrefixSum = this.prefixSum;
         if (startIndex >= oldValues.length) {
@@ -9932,7 +9846,7 @@ class PrefixSumComputer {
         if (index < 0) {
             return 0;
         }
-        index = Object(_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__["toUint32"])(index);
+        index = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(index);
         return this._getAccumulatedValue(index);
     }
     _getAccumulatedValue(index) {
@@ -9987,12 +9901,12 @@ class PrefixSumComputer {
 /*!*******************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/editor/editor.worker.js ***!
   \*******************************************************************/
-/*! exports provided: initialize */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initialize", function() { return initialize; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "initialize": () => /* binding */ initialize
+/* harmony export */ });
 /* harmony import */ var _base_common_worker_simpleWorker_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../base/common/worker/simpleWorker.js */ "./node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js");
 /* harmony import */ var _common_services_editorSimpleWorker_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./common/services/editorSimpleWorker.js */ "./node_modules/monaco-editor/esm/vs/editor/common/services/editorSimpleWorker.js");
 /*---------------------------------------------------------------------------------------------
@@ -10007,9 +9921,9 @@ function initialize(foreignModule) {
         return;
     }
     initialized = true;
-    const simpleWorker = new _base_common_worker_simpleWorker_js__WEBPACK_IMPORTED_MODULE_0__["SimpleWorkerServer"]((msg) => {
+    const simpleWorker = new _base_common_worker_simpleWorker_js__WEBPACK_IMPORTED_MODULE_0__.SimpleWorkerServer((msg) => {
         self.postMessage(msg);
-    }, (host) => new _common_services_editorSimpleWorker_js__WEBPACK_IMPORTED_MODULE_1__["EditorSimpleWorker"](host, foreignModule));
+    }, (host) => new _common_services_editorSimpleWorker_js__WEBPACK_IMPORTED_MODULE_1__.EditorSimpleWorker(host, foreignModule));
     self.onmessage = (e) => {
         simpleWorker.onmessage(e.data);
     };
@@ -10028,15 +9942,15 @@ self.onmessage = (e) => {
 /*!*****************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/edit.js ***!
   \*****************************************************************************************/
-/*! exports provided: removeProperty, setProperty, applyEdit, isWS */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removeProperty", function() { return removeProperty; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setProperty", function() { return setProperty; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyEdit", function() { return applyEdit; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isWS", function() { return isWS; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "removeProperty": () => /* binding */ removeProperty,
+/* harmony export */   "setProperty": () => /* binding */ setProperty,
+/* harmony export */   "applyEdit": () => /* binding */ applyEdit,
+/* harmony export */   "isWS": () => /* binding */ isWS
+/* harmony export */ });
 /* harmony import */ var _format_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./format.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/format.js");
 /* harmony import */ var _parser_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./parser.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/parser.js");
 /*---------------------------------------------------------------------------------------------
@@ -10053,12 +9967,12 @@ function setProperty(text, originalPath, value, options) {
     var _a;
     var path = originalPath.slice();
     var errors = [];
-    var root = Object(_parser_js__WEBPACK_IMPORTED_MODULE_1__["parseTree"])(text, errors);
+    var root = (0,_parser_js__WEBPACK_IMPORTED_MODULE_1__.parseTree)(text, errors);
     var parent = void 0;
     var lastSegment = void 0;
     while (path.length > 0) {
         lastSegment = path.pop();
-        parent = Object(_parser_js__WEBPACK_IMPORTED_MODULE_1__["findNodeAtLocation"])(root, path);
+        parent = (0,_parser_js__WEBPACK_IMPORTED_MODULE_1__.findNodeAtLocation)(root, path);
         if (parent === void 0 && value !== void 0) {
             if (typeof lastSegment === 'string') {
                 value = (_a = {}, _a[lastSegment] = value, _a);
@@ -10079,7 +9993,7 @@ function setProperty(text, originalPath, value, options) {
         return withFormatting(text, { offset: root ? root.offset : 0, length: root ? root.length : 0, content: JSON.stringify(value) }, options);
     }
     else if (parent.type === 'object' && typeof lastSegment === 'string' && Array.isArray(parent.children)) {
-        var existing = Object(_parser_js__WEBPACK_IMPORTED_MODULE_1__["findNodeAtLocation"])(parent, [lastSegment]);
+        var existing = (0,_parser_js__WEBPACK_IMPORTED_MODULE_1__.findNodeAtLocation)(parent, [lastSegment]);
         if (existing !== void 0) {
             if (value === void 0) { // delete
                 if (!existing.parent) {
@@ -10199,14 +10113,14 @@ function withFormatting(text, edit, options) {
     var begin = edit.offset;
     var end = edit.offset + edit.content.length;
     if (edit.length === 0 || edit.content.length === 0) { // insert or remove
-        while (begin > 0 && !Object(_format_js__WEBPACK_IMPORTED_MODULE_0__["isEOL"])(newText, begin - 1)) {
+        while (begin > 0 && !(0,_format_js__WEBPACK_IMPORTED_MODULE_0__.isEOL)(newText, begin - 1)) {
             begin--;
         }
-        while (end < newText.length && !Object(_format_js__WEBPACK_IMPORTED_MODULE_0__["isEOL"])(newText, end)) {
+        while (end < newText.length && !(0,_format_js__WEBPACK_IMPORTED_MODULE_0__.isEOL)(newText, end)) {
             end++;
         }
     }
-    var edits = Object(_format_js__WEBPACK_IMPORTED_MODULE_0__["format"])(newText, { offset: begin, length: end - begin }, options.formattingOptions);
+    var edits = (0,_format_js__WEBPACK_IMPORTED_MODULE_0__.format)(newText, { offset: begin, length: end - begin }, options.formattingOptions);
     // apply the formatting edits and track the begin and end offsets of the changes
     for (var i = edits.length - 1; i >= 0; i--) {
         var edit_1 = edits[i];
@@ -10233,13 +10147,13 @@ function isWS(text, offset) {
 /*!*******************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/format.js ***!
   \*******************************************************************************************/
-/*! exports provided: format, isEOL */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "format", function() { return format; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEOL", function() { return isEOL; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "format": () => /* binding */ format,
+/* harmony export */   "isEOL": () => /* binding */ isEOL
+/* harmony export */ });
 /* harmony import */ var _scanner_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scanner.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/scanner.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -10284,7 +10198,7 @@ function format(documentText, range, options) {
     else {
         indentValue = '\t';
     }
-    var scanner = Object(_scanner_js__WEBPACK_IMPORTED_MODULE_0__["createScanner"])(formatText, false);
+    var scanner = (0,_scanner_js__WEBPACK_IMPORTED_MODULE_0__.createScanner)(formatText, false);
     var hasError = false;
     function newLineAndIndent() {
         return eol + repeat(indentValue, initialIndentLevel + indentLevel);
@@ -10443,22 +10357,22 @@ function isEOL(text, offset) {
 /*!*******************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/parser.js ***!
   \*******************************************************************************************/
-/*! exports provided: getLocation, parse, parseTree, findNodeAtLocation, getNodePath, getNodeValue, contains, findNodeAtOffset, visit, stripComments, getNodeType */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLocation", function() { return getLocation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parse", function() { return parse; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parseTree", function() { return parseTree; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findNodeAtLocation", function() { return findNodeAtLocation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNodePath", function() { return getNodePath; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNodeValue", function() { return getNodeValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "contains", function() { return contains; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findNodeAtOffset", function() { return findNodeAtOffset; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "visit", function() { return visit; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stripComments", function() { return stripComments; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNodeType", function() { return getNodeType; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getLocation": () => /* binding */ getLocation,
+/* harmony export */   "parse": () => /* binding */ parse,
+/* harmony export */   "parseTree": () => /* binding */ parseTree,
+/* harmony export */   "findNodeAtLocation": () => /* binding */ findNodeAtLocation,
+/* harmony export */   "getNodePath": () => /* binding */ getNodePath,
+/* harmony export */   "getNodeValue": () => /* binding */ getNodeValue,
+/* harmony export */   "contains": () => /* binding */ contains,
+/* harmony export */   "findNodeAtOffset": () => /* binding */ findNodeAtOffset,
+/* harmony export */   "visit": () => /* binding */ visit,
+/* harmony export */   "stripComments": () => /* binding */ stripComments,
+/* harmony export */   "getNodeType": () => /* binding */ getNodeType
+/* harmony export */ });
 /* harmony import */ var _scanner_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scanner.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/scanner.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -10816,7 +10730,7 @@ function findNodeAtOffset(node, offset, includeRightBound) {
  */
 function visit(text, visitor, options) {
     if (options === void 0) { options = ParseOptions.DEFAULT; }
-    var _scanner = Object(_scanner_js__WEBPACK_IMPORTED_MODULE_0__["createScanner"])(text, false);
+    var _scanner = (0,_scanner_js__WEBPACK_IMPORTED_MODULE_0__.createScanner)(text, false);
     function toNoArgVisit(visitFunction) {
         return visitFunction ? function () { return visitFunction(_scanner.getTokenOffset(), _scanner.getTokenLength(), _scanner.getTokenStartLine(), _scanner.getTokenStartCharacter()); } : function () { return true; };
     }
@@ -11049,7 +10963,7 @@ function visit(text, visitor, options) {
  * of comments with a replaceCharacter
  */
 function stripComments(text, replaceCh) {
-    var _scanner = Object(_scanner_js__WEBPACK_IMPORTED_MODULE_0__["createScanner"])(text), parts = [], kind, offset = 0, pos;
+    var _scanner = (0,_scanner_js__WEBPACK_IMPORTED_MODULE_0__.createScanner)(text), parts = [], kind, offset = 0, pos;
     do {
         pos = _scanner.getPosition();
         kind = _scanner.scan();
@@ -11094,12 +11008,12 @@ function getNodeType(value) {
 /*!********************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/scanner.js ***!
   \********************************************************************************************/
-/*! exports provided: createScanner */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createScanner", function() { return createScanner; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "createScanner": () => /* binding */ createScanner
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -11471,25 +11385,25 @@ function isDigit(ch) {
 /*!************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js ***!
   \************************************************************************************/
-/*! exports provided: createScanner, getLocation, parse, parseTree, findNodeAtLocation, findNodeAtOffset, getNodePath, getNodeValue, visit, stripComments, printParseErrorCode, format, modify, applyEdits */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createScanner", function() { return createScanner; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLocation", function() { return getLocation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parse", function() { return parse; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parseTree", function() { return parseTree; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findNodeAtLocation", function() { return findNodeAtLocation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findNodeAtOffset", function() { return findNodeAtOffset; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNodePath", function() { return getNodePath; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNodeValue", function() { return getNodeValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "visit", function() { return visit; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stripComments", function() { return stripComments; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "printParseErrorCode", function() { return printParseErrorCode; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "format", function() { return format; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "modify", function() { return modify; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyEdits", function() { return applyEdits; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "createScanner": () => /* binding */ createScanner,
+/* harmony export */   "getLocation": () => /* binding */ getLocation,
+/* harmony export */   "parse": () => /* binding */ parse,
+/* harmony export */   "parseTree": () => /* binding */ parseTree,
+/* harmony export */   "findNodeAtLocation": () => /* binding */ findNodeAtLocation,
+/* harmony export */   "findNodeAtOffset": () => /* binding */ findNodeAtOffset,
+/* harmony export */   "getNodePath": () => /* binding */ getNodePath,
+/* harmony export */   "getNodeValue": () => /* binding */ getNodeValue,
+/* harmony export */   "visit": () => /* binding */ visit,
+/* harmony export */   "stripComments": () => /* binding */ stripComments,
+/* harmony export */   "printParseErrorCode": () => /* binding */ printParseErrorCode,
+/* harmony export */   "format": () => /* binding */ format,
+/* harmony export */   "modify": () => /* binding */ modify,
+/* harmony export */   "applyEdits": () => /* binding */ applyEdits
+/* harmony export */ });
 /* harmony import */ var _impl_format_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./impl/format.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/format.js");
 /* harmony import */ var _impl_edit_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./impl/edit.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/edit.js");
 /* harmony import */ var _impl_scanner_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./impl/scanner.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/scanner.js");
@@ -11507,46 +11421,46 @@ __webpack_require__.r(__webpack_exports__);
  * Creates a JSON scanner on the given text.
  * If ignoreTrivia is set, whitespaces or comments are ignored.
  */
-var createScanner = _impl_scanner_js__WEBPACK_IMPORTED_MODULE_2__["createScanner"];
+var createScanner = _impl_scanner_js__WEBPACK_IMPORTED_MODULE_2__.createScanner;
 /**
  * For a given offset, evaluate the location in the JSON document. Each segment in the location path is either a property name or an array index.
  */
-var getLocation = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__["getLocation"];
+var getLocation = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__.getLocation;
 /**
  * Parses the given text and returns the object the JSON content represents. On invalid input, the parser tries to be as fault tolerant as possible, but still return a result.
  * Therefore, always check the errors list to find out if the input was valid.
  */
-var parse = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__["parse"];
+var parse = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__.parse;
 /**
  * Parses the given text and returns a tree representation the JSON content. On invalid input, the parser tries to be as fault tolerant as possible, but still return a result.
  */
-var parseTree = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__["parseTree"];
+var parseTree = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__.parseTree;
 /**
  * Finds the node at the given path in a JSON DOM.
  */
-var findNodeAtLocation = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__["findNodeAtLocation"];
+var findNodeAtLocation = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__.findNodeAtLocation;
 /**
  * Finds the innermost node at the given offset. If includeRightBound is set, also finds nodes that end at the given offset.
  */
-var findNodeAtOffset = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__["findNodeAtOffset"];
+var findNodeAtOffset = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__.findNodeAtOffset;
 /**
  * Gets the JSON path of the given JSON DOM node
  */
-var getNodePath = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__["getNodePath"];
+var getNodePath = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__.getNodePath;
 /**
  * Evaluates the JavaScript object of the given JSON DOM node
  */
-var getNodeValue = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__["getNodeValue"];
+var getNodeValue = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__.getNodeValue;
 /**
  * Parses the given text and invokes the visitor functions for each object, array and literal reached.
  */
-var visit = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__["visit"];
+var visit = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__.visit;
 /**
  * Takes JSON with JavaScript-style comments and remove
  * them. Optionally replaces every none-newline character
  * of comments with a replaceCharacter
  */
-var stripComments = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__["stripComments"];
+var stripComments = _impl_parser_js__WEBPACK_IMPORTED_MODULE_3__.stripComments;
 function printParseErrorCode(code) {
     switch (code) {
         case 1 /* InvalidSymbol */: return 'InvalidSymbol';
@@ -11581,7 +11495,7 @@ function printParseErrorCode(code) {
  * To apply edits to an input, you can use `applyEdits`.
  */
 function format(documentText, range, options) {
-    return _impl_format_js__WEBPACK_IMPORTED_MODULE_0__["format"](documentText, range, options);
+    return _impl_format_js__WEBPACK_IMPORTED_MODULE_0__.format(documentText, range, options);
 }
 /**
  * Computes the edits needed to modify a value in the JSON document.
@@ -11599,14 +11513,14 @@ function format(documentText, range, options) {
  * To apply edits to an input, you can use `applyEdits`.
  */
 function modify(text, path, value, options) {
-    return _impl_edit_js__WEBPACK_IMPORTED_MODULE_1__["setProperty"](text, path, value, options);
+    return _impl_edit_js__WEBPACK_IMPORTED_MODULE_1__.setProperty(text, path, value, options);
 }
 /**
  * Applies edits to a input string.
  */
 function applyEdits(text, edits) {
     for (var i = edits.length - 1; i >= 0; i--) {
-        text = _impl_edit_js__WEBPACK_IMPORTED_MODULE_1__["applyEdit"](text, edits[i]);
+        text = _impl_edit_js__WEBPACK_IMPORTED_MODULE_1__.applyEdit(text, edits[i]);
     }
     return text;
 }
@@ -11618,12 +11532,39 @@ function applyEdits(text, edits) {
 /*!******************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageService.js ***!
   \******************************************************************************************************************/
-/*! exports provided: TextDocument, Range, TextEdit, Color, ColorInformation, ColorPresentation, FoldingRange, FoldingRangeKind, SelectionRange, Diagnostic, DiagnosticSeverity, CompletionItem, CompletionItemKind, CompletionList, Position, InsertTextFormat, MarkupContent, MarkupKind, SymbolInformation, SymbolKind, DocumentSymbol, Location, Hover, MarkedString, FormattingOptions, ErrorCode, ClientCapabilities, getLanguageService */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLanguageService", function() { return getLanguageService; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ClientCapabilities": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.ClientCapabilities,
+/* harmony export */   "Color": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.Color,
+/* harmony export */   "ColorInformation": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.ColorInformation,
+/* harmony export */   "ColorPresentation": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.ColorPresentation,
+/* harmony export */   "CompletionItem": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.CompletionItem,
+/* harmony export */   "CompletionItemKind": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.CompletionItemKind,
+/* harmony export */   "CompletionList": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.CompletionList,
+/* harmony export */   "Diagnostic": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.Diagnostic,
+/* harmony export */   "DiagnosticSeverity": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.DiagnosticSeverity,
+/* harmony export */   "DocumentSymbol": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.DocumentSymbol,
+/* harmony export */   "ErrorCode": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.ErrorCode,
+/* harmony export */   "FoldingRange": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.FoldingRange,
+/* harmony export */   "FoldingRangeKind": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.FoldingRangeKind,
+/* harmony export */   "FormattingOptions": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.FormattingOptions,
+/* harmony export */   "Hover": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.Hover,
+/* harmony export */   "InsertTextFormat": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.InsertTextFormat,
+/* harmony export */   "Location": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.Location,
+/* harmony export */   "MarkedString": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.MarkedString,
+/* harmony export */   "MarkupContent": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.MarkupContent,
+/* harmony export */   "MarkupKind": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.MarkupKind,
+/* harmony export */   "Position": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.Position,
+/* harmony export */   "Range": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.Range,
+/* harmony export */   "SelectionRange": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.SelectionRange,
+/* harmony export */   "SymbolInformation": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.SymbolInformation,
+/* harmony export */   "SymbolKind": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.SymbolKind,
+/* harmony export */   "TextDocument": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.TextDocument,
+/* harmony export */   "TextEdit": () => /* reexport safe */ _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.TextEdit,
+/* harmony export */   "getLanguageService": () => /* binding */ getLanguageService
+/* harmony export */ });
 /* harmony import */ var _services_jsonCompletion_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./services/jsonCompletion.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonCompletion.js");
 /* harmony import */ var _services_jsonHover_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./services/jsonHover.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonHover.js");
 /* harmony import */ var _services_jsonValidation_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./services/jsonValidation.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonValidation.js");
@@ -11636,60 +11577,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../jsonc-parser/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js");
 /* harmony import */ var _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./jsonLanguageTypes.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageTypes.js");
 /* harmony import */ var _services_jsonDefinition_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./services/jsonDefinition.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonDefinition.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextDocument", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["TextDocument"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Range", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["Range"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextEdit", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["TextEdit"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Color", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["Color"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ColorInformation", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["ColorInformation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ColorPresentation", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["ColorPresentation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FoldingRange", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["FoldingRange"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FoldingRangeKind", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["FoldingRangeKind"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SelectionRange", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["SelectionRange"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Diagnostic", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["Diagnostic"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DiagnosticSeverity", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["DiagnosticSeverity"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CompletionItem", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["CompletionItem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CompletionItemKind", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["CompletionItemKind"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CompletionList", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["CompletionList"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Position", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["Position"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "InsertTextFormat", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["InsertTextFormat"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MarkupContent", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["MarkupContent"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MarkupKind", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["MarkupKind"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SymbolInformation", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["SymbolInformation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SymbolKind", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["SymbolKind"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DocumentSymbol", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["DocumentSymbol"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Location", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["Location"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Hover", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["Hover"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MarkedString", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["MarkedString"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FormattingOptions", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["FormattingOptions"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrorCode", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["ErrorCode"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ClientCapabilities", function() { return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["ClientCapabilities"]; });
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -11709,12 +11596,12 @@ __webpack_require__.r(__webpack_exports__);
 
 function getLanguageService(params) {
     var promise = params.promiseConstructor || Promise;
-    var jsonSchemaService = new _services_jsonSchemaService_js__WEBPACK_IMPORTED_MODULE_6__["JSONSchemaService"](params.schemaRequestService, params.workspaceContext, promise);
-    jsonSchemaService.setSchemaContributions(_services_configuration_js__WEBPACK_IMPORTED_MODULE_5__["schemaContributions"]);
-    var jsonCompletion = new _services_jsonCompletion_js__WEBPACK_IMPORTED_MODULE_0__["JSONCompletion"](jsonSchemaService, params.contributions, promise, params.clientCapabilities);
-    var jsonHover = new _services_jsonHover_js__WEBPACK_IMPORTED_MODULE_1__["JSONHover"](jsonSchemaService, params.contributions, promise);
-    var jsonDocumentSymbols = new _services_jsonDocumentSymbols_js__WEBPACK_IMPORTED_MODULE_3__["JSONDocumentSymbols"](jsonSchemaService);
-    var jsonValidation = new _services_jsonValidation_js__WEBPACK_IMPORTED_MODULE_2__["JSONValidation"](jsonSchemaService, promise);
+    var jsonSchemaService = new _services_jsonSchemaService_js__WEBPACK_IMPORTED_MODULE_6__.JSONSchemaService(params.schemaRequestService, params.workspaceContext, promise);
+    jsonSchemaService.setSchemaContributions(_services_configuration_js__WEBPACK_IMPORTED_MODULE_5__.schemaContributions);
+    var jsonCompletion = new _services_jsonCompletion_js__WEBPACK_IMPORTED_MODULE_0__.JSONCompletion(jsonSchemaService, params.contributions, promise, params.clientCapabilities);
+    var jsonHover = new _services_jsonHover_js__WEBPACK_IMPORTED_MODULE_1__.JSONHover(jsonSchemaService, params.contributions, promise);
+    var jsonDocumentSymbols = new _services_jsonDocumentSymbols_js__WEBPACK_IMPORTED_MODULE_3__.JSONDocumentSymbols(jsonSchemaService);
+    var jsonValidation = new _services_jsonValidation_js__WEBPACK_IMPORTED_MODULE_2__.JSONValidation(jsonSchemaService, promise);
     return {
         configure: function (settings) {
             jsonSchemaService.clearExternalSchemas();
@@ -11727,8 +11614,8 @@ function getLanguageService(params) {
         },
         resetSchema: function (uri) { return jsonSchemaService.onResourceChange(uri); },
         doValidation: jsonValidation.doValidation.bind(jsonValidation),
-        parseJSONDocument: function (document) { return Object(_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_4__["parse"])(document, { collectComments: true }); },
-        newJSONDocument: function (root, diagnostics) { return Object(_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_4__["newJSONDocument"])(root, diagnostics); },
+        parseJSONDocument: function (document) { return (0,_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_4__.parse)(document, { collectComments: true }); },
+        newJSONDocument: function (root, diagnostics) { return (0,_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_4__.newJSONDocument)(root, diagnostics); },
         getMatchingSchemas: jsonSchemaService.getMatchingSchemas.bind(jsonSchemaService),
         doResolve: jsonCompletion.doResolve.bind(jsonCompletion),
         doComplete: jsonCompletion.doComplete.bind(jsonCompletion),
@@ -11738,9 +11625,9 @@ function getLanguageService(params) {
         findDocumentColors: jsonDocumentSymbols.findDocumentColors.bind(jsonDocumentSymbols),
         getColorPresentations: jsonDocumentSymbols.getColorPresentations.bind(jsonDocumentSymbols),
         doHover: jsonHover.doHover.bind(jsonHover),
-        getFoldingRanges: _services_jsonFolding_js__WEBPACK_IMPORTED_MODULE_7__["getFoldingRanges"],
-        getSelectionRanges: _services_jsonSelectionRanges_js__WEBPACK_IMPORTED_MODULE_8__["getSelectionRanges"],
-        findDefinition: _services_jsonDefinition_js__WEBPACK_IMPORTED_MODULE_11__["findDefinition"],
+        getFoldingRanges: _services_jsonFolding_js__WEBPACK_IMPORTED_MODULE_7__.getFoldingRanges,
+        getSelectionRanges: _services_jsonSelectionRanges_js__WEBPACK_IMPORTED_MODULE_8__.getSelectionRanges,
+        findDefinition: _services_jsonDefinition_js__WEBPACK_IMPORTED_MODULE_11__.findDefinition,
         format: function (d, r, o) {
             var range = undefined;
             if (r) {
@@ -11749,8 +11636,8 @@ function getLanguageService(params) {
                 range = { offset: offset, length: length };
             }
             var options = { tabSize: o ? o.tabSize : 4, insertSpaces: o ? o.insertSpaces : true, eol: '\n' };
-            return Object(_jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_9__["format"])(d.getText(), range, options).map(function (e) {
-                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["TextEdit"].replace(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__["Range"].create(d.positionAt(e.offset), d.positionAt(e.offset + e.length)), e.content);
+            return (0,_jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_9__.format)(d.getText(), range, options).map(function (e) {
+                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.TextEdit.replace(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_10__.Range.create(d.positionAt(e.offset), d.positionAt(e.offset + e.length)), e.content);
             });
         }
     };
@@ -11763,65 +11650,40 @@ function getLanguageService(params) {
 /*!****************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageTypes.js ***!
   \****************************************************************************************************************/
-/*! exports provided: TextDocument, Range, TextEdit, Color, ColorInformation, ColorPresentation, FoldingRange, FoldingRangeKind, SelectionRange, Diagnostic, DiagnosticSeverity, CompletionItem, CompletionItemKind, CompletionList, Position, InsertTextFormat, MarkupContent, MarkupKind, SymbolInformation, SymbolKind, DocumentSymbol, Location, Hover, MarkedString, FormattingOptions, ErrorCode, ClientCapabilities */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrorCode", function() { return ErrorCode; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ClientCapabilities", function() { return ClientCapabilities; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "TextDocument": () => /* reexport safe */ _vscode_languageserver_textdocument_lib_esm_main_js__WEBPACK_IMPORTED_MODULE_1__.TextDocument,
+/* harmony export */   "Range": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Range,
+/* harmony export */   "TextEdit": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.TextEdit,
+/* harmony export */   "Color": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Color,
+/* harmony export */   "ColorInformation": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ColorInformation,
+/* harmony export */   "ColorPresentation": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ColorPresentation,
+/* harmony export */   "FoldingRange": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FoldingRange,
+/* harmony export */   "FoldingRangeKind": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FoldingRangeKind,
+/* harmony export */   "SelectionRange": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SelectionRange,
+/* harmony export */   "Diagnostic": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Diagnostic,
+/* harmony export */   "DiagnosticSeverity": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DiagnosticSeverity,
+/* harmony export */   "CompletionItem": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItem,
+/* harmony export */   "CompletionItemKind": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItemKind,
+/* harmony export */   "CompletionList": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionList,
+/* harmony export */   "Position": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Position,
+/* harmony export */   "InsertTextFormat": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.InsertTextFormat,
+/* harmony export */   "MarkupContent": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupContent,
+/* harmony export */   "MarkupKind": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupKind,
+/* harmony export */   "SymbolInformation": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SymbolInformation,
+/* harmony export */   "SymbolKind": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SymbolKind,
+/* harmony export */   "DocumentSymbol": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DocumentSymbol,
+/* harmony export */   "Location": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Location,
+/* harmony export */   "Hover": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Hover,
+/* harmony export */   "MarkedString": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkedString,
+/* harmony export */   "FormattingOptions": () => /* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FormattingOptions,
+/* harmony export */   "ErrorCode": () => /* binding */ ErrorCode,
+/* harmony export */   "ClientCapabilities": () => /* binding */ ClientCapabilities
+/* harmony export */ });
 /* harmony import */ var _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../vscode-languageserver-types/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-languageserver-types/main.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Range", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["Range"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextEdit", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["TextEdit"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Color", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["Color"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ColorInformation", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["ColorInformation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ColorPresentation", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["ColorPresentation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FoldingRange", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["FoldingRange"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FoldingRangeKind", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["FoldingRangeKind"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SelectionRange", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["SelectionRange"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Diagnostic", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["Diagnostic"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DiagnosticSeverity", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["DiagnosticSeverity"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CompletionItem", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["CompletionItem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CompletionItemKind", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["CompletionItemKind"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CompletionList", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["CompletionList"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Position", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["Position"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "InsertTextFormat", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["InsertTextFormat"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MarkupContent", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["MarkupContent"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MarkupKind", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["MarkupKind"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SymbolInformation", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["SymbolInformation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SymbolKind", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["SymbolKind"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DocumentSymbol", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["DocumentSymbol"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Location", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["Location"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Hover", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["Hover"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MarkedString", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["MarkedString"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FormattingOptions", function() { return _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["FormattingOptions"]; });
-
 /* harmony import */ var _vscode_languageserver_textdocument_lib_esm_main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vscode-languageserver-textdocument/lib/esm/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-languageserver-textdocument/lib/esm/main.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextDocument", function() { return _vscode_languageserver_textdocument_lib_esm_main_js__WEBPACK_IMPORTED_MODULE_1__["TextDocument"]; });
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -11859,7 +11721,7 @@ var ClientCapabilities;
         textDocument: {
             completion: {
                 completionItem: {
-                    documentationFormat: [_vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["MarkupKind"].Markdown, _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__["MarkupKind"].PlainText],
+                    documentationFormat: [_vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupKind.Markdown, _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupKind.PlainText],
                     commitCharactersSupport: true
                 }
             }
@@ -11874,28 +11736,28 @@ var ClientCapabilities;
 /*!****************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/parser/jsonParser.js ***!
   \****************************************************************************************************************/
-/*! exports provided: ASTNodeImpl, NullASTNodeImpl, BooleanASTNodeImpl, ArrayASTNodeImpl, NumberASTNodeImpl, StringASTNodeImpl, PropertyASTNodeImpl, ObjectASTNodeImpl, asSchema, EnumMatch, ValidationResult, newJSONDocument, getNodeValue, getNodePath, contains, JSONDocument, parse */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ASTNodeImpl", function() { return ASTNodeImpl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NullASTNodeImpl", function() { return NullASTNodeImpl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BooleanASTNodeImpl", function() { return BooleanASTNodeImpl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ArrayASTNodeImpl", function() { return ArrayASTNodeImpl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NumberASTNodeImpl", function() { return NumberASTNodeImpl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StringASTNodeImpl", function() { return StringASTNodeImpl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PropertyASTNodeImpl", function() { return PropertyASTNodeImpl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ObjectASTNodeImpl", function() { return ObjectASTNodeImpl; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "asSchema", function() { return asSchema; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EnumMatch", function() { return EnumMatch; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ValidationResult", function() { return ValidationResult; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "newJSONDocument", function() { return newJSONDocument; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNodeValue", function() { return getNodeValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNodePath", function() { return getNodePath; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "contains", function() { return contains; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JSONDocument", function() { return JSONDocument; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parse", function() { return parse; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ASTNodeImpl": () => /* binding */ ASTNodeImpl,
+/* harmony export */   "NullASTNodeImpl": () => /* binding */ NullASTNodeImpl,
+/* harmony export */   "BooleanASTNodeImpl": () => /* binding */ BooleanASTNodeImpl,
+/* harmony export */   "ArrayASTNodeImpl": () => /* binding */ ArrayASTNodeImpl,
+/* harmony export */   "NumberASTNodeImpl": () => /* binding */ NumberASTNodeImpl,
+/* harmony export */   "StringASTNodeImpl": () => /* binding */ StringASTNodeImpl,
+/* harmony export */   "PropertyASTNodeImpl": () => /* binding */ PropertyASTNodeImpl,
+/* harmony export */   "ObjectASTNodeImpl": () => /* binding */ ObjectASTNodeImpl,
+/* harmony export */   "asSchema": () => /* binding */ asSchema,
+/* harmony export */   "EnumMatch": () => /* binding */ EnumMatch,
+/* harmony export */   "ValidationResult": () => /* binding */ ValidationResult,
+/* harmony export */   "newJSONDocument": () => /* binding */ newJSONDocument,
+/* harmony export */   "getNodeValue": () => /* binding */ getNodeValue,
+/* harmony export */   "getNodePath": () => /* binding */ getNodePath,
+/* harmony export */   "contains": () => /* binding */ contains,
+/* harmony export */   "JSONDocument": () => /* binding */ JSONDocument,
+/* harmony export */   "parse": () => /* binding */ parse
+/* harmony export */ });
 /* harmony import */ var _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../jsonc-parser/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js");
 /* harmony import */ var _utils_objects_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/objects.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/objects.js");
 /* harmony import */ var _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../jsonLanguageTypes.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageTypes.js");
@@ -11921,7 +11783,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
-var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_3__["loadMessageBundle"]();
+var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_3__.loadMessageBundle();
 var formats = {
     'color-hex': { errorMessage: localize('colorHexFormatWarning', 'Invalid color format. Use #RGB, #RGBA, #RRGGBB or #RRGGBBAA.'), pattern: /^#([0-9A-Fa-f]{3,4}|([0-9A-Fa-f]{2}){3,4})$/ },
     'date-time': { errorMessage: localize('dateTimeFormatWarning', 'String is not a RFC3339 date-time.'), pattern: /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\.[0-9]+)?(Z|(\+|-)([01][0-9]|2[0-3]):([0-5][0-9]))$/i },
@@ -12050,7 +11912,7 @@ var ObjectASTNodeImpl = /** @class */ (function (_super) {
 }(ASTNodeImpl));
 
 function asSchema(schema) {
-    if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isBoolean"])(schema)) {
+    if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isBoolean)(schema)) {
         return schema ? {} : { "not": {} };
     }
     return schema;
@@ -12122,7 +11984,7 @@ var ValidationResult = /** @class */ (function () {
             this.enumValues = this.enumValues.concat(validationResult.enumValues);
             for (var _i = 0, _a = this.problems; _i < _a.length; _i++) {
                 var error = _a[_i];
-                if (error.code === _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].EnumValueMismatch) {
+                if (error.code === _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.EnumValueMismatch) {
                     error.message = localize('enumWarning', 'Value is not accepted. Valid values: {0}.', this.enumValues.map(function (v) { return JSON.stringify(v); }).join(', '));
                 }
             }
@@ -12162,10 +12024,10 @@ function newJSONDocument(root, diagnostics) {
     return new JSONDocument(root, diagnostics, []);
 }
 function getNodeValue(node) {
-    return _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__["getNodeValue"](node);
+    return _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__.getNodeValue(node);
 }
 function getNodePath(node) {
-    return _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__["getNodePath"](node);
+    return _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__.getNodePath(node);
 }
 function contains(node, offset, includeRightBound) {
     if (includeRightBound === void 0) { includeRightBound = false; }
@@ -12182,7 +12044,7 @@ var JSONDocument = /** @class */ (function () {
     JSONDocument.prototype.getNodeFromOffset = function (offset, includeRightBound) {
         if (includeRightBound === void 0) { includeRightBound = false; }
         if (this.root) {
-            return _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__["findNodeAtOffset"](this.root, offset, includeRightBound);
+            return _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__.findNodeAtOffset(this.root, offset, includeRightBound);
         }
         return undefined;
     };
@@ -12206,8 +12068,8 @@ var JSONDocument = /** @class */ (function () {
             var validationResult = new ValidationResult();
             validate(this.root, schema, validationResult, NoOpSchemaCollector.instance);
             return validationResult.problems.map(function (p) {
-                var range = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["Range"].create(textDocument.positionAt(p.location.offset), textDocument.positionAt(p.location.offset + p.location.length));
-                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["Diagnostic"].create(range, p.message, p.severity, p.code);
+                var range = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.Range.create(textDocument.positionAt(p.location.offset), textDocument.positionAt(p.location.offset + p.location.length));
+                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.Diagnostic.create(range, p.message, p.severity, p.code);
             });
         }
         return undefined;
@@ -12254,7 +12116,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
             if (!schema.type.some(matchesType)) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: schema.errorMessage || localize('typeArrayMismatchWarning', 'Incorrect type. Expected one of {0}.', schema.type.join(', '))
                 });
             }
@@ -12263,7 +12125,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
             if (!matchesType(schema.type)) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: schema.errorMessage || localize('typeMismatchWarning', 'Incorrect type. Expected "{0}".', schema.type)
                 });
             }
@@ -12282,7 +12144,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
             if (!subValidationResult.hasProblems()) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: localize('notSchemaWarning', "Matches a schema that is not allowed.")
                 });
             }
@@ -12332,7 +12194,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
             if (matches.length > 1 && maxOneMatch) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: 1 },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: localize('oneOfWarning', "Matches multiple schemas when only one must validate.")
                 });
             }
@@ -12383,7 +12245,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
             var enumValueMatch = false;
             for (var _d = 0, _e = schema.enum; _d < _e.length; _d++) {
                 var e = _e[_d];
-                if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["equals"])(val, e)) {
+                if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.equals)(val, e)) {
                     enumValueMatch = true;
                     break;
                 }
@@ -12393,19 +12255,19 @@ function validate(n, schema, validationResult, matchingSchemas) {
             if (!enumValueMatch) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
-                    code: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].EnumValueMismatch,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
+                    code: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.EnumValueMismatch,
                     message: schema.errorMessage || localize('enumWarning', 'Value is not accepted. Valid values: {0}.', schema.enum.map(function (v) { return JSON.stringify(v); }).join(', '))
                 });
             }
         }
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isDefined"])(schema.const)) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isDefined)(schema.const)) {
             var val = getNodeValue(node);
-            if (!Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["equals"])(val, schema.const)) {
+            if (!(0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.equals)(val, schema.const)) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
-                    code: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].EnumValueMismatch,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
+                    code: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.EnumValueMismatch,
                     message: schema.errorMessage || localize('constWarning', 'Value must be {0}.', JSON.stringify(schema.const))
                 });
                 validationResult.enumValueMatch = false;
@@ -12418,7 +12280,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
         if (schema.deprecationMessage && node.parent) {
             validationResult.problems.push({
                 location: { offset: node.parent.offset, length: node.parent.length },
-                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                 message: schema.deprecationMessage
             });
         }
@@ -12434,7 +12296,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
             };
         }
         ;
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(schema.multipleOf)) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(schema.multipleOf)) {
             var remainder = -1;
             if (Number.isInteger(schema.multipleOf)) {
                 remainder = val % schema.multipleOf;
@@ -12456,80 +12318,80 @@ function validate(n, schema, validationResult, matchingSchemas) {
             if (remainder !== 0) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: localize('multipleOfWarning', 'Value is not divisible by {0}.', schema.multipleOf)
                 });
             }
         }
         function getExclusiveLimit(limit, exclusive) {
-            if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(exclusive)) {
+            if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(exclusive)) {
                 return exclusive;
             }
-            if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isBoolean"])(exclusive) && exclusive) {
+            if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isBoolean)(exclusive) && exclusive) {
                 return limit;
             }
             return undefined;
         }
         function getLimit(limit, exclusive) {
-            if (!Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isBoolean"])(exclusive) || !exclusive) {
+            if (!(0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isBoolean)(exclusive) || !exclusive) {
                 return limit;
             }
             return undefined;
         }
         var exclusiveMinimum = getExclusiveLimit(schema.minimum, schema.exclusiveMinimum);
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(exclusiveMinimum) && val <= exclusiveMinimum) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(exclusiveMinimum) && val <= exclusiveMinimum) {
             validationResult.problems.push({
                 location: { offset: node.offset, length: node.length },
-                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                 message: localize('exclusiveMinimumWarning', 'Value is below the exclusive minimum of {0}.', exclusiveMinimum)
             });
         }
         var exclusiveMaximum = getExclusiveLimit(schema.maximum, schema.exclusiveMaximum);
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(exclusiveMaximum) && val >= exclusiveMaximum) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(exclusiveMaximum) && val >= exclusiveMaximum) {
             validationResult.problems.push({
                 location: { offset: node.offset, length: node.length },
-                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                 message: localize('exclusiveMaximumWarning', 'Value is above the exclusive maximum of {0}.', exclusiveMaximum)
             });
         }
         var minimum = getLimit(schema.minimum, schema.exclusiveMinimum);
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(minimum) && val < minimum) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(minimum) && val < minimum) {
             validationResult.problems.push({
                 location: { offset: node.offset, length: node.length },
-                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                 message: localize('minimumWarning', 'Value is below the minimum of {0}.', minimum)
             });
         }
         var maximum = getLimit(schema.maximum, schema.exclusiveMaximum);
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(maximum) && val > maximum) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(maximum) && val > maximum) {
             validationResult.problems.push({
                 location: { offset: node.offset, length: node.length },
-                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                 message: localize('maximumWarning', 'Value is above the maximum of {0}.', maximum)
             });
         }
     }
     function _validateStringNode(node, schema, validationResult, matchingSchemas) {
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(schema.minLength) && node.value.length < schema.minLength) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(schema.minLength) && node.value.length < schema.minLength) {
             validationResult.problems.push({
                 location: { offset: node.offset, length: node.length },
-                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                 message: localize('minLengthWarning', 'String is shorter than the minimum length of {0}.', schema.minLength)
             });
         }
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(schema.maxLength) && node.value.length > schema.maxLength) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(schema.maxLength) && node.value.length > schema.maxLength) {
             validationResult.problems.push({
                 location: { offset: node.offset, length: node.length },
-                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                 message: localize('maxLengthWarning', 'String is longer than the maximum length of {0}.', schema.maxLength)
             });
         }
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isString"])(schema.pattern)) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isString)(schema.pattern)) {
             var regex = new RegExp(schema.pattern);
             if (!regex.test(node.value)) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: schema.patternErrorMessage || schema.errorMessage || localize('patternWarning', 'String does not match the pattern of "{0}".', schema.pattern)
                 });
             }
@@ -12555,7 +12417,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
                         if (errorMessage) {
                             validationResult.problems.push({
                                 location: { offset: node.offset, length: node.length },
-                                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                                 message: schema.patternErrorMessage || schema.errorMessage || localize('uriFormatWarning', 'String is not a URI: {0}', errorMessage)
                             });
                         }
@@ -12570,7 +12432,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
                     if (!node.value || !format.pattern.exec(node.value)) {
                         validationResult.problems.push({
                             location: { offset: node.offset, length: node.length },
-                            severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                            severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                             message: schema.patternErrorMessage || schema.errorMessage || format.errorMessage
                         });
                     }
@@ -12605,7 +12467,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
                 else if (schema.additionalItems === false) {
                     validationResult.problems.push({
                         location: { offset: node.offset, length: node.length },
-                        severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                        severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                         message: localize('additionalItemsWarning', 'Array has too many items according to schema. Expected {0} or fewer.', subSchemas.length)
                     });
                 }
@@ -12632,22 +12494,22 @@ function validate(n, schema, validationResult, matchingSchemas) {
             if (!doesContain) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: schema.errorMessage || localize('requiredItemMissingWarning', 'Array does not contain required item.')
                 });
             }
         }
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(schema.minItems) && node.items.length < schema.minItems) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(schema.minItems) && node.items.length < schema.minItems) {
             validationResult.problems.push({
                 location: { offset: node.offset, length: node.length },
-                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                 message: localize('minItemsWarning', 'Array has too few items. Expected {0} or more.', schema.minItems)
             });
         }
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(schema.maxItems) && node.items.length > schema.maxItems) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(schema.maxItems) && node.items.length > schema.maxItems) {
             validationResult.problems.push({
                 location: { offset: node.offset, length: node.length },
-                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                 message: localize('maxItemsWarning', 'Array has too many items. Expected {0} or fewer.', schema.maxItems)
             });
         }
@@ -12659,7 +12521,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
             if (duplicates) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: localize('uniqueItemsWarning', 'Array has duplicate items.')
                 });
             }
@@ -12682,7 +12544,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
                     var location = keyNode ? { offset: keyNode.offset, length: keyNode.length } : { offset: node.offset, length: 1 };
                     validationResult.problems.push({
                         location: location,
-                        severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                        severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                         message: localize('MissingRequiredPropWarning', 'Missing property "{0}".', propertyName)
                     });
                 }
@@ -12702,12 +12564,12 @@ function validate(n, schema, validationResult, matchingSchemas) {
                 var propertySchema = schema.properties[propertyName];
                 var child = seenKeys[propertyName];
                 if (child) {
-                    if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isBoolean"])(propertySchema)) {
+                    if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isBoolean)(propertySchema)) {
                         if (!propertySchema) {
                             var propertyNode = child.parent;
                             validationResult.problems.push({
                                 location: { offset: propertyNode.keyNode.offset, length: propertyNode.keyNode.length },
-                                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                                severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                                 message: schema.errorMessage || localize('DisallowedExtraPropWarning', 'Property {0} is not allowed.', propertyName)
                             });
                         }
@@ -12735,12 +12597,12 @@ function validate(n, schema, validationResult, matchingSchemas) {
                         var child = seenKeys[propertyName];
                         if (child) {
                             var propertySchema = schema.patternProperties[propertyPattern];
-                            if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isBoolean"])(propertySchema)) {
+                            if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isBoolean)(propertySchema)) {
                                 if (!propertySchema) {
                                     var propertyNode = child.parent;
                                     validationResult.problems.push({
                                         location: { offset: propertyNode.keyNode.offset, length: propertyNode.keyNode.length },
-                                        severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                                        severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                                         message: schema.errorMessage || localize('DisallowedExtraPropWarning', 'Property {0} is not allowed.', propertyName)
                                     });
                                 }
@@ -12779,27 +12641,27 @@ function validate(n, schema, validationResult, matchingSchemas) {
                         var propertyNode = child.parent;
                         validationResult.problems.push({
                             location: { offset: propertyNode.keyNode.offset, length: propertyNode.keyNode.length },
-                            severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                            severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                             message: schema.errorMessage || localize('DisallowedExtraPropWarning', 'Property {0} is not allowed.', propertyName)
                         });
                     }
                 }
             }
         }
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(schema.maxProperties)) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(schema.maxProperties)) {
             if (node.properties.length > schema.maxProperties) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: localize('MaxPropWarning', 'Object has more properties than limit of {0}.', schema.maxProperties)
                 });
             }
         }
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(schema.minProperties)) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(schema.minProperties)) {
             if (node.properties.length < schema.minProperties) {
                 validationResult.problems.push({
                     location: { offset: node.offset, length: node.length },
-                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                     message: localize('MinPropWarning', 'Object has fewer properties than the required number of {0}', schema.minProperties)
                 });
             }
@@ -12816,7 +12678,7 @@ function validate(n, schema, validationResult, matchingSchemas) {
                             if (!seenKeys[requiredProp]) {
                                 validationResult.problems.push({
                                     location: { offset: node.offset, length: node.length },
-                                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning,
+                                    severity: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning,
                                     message: localize('RequiredDependentPropWarning', 'Object is missing property {0} required by property {1}.', requiredProp, key)
                                 });
                             }
@@ -12852,7 +12714,7 @@ function parse(textDocument, config) {
     var problems = [];
     var lastProblemOffset = -1;
     var text = textDocument.getText();
-    var scanner = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__["createScanner"](text, false);
+    var scanner = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__.createScanner(text, false);
     var commentRanges = config && config.collectComments ? [] : undefined;
     function _scanNext() {
         while (true) {
@@ -12862,7 +12724,7 @@ function parse(textDocument, config) {
                 case 12 /* LineCommentTrivia */:
                 case 13 /* BlockCommentTrivia */:
                     if (Array.isArray(commentRanges)) {
-                        commentRanges.push(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["Range"].create(textDocument.positionAt(scanner.getTokenOffset()), textDocument.positionAt(scanner.getTokenOffset() + scanner.getTokenLength())));
+                        commentRanges.push(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.Range.create(textDocument.positionAt(scanner.getTokenOffset()), textDocument.positionAt(scanner.getTokenOffset() + scanner.getTokenLength())));
                     }
                     break;
                 case 15 /* Trivia */:
@@ -12881,10 +12743,10 @@ function parse(textDocument, config) {
         return false;
     }
     function _errorAtRange(message, code, startOffset, endOffset, severity) {
-        if (severity === void 0) { severity = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Error; }
+        if (severity === void 0) { severity = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Error; }
         if (problems.length === 0 || startOffset !== lastProblemOffset) {
-            var range = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["Range"].create(textDocument.positionAt(startOffset), textDocument.positionAt(endOffset));
-            problems.push(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["Diagnostic"].create(range, message, severity, code, textDocument.languageId));
+            var range = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.Range.create(textDocument.positionAt(startOffset), textDocument.positionAt(endOffset));
+            problems.push(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.Diagnostic.create(range, message, severity, code, textDocument.languageId));
             lastProblemOffset = startOffset;
         }
     }
@@ -12923,22 +12785,22 @@ function parse(textDocument, config) {
     function _checkScanError() {
         switch (scanner.getTokenError()) {
             case 4 /* InvalidUnicode */:
-                _error(localize('InvalidUnicode', 'Invalid unicode sequence in string.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].InvalidUnicode);
+                _error(localize('InvalidUnicode', 'Invalid unicode sequence in string.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.InvalidUnicode);
                 return true;
             case 5 /* InvalidEscapeCharacter */:
-                _error(localize('InvalidEscapeCharacter', 'Invalid escape character in string.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].InvalidEscapeCharacter);
+                _error(localize('InvalidEscapeCharacter', 'Invalid escape character in string.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.InvalidEscapeCharacter);
                 return true;
             case 3 /* UnexpectedEndOfNumber */:
-                _error(localize('UnexpectedEndOfNumber', 'Unexpected end of number.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].UnexpectedEndOfNumber);
+                _error(localize('UnexpectedEndOfNumber', 'Unexpected end of number.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.UnexpectedEndOfNumber);
                 return true;
             case 1 /* UnexpectedEndOfComment */:
-                _error(localize('UnexpectedEndOfComment', 'Unexpected end of comment.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].UnexpectedEndOfComment);
+                _error(localize('UnexpectedEndOfComment', 'Unexpected end of comment.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.UnexpectedEndOfComment);
                 return true;
             case 2 /* UnexpectedEndOfString */:
-                _error(localize('UnexpectedEndOfString', 'Unexpected end of string.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].UnexpectedEndOfString);
+                _error(localize('UnexpectedEndOfString', 'Unexpected end of string.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.UnexpectedEndOfString);
                 return true;
             case 6 /* InvalidCharacter */:
-                _error(localize('InvalidCharacter', 'Invalid characters in string. Control characters must be escaped.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].InvalidCharacter);
+                _error(localize('InvalidCharacter', 'Invalid characters in string. Control characters must be escaped.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.InvalidCharacter);
                 return true;
         }
         return false;
@@ -12961,23 +12823,23 @@ function parse(textDocument, config) {
         while (scanner.getToken() !== 4 /* CloseBracketToken */ && scanner.getToken() !== 17 /* EOF */) {
             if (scanner.getToken() === 5 /* CommaToken */) {
                 if (!needsComma) {
-                    _error(localize('ValueExpected', 'Value expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].ValueExpected);
+                    _error(localize('ValueExpected', 'Value expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.ValueExpected);
                 }
                 var commaOffset = scanner.getTokenOffset();
                 _scanNext(); // consume comma
                 if (scanner.getToken() === 4 /* CloseBracketToken */) {
                     if (needsComma) {
-                        _errorAtRange(localize('TrailingComma', 'Trailing comma'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].TrailingComma, commaOffset, commaOffset + 1);
+                        _errorAtRange(localize('TrailingComma', 'Trailing comma'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.TrailingComma, commaOffset, commaOffset + 1);
                     }
                     continue;
                 }
             }
             else if (needsComma) {
-                _error(localize('ExpectedComma', 'Expected comma'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].CommaExpected);
+                _error(localize('ExpectedComma', 'Expected comma'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.CommaExpected);
             }
             var item = _parseValue(node);
             if (!item) {
-                _error(localize('PropertyExpected', 'Value expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].ValueExpected, undefined, [], [4 /* CloseBracketToken */, 5 /* CommaToken */]);
+                _error(localize('PropertyExpected', 'Value expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.ValueExpected, undefined, [], [4 /* CloseBracketToken */, 5 /* CommaToken */]);
             }
             else {
                 node.items.push(item);
@@ -12985,7 +12847,7 @@ function parse(textDocument, config) {
             needsComma = true;
         }
         if (scanner.getToken() !== 4 /* CloseBracketToken */) {
-            return _error(localize('ExpectedCloseBracket', 'Expected comma or closing bracket'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].CommaOrCloseBacketExpected, node);
+            return _error(localize('ExpectedCloseBracket', 'Expected comma or closing bracket'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.CommaOrCloseBacketExpected, node);
         }
         return _finalize(node, true);
     }
@@ -12996,7 +12858,7 @@ function parse(textDocument, config) {
         if (!key) {
             if (scanner.getToken() === 16 /* Unknown */) {
                 // give a more helpful error message
-                _error(localize('DoubleQuotesExpected', 'Property keys must be doublequoted'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].Undefined);
+                _error(localize('DoubleQuotesExpected', 'Property keys must be doublequoted'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.Undefined);
                 var keyNode = new StringASTNodeImpl(node, scanner.getTokenOffset(), scanner.getTokenLength());
                 keyNode.value = scanner.getTokenValue();
                 key = keyNode;
@@ -13009,9 +12871,9 @@ function parse(textDocument, config) {
         node.keyNode = key;
         var seen = keysSeen[key.value];
         if (seen) {
-            _errorAtRange(localize('DuplicateKeyWarning', "Duplicate object key"), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].DuplicateKey, node.keyNode.offset, node.keyNode.offset + node.keyNode.length, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning);
+            _errorAtRange(localize('DuplicateKeyWarning', "Duplicate object key"), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.DuplicateKey, node.keyNode.offset, node.keyNode.offset + node.keyNode.length, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning);
             if (typeof seen === 'object') {
-                _errorAtRange(localize('DuplicateKeyWarning', "Duplicate object key"), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].DuplicateKey, seen.keyNode.offset, seen.keyNode.offset + seen.keyNode.length, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["DiagnosticSeverity"].Warning);
+                _errorAtRange(localize('DuplicateKeyWarning', "Duplicate object key"), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.DuplicateKey, seen.keyNode.offset, seen.keyNode.offset + seen.keyNode.length, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.DiagnosticSeverity.Warning);
             }
             keysSeen[key.value] = true; // if the same key is duplicate again, avoid duplicate error reporting
         }
@@ -13023,7 +12885,7 @@ function parse(textDocument, config) {
             _scanNext(); // consume ColonToken
         }
         else {
-            _error(localize('ColonExpected', 'Colon expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].ColonExpected);
+            _error(localize('ColonExpected', 'Colon expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.ColonExpected);
             if (scanner.getToken() === 10 /* StringLiteral */ && textDocument.positionAt(key.offset + key.length).line < textDocument.positionAt(scanner.getTokenOffset()).line) {
                 node.length = key.length;
                 return node;
@@ -13031,7 +12893,7 @@ function parse(textDocument, config) {
         }
         var value = _parseValue(node);
         if (!value) {
-            return _error(localize('ValueExpected', 'Value expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].ValueExpected, node, [], [2 /* CloseBraceToken */, 5 /* CommaToken */]);
+            return _error(localize('ValueExpected', 'Value expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.ValueExpected, node, [], [2 /* CloseBraceToken */, 5 /* CommaToken */]);
         }
         node.valueNode = value;
         node.length = value.offset + value.length - node.offset;
@@ -13048,23 +12910,23 @@ function parse(textDocument, config) {
         while (scanner.getToken() !== 2 /* CloseBraceToken */ && scanner.getToken() !== 17 /* EOF */) {
             if (scanner.getToken() === 5 /* CommaToken */) {
                 if (!needsComma) {
-                    _error(localize('PropertyExpected', 'Property expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].PropertyExpected);
+                    _error(localize('PropertyExpected', 'Property expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.PropertyExpected);
                 }
                 var commaOffset = scanner.getTokenOffset();
                 _scanNext(); // consume comma
                 if (scanner.getToken() === 2 /* CloseBraceToken */) {
                     if (needsComma) {
-                        _errorAtRange(localize('TrailingComma', 'Trailing comma'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].TrailingComma, commaOffset, commaOffset + 1);
+                        _errorAtRange(localize('TrailingComma', 'Trailing comma'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.TrailingComma, commaOffset, commaOffset + 1);
                     }
                     continue;
                 }
             }
             else if (needsComma) {
-                _error(localize('ExpectedComma', 'Expected comma'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].CommaExpected);
+                _error(localize('ExpectedComma', 'Expected comma'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.CommaExpected);
             }
             var property = _parseProperty(node, keysSeen);
             if (!property) {
-                _error(localize('PropertyExpected', 'Property expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].PropertyExpected, undefined, [], [2 /* CloseBraceToken */, 5 /* CommaToken */]);
+                _error(localize('PropertyExpected', 'Property expected'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.PropertyExpected, undefined, [], [2 /* CloseBraceToken */, 5 /* CommaToken */]);
             }
             else {
                 node.properties.push(property);
@@ -13072,7 +12934,7 @@ function parse(textDocument, config) {
             needsComma = true;
         }
         if (scanner.getToken() !== 2 /* CloseBraceToken */) {
-            return _error(localize('ExpectedCloseBrace', 'Expected comma or closing brace'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].CommaOrCloseBraceExpected, node);
+            return _error(localize('ExpectedCloseBrace', 'Expected comma or closing brace'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.CommaOrCloseBraceExpected, node);
         }
         return _finalize(node, true);
     }
@@ -13093,13 +12955,13 @@ function parse(textDocument, config) {
             var tokenValue = scanner.getTokenValue();
             try {
                 var numberValue = JSON.parse(tokenValue);
-                if (!Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(numberValue)) {
-                    return _error(localize('InvalidNumberFormat', 'Invalid number format.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].Undefined, node);
+                if (!(0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_1__.isNumber)(numberValue)) {
+                    return _error(localize('InvalidNumberFormat', 'Invalid number format.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.Undefined, node);
                 }
                 node.value = numberValue;
             }
             catch (e) {
-                return _error(localize('InvalidNumberFormat', 'Invalid number format.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].Undefined, node);
+                return _error(localize('InvalidNumberFormat', 'Invalid number format.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.Undefined, node);
             }
             node.isInteger = tokenValue.indexOf('.') === -1;
         }
@@ -13126,10 +12988,10 @@ function parse(textDocument, config) {
     if (token !== 17 /* EOF */) {
         _root = _parseValue(_root);
         if (!_root) {
-            _error(localize('Invalid symbol', 'Expected a JSON object, array or literal.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].Undefined);
+            _error(localize('Invalid symbol', 'Expected a JSON object, array or literal.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.Undefined);
         }
         else if (scanner.getToken() !== 17 /* EOF */) {
-            _error(localize('End of file expected', 'End of file expected.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__["ErrorCode"].Undefined);
+            _error(localize('End of file expected', 'End of file expected.'), _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_2__.ErrorCode.Undefined);
         }
     }
     return new JSONDocument(_root, problems, commentRanges);
@@ -13142,19 +13004,19 @@ function parse(textDocument, config) {
 /*!*********************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/configuration.js ***!
   \*********************************************************************************************************************/
-/*! exports provided: schemaContributions */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "schemaContributions", function() { return schemaContributions; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "schemaContributions": () => /* binding */ schemaContributions
+/* harmony export */ });
 /* harmony import */ var _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../fillers/vscode-nls.js */ "./node_modules/monaco-editor/esm/vs/language/json/fillers/vscode-nls.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_0__["loadMessageBundle"]();
+var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_0__.loadMessageBundle();
 var schemaContributions = {
     schemaAssociations: [],
     schemas: {
@@ -13687,12 +13549,12 @@ for (var schemaName in schemaContributions.schemas) {
 /*!**********************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonCompletion.js ***!
   \**********************************************************************************************************************/
-/*! exports provided: JSONCompletion */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JSONCompletion", function() { return JSONCompletion; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "JSONCompletion": () => /* binding */ JSONCompletion
+/* harmony export */ });
 /* harmony import */ var _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../parser/jsonParser.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/parser/jsonParser.js");
 /* harmony import */ var _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../jsonc-parser/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js");
 /* harmony import */ var _utils_json_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/json.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/json.js");
@@ -13711,7 +13573,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_6__["loadMessageBundle"]();
+var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_6__.loadMessageBundle();
 var valueCommitCharacters = [',', '}', ']'];
 var propertyCommitCharacters = [':'];
 var JSONCompletion = /** @class */ (function () {
@@ -13758,14 +13620,14 @@ var JSONCompletion = /** @class */ (function () {
         var currentWord = this.getCurrentWord(document, offset);
         var overwriteRange;
         if (node && (node.type === 'string' || node.type === 'number' || node.type === 'boolean' || node.type === 'null')) {
-            overwriteRange = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["Range"].create(document.positionAt(node.offset), document.positionAt(node.offset + node.length));
+            overwriteRange = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.Range.create(document.positionAt(node.offset), document.positionAt(node.offset + node.length));
         }
         else {
             var overwriteStart = offset - currentWord.length;
             if (overwriteStart > 0 && text[overwriteStart - 1] === '"') {
                 overwriteStart--;
             }
-            overwriteRange = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["Range"].create(document.positionAt(overwriteStart), position);
+            overwriteRange = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.Range.create(document.positionAt(overwriteStart), position);
         }
         var supportsCommitCharacters = false; //this.doesSupportsCommitCharacters(); disabled for now, waiting for new API: https://github.com/microsoft/vscode/issues/42544
         var proposed = {};
@@ -13782,10 +13644,10 @@ var JSONCompletion = /** @class */ (function () {
                         }
                     }
                     if (overwriteRange && suggestion.insertText !== undefined) {
-                        suggestion.textEdit = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["TextEdit"].replace(overwriteRange, suggestion.insertText);
+                        suggestion.textEdit = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.TextEdit.replace(overwriteRange, suggestion.insertText);
                     }
                     if (supportsCommitCharacters) {
-                        suggestion.commitCharacters = suggestion.kind === _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Property ? propertyCommitCharacters : valueCommitCharacters;
+                        suggestion.commitCharacters = suggestion.kind === _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Property ? propertyCommitCharacters : valueCommitCharacters;
                     }
                     suggestion.label = label;
                     proposed[label] = suggestion;
@@ -13836,7 +13698,7 @@ var JSONCompletion = /** @class */ (function () {
                 var properties = node.properties;
                 properties.forEach(function (p) {
                     if (!currentProperty || currentProperty !== p) {
-                        proposed[p.keyNode.value] = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItem"].create('__');
+                        proposed[p.keyNode.value] = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItem.create('__');
                     }
                 });
                 var separatorAfter_1 = '';
@@ -13851,7 +13713,7 @@ var JSONCompletion = /** @class */ (function () {
                     // property proposals without schema
                     _this.getSchemaLessPropertyCompletions(doc, node, currentKey, collector);
                 }
-                var location_1 = _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__["getNodePath"](node);
+                var location_1 = _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__.getNodePath(node);
                 _this.contributions.forEach(function (contribution) {
                     var collectPromise = contribution.collectPropertyCompletions(document.uri, location_1, currentWord, addValue, separatorAfter_1 === '', collector);
                     if (collectPromise) {
@@ -13860,10 +13722,10 @@ var JSONCompletion = /** @class */ (function () {
                 });
                 if ((!schema && currentWord.length > 0 && text.charAt(offset - currentWord.length - 1) !== '"')) {
                     collector.add({
-                        kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Property,
+                        kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Property,
                         label: _this.getLabelForValue(currentWord),
                         insertText: _this.getInsertTextForProperty(currentWord, undefined, false, separatorAfter_1),
-                        insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet, documentation: '',
+                        insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet, documentation: '',
                     });
                     collector.setAsIncomplete();
                 }
@@ -13905,17 +13767,17 @@ var JSONCompletion = /** @class */ (function () {
                         var propertySchema = schemaProperties_1[key];
                         if (typeof propertySchema === 'object' && !propertySchema.deprecationMessage && !propertySchema.doNotSuggest) {
                             var proposal = {
-                                kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Property,
+                                kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Property,
                                 label: key,
                                 insertText: _this.getInsertTextForProperty(key, propertySchema, addValue, separatorAfter),
-                                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                                 filterText: _this.getFilterTextForValue(key),
                                 documentation: _this.fromMarkup(propertySchema.markdownDescription) || propertySchema.description || '',
                             };
                             if (propertySchema.suggestSortText !== undefined) {
                                 proposal.sortText = propertySchema.suggestSortText;
                             }
-                            if (proposal.insertText && Object(_utils_strings_js__WEBPACK_IMPORTED_MODULE_3__["endsWith"])(proposal.insertText, "$1" + separatorAfter)) {
+                            if (proposal.insertText && (0,_utils_strings_js__WEBPACK_IMPORTED_MODULE_3__.endsWith)(proposal.insertText, "$1" + separatorAfter)) {
                                 proposal.command = {
                                     title: 'Suggest',
                                     command: 'editor.action.triggerSuggest'
@@ -13930,17 +13792,17 @@ var JSONCompletion = /** @class */ (function () {
                     var propertyNameCompletionItem = function (name, enumDescription) {
                         if (enumDescription === void 0) { enumDescription = undefined; }
                         var proposal = {
-                            kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Property,
+                            kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Property,
                             label: name,
                             insertText: _this.getInsertTextForProperty(name, undefined, addValue, separatorAfter),
-                            insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                            insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                             filterText: _this.getFilterTextForValue(name),
                             documentation: enumDescription || _this.fromMarkup(schemaPropertyNames_1.markdownDescription) || schemaPropertyNames_1.description || '',
                         };
                         if (schemaPropertyNames_1.suggestSortText !== undefined) {
                             proposal.sortText = schemaPropertyNames_1.suggestSortText;
                         }
-                        if (proposal.insertText && Object(_utils_strings_js__WEBPACK_IMPORTED_MODULE_3__["endsWith"])(proposal.insertText, "$1" + separatorAfter)) {
+                        if (proposal.insertText && (0,_utils_strings_js__WEBPACK_IMPORTED_MODULE_3__.endsWith)(proposal.insertText, "$1" + separatorAfter)) {
                             proposal.command = {
                                 title: 'Suggest',
                                 command: 'editor.action.triggerSuggest'
@@ -13973,10 +13835,10 @@ var JSONCompletion = /** @class */ (function () {
             obj.properties.forEach(function (p) {
                 var key = p.keyNode.value;
                 collector.add({
-                    kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Property,
+                    kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Property,
                     label: key,
                     insertText: _this.getInsertTextForValue(key, ''),
-                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                     filterText: _this.getFilterTextForValue(key),
                     documentation: ''
                 });
@@ -14004,10 +13866,10 @@ var JSONCompletion = /** @class */ (function () {
         }
         else if (node.type === 'object') {
             collector.add({
-                kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Property,
+                kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Property,
                 label: '$schema',
                 insertText: this.getInsertTextForProperty('$schema', undefined, true, ''),
-                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet, documentation: '',
+                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet, documentation: '',
                 filterText: this.getFilterTextForValue("$schema")
             });
         }
@@ -14024,26 +13886,26 @@ var JSONCompletion = /** @class */ (function () {
                 kind: this.getSuggestionKind('object'),
                 label: 'Empty object',
                 insertText: this.getInsertTextForValue({}, ''),
-                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                 documentation: ''
             });
             collector.add({
                 kind: this.getSuggestionKind('array'),
                 label: 'Empty array',
                 insertText: this.getInsertTextForValue([], ''),
-                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                 documentation: ''
             });
             return;
         }
         var separatorAfter = this.evaluateSeparatorAfter(document, offsetForSeparator);
         var collectSuggestionsForValues = function (value) {
-            if (value.parent && !_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__["contains"](value.parent, offset, true)) {
+            if (value.parent && !_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__.contains(value.parent, offset, true)) {
                 collector.add({
                     kind: _this.getSuggestionKind(value.type),
                     label: _this.getLabelTextForMatchingNode(value, document),
                     insertText: _this.getInsertTextForMatchingNode(value, document, separatorAfter),
-                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet, documentation: ''
+                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet, documentation: ''
                 });
             }
             if (value.type === 'boolean') {
@@ -14180,7 +14042,7 @@ var JSONCompletion = /** @class */ (function () {
                 var parentKey_4 = node.keyNode.value;
                 var valueNode = node.valueNode;
                 if ((!valueNode || offset <= (valueNode.offset + valueNode.length)) && node.parent) {
-                    var location_2 = _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__["getNodePath"](node.parent);
+                    var location_2 = _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__.getNodePath(node.parent);
                     this.contributions.forEach(function (contribution) {
                         var collectPromise = contribution.collectValueCompletions(document.uri, location_2, parentKey_4, collector);
                         if (collectPromise) {
@@ -14212,7 +14074,7 @@ var JSONCompletion = /** @class */ (function () {
         var _this = this;
         if (arrayDepth === void 0) { arrayDepth = 0; }
         var hasProposals = false;
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__["isDefined"])(schema.default)) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__.isDefined)(schema.default)) {
             var type = schema.type;
             var value = schema.default;
             for (var i = arrayDepth; i > 0; i--) {
@@ -14223,7 +14085,7 @@ var JSONCompletion = /** @class */ (function () {
                 kind: this.getSuggestionKind(type),
                 label: this.getLabelForValue(value),
                 insertText: this.getInsertTextForValue(value, separatorAfter),
-                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                 detail: localize('json.suggest.default', 'Default value')
             });
             hasProposals = true;
@@ -14240,7 +14102,7 @@ var JSONCompletion = /** @class */ (function () {
                     kind: _this.getSuggestionKind(type),
                     label: _this.getLabelForValue(value),
                     insertText: _this.getInsertTextForValue(value, separatorAfter),
-                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet
+                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet
                 });
                 hasProposals = true;
             });
@@ -14252,7 +14114,7 @@ var JSONCompletion = /** @class */ (function () {
                 var label = s.label;
                 var insertText;
                 var filterText;
-                if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__["isDefined"])(value)) {
+                if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__.isDefined)(value)) {
                     var type_1 = schema.type;
                     for (var i = arrayDepth; i > 0; i--) {
                         value = [value];
@@ -14282,7 +14144,7 @@ var JSONCompletion = /** @class */ (function () {
                     label: label,
                     documentation: _this.fromMarkup(s.markdownDescription) || s.description,
                     insertText: insertText,
-                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                     filterText: filterText
                 });
                 hasProposals = true;
@@ -14293,12 +14155,12 @@ var JSONCompletion = /** @class */ (function () {
         }
     };
     JSONCompletion.prototype.addEnumValueCompletions = function (schema, separatorAfter, collector) {
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__["isDefined"])(schema.const)) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__.isDefined)(schema.const)) {
             collector.add({
                 kind: this.getSuggestionKind(schema.type),
                 label: this.getLabelForValue(schema.const),
                 insertText: this.getInsertTextForValue(schema.const, separatorAfter),
-                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                 documentation: this.fromMarkup(schema.markdownDescription) || schema.description
             });
         }
@@ -14316,14 +14178,14 @@ var JSONCompletion = /** @class */ (function () {
                     kind: this.getSuggestionKind(schema.type),
                     label: this.getLabelForValue(enm),
                     insertText: this.getInsertTextForValue(enm, separatorAfter),
-                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                    insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                     documentation: documentation
                 });
             }
         }
     };
     JSONCompletion.prototype.collectTypes = function (schema, types) {
-        if (Array.isArray(schema.enum) || Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__["isDefined"])(schema.const)) {
+        if (Array.isArray(schema.enum) || (0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__.isDefined)(schema.const)) {
             return;
         }
         var type = schema.type;
@@ -14340,7 +14202,7 @@ var JSONCompletion = /** @class */ (function () {
                 kind: this.getSuggestionKind('object'),
                 label: '{}',
                 insertText: this.getInsertTextForGuessedValue({}, separatorAfter),
-                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                 detail: localize('defaults.object', 'New object'),
                 documentation: ''
             });
@@ -14350,7 +14212,7 @@ var JSONCompletion = /** @class */ (function () {
                 kind: this.getSuggestionKind('array'),
                 label: '[]',
                 insertText: this.getInsertTextForGuessedValue([], separatorAfter),
-                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+                insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
                 detail: localize('defaults.array', 'New array'),
                 documentation: ''
             });
@@ -14361,7 +14223,7 @@ var JSONCompletion = /** @class */ (function () {
             kind: this.getSuggestionKind('boolean'),
             label: value ? 'true' : 'false',
             insertText: this.getInsertTextForValue(value, separatorAfter),
-            insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+            insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
             documentation: ''
         });
     };
@@ -14370,7 +14232,7 @@ var JSONCompletion = /** @class */ (function () {
             kind: this.getSuggestionKind('null'),
             label: 'null',
             insertText: 'null' + separatorAfter,
-            insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet,
+            insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet,
             documentation: ''
         });
     };
@@ -14378,11 +14240,11 @@ var JSONCompletion = /** @class */ (function () {
         var _this = this;
         var schemaIds = this.schemaService.getRegisteredSchemaIds(function (schema) { return schema === 'http' || schema === 'https'; });
         schemaIds.forEach(function (schemaId) { return collector.add({
-            kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Module,
+            kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Module,
             label: _this.getLabelForValue(schemaId),
             filterText: _this.getFilterTextForValue(schemaId),
             insertText: _this.getInsertTextForValue(schemaId, separatorAfter),
-            insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["InsertTextFormat"].Snippet, documentation: ''
+            insertTextFormat: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.InsertTextFormat.Snippet, documentation: ''
         }); });
     };
     JSONCompletion.prototype.getLabelForValue = function (value) {
@@ -14420,7 +14282,7 @@ var JSONCompletion = /** @class */ (function () {
             }
             return JSON.stringify(value);
         };
-        return Object(_utils_json_js__WEBPACK_IMPORTED_MODULE_2__["stringifyObject"])(value, '', replacer) + separatorAfter;
+        return (0,_utils_json_js__WEBPACK_IMPORTED_MODULE_2__.stringifyObject)(value, '', replacer) + separatorAfter;
     };
     JSONCompletion.prototype.getInsertTextForGuessedValue = function (value, separatorAfter) {
         switch (typeof value) {
@@ -14446,13 +14308,13 @@ var JSONCompletion = /** @class */ (function () {
             type = array.length > 0 ? array[0] : undefined;
         }
         if (!type) {
-            return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Value;
+            return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Value;
         }
         switch (type) {
-            case 'string': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Value;
-            case 'object': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Module;
-            case 'property': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Property;
-            default: return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["CompletionItemKind"].Value;
+            case 'string': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Value;
+            case 'object': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Module;
+            case 'property': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Property;
+            default: return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.CompletionItemKind.Value;
         }
     };
     JSONCompletion.prototype.getLabelTextForMatchingNode = function (node, document) {
@@ -14489,7 +14351,7 @@ var JSONCompletion = /** @class */ (function () {
             if (Array.isArray(propertySchema.defaultSnippets)) {
                 if (propertySchema.defaultSnippets.length === 1) {
                     var body = propertySchema.defaultSnippets[0].body;
-                    if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__["isDefined"])(body)) {
+                    if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__.isDefined)(body)) {
                         value = this.getInsertTextForSnippetValue(body, '');
                     }
                 }
@@ -14501,7 +14363,7 @@ var JSONCompletion = /** @class */ (function () {
                 }
                 nValueProposals += propertySchema.enum.length;
             }
-            if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__["isDefined"])(propertySchema.default)) {
+            if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__.isDefined)(propertySchema.default)) {
                 if (!value) {
                     value = this.getInsertTextForGuessedValue(propertySchema.default, '');
                 }
@@ -14562,7 +14424,7 @@ var JSONCompletion = /** @class */ (function () {
         return text.substring(i + 1, offset);
     };
     JSONCompletion.prototype.evaluateSeparatorAfter = function (document, offset) {
-        var scanner = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__["createScanner"](document.getText(), true);
+        var scanner = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__.createScanner(document.getText(), true);
         scanner.setPosition(offset);
         var token = scanner.scan();
         switch (token) {
@@ -14576,7 +14438,7 @@ var JSONCompletion = /** @class */ (function () {
         }
     };
     JSONCompletion.prototype.findItemAtOffset = function (node, document, offset) {
-        var scanner = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__["createScanner"](document.getText(), true);
+        var scanner = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__.createScanner(document.getText(), true);
         var children = node.items;
         for (var i = children.length - 1; i >= 0; i--) {
             var child = children[i];
@@ -14595,7 +14457,7 @@ var JSONCompletion = /** @class */ (function () {
         return 0;
     };
     JSONCompletion.prototype.isInComment = function (document, start, offset) {
-        var scanner = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__["createScanner"](document.getText(), false);
+        var scanner = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__.createScanner(document.getText(), false);
         scanner.setPosition(start);
         var token = scanner.scan();
         while (token !== 17 /* EOF */ && (scanner.getTokenOffset() + scanner.getTokenLength() < offset)) {
@@ -14606,21 +14468,21 @@ var JSONCompletion = /** @class */ (function () {
     JSONCompletion.prototype.fromMarkup = function (markupString) {
         if (markupString && this.doesSupportMarkdown()) {
             return {
-                kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["MarkupKind"].Markdown,
+                kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.MarkupKind.Markdown,
                 value: markupString
             };
         }
         return undefined;
     };
     JSONCompletion.prototype.doesSupportMarkdown = function () {
-        if (!Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__["isDefined"])(this.supportsMarkdown)) {
+        if (!(0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__.isDefined)(this.supportsMarkdown)) {
             var completion = this.clientCapabilities.textDocument && this.clientCapabilities.textDocument.completion;
-            this.supportsMarkdown = completion && completion.completionItem && Array.isArray(completion.completionItem.documentationFormat) && completion.completionItem.documentationFormat.indexOf(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__["MarkupKind"].Markdown) !== -1;
+            this.supportsMarkdown = completion && completion.completionItem && Array.isArray(completion.completionItem.documentationFormat) && completion.completionItem.documentationFormat.indexOf(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_5__.MarkupKind.Markdown) !== -1;
         }
         return this.supportsMarkdown;
     };
     JSONCompletion.prototype.doesSupportsCommitCharacters = function () {
-        if (!Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__["isDefined"])(this.supportsCommitCharacters)) {
+        if (!(0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_4__.isDefined)(this.supportsCommitCharacters)) {
             var completion = this.clientCapabilities.textDocument && this.clientCapabilities.textDocument.completion;
             this.supportsCommitCharacters = completion && completion.completionItem && !!completion.completionItem.commitCharactersSupport;
         }
@@ -14637,12 +14499,12 @@ var JSONCompletion = /** @class */ (function () {
 /*!**********************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonDefinition.js ***!
   \**********************************************************************************************************************/
-/*! exports provided: findDefinition */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findDefinition", function() { return findDefinition; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "findDefinition": () => /* binding */ findDefinition
+/* harmony export */ });
 /* harmony import */ var _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../jsonLanguageTypes.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageTypes.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -14671,7 +14533,7 @@ function findDefinition(document, position, doc) {
     return Promise.resolve([definition]);
 }
 function createRange(document, node) {
-    return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__["Range"].create(document.positionAt(node.offset), document.positionAt(node.offset + node.length));
+    return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__.Range.create(document.positionAt(node.offset), document.positionAt(node.offset + node.length));
 }
 function isRef(node) {
     return node.type === 'string' &&
@@ -14735,12 +14597,12 @@ function unescape(str) {
 /*!***************************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonDocumentSymbols.js ***!
   \***************************************************************************************************************************/
-/*! exports provided: JSONDocumentSymbols */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JSONDocumentSymbols", function() { return JSONDocumentSymbols; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "JSONDocumentSymbols": () => /* binding */ JSONDocumentSymbols
+/* harmony export */ });
 /* harmony import */ var _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../parser/jsonParser.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/parser/jsonParser.js");
 /* harmony import */ var _utils_strings_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/strings.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/strings.js");
 /* harmony import */ var _utils_colors_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/colors.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/colors.js");
@@ -14767,7 +14629,7 @@ var JSONDocumentSymbols = /** @class */ (function () {
         var limit = context.resultLimit || Number.MAX_VALUE;
         // special handling for key bindings
         var resourceString = document.uri;
-        if ((resourceString === 'vscode://defaultsettings/keybindings.json') || _utils_strings_js__WEBPACK_IMPORTED_MODULE_1__["endsWith"](resourceString.toLowerCase(), '/user/keybindings.json')) {
+        if ((resourceString === 'vscode://defaultsettings/keybindings.json') || _utils_strings_js__WEBPACK_IMPORTED_MODULE_1__.endsWith(resourceString.toLowerCase(), '/user/keybindings.json')) {
             if (root.type === 'array') {
                 var result_1 = [];
                 for (var _i = 0, _a = root.items; _i < _a.length; _i++) {
@@ -14776,8 +14638,8 @@ var JSONDocumentSymbols = /** @class */ (function () {
                         for (var _b = 0, _c = item.properties; _b < _c.length; _b++) {
                             var property = _c[_b];
                             if (property.keyNode.value === 'key' && property.valueNode) {
-                                var location = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["Location"].create(document.uri, getRange(document, item));
-                                result_1.push({ name: _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__["getNodeValue"](property.valueNode), kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["SymbolKind"].Function, location: location });
+                                var location = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.Location.create(document.uri, getRange(document, item));
+                                result_1.push({ name: _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__.getNodeValue(property.valueNode), kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.SymbolKind.Function, location: location });
                                 limit--;
                                 if (limit <= 0) {
                                     if (context && context.onResultLimitExceeded) {
@@ -14812,7 +14674,7 @@ var JSONDocumentSymbols = /** @class */ (function () {
                     if (valueNode) {
                         if (limit > 0) {
                             limit--;
-                            var location = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["Location"].create(document.uri, getRange(document, property));
+                            var location = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.Location.create(document.uri, getRange(document, property));
                             var childContainerName = containerName ? containerName + '.' + property.keyNode.value : property.keyNode.value;
                             result.push({ name: _this.getKeyLabel(property), kind: _this.getSymbolKind(valueNode.type), location: location, containerName: containerName });
                             toVisit.push({ node: valueNode, containerName: childContainerName });
@@ -14844,7 +14706,7 @@ var JSONDocumentSymbols = /** @class */ (function () {
         var limit = context.resultLimit || Number.MAX_VALUE;
         // special handling for key bindings
         var resourceString = document.uri;
-        if ((resourceString === 'vscode://defaultsettings/keybindings.json') || _utils_strings_js__WEBPACK_IMPORTED_MODULE_1__["endsWith"](resourceString.toLowerCase(), '/user/keybindings.json')) {
+        if ((resourceString === 'vscode://defaultsettings/keybindings.json') || _utils_strings_js__WEBPACK_IMPORTED_MODULE_1__.endsWith(resourceString.toLowerCase(), '/user/keybindings.json')) {
             if (root.type === 'array') {
                 var result_2 = [];
                 for (var _i = 0, _a = root.items; _i < _a.length; _i++) {
@@ -14855,7 +14717,7 @@ var JSONDocumentSymbols = /** @class */ (function () {
                             if (property.keyNode.value === 'key' && property.valueNode) {
                                 var range = getRange(document, item);
                                 var selectionRange = getRange(document, property.keyNode);
-                                result_2.push({ name: _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__["getNodeValue"](property.valueNode), kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["SymbolKind"].Function, range: range, selectionRange: selectionRange });
+                                result_2.push({ name: _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__.getNodeValue(property.valueNode), kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.SymbolKind.Function, range: range, selectionRange: selectionRange });
                                 limit--;
                                 if (limit <= 0) {
                                     if (context && context.onResultLimitExceeded) {
@@ -14927,17 +14789,17 @@ var JSONDocumentSymbols = /** @class */ (function () {
     JSONDocumentSymbols.prototype.getSymbolKind = function (nodeType) {
         switch (nodeType) {
             case 'object':
-                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["SymbolKind"].Module;
+                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.SymbolKind.Module;
             case 'string':
-                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["SymbolKind"].String;
+                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.SymbolKind.String;
             case 'number':
-                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["SymbolKind"].Number;
+                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.SymbolKind.Number;
             case 'array':
-                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["SymbolKind"].Array;
+                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.SymbolKind.Array;
             case 'boolean':
-                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["SymbolKind"].Boolean;
+                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.SymbolKind.Boolean;
             default: // 'null'
-                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["SymbolKind"].Variable;
+                return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.SymbolKind.Variable;
         }
     };
     JSONDocumentSymbols.prototype.getKeyLabel = function (property) {
@@ -14962,7 +14824,7 @@ var JSONDocumentSymbols = /** @class */ (function () {
                     if (!s.inverted && s.schema && (s.schema.format === 'color' || s.schema.format === 'color-hex') && s.node && s.node.type === 'string') {
                         var nodeId = String(s.node.offset);
                         if (!visitedNode[nodeId]) {
-                            var color = Object(_utils_colors_js__WEBPACK_IMPORTED_MODULE_2__["colorFromHex"])(_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__["getNodeValue"](s.node));
+                            var color = (0,_utils_colors_js__WEBPACK_IMPORTED_MODULE_2__.colorFromHex)(_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__.getNodeValue(s.node));
                             if (color) {
                                 var range = getRange(document, s.node);
                                 result.push({ color: color, range: range });
@@ -14996,14 +14858,14 @@ var JSONDocumentSymbols = /** @class */ (function () {
         else {
             label = "#" + toTwoDigitHex(red256) + toTwoDigitHex(green256) + toTwoDigitHex(blue256) + toTwoDigitHex(Math.round(color.alpha * 255));
         }
-        result.push({ label: label, textEdit: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["TextEdit"].replace(range, JSON.stringify(label)) });
+        result.push({ label: label, textEdit: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.TextEdit.replace(range, JSON.stringify(label)) });
         return result;
     };
     return JSONDocumentSymbols;
 }());
 
 function getRange(document, node) {
-    return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__["Range"].create(document.positionAt(node.offset), document.positionAt(node.offset + node.length));
+    return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_3__.Range.create(document.positionAt(node.offset), document.positionAt(node.offset + node.length));
 }
 
 
@@ -15013,12 +14875,12 @@ function getRange(document, node) {
 /*!*******************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonFolding.js ***!
   \*******************************************************************************************************************/
-/*! exports provided: getFoldingRanges */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getFoldingRanges", function() { return getFoldingRanges; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getFoldingRanges": () => /* binding */ getFoldingRanges
+/* harmony export */ });
 /* harmony import */ var _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../jsonc-parser/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js");
 /* harmony import */ var _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../jsonLanguageTypes.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageTypes.js");
 /*---------------------------------------------------------------------------------------------
@@ -15032,7 +14894,7 @@ function getFoldingRanges(document, context) {
     var nestingLevels = [];
     var stack = [];
     var prevStart = -1;
-    var scanner = Object(_jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__["createScanner"])(document.getText(), false);
+    var scanner = (0,_jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__.createScanner)(document.getText(), false);
     var token = scanner.scan();
     function addRange(range) {
         ranges.push(range);
@@ -15065,11 +14927,11 @@ function getFoldingRanges(document, context) {
                 var startLine = document.positionAt(scanner.getTokenOffset()).line;
                 var endLine = document.positionAt(scanner.getTokenOffset() + scanner.getTokenLength()).line;
                 if (scanner.getTokenError() === 1 /* UnexpectedEndOfComment */ && startLine + 1 < document.lineCount) {
-                    scanner.setPosition(document.offsetAt(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["Position"].create(startLine + 1, 0)));
+                    scanner.setPosition(document.offsetAt(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.Position.create(startLine + 1, 0)));
                 }
                 else {
                     if (startLine < endLine) {
-                        addRange({ startLine: startLine, endLine: endLine, kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["FoldingRangeKind"].Comment });
+                        addRange({ startLine: startLine, endLine: endLine, kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.FoldingRangeKind.Comment });
                         prevStart = startLine;
                     }
                 }
@@ -15081,12 +14943,12 @@ function getFoldingRanges(document, context) {
                 if (m) {
                     var line = document.positionAt(scanner.getTokenOffset()).line;
                     if (m[1]) { // start pattern match
-                        var range = { startLine: line, endLine: line, kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["FoldingRangeKind"].Region };
+                        var range = { startLine: line, endLine: line, kind: _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.FoldingRangeKind.Region };
                         stack.push(range);
                     }
                     else {
                         var i = stack.length - 1;
-                        while (i >= 0 && stack[i].kind !== _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["FoldingRangeKind"].Region) {
+                        while (i >= 0 && stack[i].kind !== _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.FoldingRangeKind.Region) {
                             i--;
                         }
                         if (i >= 0) {
@@ -15150,12 +15012,12 @@ function getFoldingRanges(document, context) {
 /*!*****************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonHover.js ***!
   \*****************************************************************************************************************/
-/*! exports provided: JSONHover */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JSONHover", function() { return JSONHover; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "JSONHover": () => /* binding */ JSONHover
+/* harmony export */ });
 /* harmony import */ var _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../parser/jsonParser.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/parser/jsonParser.js");
 /* harmony import */ var _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../jsonLanguageTypes.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageTypes.js");
 /*---------------------------------------------------------------------------------------------
@@ -15188,7 +15050,7 @@ var JSONHover = /** @class */ (function () {
                 }
             }
         }
-        var hoverRange = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["Range"].create(document.positionAt(hoverRangeNode.offset), document.positionAt(hoverRangeNode.offset + hoverRangeNode.length));
+        var hoverRange = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.Range.create(document.positionAt(hoverRangeNode.offset), document.positionAt(hoverRangeNode.offset + hoverRangeNode.length));
         var createHover = function (contents) {
             var result = {
                 contents: contents,
@@ -15196,7 +15058,7 @@ var JSONHover = /** @class */ (function () {
             };
             return result;
         };
-        var location = _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__["getNodePath"](node);
+        var location = _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__.getNodePath(node);
         for (var i = this.contributions.length - 1; i >= 0; i--) {
             var contribution = this.contributions[i];
             var promise = contribution.getInfoContribution(document.uri, location);
@@ -15215,7 +15077,7 @@ var JSONHover = /** @class */ (function () {
                         title_1 = title_1 || s.schema.title;
                         markdownDescription_1 = markdownDescription_1 || s.schema.markdownDescription || toMarkdown(s.schema.description);
                         if (s.schema.enum) {
-                            var idx = s.schema.enum.indexOf(_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__["getNodeValue"](node));
+                            var idx = s.schema.enum.indexOf(_parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_0__.getNodeValue(node));
                             if (s.schema.markdownEnumDescriptions) {
                                 markdownEnumValueDescription_1 = s.schema.markdownEnumDescriptions[idx];
                             }
@@ -15278,14 +15140,14 @@ function toMarkdownCodeBlock(content) {
 /*!*************************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonSchemaService.js ***!
   \*************************************************************************************************************************/
-/*! exports provided: UnresolvedSchema, ResolvedSchema, JSONSchemaService */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UnresolvedSchema", function() { return UnresolvedSchema; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ResolvedSchema", function() { return ResolvedSchema; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JSONSchemaService", function() { return JSONSchemaService; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "UnresolvedSchema": () => /* binding */ UnresolvedSchema,
+/* harmony export */   "ResolvedSchema": () => /* binding */ ResolvedSchema,
+/* harmony export */   "JSONSchemaService": () => /* binding */ JSONSchemaService
+/* harmony export */ });
 /* harmony import */ var _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../jsonc-parser/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js");
 /* harmony import */ var _vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../vscode-uri/index.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-uri/index.js");
 /* harmony import */ var _utils_strings_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/strings.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/strings.js");
@@ -15300,7 +15162,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_4__["loadMessageBundle"]();
+var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_4__.loadMessageBundle();
 var FilePatternAssociation = /** @class */ (function () {
     function FilePatternAssociation(pattern, uris) {
         this.patternRegExps = [];
@@ -15312,7 +15174,7 @@ var FilePatternAssociation = /** @class */ (function () {
                 if (!include) {
                     p = p.substring(1);
                 }
-                this.patternRegExps.push(new RegExp(_utils_strings_js__WEBPACK_IMPORTED_MODULE_2__["convertSimple2RegExpPattern"](p) + '$'));
+                this.patternRegExps.push(new RegExp(_utils_strings_js__WEBPACK_IMPORTED_MODULE_2__.convertSimple2RegExpPattern(p) + '$'));
                 this.isInclude.push(include);
             }
             this.uris = uris;
@@ -15388,7 +15250,7 @@ var ResolvedSchema = /** @class */ (function () {
     ResolvedSchema.prototype.getSection = function (path) {
         var schemaRef = this.getSectionRecursive(path, this.schema);
         if (schemaRef) {
-            return _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_3__["asSchema"](schemaRef);
+            return _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_3__.asSchema(schemaRef);
         }
         return undefined;
     };
@@ -15442,7 +15304,7 @@ var JSONSchemaService = /** @class */ (function () {
     }
     JSONSchemaService.prototype.getRegisteredSchemaIds = function (filter) {
         return Object.keys(this.registeredSchemasIds).filter(function (id) {
-            var scheme = _vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__["URI"].parse(id).scheme;
+            var scheme = _vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__.URI.parse(id).scheme;
             return scheme !== 'schemaservice' && (!filter || filter(scheme));
         });
     };
@@ -15554,7 +15416,7 @@ var JSONSchemaService = /** @class */ (function () {
             }
             var schemaContent = {};
             var jsonErrors = [];
-            schemaContent = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__["parse"](content, jsonErrors);
+            schemaContent = _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__.parse(content, jsonErrors);
             var errors = jsonErrors.length ? [localize('json.schema.invalidFormat', 'Unable to parse content from \'{0}\': Parse error at offset {1}.', toDisplayString(url), jsonErrors[0].offset)] : [];
             return new UnresolvedSchema(schemaContent, errors);
         }, function (error) {
@@ -15564,7 +15426,7 @@ var JSONSchemaService = /** @class */ (function () {
                 // more concise error message, URL and context are attached by caller anyways
                 errorMessage = errorSplit[1];
             }
-            if (_utils_strings_js__WEBPACK_IMPORTED_MODULE_2__["endsWith"](errorMessage, '.')) {
+            if (_utils_strings_js__WEBPACK_IMPORTED_MODULE_2__.endsWith(errorMessage, '.')) {
                 errorMessage = errorMessage.substr(0, errorMessage.length - 1);
             }
             return new UnresolvedSchema({}, [localize('json.schema.nocontent', 'Unable to load schema from \'{0}\': {1}.', toDisplayString(url), errorMessage)]);
@@ -15722,8 +15584,8 @@ var JSONSchemaService = /** @class */ (function () {
             if (schemaProperties.length > 0) {
                 var valueNode = schemaProperties[0].valueNode;
                 if (valueNode && valueNode.type === 'string') {
-                    var schemeId = _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_3__["getNodeValue"](valueNode);
-                    if (schemeId && _utils_strings_js__WEBPACK_IMPORTED_MODULE_2__["startsWith"](schemeId, '.') && this.contextService) {
+                    var schemeId = _parser_jsonParser_js__WEBPACK_IMPORTED_MODULE_3__.getNodeValue(valueNode);
+                    if (schemeId && _utils_strings_js__WEBPACK_IMPORTED_MODULE_2__.startsWith(schemeId, '.') && this.contextService) {
                         schemeId = this.contextService.resolveRelativePath(schemeId, resource);
                     }
                     if (schemeId) {
@@ -15787,7 +15649,7 @@ var idCounter = 0;
 function normalizeId(id) {
     // remove trailing '#', normalize drive capitalization
     try {
-        return _vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__["URI"].parse(id).toString();
+        return _vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__.URI.parse(id).toString();
     }
     catch (e) {
         return id;
@@ -15795,7 +15657,7 @@ function normalizeId(id) {
 }
 function toDisplayString(url) {
     try {
-        var uri = _vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__["URI"].parse(url);
+        var uri = _vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__.URI.parse(url);
         if (uri.scheme === 'file') {
             return uri.fsPath;
         }
@@ -15813,12 +15675,12 @@ function toDisplayString(url) {
 /*!***************************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonSelectionRanges.js ***!
   \***************************************************************************************************************************/
-/*! exports provided: getSelectionRanges */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSelectionRanges", function() { return getSelectionRanges; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getSelectionRanges": () => /* binding */ getSelectionRanges
+/* harmony export */ });
 /* harmony import */ var _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../jsonLanguageTypes.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageTypes.js");
 /* harmony import */ var _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../jsonc-parser/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js");
 /*---------------------------------------------------------------------------------------------
@@ -15861,17 +15723,17 @@ function getSelectionRanges(document, positions, doc) {
         }
         var current = undefined;
         for (var index = result.length - 1; index >= 0; index--) {
-            current = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__["SelectionRange"].create(result[index], current);
+            current = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__.SelectionRange.create(result[index], current);
         }
         if (!current) {
-            current = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__["SelectionRange"].create(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__["Range"].create(position, position));
+            current = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__.SelectionRange.create(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__.Range.create(position, position));
         }
         return current;
     }
     function newRange(start, end) {
-        return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__["Range"].create(document.positionAt(start), document.positionAt(end));
+        return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_0__.Range.create(document.positionAt(start), document.positionAt(end));
     }
-    var scanner = Object(_jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__["createScanner"])(document.getText(), true);
+    var scanner = (0,_jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_1__.createScanner)(document.getText(), true);
     function getOffsetAfterNextToken(offset, expectedToken) {
         scanner.setPosition(offset);
         var token = scanner.scan();
@@ -15890,12 +15752,12 @@ function getSelectionRanges(document, positions, doc) {
 /*!**********************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonValidation.js ***!
   \**********************************************************************************************************************/
-/*! exports provided: JSONValidation */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JSONValidation", function() { return JSONValidation; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "JSONValidation": () => /* binding */ JSONValidation
+/* harmony export */ });
 /* harmony import */ var _jsonSchemaService_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./jsonSchemaService.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/services/jsonSchemaService.js");
 /* harmony import */ var _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../jsonLanguageTypes.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageTypes.js");
 /* harmony import */ var _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../fillers/vscode-nls.js */ "./node_modules/monaco-editor/esm/vs/language/json/fillers/vscode-nls.js");
@@ -15908,7 +15770,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_2__["loadMessageBundle"]();
+var localize = _fillers_vscode_nls_js__WEBPACK_IMPORTED_MODULE_2__.loadMessageBundle();
 var JSONValidation = /** @class */ (function () {
     function JSONValidation(jsonSchemaService, promiseConstructor) {
         this.jsonSchemaService = jsonSchemaService;
@@ -15918,7 +15780,7 @@ var JSONValidation = /** @class */ (function () {
     JSONValidation.prototype.configure = function (raw) {
         if (raw) {
             this.validationEnabled = raw.validate;
-            this.commentSeverity = raw.allowComments ? undefined : _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["DiagnosticSeverity"].Error;
+            this.commentSeverity = raw.allowComments ? undefined : _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.DiagnosticSeverity.Error;
         }
     };
     JSONValidation.prototype.doValidation = function (textDocument, jsonDocument, documentSettings, schema) {
@@ -15937,7 +15799,7 @@ var JSONValidation = /** @class */ (function () {
             }
         };
         var getDiagnostics = function (schema) {
-            var trailingCommaSeverity = documentSettings ? toDiagnosticSeverity(documentSettings.trailingCommas) : _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["DiagnosticSeverity"].Error;
+            var trailingCommaSeverity = documentSettings ? toDiagnosticSeverity(documentSettings.trailingCommas) : _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.DiagnosticSeverity.Error;
             var commentSeverity = documentSettings ? toDiagnosticSeverity(documentSettings.comments) : _this.commentSeverity;
             if (schema) {
                 if (schema.errors.length && jsonDocument.root) {
@@ -15945,12 +15807,12 @@ var JSONValidation = /** @class */ (function () {
                     var property = astRoot.type === 'object' ? astRoot.properties[0] : undefined;
                     if (property && property.keyNode.value === '$schema') {
                         var node = property.valueNode || property;
-                        var range = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["Range"].create(textDocument.positionAt(node.offset), textDocument.positionAt(node.offset + node.length));
-                        addProblem(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["Diagnostic"].create(range, schema.errors[0], _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["DiagnosticSeverity"].Warning, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["ErrorCode"].SchemaResolveError));
+                        var range = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.Range.create(textDocument.positionAt(node.offset), textDocument.positionAt(node.offset + node.length));
+                        addProblem(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.Diagnostic.create(range, schema.errors[0], _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.DiagnosticSeverity.Warning, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.ErrorCode.SchemaResolveError));
                     }
                     else {
-                        var range = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["Range"].create(textDocument.positionAt(astRoot.offset), textDocument.positionAt(astRoot.offset + 1));
-                        addProblem(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["Diagnostic"].create(range, schema.errors[0], _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["DiagnosticSeverity"].Warning, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["ErrorCode"].SchemaResolveError));
+                        var range = _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.Range.create(textDocument.positionAt(astRoot.offset), textDocument.positionAt(astRoot.offset + 1));
+                        addProblem(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.Diagnostic.create(range, schema.errors[0], _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.DiagnosticSeverity.Warning, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.ErrorCode.SchemaResolveError));
                     }
                 }
                 else {
@@ -15968,7 +15830,7 @@ var JSONValidation = /** @class */ (function () {
             }
             for (var _i = 0, _a = jsonDocument.syntaxErrors; _i < _a.length; _i++) {
                 var p = _a[_i];
-                if (p.code === _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["ErrorCode"].TrailingComma) {
+                if (p.code === _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.ErrorCode.TrailingComma) {
                     if (typeof trailingCommaSeverity !== 'number') {
                         continue;
                     }
@@ -15979,14 +15841,14 @@ var JSONValidation = /** @class */ (function () {
             if (typeof commentSeverity === 'number') {
                 var message_1 = localize('InvalidCommentToken', 'Comments are not permitted in JSON.');
                 jsonDocument.comments.forEach(function (c) {
-                    addProblem(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["Diagnostic"].create(c, message_1, commentSeverity, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["ErrorCode"].CommentNotPermitted));
+                    addProblem(_jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.Diagnostic.create(c, message_1, commentSeverity, _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.ErrorCode.CommentNotPermitted));
                 });
             }
             return diagnostics;
         };
         if (schema) {
             var id = schema.id || ('schemaservice://untitled/' + idCounter++);
-            return this.jsonSchemaService.resolveSchemaContent(new _jsonSchemaService_js__WEBPACK_IMPORTED_MODULE_0__["UnresolvedSchema"](schema), id, {}).then(function (resolvedSchema) {
+            return this.jsonSchemaService.resolveSchemaContent(new _jsonSchemaService_js__WEBPACK_IMPORTED_MODULE_0__.UnresolvedSchema(schema), id, {}).then(function (resolvedSchema) {
                 return getDiagnostics(resolvedSchema);
             });
         }
@@ -16000,14 +15862,14 @@ var JSONValidation = /** @class */ (function () {
 var idCounter = 0;
 function schemaAllowsComments(schemaRef) {
     if (schemaRef && typeof schemaRef === 'object') {
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__["isBoolean"])(schemaRef.allowComments)) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__.isBoolean)(schemaRef.allowComments)) {
             return schemaRef.allowComments;
         }
         if (schemaRef.allOf) {
             for (var _i = 0, _a = schemaRef.allOf; _i < _a.length; _i++) {
                 var schema = _a[_i];
                 var allow = schemaAllowsComments(schema);
-                if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__["isBoolean"])(allow)) {
+                if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__.isBoolean)(allow)) {
                     return allow;
                 }
             }
@@ -16017,18 +15879,18 @@ function schemaAllowsComments(schemaRef) {
 }
 function schemaAllowsTrailingCommas(schemaRef) {
     if (schemaRef && typeof schemaRef === 'object') {
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__["isBoolean"])(schemaRef.allowTrailingCommas)) {
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__.isBoolean)(schemaRef.allowTrailingCommas)) {
             return schemaRef.allowTrailingCommas;
         }
         var deprSchemaRef = schemaRef;
-        if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__["isBoolean"])(deprSchemaRef['allowsTrailingCommas'])) { // deprecated
+        if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__.isBoolean)(deprSchemaRef['allowsTrailingCommas'])) { // deprecated
             return deprSchemaRef['allowsTrailingCommas'];
         }
         if (schemaRef.allOf) {
             for (var _i = 0, _a = schemaRef.allOf; _i < _a.length; _i++) {
                 var schema = _a[_i];
                 var allow = schemaAllowsTrailingCommas(schema);
-                if (Object(_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__["isBoolean"])(allow)) {
+                if ((0,_utils_objects_js__WEBPACK_IMPORTED_MODULE_3__.isBoolean)(allow)) {
                     return allow;
                 }
             }
@@ -16038,8 +15900,8 @@ function schemaAllowsTrailingCommas(schemaRef) {
 }
 function toDiagnosticSeverity(severityLevel) {
     switch (severityLevel) {
-        case 'error': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["DiagnosticSeverity"].Error;
-        case 'warning': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__["DiagnosticSeverity"].Warning;
+        case 'error': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.DiagnosticSeverity.Error;
+        case 'warning': return _jsonLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.DiagnosticSeverity.Warning;
         case 'ignore': return undefined;
     }
     return undefined;
@@ -16052,14 +15914,14 @@ function toDiagnosticSeverity(severityLevel) {
 /*!***********************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/colors.js ***!
   \***********************************************************************************************************/
-/*! exports provided: hexDigit, colorFromHex, colorFrom256RGB */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hexDigit", function() { return hexDigit; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "colorFromHex", function() { return colorFromHex; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "colorFrom256RGB", function() { return colorFrom256RGB; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "hexDigit": () => /* binding */ hexDigit,
+/* harmony export */   "colorFromHex": () => /* binding */ colorFromHex,
+/* harmony export */   "colorFrom256RGB": () => /* binding */ colorFrom256RGB
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -16137,12 +15999,12 @@ function colorFrom256RGB(red, green, blue, alpha) {
 /*!*********************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/json.js ***!
   \*********************************************************************************************************/
-/*! exports provided: stringifyObject */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stringifyObject", function() { return stringifyObject; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "stringifyObject": () => /* binding */ stringifyObject
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -16193,16 +16055,16 @@ function stringifyObject(obj, indent, stringifyLiteral) {
 /*!************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/objects.js ***!
   \************************************************************************************************************/
-/*! exports provided: equals, isNumber, isDefined, isBoolean, isString */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equals", function() { return equals; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isNumber", function() { return isNumber; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isDefined", function() { return isDefined; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isBoolean", function() { return isBoolean; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isString", function() { return isString; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "equals": () => /* binding */ equals,
+/* harmony export */   "isNumber": () => /* binding */ isNumber,
+/* harmony export */   "isDefined": () => /* binding */ isDefined,
+/* harmony export */   "isBoolean": () => /* binding */ isBoolean,
+/* harmony export */   "isString": () => /* binding */ isString
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -16276,15 +16138,15 @@ function isString(val) {
 /*!************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/utils/strings.js ***!
   \************************************************************************************************************/
-/*! exports provided: startsWith, endsWith, convertSimple2RegExpPattern, repeat */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "startsWith", function() { return startsWith; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "endsWith", function() { return endsWith; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "convertSimple2RegExpPattern", function() { return convertSimple2RegExpPattern; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "repeat", function() { return repeat; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "startsWith": () => /* binding */ startsWith,
+/* harmony export */   "endsWith": () => /* binding */ endsWith,
+/* harmony export */   "convertSimple2RegExpPattern": () => /* binding */ convertSimple2RegExpPattern,
+/* harmony export */   "repeat": () => /* binding */ repeat
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -16337,12 +16199,12 @@ function repeat(value, count) {
 /*!******************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-languageserver-textdocument/lib/esm/main.js ***!
   \******************************************************************************************************************/
-/*! exports provided: TextDocument */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TextDocument", function() { return TextDocument; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "TextDocument": () => /* binding */ TextDocument
+/* harmony export */ });
 /* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
@@ -16620,61 +16482,61 @@ function getWellformedEdit(textEdit) {
 /*!***************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-languageserver-types/main.js ***!
   \***************************************************************************************************/
-/*! exports provided: Position, Range, Location, LocationLink, Color, ColorInformation, ColorPresentation, FoldingRangeKind, FoldingRange, DiagnosticRelatedInformation, DiagnosticSeverity, DiagnosticTag, Diagnostic, Command, TextEdit, TextDocumentEdit, CreateFile, RenameFile, DeleteFile, WorkspaceEdit, WorkspaceChange, TextDocumentIdentifier, VersionedTextDocumentIdentifier, TextDocumentItem, MarkupKind, MarkupContent, CompletionItemKind, InsertTextFormat, CompletionItemTag, CompletionItem, CompletionList, MarkedString, Hover, ParameterInformation, SignatureInformation, DocumentHighlightKind, DocumentHighlight, SymbolKind, SymbolTag, SymbolInformation, DocumentSymbol, CodeActionKind, CodeActionContext, CodeAction, CodeLens, FormattingOptions, DocumentLink, SelectionRange, EOL, TextDocument */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Position", function() { return Position; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Range", function() { return Range; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Location", function() { return Location; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LocationLink", function() { return LocationLink; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Color", function() { return Color; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ColorInformation", function() { return ColorInformation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ColorPresentation", function() { return ColorPresentation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FoldingRangeKind", function() { return FoldingRangeKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FoldingRange", function() { return FoldingRange; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DiagnosticRelatedInformation", function() { return DiagnosticRelatedInformation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DiagnosticSeverity", function() { return DiagnosticSeverity; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DiagnosticTag", function() { return DiagnosticTag; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Diagnostic", function() { return Diagnostic; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Command", function() { return Command; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TextEdit", function() { return TextEdit; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TextDocumentEdit", function() { return TextDocumentEdit; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CreateFile", function() { return CreateFile; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenameFile", function() { return RenameFile; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DeleteFile", function() { return DeleteFile; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WorkspaceEdit", function() { return WorkspaceEdit; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WorkspaceChange", function() { return WorkspaceChange; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TextDocumentIdentifier", function() { return TextDocumentIdentifier; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VersionedTextDocumentIdentifier", function() { return VersionedTextDocumentIdentifier; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TextDocumentItem", function() { return TextDocumentItem; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MarkupKind", function() { return MarkupKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MarkupContent", function() { return MarkupContent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CompletionItemKind", function() { return CompletionItemKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "InsertTextFormat", function() { return InsertTextFormat; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CompletionItemTag", function() { return CompletionItemTag; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CompletionItem", function() { return CompletionItem; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CompletionList", function() { return CompletionList; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MarkedString", function() { return MarkedString; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Hover", function() { return Hover; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ParameterInformation", function() { return ParameterInformation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SignatureInformation", function() { return SignatureInformation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DocumentHighlightKind", function() { return DocumentHighlightKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DocumentHighlight", function() { return DocumentHighlight; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SymbolKind", function() { return SymbolKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SymbolTag", function() { return SymbolTag; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SymbolInformation", function() { return SymbolInformation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DocumentSymbol", function() { return DocumentSymbol; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CodeActionKind", function() { return CodeActionKind; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CodeActionContext", function() { return CodeActionContext; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CodeAction", function() { return CodeAction; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CodeLens", function() { return CodeLens; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FormattingOptions", function() { return FormattingOptions; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DocumentLink", function() { return DocumentLink; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SelectionRange", function() { return SelectionRange; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EOL", function() { return EOL; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TextDocument", function() { return TextDocument; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Position": () => /* binding */ Position,
+/* harmony export */   "Range": () => /* binding */ Range,
+/* harmony export */   "Location": () => /* binding */ Location,
+/* harmony export */   "LocationLink": () => /* binding */ LocationLink,
+/* harmony export */   "Color": () => /* binding */ Color,
+/* harmony export */   "ColorInformation": () => /* binding */ ColorInformation,
+/* harmony export */   "ColorPresentation": () => /* binding */ ColorPresentation,
+/* harmony export */   "FoldingRangeKind": () => /* binding */ FoldingRangeKind,
+/* harmony export */   "FoldingRange": () => /* binding */ FoldingRange,
+/* harmony export */   "DiagnosticRelatedInformation": () => /* binding */ DiagnosticRelatedInformation,
+/* harmony export */   "DiagnosticSeverity": () => /* binding */ DiagnosticSeverity,
+/* harmony export */   "DiagnosticTag": () => /* binding */ DiagnosticTag,
+/* harmony export */   "Diagnostic": () => /* binding */ Diagnostic,
+/* harmony export */   "Command": () => /* binding */ Command,
+/* harmony export */   "TextEdit": () => /* binding */ TextEdit,
+/* harmony export */   "TextDocumentEdit": () => /* binding */ TextDocumentEdit,
+/* harmony export */   "CreateFile": () => /* binding */ CreateFile,
+/* harmony export */   "RenameFile": () => /* binding */ RenameFile,
+/* harmony export */   "DeleteFile": () => /* binding */ DeleteFile,
+/* harmony export */   "WorkspaceEdit": () => /* binding */ WorkspaceEdit,
+/* harmony export */   "WorkspaceChange": () => /* binding */ WorkspaceChange,
+/* harmony export */   "TextDocumentIdentifier": () => /* binding */ TextDocumentIdentifier,
+/* harmony export */   "VersionedTextDocumentIdentifier": () => /* binding */ VersionedTextDocumentIdentifier,
+/* harmony export */   "TextDocumentItem": () => /* binding */ TextDocumentItem,
+/* harmony export */   "MarkupKind": () => /* binding */ MarkupKind,
+/* harmony export */   "MarkupContent": () => /* binding */ MarkupContent,
+/* harmony export */   "CompletionItemKind": () => /* binding */ CompletionItemKind,
+/* harmony export */   "InsertTextFormat": () => /* binding */ InsertTextFormat,
+/* harmony export */   "CompletionItemTag": () => /* binding */ CompletionItemTag,
+/* harmony export */   "CompletionItem": () => /* binding */ CompletionItem,
+/* harmony export */   "CompletionList": () => /* binding */ CompletionList,
+/* harmony export */   "MarkedString": () => /* binding */ MarkedString,
+/* harmony export */   "Hover": () => /* binding */ Hover,
+/* harmony export */   "ParameterInformation": () => /* binding */ ParameterInformation,
+/* harmony export */   "SignatureInformation": () => /* binding */ SignatureInformation,
+/* harmony export */   "DocumentHighlightKind": () => /* binding */ DocumentHighlightKind,
+/* harmony export */   "DocumentHighlight": () => /* binding */ DocumentHighlight,
+/* harmony export */   "SymbolKind": () => /* binding */ SymbolKind,
+/* harmony export */   "SymbolTag": () => /* binding */ SymbolTag,
+/* harmony export */   "SymbolInformation": () => /* binding */ SymbolInformation,
+/* harmony export */   "DocumentSymbol": () => /* binding */ DocumentSymbol,
+/* harmony export */   "CodeActionKind": () => /* binding */ CodeActionKind,
+/* harmony export */   "CodeActionContext": () => /* binding */ CodeActionContext,
+/* harmony export */   "CodeAction": () => /* binding */ CodeAction,
+/* harmony export */   "CodeLens": () => /* binding */ CodeLens,
+/* harmony export */   "FormattingOptions": () => /* binding */ FormattingOptions,
+/* harmony export */   "DocumentLink": () => /* binding */ DocumentLink,
+/* harmony export */   "SelectionRange": () => /* binding */ SelectionRange,
+/* harmony export */   "EOL": () => /* binding */ EOL,
+/* harmony export */   "TextDocument": () => /* binding */ TextDocument
+/* harmony export */ });
 /* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
@@ -18210,13 +18072,13 @@ var Is;
 /*!***********************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-uri/index.js ***!
   \***********************************************************************************/
-/*! exports provided: URI, uriToFsPath */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "URI", function() { return URI; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uriToFsPath", function() { return uriToFsPath; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "URI": () => /* binding */ URI,
+/* harmony export */   "uriToFsPath": () => /* binding */ uriToFsPath
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -18238,7 +18100,7 @@ var __extends = (undefined && undefined.__extends) || (function () {
 var _a;
 var isWindows;
 if (typeof process === 'object') {
-    isWindows = process.platform === 'win32';
+    isWindows = ({}) === 'win32';
 }
 else if (typeof navigator === 'object') {
     var userAgent = navigator.userAgent;
@@ -18861,7 +18723,6 @@ function percentDecode(str) {
     return str.replace(_rEncodedAsHex, function (match) { return decodeURIComponentGraceful(match); });
 }
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../../../process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -18869,13 +18730,13 @@ function percentDecode(str) {
 /*!*******************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/fillers/vscode-nls.js ***!
   \*******************************************************************************/
-/*! exports provided: loadMessageBundle, config */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadMessageBundle", function() { return loadMessageBundle; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "config", function() { return config; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "loadMessageBundle": () => /* binding */ loadMessageBundle,
+/* harmony export */   "config": () => /* binding */ config
+/* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -18914,10 +18775,8 @@ function config(opt) {
 /*!************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/json.worker.js ***!
   \************************************************************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _editor_editor_worker_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../editor/editor.worker.js */ "./node_modules/monaco-editor/esm/vs/editor/editor.worker.js");
 /* harmony import */ var _jsonWorker_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./jsonWorker.js */ "./node_modules/monaco-editor/esm/vs/language/json/jsonWorker.js");
@@ -18929,8 +18788,8 @@ __webpack_require__.r(__webpack_exports__);
 
 self.onmessage = function () {
     // ignore the first message
-    _editor_editor_worker_js__WEBPACK_IMPORTED_MODULE_0__["initialize"](function (ctx, createData) {
-        return new _jsonWorker_js__WEBPACK_IMPORTED_MODULE_1__["JSONWorker"](ctx, createData);
+    _editor_editor_worker_js__WEBPACK_IMPORTED_MODULE_0__.initialize(function (ctx, createData) {
+        return new _jsonWorker_js__WEBPACK_IMPORTED_MODULE_1__.JSONWorker(ctx, createData);
     });
 };
 
@@ -18941,13 +18800,13 @@ self.onmessage = function () {
 /*!***********************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/json/jsonWorker.js ***!
   \***********************************************************************/
-/*! exports provided: JSONWorker, create */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "JSONWorker", function() { return JSONWorker; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "JSONWorker": () => /* binding */ JSONWorker,
+/* harmony export */   "create": () => /* binding */ create
+/* harmony export */ });
 /* harmony import */ var _deps_vscode_json_languageservice_jsonLanguageService_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_deps/vscode-json-languageservice/jsonLanguageService.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-json-languageservice/jsonLanguageService.js");
 /* harmony import */ var _deps_vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_deps/vscode-uri/index.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-uri/index.js");
 /*---------------------------------------------------------------------------------------------
@@ -19003,7 +18862,7 @@ var JSONWorker = /** @class */ (function () {
         this._ctx = ctx;
         this._languageSettings = createData.languageSettings;
         this._languageId = createData.languageId;
-        this._languageService = _deps_vscode_json_languageservice_jsonLanguageService_js__WEBPACK_IMPORTED_MODULE_0__["getLanguageService"]({
+        this._languageService = _deps_vscode_json_languageservice_jsonLanguageService_js__WEBPACK_IMPORTED_MODULE_0__.getLanguageService({
             workspaceContext: {
                 resolveRelativePath: function (relativePath, resource) {
                     var base = resource.substr(0, resource.lastIndexOf('/') + 1);
@@ -19130,7 +18989,7 @@ var JSONWorker = /** @class */ (function () {
         for (var _i = 0, models_1 = models; _i < models_1.length; _i++) {
             var model = models_1[_i];
             if (model.uri.toString() === uri) {
-                return _deps_vscode_json_languageservice_jsonLanguageService_js__WEBPACK_IMPORTED_MODULE_0__["TextDocument"].create(uri, this._languageId, model.version, model.getValue());
+                return _deps_vscode_json_languageservice_jsonLanguageService_js__WEBPACK_IMPORTED_MODULE_0__.TextDocument.create(uri, this._languageId, model.version, model.getValue());
             }
         }
         return null;
@@ -19146,7 +19005,7 @@ function isAbsolutePath(path) {
 }
 function resolvePath(uriString, path) {
     if (isAbsolutePath(path)) {
-        var uri = _deps_vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__["URI"].parse(uriString);
+        var uri = _deps_vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__.URI.parse(uriString);
         var parts = path.split('/');
         return uri.with({ path: normalizePath(parts) }).toString();
     }
@@ -19180,7 +19039,7 @@ function joinPath(uriString) {
     for (var _i = 1; _i < arguments.length; _i++) {
         paths[_i - 1] = arguments[_i];
     }
-    var uri = _deps_vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__["URI"].parse(uriString);
+    var uri = _deps_vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__.URI.parse(uriString);
     var parts = uri.path.split('/');
     for (var _a = 0, paths_1 = paths; _a < paths_1.length; _a++) {
         var path = paths_1[_a];
@@ -19193,233 +19052,79 @@ function create(ctx, createData) {
 }
 
 
-/***/ }),
-
-/***/ "./node_modules/process/browser.js":
-/*!*****************************************!*\
-  !*** ./node_modules/process/browser.js ***!
-  \*****************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-
-/***/ }),
-
-/***/ "./node_modules/webpack/buildin/global.js":
-/*!***********************************!*\
-  !*** (webpack)/buildin/global.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || new Function("return this")();
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
 /***/ })
 
-/******/ });
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		if(__webpack_module_cache__[moduleId]) {
+/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	// startup
+/******/ 	// Load entry module
+/******/ 	__webpack_require__("./node_modules/monaco-editor/esm/vs/language/json/json.worker.js");
+/******/ 	// This entry module used 'exports' so it can't be inlined
+/******/ })()
+;
 //# sourceMappingURL=b48e24c12d2496127b6583b54fc55dfe.worker.js.map

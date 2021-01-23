@@ -377,6 +377,16 @@ export default class BoxUI extends React.PureComponent<P, S> {
         if (this.state.presentation) classArray.push("presentation");
         return (
             <div className={classArray.join(" ")} tabIndex={0} style={divStyle} ref={this.refDiv} data-id={this.props.id} onClick={this.handleClick} onMouseDown={this.handleMouseDown} onKeyDown={this.handleKeyDown}>
+                <div className={"resize-handlers resize-handlers-" + InnerUI.sizing}>
+                    <div className="resize-handler resize-handler-n" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-s" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-w" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-ne" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-se" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-sw" onMouseDown={this.handleResizeMouseDown}></div>
+                    <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
+                </div>
                 <div className="box-ui">
                     <InnerUI object={box.object} editing={this.state.editing} onEditEnd={this.handleBlur} key={this.state.key} />
                 </div>
@@ -389,16 +399,6 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 {
                     this.state.error || this.state.highlight ? <div style={{ position: "absolute", width: "100%", height: "100%", backgroundColor: this.state.error ? "rgba(255, 0, 0, 0.3)" : "rgba(255, 255, 128, 0.3)" }} /> : undefined
                 }
-                <div className={"resize-handlers resize-handlers-" + InnerUI.sizing}>
-                    <div className="resize-handler resize-handler-n" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-s" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-w" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-ne" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-se" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-sw" onMouseDown={this.handleResizeMouseDown}></div>
-                    <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
-                </div>
             </div>
         );
     }
