@@ -23,7 +23,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     get env(): Env {
         return this._env;
     }
-    private readonly _fileMgr: FileManager;
+    protected readonly _fileMgr: FileManager;
     get fileMgr() {
         return this._fileMgr;
     }
@@ -54,7 +54,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         this.on("dirty", dirty => this._isDirty = dirty);
         if (dataIn) this._data = dataIn;
     }
-    clone(parentIn = this.parent, nameIn = this._name, dataIn?: ArrayBuffer) {
+    clone(parentIn = this.parent, nameIn = this._name, dataIn = this._data.slice(0)) {
         const Ctor = this.constructor as typeof ProjectItem;
         return new Ctor(this._fileMgr, this.project, parentIn, nameIn, dataIn);
     }
@@ -63,6 +63,10 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         await this.emit("ready");
         return this;
     }
+    /**
+     * This method calls default instantiation (from the file manager).
+     * Please use `FileInstance.fromProjectItem(item)` for a better instantiation.
+     */
     async instantiate(): Promise<FileInstance<any>> {
         throw new Error("Not implemented.");
         // new instance Patcher / AudioBuffer etc
@@ -121,14 +125,14 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         await this._fileMgr.putFile(this);
         await this.emit("saved");
     }
-    async saveAs(parent: Folder, name: string, newData: ArrayBuffer) {
+    async saveAsCopy(parent: Folder, name: string, newData: ArrayBuffer) {
         const item = this.clone(parent, name, newData);
         await this._fileMgr.putFile(item);
         parent.items.add(item);
         await this.emitTreeChanged();
         return item;
     }
-    async saveAsSelf(to: Folder, name: string, newData: ArrayBuffer) {
+    async saveAs(to: Folder, name: string, newData: ArrayBuffer) {
         const item = this.clone(to, name, newData);
         await this._fileMgr.putFile(item);
         const from = this.parent;

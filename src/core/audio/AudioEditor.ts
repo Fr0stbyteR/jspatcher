@@ -2,6 +2,7 @@ import { WebAudioModule } from "wamsdk/src/api";
 import PatcherAudio from "./PatcherAudio";
 import { TAudioPlayingState } from "../types";
 import { dbtoa } from "../../utils/math";
+import AudioFile from "./AudioFile";
 import AudioPlayer from "./AudioPlayer";
 import AudioRecorder from "./AudioRecorder";
 
@@ -37,6 +38,9 @@ export interface AudioEditorState {
 }
 
 export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
+    static async fromProjectItem(item: AudioFile) {
+        return new this(item).init();
+    }
     readonly player = new AudioPlayer(this);
     readonly recorder = new AudioRecorder(this);
     readonly state: AudioEditorState = {

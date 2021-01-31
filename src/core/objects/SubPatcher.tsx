@@ -417,15 +417,16 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
             const { args } = this.box;
             if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
             const { key } = this.state;
+            const P = this.patcher.constructor as typeof Patcher;
             if (key) {
                 try {
                     const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
-                    const patcher = await patcherFile.instantiate();
+                    const patcher = await P.fromProjectItem(patcherFile);
                     this.state.patcher = patcher;
                     this.data = {};
                 } catch {
                     const shared: RawPatcher = this.sharedData.get("patcher", key);
-                    const patcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
+                    const patcher = new P(this.patcher.project);
                     this.state.patcher = patcher;
                     if (typeof shared === "object") {
                         await patcher.load(shared, this.type);
@@ -438,7 +439,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
                     }
                 }
             } else {
-                const patcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
+                const patcher = new P(this.patcher.project);
                 await patcher.load(this.data, this.type);
                 this.state.patcher = patcher;
                 this.setData(patcher.toSerializable());
@@ -551,10 +552,11 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
         if (typeof args[1] === "number") this.state.voices = ~~Math.max(0, args[1]);
         const { key } = this.state;
+        const P = this.patcher.constructor as typeof Patcher;
         if (key) {
             try {
                 const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
-                const patcher = await patcherFile.instantiate();
+                const patcher = await P.fromProjectItem(patcherFile);
                 this.state.patcher = patcher;
                 this.data = {};
             } catch {

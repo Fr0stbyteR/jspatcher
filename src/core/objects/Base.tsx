@@ -6,7 +6,7 @@ import Box from "../patcher/Box";
 import Line from "../patcher/Line";
 import "./Default.scss";
 import "./Base.scss";
-import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect } from "../types";
+import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect, ProjectItemType } from "../types";
 import { BaseUI, DefaultUI, BaseUIState, DefaultUIState } from "./BaseUI";
 
 export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject => typeof x === "function" && x?.isJSPatcherObjectConstructor;
@@ -130,6 +130,25 @@ export abstract class AbstractObject<
      */
     get sharedData() {
         return this._patcher.state.dataMgr;
+    }
+    /**
+     * Get a shared item from files or temp
+     * If no ID provided, this will create a new key in temp
+     * if no such ID found in files or in temp, will put data into it.
+     */
+    getSharedItem(id = performance.now().toString(), type?: ProjectItemType, data?: any) {
+        try {
+            const item = this.patcher.env.fileMgr.getProjectItemFromPath(id);
+            return { item, isTemp: false };
+        } catch {
+            try {
+                const item = this.patcher.env.tempMgr.getProjectItemFromPath(id);
+                return { item, isTemp: true };
+            } catch {
+                const item = this.patcher.env.tempMgr.root.getProjectItem(id, type, data);
+                return { item, isTemp: true };
+            }
+        }
     }
     /**
      * Get prop value from box, if not defined, get from metadata default

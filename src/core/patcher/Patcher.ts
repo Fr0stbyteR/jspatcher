@@ -10,10 +10,11 @@ import { toFaustDspCode } from "../objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "../objects/SubPatcher";
 import FileInstance from "../file/FileInstance";
 import ProjectItem from "../file/ProjectItem";
+import PatcherFile from "./PatcherFile";
 import Env from "../Env";
 import Project from "../Project";
 
-export default class Patcher extends FileInstance<PatcherEventMap> {
+export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> {
     static props: TPropsMeta<TPublicPatcherProps> = {
         dependencies: {
             type: "object",
@@ -41,6 +42,9 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
             default: false
         }
     };
+    static async fromProjectItem(item: PatcherFile): Promise<Patcher> {
+        return new this(item).init();
+    }
     lines: Record<string, Line>;
     boxes: Record<string, Box>;
     props: TPatcherProps;
@@ -48,7 +52,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     data: TSharedData;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
-    constructor(ctxIn?: ProjectItem | Project | Env) {
+    constructor(ctxIn?: PatcherFile | Project | Env) {
         super(ctxIn);
         this.observeGraphChange();
         this.observeChange();
@@ -94,6 +98,9 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
             faust: "dsppat"
         }[this.props.mode];
     }
+    get fileName() {
+        return `${this.file?.name || this._state.name}.${this.fileExtension}`;
+    }
     get fileIcon(): SemanticICONS {
         return "sitemap";
     }
@@ -130,7 +137,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         this._state.history = new PatcherHistory(this);
         this._state.dataMgr = new SharedData(this);
     }
-    async init(data: ArrayBuffer, fileName: string) {
+    async init(data = this.file?.data, fileName = this.fileName) {
         if (!data.byteLength) return this.load({});
         const patcherIn = await new Response(data).json();
         const splitName = fileName.split(".");
@@ -272,9 +279,6 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     async destroy() {
         await this.unload();
         await this.emit("destroy");
-    }
-    get fileName() {
-        return `${this.file?.name || this._state.name}.${this.fileExtension}`;
     }
     async addPackage(namespace: string, url: string) {
         const { dependencies } = this.props;
@@ -1036,7 +1040,7 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
         }
     }
     toString(spacing?: number) {
-        const obj = this.props.mode === "max" || this.props.mode === "gen" ? js2max(this) : this;
+        const obj: TMaxPatcher | Patcher = this.props.mode === "max" || this.props.mode === "gen" ? js2max(this) : this;
         return JSON.stringify(obj, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
     }
     toSerializable(): RawPatcher {
@@ -1047,6 +1051,9 @@ export default class Patcher extends FileInstance<PatcherEventMap> {
     }
     serialize() {
         return new Blob([this.toString()]).arrayBuffer();
+    }
+    toTempData() {
+        return this.serialize();
     }
     onUiResized() {}
 }

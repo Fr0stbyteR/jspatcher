@@ -10,6 +10,7 @@ import { getFaustLibObjects } from "./objects/Faust";
 import Importer from "./objects/importer/Importer";
 import { GlobalPackageManager } from "./PkgMgr";
 import FileManager from "./FileMgr";
+import TempManager from "./TempMgr";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
@@ -55,6 +56,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly dataConsumers: TSharedDataConsumers = {};
     readonly taskMgr = new TaskManager();
     readonly fileMgr = new FileManager(this);
+    readonly tempMgr = new TempManager(this);
     readonly editorContainer = new EditorContainer(this);
     readonly log: TPatcherLog[] = [];
     readonly AudioWorkletRegister = AudioWorkletRegister;
@@ -190,6 +192,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
                 } else {
                     await this.fileMgr.init(project, urlParamsOptions.init);
                 }
+                await this.tempMgr.init(project);
             });
             window.jspatcherEnv = this;
         });

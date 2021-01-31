@@ -208,15 +208,7 @@
         "@typescript-eslint/prefer-interface": "off",
         "@typescript-eslint/no-array-constructor": "warn",
         "@typescript-eslint/no-namespace": "error",
-        "@typescript-eslint/no-use-before-define": [
-            "warn",
-            {
-                "functions": false,
-                "classes": false,
-                "variables": false,
-                "typedefs": false
-            }
-        ],
+        "@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/no-unused-expressions": [
             "error",
             {

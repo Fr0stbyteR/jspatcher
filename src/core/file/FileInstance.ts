@@ -5,6 +5,7 @@ import Project from "../Project";
 import Folder from "./Folder";
 import History from "./History";
 import ProjectItem from "./ProjectItem";
+import TempItem from "./TempItem";
 
 export interface FileInstanceEventMap {
     "ready": never;
@@ -17,7 +18,10 @@ export interface FileInstanceEventMap {
 
 export type AnyFileInstance = FileInstance<Record<string, any>>;
 
-export default class FileInstance<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}> extends TypedEventEmitter<EventMap & FileInstanceEventMap> {
+export default class FileInstance<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}, Item extends ProjectItem | TempItem = ProjectItem | TempItem> extends TypedEventEmitter<EventMap & FileInstanceEventMap> {
+    static async fromProjectItem(item: ProjectItem | TempItem): Promise<FileInstance<any>> {
+        return new this(item);
+    }
     private readonly _env: Env;
     get env(): Env {
         return this._env;
@@ -26,11 +30,11 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get project(): Project {
         return this._project;
     }
-    private _file?: ProjectItem;
-    get file(): ProjectItem {
+    private _file?: Item;
+    get file(): Item {
         return this._file;
     }
-    set file(value: ProjectItem) {
+    set file(value: Item) {
         this._file = value;
     }
     get ctx() {
@@ -39,12 +43,8 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get isInMemory() {
         return !this.file;
     }
-    private _isTemporary = false;
     get isTemporary() {
-        return this._isTemporary;
-    }
-    set isTemporary(value) {
-        this._isTemporary = value;
+        return this.file instanceof TempItem;
     }
     private _isReadonly = false;
     get isReadonly() {
@@ -79,7 +79,7 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
         return this.env.activeInstance === this;
     }
     readonly instanceId = performance.now();
-    constructor(ctxIn: ProjectItem | Project | Env) {
+    constructor(ctxIn: Item | Project | Env) {
         super();
         if (ctxIn instanceof ProjectItem) {
             this._file = ctxIn;
@@ -109,6 +109,12 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     async serialize(): Promise<ArrayBuffer> {
         throw new Error("Not implemented.");
     }
+    async toFileData() {
+        return this.serialize();
+    }
+    async toTempData(): Promise<any> {
+        return this;
+    }
     undo() {
         return this.history.undo();
     }
@@ -134,26 +140,23 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
         throw new Error("Not implemented.");
     }
     async save() {
-        if (this.isTemporary) throw new Error("Cannot save temporary file");
         if (this.isReadonly) throw new Error("Cannot save readonly file");
         if (this.isInMemory) throw new Error("Cannot save in-memory instance");
-        const data = await this.serialize();
+        const data = await (this.file instanceof TempItem ? this.toTempData() : this.toFileData());
         await this.file.save(data);
         this.emit("saved");
     }
     async saveAs(parent: Folder, name: string) {
-        const data = await this.serialize();
+        const data = await this.toFileData();
         if (this.isTemporary) {
-            await this.file.move(parent, name);
-            await this.file.save(data);
+            await this.file.saveAsCopy(parent, name, data);
         } else if (this.isReadonly) {
-            await this.file.saveAsSelf(parent, name, data);
+            await this.file.saveAs(parent, name, data);
         } else if (this.isInMemory) {
-            this.file = await parent.addProjectItem(name, data);
+            this.file = await parent.addProjectItem(name, data) as any;
         } else {
             await this.file.saveAs(parent, name, data);
         }
-        this.isTemporary = false;
         this.isReadonly = false;
         this.emit("saved");
     }

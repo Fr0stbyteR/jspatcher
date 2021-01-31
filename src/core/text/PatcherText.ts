@@ -2,13 +2,18 @@ import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { SemanticICONS } from "semantic-ui-react";
 import FileInstance from "../file/FileInstance";
+import TextFile from "./TextFile";
 import TextHistory from "./TextHistory";
+import TempTextFile from "./TempTextFile";
 
 export interface PatcherTextEventMap {
     "textModified": { text: string; oldText: string };
 }
 
-export default class PatcherText extends FileInstance<PatcherTextEventMap> {
+export default class PatcherText extends FileInstance<PatcherTextEventMap, TextFile | TempTextFile> {
+    static async fromProjectItem(item: TextFile | TempTextFile) {
+        return new this(item).init();
+    }
     text: string;
     editor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
@@ -22,10 +27,11 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap> {
     get fileIcon(): SemanticICONS {
         return "code";
     }
-    async init(data?: ArrayBuffer) {
+    async init(data = this.file?.data) {
         if (data) this.text = await new Response(data).text();
         else this.text = "";
         this.emit("ready");
+        return this;
     }
     async serialize() {
         return new Blob([this.text]).arrayBuffer();

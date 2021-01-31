@@ -22,7 +22,7 @@ export default class Folder extends ProjectItem {
         await this.emit("ready");
         return this;
     }
-    getProjectItem(name: string, type: ProjectItemType, data?: ArrayBuffer) {
+    getProjectItem(name: string, type: ProjectItemType, data?: ArrayBuffer): ProjectItem {
         if (type === "folder") return new Folder(this.fileMgr, this.project, this, name, data);
         if (type === "patcher") return new PatcherFile(this.fileMgr, this.project, this, name, data);
         if (type === "audio") return new AudioFile(this.fileMgr, this.project, this, name, data);

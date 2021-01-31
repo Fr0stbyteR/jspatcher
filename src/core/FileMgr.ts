@@ -81,7 +81,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         const type: ProjectItemType = isFile ? this.getTypeFromFileName(name) : "folder";
         return { name, type };
     }
-    private getTypeFromFileName(name: string): ProjectItemType {
+    protected getTypeFromFileName(name: string): ProjectItemType {
         if (FileManager.patcherFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "patcher";
         if (FileManager.audioFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "audio";
         if (FileManager.textFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "text";

@@ -4,6 +4,7 @@ import { dbtoa, isIdentityMatrix, normExp } from "../../utils/math";
 import Waveform from "../../utils/Waveform";
 import { Options } from "../../utils/WavEncoder";
 import FileInstance from "../file/FileInstance";
+import AudioFile from "./AudioFile";
 import AudioHistory from "./AudioHistory";
 import OperableAudioBuffer from "./OperableAudioBuffer";
 
@@ -33,7 +34,7 @@ export interface PatcherAudioEventMap {
     "postInit": never;
 }
 
-export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Record<string, any> = Record<string, any>> extends FileInstance<PatcherAudioEventMap & M> {
+export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Record<string, any> = Record<string, any>> extends FileInstance<PatcherAudioEventMap & M, AudioFile> {
     static async fromArrayBuffer(ctxIn: ConstructorParameters<typeof PatcherAudio>[0], data: ArrayBuffer) {
         const audio = new PatcherAudio(ctxIn);
         await audio.init(data);
@@ -60,6 +61,9 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
         await audio.emit("ready");
         return audio;
     }
+    static async fromProjectItem(item: AudioFile) {
+        return new this(item).init();
+    }
     get audioCtx() {
         return this.project?.audioCtx || this.env.audioCtx;
     }
@@ -85,7 +89,7 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
     get sampleRate() {
         return this.audioBuffer.sampleRate;
     }
-    async init(data?: ArrayBuffer) {
+    async init(data = this.file?.data?.slice?.(0)) {
         const { audioCtx } = this;
         await this.env.taskMgr.newTask(this, "Initializing Audio", async (onUpdate) => {
             onUpdate("Decoding Audio...");
@@ -102,6 +106,7 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
         await this.emit("postInit");
         this._isReady = true;
         await this.emit("ready");
+        return this;
     }
     async initWithOptions(options: Partial<AudioBufferOptions>) {
         const { length = 1, numberOfChannels = 1, sampleRate = this.audioCtx.sampleRate } = options;

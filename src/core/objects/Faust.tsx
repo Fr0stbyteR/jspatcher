@@ -1171,26 +1171,30 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         const { args } = this.box;
         if (typeof args[0] === "string" || typeof args[0] === "undefined") this.state.key = args[0];
         const { key } = this.state;
+        const P = this.patcher.constructor as typeof Patcher;
         if (key) {
-            this.data = {};
             try {
                 const patcherFile = this.patcher.env.fileMgr.getProjectItemFromPath(key) as PatcherFile;
-                const patcher = await patcherFile.instantiate();
+                const patcher = await P.fromProjectItem(patcherFile);
                 this.state.patcher = patcher;
+                this.data = {};
             } catch {
                 const shared: RawPatcher = this.sharedData.get("patcher", key);
+                const patcher = new P(this.patcher.project);
+                this.state.patcher = patcher;
                 if (typeof shared === "object") {
-                    const patcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
                     await patcher.load(shared, this.type);
-                    this.state.patcher = patcher;
+                    this.setData(patcher.toSerializable());
                 } else {
-                    this.sharedData.set("patcher", key, this.state.patcher.toSerializable(), this);
+                    await patcher.load(this.data, this.type);
+                    const rawPatcher = patcher.toSerializable();
+                    this.sharedData.set("patcher", key, rawPatcher, this);
+                    this.setData(rawPatcher);
                 }
             }
         } else {
-            const { data } = this;
-            const patcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
-            await patcher.load(data, this.type);
+            const patcher = new P(this.patcher.project);
+            await patcher.load(this.data, this.type);
             this.state.patcher = patcher;
             this.data = this.state.patcher.toSerializable();
         }
