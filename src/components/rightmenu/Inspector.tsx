@@ -3,6 +3,7 @@ import { ColorResult, ChromePicker } from "react-color";
 import { Checkbox, DropdownProps, DropdownItemProps, Dropdown, Table, Menu, Label } from "semantic-ui-react";
 import Box from "../../core/patcher/Box";
 import Patcher from "../../core/patcher/Patcher";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 import { TArgsMeta, TPropsMeta, TMeta, TPublicPatcherProps, TRect, TPresentationRect, TPatcherProps } from "../../core/types";
 
 class InspectorBooleanItem extends React.PureComponent<{ itemKey: number | string; value: boolean; onChange: (value: boolean, key: number | string) => any }> {
@@ -194,8 +195,8 @@ type InspectorState = {
     rect: TRect;
     presentationRect: TPresentationRect;
 };
-export default class Inspector extends React.PureComponent<{ patcher: Patcher }, InspectorState> {
-    state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null, patcherProps: this.props.patcher.publicProps };
+export default class Inspector extends React.PureComponent<{ editor: PatcherEditor }, InspectorState> {
+    state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null, patcherProps: this.props.editor.publicProps };
     boxes: Box[];
     box: Box;
     handleBoxUpdate = (e: { args?: any[]; props?: Record<string, any> }) => this.setState({ args: e.args || [], props: e.props || {} });
@@ -220,12 +221,12 @@ export default class Inspector extends React.PureComponent<{ patcher: Patcher },
         }
     };
     handleSelected = () => {
-        const boxes = this.props.patcher.state.selected.filter(id => id.startsWith("box") && this.props.patcher.boxes[id]).map(id => this.props.patcher.boxes[id]);
+        const boxes = this.props.editor.state.selected.filter(id => id.startsWith("box") && this.props.editor.boxes[id]).map(id => this.props.editor.boxes[id]);
         this.boxes = boxes;
         this.unSubscribeBox();
         this.subscribeBox();
         if (boxes.length === 0) {
-            this.setState({ meta: null, args: [], props: {}, rect: null, presentationRect: null, patcherProps: this.props.patcher.publicProps });
+            this.setState({ meta: null, args: [], props: {}, rect: null, presentationRect: null, patcherProps: this.props.editor.publicProps });
             return;
         }
         const { meta: boxMeta, args, props, rect, presentationRect, presentation, background } = boxes[0];
@@ -301,23 +302,21 @@ export default class Inspector extends React.PureComponent<{ patcher: Patcher },
         if ("background" in commonProps) additionalProps.background = background;
         this.setState({ meta, args, props: { ...props, ...additionalProps }, rect: null, presentationRect: null });
     };
-    handlePatcherPropsChanged = () => this.setState({ patcherProps: this.props.patcher.publicProps });
+    handlePatcherPropsChanged = () => this.setState({ patcherProps: this.props.editor.publicProps });
     handlePatcherLoading = (loading: string[]) => {
-        if (!loading) this.setState({ patcherProps: this.props.patcher.publicProps });
+        if (!loading) this.setState({ patcherProps: this.props.editor.publicProps });
     };
     componentDidMount() {
         this.handleSelected();
-        this.props.patcher.on("selected", this.handleSelected);
-        this.props.patcher.on("deselected", this.handleSelected);
-        this.props.patcher.on("propsChanged", this.handlePatcherPropsChanged);
-        this.props.patcher.on("loading", this.handlePatcherLoading);
+        this.props.editor.on("selected", this.handleSelected);
+        this.props.editor.instance.on("propsChanged", this.handlePatcherPropsChanged);
+        this.props.editor.instance.on("loading", this.handlePatcherLoading);
     }
     componentWillUnmount() {
         this.unSubscribeBox(true);
-        this.props.patcher.off("selected", this.handleSelected);
-        this.props.patcher.off("deselected", this.handleSelected);
-        this.props.patcher.off("propsChanged", this.handlePatcherPropsChanged);
-        this.props.patcher.off("loading", this.handlePatcherLoading);
+        this.props.editor.off("selected", this.handleSelected);
+        this.props.editor.instance.off("propsChanged", this.handlePatcherPropsChanged);
+        this.props.editor.instance.off("loading", this.handlePatcherLoading);
     }
     handleChange = (value: any, key: number | string) => {
         if (!this.box) return;
@@ -337,7 +336,7 @@ export default class Inspector extends React.PureComponent<{ patcher: Patcher },
         }
         this.handleSelected();
     };
-    handlePatcherChange = (value: any, key: keyof TPatcherProps) => this.props.patcher.setProps({ [key]: value });
+    handlePatcherChange = (value: any, key: keyof TPatcherProps) => this.props.editor.instance.setProps({ [key]: value });
     render() {
         const { meta, args, props } = this.state;
         const table: JSX.Element[] = [];
@@ -347,11 +346,11 @@ export default class Inspector extends React.PureComponent<{ patcher: Patcher },
                     <Table.Cell colSpan={2} width={16} className="division-name">Patcher</Table.Cell>
                 </Table.Row>
             );
-            Object.keys((this.props.patcher.constructor as typeof Patcher).props).forEach((nameIn) => {
+            Object.keys((this.props.editor.constructor as typeof Patcher).props).forEach((nameIn) => {
                 const name = nameIn as keyof typeof Patcher["props"];
-                const propMeta = (this.props.patcher.constructor as typeof Patcher).props[name];
+                const propMeta = (this.props.editor.constructor as typeof Patcher).props[name];
                 const value = this.state.patcherProps[name];
-                const item = <InspectorPropItem {...this.props} key={name} itemKey={name} meta={propMeta} value={value} onChange={this.handlePatcherChange} />;
+                const item = <InspectorPropItem {...this.props} key={name} patcher={this.props.editor.instance} itemKey={name} meta={propMeta} value={value} onChange={this.handlePatcherChange} />;
                 table.push(item);
             });
         } else {
@@ -365,7 +364,7 @@ export default class Inspector extends React.PureComponent<{ patcher: Patcher },
                 const { default: defaultValue, varLength } = argMeta;
                 const value = varLength ? args.slice(i) : typeof args[i] === "undefined" ? defaultValue : args[i];
                 table.push(
-                    <InspectorArgItem {...this.props} key={i} itemKey={i} meta={argMeta} value={value} onChange={this.handleChange} />
+                    <InspectorArgItem {...this.props} key={i} patcher={this.props.editor.instance} itemKey={i} meta={argMeta} value={value} onChange={this.handleChange} />
                 );
             });
             table.push(
@@ -380,7 +379,7 @@ export default class Inspector extends React.PureComponent<{ patcher: Patcher },
                 const value = name === "rect" ? this.state.rect
                     : name === "presentationRect" ? this.state.presentationRect
                         : typeof props[name] === "undefined" ? defaultValue : props[name];
-                const item = <InspectorPropItem {...this.props} key={name} itemKey={name} meta={propMeta} value={value} onChange={this.handleChange} />;
+                const item = <InspectorPropItem {...this.props} key={name} patcher={this.props.editor.instance} itemKey={name} meta={propMeta} value={value} onChange={this.handleChange} />;
                 if (group !== lastGroup) {
                     lastGroup = group;
                     table.push(
@@ -392,7 +391,7 @@ export default class Inspector extends React.PureComponent<{ patcher: Patcher },
                 table.push(item);
             });
         }
-        const boxIDs = this.props.patcher.state.selected.filter(id => id.startsWith("box")).map(s => +s.slice(4)).sort((a, b) => a - b);
+        const boxIDs = this.props.editor.state.selected.filter(id => id.startsWith("box")).map(s => +s.slice(4)).sort((a, b) => a - b);
         return (
             <>
                 <div className="inspector-table-container">

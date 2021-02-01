@@ -66,7 +66,7 @@ export default class AudioRecorder {
                     channel.set(bufferIn[i], $);
                 }
             }
-            audio.audioBuffer = newBuffer;
+            audio.instance.audioBuffer = newBuffer;
             audio.waveform.update($, newLength);
             extended = true;
         } else {
@@ -84,7 +84,7 @@ export default class AudioRecorder {
             audio.waveform.update($, $ + copyLength);
         }
         this.$ += copyLength;
-        audio.emit("setAudio");
+        audio.instance.emit("setAudio");
         this.editor.setCursor(this.$);
         if (extended) this.editor.setViewRange([this.editor.state.viewRange[0], this.audio.length]);
         if (inPlace && this.$ === $end) {
@@ -167,8 +167,8 @@ export default class AudioRecorder {
         if (!this.editor.player.monitoring) this.node.disconnect(this.editor.player.postAnalyserNode);
         await this.transmitter.stop();
         if (!this.inPlace && this.$ > this.$end && this.$ < this.audio.length) {
-            const [audio] = await this.audio.split(this.$);
-            this.audio.setAudio(audio);
+            const [audio] = await this.audio.instance.split(this.$);
+            this.audio.instance.setAudio(audio);
             if (this.overwrittenAudio) this.overwrittenAudio.waveform.update();
         } else {
             if (this.overwrittenAudio) {
@@ -179,7 +179,7 @@ export default class AudioRecorder {
                 this.overwrittenAudio.waveform.update();
             }
         }
-        const audio = await this.audio.pick(this.$start, this.$, true);
+        const audio = await this.audio.instance.pick(this.$start, this.$, true);
         this.editor.emit("recorded", { range: (this.inPlace || this.overwrittenAudio) ? [this.$start, this.$] : undefined, cursor: (this.inPlace || this.overwrittenAudio) ? undefined : this.$start, audio, oldAudio: this.overwrittenAudio });
         this.editor.setSelRange([this.$start, this.$]);
     }

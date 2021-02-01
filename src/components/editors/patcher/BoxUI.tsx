@@ -1,16 +1,32 @@
 import * as React from "react";
 import { Popup } from "semantic-ui-react";
-import Patcher from "../core/patcher/Patcher";
-import Box from "../core/patcher/Box";
+import PatcherEditor, { PatcherEditorEventMap } from "../../../core/patcher/PatcherEditor";
+import Box from "../../../core/patcher/Box";
+import { TResizeHandlerType, BoxEventMap, TRect, TPresentationRect } from "../../../core/types";
+import { BaseUI } from "../../../core/objects/BaseUI";
+import { isRectMovable, isRectResizable } from "../../../utils/utils";
 import "./BoxUI.scss";
-import { TResizeHandlerType, BoxEventMap, TRect, PatcherEventMap, TPresentationRect } from "../core/types";
-import { BaseUI } from "../core/objects/BaseUI";
-import { isRectMovable, isRectResizable } from "../utils/utils";
 
-type P = { patcher: Patcher; id: string; runtime?: boolean };
-type S = { selected: boolean; rect: TRect; presentationRect: TPresentationRect; presentation: boolean; inPresentationMode: boolean; uiComponent: typeof BaseUI; editing: boolean; highlight: boolean; error: boolean; key: string };
+interface P {
+    editor: PatcherEditor;
+    id: string;
+    runtime?: boolean;
+}
+
+interface S {
+    selected: boolean;
+    rect: TRect;
+    presentationRect: TPresentationRect;
+    presentation: boolean;
+    inPresentationMode: boolean;
+    uiComponent: typeof BaseUI;
+    editing: boolean;
+    highlight: boolean;
+    error: boolean;
+    key: string;
+}
 export default class BoxUI extends React.PureComponent<P, S> {
-    box = this.props.patcher.boxes[this.props.id];
+    box = this.props.editor.boxes[this.props.id];
     refDiv = React.createRef<HTMLDivElement>();
     handlingToggleEditOnClick = false;
     textChanged = false;
@@ -21,7 +37,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         rect: this.box.rect.slice() as TRect,
         presentationRect: this.box.presentationRect.slice() as TPresentationRect,
         presentation: this.box.presentation,
-        inPresentationMode: this.props.patcher.state.presentation,
+        inPresentationMode: this.props.editor.state.presentation,
         uiComponent: this.box.UI,
         editing: this.box.UI.editableOnUnlock && this.box._editing,
         highlight: false,
@@ -56,7 +72,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
     };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         if (e.button !== 0) return;
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
         // Handle Draggable
@@ -80,7 +96,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                     if (!this.dragged) this.dragged = true;
                     dragOffset.x += movementX;
                     dragOffset.y += movementY;
-                    dragOffset = this.props.patcher.moveSelectedBox(dragOffset, this.props.id);
+                    dragOffset = this.props.editor.moveSelectedBox(dragOffset, this.props.id);
                 }
                 const x = e.clientX - patcherRect.left;
                 const y = e.clientY - patcherRect.top;
@@ -97,7 +113,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
                 if (this.dragging && !this.state.editing && (movementX || movementY)) {
                     if (!this.dragged) this.dragged = true;
-                    dragOffset = this.props.patcher.moveSelectedBox(dragOffset, this.props.id);
+                    dragOffset = this.props.editor.moveSelectedBox(dragOffset, this.props.id);
                 }
             };
             const handleKey = (e: KeyboardEvent) => {
@@ -108,7 +124,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 e.stopPropagation();
                 e.preventDefault();
                 this.dragging = false;
-                if (this.dragged) this.props.patcher.moveEnd({ ...this.translate });
+                if (this.dragged) this.props.editor.moveEnd({ ...this.translate });
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
                 this.refDiv.current.removeEventListener("keydown", handleKey);
@@ -124,16 +140,16 @@ export default class BoxUI extends React.PureComponent<P, S> {
         // Handle select
         if (e.shiftKey) {
             if (this.state.selected) {
-                this.props.patcher.deselect(this.props.id);
+                this.props.editor.deselect(this.props.id);
             } else {
-                this.props.patcher.select(this.props.id);
+                this.props.editor.select(this.props.id);
                 handleDraggable();
             }
         } else if (this.state.selected) {
             if (!this.state.editing && this.state.uiComponent.editableOnUnlock) this.handlingToggleEditOnClick = true; // Handle edit
             handleDraggable();
         } else {
-            this.props.patcher.selectOnly(this.props.id);
+            this.props.editor.selectOnly(this.props.id);
             handleDraggable();
         }
         e.stopPropagation();
@@ -143,10 +159,10 @@ export default class BoxUI extends React.PureComponent<P, S> {
         e.stopPropagation();
     };
     handleKeyDown = (e: React.KeyboardEvent) => {
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         if (e.key === "Enter") {
             if (e.ctrlKey) {
-                this.props.patcher.dockUI(this.box);
+                this.props.editor.dockUI(this.box);
                 e.preventDefault();
             } else if (this.state.editing) {
                 this.refDiv.current.focus();
@@ -167,7 +183,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
             this.textChanged = false;
             return;
         }
-        const box = this.props.patcher.boxes[this.props.id];
+        const box = this.props.editor.boxes[this.props.id];
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
         if (!isRectResizable(box[rectKey])) return;
         const div = this.refDiv.current;
@@ -183,22 +199,24 @@ export default class BoxUI extends React.PureComponent<P, S> {
             box.setRect(rect.slice() as TRect);
         }
     };
-    handleSelected = (ids: string[]) => (!this.props.runtime && !this.state.selected && ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
-    handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 && this.state.selected ? this.setState({ selected: false }) : null);
+    handleSelected = (ids: string[]) => {
+        const selected = !this.props.runtime && ids.indexOf(this.props.id) >= 0;
+        if (this.state.selected !== selected) this.setState({ selected });
+    };
     handlePatcherPresentationChanged = (inPresentationMode: boolean) => this.setState({ inPresentationMode });
     handlePresentationChanged = () => this.setState({ presentation: this.box.presentation, presentationRect: this.box.presentationRect.slice() as TRect });
     translate = { x: 0, y: 0 };
-    handleMoving = ({ selected, delta, presentation }: PatcherEventMap["moving"]) => {
+    handleMoving = ({ selected, delta, presentation }: PatcherEditorEventMap["moving"]) => {
         if (!this.refDiv.current) return;
-        if (this.props.patcher.state.presentation !== presentation) return;
-        if (this.props.patcher.state.presentation && !this.state.presentation) return;
+        if (this.props.editor.state.presentation !== presentation) return;
+        if (this.props.editor.state.presentation && !this.state.presentation) return;
         if (selected.indexOf(this.props.id) !== -1) {
             this.translate.x += delta.x;
             this.translate.y += delta.y;
             this.refDiv.current.style.transform = `translate(${this.translate.x}px, ${this.translate.y}px)`;
         }
     };
-    handleMoved = ({ selected, presentation }: PatcherEventMap["moved"]) => {
+    handleMoved = ({ selected, presentation }: PatcherEditorEventMap["moved"]) => {
         if (!this.refDiv.current) return;
         if (selected.indexOf(this.props.id) !== -1) {
             this.translate.x = 0;
@@ -208,7 +226,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
             else this.handleRectChanged();
         }
     };
-    handleResized = ({ selected }: PatcherEventMap["resized"]) => {
+    handleResized = ({ selected }: PatcherEditorEventMap["resized"]) => {
         if (selected.indexOf(this.props.id) !== -1) this.inspectRectChange();
     };
     clearOverlay = () => {
@@ -236,7 +254,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
         if (!isRectResizable(this.state[rectKey])) return;
         const classList = e.currentTarget.classList;
@@ -276,7 +294,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 if (!this.dragged) this.dragged = true;
                 dragOffset.x += movementX;
                 dragOffset.y += movementY;
-                dragOffset = this.props.patcher.resizeSelectedBox(this.props.id, dragOffset, type);
+                dragOffset = this.props.editor.resizeSelectedBox(this.props.id, dragOffset, type);
                 totalOffset.x += movementX;
                 totalOffset.y += movementY;
             }
@@ -295,7 +313,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
             patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
             if (this.dragging && !this.state.editing && (movementX || movementY)) {
                 if (!this.dragged) this.dragged = true;
-                dragOffset = this.props.patcher.resizeSelectedBox(this.props.id, dragOffset, type);
+                dragOffset = this.props.editor.resizeSelectedBox(this.props.id, dragOffset, type);
             }
             totalOffset.x += movementX;
             totalOffset.y += movementY;
@@ -310,7 +328,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
             this.dragging = false;
             totalOffset.x -= dragOffset.x;
             totalOffset.y -= dragOffset.y;
-            if (this.dragged) this.props.patcher.resizeEnd(totalOffset, type);
+            if (this.dragged) this.props.editor.resizeEnd(totalOffset, type);
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
             this.refDiv.current.removeEventListener("keydown", handleKey);
@@ -326,28 +344,26 @@ export default class BoxUI extends React.PureComponent<P, S> {
     };
     componentDidMount() {
         const { box } = this;
-        this.setState({ selected: this.props.patcher.state.selected.indexOf(box.id) !== -1 });
+        this.setState({ selected: this.props.editor.state.selected.indexOf(box.id) !== -1 });
         box.on("textChanged", this.handleTextChanged);
         box.on("rectChanged", this.handleRectChanged);
         box.on("presentationRectChanged", this.handlePresentationRectChanged);
         box.on("presentationChanged", this.handlePresentationChanged);
         box.on("highlight", this.handleHighlight);
         box.on("error", this.handleError);
-        this.props.patcher.on("selected", this.handleSelected);
-        this.props.patcher.on("deselected", this.handleDeselected);
-        this.props.patcher.on("presentation", this.handlePatcherPresentationChanged);
-        this.props.patcher.on("moving", this.handleMoving);
-        this.props.patcher.on("moved", this.handleMoved);
-        this.props.patcher.on("resized", this.handleResized);
+        this.props.editor.on("selected", this.handleSelected);
+        this.props.editor.on("presentation", this.handlePatcherPresentationChanged);
+        this.props.editor.on("moving", this.handleMoving);
+        this.props.editor.on("moved", this.handleMoved);
+        this.props.editor.on("resized", this.handleResized);
         this.inspectRectChange();
     }
     componentWillUnmount() {
-        this.props.patcher.deselect(this.props.id);
-        this.props.patcher.off("selected", this.handleSelected);
-        this.props.patcher.off("deselected", this.handleDeselected);
-        this.props.patcher.off("presentation", this.handlePatcherPresentationChanged);
-        this.props.patcher.off("resized", this.handleResized);
-        const box = this.props.patcher.boxes[this.props.id];
+        this.props.editor.deselect(this.props.id);
+        this.props.editor.off("selected", this.handleSelected);
+        this.props.editor.off("presentation", this.handlePatcherPresentationChanged);
+        this.props.editor.off("resized", this.handleResized);
+        const box = this.props.editor.boxes[this.props.id];
         if (!box) return;
         box.off("textChanged", this.handleTextChanged);
         box.off("rectChanged", this.handleRectChanged);
@@ -388,12 +404,12 @@ export default class BoxUI extends React.PureComponent<P, S> {
                     <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
                 </div>
                 <div className="box-ui">
-                    <InnerUI object={box.object} editing={this.state.editing} onEditEnd={this.handleBlur} key={this.state.key} />
+                    <InnerUI object={box.object} editor={this.props.editor} editing={this.state.editing} onEditEnd={this.handleBlur} key={this.state.key} />
                 </div>
                 {
                     this.state.inPresentationMode ? undefined : <>
-                        <Inlets patcher={this.props.patcher} box={box} runtime={this.props.runtime} />
-                        <Outlets patcher={this.props.patcher} box={box} runtime={this.props.runtime} />
+                        <Inlets editor={this.props.editor} box={box} runtime={this.props.runtime} />
+                        <Outlets editor={this.props.editor} box={box} runtime={this.props.runtime} />
                     </>
                 }
                 {
@@ -403,7 +419,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         );
     }
 }
-class Inlets extends React.PureComponent<{ patcher: Patcher; box: Box; runtime?: boolean }, { ports: JSX.Element[] }> {
+class Inlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean }, { ports: JSX.Element[] }> {
     get ports() {
         const ports: JSX.Element[] = [];
         for (let i = 0; i < this.props.box.inlets; i++) {
@@ -432,7 +448,7 @@ class Inlets extends React.PureComponent<{ patcher: Patcher; box: Box; runtime?:
         );
     }
 }
-class Outlets extends React.PureComponent<{ patcher: Patcher; box: Box; runtime?: boolean }, { ports: JSX.Element[] }> {
+class Outlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean }, { ports: JSX.Element[] }> {
     get ports() {
         const ports: JSX.Element[] = [];
         for (let i = 0; i < this.props.box.outlets; i++) {
@@ -461,7 +477,7 @@ class Outlets extends React.PureComponent<{ patcher: Patcher; box: Box; runtime?
         );
     }
 }
-class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: number; runtime?: boolean }, { isConnected: boolean; highlight: boolean }> {
+class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: number; runtime?: boolean }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.inletLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
@@ -486,30 +502,30 @@ class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: num
     };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         if (e.button !== 0) return;
         if (e.target !== e.currentTarget) return;
         e.stopPropagation();
-        this.props.patcher.tempLine(true, [this.props.box.id, this.props.index]);
+        this.props.editor.tempLine(true, [this.props.box.id, this.props.index]);
     };
     handleMouseEnter = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         if (e.buttons) return;
         this.setState({ highlight: true });
     };
     handleMouseMove = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         if (e.currentTarget !== e.target) this.setState({ highlight: false });
     };
     handleMouseLeave = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         this.setState({ highlight: false });
     };
     render() {
-        const { box, index: i, patcher } = this.props;
+        const { box, index: i, editor: patcher } = this.props;
         const forceHot = patcher.props.mode === "gen" || patcher.props.mode === "faust";
         let props = { isHot: false, type: "anything", description: "" };
         const meta = box.meta.inlets;
@@ -529,7 +545,7 @@ class Inlet extends React.PureComponent<{ patcher: Patcher; box: Box; index: num
         );
     }
 }
-class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: number; runtime?: boolean }, { isConnected: boolean; highlight: boolean }> {
+class Outlet extends React.PureComponent< { editor: PatcherEditor; box: Box; index: number; runtime?: boolean }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.outletLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
@@ -554,26 +570,26 @@ class Outlet extends React.PureComponent< { patcher: Patcher; box: Box; index: n
     };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         if (e.button !== 0) return;
         if (e.target !== e.currentTarget) return;
         e.stopPropagation();
-        this.props.patcher.tempLine(false, [this.props.box.id, this.props.index]);
+        this.props.editor.tempLine(false, [this.props.box.id, this.props.index]);
     };
     handleMouseEnter = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         if (e.buttons) return;
         this.setState({ highlight: true });
     };
     handleMouseLeave = () => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         this.setState({ highlight: false });
     };
     handleMouseMove = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         if (e.currentTarget !== e.target) this.setState({ highlight: false });
     };
     render() {

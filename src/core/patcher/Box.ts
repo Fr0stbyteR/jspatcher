@@ -289,36 +289,36 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         const [left, top, width, height] = this.presentationRect;
         this.setPresentationRect([left, top, widthIn || width, heightIn || height] as TPresentationRect);
     }
-    get left() {
-        const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
+    getLeft(inPresentation = false) {
+        const rectKey = inPresentation ? "presentationRect" : "rect";
         return this[rectKey][0];
     }
-    set left(leftIn: number | string) {
-        const positionKey = this._patcher._state.presentation ? "presentationPosition" : "position";
+    setLeft(leftIn: number | string, inPresentation = false) {
+        const positionKey = inPresentation ? "presentationPosition" : "position";
         this[positionKey] = [leftIn as any, undefined];
     }
-    get top() {
-        const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
+    getTop(inPresentation = false) {
+        const rectKey = inPresentation ? "presentationRect" : "rect";
         return this[rectKey][1];
     }
-    set top(topIn: number | string) {
-        const positionKey = this._patcher._state.presentation ? "presentationPosition" : "position";
+    setTop(topIn: number | string, inPresentation = false) {
+        const positionKey = inPresentation ? "presentationPosition" : "position";
         this[positionKey] = [undefined, topIn as any];
     }
-    get width() {
-        const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
+    getWidth(inPresentation = false) {
+        const rectKey = inPresentation ? "presentationRect" : "rect";
         return this[rectKey][2];
     }
-    set width(widthIn: number | string) {
-        const sizeKey = this._patcher._state.presentation ? "presentationSize" : "size";
+    setWidth(widthIn: number | string, inPresentation = false) {
+        const sizeKey = inPresentation ? "presentationSize" : "size";
         this[sizeKey] = [widthIn as any, undefined];
     }
-    get height() {
-        const rectKey = this._patcher._state.presentation ? "presentationRect" : "rect";
+    getHeight(inPresentation = false) {
+        const rectKey = inPresentation ? "presentationRect" : "rect";
         return this[rectKey][3];
     }
-    set height(heightIn: number | string) {
-        const sizeKey = this._patcher._state.presentation ? "presentationSize" : "size";
+    setHeight(heightIn: number | string, inPresentation = false) {
+        const sizeKey = inPresentation ? "presentationSize" : "size";
         this[sizeKey] = [undefined, heightIn as any];
     }
     setBackground(bool: boolean) {
@@ -356,12 +356,12 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         this.emit("presentationRectChanged", this);
         return this;
     }
-    get isMovable() {
-        if (!this._patcher.state.presentation) return true;
+    getIsMovable(inPresentation = false) {
+        if (!inPresentation) return true;
         return isRectMovable(this.presentationRect);
     }
-    get isResizable() {
-        if (!this._patcher.state.presentation) return true;
+    getIsResizable(inPresentation = false) {
+        if (!inPresentation) return true;
         return isRectResizable(this.presentationRect);
     }
     error(text: string) {

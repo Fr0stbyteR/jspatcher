@@ -1,42 +1,63 @@
 import * as React from "react";
 import { Dimmer, Loader } from "semantic-ui-react";
 import Env from "../../core/Env";
-import Patcher from "../../core/patcher/Patcher";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 import { Errors, Tasks } from "../../core/TaskMgr";
-import PatcherBottomMenu from "../PatcherBottomMenu";
-import PatcherUI from "../PatcherUI";
+import PatcherBottomMenu from "./patcher/PatcherBottomMenu";
+import PatcherUI from "./patcher/PatcherUI";
 import PatcherRightMenu from "../rightmenu/PatcherRightMenu";
 
 interface P {
     env: Env;
     lang: string;
-    patcher: Patcher;
+    editor: PatcherEditor;
 }
 
 interface S {
     tasks: Tasks;
     errors: Errors;
+    editorReady: boolean;
 }
 
 export default class PatcherEditorUI extends React.PureComponent<P, S> {
     state = {
-        tasks: this.props.env.taskMgr.getTasksFromEmitter(this.props.patcher),
-        errors: this.props.env.taskMgr.getErrorsFromEmitter(this.props.patcher)
+        tasks: this.tasks,
+        errors: this.errors,
+        editorReady: this.props.editor.isReady
     };
-    handleTasks = () => this.setState({ tasks: this.props.env.taskMgr.getTasksFromEmitter(this.props.patcher) });
-    handleErrors = () => this.setState({ errors: this.props.env.taskMgr.getErrorsFromEmitter(this.props.patcher) });
+    get tasks() {
+        return {
+            ...this.props.env.taskMgr.getTasksFromEmitter(this.props.editor.instance),
+            ...this.props.env.taskMgr.getTasksFromEmitter(this.props.editor)
+        };
+    }
+    get errors() {
+        return {
+            ...this.props.env.taskMgr.getErrorsFromEmitter(this.props.editor.instance),
+            ...this.props.env.taskMgr.getErrorsFromEmitter(this.props.editor)
+        };
+    }
+    handleTasks = () => this.setState({ tasks: this.tasks });
+    handleErrors = () => this.setState({ errors: this.errors });
     handleReady = () => {
         this.props.env.taskMgr.off("tasks", this.handleTasks);
         this.props.env.taskMgr.off("errors", this.handleErrors);
+        this.setState({ editorReady: true });
+    };
+    handleUnmountReady = () => {
+        this.props.editor.off("ready", this.handleUnmountReady);
+        this.props.editor.destroy();
     };
     componentDidMount() {
-        this.props.patcher.on("ready", this.handleReady);
-        if (this.props.patcher.isReady) return;
+        if (this.state.editorReady) return;
+        this.props.editor.on("ready", this.handleReady);
         this.props.env.taskMgr.on("tasks", this.handleTasks);
         this.props.env.taskMgr.on("errors", this.handleErrors);
     }
     componentWillUnmount() {
-        this.props.patcher.off("ready", this.handleReady);
+        if (this.state.editorReady) this.props.editor.destroy();
+        else this.props.editor.on("ready", this.handleUnmountReady);
+        this.props.editor.off("ready", this.handleReady);
         this.props.env.taskMgr.off("tasks", this.handleTasks);
         this.props.env.taskMgr.off("errors", this.handleErrors);
     }
@@ -55,7 +76,7 @@ export default class PatcherEditorUI extends React.PureComponent<P, S> {
         return (
             <div className="ui-flex-row ui-flex-full" style={{ overflow: "auto" }}>
                 <div className="ui-flex-column ui-flex-full" style={{ overflow: "auto" }}>
-                    <div className="patcher-container" data-id={this.props.patcher.instanceId}>
+                    <div className="patcher-container" data-id={this.props.editor.instance.instanceId}>
                         {dimmer}
                         <PatcherUI {...this.props} />
                     </div>

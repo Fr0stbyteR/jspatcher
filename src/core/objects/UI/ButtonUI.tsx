@@ -17,12 +17,12 @@ export default class ButtonUI<T extends BaseObject<{ text: string }, { editing: 
     }
     handleChanged = (text: string) => {};
     toggleEdit(toggle: boolean) {
-        const { patcher, box } = this;
-        if (patcher.state.locked) return;
+        const { editor, box } = this;
+        if (editor.state.locked) return;
         if (!this.refSpan.current) return;
         const span = this.refSpan.current;
         if (toggle) {
-            patcher.selectOnly(box.id);
+            editor.selectOnly(box.id);
             this.setState({ text: span.textContent }, () => {
                 span.focus();
                 selectElementRange(span);

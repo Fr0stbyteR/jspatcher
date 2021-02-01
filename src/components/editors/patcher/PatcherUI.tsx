@@ -1,17 +1,14 @@
 import * as React from "react";
 import * as Color from "color-js";
-import Patcher from "../core/patcher/Patcher";
-import Box from "../core/patcher/Box";
-import Line from "../core/patcher/Line";
-import "./PatcherUI.scss";
-import "./zIndex.scss";
+import PatcherEditor from "../../../core/patcher/PatcherEditor";
 import BoxUI from "./BoxUI";
 import { LineUI, TempLineUI } from "./LineUI";
-import { RawPatcher, TRect } from "../core/types";
-import { round } from "../utils/math";
+import { RawPatcher, TRect } from "../../../core/types";
+import { round } from "../../../utils/math";
+import "./PatcherUI.scss";
 
 interface P {
-    patcher: Patcher;
+    editor: PatcherEditor;
     transparent?: boolean;
     runtime?: boolean;
 }
@@ -28,11 +25,11 @@ interface S {
 
 export default class PatcherUI extends React.PureComponent<P, S> {
     state: S = {
-        locked: this.props.runtime || this.props.patcher.state.locked,
-        presentation: this.props.patcher.state.presentation,
-        showGrid: this.props.patcher.state.showGrid,
-        bgColor: this.props.patcher.props.bgColor,
-        editingBgColor: this.props.patcher.props.editingBgColor,
+        locked: this.props.runtime || this.props.editor.state.locked,
+        presentation: this.props.editor.state.presentation,
+        showGrid: this.props.editor.state.showGrid,
+        bgColor: this.props.editor.props.bgColor,
+        editingBgColor: this.props.editor.props.editingBgColor,
         fileDropping: false,
         selectionRect: [0, 0, 0, 0]
     };
@@ -45,7 +42,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     dragged = false;
     handleLoading = (loading?: string[]) => {
         if (loading) return;
-        const { patcher } = this.props;
+        const { editor: patcher } = this.props;
         this.setState({ bgColor: patcher.props.bgColor, editingBgColor: patcher.props.editingBgColor, presentation: patcher.state.presentation });
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
@@ -112,10 +109,10 @@ export default class PatcherUI extends React.PureComponent<P, S> {
      */
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        this.props.patcher.setActive();
-        if (!e.shiftKey) this.props.patcher.deselectAll();
+        this.props.editor.setActive();
+        if (!e.shiftKey) this.props.editor.deselectAll();
         if (e.button !== 0) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         this.dragged = false;
         // Handle Draggable
         const handleDraggable = () => {
@@ -123,7 +120,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             const patcherRect = patcherDiv.getBoundingClientRect();
             if (patcherRect.top + patcherDiv.clientHeight < e.clientY || patcherRect.left + patcherDiv.clientWidth < e.clientX) return; // Click on scrollbar
             let patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
-            const selectedBefore = this.props.patcher.state.selected.slice();
+            const selectedBefore = this.props.editor.state.selected.slice();
             const selectionRect = [e.clientX - patcherRect.left + patcherDiv.scrollLeft, e.clientY - patcherRect.top + patcherDiv.scrollTop, 0, 0] as TRect;
             const handleMouseMove = (e: MouseEvent) => {
                 this.dragged = true;
@@ -133,7 +130,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
                     selectionRect[2] = e.clientX - patcherRect.left + patcherDiv.scrollLeft;
                     selectionRect[3] = e.clientY - patcherRect.top + patcherDiv.scrollTop;
                     this.setState({ selectionRect: selectionRect.slice() as TRect });
-                    this.props.patcher.selectRegion(selectionRect, selectedBefore);
+                    this.props.editor.selectRegion(selectionRect, selectedBefore);
                 }
                 const x = e.clientX - patcherRect.left;
                 const y = e.clientY - patcherRect.top;
@@ -150,7 +147,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
                 patcherPrevScroll = { left: patcherDiv.scrollLeft, top: patcherDiv.scrollTop };
                 if (movementX || movementY) {
                     this.setState({ selectionRect: selectionRect.slice() as TRect });
-                    this.props.patcher.selectRegion(selectionRect, selectedBefore);
+                    this.props.editor.selectRegion(selectionRect, selectedBefore);
                 }
             };
             const handleMouseUp = (e: MouseEvent) => {
@@ -169,12 +166,12 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     };
     handleClick = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        const ctrlKey = this.props.patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        if (ctrlKey && !this.props.patcher.state.selected.length) this.props.patcher.setState({ locked: !this.props.patcher.state.locked });
+        const ctrlKey = this.props.editor.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        if (ctrlKey && !this.props.editor.state.selected.length) this.props.editor.setState({ locked: !this.props.editor.state.locked });
     };
     handleDoubleClick = (e: React.MouseEvent) => {
         if (this.dragged) return;
-        const { patcher, runtime } = this.props;
+        const { editor: patcher, runtime } = this.props;
         if (runtime) return;
         if (patcher.state.locked) return;
         if (!(e.target instanceof HTMLDivElement && (e.target.classList.contains("boxes") || e.target.classList.contains("patcher")))) return;
@@ -186,11 +183,11 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         const [gridX, gridY] = patcher.props.grid;
         const x = round(Math.max(0, e.clientX - patcherRect.left + patcherDiv.scrollLeft), gridX);
         const y = round(Math.max(0, e.clientY - patcherRect.top + patcherDiv.scrollTop), gridY);
-        const { presentation } = patcher._state;
-        this.props.patcher.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
+        const { presentation } = patcher.state;
+        this.props.editor.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
     };
     handleKeyDown = (e: KeyboardEvent) => {
-        const { patcher, runtime } = this.props;
+        const { editor: patcher, runtime } = this.props;
         if (runtime) return;
         if (!patcher.isActive) return;
         if (patcher.state.locked) return;
@@ -202,7 +199,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             e.preventDefault();
             let x = e.key === "ArrowLeft" ? -1 : e.key === "ArrowRight" ? 1 : 0;
             let y = e.key === "ArrowUp" ? -1 : e.key === "ArrowDown" ? 1 : 0;
-            if (!e.shiftKey && patcher._state.snapToGrid) {
+            if (!e.shiftKey && patcher.state.snapToGrid) {
                 x *= patcher.props.grid[0];
                 y *= patcher.props.grid[1];
             }
@@ -222,27 +219,29 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             else if (e.key === "b") text = "live.button";
             else if (e.key === "i") text = "live.numbox";
             else if (e.key === "s") text = "live.slider";
-            const { presentation } = patcher._state;
-            this.props.patcher.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
+            const { presentation } = patcher.state;
+            this.props.editor.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
         }
     };
     handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.clientX, y: e.clientY };
     componentDidMount() {
-        const patcher = this.props.patcher;
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        editor.on("locked", this.handleLockedChange);
+        editor.on("presentation", this.handlePresentationChange);
+        editor.on("showGrid", this.handleShowGridChange);
         patcher.on("loading", this.handleLoading);
-        patcher.on("locked", this.handleLockedChange);
-        patcher.on("presentation", this.handlePresentationChange);
-        patcher.on("showGrid", this.handleShowGridChange);
         patcher.on("bgColor", this.handleBgColorChange);
         patcher.on("editingBgColor", this.handleEditingBgColorChange);
         document.addEventListener("keydown", this.handleKeyDown);
     }
     componentWillUnmount() {
-        const patcher = this.props.patcher;
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        editor.off("locked", this.handleLockedChange);
+        editor.off("presentation", this.handlePresentationChange);
+        editor.off("showGrid", this.handleShowGridChange);
         patcher.off("loading", this.handleLoading);
-        patcher.off("locked", this.handleLockedChange);
-        patcher.off("presentation", this.handlePresentationChange);
-        patcher.off("showGrid", this.handleShowGridChange);
         patcher.off("bgColor", this.handleBgColorChange);
         patcher.off("editingBgColor", this.handleEditingBgColorChange);
         document.removeEventListener("keydown", this.handleKeyDown);
@@ -276,46 +275,49 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     }
 }
 
-class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean }, { width: string; height: string; timestamp: number }> {
-    state = { width: "100%", height: "100%", timestamp: performance.now() };
+interface LinesProps {
+    editor: PatcherEditor;
+    runtime?: boolean;
+}
+
+interface LinesState {
+    width: string;
+    height: string;
+    timestamp: number;
+}
+
+class Lines extends React.PureComponent<LinesProps, LinesState> {
+    state: LinesState = {
+        width: "100%",
+        height: "100%",
+        timestamp: performance.now()
+    };
     lines: Record<string, JSX.Element> = {};
     componentDidMount() {
         this.handleLoading();
-        const patcher = this.props.patcher;
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        editor.on("create", this.handleCreate);
+        editor.on("delete", this.handleDelete);
         patcher.on("loading", this.handleLoading);
-        patcher.on("createLine", this.handleCreateLine);
-        patcher.on("create", this.handleCreate);
-        patcher.on("deleteLine", this.handleDeleteLine);
-        patcher.on("delete", this.handleDelete);
     }
     componentWillUnmount() {
-        const patcher = this.props.patcher;
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        editor.off("create", this.handleCreate);
+        editor.off("delete", this.handleDelete);
         patcher.off("loading", this.handleLoading);
-        patcher.off("createLine", this.handleCreateLine);
-        patcher.off("create", this.handleCreate);
-        patcher.off("deleteLine", this.handleDeleteLine);
-        patcher.off("delete", this.handleDelete);
     }
-    handleCreateLine = (line: Line) => {
-        if (this.props.patcher.state.isLoading) return;
-        this.lines[line.id] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
-        this.setState({ timestamp: performance.now() });
-    };
     handleCreate = (created: RawPatcher) => {
-        if (this.props.patcher.state.isLoading) return;
+        if (this.props.editor.instance.state.isLoading) return;
         Object.keys(created.lines).forEach((id) => {
             const line = created.lines[id];
             this.lines[line.id] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
         });
         this.setState({ timestamp: performance.now() });
     };
-    handleDeleteLine = (line: Line) => {
-        if (this.props.patcher.state.isLoading) return;
-        delete this.lines[line.id];
-        this.setState({ timestamp: performance.now() });
-    };
     handleDelete = (deleted: RawPatcher) => {
-        if (this.props.patcher.state.isLoading) return;
+        if (this.props.editor.instance.state.isLoading) return;
         Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
         this.setState({ timestamp: performance.now() });
     };
@@ -324,8 +326,8 @@ class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
         for (const lineID in this.lines) {
             delete this.lines[lineID];
         }
-        for (const lineID in this.props.patcher.lines) {
-            const line = this.props.patcher.lines[lineID];
+        for (const lineID in this.props.editor.lines) {
+            const line = this.props.editor.lines[lineID];
             this.lines[lineID] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
         }
         this.setState({ timestamp: performance.now() });
@@ -339,62 +341,60 @@ class Lines extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
         );
     }
 }
-type BoxesState = { width: string; height: string };
-class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean }, BoxesState> {
-    state: BoxesState = { width: "100%", height: "100%" };
+interface BoxesProps {
+    editor: PatcherEditor;
+    runtime?: boolean;
+}
+interface BoxesState {
+    width: string;
+    height: string;
+    timestamp: number;
+}
+class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
+    state: BoxesState = {
+        width: "100%",
+        height: "100%",
+        timestamp: performance.now()
+    };
     boxes: Record<string, JSX.Element> = {};
     componentDidMount() {
         this.handleLoading();
-        const patcher = this.props.patcher;
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        editor.on("create", this.handleCreate);
+        editor.on("delete", this.handleDelete);
         patcher.on("loading", this.handleLoading);
-        patcher.on("createBox", this.handleCreateBox);
-        patcher.on("create", this.handleCreate);
-        patcher.on("deleteBox", this.handleDeleteBox);
-        patcher.on("delete", this.handleDelete);
     }
     componentWillUnmount() {
-        const patcher = this.props.patcher;
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        editor.off("create", this.handleCreate);
+        editor.off("delete", this.handleDelete);
         patcher.off("loading", this.handleLoading);
-        patcher.off("createBox", this.handleCreateBox);
-        patcher.off("create", this.handleCreate);
-        patcher.off("deleteBox", this.handleDeleteBox);
-        patcher.off("delete", this.handleDelete);
     }
-    handleCreateBox = (box: Box) => {
-        if (this.props.patcher.state.isLoading) return;
-        this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
-        this.forceUpdate();
-    };
     handleCreate = (created: RawPatcher) => {
-        if (this.props.patcher.state.isLoading) return;
+        if (this.props.editor.instance.state.isLoading) return;
         Object.keys(created.boxes).forEach((id) => {
             const box = created.boxes[id];
             this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
         });
-        this.forceUpdate();
-    };
-    handleDeleteBox = (box: Box) => {
-        if (this.props.patcher.state.isLoading) return;
-        delete this.boxes[box.id];
-        this.forceUpdate();
+        this.setState({ timestamp: performance.now() });
     };
     handleDelete = (deleted: RawPatcher) => {
-        if (this.props.patcher.state.isLoading) return;
+        if (this.props.editor.instance.state.isLoading) return;
         Object.keys(deleted.boxes).forEach(id => delete this.boxes[id]);
-        this.forceUpdate();
+        this.setState({ timestamp: performance.now() });
     };
     handleLoading = (loading?: string[]) => {
         if (loading) return;
         for (const boxID in this.boxes) {
             delete this.boxes[boxID];
         }
-        this.forceUpdate(() => { // Unmount All of them, please.
-            for (const boxID in this.props.patcher.boxes) {
-                const box = this.props.patcher.boxes[boxID];
-                this.boxes[boxID] = <BoxUI {...this.props} id={box.id} key={box.id} />;
-            }
-            this.forceUpdate();
-        });
+        for (const boxID in this.props.editor.boxes) {
+            const box = this.props.editor.boxes[boxID];
+            this.boxes[boxID] = <BoxUI {...this.props} id={box.id} key={box.id} />;
+        }
+        this.setState({ timestamp: performance.now() });
     };
     render() {
         return (
@@ -405,24 +405,44 @@ class Boxes extends React.PureComponent<{ patcher: Patcher; runtime?: boolean },
     }
 }
 
-class Grid extends React.PureComponent<{ patcher: Patcher }, { width: string; height: string; grid: [number, number]; editingBgColor: string }> {
-    state = { width: "100%", height: "100%", grid: this.props.patcher.props.grid, editingBgColor: this.props.patcher.props.editingBgColor };
+interface GridProps {
+    editor: PatcherEditor;
+}
+
+interface GridState {
+    width: string;
+    height: string;
+    grid: [number, number];
+    editingBgColor: string;
+}
+
+class Grid extends React.PureComponent<GridProps, GridState> {
+    state: GridState = {
+        width: "100%",
+        height: "100%",
+        grid: this.props.editor.props.grid,
+        editingBgColor: this.props.editor.props.editingBgColor
+    };
     handleLoading = (loading?: string[]) => {
         if (loading) return;
-        const { grid, editingBgColor } = this.props.patcher.props;
+        const { grid, editingBgColor } = this.props.editor.props;
         this.setState({ grid: grid.slice() as [number, number], editingBgColor });
     };
     handleGridChange = (grid: [number, number]) => this.setState({ grid: grid.slice() as [number, number] });
     handleEditingBgColorChange = (editingBgColor: string) => this.setState({ editingBgColor });
     componentDidMount() {
-        this.props.patcher.on("loading", this.handleLoading);
-        this.props.patcher.on("grid", this.handleGridChange);
-        this.props.patcher.on("editingBgColor", this.handleEditingBgColorChange);
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        patcher.on("loading", this.handleLoading);
+        patcher.on("grid", this.handleGridChange);
+        patcher.on("editingBgColor", this.handleEditingBgColorChange);
     }
     componentWillUnmount() {
-        this.props.patcher.off("loading", this.handleLoading);
-        this.props.patcher.off("grid", this.handleGridChange);
-        this.props.patcher.off("editingBgColor", this.handleEditingBgColorChange);
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        patcher.off("loading", this.handleLoading);
+        patcher.off("grid", this.handleGridChange);
+        patcher.off("editingBgColor", this.handleEditingBgColorChange);
     }
     render() {
         const { grid, editingBgColor, width, height } = this.state;

@@ -28,12 +28,12 @@ class CommentUI extends BaseUI<comment, {}, { value: string }> {
         if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
     }
     toggleEdit(toggle: boolean) {
-        const { patcher, box } = this;
-        if (patcher.state.locked) return;
+        const { editor, box } = this;
+        if (editor.state.locked) return;
         if (!this.refSpan.current) return;
         const span = this.refSpan.current;
         if (toggle) {
-            patcher.selectOnly(box.id);
+            editor.selectOnly(box.id);
             span.focus();
             selectElementRange(span);
         } else {

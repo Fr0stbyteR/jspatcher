@@ -1,76 +1,76 @@
 import History from "../file/History";
-import PatcherAudio, { PatcherAudioEventMap } from "./PatcherAudio";
+import AudioEditor, { AudioEditorEventMap } from "./AudioEditor";
 
-export default class AudioHistory extends History<PatcherAudioEventMap> {
-    instance: PatcherAudio = this.instance;
-    get eventListening(): (keyof PatcherAudioEventMap)[] {
+export default class AudioHistory extends History<AudioEditorEventMap, AudioEditor> {
+    editor: AudioEditor = this.editor;
+    get eventListening(): (keyof AudioEditorEventMap)[] {
         return ["faded", "fadedIn", "fadedOut", "cutEnd", "pasted", "deleted", "silenced", "insertedSilence", "resampled", "remixed", "recorded"];
     }
     async undo() {
-        if (!this.instance) return;
+        if (!this.editor) return;
         if (!this.isUndoable) return;
         const lastKey = Object.keys(this.undoMap).map(v => +v).sort((a, b) => b - a)[0];
         const { type, event } = this.undoMap[lastKey];
         if (type === "faded") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [selStart, selEnd], oldAudio } = e;
-            await this.instance.pasteToRange(oldAudio, selStart, selEnd);
+            await this.editor.instance.pasteToRange(oldAudio, selStart, selEnd);
         } else if (type === "fadedIn") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { length, oldAudio } = e;
-            await this.instance.pasteToRange(oldAudio, 0, length);
+            await this.editor.instance.pasteToRange(oldAudio, 0, length);
         } else if (type === "fadedOut") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { length, oldAudio } = e;
-            const l = this.instance.audioBuffer.length;
-            await this.instance.pasteToRange(oldAudio, l - length, l);
+            const l = this.editor.instance.audioBuffer.length;
+            await this.editor.instance.pasteToRange(oldAudio, l - length, l);
         } else if (type === "cutEnd") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [cursor], oldAudio } = e;
-            await this.instance.insertToCursor(oldAudio, cursor);
+            await this.editor.instance.insertToCursor(oldAudio, cursor);
         } else if (type === "pasted") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range, cursor, audio, oldAudio } = e;
             if (range) {
-                await this.instance.pasteToRange(oldAudio, range[0], range[0] + audio.length);
+                await this.editor.instance.pasteToRange(oldAudio, range[0], range[0] + audio.length);
             } else {
-                await this.instance.removeFromRange(cursor, cursor + audio.length);
+                await this.editor.instance.removeFromRange(cursor, cursor + audio.length);
             }
         } else if (type === "deleted") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [cursor], oldAudio } = e;
-            await this.instance.insertToCursor(oldAudio, cursor);
+            await this.editor.instance.insertToCursor(oldAudio, cursor);
         } else if (type === "silenced") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [from, to], oldAudio } = e;
-            await this.instance.pasteToRange(oldAudio, from, to);
+            await this.editor.instance.pasteToRange(oldAudio, from, to);
         } else if (type === "insertedSilence") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [from, to] } = e;
-            await this.instance.removeFromRange(from, to);
+            await this.editor.instance.removeFromRange(from, to);
         } else if (type === "reversed") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [from, to], oldAudio } = e;
-            await this.instance.pasteToRange(oldAudio, from, to);
+            await this.editor.instance.pasteToRange(oldAudio, from, to);
         } else if (type === "inversed") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [from, to], oldAudio } = e;
-            await this.instance.pasteToRange(oldAudio, from, to);
+            await this.editor.instance.pasteToRange(oldAudio, from, to);
         } else if (type === "resampled") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { oldAudio } = e;
-            this.instance.setAudio(oldAudio);
+            this.editor.instance.setAudio(oldAudio);
         } else if (type === "remixed") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { oldAudio } = e;
-            this.instance.setAudio(oldAudio);
+            this.editor.instance.setAudio(oldAudio);
         } else if (type === "recorded") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range, cursor, audio, oldAudio } = e;
             if (range) {
-                await this.instance.pasteToRange(oldAudio, range[0], range[0] + audio.length);
+                await this.editor.instance.pasteToRange(oldAudio, range[0], range[0] + audio.length);
             } else {
-                await this.instance.removeFromRange(cursor, cursor + audio.length);
+                await this.editor.instance.removeFromRange(cursor, cursor + audio.length);
             }
         }
         this.redoMap[lastKey] = this.undoMap[lastKey];
@@ -78,70 +78,70 @@ export default class AudioHistory extends History<PatcherAudioEventMap> {
         this.emitChanged();
     }
     async redo() {
-        if (!this.instance) return;
+        if (!this.editor) return;
         if (!this.isRedoable) return;
         const nextKey = Object.keys(this.redoMap).map(v => +v).sort((a, b) => a - b)[0];
         const { type, event } = this.redoMap[nextKey];
         if (type === "faded") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [selStart, selEnd], audio } = e;
-            await this.instance.pasteToRange(audio, selStart, selEnd);
+            await this.editor.instance.pasteToRange(audio, selStart, selEnd);
         } else if (type === "fadedIn") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { length, audio } = e;
-            await this.instance.pasteToRange(audio, 0, length);
+            await this.editor.instance.pasteToRange(audio, 0, length);
         } else if (type === "fadedOut") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { length, audio } = e;
             const l = audio.length;
-            await this.instance.pasteToRange(audio, l - length, l);
+            await this.editor.instance.pasteToRange(audio, l - length, l);
         } else if (type === "cutEnd") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [selStart, selEnd] } = e;
-            await this.instance.removeFromRange(selStart, selEnd);
+            await this.editor.instance.removeFromRange(selStart, selEnd);
         } else if (type === "pasted") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range, cursor, audio, oldAudio } = e;
             if (range) {
-                await this.instance.pasteToRange(audio, range[0], range[0] + oldAudio.length);
+                await this.editor.instance.pasteToRange(audio, range[0], range[0] + oldAudio.length);
             } else {
-                await this.instance.insertToCursor(audio, cursor);
+                await this.editor.instance.insertToCursor(audio, cursor);
             }
         } else if (type === "deleted") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [selStart, selEnd] } = e;
-            await this.instance.removeFromRange(selStart, selEnd);
+            await this.editor.instance.removeFromRange(selStart, selEnd);
         } else if (type === "silenced") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [from, to], audio } = e;
-            await this.instance.pasteToRange(audio, from, to);
+            await this.editor.instance.pasteToRange(audio, from, to);
         } else if (type === "insertedSilence") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [cursor], audio } = e;
-            await this.instance.insertToCursor(audio, cursor);
+            await this.editor.instance.insertToCursor(audio, cursor);
         } else if (type === "reversed") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [from, to], audio } = e;
-            await this.instance.pasteToRange(audio, from, to);
+            await this.editor.instance.pasteToRange(audio, from, to);
         } else if (type === "inversed") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range: [from, to], audio } = e;
-            await this.instance.pasteToRange(audio, from, to);
+            await this.editor.instance.pasteToRange(audio, from, to);
         } else if (type === "resampled") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { audio } = e;
-            this.instance.setAudio(audio);
+            this.editor.instance.setAudio(audio);
         } else if (type === "remixed") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { audio } = e;
-            this.instance.setAudio(audio);
+            this.editor.instance.setAudio(audio);
         } else if (type === "recorded") {
-            const e: PatcherAudioEventMap[typeof type] = event;
+            const e: AudioEditorEventMap[typeof type] = event;
             const { range, cursor, audio, oldAudio } = e;
             if (range) {
-                await this.instance.pasteToRange(audio, range[0], range[0] + oldAudio.length);
+                await this.editor.instance.pasteToRange(audio, range[0], range[0] + oldAudio.length);
             } else {
-                await this.instance.insertToCursor(audio, cursor);
+                await this.editor.instance.insertToCursor(audio, cursor);
             }
         }
         this.undoMap[nextKey] = this.redoMap[nextKey];

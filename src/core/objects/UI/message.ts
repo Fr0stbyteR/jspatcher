@@ -9,7 +9,7 @@ class MessageUI extends ButtonUI<message> {
     static editableOnUnlock = true;
     handleChanged = (text: string) => this.object.handleUpdateArgs([text]);
     handleClick = (e: React.MouseEvent) => {
-        if (this.patcher.state.locked) this.object.outlet(0, this.object.state.buffer);
+        if (this.editor.state.locked) this.object.outlet(0, this.object.state.buffer);
     };
 }
 export default class message extends UIObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], {}, { text: string }> {

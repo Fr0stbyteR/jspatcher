@@ -1,7 +1,7 @@
-import FileInstance, { FileInstanceEventMap } from "./FileInstance";
+import FileEditor, { FileEditorEventMap } from "./FileEditor";
 
-export default class History<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}> {
-    instance: FileInstance<EventMap>;
+export default class History<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}, Editor extends FileEditor<any, EventMap> = FileEditor<any, EventMap>> {
+    editor: Editor;
     saveTime = 0;
     undoMap: Record<number, { type: keyof EventMap; event: any }> = {};
     redoMap: Record<number, { type: keyof EventMap; event: any }> = {};
@@ -9,10 +9,10 @@ export default class History<EventMap extends Record<string, any> & Partial<File
         return [];
     }
     capture = true;
-    constructor(instanceIn: FileInstance<EventMap>) {
-        this.instance = instanceIn;
-        this.eventListening.forEach(type => this.instance.on(type as Extract<keyof EventMap, string>, event => this.did(type, event)));
-        this.instance.on("saved", this.handleSaved);
+    constructor(editorIn: Editor) {
+        this.editor = editorIn;
+        this.eventListening.forEach(type => this.editor.on(type as Extract<keyof EventMap, string>, event => this.did(type, event)));
+        this.editor.on("saved", this.handleSaved);
     }
     did(type: keyof EventMap, event: any) {
         if (!this.capture) return;
@@ -21,14 +21,14 @@ export default class History<EventMap extends Record<string, any> & Partial<File
         this.emitChanged();
     }
     emitChanged() {
-        this.instance.emit("changed");
+        this.editor.emit("changed");
         this.emitDirty();
     }
     emitDirty() {
-        this.instance.emit("dirty", this.isDirty);
+        this.editor.emit("dirty", this.isDirty);
     }
     destroy() {
-        this.eventListening.forEach(type => this.instance.off(type as Extract<keyof EventMap, string>, event => this.did(type, event)));
+        this.eventListening.forEach(type => this.editor.off(type as Extract<keyof EventMap, string>, event => this.did(type, event)));
     }
     get isDirty() {
         if (!this.saveTime) return this.isUndoable;

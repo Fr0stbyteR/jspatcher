@@ -3,12 +3,12 @@ import Env from "../Env";
 import FileManager from "../FileMgr";
 import Project from "../Project";
 import { ProjectItemType } from "../types";
-import FileInstance from "./FileInstance";
+import { AnyFileEditor } from "./FileEditor";
+import { AnyFileInstance } from "./FileInstance";
 import Folder from "./Folder";
 
 export interface ProjectItemEventMap {
     "ready": never;
-    "instantiated": FileInstance;
     "nameChanged": { oldName: string, newName: string };
     "pathChanged": { from: Folder, to: Folder };
     "treeChanged": never;
@@ -67,9 +67,12 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
      * This method calls default instantiation (from the file manager).
      * Please use `FileInstance.fromProjectItem(item)` for a better instantiation.
      */
-    async instantiate(): Promise<FileInstance<any>> {
+    async instantiate(): Promise<AnyFileInstance> {
         throw new Error("Not implemented.");
         // new instance Patcher / AudioBuffer etc
+    }
+    async instantiateEditor(): Promise<AnyFileEditor> {
+        throw new Error("Not implemented.");
     }
     get path(): string {
         return this.parent ? `${this.parentPath}/${this._name}` : "";

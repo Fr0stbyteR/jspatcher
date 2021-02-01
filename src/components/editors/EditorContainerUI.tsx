@@ -56,7 +56,7 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
                         ? this.state.instances.map((instance) => {
                             if (instance instanceof Patcher) {
                                 return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instanceId}>
-                                    <PatcherEditorUI {...this.props} patcher={instance} />
+                                    <PatcherEditorUI {...this.props} editor={instance} />
                                 </div>;
                             }
                             if (instance instanceof PatcherText) {

@@ -1,13 +1,29 @@
 import * as React from "react";
-import Patcher from "../core/patcher/Patcher";
+import { TLineType } from "../../../core/types";
+import PatcherEditor from "../../../core/patcher/PatcherEditor";
 import "./LineUI.scss";
-import { TLineType } from "../core/types";
 
-type TPosition = { left: number; top: number };
-type P = { patcher: Patcher; id: string; runtime?: boolean };
-type S = { type: TLineType; selected: boolean; dragging: boolean; destPos: TPosition; srcPos: TPosition; srcHandlerPos: TPosition; destHandlerPos: TPosition };
+interface TPosition {
+    left: number;
+    top: number;
+}
+interface P {
+    editor: PatcherEditor;
+    id: string;
+    runtime?: boolean;
+}
+interface S {
+    type: TLineType;
+    selected: boolean;
+    dragging: boolean;
+    destPos: TPosition;
+    srcPos: TPosition;
+    srcHandlerPos: TPosition;
+    destHandlerPos: TPosition;
+}
+
 export class LineUI extends React.PureComponent<P, S> {
-    line = this.props.patcher.lines[this.props.id];
+    line = this.props.editor.lines[this.props.id];
     state = { type: this.line.type, selected: false, dragging: false, destPos: this.line.destPos, srcPos: this.line.srcPos, srcHandlerPos: { left: 0, top: 0 }, destHandlerPos: { left: 0, top: 0 } };
     refDiv = React.createRef<HTMLDivElement>();
     refPath = React.createRef<SVGPathElement>();
@@ -39,8 +55,10 @@ export class LineUI extends React.PureComponent<P, S> {
         }
         this.setState({ destPos: line.destPos, srcPos: line.srcPos }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
     };
-    handleSelected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: true }) : null);
-    handleDeselected = (ids: string[]) => (ids.indexOf(this.props.id) >= 0 ? this.setState({ selected: false }) : null);
+    handleSelected = (ids: string[]) => {
+        const selected = ids.indexOf(this.props.id) >= 0;
+        if (this.state.selected !== selected) this.setState({ selected });
+    };
     handleTypeChanged = (type: TLineType) => this.setState({ type });
     componentDidMount() {
         const { line } = this;
@@ -48,12 +66,10 @@ export class LineUI extends React.PureComponent<P, S> {
         line.on("srcPosChanged", this.handleResetPos);
         line.on("posChanged", this.handleResetPos);
         line.on("typeChanged", this.handleTypeChanged);
-        this.props.patcher.on("selected", this.handleSelected);
-        this.props.patcher.on("deselected", this.handleDeselected);
+        this.props.editor.on("selected", this.handleSelected);
     }
     componentWillUnmount() {
-        this.props.patcher.off("selected", this.handleSelected);
-        this.props.patcher.off("deselected", this.handleDeselected);
+        this.props.editor.off("selected", this.handleSelected);
         const { line } = this;
         line.off("destPosChanged", this.handleResetPos);
         line.off("srcPosChanged", this.handleResetPos);
@@ -73,23 +89,23 @@ export class LineUI extends React.PureComponent<P, S> {
     }
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         this.setState(this.handlersPos);
         if (e.shiftKey) {
-            if (this.state.selected) this.props.patcher.deselect(this.props.id);
-            else this.props.patcher.select(this.props.id);
-        } else this.props.patcher.selectOnly(this.props.id);
+            if (this.state.selected) this.props.editor.deselect(this.props.id);
+            else this.props.editor.select(this.props.id);
+        } else this.props.editor.selectOnly(this.props.id);
         e.stopPropagation();
     };
     handleMouseDownSrc = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         this.handleDraggable(e, true);
         e.stopPropagation();
     };
     handleMouseDownDest = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         this.handleDraggable(e, false);
         e.stopPropagation();
     };
@@ -116,7 +132,7 @@ export class LineUI extends React.PureComponent<P, S> {
                 dragOffset.y += movementY;
                 if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + movementX, top: this.state.srcPos.top + movementY } });
                 else this.setState({ destPos: { left: this.state.destPos.left + movementX, top: this.state.destPos.top + movementY } });
-                nearest = this.props.patcher.highlightNearestPort(isSrc, dragOffset, isSrc ? line.getDest() : line.getSrc(), isSrc ? line.getSrc() : line.getDest());
+                nearest = this.props.editor.highlightNearestPort(isSrc, dragOffset, isSrc ? line.getDest() : line.getSrc(), isSrc ? line.getSrc() : line.getDest());
             }
             const x = e.clientX - patcherRect.left;
             const y = e.clientY - patcherRect.top;
@@ -135,7 +151,7 @@ export class LineUI extends React.PureComponent<P, S> {
                 if (!this.dragged) this.dragged = true;
                 if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + movementX, top: this.state.srcPos.top + movementY } });
                 else this.setState({ destPos: { left: this.state.destPos.left + movementX, top: this.state.destPos.top + movementY } });
-                nearest = this.props.patcher.highlightNearestPort(isSrc, dragOffset, isSrc ? line.getDest() : line.getSrc(), isSrc ? line.getSrc() : line.getDest());
+                nearest = this.props.editor.highlightNearestPort(isSrc, dragOffset, isSrc ? line.getDest() : line.getSrc(), isSrc ? line.getSrc() : line.getDest());
             }
         };
         const handleMouseUp = (e: MouseEvent) => {
@@ -147,11 +163,11 @@ export class LineUI extends React.PureComponent<P, S> {
             this.setState({ dragging: false });
             if (!this.dragged) return;
             if (nearest[0]) {
-                this.props.patcher.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
+                this.props.editor.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
                 if (line[isSrc ? "srcID" : "destID"] === nearest[0] && line[isSrc ? "srcOutlet" : "destInlet"] === nearest[1]) this.handleResetPos();
-                else this.props.patcher[isSrc ? "changeLineSrc" : "changeLineDest"](this.props.id, ...nearest);
+                else this.props.editor[isSrc ? "changeLineSrc" : "changeLineDest"](this.props.id, ...nearest);
             } else {
-                this.props.patcher.deleteLine(this.props.id);
+                this.props.editor.deleteLine(this.props.id);
             }
         };
         document.addEventListener("mousemove", handleMouseMove);
@@ -192,7 +208,7 @@ export class LineUI extends React.PureComponent<P, S> {
     }
 }
 
-export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show: boolean; srcPos: TPosition; destPos: TPosition }> {
+export class TempLineUI extends React.PureComponent<{ editor: PatcherEditor }, { show: boolean; srcPos: TPosition; destPos: TPosition }> {
     state = { show: false, srcPos: { left: 0, top: 0 }, destPos: { left: 0, top: 0 } };
     refDiv = React.createRef<HTMLDivElement>();
     refPath = React.createRef<SVGPathElement>();
@@ -200,18 +216,18 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
     findSrc = false;
     from = [null, null] as [string, number];
     componentDidMount() {
-        this.props.patcher.on("tempLine", this.handleNewLine);
+        this.props.editor.on("tempLine", this.handleNewLine);
     }
     componentWillUnmount() {
-        this.props.patcher.off("tempLine", this.handleNewLine);
+        this.props.editor.off("tempLine", this.handleNewLine);
     }
     handleNewLine = (e: { findSrc: boolean; from: [string, number] }) => {
         const { findSrc, from } = e;
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         if (this.state.show) return;
         this.findSrc = findSrc;
         this.from = from;
-        const fromPos = this.props.patcher.boxes[from[0]][findSrc ? "getInletPos" : "getOutletPos"](from[1]);
+        const fromPos = this.props.editor.boxes[from[0]][findSrc ? "getInletPos" : "getOutletPos"](from[1]);
         this.setState({ srcPos: fromPos, destPos: fromPos });
         this.handleDraggable(findSrc, fromPos);
     };
@@ -237,7 +253,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
                 dragOffset.y += movementY;
                 if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + movementX, top: this.state.srcPos.top + movementY } });
                 else this.setState({ destPos: { left: this.state.destPos.left + movementX, top: this.state.destPos.top + movementY } });
-                nearest = this.props.patcher.highlightNearestPort(this.findSrc, dragOffset, this.from);
+                nearest = this.props.editor.highlightNearestPort(this.findSrc, dragOffset, this.from);
             }
             const x = e.clientX - patcherRect.left;
             const y = e.clientY - patcherRect.top;
@@ -257,7 +273,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
                 if (!this.state.show) this.setState({ show: true });
                 if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + movementX, top: this.state.srcPos.top + movementY } });
                 else this.setState({ destPos: { left: this.state.destPos.left + movementX, top: this.state.destPos.top + movementY } });
-                nearest = this.props.patcher.highlightNearestPort(isSrc, dragOffset, this.from);
+                nearest = this.props.editor.highlightNearestPort(isSrc, dragOffset, this.from);
             }
         };
         const handleMouseUp = (e: MouseEvent) => {
@@ -265,8 +281,8 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
             e.preventDefault();
             if (!this.dragged) return;
             if (nearest[0]) {
-                this.props.patcher.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
-                this.props.patcher.createLine({ src: this.findSrc ? nearest : this.from, dest: this.findSrc ? this.from : nearest });
+                this.props.editor.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
+                this.props.editor.createLine({ src: this.findSrc ? nearest : this.from, dest: this.findSrc ? this.from : nearest });
             }
             if (!e.shiftKey) {
                 this.setState({ show: false });
@@ -277,7 +293,7 @@ export class TempLineUI extends React.PureComponent<{ patcher: Patcher }, { show
             }
         };
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (!this.props.patcher.isActive) return;
+            if (!this.props.editor.isActive) return;
             if (e.key === "Escape") {
                 e.stopPropagation();
                 e.preventDefault();

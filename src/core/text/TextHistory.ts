@@ -1,28 +1,27 @@
 import History from "../file/History";
-import PatcherText, { PatcherTextEventMap } from "./PatcherText";
+import TextEditor, { TextEditorEventMap } from "./TextEditor";
 
-export default class TextHistory extends History<PatcherTextEventMap> {
-    instance: PatcherText = this.instance;
-    get eventListening(): (keyof PatcherTextEventMap)[] {
+export default class TextHistory extends History<TextEditorEventMap, TextEditor> {
+    get eventListening(): (keyof TextEditorEventMap)[] {
         return ["textModified"];
     }
     async undo() {
-        if (!this.instance) return;
+        if (!this.editor) return;
         if (!this.isUndoable) return;
         const lastKey = Object.keys(this.undoMap).map(v => +v).sort((a, b) => b - a)[0];
         const { type, event } = this.undoMap[lastKey];
         if (type === "textModified") {
-            const e: PatcherTextEventMap[typeof type] = event;
+            const e: TextEditorEventMap[typeof type] = event;
             const { oldText } = e;
-            if (this.instance.editor) {
-                this.instance.editor.focus();
+            if (this.editor.editor) {
+                this.editor.editor.focus();
                 if (!document.execCommand("undo")) {
-                    (this.instance.editor.getModel() as any).undo?.();
+                    (this.editor.editor.getModel() as any).undo?.();
                 }
-                this.instance.text = this.instance.editor.getValue();
-                e.oldText = this.instance.text;
+                this.editor.text = this.editor.editor.getValue();
+                e.oldText = this.editor.text;
             } else {
-                this.instance.text = oldText;
+                this.editor.text = oldText;
             }
         }
         this.redoMap[lastKey] = this.undoMap[lastKey];
@@ -30,22 +29,22 @@ export default class TextHistory extends History<PatcherTextEventMap> {
         this.emitChanged();
     }
     async redo() {
-        if (!this.instance) return;
+        if (!this.editor) return;
         if (!this.isRedoable) return;
         const nextKey = Object.keys(this.redoMap).map(v => +v).sort((a, b) => a - b)[0];
         const { type, event } = this.redoMap[nextKey];
         if (type === "textModified") {
-            const e: PatcherTextEventMap[typeof type] = event;
+            const e: TextEditorEventMap[typeof type] = event;
             const { text } = e;
-            if (this.instance.editor) {
-                this.instance.editor.focus();
+            if (this.editor.editor) {
+                this.editor.editor.focus();
                 if (!document.execCommand("undo")) {
-                    (this.instance.editor.getModel() as any)?.redo?.();
+                    (this.editor.editor.getModel() as any)?.redo?.();
                 }
-                this.instance.text = this.instance.editor.getValue();
-                e.text = this.instance.text;
+                this.editor.text = this.editor.editor.getValue();
+                e.text = this.editor.text;
             } else {
-                this.instance.text = text;
+                this.editor.text = text;
             }
         }
         this.undoMap[nextKey] = this.redoMap[nextKey];

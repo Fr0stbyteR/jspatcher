@@ -93,19 +93,14 @@ export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor"
 export interface TPatcherState {
     name: string;
     isLoading: boolean;
-    locked: boolean;
-    presentation: boolean;
-    showGrid: boolean;
-    snapToGrid: boolean;
     log: TPatcherLog[];
     history: PatcherHistory;
     selected: string[];
     pkgMgr: PackageManager;
     dataConsumers: TSharedDataConsumers;
     dataMgr: SharedData;
+    preventEmitChanged: boolean;
 }
-export type TPublicPatcherState = Pick<TPatcherState, "locked" | "presentation" | "showGrid" | "snapToGrid">;
-
 export type TErrorLevel = "error" | "warn" | "info" | "none";
 
 export interface TPatcherLog {
@@ -226,45 +221,24 @@ export interface JSPatcherFile extends FileState {
     instance: any;
     history: any
 }
-export interface PatcherEventMap extends TPublicPatcherProps, TPublicPatcherState {
+export interface PatcherEventMap extends TPublicPatcherProps {
     "loading": string[] | undefined;
     "ready": never;
     "unload": never;
-    "create": RawPatcher;
-    "delete": RawPatcher;
-    "createBox": Box;
-    "deleteBox": Box;
-    "createObject": BaseObject;
     "changeBoxText": { box: Box; oldText: string; text: string };
-    "createLine": Line;
-    "deleteLine": Line;
-    "redrawLine": Line;
-    "changeLineSrc": { line: Line; oldSrc: [string, number]; src: [string, number] };
-    "changeLineDest": { line: Line; oldDest: [string, number]; dest: [string, number] };
-    "changeLine": { line: Line; isSrc: boolean; oldPort: [string, number]; port: [string, number] };
     "newLog": TPatcherLog;
-    "selected": string[];
-    "deselected": string[];
-    "tempLine": { findSrc: boolean; from: [string, number] };
-    "moving": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
-    "moved": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
-    "resizing": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType; presentation: boolean };
-    "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType; presentation: boolean };
     "generateCode": string;
     "graphChanged": never;
+    "changed": never;
+    "ioChanged": TMeta;
     "inlet": TInletEvent<any[]>;
     "outlet": TOutletEvent<any[]>;
     "disconnectAudioInlet": number;
     "disconnectAudioOutlet": number;
     "connectAudioInlet": number;
     "connectAudioOutlet": number;
-    "ioChanged": TMeta;
-    "stateChanged": Partial<TPublicPatcherState>;
     "propsChanged": Partial<TPublicPatcherProps>;
     "libChanged": { pkg: TPackage; lib: TFlatPackage };
-    "changed": never;
-    "inspector": Box;
-    "dockUI": Box;
 }
 
 export interface LineEventMap {

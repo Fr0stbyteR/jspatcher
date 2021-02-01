@@ -1,12 +1,29 @@
+import { SemanticICONS } from "semantic-ui-react";
 import { WebAudioModule } from "wamsdk/src/api";
-import PatcherAudio from "./PatcherAudio";
 import { TAudioPlayingState } from "../types";
 import { dbtoa } from "../../utils/math";
 import AudioFile from "./AudioFile";
+import AudioHistory from "./AudioHistory";
 import AudioPlayer from "./AudioPlayer";
 import AudioRecorder from "./AudioRecorder";
+import FileEditor from "../file/FileEditor";
+import PatcherAudio from "./PatcherAudio";
+import TempAudioFile from "./TempAudioFile";
 
 export interface AudioEditorEventMap {
+    "pasted": { range?: [number, number]; cursor?: number; audio: PatcherAudio; oldAudio?: PatcherAudio };
+    "cutEnd": { range: [number, number]; oldAudio: PatcherAudio };
+    "deleted": { range: [number, number]; oldAudio: PatcherAudio };
+    "silenced": { range: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
+    "insertedSilence": { range: [number, number]; audio: PatcherAudio };
+    "inversed": { range: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
+    "reversed": { range: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
+    "faded": { gain: number; range: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
+    "fadedIn": { length: number; exponent: number; audio: PatcherAudio; oldAudio: PatcherAudio };
+    "fadedOut": { length: number; exponent: number; audio: PatcherAudio; oldAudio: PatcherAudio };
+    "recorded": { range?: [number, number]; cursor?: number; audio: PatcherAudio; oldAudio: PatcherAudio };
+    "resampled": { audio: PatcherAudio; oldAudio: PatcherAudio };
+    "remixed": { audio: PatcherAudio; oldAudio: PatcherAudio };
     "viewRange": [number, number];
     "selRange": [number, number];
     "selRangeToPlay": [number, number] | null;
@@ -19,6 +36,7 @@ export interface AudioEditorEventMap {
     "pluginsChanged": { plugins: WebAudioModule[]; pluginsEnabled: boolean[]; pluginsShowing: boolean[] };
     "pluginsApplied": { range?: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
     "uiResized": never;
+    "setAudio": never;
     "ready": never;
 }
 export interface AudioEditorState {
@@ -37,10 +55,13 @@ export interface AudioEditorState {
     postFxGain: number;
 }
 
-export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
-    static async fromProjectItem(item: AudioFile) {
-        return new this(item).init();
+export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEventMap> {
+    static async fromProjectItem(item: AudioFile | TempAudioFile) {
+        const audio = item instanceof TempAudioFile ? item.data : await item.instantiate();
+        const editor = new this(audio);
+        return editor.init();
     }
+    readonly audio: PatcherAudio;
     readonly player = new AudioPlayer(this);
     readonly recorder = new AudioRecorder(this);
     readonly state: AudioEditorState = {
@@ -58,12 +79,43 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         preFxGain: 0,
         postFxGain: 0
     };
+    get fileExtension() {
+        return "wav";
+    }
+    get fileIcon(): SemanticICONS {
+        return "music";
+    }
+    readonly _history: AudioHistory = new AudioHistory(this);
+    get history() {
+        return this._history;
+    }
 
     get clipboard() {
         return this.env.audioClipboard;
     }
     set clipboard(audio: PatcherAudio) {
         this.env.audioClipboard = audio;
+    }
+    get ctx() {
+        return this.instance.ctx;
+    }
+    get audioCtx() {
+        return this.instance.audioCtx;
+    }
+    get length() {
+        return this.instance.length;
+    }
+    get numberOfChannels() {
+        return this.instance.numberOfChannels;
+    }
+    get sampleRate() {
+        return this.instance.sampleRate;
+    }
+    get audioBuffer() {
+        return this.instance.audioBuffer;
+    }
+    get waveform() {
+        return this.instance.waveform;
     }
 
     handleSetAudio = () => {
@@ -78,6 +130,7 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
             this.setState({ enabledChannels });
             this.emit("enabledChannels", enabledChannels);
         }
+        this.emit("setAudio");
     };
     handlePlayerEnded = (cursor: number) => {
         const playing: TAudioPlayingState = "stopped";
@@ -89,24 +142,36 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         await this.recorder.newSearch(deviceId);
         if (this.state.monitoring) this.player.startMonitoring();
     };
-    onUiResized() {
-        this.emit("uiResized");
-    }
-    handlePostInit = async () => {
+    handleDestroy = () => this.destroy();
+    async init() {
+        if (!this.instance.isReady) {
+            await new Promise<void>((resolve, reject) => {
+                const handleReady = () => {
+                    resolve();
+                    this.instance.off("ready", handleReady);
+                };
+                this.instance.on("ready", handleReady);
+            });
+        }
         this.setState({
             viewRange: [0, this.length],
             enabledChannels: new Array(this.numberOfChannels).fill(true)
         });
-        this.on("setAudio", this.handleSetAudio);
+        this.instance.on("setAudio", this.handleSetAudio);
+        this.instance.on("destroy", this.handleDestroy);
         await this.env.taskMgr.newTask(this, "Initializing Audio Editor...", async () => {
             await this.player.init();
             await this.recorder.init();
         });
         this._isReady = true;
-    };
-    constructor(...args: ConstructorParameters<typeof PatcherAudio>) {
-        super(...args);
-        this.on("postInit", this.handlePostInit);
+        this.emit("ready");
+        return this;
+    }
+    setState(state: Partial<AudioEditorState>) {
+        Object.assign(this.state, state);
+    }
+    onUiResized() {
+        this.emit("uiResized");
     }
     emitPluginsChanged() {
         const { plugins, pluginsEnabled, pluginsShowing } = this.state;
@@ -162,13 +227,10 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         this.setState({ recording });
         this.emit("recording", recording);
     }
-    setState(state: Partial<AudioEditorState>) {
-        Object.assign(this.state, state);
-    }
     setCursor(cursorIn: number, fromPlayer?: boolean) {
         const shouldReplay = !fromPlayer && this.state.playing === "playing";
         if (shouldReplay) this.stop();
-        const { length } = this.audioBuffer;
+        const { length } = this;
         const cursor = Math.max(0, Math.min(length, Math.round(cursorIn)));
         this.setState({ cursor });
         this.emit("cursor", cursor);
@@ -180,7 +242,7 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
             this.emit("selRange", null);
             return;
         }
-        const { length } = this.audioBuffer;
+        const { length } = this;
         let [start, end] = range;
         if (end < start) [start, end] = [end, start];
         start = Math.max(0, Math.min(length - 1, Math.round(start)));
@@ -196,7 +258,7 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         this.emit("cursor", start);
     }
     setSelRangeToAll() {
-        const { length } = this.audioBuffer;
+        const { length } = this;
         const selRange: [number, number] = [0, length];
         this.setState({ selRange });
         this.emit("selRange", selRange);
@@ -231,7 +293,7 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         if (!selRange) return;
         const [selStart, selEnd] = selRange;
         this.setSelRange(null);
-        this.env.audioClipboard = await this.removeFromRange(selStart, selEnd);
+        this.env.audioClipboard = await this.instance.removeFromRange(selStart, selEnd);
         const oldAudio = this.env.audioClipboard;
         this.emit("cutEnd", { range: [selStart, selEnd], oldAudio });
     }
@@ -239,7 +301,7 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         const { selRange } = this.state;
         if (!selRange) return;
         const [selStart, selEnd] = selRange;
-        this.env.audioClipboard = await this.pick(selStart, selEnd, true);
+        this.env.audioClipboard = await this.instance.pick(selStart, selEnd, true);
     }
     async paste() {
         const { audioClipboard } = this.env;
@@ -247,10 +309,10 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         const { cursor, selRange } = this.state;
         if (selRange) {
             const [selStart, selEnd] = selRange;
-            const oldAudio = await this.pasteToRange(audioClipboard, selStart, selEnd);
+            const oldAudio = await this.instance.pasteToRange(audioClipboard, selStart, selEnd);
             this.emit("pasted", { range: [selStart, selEnd], audio: audioClipboard, oldAudio });
         } else {
-            this.insertToCursor(audioClipboard, cursor);
+            this.instance.insertToCursor(audioClipboard, cursor);
             this.emit("pasted", { cursor, audio: audioClipboard });
         }
     }
@@ -259,70 +321,75 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         if (!selRange) return;
         const [selStart, selEnd] = selRange;
         this.setSelRange(null);
-        const oldAudio = await this.removeFromRange(selStart, selEnd);
+        const oldAudio = await this.instance.removeFromRange(selStart, selEnd);
         this.emit("deleted", { range: [selStart, selEnd], oldAudio });
     }
     async silence() {
         const { selRange } = this.state;
         if (!selRange) return;
-        await super.silence(selRange);
+        const silenced = await this.instance.silence(selRange);
+        if (silenced) this.emit("silenced", silenced);
     }
     async insertSilence(length: number) {
         if (!length) return;
         const { cursor } = this.state;
-        await super.insertSilence(length, cursor);
+        const inserted = await this.instance.insertSilence(length, cursor);
+        if (inserted) this.emit("insertedSilence", inserted);
     }
     async reverse() {
         const { selRange } = this.state;
         const [selStart, selEnd] = selRange || [0, this.length];
-        const audio = await this.pick(selStart, selEnd, true);
+        const audio = await this.instance.pick(selStart, selEnd, true);
         audio.reverse();
-        const oldAudio = await this.pasteToRange(audio, selStart, selEnd);
+        const oldAudio = await this.instance.pasteToRange(audio, selStart, selEnd);
         this.emit("reversed", { range: [0, this.length], audio, oldAudio });
     }
     async inverse() {
         const { selRange } = this.state;
         const [selStart, selEnd] = selRange || [0, this.length];
-        const audio = await this.pick(selStart, selEnd, true);
+        const audio = await this.instance.pick(selStart, selEnd, true);
         audio.inverse();
-        const oldAudio = await this.pasteToRange(audio, selStart, selEnd);
+        const oldAudio = await this.instance.pasteToRange(audio, selStart, selEnd);
         this.emit("inversed", { range: [selStart, selEnd], audio, oldAudio });
     }
     async fade(gain: number) {
         const { selRange, enabledChannels } = this.state;
         if (!selRange) return;
-        await super.fade(gain, ...selRange, enabledChannels);
+        const faded = await this.instance.fade(gain, ...selRange, enabledChannels);
+        if (faded) this.emit("faded", faded);
     }
     async fadeIn(length: number, exponent: number) {
         const { enabledChannels } = this.state;
-        await super.fadeIn(length, exponent, enabledChannels);
+        const faded = await this.instance.fadeIn(length, exponent, enabledChannels);
+        if (faded) this.emit("fadedIn", faded);
     }
     async fadeOut(length: number, exponent: number) {
         const { enabledChannels } = this.state;
-        await super.fadeOut(length, exponent, enabledChannels);
+        const faded = await this.instance.fadeOut(length, exponent, enabledChannels);
+        if (faded) this.emit("fadedOut", faded);
     }
     async resample(to: number) {
         if (to <= 0) return;
-        const oldAudio = await super.clone();
+        const oldAudio = await this.instance.clone();
         if (oldAudio.sampleRate === to) return;
-        const audio = await this.render(to);
-        this.setAudio(audio);
+        const audio = await this.instance.render(to);
+        this.instance.setAudio(audio);
         this.emit("resampled", { audio, oldAudio });
     }
     async remixChannels(mix: number[][]) {
-        const oldAudio = await super.clone();
-        const audio = await this.render(undefined, mix);
-        this.setAudio(audio);
+        const oldAudio = await this.instance.clone();
+        const audio = await this.instance.render(undefined, mix);
+        this.instance.setAudio(audio);
         this.emit("remixed", { audio, oldAudio });
     }
     async applyPlugins(selected?: boolean) {
         const { selRange, plugins, pluginsEnabled, preFxGain, postFxGain } = this.state;
         if (plugins.every(p => !p || !pluginsEnabled.has(p))) return;
         if (selected && !selRange) return;
-        const oldAudio = selected ? await this.pick(...selRange) : await super.clone();
+        const oldAudio = selected ? await this.instance.pick(...selRange) : await this.instance.clone();
         const audio = await oldAudio.render(undefined, undefined, true, { plugins, pluginsEnabled, preFxGain, postFxGain });
-        if (selected) await this.pasteToRange(audio, ...selRange);
-        else this.setAudio(audio);
+        if (selected) await this.instance.pasteToRange(audio, ...selRange);
+        else this.instance.setAudio(audio);
         plugins.forEach((p, i) => {
             if (!p) return;
             this.setPluginEnabled(i, false);
@@ -411,7 +478,7 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
 
     async destroy() {
         this._isReady = false;
-        this.off("setAudio", this.handleSetAudio);
+        this.instance.off("setAudio", this.handleSetAudio);
         if (this.state.recording) await this.stopRecord();
         if (this.state.playing !== "stopped") this.stop();
         for (let i = 0; i < this.state.plugins.length; i++) {
@@ -419,6 +486,5 @@ export default class AudioEditor extends PatcherAudio<AudioEditorEventMap> {
         }
         await this.recorder.destroy();
         await this.player.destroy();
-        await super.destroy();
     }
 }

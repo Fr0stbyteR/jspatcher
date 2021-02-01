@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
-import Patcher from "../core/patcher/Patcher";
+import PatcherEditor from "../../../core/patcher/PatcherEditor";
 import "./PatcherBottomMenu.scss";
 
 interface P {
-    patcher: Patcher;
+    editor: PatcherEditor;
 }
 
 interface S {
@@ -15,30 +15,30 @@ interface S {
 
 export default class PatcherBottomMenu extends React.PureComponent<P, S> {
     state = {
-        locked: this.props.patcher.state.locked,
-        presentation: this.props.patcher.state.presentation,
-        showGrid: this.props.patcher.state.showGrid
+        locked: this.props.editor.state.locked,
+        presentation: this.props.editor.state.presentation,
+        showGrid: this.props.editor.state.showGrid
     };
     componentDidMount() {
-        this.props.patcher.on("locked", this.handleLockedChange);
-        this.props.patcher.on("presentation", this.handlePresentationChange);
-        this.props.patcher.on("showGrid", this.handleShowGridChange);
-        this.props.patcher.on("loading", this.handleLoading);
+        this.props.editor.on("locked", this.handleLockedChange);
+        this.props.editor.on("presentation", this.handlePresentationChange);
+        this.props.editor.on("showGrid", this.handleShowGridChange);
+        this.props.editor.instance.on("loading", this.handleLoading);
     }
     componentWillUnmount() {
-        this.props.patcher.off("locked", this.handleLockedChange);
-        this.props.patcher.off("presentation", this.handlePresentationChange);
-        this.props.patcher.off("showGrid", this.handleShowGridChange);
-        this.props.patcher.off("loading", this.handleLoading);
+        this.props.editor.off("locked", this.handleLockedChange);
+        this.props.editor.off("presentation", this.handlePresentationChange);
+        this.props.editor.off("showGrid", this.handleShowGridChange);
+        this.props.editor.instance.off("loading", this.handleLoading);
     }
     handleLockedChange = (locked: boolean) => this.setState({ locked });
     handleShowGridChange = (showGrid: boolean) => this.setState({ showGrid });
     handlePresentationChange = (presentation: boolean) => this.setState({ presentation });
-    handleClickLock = () => this.props.patcher.setState({ locked: !this.state.locked });
-    handleClickGrid = () => this.props.patcher.setState({ showGrid: !this.state.showGrid });
-    handleClickPresentation = () => this.props.patcher.setState({ presentation: !this.state.presentation });
+    handleClickLock = () => this.props.editor.setState({ locked: !this.state.locked });
+    handleClickGrid = () => this.props.editor.setState({ showGrid: !this.state.showGrid });
+    handleClickPresentation = () => this.props.editor.setState({ presentation: !this.state.presentation });
     handleLoading = (loading: string[]) => {
-        if (!loading) this.setState({ presentation: this.props.patcher.state.presentation });
+        if (!loading) this.setState({ presentation: this.props.editor.state.presentation });
     };
     render() {
         return (

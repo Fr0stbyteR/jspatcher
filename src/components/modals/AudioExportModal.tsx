@@ -14,7 +14,7 @@ export type TExportMp3Bitrate = 8 | 16 | 24 | 32 | 40 | 48 | 64 | 80 | 96 | 112 
 export type TExportWavBitDepth = 8 | 16 | 24 | 32;
 
 interface P {
-    instance: AudioEditor;
+    editor: AudioEditor;
     lang: string;
     open: boolean;
     onClose: () => any;
@@ -34,15 +34,15 @@ interface S {
 
 export default class AudioExportModal extends React.PureComponent<P, S> {
     state: S = {
-        tasks: this.props.instance.env.taskMgr.getTasksFromEmitter(this.props.instance),
-        errors: this.props.instance.env.taskMgr.getErrorsFromEmitter(this.props.instance),
+        tasks: this.props.editor.env.taskMgr.getTasksFromEmitter(this.props.editor),
+        errors: this.props.editor.env.taskMgr.getErrorsFromEmitter(this.props.editor),
         type: "wav",
-        fileName: this.changeSuffix(this.props.instance.file?.name || "Untitled.wav", "wav"),
+        fileName: this.changeSuffix(this.props.editor.file?.name || "Untitled.wav", "wav"),
         applyFx: true,
-        mix: identityMatrix(this.props.instance.numberOfChannels || 1),
+        mix: identityMatrix(this.props.editor.numberOfChannels || 1),
         bitrate: 256,
         bitDepth: 32,
-        sampleRate: this.props.instance.sampleRate,
+        sampleRate: this.props.editor.sampleRate,
         sampleRateOptions: this.sampleRateOptions
     };
     refInput = React.createRef<HTMLDivElement>();
@@ -52,9 +52,9 @@ export default class AudioExportModal extends React.PureComponent<P, S> {
     }
     get sampleRates() {
         const defaults = [6000, 8000, 11025, 16000, 22050, 32000, 44100, 48000, 64000, 88200, 96000, 176400, 192000];
-        const ctx = this.props.instance.audioCtx.sampleRate;
+        const ctx = this.props.editor.audioCtx.sampleRate;
         if (ctx && defaults.indexOf(ctx) === -1) defaults.push(ctx);
-        const buffer = this.props.instance.sampleRate;
+        const buffer = this.props.editor.sampleRate;
         if (buffer && defaults.indexOf(buffer) === -1) defaults.push(buffer);
         return defaults;
     }
@@ -73,8 +73,8 @@ export default class AudioExportModal extends React.PureComponent<P, S> {
     changeSuffix(sIn: string, suffix: TExportType) {
         return sIn ? sIn.replace(/(wav|mp3|aac)$/, suffix) || sIn : "";
     }
-    handleTasks = () => this.setState({ tasks: this.props.instance.env.taskMgr.getTasksFromEmitter(this.props.instance) });
-    handleErrors = () => this.setState({ errors: this.props.instance.env.taskMgr.getErrorsFromEmitter(this.props.instance) });
+    handleTasks = () => this.setState({ tasks: this.props.editor.env.taskMgr.getTasksFromEmitter(this.props.editor) });
+    handleErrors = () => this.setState({ errors: this.props.editor.env.taskMgr.getErrorsFromEmitter(this.props.editor) });
     handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
         this.setState({ fileName: value });
     };
@@ -82,14 +82,14 @@ export default class AudioExportModal extends React.PureComponent<P, S> {
         this.setState(({ fileName }) => ({ type: value as TExportType, fileName: this.changeSuffix(fileName, value as TExportType) }));
     };
     handleSampleRateAddition = (e: React.KeyboardEvent<HTMLElement>, { value: valueIn }: DropdownProps) => {
-        const value = ~~Math.max(1, +valueIn) || this.props.instance.audioCtx.sampleRate;
+        const value = ~~Math.max(1, +valueIn) || this.props.editor.audioCtx.sampleRate;
         if (this.state.sampleRateOptions.find(option => option.value === value)) return;
         this.setState(({ sampleRateOptions }) => ({
             sampleRateOptions: [...sampleRateOptions, { key: value, text: value, value }]
         }));
     };
     handleSampleRateChange = (e: React.SyntheticEvent<HTMLElement, Event>, { value: valueIn }: DropdownProps) => {
-        const value = ~~Math.max(1, +valueIn) || this.props.instance.audioCtx.sampleRate;
+        const value = ~~Math.max(1, +valueIn) || this.props.editor.audioCtx.sampleRate;
         this.setState({ sampleRate: value });
     };
     handleApplyFxChange = () => this.setState(({ applyFx }) => ({ applyFx: !applyFx }));
@@ -103,28 +103,28 @@ export default class AudioExportModal extends React.PureComponent<P, S> {
     };
     handleConfirm = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         const { type, fileName, applyFx, mix, bitrate, bitDepth, sampleRate } = this.state;
-        const { plugins, pluginsEnabled, preFxGain, postFxGain } = this.props.instance.state;
+        const { plugins, pluginsEnabled, preFxGain, postFxGain } = this.props.editor.state;
         const pluginsOptions = { plugins, pluginsEnabled, preFxGain, postFxGain };
-        const audioBuffer = await this.props.instance.render(sampleRate, mix, applyFx, pluginsOptions);
+        const audioBuffer = await this.props.editor.instance.render(sampleRate, mix, applyFx, pluginsOptions);
         if (!audioBuffer) return;
         let arrayBuffer: ArrayBuffer;
-        if (type === "wav") arrayBuffer = await this.props.instance.serialize({ bitDepth });
-        else if (type === "aac") arrayBuffer = await this.props.instance.encodeAac(bitrate);
-        else if (type === "mp3") arrayBuffer = await this.props.instance.encodeMp3(bitrate);
+        if (type === "wav") arrayBuffer = await this.props.editor.instance.serialize({ bitDepth });
+        else if (type === "aac") arrayBuffer = await this.props.editor.instance.encodeAac(bitrate);
+        else if (type === "mp3") arrayBuffer = await this.props.editor.instance.encodeMp3(bitrate);
         if (arrayBuffer) this.download(arrayBuffer, fileName, type);
     };
     componentDidMount() {
-        this.props.instance.env.taskMgr.on("tasks", this.handleTasks);
-        this.props.instance.env.taskMgr.on("errors", this.handleErrors);
+        this.props.editor.env.taskMgr.on("tasks", this.handleTasks);
+        this.props.editor.env.taskMgr.on("errors", this.handleErrors);
     }
     componentWillUnmount() {
-        this.props.instance.env.taskMgr.off("tasks", this.handleTasks);
-        this.props.instance.env.taskMgr.off("errors", this.handleErrors);
+        this.props.editor.env.taskMgr.off("tasks", this.handleTasks);
+        this.props.editor.env.taskMgr.off("errors", this.handleErrors);
     }
     handleNumberOfChannelsChange = (event: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
         const outs = +~~value || this.state.mix.length;
         if (outs === this.state.mix.length) return;
-        const ins = this.props.instance.numberOfChannels;
+        const ins = this.props.editor.numberOfChannels;
         const mix = identityMatrix(Math.max(ins, outs)).slice(0, outs).map(v => v.slice(0, ins));
         mix.forEach((x, i) => {
             if (i >= this.state.mix.length) return;

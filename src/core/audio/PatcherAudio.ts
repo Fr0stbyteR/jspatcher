@@ -1,40 +1,22 @@
-import { SemanticICONS } from "semantic-ui-react";
 import { WebAudioModule } from "wamsdk/src/api";
 import { dbtoa, isIdentityMatrix, normExp } from "../../utils/math";
-import Waveform from "../../utils/Waveform";
 import { Options } from "../../utils/WavEncoder";
-import FileInstance from "../file/FileInstance";
 import AudioFile from "./AudioFile";
-import AudioHistory from "./AudioHistory";
+import FileInstance from "../file/FileInstance";
 import OperableAudioBuffer from "./OperableAudioBuffer";
+import Waveform from "../../utils/Waveform";
 
 export interface PatcherAudioEventMap {
     "setAudio": never;
-    "pasted": { range?: [number, number]; cursor?: number; audio: PatcherAudio; oldAudio?: PatcherAudio };
-    "cutEnd": { range: [number, number]; oldAudio: PatcherAudio };
-    "deleted": { range: [number, number]; oldAudio: PatcherAudio };
-    "silenced": { range: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
-    "insertedSilence": { range: [number, number]; audio: PatcherAudio };
-    "inversed": { range: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
-    "reversed": { range: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
-    "faded": { gain: number; range: [number, number]; audio: PatcherAudio; oldAudio: PatcherAudio };
-    "fadedIn": { length: number; exponent: number; audio: PatcherAudio; oldAudio: PatcherAudio };
-    "fadedOut": { length: number; exponent: number; audio: PatcherAudio; oldAudio: PatcherAudio };
-    "recorded": { range?: [number, number]; cursor?: number; audio: PatcherAudio; oldAudio: PatcherAudio };
-    "resampled": { audio: PatcherAudio; oldAudio: PatcherAudio };
-    "remixed": { audio: PatcherAudio; oldAudio: PatcherAudio };
     "selRange": [number, number];
     "cursor": number;
-    "copy": never;
-    "cut": never;
-    "paste": never;
-    "deleteSelected": never;
-    "selectAll": never;
-    "uiResized": never;
     "postInit": never;
 }
 
-export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Record<string, any> = Record<string, any>> extends FileInstance<PatcherAudioEventMap & M, AudioFile> {
+export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, AudioFile> {
+    static async fromProjectItem(item: AudioFile) {
+        return new this(item).init();
+    }
     static async fromArrayBuffer(ctxIn: ConstructorParameters<typeof PatcherAudio>[0], data: ArrayBuffer) {
         const audio = new PatcherAudio(ctxIn);
         await audio.init(data);
@@ -61,21 +43,8 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
         await audio.emit("ready");
         return audio;
     }
-    static async fromProjectItem(item: AudioFile) {
-        return new this(item).init();
-    }
     get audioCtx() {
         return this.project?.audioCtx || this.env.audioCtx;
-    }
-    _history: AudioHistory = new AudioHistory(this);
-    get history() {
-        return this._history;
-    }
-    get fileExtension() {
-        return "wav";
-    }
-    get fileIcon(): SemanticICONS {
-        return "music";
     }
     audioBuffer: OperableAudioBuffer;
     waveform: Waveform;
@@ -181,13 +150,13 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
         const length = selEnd - selStart;
         const audio = await PatcherAudio.fromSilence(this.ctx, this.numberOfChannels, length, this.sampleRate);
         const oldAudio = await this.pasteToRange(audio, selStart, selEnd);
-        this.emit("silenced", { range: [selStart, selEnd], audio, oldAudio });
+        return { range: [selStart, selEnd] as [number, number], audio, oldAudio };
     }
     async insertSilence(length: number, from: number) {
-        if (!length) return;
+        if (!length) return null;
         const audio = await PatcherAudio.fromSilence(this.ctx, this.numberOfChannels, length, this.sampleRate);
         this.insertToCursor(audio, from);
-        this.emit("insertedSilence", { range: [from, from + length], audio });
+        return { range: [from, from + length] as [number, number], audio };
     }
     reverse() {
         this.audioBuffer.reverse();
@@ -322,7 +291,7 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
         const oldAudio = await this.pick(from, to, true);
         const factor = dbtoa(gain);
         for (let c = 0; c < this.numberOfChannels; c++) {
-            if (!enabledChannels[c]) return;
+            if (!enabledChannels[c]) return null;
             const channel = this.audioBuffer.getChannelData(c);
             for (let i = from; i < to; i++) {
                 channel[i] *= factor;
@@ -330,14 +299,14 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
         }
         this.waveform.update(from, to);
         const audio = await this.pick(from, to, true);
-        this.emit("faded", { gain, range: [from, to], audio, oldAudio });
+        return { gain, range: [from, to] as [number, number], audio, oldAudio };
     }
     async fadeIn(lengthIn: number, exponent: number, enabledChannels: boolean[]) {
         const length = Math.max(0, Math.min(this.length, ~~lengthIn));
-        if (!length) return;
+        if (!length) return null;
         const oldAudio = await this.pick(0, length, true);
         for (let c = 0; c < this.numberOfChannels; c++) {
-            if (!enabledChannels[c]) return;
+            if (!enabledChannels[c]) return null;
             const channel = this.audioBuffer.getChannelData(c);
             for (let i = 0; i < length; i++) {
                 channel[i] *= normExp(i / length, exponent);
@@ -345,15 +314,15 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
         }
         this.waveform.update(0, length);
         const audio = await this.pick(0, length, true);
-        this.emit("fadedIn", { length, exponent, audio, oldAudio });
+        return { length, exponent, audio, oldAudio };
     }
     async fadeOut(lengthIn: number, exponent: number, enabledChannels: boolean[]) {
         const l = this.length;
         const length = Math.max(0, Math.min(l, ~~lengthIn));
-        if (!length) return;
+        if (!length) return null;
         const oldAudio = await this.pick(l - length, l, true);
         for (let c = 0; c < this.numberOfChannels; c++) {
-            if (!enabledChannels[c]) return;
+            if (!enabledChannels[c]) return null;
             const channel = this.audioBuffer.getChannelData(c);
             for (let i = 0; i < length; i++) {
                 channel[l - i] *= normExp(i / length, exponent);
@@ -361,7 +330,7 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
         }
         this.waveform.update(l - length, l);
         const audio = await this.pick(l - length, l, true);
-        this.emit("fadedOut", { length, exponent, audio, oldAudio });
+        return { length, exponent, audio, oldAudio };
     }
     write(channel: number, index: number, value: number) {
         this.audioBuffer.write(channel, index, value);
@@ -442,23 +411,5 @@ export default class PatcherAudio<M extends Partial<PatcherAudioEventMap> & Reco
     }
     setSelRangeToAll() {
         this.emit("selRange", [0, this.length]);
-    }
-    async copy() {
-        this.emit("copy");
-    }
-    async cut() {
-        this.emit("cut");
-    }
-    async paste() {
-        this.emit("paste");
-    }
-    async selectAll() {
-        this.emit("selectAll");
-    }
-    async deleteSelected() {
-        this.emit("deleteSelected");
-    }
-    onUiResized() {
-        this.emit("uiResized");
     }
 }

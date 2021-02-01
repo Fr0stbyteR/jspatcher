@@ -18,6 +18,7 @@ import FfmpegWorker from "./workers/FfmpegWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
 import FileInstance, { AnyFileInstance } from "./file/FileInstance";
+import { AnyFileEditor } from "./file/FileEditor";
 import UI from "../components/UI";
 import PatcherAudio from "./audio/PatcherAudio";
 import EditorContainer from "./EditorContainer";
@@ -29,6 +30,7 @@ export interface EnvEventMap {
     "ready": never;
     "projectChanged": { project: Project; oldProject: Project };
     "activeInstance": { instance: AnyFileInstance; oldInstance: AnyFileInstance };
+    "activeEditor": { editor: AnyFileEditor; oldEditor: AnyFileEditor };
     "openInstance": AnyFileInstance;
     "activeEditorContainer": { editorContainer: EditorContainer; oldEditorContainer: EditorContainer ;}
     "instances": AnyFileInstance[];
@@ -78,6 +80,16 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         const oldInstance = this._activeInstance;
         this._activeInstance = instance;
         this.emit("activeInstance", { instance, oldInstance });
+    }
+    private _activeEditor: AnyFileEditor;
+    get activeEditor(): AnyFileEditor {
+        return this._activeEditor;
+    }
+    set activeEditor(editor: AnyFileEditor) {
+        if (this._activeEditor === editor) return;
+        const oldEditor = this._activeEditor;
+        this._activeEditor = editor;
+        this.emit("activeEditor", { editor, oldEditor });
     }
     private _activeEditorContainer = this.editorContainer;
     get activeEditorContainer(): EditorContainer {

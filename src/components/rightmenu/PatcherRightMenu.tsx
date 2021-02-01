@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Menu, Icon, MenuItemProps, Header } from "semantic-ui-react";
-import Patcher from "../../core/patcher/Patcher";
-import "./PatcherRightMenu.scss";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 import Console from "./Console";
 import Inspector from "./Inspector";
 import UIDock from "./UIDock";
 import CodeEditor from "./CodeEditor";
 import Env from "../../core/Env";
+import "./PatcherRightMenu.scss";
 
 enum TPanels {
     None = "None",
@@ -19,7 +19,7 @@ enum TPanels {
 interface P {
     env: Env;
     lang: string;
-    patcher: Patcher;
+    editor: PatcherEditor;
 }
 
 interface S {
@@ -31,7 +31,7 @@ interface S {
 export default class PatcherRightMenu extends React.PureComponent<P, S> {
     state = {
         active: TPanels.None,
-        codePanel: this.props.patcher instanceof Patcher && (this.props.patcher.props.mode === "faust" || this.props.patcher.props.mode === "gen"),
+        codePanel: this.props.editor.props.mode === "faust" || this.props.editor.props.mode === "gen",
         audioOn: this.props.env.audioCtx.state === "running"
     };
     refDivPane = React.createRef<HTMLDivElement>();
@@ -108,14 +108,14 @@ export default class PatcherRightMenu extends React.PureComponent<P, S> {
     componentDidMount() {
         const audioCtx = this.props.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleEnvAudioCtxStateChange);
-        this.props.patcher.on("inspector", this.handleInspector);
-        this.props.patcher.on("dockUI", this.handleDock);
+        this.props.editor.on("inspector", this.handleInspector);
+        this.props.editor.on("dockUI", this.handleDock);
     }
     componentWillUnmount() {
         const audioCtx = this.props.env.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleEnvAudioCtxStateChange);
-        this.props.patcher.off("inspector", this.handleInspector);
-        this.props.patcher.off("dockUI", this.handleDock);
+        this.props.editor.off("inspector", this.handleInspector);
+        this.props.editor.off("dockUI", this.handleDock);
     }
     render() {
         return (
@@ -144,13 +144,13 @@ export default class PatcherRightMenu extends React.PureComponent<P, S> {
                         <Console {...this.props} ref={this.refConsole} display={this.state.active === TPanels.Console} />
                     </div>
                     <div className="right-pane-code-editor" hidden={this.state.active !== TPanels.Code}>
-                        {this.state.active === TPanels.Code ? <CodeEditor {...this.props} patcher={this.props.patcher} ref={this.refCode} /> : <></> }
+                        {this.state.active === TPanels.Code ? <CodeEditor {...this.props} patcher={this.props.editor.instance} ref={this.refCode} /> : <></> }
                     </div>
                     <div className="right-pane-inspector" hidden={this.state.active !== TPanels.Inspector}>
-                        {this.state.active === TPanels.Inspector ? <Inspector {...this.props} patcher={this.props.patcher} ref={this.refInspector} /> : <></> }
+                        {this.state.active === TPanels.Inspector ? <Inspector {...this.props} editor={this.props.editor} ref={this.refInspector} /> : <></> }
                     </div>
                     <div className="right-pane-dock" hidden={this.state.active !== TPanels.Dock}>
-                        <UIDock {...this.props} patcher={this.props.patcher} ref={this.refDock} display={this.state.active === TPanels.Dock} />
+                        <UIDock {...this.props} editor={this.props.editor} ref={this.refDock} display={this.state.active === TPanels.Dock} />
                     </div>
                 </div>
                 <div className="resize-handler resize-handler-w" onMouseDown={this.handleResizeMouseDown} hidden={this.state.active === TPanels.None}></div>

@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
-import Patcher from "../../core/patcher/Patcher";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 import Box from "../../core/patcher/Box";
 import { BaseUI } from "../../core/objects/BaseUI";
 
-export default class UIDock extends React.PureComponent<{ patcher: Patcher; display: boolean; }, { box: Box; }> {
+export default class UIDock extends React.PureComponent<{ editor: PatcherEditor; display: boolean; }, { box: Box; }> {
     state = { box: undefined as Box };
     refDiv = React.createRef<HTMLDivElement>();
     refUI = React.createRef<BaseUI>();
@@ -36,25 +36,25 @@ export default class UIDock extends React.PureComponent<{ patcher: Patcher; disp
         }
     };
     componentDidMount() {
-        this.props.patcher.on("loading", this.handlePatcherLoading);
-        this.props.patcher.on("dockUI", this.handleDock);
+        this.props.editor.instance.on("loading", this.handlePatcherLoading);
+        this.props.editor.on("dockUI", this.handleDock);
         window.addEventListener("resize", this.handleResize);
     }
     componentWillUnmount() {
         if (this.state.box) this.state.box.object.off("destroy", this.handleDestroy);
-        this.props.patcher.off("loading", this.handlePatcherLoading);
-        this.props.patcher.off("dockUI", this.handleDock);
+        this.props.editor.instance.off("loading", this.handlePatcherLoading);
+        this.props.editor.off("dockUI", this.handleDock);
         window.removeEventListener("resize", this.handleResize);
     }
     render() {
         if (!this.props.display) return <></>;
         const { box } = this.state;
-        const ctrlKey = this.props.patcher.env.os === "MacOS" ? "Cmd" : "Ctrl";
+        const ctrlKey = this.props.editor.env.os === "MacOS" ? "Cmd" : "Ctrl";
         return (
             <>
                 <div className="dock-ui" ref={this.refDiv}>
                     {box
-                        ? <box.UI object={box.object} editing={false} onEditEnd={() => undefined} inDock ref={this.refUI} />
+                        ? <box.UI object={box.object} editor={this.props.editor} editing={false} onEditEnd={() => undefined} inDock ref={this.refUI} />
                         : <div className="dock-ui-default">{ctrlKey} + Enter on selected box to dock UI</div>}
                 </div>
                 <Menu icon inverted size="mini">

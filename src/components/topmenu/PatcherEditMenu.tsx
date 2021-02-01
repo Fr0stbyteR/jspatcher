@@ -1,22 +1,22 @@
 import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
 import Env from "../../core/Env";
-import Patcher from "../../core/patcher/Patcher";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 
 interface P {
     env: Env;
     lang: string;
-    instance: Patcher;
+    instance: PatcherEditor;
     locked: boolean;
 }
 
 export default class PatcherEditMenu extends React.PureComponent<P> {
     handleClickNewBox = () => {
-        const { instance: patcher } = this.props;
-        const { presentation } = patcher._state;
-        const [gridX, gridY] = patcher.props.grid;
+        const { instance: editor } = this.props;
+        const { presentation } = editor.state;
+        const [gridX, gridY] = editor.props.grid;
         const text = "";
-        patcher.createBox({ text, inlets: 0, outlets: 0, rect: [gridX, gridY, 0, 0], presentation, _editing: true });
+        editor.createBox({ text, inlets: 0, outlets: 0, rect: [gridX, gridY, 0, 0], presentation, _editing: true });
     };
     handleClickDuplicate = async () => {
         await this.props.instance.duplicate();

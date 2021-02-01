@@ -35,19 +35,19 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
     handleAudio = () => this.setState({ $audio: performance.now() });
     handleEnvOptions = ({ options }: EnvEventMap["options"]) => this.setState(options);
     handleResize = () => this.props.editor.onUiResized();
-    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
-        if (instance === this.props.editor) this.handleResize();
+    handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
+        if (editor === this.props.editor) this.handleResize();
     };
     componentDidMount() {
         this.props.env.on("options", this.handleEnvOptions);
-        this.props.env.on("activeInstance", this.handleActiveInstance);
+        this.props.env.on("activeEditor", this.handleActiveEditor);
         this.editorEventsListening.forEach(eventName => this.props.editor.on(eventName, this.editorEventListeners[eventName]));
         this.props.editor.on("setAudio", this.handleAudio);
         window.addEventListener("resize", this.handleResize);
     }
     async componentWillUnmount() {
         this.props.env.off("options", this.handleEnvOptions);
-        this.props.env.off("activeInstance", this.handleActiveInstance);
+        this.props.env.off("activeEditor", this.handleActiveEditor);
         this.editorEventsListening.forEach(eventName => this.props.editor.off(eventName, this.editorEventListeners[eventName]));
         this.props.editor.off("setAudio", this.handleAudio);
         await this.props.editor.destroy();

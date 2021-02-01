@@ -4,16 +4,18 @@ import { Icon, SemanticICONS, StrictModalProps, Modal, Dimmer, Loader, Button } 
 import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import Box from "../patcher/Box";
-import "./Default.scss";
-import "./Base.scss";
+import PatcherEditor from "../patcher/PatcherEditor";
 import { AbstractObject, BaseObject, AnyObject, DefaultObject, DefaultObjectUIProps } from "./Base";
 import { selectElementPos, selectElementRange } from "../../utils/utils";
 import { TFlatPackage, TMetaType } from "../types";
 import { ImportedStaticMethodObject } from "../../utils/symbols";
 import { StaticMethod } from "./importer/StaticMethod";
+import "./Default.scss";
+import "./Base.scss";
 
 export interface AbstractUIProps<T extends AbstractObject = AbstractObject> {
     object: T;
+    editor: PatcherEditor;
     inDock?: boolean;
     editing: boolean;
     onEditEnd: () => any;
@@ -62,8 +64,8 @@ export abstract class AbstractUI<
     state: S & AbstractUIState = {
         ...this.state,
         ...this.objectProps,
-        width: this.box.width,
-        height: this.box.height
+        width: this.box.getWidth(this.editor.state.presentation),
+        height: this.box.getHeight(this.editor.state.presentation)
     };
     get dockable() {
         return (this.constructor as typeof AbstractUI).dockable;
@@ -73,6 +75,9 @@ export abstract class AbstractUI<
     }
     get patcher() {
         return this.props.object.patcher;
+    }
+    get editor() {
+        return this.props.editor;
     }
     get box(): Box<T> {
         return this.props.object.box;
@@ -86,7 +91,8 @@ export abstract class AbstractUI<
     }
     private _handleUIUpdate = (e?: Pick<S & AbstractUIState, keyof (S & AbstractUIState)>) => (e ? this.setState(e) : this.forceUpdate());
     private _handleResized = () => {
-        const { width, height } = this.box;
+        const width = this.box.getWidth(this.editor.state.presentation);
+        const height = this.box.getHeight(this.editor.state.presentation);
         if (width !== this.state.width || height !== this.state.height) this.setState({ width, height });
     };
     componentDidMount() {
@@ -95,14 +101,14 @@ export abstract class AbstractUI<
         if (this.dockable && this.props.inDock) return;
         this.box.on("rectChanged", this._handleResized);
         this.box.on("presentationRectChanged", this._handleResized);
-        this.patcher.on("presentation", this._handleResized);
+        this.editor.on("presentation", this._handleResized);
     }
     componentWillUnmount() {
         this.object.off("uiUpdate", this._handleUIUpdate);
         if (this.dockable && this.props.inDock) return;
         this.box.off("rectChanged", this._handleResized);
         this.box.off("presentationRectChanged", this._handleResized);
-        this.patcher.off("presentation", this._handleResized);
+        this.editor.off("presentation", this._handleResized);
     }
     render() {
         return <></>;
@@ -128,7 +134,7 @@ export class BaseUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIP
         presentation: this.box.presentation || false
     };
     private _handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (this.object.patcher.state.locked) e.currentTarget.title = this.state.hint;
+        if (this.editor.state.locked) e.currentTarget.title = this.state.hint;
     };
     private _handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.title = "";
     render() {
@@ -315,12 +321,12 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
     }
     toggleEdit(toggle: boolean) {
-        const { patcher, box } = this;
-        if (patcher.state.locked) return;
+        const { patcher, box, editor } = this;
+        if (editor.state.locked) return;
         if (!this.refSpan.current) return;
         const span = this.refSpan.current;
         if (toggle) {
-            patcher.selectOnly(box.id);
+            editor.selectOnly(box.id);
             this.setState({ text: span.textContent }, () => {
                 span.focus();
                 selectElementRange(span);
@@ -504,7 +510,7 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
         this.schedulePaint();
     };
     schedulePaint = () => {
-        if (this.patcher.state.presentation && !this.box.presentation) return;
+        if (this.editor.state.presentation && !this.box.presentation) return;
         if (this.paintScheduled) return;
         if (this.$paintRaf === -1) this.$paintRaf = requestAnimationFrame(this.paintCallback);
         else if (this.$paintRaf < -1) requestAnimationFrame(this.noPaintCallback);
@@ -513,14 +519,14 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
     componentDidMount() {
         super.componentDidMount();
         this.schedulePaint();
-        this.patcher.on("presentation", this.schedulePaint);
+        this.editor.on("presentation", this.schedulePaint);
     }
     componentDidUpdate() { // But super.componentDidUpdate is not a function
         this.schedulePaint();
     }
     componentWillUnmount() {
         super.componentWillUnmount();
-        this.patcher.off("presentation", this.schedulePaint);
+        this.editor.off("presentation", this.schedulePaint);
         if (this.paintScheduled) cancelAnimationFrame(this.$paintRaf);
     }
     paint() {
@@ -552,7 +558,7 @@ export class DefaultPopupUI<T extends DefaultObject = DefaultObject, P extends P
         modalOpen: false
     };
     handleDoubleClick = () => {
-        if (this.patcher.state.locked) this.setState({ modalOpen: true });
+        if (this.editor.state.locked) this.setState({ modalOpen: true });
     };
     handleClose = () => this.setState({ modalOpen: false });
     handleKeyDown = (e: React.KeyboardEvent) => {

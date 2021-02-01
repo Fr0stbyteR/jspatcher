@@ -1,5 +1,6 @@
-import TempItem from "../file/TempItem";
+import AudioEditor from "./AudioEditor";
 import PatcherAudio from "./PatcherAudio";
+import TempItem from "../file/TempItem";
 
 export default class TempAudioFile extends TempItem {
     type = "audio" as const;
@@ -7,7 +8,9 @@ export default class TempAudioFile extends TempItem {
         return this._data;
     }
     async instantiate() {
-        this.data.on("changed", () => this.save(this.data));
         return this.data;
+    }
+    async instantiateEditor(): Promise<AudioEditor> {
+        return AudioEditor.fromProjectItem(this);
     }
 }

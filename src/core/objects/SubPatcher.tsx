@@ -6,10 +6,11 @@ import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNo
 import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState } from "./BaseUI";
 import "./SubPatcher.scss";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
-import PatcherUI from "../../components/PatcherUI";
+import PatcherUI from "../../components/editors/patcher/PatcherUI";
 import PatcherEditorUI from "../../components/editors/PatcherEditorUI";
 import LeftMenu from "../../components/leftmenu/LeftMenu";
 import PatcherFile from "../patcher/PatcherFile";
+import PatcherEditor from "../patcher/PatcherEditor";
 
 export class In extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
     static package = "SubPatcher";
@@ -273,20 +274,39 @@ export class AudioOut extends DefaultObject<{}, { index: number }, [any], [], [n
     }
 }
 
-export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher; timestamp: number }> {
-    state: { patcher: Patcher; timestamp: number } & DefaultPopupUIState = {
+export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher; timestamp: number; editor: PatcherEditor }> {
+    state: { patcher: Patcher; timestamp: number; editor: PatcherEditor } & DefaultPopupUIState = {
         ...this.state,
         patcher: this.object.state.patcher,
-        timestamp: performance.now()
+        timestamp: performance.now(),
+        editor: undefined
     };
     static dockable = true;
     handleDoubleClick = () => {
-        if (this.patcher.state.locked) this.setState({ modalOpen: true }, () => this.props.object.patcher.env.activeInstance = this.state.patcher);
+        if (this.editor.state.locked) this.setState({ modalOpen: true }, () => this.props.object.patcher.env.activeInstance = this.state.patcher);
     };
     handleClose = () => this.setState({ modalOpen: false }, () => this.props.object.patcher.env.activeInstance = this.props.object.patcher);
     handleMouseDownModal = (e: React.MouseEvent) => e.stopPropagation();
+    componentDidMount() {
+        if (this.state.patcher) {
+            const Editor = this.editor.constructor as typeof PatcherEditor;
+            const editor = new Editor(this.object.state.patcher);
+            this.setState({ editor });
+            editor.init();
+        }
+    }
     componentDidUpdate(prevProps: any, prevState: Readonly<{ patcher: Patcher; timestamp: number } & BaseUIState>) {
-        if (prevState.patcher !== this.state.patcher) this.setState({ timestamp: performance.now() });
+        if (prevState.patcher !== this.state.patcher) {
+            if (this.state.editor) this.state.editor.destroy();
+            if (this.state.patcher) {
+                const Editor = this.editor.constructor as typeof PatcherEditor;
+                const editor = new Editor(this.object.state.patcher);
+                this.setState({ timestamp: performance.now(), editor });
+                editor.init();
+            } else {
+                this.setState({ timestamp: performance.now(), editor: undefined });
+            }
+        }
     }
     render() {
         const content = <div style={{ height: "100%", width: "100%", display: "flex", position: "relative" }}>
@@ -295,7 +315,11 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
                     <LeftMenu env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} noFileMgr />
                 </div>
                 <div className="ui-center">
-                    <PatcherEditorUI key={this.state.timestamp} patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                    {
+                        this.state.editor
+                            ? <PatcherEditorUI key={this.state.timestamp} editor={this.state.editor} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                            : undefined
+                    }
                 </div>
             </div>
         </div>;
@@ -615,16 +639,35 @@ export class gen extends faustPatcher {
     static description = "Gen Sub-patcher, compiled to AudioNode";
     type: "faust" | "gen" = "gen";
 }
-export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher; timestamp: number }> {
+export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher; timestamp: number; editor: PatcherEditor }> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     static defaultSize: [number, number] = [210, 90];
-    state: { patcher: Patcher; timestamp: number } & BaseUIState = {
+    state: { patcher: Patcher; timestamp: number; editor: PatcherEditor } & BaseUIState = {
         ...this.state,
         patcher: this.object.state.patcher,
-        timestamp: performance.now()
+        timestamp: performance.now(),
+        editor: undefined
     };
+    componentDidMount() {
+        if (this.state.patcher) {
+            const Editor = this.editor.constructor as typeof PatcherEditor;
+            const editor = new Editor(this.object.state.patcher);
+            this.setState({ editor });
+            editor.init();
+        }
+    }
     componentDidUpdate(prevProps: any, prevState: Readonly<{ patcher: Patcher; timestamp: number } & BaseUIState>) {
-        if (prevState.patcher !== this.state.patcher) this.setState({ timestamp: performance.now() });
+        if (prevState.patcher !== this.state.patcher) {
+            if (this.state.editor) this.state.editor.destroy();
+            if (this.state.patcher) {
+                const Editor = this.editor.constructor as typeof PatcherEditor;
+                const editor = new Editor(this.object.state.patcher);
+                this.setState({ timestamp: performance.now(), editor });
+                editor.init();
+            } else {
+                this.setState({ timestamp: performance.now(), editor: undefined });
+            }
+        }
     }
     static dockable = true;
     render() {
@@ -632,8 +675,8 @@ export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher; timestam
             return (
                 <div style={{ height: "100%", width: "100%", display: "flex" }}>
                     {
-                        this.state.patcher
-                            ? <PatcherEditorUI key={this.state.timestamp} patcher={this.state.patcher} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                        this.state.editor
+                            ? <PatcherEditorUI key={this.state.timestamp} editor={this.state.editor} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
                             : undefined
                     }
                 </div>
@@ -643,7 +686,7 @@ export class BPatcherUI extends BaseUI<patcher, {}, { patcher: Patcher; timestam
             <div style={{ height: "100%", width: "100%", display: "flex" }}>
                 {
                     this.state.patcher
-                        ? <PatcherUI key={this.state.timestamp} patcher={this.state.patcher} transparent runtime />
+                        ? <PatcherUI key={this.state.timestamp} editor={this.state.editor} transparent runtime />
                         : undefined
                 }
             </div>

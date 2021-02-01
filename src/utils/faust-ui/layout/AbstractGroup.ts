@@ -24,13 +24,13 @@ export abstract class AbstractGroup implements IItem {
             sizing
         };
     }
-    adjust() {
+    adjust(): this {
         throw new Error("Method not implemented.");
     }
-    expand(dX: number, dY: number) {
+    expand(dX: number, dY: number): this {
         throw new Error("Method not implemented.");
     }
-    offset() {
+    offset(): this {
         throw new Error("Method not implemented.");
     }
 
