@@ -17,12 +17,6 @@ export default class UIDock extends React.PureComponent<{ editor: PatcherEditor;
             this.setState({ box });
         });
     };
-    handlePatcherLoading = () => {
-        if (this.state.box) {
-            this.state.box.object.off("destroy", this.handleDestroy);
-            this.setState({ box: undefined });
-        }
-    };
     handleResize = () => {
         if (this.refDiv.current && this.refUI.current) {
             const { width, height } = this.refDiv.current.getBoundingClientRect();
@@ -36,13 +30,11 @@ export default class UIDock extends React.PureComponent<{ editor: PatcherEditor;
         }
     };
     componentDidMount() {
-        this.props.editor.instance.on("loading", this.handlePatcherLoading);
         this.props.editor.on("dockUI", this.handleDock);
         window.addEventListener("resize", this.handleResize);
     }
     componentWillUnmount() {
         if (this.state.box) this.state.box.object.off("destroy", this.handleDestroy);
-        this.props.editor.instance.off("loading", this.handlePatcherLoading);
         this.props.editor.off("dockUI", this.handleDock);
         window.removeEventListener("resize", this.handleResize);
     }

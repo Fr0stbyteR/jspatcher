@@ -222,7 +222,7 @@ export interface JSPatcherFile extends FileState {
     history: any
 }
 export interface PatcherEventMap extends TPublicPatcherProps {
-    "loading": string[] | undefined;
+    "postInited": never;
     "ready": never;
     "unload": never;
     "changeBoxText": { box: Box; oldText: string; text: string };

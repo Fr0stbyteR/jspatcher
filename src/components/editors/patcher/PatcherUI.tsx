@@ -40,8 +40,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     size = { width: 0, height: 0 };
     cachedMousePos = { x: 0, y: 0 };
     dragged = false;
-    handleLoading = (loading?: string[]) => {
-        if (loading) return;
+    handleReady = () => {
         const { editor: patcher } = this.props;
         this.setState({ bgColor: patcher.props.bgColor, editingBgColor: patcher.props.editingBgColor, presentation: patcher.state.presentation });
         const grid = this.refGrid.current;
@@ -230,7 +229,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         editor.on("locked", this.handleLockedChange);
         editor.on("presentation", this.handlePresentationChange);
         editor.on("showGrid", this.handleShowGridChange);
-        patcher.on("loading", this.handleLoading);
+        patcher.on("ready", this.handleReady);
         patcher.on("bgColor", this.handleBgColorChange);
         patcher.on("editingBgColor", this.handleEditingBgColorChange);
         document.addEventListener("keydown", this.handleKeyDown);
@@ -241,7 +240,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         editor.off("locked", this.handleLockedChange);
         editor.off("presentation", this.handlePresentationChange);
         editor.off("showGrid", this.handleShowGridChange);
-        patcher.off("loading", this.handleLoading);
+        patcher.off("ready", this.handleReady);
         patcher.off("bgColor", this.handleBgColorChange);
         patcher.off("editingBgColor", this.handleEditingBgColorChange);
         document.removeEventListener("keydown", this.handleKeyDown);
@@ -294,19 +293,17 @@ class Lines extends React.PureComponent<LinesProps, LinesState> {
     };
     lines: Record<string, JSX.Element> = {};
     componentDidMount() {
-        this.handleLoading();
         const { editor } = this.props;
-        const { instance: patcher } = editor;
         editor.on("create", this.handleCreate);
         editor.on("delete", this.handleDelete);
-        patcher.on("loading", this.handleLoading);
+        if (editor.isReady) this.handleReady();
+        else editor.on("ready", this.handleReady);
     }
     componentWillUnmount() {
         const { editor } = this.props;
-        const { instance: patcher } = editor;
         editor.off("create", this.handleCreate);
         editor.off("delete", this.handleDelete);
-        patcher.off("loading", this.handleLoading);
+        editor.off("ready", this.handleReady);
     }
     handleCreate = (created: RawPatcher) => {
         if (this.props.editor.instance.state.isLoading) return;
@@ -321,8 +318,7 @@ class Lines extends React.PureComponent<LinesProps, LinesState> {
         Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
         this.setState({ timestamp: performance.now() });
     };
-    handleLoading = (loading?: string[]) => {
-        if (loading) return;
+    handleReady = () => {
         for (const lineID in this.lines) {
             delete this.lines[lineID];
         }
@@ -358,19 +354,17 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
     };
     boxes: Record<string, JSX.Element> = {};
     componentDidMount() {
-        this.handleLoading();
         const { editor } = this.props;
-        const { instance: patcher } = editor;
         editor.on("create", this.handleCreate);
         editor.on("delete", this.handleDelete);
-        patcher.on("loading", this.handleLoading);
+        if (editor.isReady) this.handleReady();
+        else editor.on("ready", this.handleReady);
     }
     componentWillUnmount() {
         const { editor } = this.props;
-        const { instance: patcher } = editor;
         editor.off("create", this.handleCreate);
         editor.off("delete", this.handleDelete);
-        patcher.off("loading", this.handleLoading);
+        editor.off("ready", this.handleReady);
     }
     handleCreate = (created: RawPatcher) => {
         if (this.props.editor.instance.state.isLoading) return;
@@ -385,8 +379,7 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
         Object.keys(deleted.boxes).forEach(id => delete this.boxes[id]);
         this.setState({ timestamp: performance.now() });
     };
-    handleLoading = (loading?: string[]) => {
-        if (loading) return;
+    handleReady = () => {
         for (const boxID in this.boxes) {
             delete this.boxes[boxID];
         }
@@ -423,8 +416,7 @@ class Grid extends React.PureComponent<GridProps, GridState> {
         grid: this.props.editor.props.grid,
         editingBgColor: this.props.editor.props.editingBgColor
     };
-    handleLoading = (loading?: string[]) => {
-        if (loading) return;
+    handleReady = () => {
         const { grid, editingBgColor } = this.props.editor.props;
         this.setState({ grid: grid.slice() as [number, number], editingBgColor });
     };
@@ -433,16 +425,17 @@ class Grid extends React.PureComponent<GridProps, GridState> {
     componentDidMount() {
         const { editor } = this.props;
         const { instance: patcher } = editor;
-        patcher.on("loading", this.handleLoading);
         patcher.on("grid", this.handleGridChange);
         patcher.on("editingBgColor", this.handleEditingBgColorChange);
+        if (editor.isReady) this.handleReady();
+        else editor.on("ready", this.handleReady);
     }
     componentWillUnmount() {
         const { editor } = this.props;
         const { instance: patcher } = editor;
-        patcher.off("loading", this.handleLoading);
         patcher.off("grid", this.handleGridChange);
         patcher.off("editingBgColor", this.handleEditingBgColorChange);
+        editor.off("ready", this.handleReady);
     }
     render() {
         const { grid, editingBgColor, width, height } = this.state;

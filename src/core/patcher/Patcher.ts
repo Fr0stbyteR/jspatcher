@@ -138,11 +138,11 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
     async load(patcherIn: RawPatcher | TMaxPatcher | any, modeIn?: PatcherMode, data?: TSharedData) {
         this._state.isLoading = true;
         this._state.preventEmitChanged = true;
-        this.emit("loading", []);
         await this.unload();
         if (typeof patcherIn !== "object") {
             this._state.isLoading = false;
-            this.emit("loading");
+            this._state.preventEmitChanged = false;
+            this.emit("ready");
             return this;
         }
         if (typeof data === "object") this._state.dataMgr.mergeEnvData(data);
@@ -176,7 +176,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
                 }
             }
             let depNames = this.props.dependencies.map(t => t[0]);
-            this.emit("loading", depNames);
             try {
                 await this.env.taskMgr.newTask(this, `${this.file?.name || ""} Loading dependencies`, async (onUpdate: (newMsg: string) => any) => {
                     for (let i = 0; i < this.props.dependencies.length; i++) {
@@ -212,10 +211,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
         }
         this._state.isLoading = false;
         this._state.preventEmitChanged = false;
-        this.emit("loading");
-        await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].postInit()));
         this.emitGraphChanged();
         this.emit("ready");
+        await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].postInit()));
+        this.emit("postInited");
         return this;
     }
     async loadFromURL(url: string) {

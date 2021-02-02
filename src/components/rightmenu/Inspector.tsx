@@ -303,20 +303,15 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
         this.setState({ meta, args, props: { ...props, ...additionalProps }, rect: null, presentationRect: null });
     };
     handlePatcherPropsChanged = () => this.setState({ patcherProps: this.props.editor.publicProps });
-    handlePatcherLoading = (loading: string[]) => {
-        if (!loading) this.setState({ patcherProps: this.props.editor.publicProps });
-    };
     componentDidMount() {
         this.handleSelected();
         this.props.editor.on("selected", this.handleSelected);
         this.props.editor.instance.on("propsChanged", this.handlePatcherPropsChanged);
-        this.props.editor.instance.on("loading", this.handlePatcherLoading);
     }
     componentWillUnmount() {
         this.unSubscribeBox(true);
         this.props.editor.off("selected", this.handleSelected);
         this.props.editor.instance.off("propsChanged", this.handlePatcherPropsChanged);
-        this.props.editor.instance.off("loading", this.handlePatcherLoading);
     }
     handleChange = (value: any, key: number | string) => {
         if (!this.box) return;

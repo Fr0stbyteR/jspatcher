@@ -31,12 +31,10 @@ export default class CodeEditor extends React.PureComponent<P, S> {
         const reactMonacoEditor = await import("react-monaco-editor");
         this.editorJSX = reactMonacoEditor.default;
         this.setState({ editorLoaded: true });
-        this.props.patcher.on("loading", this.handleGraphChanged);
         this.props.patcher.on("graphChanged", this.handleGraphChanged);
         window.addEventListener("resize", this.handleResize);
     }
     componentWillUnmount() {
-        this.props.patcher.off("loading", this.handleGraphChanged);
         this.props.patcher.off("graphChanged", this.handleGraphChanged);
         window.removeEventListener("resize", this.handleResize);
     }

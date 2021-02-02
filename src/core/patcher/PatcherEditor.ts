@@ -66,6 +66,17 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     }
     handleChangeBoxText = (e: PatcherEventMap["changeBoxText"]) => this.emit("changeBoxText", e);
     handleDestroy = () => this.emit("destroy");
+    constructor(instance: Patcher) {
+        super(instance);
+        const { openInPresentation } = this.props;
+        this.setState({
+            locked: true,
+            presentation: !!openInPresentation,
+            showGrid: true,
+            snapToGrid: true,
+            selected: []
+        });
+    }
     async init() {
         if (!this.instance.isReady) {
             await new Promise<void>((resolve, reject) => {

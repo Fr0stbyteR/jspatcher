@@ -23,13 +23,11 @@ export default class PatcherBottomMenu extends React.PureComponent<P, S> {
         this.props.editor.on("locked", this.handleLockedChange);
         this.props.editor.on("presentation", this.handlePresentationChange);
         this.props.editor.on("showGrid", this.handleShowGridChange);
-        this.props.editor.instance.on("loading", this.handleLoading);
     }
     componentWillUnmount() {
         this.props.editor.off("locked", this.handleLockedChange);
         this.props.editor.off("presentation", this.handlePresentationChange);
         this.props.editor.off("showGrid", this.handleShowGridChange);
-        this.props.editor.instance.off("loading", this.handleLoading);
     }
     handleLockedChange = (locked: boolean) => this.setState({ locked });
     handleShowGridChange = (showGrid: boolean) => this.setState({ showGrid });
@@ -37,9 +35,6 @@ export default class PatcherBottomMenu extends React.PureComponent<P, S> {
     handleClickLock = () => this.props.editor.setState({ locked: !this.state.locked });
     handleClickGrid = () => this.props.editor.setState({ showGrid: !this.state.showGrid });
     handleClickPresentation = () => this.props.editor.setState({ presentation: !this.state.presentation });
-    handleLoading = (loading: string[]) => {
-        if (!loading) this.setState({ presentation: this.props.editor.state.presentation });
-    };
     render() {
         return (
             <Menu inverted icon size="mini" className="patcher-bottom-menu">

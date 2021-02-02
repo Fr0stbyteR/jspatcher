@@ -127,6 +127,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         const lines = this.allLines;
         lines.forEach(line => line.disable());
         this.inlets = count;
+        // Lines that should be removed will destroy themselves when enable()
         lines.forEach(line => line.enable());
         const linesSetLength = this._inletLines.length;
         if (count > linesSetLength) this._inletLines.push(...new Array(count - linesSetLength).fill(null).map(() => new Set<Line>()));
@@ -138,6 +139,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         const lines = this.allLines;
         lines.forEach(line => line.disable());
         this.outlets = count;
+        // Lines that should be removed will destroy themselves when enable()
         lines.forEach(line => line.enable());
         const linesSetLength = this._outletLines.length;
         if (count > linesSetLength) this._outletLines.push(...new Array(count - linesSetLength).fill(null).map(() => new Set<Line>()));
