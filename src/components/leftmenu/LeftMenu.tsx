@@ -6,8 +6,9 @@ import Packages from "./Packages";
 import VERSION from "../../scripts/version";
 import Env, { EnvEventMap } from "../../core/Env";
 import Patcher from "../../core/patcher/Patcher";
-import { AnyFileInstance } from "../../core/file/FileInstance";
+import { AnyFileEditor } from "../../core/file/FileEditor";
 import FileManagerUI from "./FileMgrUI";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 
 enum TPanels {
     None = "None",
@@ -37,13 +38,13 @@ interface P {
 
 interface S {
     active: TPanels;
-    instance: AnyFileInstance;
+    editor: AnyFileEditor;
 }
 
 export default class LeftMenu extends React.PureComponent<P, S> {
-    state = {
+    state: S = {
         active: this.props.noFileMgr ? TPanels.None : TPanels.FileMgr,
-        instance: this.props.env.activeInstance
+        editor: this.props.env.activeEditor
     };
     refDivPane = React.createRef<HTMLDivElement>();
     refFileMgr = React.createRef<FileManagerUI>();
@@ -71,7 +72,7 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                     if (this.state.active === TPanels.None) this.setState({ active: panel });
                     this.refDivPane.current.style.width = width + "px";
                 }
-                this.state.instance?.onUiResized();
+                this.state.editor?.onUiResized();
             }
         };
         const handleMouseUp = (e: MouseEvent) => {
@@ -83,15 +84,15 @@ export default class LeftMenu extends React.PureComponent<P, S> {
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
     };
-    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
-        const active = this.state.active === TPanels.None || instance instanceof Patcher ? this.state.active : this.state.active === TPanels.FileMgr ? this.state.active : TPanels.None;
-        this.setState({ instance, active });
+    handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
+        const active = this.state.active === TPanels.None || editor.instance instanceof Patcher ? this.state.active : this.state.active === TPanels.FileMgr ? this.state.active : TPanels.None;
+        this.setState({ editor, active });
     };
     componentDidMount() {
-        this.props.env.on("activeInstance", this.handleActiveInstance);
+        this.props.env.on("activeEditor", this.handleActiveEditor);
     }
     componentWillUnmount() {
-        this.props.env.off("activeInstance", this.handleActiveInstance);
+        this.props.env.off("activeEditor", this.handleActiveEditor);
     }
     render() {
         return (
@@ -105,10 +106,10 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                         </div>
                     }
                     <div className="left-pane-objects" hidden={this.state.active !== TPanels.Objects}>
-                        {this.state.active === TPanels.Objects ? <Objects {...this.props} patcher={this.state.instance as Patcher} ref={this.refObjects} /> : <></> }
+                        {this.state.active === TPanels.Objects ? <Objects {...this.props} editor={this.state.editor as PatcherEditor} ref={this.refObjects} /> : <></> }
                     </div>
                     <div className="left-pane-packages" hidden={this.state.active !== TPanels.Packages}>
-                        {this.state.active === TPanels.Packages ? <Packages {...this.props} patcher={this.state.instance as Patcher} ref={this.refPackages} /> : <></> }
+                        {this.state.active === TPanels.Packages ? <Packages {...this.props} editor={this.state.editor as PatcherEditor} ref={this.refPackages} /> : <></> }
                     </div>
                 </div>
                 <Menu icon vertical inverted size="mini" className="left-menu">
@@ -118,7 +119,7 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                             <Icon name="folder" color={this.state.active === TPanels.FileMgr ? "teal" : "grey"} inverted />
                         </Menu.Item>
                     }
-                    {this.state.instance instanceof Patcher
+                    {this.state.editor instanceof Patcher
                         ? <>
                             <Menu.Item name={TPanels.Objects} active={this.state.active === TPanels.Objects} onClick={this.handleItemClick} title={TPanels.Objects}>
                                 <Icon name="add" color={this.state.active === TPanels.Objects ? "teal" : "grey"} inverted />

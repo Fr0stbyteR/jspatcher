@@ -53,9 +53,6 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
         author: Project.props.author.default,
         version: Project.props.version.default
     };
-    get activePatcher() {
-        return this.env.activeInstance;
-    }
     constructor(envIn: Env) {
         super();
         this.env = envIn;

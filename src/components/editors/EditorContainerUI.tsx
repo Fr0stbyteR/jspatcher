@@ -1,15 +1,15 @@
 import * as React from "react";
 import EditorContainer, { EditorContainerEventMap, EditorContainerState } from "../../core/EditorContainer";
 import Env from "../../core/Env";
-import { AnyFileInstance } from "../../core/file/FileInstance";
-import Patcher from "../../core/patcher/Patcher";
 import PatcherEditorUI from "./PatcherEditorUI";
-import "./EditorContainerUI.scss";
 import { EditorContainerTabUI } from "./EditorContainerTabUI";
-import PatcherText from "../../core/text/PatcherText";
 import TextEditorUI from "./TextEditorUI";
 import AudioEditor from "../../core/audio/AudioEditor";
 import AudioEditorUI from "./audio/AudioEditorUI";
+import "./EditorContainerUI.scss";
+import { AnyFileEditor } from "../../core/file/FileEditor";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
+import TextEditor from "../../core/text/TextEditor";
 
 interface P {
     env: Env;
@@ -22,17 +22,17 @@ interface S extends EditorContainerState {
 
 export default class EditorContainerUI extends React.PureComponent<P, S> {
     state: S = {
-        instances: this.props.editorContainer.instances,
+        editors: this.props.editorContainer.editors,
         children: this.props.editorContainer.children,
         mode: this.props.editorContainer.mode,
-        activeInstance: this.props.editorContainer.activeInstance
+        activeEditor: this.props.editorContainer.activeEditor
     };
-    handleCloseTab = async (instance: AnyFileInstance) => {
-        await instance.destroy();
+    handleCloseTab = async (editor: AnyFileEditor) => {
+        await editor.instance.destroy();
     };
-    handleActiveTab = async (instance: AnyFileInstance) => {
-        this.setState({ activeInstance: instance });
-        this.props.env.activeInstance = instance;
+    handleActiveTab = async (editor: AnyFileEditor) => {
+        this.setState({ activeEditor: editor });
+        editor.setActive();
     };
     handleState = (state: EditorContainerEventMap["state"]) => {
         this.setState(state);
@@ -48,25 +48,25 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
             <div className="editor-container ui-flex-column ui-flex-full">
                 <div className="editor-container-tabs-container">
                     <div className="editor-container-tabs">
-                        {this.state.instances.map(instance => <EditorContainerTabUI {...this.props} key={instance.instanceId} instance={instance} active={this.state.activeInstance === instance} onActive={this.handleActiveTab} onClose={this.handleCloseTab} />)}
+                        {this.state.editors.map(editor => <EditorContainerTabUI {...this.props} key={editor.editorId} editor={editor} active={this.state.activeEditor === editor} onActive={this.handleActiveTab} onClose={this.handleCloseTab} />)}
                     </div>
                 </div>
                 <div className="editor-container-body ui-flex-column ui-flex-full">
-                    {this.state.instances.length
-                        ? this.state.instances.map((instance) => {
-                            if (instance instanceof Patcher) {
-                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instanceId}>
-                                    <PatcherEditorUI {...this.props} editor={instance} />
+                    {this.state.editors.length
+                        ? this.state.editors.map((editor) => {
+                            if (editor instanceof PatcherEditor) {
+                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={editor !== this.state.activeEditor} key={editor.editorId}>
+                                    <PatcherEditorUI {...this.props} editor={editor} />
                                 </div>;
                             }
-                            if (instance instanceof PatcherText) {
-                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instanceId}>
-                                    <TextEditorUI {...this.props} text={instance} />
+                            if (editor instanceof TextEditor) {
+                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={editor !== this.state.activeEditor} key={editor.editorId}>
+                                    <TextEditorUI {...this.props} editor={editor} />
                                 </div>;
                             }
-                            if (instance instanceof AudioEditor) {
-                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={instance !== this.state.activeInstance} key={instance.instanceId}>
-                                    <AudioEditorUI {...this.props} editor={instance} />
+                            if (editor instanceof AudioEditor) {
+                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={editor !== this.state.activeEditor} key={editor.editorId}>
+                                    <AudioEditorUI {...this.props} editor={editor} />
                                 </div>;
                             }
                             return undefined;

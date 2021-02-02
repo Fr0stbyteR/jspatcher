@@ -15,8 +15,8 @@ export default class TopMenu extends React.PureComponent<P> {
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();
     handleKeyDown = (e: KeyboardEvent) => {
-        const { activeInstance } = this.props.env;
-        if (!activeInstance) return;
+        const { activeEditor } = this.props.env;
+        if (!activeEditor) return;
         const fileMenu = this.refFileMenu.current;
         const editMenu = this.refEditMenu.current;
         if (!fileMenu || !editMenu) return;

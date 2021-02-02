@@ -2,8 +2,8 @@ import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
 import AudioEditor from "../../core/audio/AudioEditor";
 import Env, { EnvEventMap } from "../../core/Env";
-import { AnyFileInstance } from "../../core/file/FileInstance";
-import Patcher from "../../core/patcher/Patcher";
+import { AnyFileEditor } from "../../core/file/FileEditor";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 import AudioEditMenu from "./AudioEditMenu";
 import PatcherEditMenu from "./PatcherEditMenu";
 
@@ -13,43 +13,43 @@ interface P {
 }
 
 interface S {
-    instance: AnyFileInstance;
+    editor: AnyFileEditor;
     locked: boolean;
 }
 
 export default class EditMenu extends React.PureComponent<P, S> {
-    state = {
-        instance: this.props.env.activeInstance,
-        locked: !!this.props.env.activeInstance?.isLocked
+    state: S = {
+        editor: this.props.env.activeEditor,
+        locked: !!this.props.env.activeEditor?.isLocked
     };
     refInstanceEditMenu = React.createRef<PatcherEditMenu & AudioEditMenu>();
     handleClickUndo = async () => {
         if (this.state.locked) return;
-        this.state.instance.undo();
+        this.state.editor.undo();
     };
     handleClickRedo = async () => {
         if (this.state.locked) return;
-        this.state.instance.redo();
+        this.state.editor.redo();
     };
     handleClickCut = async () => {
         if (this.state.locked) return;
-        await this.state.instance.cut();
+        await this.state.editor.cut();
     };
     handleClickCopy = async () => {
         if (this.state.locked) return;
-        await this.state.instance.copy();
+        await this.state.editor.copy();
     };
     handleClickPaste = async () => {
         if (this.state.locked) return;
-        await this.state.instance.paste();
+        await this.state.editor.paste();
     };
     handleClickDelete = () => {
         if (this.state.locked) return;
-        this.state.instance.deleteSelected();
+        this.state.editor.deleteSelected();
     };
     handleClickSelectAll = () => {
         if (this.state.locked) return;
-        this.state.instance.selectAll();
+        this.state.editor.selectAll();
     };
     onShortKey(e: KeyboardEvent) {
         if (this.state.locked) return;
@@ -65,20 +65,20 @@ export default class EditMenu extends React.PureComponent<P, S> {
         else if (ctrlKey && e.key === "a") this.handleClickSelectAll();
     }
     handleLocked = (locked: boolean) => this.setState({ locked });
-    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
-        this.state.instance?.off?.("locked", this.handleLocked);
-        this.setState({ instance, locked: !!instance?.isLocked });
-        instance?.on?.("locked", this.handleLocked);
+    handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
+        this.state.editor?.off?.("locked", this.handleLocked);
+        this.setState({ editor, locked: !!editor?.isLocked });
+        editor?.on?.("locked", this.handleLocked);
     };
     componentDidMount() {
-        this.props.env.on("activeInstance", this.handleActiveInstance);
+        this.props.env.on("activeEditor", this.handleActiveEditor);
     }
     componentWillUnmount() {
-        this.props.env.off("activeInstance", this.handleActiveInstance);
+        this.props.env.off("activeEditor", this.handleActiveEditor);
     }
     render() {
         const ctrlKey = this.props.env.os === "MacOS" ? "Cmd" : "Ctrl";
-        const locked = this.state.locked || !this.state.instance;
+        const locked = this.state.locked || !this.state.editor;
         return (
             <Dropdown item={true} icon={false} text="Edit">
                 <Dropdown.Menu style={{ minWidth: "max-content" }}>
@@ -90,12 +90,12 @@ export default class EditMenu extends React.PureComponent<P, S> {
                     <Dropdown.Item onClick={this.handleClickPaste} text="Paste" description={`${ctrlKey} + V`} disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickDelete} text="Delete" description="Del" disabled={locked} />
                     <Dropdown.Item onClick={this.handleClickSelectAll} text="Select All" description={`${ctrlKey} + A`} disabled={locked} />
-                    {this.state.instance ? <Dropdown.Divider /> : undefined}
+                    {this.state.editor ? <Dropdown.Divider /> : undefined}
                     {
-                        this.state.instance instanceof Patcher
-                            ? <PatcherEditMenu ref={this.refInstanceEditMenu} {...this.props} locked={this.state.locked} instance={this.state.instance} />
-                            : this.state.instance instanceof AudioEditor
-                                ? <AudioEditMenu ref={this.refInstanceEditMenu} {...this.props} locked={this.state.locked} instance={this.state.instance} />
+                        this.state.editor instanceof PatcherEditor
+                            ? <PatcherEditMenu ref={this.refInstanceEditMenu} {...this.props} locked={this.state.locked} editor={this.state.editor} />
+                            : this.state.editor instanceof AudioEditor
+                                ? <AudioEditMenu ref={this.refInstanceEditMenu} {...this.props} locked={this.state.locked} editor={this.state.editor} />
                                 : undefined
                     }
                 </Dropdown.Menu>

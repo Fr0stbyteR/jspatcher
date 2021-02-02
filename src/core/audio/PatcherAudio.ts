@@ -2,6 +2,7 @@ import { WebAudioModule } from "wamsdk/src/api";
 import { dbtoa, isIdentityMatrix, normExp } from "../../utils/math";
 import { Options } from "../../utils/WavEncoder";
 import AudioFile from "./AudioFile";
+import AudioEditor from "./AudioEditor";
 import FileInstance from "../file/FileInstance";
 import OperableAudioBuffer from "./OperableAudioBuffer";
 import Waveform from "../../utils/Waveform";
@@ -42,6 +43,10 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Aud
         audio._isReady = true;
         await audio.emit("ready");
         return audio;
+    }
+    async getEditor() {
+        const editor = new AudioEditor(this);
+        return editor.init();
     }
     get audioCtx() {
         return this.project?.audioCtx || this.env.audioCtx;

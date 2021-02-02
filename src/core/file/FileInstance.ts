@@ -1,6 +1,7 @@
 import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import Env from "../Env";
 import Project from "../Project";
+import { AnyFileEditor } from "./FileEditor";
 import ProjectItem from "./ProjectItem";
 import TempItem from "./TempItem";
 
@@ -34,15 +35,31 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get ctx() {
         return this.file || this.project || this.env;
     }
+    get isInMemory() {
+        return !this.file;
+    }
+    get isTemporary() {
+        return this.file instanceof TempItem;
+    }
+    private _isReadonly = false;
+    get isReadonly() {
+        return this._isReadonly;
+    }
+    set isReadonly(value) {
+        this._isReadonly = value;
+    }
     protected _isReady = false;
     get isReady() {
         return this._isReady;
     }
     setActive() {
-        this.env.activeInstance = this as AnyFileInstance;
+        this.env.activeInstance = this;
     }
     get isActive(): boolean {
         return this.env.activeInstance === this;
+    }
+    async getEditor(): Promise<AnyFileEditor> {
+        throw new Error("Not implemented.");
     }
     readonly instanceId = performance.now();
     constructor(ctxIn: Item | Project | Env) {

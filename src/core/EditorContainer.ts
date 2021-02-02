@@ -1,16 +1,16 @@
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import Env, { EnvEventMap } from "./Env";
-import { AnyFileInstance } from "./file/FileInstance";
+import { AnyFileEditor } from "./file/FileEditor";
 
 export type TSplitMode = "none" | "row" | "column";
 
 export type TSplitDirection = "left" | "right" | "top" | "bottom";
 
 export interface EditorContainerState {
-    instances: AnyFileInstance[];
+    editors: AnyFileEditor[];
     children: EditorContainer[];
     mode: TSplitMode;
-    activeInstance: AnyFileInstance;
+    activeEditor: AnyFileEditor;
 }
 
 export interface EditorContainerEventMap {
@@ -21,8 +21,8 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
     readonly _env: Env;
     readonly id = performance.now();
     readonly parent: EditorContainer;
-    activeInstance: AnyFileInstance;
-    instances: AnyFileInstance[] = [];
+    activeEditor: AnyFileEditor;
+    editors: AnyFileEditor[] = [];
     mode: TSplitMode = "none";
     children: EditorContainer[] = [];
     setActive() {
@@ -32,45 +32,45 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
         return this._env.activeEditorContainer === this;
     }
     get isDirty(): boolean {
-        return !this.instances.every(i => !i.isDirty) && this.children.every(c => !c.isDirty);
+        return !this.editors.every(i => !i.isDirty) && this.children.every(c => !c.isDirty);
     }
     getDescendantInstances() {
-        if (this.instances) return this.instances.slice();
-        const instances: AnyFileInstance[] = [];
+        if (this.editors) return this.editors.slice();
+        const editors: AnyFileEditor[] = [];
         for (const container of this.children) {
-            instances.push(...container.getDescendantInstances());
+            editors.push(...container.getDescendantInstances());
         }
-        return instances;
+        return editors;
     }
-    constructor(env: Env, parent: EditorContainer = null, mode: TSplitMode = "none", instances: AnyFileInstance[] = []) {
+    constructor(env: Env, parent: EditorContainer = null, mode: TSplitMode = "none", editors: AnyFileEditor[] = []) {
         super();
         this._env = env;
         this.mode = mode;
-        this.instances = instances;
-        this.activeInstance = instances[0];
+        this.editors = editors;
+        this.activeEditor = editors[0];
         this.parent = parent;
         if (!parent) this.setActive();
-        this._env.on("activeInstance", this.handleActiveInstance);
-        this._env.on("openInstance", this.handleOpenInstance);
+        this._env.on("activeEditor", this.handleActiveEditor);
+        this._env.on("openEditor", this.handleOpenEditor);
     }
-    findInstanceFromId(id: number) {
-        return this.getDescendantInstances().find(i => i.instanceId === id);
+    findEditorFromId(id: number) {
+        return this.getDescendantInstances().find(i => i.editorId === id);
     }
-    handleActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
-        if (this.instances.indexOf(instance) !== -1) {
-            this.activeInstance = instance;
+    handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
+        if (this.editors.indexOf(editor) !== -1) {
+            this.activeEditor = editor;
             this.setActive();
         }
         this.emitState();
     };
-    handleOpenInstance = (instance: EnvEventMap["openInstance"]) => {
-        if (this.active) this.instances = [...this.instances, instance];
-        this.activeInstance = instance;
+    handleOpenEditor = (instance: EnvEventMap["openEditor"]) => {
+        if (this.active) this.editors = [...this.editors, instance];
+        this.activeEditor = instance;
         const handleInstanceDestroy = () => {
-            this.instances = this.instances.filter(i => i !== instance);
-            if (!this.instances.length) this.destroy();
+            this.editors = this.editors.filter(i => i !== instance);
+            if (!this.editors.length) this.destroy();
             instance.off("destroy", handleInstanceDestroy);
-            this.activeInstance = this.instances[this.instances.length - 1];
+            this.activeEditor = this.editors[this.editors.length - 1];
             this.setActive();
             this.emitState();
         };
@@ -80,20 +80,20 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
 
     split(direction: TSplitDirection) {
         if (this.mode !== "none") throw new Error(`The Container is already splitted as ${this.mode}`);
-        const container = new EditorContainer(this._env, this, "none", this.instances);
+        const container = new EditorContainer(this._env, this, "none", this.editors);
         const newContainer = new EditorContainer(this._env, this, "none");
         if (direction === "bottom" || direction === "right") this.children = [container, newContainer];
         else this.children = [newContainer, container];
         if (direction === "bottom" || direction === "top") this.mode = "column";
         else this.mode = "row";
-        this.instances = [];
+        this.editors = [];
         this.emitState();
         return { container, newContainer };
     }
     unsplit() {
         if (this.mode === "none") throw new Error("The Container is not splitted.");
         this.mode = "none";
-        this.instances = [...this.children[0].instances, ...this.children[1].instances];
+        this.editors = [...this.children[0].editors, ...this.children[1].editors];
         this.children = [];
         this.setActive();
         this.emitState();
@@ -101,17 +101,17 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
     destroy() {
         if (this.parent) {
             this.parent.unsplit();
-            this._env.off("activeInstance", this.handleActiveInstance);
-            this._env.off("openInstance", this.handleOpenInstance);
+            this._env.off("activeEditor", this.handleActiveEditor);
+            this._env.off("openEditor", this.handleOpenEditor);
         } else {
-            this.instances = [];
-            this.activeInstance = null;
+            this.editors = [];
+            this.activeEditor = null;
             this.setActive();
         }
         this.emitState();
     }
     emitState() {
-        const { instances, children, mode, activeInstance } = this;
-        this.emit("state", { instances, children, mode, activeInstance });
+        const { editors: instances, children, mode, activeEditor } = this;
+        this.emit("state", { editors: instances, children, mode, activeEditor });
     }
 }

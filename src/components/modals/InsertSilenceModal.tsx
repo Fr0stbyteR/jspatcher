@@ -7,7 +7,7 @@ import I18n from "../../i18n/I18n";
 import "./InsertSilenceModal.scss";
 
 interface Props {
-    instance: AudioEditor;
+    editor: AudioEditor;
     lang: string;
     open: boolean;
     onClose: () => any;
@@ -19,8 +19,8 @@ interface State {
 
 export default class InsertSilenceModal extends React.PureComponent<Props, State> {
     state: State = {
-        audioUnit: this.props.instance.env.options.audioUnit,
-        samples: this.props.instance.sampleRate || 48000
+        audioUnit: this.props.editor.env.options.audioUnit,
+        samples: this.props.editor.sampleRate || 48000
     };
     get strings() {
         return {
@@ -35,7 +35,7 @@ export default class InsertSilenceModal extends React.PureComponent<Props, State
     handleUnitChange = (e: React.SyntheticEvent<HTMLElement, Event>, { value }: DropdownProps) => this.setState({ audioUnit: value as TAudioUnit });
     handleTimeChange = (samples: number) => this.setState({ samples: Math.max(0, samples) });
     handleConfirm = () => {
-        this.props.instance.insertSilence(this.state.samples);
+        this.props.editor.insertSilence(this.state.samples);
         this.props.onClose();
     };
     render() {
@@ -46,7 +46,7 @@ export default class InsertSilenceModal extends React.PureComponent<Props, State
                     <Form inverted size="mini">
                         <Form.Field inline>
                             <label>{this.strings.msg}</label>
-                            <TimeInputUI audioUnit={this.state.audioUnit} {...this.props.instance.env.options.audioUnitOptions} samples={this.state.samples} sampleRate={this.props.instance.sampleRate} onChange={this.handleTimeChange} />
+                            <TimeInputUI audioUnit={this.state.audioUnit} {...this.props.editor.env.options.audioUnitOptions} samples={this.state.samples} sampleRate={this.props.editor.sampleRate} onChange={this.handleTimeChange} />
                             <Dropdown options={this.unitOptions} value={this.state.audioUnit} onChange={this.handleUnitChange} />
                         </Form.Field>
                     </Form>

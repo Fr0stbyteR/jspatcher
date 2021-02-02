@@ -3,7 +3,7 @@ import { Icon } from "semantic-ui-react";
 import Env, { EnvEventMap } from "../../core/Env";
 import Folder from "../../core/file/Folder";
 import ProjectItem, { ProjectItemEventMap } from "../../core/file/ProjectItem";
-import Patcher from "../../core/patcher/Patcher";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 import I18n from "../../i18n/I18n";
 import { findFromAscendants } from "../../utils/utils";
 import NewFolderModal from "../modals/NewFolderModal";
@@ -43,7 +43,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         loading: this.props.item.type !== "folder" && !this.props.item.data,
         dirty: this.props.item.isDirty,
         renaming: false,
-        active: this.props.item === this.props.env.activeInstance?.file,
+        active: this.props.item === this.props.env.activeEditor?.file,
         collapsed: this.props.item.type === "folder" && !!this.props.selected.find(item => (this.props.item as Folder).isParentOf(item)),
         children: (this.props.item as Folder)?.getOrderedItems?.() || [],
         newFolderModalOpen: false,
@@ -139,7 +139,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     handleItemNameChanged = ({ newName }: ProjectItemEventMap["nameChanged"]) => this.setState({ fileName: newName, filePath: this.props.item.path });
     handleItemPathChanged = () => this.setState({ filePath: this.props.item.path });
     handleItemTreeChanged = () => this.setState({ children: (this.props.item as Folder)?.getOrderedItems?.() || [] });
-    handleEnvActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => this.setState({ active: this.props.item === instance?.file });
+    handleEnvActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => this.setState({ active: this.props.item === editor?.file });
     handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
         if (this.props.item.type !== "folder") return;
         e.preventDefault();
@@ -240,8 +240,8 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                 const patcherDiv = findFromAscendants(target as HTMLElement, e => e.classList.contains("patcher-container"));
                 if (patcherDiv) {
                     const patcherId = +patcherDiv.getAttribute("data-id");
-                    const patcher = this.props.env.editorContainer.findInstanceFromId(patcherId);
-                    if (patcher instanceof Patcher) {
+                    const patcher = this.props.env.editorContainer.findEditorFromId(patcherId);
+                    if (patcher instanceof PatcherEditor) {
                         if (patcher.state.locked) return;
                         const patcherRect = patcherDiv.getBoundingClientRect();
                         const { left, top, width, height } = patcherRect;
@@ -252,7 +252,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                         const { scrollLeft, scrollTop } = patcherDiv;
                         const x = clientX - left + scrollLeft;
                         const y = clientY - top + scrollTop;
-                        const { presentation } = patcher._state;
+                        const { presentation } = patcher.state;
                         patcher.createBoxFromFile(this.props.item, { inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
                     }
                 }
@@ -272,7 +272,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         this.props.item.on("nameChanged", this.handleItemNameChanged);
         this.props.item.on("pathChanged", this.handleItemPathChanged);
         this.props.item.on("treeChanged", this.handleItemTreeChanged);
-        this.props.env.on("activeInstance", this.handleEnvActiveInstance);
+        this.props.env.on("activeEditor", this.handleEnvActiveEditor);
     }
     componentWillUnmount() {
         this.props.item.off("ready", this.handleItemReady);
@@ -280,7 +280,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         this.props.item.off("nameChanged", this.handleItemNameChanged);
         this.props.item.off("pathChanged", this.handleItemPathChanged);
         this.props.item.off("treeChanged", this.handleItemTreeChanged);
-        this.props.env.off("activeInstance", this.handleEnvActiveInstance);
+        this.props.env.off("activeEditor", this.handleEnvActiveEditor);
     }
     render() {
         const classNameArray = ["file-manager-item"];

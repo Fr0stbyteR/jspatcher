@@ -1,17 +1,17 @@
 import * as React from "react";
 import { Icon } from "semantic-ui-react";
 import Env from "../../core/Env";
-import { AnyFileInstance } from "../../core/file/FileInstance";
+import { AnyFileEditor } from "../../core/file/FileEditor";
 import Folder from "../../core/file/Folder";
 import SaveAsModal from "../modals/SaveAsModal";
 import TabCloseModal from "../modals/TabCloseModal";
 
 interface P {
     env: Env;
-    instance: AnyFileInstance;
+    editor: AnyFileEditor;
     active: boolean;
-    onActive: (instance: AnyFileInstance) => any;
-    onClose: (instance: AnyFileInstance) => any;
+    onActive: (editor: AnyFileEditor) => any;
+    onClose: (editor: AnyFileEditor) => any;
     lang: string;
 }
 
@@ -25,29 +25,29 @@ interface S {
 
 export class EditorContainerTabUI extends React.PureComponent<P, S> {
     state: S = {
-        fileName: this.props.instance.file?.name || `Untitled.${this.props.instance.fileExtension}`,
+        fileName: this.props.editor.file?.name || `Untitled.${this.props.editor.fileExtension}`,
         fileSubscribed: false,
         closeModalOpen: false,
         saveAsModalOpen: false,
-        dirty: this.props.instance.isDirty
+        dirty: this.props.editor.isDirty
     };
     handleMouseDownTab = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-        this.props.onActive(this.props.instance);
+        this.props.onActive(this.props.editor);
     };
     handleClickClose = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-        if (this.props.instance.isDirty) this.setState({ closeModalOpen: true });
-        else this.props.onClose(this.props.instance);
+        if (this.props.editor.isDirty) this.setState({ closeModalOpen: true });
+        else this.props.onClose(this.props.editor);
     };
     handleCloseModalClose = () => this.setState({ closeModalOpen: false });
     handleCloseModalDiscard = () => {
         this.setState({ closeModalOpen: false });
-        this.props.onClose(this.props.instance);
+        this.props.onClose(this.props.editor);
     };
     handleCloseModalConfirm = async () => {
-        if (this.props.instance.file) {
+        if (this.props.editor.file) {
             this.setState({ closeModalOpen: false });
-            await this.props.instance.save();
-            this.props.onClose(this.props.instance);
+            await this.props.editor.save();
+            this.props.onClose(this.props.editor);
         } else {
             this.setState({ closeModalOpen: false, saveAsModalOpen: true });
         }
@@ -55,42 +55,42 @@ export class EditorContainerTabUI extends React.PureComponent<P, S> {
     handleSaveAsModalClose = () => this.setState({ saveAsModalOpen: false });
     handleSaveAsModalConfirm = async (folder: Folder, name: string) => {
         this.setState({ saveAsModalOpen: false });
-        await this.props.instance.saveAs(folder, name);
-        this.props.onClose(this.props.instance);
+        await this.props.editor.saveAs(folder, name);
+        this.props.onClose(this.props.editor);
     };
-    handleInstanceSaved = () => {
-        const { file } = this.props.instance;
+    handleSaved = () => {
+        const { file } = this.props.editor;
         if (file) {
-            if (!this.state.fileSubscribed) file.on("nameChanged", this.handleInstanceSaved);
+            if (!this.state.fileSubscribed) file.on("nameChanged", this.handleSaved);
             this.setState({ fileName: file.name, fileSubscribed: true });
         }
     };
-    handleInstanceDirty = (dirty: boolean) => this.setState({ dirty });
+    handleDirty = (dirty: boolean) => this.setState({ dirty });
     componentDidMount() {
-        this.props.instance.on("saved", this.handleInstanceSaved);
-        this.props.instance.on("dirty", this.handleInstanceDirty);
-        const { file } = this.props.instance;
+        this.props.editor.on("saved", this.handleSaved);
+        this.props.editor.on("dirty", this.handleDirty);
+        const { file } = this.props.editor;
         if (file) {
-            file.on("nameChanged", this.handleInstanceSaved);
+            file.on("nameChanged", this.handleSaved);
             this.setState({ fileSubscribed: true });
         }
     }
     componentWillUnmount() {
-        this.props.instance.off("saved", this.handleInstanceSaved);
-        this.props.instance.off("dirty", this.handleInstanceDirty);
-        if (this.props.instance.file && this.state.fileSubscribed) {
-            this.props.instance.file.off("nameChanged", this.handleInstanceSaved);
+        this.props.editor.off("saved", this.handleSaved);
+        this.props.editor.off("dirty", this.handleDirty);
+        if (this.props.editor.file && this.state.fileSubscribed) {
+            this.props.editor.file.off("nameChanged", this.handleSaved);
             this.setState({ fileSubscribed: false });
         }
     }
     render() {
-        const { instance, active } = this.props;
+        const { editor, active } = this.props;
         const name = this.state.fileName;
-        const icon = instance.fileIcon;
+        const icon = editor.fileIcon;
         const classArray = ["editor-container-tab"];
         if (active) classArray.push("active");
         return (
-            <div className={classArray.join(" ")} key={instance.instanceId} onMouseDown={this.handleMouseDownTab}>
+            <div className={classArray.join(" ")} key={editor.editorId} onMouseDown={this.handleMouseDownTab}>
                 {this.state.dirty ? <span className="editor-container-tab-dirty" /> : undefined}
                 <Icon className="editor-container-tab-icon" name={icon} />
                 <span className="editor-container-tab-name" style={{ fontStyle: this.state.fileSubscribed ? "normal" : "italic" }}>{name}</span>

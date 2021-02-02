@@ -1,6 +1,7 @@
 import { SemanticICONS } from "semantic-ui-react";
 import FileInstance from "../file/FileInstance";
 import TextFile from "./TextFile";
+import TextEditor from "./TextEditor";
 import TempTextFile from "./TempTextFile";
 
 export interface PatcherTextEventMap {
@@ -17,6 +18,10 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap, TextF
     }
     get fileIcon(): SemanticICONS {
         return "code";
+    }
+    async getEditor() {
+        const editor = new TextEditor(this);
+        return editor.init();
     }
     async init(data = this.file?.data) {
         if (data) this.text = await new Response(data).text();

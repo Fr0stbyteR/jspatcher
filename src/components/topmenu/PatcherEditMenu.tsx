@@ -6,26 +6,26 @@ import PatcherEditor from "../../core/patcher/PatcherEditor";
 interface P {
     env: Env;
     lang: string;
-    instance: PatcherEditor;
+    editor: PatcherEditor;
     locked: boolean;
 }
 
 export default class PatcherEditMenu extends React.PureComponent<P> {
     handleClickNewBox = () => {
-        const { instance: editor } = this.props;
+        const { editor } = this.props;
         const { presentation } = editor.state;
         const [gridX, gridY] = editor.props.grid;
         const text = "";
         editor.createBox({ text, inlets: 0, outlets: 0, rect: [gridX, gridY, 0, 0], presentation, _editing: true });
     };
     handleClickDuplicate = async () => {
-        await this.props.instance.duplicate();
+        await this.props.editor.duplicate();
     };
     handleClickInspector = () => {
-        this.props.instance.inspector();
+        this.props.editor.inspector();
     };
     handleClickDock = async () => {
-        this.props.instance.dockUI();
+        this.props.editor.dockUI();
     };
     onShortKey(e: KeyboardEvent) {
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;

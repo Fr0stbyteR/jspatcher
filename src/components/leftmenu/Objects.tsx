@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Menu, Icon, Segment, List, Input } from "semantic-ui-react";
-import Patcher from "../../core/patcher/Patcher";
-import "./LeftMenu.scss";
+import Env, { EnvEventMap } from "../../core/Env";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 import { TPackage } from "../../core/types";
 import { ImporterDirSelfObject } from "../../utils/symbols";
-import Env, { EnvEventMap } from "../../core/Env";
 import { isJSPatcherObjectConstructor } from "../../core/objects/Base";
+import "./LeftMenu.scss";
 
-class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage; path: string[]; search?: string }, { selected: (string | symbol)[] }> {
+class ObjectsItems extends React.PureComponent<{ editor: PatcherEditor; pkg: TPackage; path: string[]; search?: string }, { selected: (string | symbol)[] }> {
     state = { selected: [] as (string | symbol)[] };
     refIcon = React.createRef<Icon>();
     get list() {
@@ -15,7 +15,7 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
         const { selected } = this.state;
         const list: JSX.Element[] = [];
         if (search) {
-            const searchResult = this.props.patcher._state.pkgMgr.searchInPkg(search, 128, false, pkg);
+            const searchResult = this.props.editor.instance.state.pkgMgr.searchInPkg(search, 128, false, pkg);
             searchResult.forEach((r, i) => {
                 const { object, path } = r;
                 const key = path[path.length - 1];
@@ -62,24 +62,27 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
         return list;
     }
     getDescription(path: (string | symbol)[]) {
-        const { patcher } = this.props;
-        const obj = patcher._state.pkgMgr.getFromPath(path, patcher.activePkg);
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        const obj = patcher.state.pkgMgr.getFromPath(path, patcher.activePkg);
         return isJSPatcherObjectConstructor(obj) ? obj.description : undefined;
     }
     isFolder(path: (string | symbol)[]) {
-        const { patcher } = this.props;
-        const obj = patcher._state.pkgMgr.getFromPath(path, patcher.activePkg);
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        const obj = patcher.state.pkgMgr.getFromPath(path, patcher.activePkg);
         return typeof obj === "object";
     }
     isObject(path: (string | symbol)[]) {
-        const { patcher } = this.props;
-        const obj = patcher._state.pkgMgr.getFromPath(path, patcher.activePkg);
+        const { editor } = this.props;
+        const { instance: patcher } = editor;
+        const obj = patcher.state.pkgMgr.getFromPath(path, patcher.activePkg);
         return isJSPatcherObjectConstructor(obj);
     }
     getObjText(pathIn: (string | symbol)[]) {
         const path = pathIn.slice();
         const key = path[path.length - 1];
-        const lib = this.props.patcher.activeLib;
+        const lib = this.props.editor.instance.activeLib;
         const isConstructor = key === ImporterDirSelfObject;
         if (isConstructor) path.pop();
         let id = path.join(".");
@@ -100,10 +103,10 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
         this.setState({ selected: same && this.isFolder(path) ? [] : path });
     };
     handleMouseDown = (e: React.MouseEvent, path: (string | symbol)[]) => {
-        if (this.props.patcher.state.locked) return;
+        if (this.props.editor.state.locked) return;
         const currentTarget = e.currentTarget as HTMLDivElement;
         // Find Patcher Div
-        const patcherDiv = document.body.querySelector(`.patcher-container[data-id="${this.props.patcher.instanceId}"]`);
+        const patcherDiv = document.body.querySelector(`.patcher-container[data-id="${this.props.editor.editorId}"]`);
         if (!patcherDiv) return;
         const patcherRect = patcherDiv.getBoundingClientRect();
         // Clone Node to follow cursor
@@ -138,9 +141,9 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
             const { scrollLeft, scrollTop } = patcherDiv;
             const x = clientX - left + scrollLeft;
             const y = clientY - top + scrollTop;
-            const { patcher } = this.props;
-            const { presentation } = patcher._state;
-            patcher.createBox({ text: this.getObjText(path), inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
+            const { editor } = this.props;
+            const { presentation } = editor.state;
+            editor.createBox({ text: this.getObjText(path), inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
         };
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
@@ -154,25 +157,25 @@ class ObjectsItems extends React.PureComponent<{ patcher: Patcher; pkg: TPackage
     }
 }
 
-export default class Objects extends React.PureComponent<{ env: Env; patcher: Patcher }, { patcher: Patcher; pkg: TPackage; search: string }> {
-    state = { patcher: this.props.env.activeInstance instanceof Patcher ? this.props.env.activeInstance : null, pkg: this.props.env.activeInstance instanceof Patcher ? this.props.env.activeInstance.activePkg : null, search: "" };
+export default class Objects extends React.PureComponent<{ env: Env; editor: PatcherEditor }, { editor: PatcherEditor; pkg: TPackage; search: string }> {
+    state = { editor: this.props.env.activeEditor instanceof PatcherEditor ? this.props.env.activeEditor : null, pkg: this.props.env.activeEditor instanceof PatcherEditor ? this.props.env.activeEditor.instance.activePkg : null, search: "" };
     timer: number = undefined;
     handlePkgChanged = ({ pkg }: { pkg: TPackage }) => this.setState({ pkg: {} }, () => this.setState({ pkg }));
-    handleEnvActiveInstance = ({ instance }: EnvEventMap["activeInstance"]) => {
-        this.state.patcher?.off?.("libChanged", this.handlePkgChanged);
-        if (instance instanceof Patcher) {
-            this.state.patcher.on("libChanged", this.handlePkgChanged);
-            this.setState({ patcher: instance, pkg: instance.activePkg });
+    handleEnvActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
+        this.state.editor?.instance?.off?.("libChanged", this.handlePkgChanged);
+        if (editor instanceof PatcherEditor) {
+            editor.instance.on("libChanged", this.handlePkgChanged);
+            this.setState({ editor, pkg: editor.instance.activePkg });
         } else {
-            this.setState({ patcher: null, pkg: null });
+            this.setState({ editor: null, pkg: null });
         }
     };
     componentDidMount() {
-        this.props.env.on("activeInstance", this.handleEnvActiveInstance);
+        this.props.env.on("activeEditor", this.handleEnvActiveEditor);
     }
     componentWillUnmount() {
-        this.state.patcher?.off?.("libChanged", this.handlePkgChanged);
-        this.props.env.off("activeInstance", this.handleEnvActiveInstance);
+        this.state.editor?.instance?.off?.("libChanged", this.handlePkgChanged);
+        this.props.env.off("activeEditor", this.handleEnvActiveEditor);
     }
     handleKeyDown = (e: React.KeyboardEvent<Input>) => {
         e.stopPropagation();

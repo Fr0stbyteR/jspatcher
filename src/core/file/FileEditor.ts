@@ -31,24 +31,23 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
     get file() {
         return this.instance.file;
     }
-    set file(value: Instance["file"]) {
+    set file(value) {
         this.instance.file = value;
     }
     get ctx() {
         return this.instance.ctx;
     }
     get isInMemory() {
-        return !this.file;
+        return this.instance.isInMemory;
     }
     get isTemporary() {
-        return this.file instanceof TempItem;
+        return this.instance.isTemporary;
     }
-    private _isReadonly = false;
     get isReadonly() {
-        return this._isReadonly;
+        return this.instance.isReadonly;
     }
     set isReadonly(value) {
-        this._isReadonly = value;
+        this.instance.isReadonly = value;
     }
     protected _isReady = false;
     get isReady() {
@@ -70,11 +69,13 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
         return "code";
     }
     setActive() {
-        this.env.activeEditor = this as AnyFileEditor;
+        this.env.activeEditor = this;
+        this.env.activeInstance = this.instance;
     }
     get isActive(): boolean {
         return this.env.activeEditor === this;
     }
+    readonly editorId = performance.now();
     handleProjectSave = async () => this.save();
     handleProjectUnload = async () => this.destroy();
     constructor(instance: Instance) {

@@ -9,6 +9,7 @@ import { toFaustDspCode } from "../objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "../objects/SubPatcher";
 import FileInstance from "../file/FileInstance";
 import PatcherFile from "./PatcherFile";
+import PatcherEditor from "./PatcherEditor";
 import Env from "../Env";
 import Project from "../Project";
 
@@ -42,6 +43,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
     };
     static async fromProjectItem(item: PatcherFile): Promise<Patcher> {
         return new this(item).init();
+    }
+    async getEditor() {
+        const editor = new PatcherEditor(this);
+        return editor.init();
     }
     lines: Record<string, Line>;
     boxes: Record<string, Box>;

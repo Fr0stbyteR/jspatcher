@@ -11,7 +11,7 @@ import RemixModal from "../modals/RemixModal";
 interface P {
     env: Env;
     lang: string;
-    instance: AudioEditor;
+    editor: AudioEditor;
     locked: boolean;
 }
 interface S {
@@ -32,7 +32,7 @@ export default class AudioEditMenu extends React.PureComponent<P, S> {
         return I18n[this.props.lang].AudioEditMenu;
     }
     handleClickPlayStop = () => {
-        const { instance } = this.props;
+        const { editor: instance } = this.props;
         if (instance.state.recording) {
             instance.stopRecord();
             return;
@@ -41,13 +41,13 @@ export default class AudioEditMenu extends React.PureComponent<P, S> {
         else instance.play();
     };
     handleClickSilence = () => {
-        this.props.instance.silence();
+        this.props.editor.silence();
     };
     handleClickReverse = () => {
-        this.props.instance.reverse();
+        this.props.editor.reverse();
     };
     handleClickInverse = () => {
-        this.props.instance.inverse();
+        this.props.editor.inverse();
     };
     handleClickBounce = () => {
         this.setState({ bounceModalOpen: true });

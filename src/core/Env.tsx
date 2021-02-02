@@ -32,6 +32,7 @@ export interface EnvEventMap {
     "activeInstance": { instance: AnyFileInstance; oldInstance: AnyFileInstance };
     "activeEditor": { editor: AnyFileEditor; oldEditor: AnyFileEditor };
     "openInstance": AnyFileInstance;
+    "openEditor": AnyFileEditor;
     "activeEditorContainer": { editorContainer: EditorContainer; oldEditorContainer: EditorContainer ;}
     "instances": AnyFileInstance[];
     "newLog": TPatcherLog;
@@ -97,12 +98,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     }
     set activeEditorContainer(editorContainer: EditorContainer) {
         if (this._activeEditorContainer === editorContainer) {
-            this.activeInstance = editorContainer.activeInstance;
+            editorContainer.activeEditor.setActive();
             return;
         }
         const oldEditorContainer = this._activeEditorContainer;
         this._activeEditorContainer = editorContainer;
-        this.activeInstance = editorContainer.activeInstance;
+        editorContainer.activeEditor.setActive();
         this.emit("activeEditorContainer", { editorContainer, oldEditorContainer });
     }
     instances = new Set<FileInstance>();
@@ -247,7 +248,11 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     }
     openInstance(i: AnyFileInstance) {
         this.emit("openInstance", i);
-        this.activeInstance = i;
+        i.setActive();
+    }
+    openEditor(e: AnyFileEditor) {
+        this.emit("openEditor", e);
+        e.setActive();
     }
     registerInstance(i: AnyFileInstance) {
         this.instances.add(i);

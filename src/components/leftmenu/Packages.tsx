@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Menu, Input, Table, Button } from "semantic-ui-react";
-import Patcher from "../../core/patcher/Patcher";
+import PatcherEditor from "../../core/patcher/PatcherEditor";
 
-export default class Packages extends React.PureComponent<{ patcher: Patcher; }, { imports: [string, string][]; adding: boolean; }> {
-    state = { imports: this.props.patcher.state.pkgMgr.imported.slice(), adding: false };
+export default class Packages extends React.PureComponent<{ editor: PatcherEditor; }, { imports: [string, string][]; adding: boolean; }> {
+    state = { imports: this.props.editor.instance.state.pkgMgr.imported.slice(), adding: false };
     refTable = React.createRef<HTMLTableElement>();
     handleLibChanged = () => {
-        this.setState({ imports: this.props.patcher.state.pkgMgr.imported.slice() });
+        this.setState({ imports: this.props.editor.instance.state.pkgMgr.imported.slice() });
     };
     handleAdd = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const tdID = e.currentTarget.parentElement.nextSibling as HTMLTableRowElement;
@@ -16,10 +16,10 @@ export default class Packages extends React.PureComponent<{ patcher: Patcher; },
         if (id && url) {
             this.setState({ adding: true });
             try {
-                await this.props.patcher.addPackage(id, url);
+                await this.props.editor.instance.addPackage(id, url);
             } catch (e) {
                 this.setState({ adding: false });
-                this.props.patcher.error(`Loading dependency: ${id} from ${url} failed`);
+                this.props.editor.instance.error(`Loading dependency: ${id} from ${url} failed`);
             }
             this.setState({ adding: false });
         }
@@ -29,7 +29,7 @@ export default class Packages extends React.PureComponent<{ patcher: Patcher; },
         const tdURL = tdID.nextSibling as HTMLTableRowElement;
         // const id = tdID.innerText;
         const url = tdURL.innerText;
-        this.props.patcher.removePackage(url);
+        this.props.editor.instance.removePackage(url);
     };
     handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
@@ -46,14 +46,14 @@ export default class Packages extends React.PureComponent<{ patcher: Patcher; },
         if (!inputURL.value || inputURL.value.startsWith("https://unpkg.com/")) inputURL.value = `https://unpkg.com/${e.currentTarget.value}`;
     };
     componentDidMount() {
-        this.props.patcher.on("ready", this.handleLibChanged);
-        this.props.patcher.on("libChanged", this.handleLibChanged);
-        this.props.patcher.on("propsChanged", this.handleLibChanged);
+        this.props.editor.on("ready", this.handleLibChanged);
+        this.props.editor.instance.on("libChanged", this.handleLibChanged);
+        this.props.editor.instance.on("propsChanged", this.handleLibChanged);
     }
     componentWillUnmount() {
-        this.props.patcher.off("ready", this.handleLibChanged);
-        this.props.patcher.off("libChanged", this.handleLibChanged);
-        this.props.patcher.off("propsChanged", this.handleLibChanged);
+        this.props.editor.off("ready", this.handleLibChanged);
+        this.props.editor.instance.off("libChanged", this.handleLibChanged);
+        this.props.editor.instance.off("propsChanged", this.handleLibChanged);
     }
     render() {
         const logs = this.state.imports.map(([id, url], i) => (

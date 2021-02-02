@@ -1,17 +1,17 @@
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
-import FileInstance from "./file/FileInstance";
+import FileEditor from "./file/FileEditor";
 
 export interface EditorEventMap {
-    "open": FileInstance;
-    "active": FileInstance;
+    "open": FileEditor;
+    "active": FileEditor;
 }
 export default class Editor extends TypedEventEmitter<EditorEventMap> {
-    private _activeInstance: FileInstance;
-    get activeInstance(): FileInstance {
-        return this._activeInstance;
+    private _activeEditor: FileEditor;
+    get activeEditor(): FileEditor {
+        return this._activeEditor;
     }
-    set activeInstance(value: FileInstance) {
-        this._activeInstance = value;
+    set activeEditor(value: FileEditor) {
+        this._activeEditor = value;
         this.emit("active", value);
     }
 }

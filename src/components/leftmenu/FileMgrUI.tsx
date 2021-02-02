@@ -179,8 +179,8 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
     handleDoubleClickItem = async (item: ProjectItem) => {
         if (this.props.noActions) return;
         if (item.type === "folder") return;
-        const instance = await item.instantiate();
-        this.props.env.openInstance(instance);
+        const editor = await item.instantiateEditor();
+        this.props.env.openEditor(editor);
     };
     handleDeleteModalClose = () => this.setState({ deleteModalOpen: false });
     handleDeleteModalConfirm = async () => {

@@ -7,7 +7,7 @@ import I18n from "../../i18n/I18n";
 import "./RemixModal.scss";
 
 interface Props {
-    instance: AudioEditor;
+    editor: AudioEditor;
     lang: string;
     open: boolean;
     onClose: () => any;
@@ -17,14 +17,14 @@ interface State {
 }
 
 export default class RemixModal extends React.PureComponent<Props, State> {
-    state: State = { mix: identityMatrix(this.props.instance.numberOfChannels || 1) };
+    state: State = { mix: identityMatrix(this.props.editor.numberOfChannels || 1) };
     get strings() {
         return I18n[this.props.lang].RemixModal;
     }
     handleNumberOfChannelsChange = (event: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
         const outs = +~~value || this.state.mix.length;
         if (outs === this.state.mix.length) return;
-        const ins = this.props.instance.numberOfChannels;
+        const ins = this.props.editor.numberOfChannels;
         const mix = identityMatrix(Math.max(ins, outs)).slice(0, outs).map(v => v.slice(0, ins));
         mix.forEach((x, i) => {
             if (i >= this.state.mix.length) return;
@@ -43,15 +43,15 @@ export default class RemixModal extends React.PureComponent<Props, State> {
         this.setState({ mix });
     };
     handleConfirm = async () => {
-        await this.props.instance.remixChannels(this.state.mix);
+        await this.props.editor.remixChannels(this.state.mix);
         this.props.onClose();
     };
-    handleSetAudio = () => this.setState({ mix: identityMatrix(this.props.instance.numberOfChannels || 1) });
+    handleSetAudio = () => this.setState({ mix: identityMatrix(this.props.editor.numberOfChannels || 1) });
     componentDidMount() {
-        this.props.instance.on("setAudio", this.handleSetAudio);
+        this.props.editor.on("setAudio", this.handleSetAudio);
     }
     componentWillUnmount() {
-        this.props.instance.off("setAudio", this.handleSetAudio);
+        this.props.editor.off("setAudio", this.handleSetAudio);
     }
     get matrix() {
         const { mix } = this.state;

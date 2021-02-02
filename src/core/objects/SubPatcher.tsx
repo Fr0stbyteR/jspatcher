@@ -283,9 +283,9 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, { patcher: Patcher
     };
     static dockable = true;
     handleDoubleClick = () => {
-        if (this.editor.state.locked) this.setState({ modalOpen: true }, () => this.props.object.patcher.env.activeInstance = this.state.patcher);
+        if (this.editor.state.locked) this.setState({ modalOpen: true }, () => this.state.editor.setActive());
     };
-    handleClose = () => this.setState({ modalOpen: false }, () => this.props.object.patcher.env.activeInstance = this.props.object.patcher);
+    handleClose = () => this.setState({ modalOpen: false }, () => this.props.editor.setActive());
     handleMouseDownModal = (e: React.MouseEvent) => e.stopPropagation();
     componentDidMount() {
         if (this.state.patcher) {
