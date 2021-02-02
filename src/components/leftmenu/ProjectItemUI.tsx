@@ -239,10 +239,10 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                 this.props.onMoveTo();
                 const patcherDiv = findFromAscendants(target as HTMLElement, e => e.classList.contains("patcher-container"));
                 if (patcherDiv) {
-                    const patcherId = +patcherDiv.getAttribute("data-id");
-                    const patcher = this.props.env.editorContainer.findEditorFromId(patcherId);
-                    if (patcher instanceof PatcherEditor) {
-                        if (patcher.state.locked) return;
+                    const editorId = +patcherDiv.getAttribute("data-id");
+                    const editor = this.props.env.editorContainer.findEditorFromId(editorId);
+                    if (editor instanceof PatcherEditor) {
+                        if (editor.state.locked) return;
                         const patcherRect = patcherDiv.getBoundingClientRect();
                         const { left, top, width, height } = patcherRect;
                         if (clientX < left) return;
@@ -252,8 +252,8 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                         const { scrollLeft, scrollTop } = patcherDiv;
                         const x = clientX - left + scrollLeft;
                         const y = clientY - top + scrollTop;
-                        const { presentation } = patcher.state;
-                        patcher.createBoxFromFile(this.props.item, { inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
+                        const { presentation } = editor.state;
+                        editor.createBoxFromFile(this.props.item, { inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
                     }
                 }
             } else {

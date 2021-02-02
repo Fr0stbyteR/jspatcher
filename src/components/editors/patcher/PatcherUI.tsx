@@ -41,8 +41,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     cachedMousePos = { x: 0, y: 0 };
     dragged = false;
     handleReady = () => {
-        const { editor: patcher } = this.props;
-        this.setState({ bgColor: patcher.props.bgColor, editingBgColor: patcher.props.editingBgColor, presentation: patcher.state.presentation });
+        const { editor } = this.props;
+        this.setState({ bgColor: editor.props.bgColor, editingBgColor: editor.props.editingBgColor, presentation: editor.state.presentation });
         const grid = this.refGrid.current;
         const boxes = this.refBoxes.current;
         const lines = this.refLines.current;
@@ -229,7 +229,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         editor.on("locked", this.handleLockedChange);
         editor.on("presentation", this.handlePresentationChange);
         editor.on("showGrid", this.handleShowGridChange);
-        patcher.on("ready", this.handleReady);
+        editor.on("ready", this.handleReady);
         patcher.on("bgColor", this.handleBgColorChange);
         patcher.on("editingBgColor", this.handleEditingBgColorChange);
         document.addEventListener("keydown", this.handleKeyDown);
@@ -240,7 +240,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         editor.off("locked", this.handleLockedChange);
         editor.off("presentation", this.handlePresentationChange);
         editor.off("showGrid", this.handleShowGridChange);
-        patcher.off("ready", this.handleReady);
+        editor.off("ready", this.handleReady);
         patcher.off("bgColor", this.handleBgColorChange);
         patcher.off("editingBgColor", this.handleEditingBgColorChange);
         document.removeEventListener("keydown", this.handleKeyDown);
@@ -306,7 +306,6 @@ class Lines extends React.PureComponent<LinesProps, LinesState> {
         editor.off("ready", this.handleReady);
     }
     handleCreate = (created: RawPatcher) => {
-        if (this.props.editor.instance.state.isLoading) return;
         Object.keys(created.lines).forEach((id) => {
             const line = created.lines[id];
             this.lines[line.id] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
@@ -314,7 +313,6 @@ class Lines extends React.PureComponent<LinesProps, LinesState> {
         this.setState({ timestamp: performance.now() });
     };
     handleDelete = (deleted: RawPatcher) => {
-        if (this.props.editor.instance.state.isLoading) return;
         Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
         this.setState({ timestamp: performance.now() });
     };
@@ -367,7 +365,6 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
         editor.off("ready", this.handleReady);
     }
     handleCreate = (created: RawPatcher) => {
-        if (this.props.editor.instance.state.isLoading) return;
         Object.keys(created.boxes).forEach((id) => {
             const box = created.boxes[id];
             this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
@@ -375,7 +372,6 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
         this.setState({ timestamp: performance.now() });
     };
     handleDelete = (deleted: RawPatcher) => {
-        if (this.props.editor.instance.state.isLoading) return;
         Object.keys(deleted.boxes).forEach(id => delete this.boxes[id]);
         this.setState({ timestamp: performance.now() });
     };

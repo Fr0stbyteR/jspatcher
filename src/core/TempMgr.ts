@@ -1,4 +1,4 @@
-import Folder from "./file/Folder";
+import TempFolder from "./file/TempFolder";
 import ProjectItem from "./file/ProjectItem";
 import FileManager from "./FileMgr";
 import Project from "./Project";
@@ -9,7 +9,7 @@ export default class TempManager extends FileManager {
         return true;
     }
     async init(project: Project, clean?: boolean) {
-        this.root = new Folder(this, project, null, null);
+        this.root = new TempFolder(this, project, null, null);
         await this.root.init();
         this.emit("ready");
         return this;
@@ -91,7 +91,7 @@ export default class TempManager extends FileManager {
             }
             const cur = itemArray[itemArray.length - 1];
             if (cur.type !== "folder") throw new Error(`${cur.name} from path ${path} is not a folder`);
-            const next = (cur as Folder).findItem(id);
+            const next = (cur as TempFolder).findItem(id);
             if (!next) throw new Error(`Cannot find ${id} from path ${path}`);
             itemArray.push(next);
         }

@@ -24,7 +24,7 @@ export default class CodeEditor extends React.PureComponent<P, S> {
         this.codeEditor = monaco;
     };
     handleGraphChanged = (e?: string[]) => {
-        if (!e && !this.props.patcher.state.isLoading && this.state.editorLoaded) this.setState({ value: this.code });
+        if (!e && this.state.editorLoaded) this.setState({ value: this.code });
     };
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
     async componentDidMount() {

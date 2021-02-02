@@ -486,5 +486,6 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
         }
         await this.recorder.destroy();
         await this.player.destroy();
+        await super.destroy();
     }
 }

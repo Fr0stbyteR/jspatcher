@@ -341,9 +341,10 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
                     <Table.Cell colSpan={2} width={16} className="division-name">Patcher</Table.Cell>
                 </Table.Row>
             );
-            Object.keys((this.props.editor.constructor as typeof Patcher).props).forEach((nameIn) => {
+            const P = this.props.editor.instance.constructor as typeof Patcher;
+            Object.keys(P.props).forEach((nameIn) => {
                 const name = nameIn as keyof typeof Patcher["props"];
-                const propMeta = (this.props.editor.constructor as typeof Patcher).props[name];
+                const propMeta = P.props[name];
                 const value = this.state.patcherProps[name];
                 const item = <InspectorPropItem {...this.props} key={name} patcher={this.props.editor.instance} itemKey={name} meta={propMeta} value={value} onChange={this.handlePatcherChange} />;
                 table.push(item);

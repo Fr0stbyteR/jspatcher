@@ -92,7 +92,7 @@ export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor"
 
 export interface TPatcherState {
     name: string;
-    isLoading: boolean;
+    isReady: boolean;
     log: TPatcherLog[];
     history: PatcherHistory;
     selected: string[];

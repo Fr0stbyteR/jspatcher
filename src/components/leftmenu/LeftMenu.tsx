@@ -5,7 +5,6 @@ import Objects from "./Objects";
 import Packages from "./Packages";
 import VERSION from "../../scripts/version";
 import Env, { EnvEventMap } from "../../core/Env";
-import Patcher from "../../core/patcher/Patcher";
 import { AnyFileEditor } from "../../core/file/FileEditor";
 import FileManagerUI from "./FileMgrUI";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
@@ -85,7 +84,7 @@ export default class LeftMenu extends React.PureComponent<P, S> {
         document.addEventListener("mouseup", handleMouseUp);
     };
     handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
-        const active = this.state.active === TPanels.None || editor.instance instanceof Patcher ? this.state.active : this.state.active === TPanels.FileMgr ? this.state.active : TPanels.None;
+        const active = this.state.active === TPanels.None || editor instanceof PatcherEditor ? this.state.active : this.state.active === TPanels.FileMgr ? this.state.active : TPanels.None;
         this.setState({ editor, active });
     };
     componentDidMount() {
@@ -119,7 +118,7 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                             <Icon name="folder" color={this.state.active === TPanels.FileMgr ? "teal" : "grey"} inverted />
                         </Menu.Item>
                     }
-                    {this.state.editor instanceof Patcher
+                    {this.state.editor instanceof PatcherEditor
                         ? <>
                             <Menu.Item name={TPanels.Objects} active={this.state.active === TPanels.Objects} onClick={this.handleItemClick} title={TPanels.Objects}>
                                 <Icon name="add" color={this.state.active === TPanels.Objects ? "teal" : "grey"} inverted />

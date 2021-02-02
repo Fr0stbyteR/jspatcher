@@ -1,3 +1,4 @@
+import { SemanticICONS } from "semantic-ui-react";
 import { isRectMovable, isRectResizable, isTRect } from "../../utils/utils";
 import FileEditor from "../file/FileEditor";
 import ProjectItem from "../file/ProjectItem";
@@ -36,7 +37,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     static async fromProjectItem(item: PatcherFile | TempPatcherFile): Promise<PatcherEditor> {
         const patcher = item instanceof TempPatcherFile ? item.data : await item.instantiate();
         const editor = new this(patcher);
-        return editor;
+        return editor.init();
     }
     state: PatcherEditorState = {
         locked: true,
@@ -64,8 +65,17 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     get publicProps() {
         return this.instance.publicProps;
     }
+    get fileExtension() {
+        return this.instance.fileExtension;
+    }
+    get fileName() {
+        return this.instance.fileName;
+    }
+    get fileIcon(): SemanticICONS {
+        return "sitemap";
+    }
     handleChangeBoxText = (e: PatcherEventMap["changeBoxText"]) => this.emit("changeBoxText", e);
-    handleDestroy = () => this.emit("destroy");
+    handleDestroy = () => this.destroy();
     constructor(instance: Patcher) {
         super(instance);
         const { openInPresentation } = this.props;
@@ -103,7 +113,6 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     }
     setState(state: Partial<PatcherEditorState>) {
         let changed = false;
-        Object.assign(this.state, state);
         for (const keyIn in state) {
             const key = keyIn as keyof PatcherEditorState;
             if (this.state[key] === state[key]) continue;

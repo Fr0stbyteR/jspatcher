@@ -90,6 +90,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         if (this._activeEditor === editor) return;
         const oldEditor = this._activeEditor;
         this._activeEditor = editor;
+        if (editor) this.activeInstance = editor.instance;
         this.emit("activeEditor", { editor, oldEditor });
     }
     private _activeEditorContainer = this.editorContainer;
@@ -98,12 +99,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     }
     set activeEditorContainer(editorContainer: EditorContainer) {
         if (this._activeEditorContainer === editorContainer) {
-            editorContainer.activeEditor.setActive();
+            this.activeEditor = editorContainer.activeEditor;
             return;
         }
         const oldEditorContainer = this._activeEditorContainer;
         this._activeEditorContainer = editorContainer;
-        editorContainer.activeEditor.setActive();
+        this.activeEditor = editorContainer.activeEditor;
         this.emit("activeEditorContainer", { editorContainer, oldEditorContainer });
     }
     instances = new Set<FileInstance>();

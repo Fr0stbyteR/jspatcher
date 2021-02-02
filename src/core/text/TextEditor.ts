@@ -28,6 +28,7 @@ export default class TextEditor extends FileEditor<PatcherText, TextEditorEventM
     set text(value: string) {
         this.instance.text = value;
     }
+    handleDestroy = () => this.destroy();
     async init() {
         if (!this.instance.isReady) {
             await new Promise<void>((resolve, reject) => {
@@ -38,6 +39,7 @@ export default class TextEditor extends FileEditor<PatcherText, TextEditorEventM
                 this.instance.on("ready", handleReady);
             });
         }
+        this.instance.on("destroy", this.handleDestroy);
         this._isReady = true;
         this.emit("ready");
         return this;

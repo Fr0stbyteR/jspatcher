@@ -1,4 +1,3 @@
-import { SemanticICONS } from "semantic-ui-react";
 import { max2js, js2max } from "../../utils/utils";
 import Line from "./Line";
 import Box from "./Box";
@@ -48,8 +47,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
         const editor = new PatcherEditor(this);
         return editor.init();
     }
-    lines: Record<string, Line>;
-    boxes: Record<string, Box>;
+    lines: Record<string, Line> = {};
+    boxes: Record<string, Box> = {};
     props: TPatcherProps;
     _state: TPatcherState;
     data: TSharedData;
@@ -59,7 +58,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
         super(ctxIn);
         this._state = {
             name: "patcher",
-            isLoading: false,
+            isReady: false,
             log: [],
             history: undefined,
             selected: [],
@@ -95,9 +94,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
     }
     get fileName() {
         return `${this.file?.name || this._state.name}.${this.fileExtension}`;
-    }
-    get fileIcon(): SemanticICONS {
-        return "sitemap";
     }
     emitGraphChanged() {
         if (this._state.preventEmitChanged) return;
@@ -141,11 +137,11 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
         return this.load(patcherIn, extMap[ext] || "js");
     }
     async load(patcherIn: RawPatcher | TMaxPatcher | any, modeIn?: PatcherMode, data?: TSharedData) {
-        this._state.isLoading = true;
+        this._state.isReady = false;
         this._state.preventEmitChanged = true;
         await this.unload();
         if (typeof patcherIn !== "object") {
-            this._state.isLoading = false;
+            this._state.isReady = true;
             this._state.preventEmitChanged = false;
             this.emit("ready");
             return this;
@@ -214,7 +210,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
                 if (numID > this.props.lineIndexCount) this.props.lineIndexCount = numID;
             }
         }
-        this._state.isLoading = false;
+        this._state.isReady = true;
         this._state.preventEmitChanged = false;
         this.emitGraphChanged();
         this.emit("ready");

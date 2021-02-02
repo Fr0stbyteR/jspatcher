@@ -413,7 +413,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                     </>
                 }
                 {
-                    this.state.error || this.state.highlight ? <div style={{ position: "absolute", width: "100%", height: "100%", backgroundColor: this.state.error ? "rgba(255, 0, 0, 0.3)" : "rgba(255, 255, 128, 0.3)" }} /> : undefined
+                    this.state.error || this.state.highlight ? <div style={{ position: "absolute", width: "100%", height: "100%", top: 0, left: 0, backgroundColor: this.state.error ? "rgba(255, 0, 0, 0.3)" : "rgba(255, 255, 128, 0.3)" }} /> : undefined
                 }
             </div>
         );

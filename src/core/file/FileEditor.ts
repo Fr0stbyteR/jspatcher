@@ -70,7 +70,6 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
     }
     setActive() {
         this.env.activeEditor = this;
-        this.env.activeInstance = this.instance;
     }
     get isActive(): boolean {
         return this.env.activeEditor === this;

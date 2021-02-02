@@ -19,12 +19,21 @@ export default class PatcherBottomMenu extends React.PureComponent<P, S> {
         presentation: this.props.editor.state.presentation,
         showGrid: this.props.editor.state.showGrid
     };
+    handleReady = () => {
+        this.setState({
+            locked: this.props.editor.state.locked,
+            presentation: this.props.editor.state.presentation,
+            showGrid: this.props.editor.state.showGrid
+        });
+    };
     componentDidMount() {
+        this.props.editor.on("ready", this.handleReady);
         this.props.editor.on("locked", this.handleLockedChange);
         this.props.editor.on("presentation", this.handlePresentationChange);
         this.props.editor.on("showGrid", this.handleShowGridChange);
     }
     componentWillUnmount() {
+        this.props.editor.off("ready", this.handleReady);
         this.props.editor.off("locked", this.handleLockedChange);
         this.props.editor.off("presentation", this.handlePresentationChange);
         this.props.editor.off("showGrid", this.handleShowGridChange);

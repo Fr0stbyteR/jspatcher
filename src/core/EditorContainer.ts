@@ -63,18 +63,18 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
         }
         this.emitState();
     };
-    handleOpenEditor = (instance: EnvEventMap["openEditor"]) => {
-        if (this.active) this.editors = [...this.editors, instance];
-        this.activeEditor = instance;
+    handleOpenEditor = (editor: EnvEventMap["openEditor"]) => {
+        if (this.active) this.editors = [...this.editors, editor];
+        this.activeEditor = editor;
         const handleInstanceDestroy = () => {
-            this.editors = this.editors.filter(i => i !== instance);
+            this.editors = this.editors.filter(i => i !== editor);
             if (!this.editors.length) this.destroy();
-            instance.off("destroy", handleInstanceDestroy);
+            editor.off("destroy", handleInstanceDestroy);
             this.activeEditor = this.editors[this.editors.length - 1];
             this.setActive();
             this.emitState();
         };
-        instance.on("destroy", handleInstanceDestroy);
+        editor.on("destroy", handleInstanceDestroy);
         this.emitState();
     };
 
@@ -111,7 +111,7 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
         this.emitState();
     }
     emitState() {
-        const { editors: instances, children, mode, activeEditor } = this;
-        this.emit("state", { editors: instances, children, mode, activeEditor });
+        const { editors, children, mode, activeEditor } = this;
+        this.emit("state", { editors, children, mode, activeEditor });
     }
 }

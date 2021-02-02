@@ -103,17 +103,26 @@ export default class PatcherRightMenu extends React.PureComponent<P, S> {
         }
         this.setState({ audioOn: state === "running" });
     };
+    handleReady = () => {
+        this.setState({
+            active: TPanels.None,
+            codePanel: this.props.editor.props.mode === "faust" || this.props.editor.props.mode === "gen",
+            audioOn: this.props.env.audioCtx.state === "running"
+        });
+    };
     handleInspector = () => this.setState({ active: TPanels.Inspector });
     handleDock = () => this.setState({ active: TPanels.Dock });
     componentDidMount() {
         const audioCtx = this.props.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleEnvAudioCtxStateChange);
+        this.props.editor.on("ready", this.handleReady);
         this.props.editor.on("inspector", this.handleInspector);
         this.props.editor.on("dockUI", this.handleDock);
     }
     componentWillUnmount() {
         const audioCtx = this.props.env.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleEnvAudioCtxStateChange);
+        this.props.editor.off("ready", this.handleReady);
         this.props.editor.off("inspector", this.handleInspector);
         this.props.editor.off("dockUI", this.handleDock);
     }
