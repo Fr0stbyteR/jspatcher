@@ -5,6 +5,7 @@ import Project from "./Project";
 import { RawProjectItem, RawProjectItems } from "./types";
 
 export default class TempManager extends FileManager {
+    root: TempFolder;
     async empty() {
         return true;
     }

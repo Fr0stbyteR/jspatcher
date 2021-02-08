@@ -2,6 +2,7 @@ import { WebAudioModule } from "wamsdk/src/api";
 import { dbtoa, isIdentityMatrix, normExp } from "../../utils/math";
 import { Options } from "../../utils/WavEncoder";
 import AudioFile from "./AudioFile";
+import TempAudioFile from "./TempAudioFile";
 import AudioEditor from "./AudioEditor";
 import FileInstance from "../file/FileInstance";
 import OperableAudioBuffer from "./OperableAudioBuffer";
@@ -14,9 +15,9 @@ export interface PatcherAudioEventMap {
     "postInit": never;
 }
 
-export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, AudioFile> {
+export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, AudioFile | TempAudioFile> {
     static async fromProjectItem(item: AudioFile) {
-        return new this(item).init();
+        return new this(item).init(item.data);
     }
     static async fromArrayBuffer(ctxIn: ConstructorParameters<typeof PatcherAudio>[0], data: ArrayBuffer) {
         const audio = new PatcherAudio(ctxIn);
@@ -63,7 +64,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Aud
     get sampleRate() {
         return this.audioBuffer.sampleRate;
     }
-    async init(data = this.file?.data?.slice?.(0)) {
+    async init(data: ArrayBuffer) {
         const { audioCtx } = this;
         await this.env.taskMgr.newTask(this, "Initializing Audio", async (onUpdate) => {
             onUpdate("Decoding Audio...");

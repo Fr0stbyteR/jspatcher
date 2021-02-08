@@ -142,7 +142,6 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
         await this.recorder.newSearch(deviceId);
         if (this.state.monitoring) this.player.startMonitoring();
     };
-    handleDestroy = () => this.destroy();
     async init() {
         if (!this.instance.isReady) {
             await new Promise<void>((resolve, reject) => {
@@ -158,7 +157,6 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
             enabledChannels: new Array(this.numberOfChannels).fill(true)
         });
         this.instance.on("setAudio", this.handleSetAudio);
-        this.instance.on("destroy", this.handleDestroy);
         await this.env.taskMgr.newTask(this, "Initializing Audio Editor...", async () => {
             await this.player.init();
             await this.recorder.init();

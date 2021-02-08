@@ -4,10 +4,10 @@ import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import Patcher from "../patcher/Patcher";
 import Box from "../patcher/Box";
 import Line from "../patcher/Line";
+import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect, TempItemType, SharedItemByType, TempItemByType } from "../types";
+import { BaseUI, DefaultUI, BaseUIState, DefaultUIState } from "./BaseUI";
 import "./Default.scss";
 import "./Base.scss";
-import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect, ProjectItemType } from "../types";
-import { BaseUI, DefaultUI, BaseUIState, DefaultUIState } from "./BaseUI";
 
 export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject => typeof x === "function" && x?.isJSPatcherObjectConstructor;
 
@@ -134,21 +134,27 @@ export abstract class AbstractObject<
     /**
      * Get a shared item from files or temp
      * If no ID provided, this will create a new key in temp
-     * if no such ID found in files or in temp, will put data into it.
+     * if no such ID found in files or in temp, will put the result of data() into it.
      */
-    getSharedItem(id = performance.now().toString(), type?: ProjectItemType, data?: any) {
+    async getSharedItem<T extends TempItemType>(id = performance.now().toString(), type: T = "unknown" as T, data?: () => Promise<TempItemByType<T>["data"]>): Promise<{ id: string; item: SharedItemByType<T>; isTemp: boolean }> {
+        let item: SharedItemByType<T>;
+        let isTemp = false;
         try {
-            const item = this.patcher.env.fileMgr.getProjectItemFromPath(id);
-            return { item, isTemp: false };
+            item = this.patcher.env.fileMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
         } catch {
+            isTemp = true;
             try {
-                const item = this.patcher.env.tempMgr.getProjectItemFromPath(id);
-                return { item, isTemp: true };
+                item = this.patcher.env.tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
             } catch {
-                const item = this.patcher.env.tempMgr.root.getProjectItem(id, type, data);
-                return { item, isTemp: true };
+                const d = await data?.();
+                try {
+                    item = await this.patcher.env.tempMgr.root.addProjectItem(id, d, type) as SharedItemByType<T>;
+                } catch {
+                    item = this.patcher.env.tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
+                }
             }
         }
+        return { id, item, isTemp };
     }
     /**
      * Get prop value from box, if not defined, get from metadata default

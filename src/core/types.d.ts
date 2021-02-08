@@ -7,6 +7,13 @@ import PatcherHistory from "./patcher/PatcherHistory";
 import Env from "./Env";
 import SharedData from "./Shared";
 import { PackageManager } from "./PkgMgr";
+import TempPatcherFile from "./patcher/TempPatcherFile";
+import PatcherFile from "./patcher/PatcherFile";
+import TempAudioFile from "./audio/TempAudioFile";
+import AudioFile from "./audio/AudioFile";
+import TempTextFile from "./text/TempTextFile";
+import TextFile from "./text/TextFile";
+import TempData from "./file/TempData";
 
 declare global {
     interface Window {
@@ -37,6 +44,12 @@ export type TextFileExtension = "txt" | "json";
 
 export type FileExtension = PatcherFileExtension | AudioFileExtension | TextFileExtension;
 
+export type TempItemType = "patcher" | "audio" | "text" | "unknown";
+
+export type SharedItemByType<T extends TempItemType> = T extends "patcher" ? TempPatcherFile | PatcherFile : T extends "audio" ? TempAudioFile | AudioFile : T extends "text" ? TempTextFile | TextFile : TempData;
+
+export type TempItemByType<T extends TempItemType> = T extends "patcher" ? TempPatcherFile : T extends "audio" ? TempAudioFile : T extends "text" ? TempTextFile : TempData;
+
 export type ProjectItemType = "patcher" | "audio" | "text" | "folder" | "unknown";
 
 export type ProjectItemDataType<T extends ProjectItemType = any> = T extends "folder" ? RawProjectItems : T extends "patcher" ? RawPatcher : T extends "text" ? string : ArrayBuffer;
@@ -64,7 +77,7 @@ export interface RawProject {
 export interface RawPatcher {
     lines: Record<string, TLine>;
     boxes: Record<string, TBox>;
-    props?: TPublicPatcherProps;
+    props?: TPublicPatcherProps & Pick<TPatcherProps, "mode">;
 }
 export interface TPatcherEnv {
     patcher: RawPatcher;

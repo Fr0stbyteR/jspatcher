@@ -35,7 +35,7 @@ export interface PatcherEditorState {
 
 export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEventMap> {
     static async fromProjectItem(item: PatcherFile | TempPatcherFile): Promise<PatcherEditor> {
-        const patcher = item instanceof TempPatcherFile ? item.data : await item.instantiate();
+        const patcher = await item.instantiate();
         const editor = new this(patcher);
         return editor.init();
     }
@@ -75,7 +75,6 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         return "sitemap";
     }
     handleChangeBoxText = (e: PatcherEventMap["changeBoxText"]) => this.emit("changeBoxText", e);
-    handleDestroy = () => this.destroy();
     constructor(instance: Patcher) {
         super(instance);
         const { openInPresentation } = this.props;
@@ -98,7 +97,6 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             });
         }
         this.instance.on("changeBoxText", this.handleChangeBoxText);
-        this.instance.on("destroy", this.handleDestroy);
         const { openInPresentation } = this.props;
         this.setState({
             locked: true,
@@ -633,7 +631,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
     }
     onUiResized() {}
-    toTempData() {
-        return this.instance.serialize();
+    async toTempData() {
+        return this.instance.toSerializable();
     }
 }

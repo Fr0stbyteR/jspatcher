@@ -11,8 +11,9 @@ import PatcherFile from "./PatcherFile";
 import PatcherEditor from "./PatcherEditor";
 import Env from "../Env";
 import Project from "../Project";
+import TempPatcherFile from "./TempPatcherFile";
 
-export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> {
+export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile | TempPatcherFile> {
     static props: TPropsMeta<TPublicPatcherProps> = {
         dependencies: {
             type: "object",
@@ -54,7 +55,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
     data: TSharedData;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
-    constructor(ctxIn?: PatcherFile | Project | Env) {
+    constructor(ctxIn?: PatcherFile | TempPatcherFile | Project | Env) {
         super(ctxIn);
         this._state = {
             name: "patcher",
@@ -129,12 +130,15 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
         this._state.dataMgr = new SharedData(this);
     }
     async init(data = this.file?.data, fileName = this.fileName) {
-        if (!data.byteLength) return this.load({});
-        const patcherIn = await new Response(data).json();
-        const splitName = fileName.split(".");
-        const ext = splitName.pop();
-        const extMap: Record<string, PatcherMode> = { json: "js", jspat: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
-        return this.load(patcherIn, extMap[ext] || "js");
+        if (data instanceof ArrayBuffer) {
+            if (!data.byteLength) return this.load({});
+            const patcherIn = await new Response(data).json();
+            const splitName = fileName.split(".");
+            const ext = splitName.pop();
+            const extMap: Record<string, PatcherMode> = { json: "js", jspat: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+            return this.load(patcherIn, extMap[ext] || "js");
+        }
+        return this.load(data || {});
     }
     async load(patcherIn: RawPatcher | TMaxPatcher | any, modeIn?: PatcherMode, data?: TSharedData) {
         this._state.isReady = false;
@@ -269,7 +273,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile> 
     }
     async destroy() {
         await this.unload();
-        await this.emit("destroy");
+        await super.destroy();
     }
     async addPackage(namespace: string, url: string) {
         const { dependencies } = this.props;

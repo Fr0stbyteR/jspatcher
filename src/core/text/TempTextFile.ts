@@ -4,8 +4,11 @@ import TextEditor from "./TextEditor";
 
 export default class TempTextFile extends TempItem {
     type = "text" as const;
-    async instantiate(): Promise<PatcherText> {
+    get data(): PatcherText {
         return this._data;
+    }
+    async instantiate(): Promise<PatcherText> {
+        return this.data;
     }
     async instantiateEditor(): Promise<TextEditor> {
         return TextEditor.fromProjectItem(this);

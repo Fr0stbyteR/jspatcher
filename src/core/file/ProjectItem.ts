@@ -14,7 +14,8 @@ export interface ProjectItemEventMap {
     "treeChanged": never;
     "destroyed": never;
     "dirty": boolean;
-    "saved": never;
+    "saved": any; // here emit with the object who performed the saving
+    "observers": Set<any>;
 }
 
 export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> {
@@ -43,6 +44,15 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     private _isDirty: boolean;
     get isDirty() {
         return this._isDirty;
+    }
+    protected readonly observers = new Set<any>();
+    addObserver(observer: any) {
+        this.observers.add(observer);
+        this.emit("observers", this.observers);
+    }
+    removeObserver(observer: any) {
+        this.observers.delete(observer);
+        this.emit("observers", this.observers);
     }
     constructor(fileMgrIn: FileManager, projectIn: Project, parentIn: Folder, nameIn: string, dataIn?: ArrayBuffer) {
         super();
@@ -123,10 +133,10 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         await this.emitTreeChanged();
         await this.emit("destroyed");
     }
-    async save(newData: ArrayBuffer) {
+    async save(newData: ArrayBuffer, by: any) {
         this._data = newData;
         await this._fileMgr.putFile(this);
-        await this.emit("saved");
+        await this.emit("saved", by);
     }
     async saveAsCopy(parent: Folder, name: string, newData: ArrayBuffer) {
         const item = this.clone(parent, name, newData);
@@ -135,7 +145,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         await this.emitTreeChanged();
         return item;
     }
-    async saveAs(to: Folder, name: string, newData: ArrayBuffer) {
+    async saveAs(to: Folder, name: string, newData: ArrayBuffer, by: any) {
         const item = this.clone(to, name, newData);
         await this._fileMgr.putFile(item);
         const from = this.parent;
@@ -144,7 +154,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         this.parent.items.add(this);
         await this.emitTreeChanged();
         await this.emit("pathChanged", { from, to });
-        await this.emit("saved");
+        await this.emit("saved", by);
         return item;
     }
 }

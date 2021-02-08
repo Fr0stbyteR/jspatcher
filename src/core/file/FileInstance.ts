@@ -6,6 +6,7 @@ import ProjectItem from "./ProjectItem";
 import TempItem from "./TempItem";
 
 export interface FileInstanceEventMap {
+    "observer": never;
     "ready": never;
     "changed": never;
     "destroy": never;
@@ -29,10 +30,12 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     get file(): Item {
         return this._file;
     }
-    set file(value: Item) {
+    set file(value) {
+        this._file?.removeObserver(this);
         this._file = value;
+        this._file?.addObserver(this);
     }
-    get ctx() {
+    get ctx(): Item | Project | Env {
         return this.file || this.project || this.env;
     }
     get isInMemory() {
@@ -61,11 +64,20 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     async getEditor(): Promise<AnyFileEditor> {
         throw new Error("Not implemented.");
     }
+    observers = new Set<any>();
+    addObserver(observer: any) {
+        this.observers.add(observer);
+    }
+    removeObserver(observer: any) {
+        this.observers.delete(observer);
+        if (this.observers.size === 0) this.destroy();
+    }
     readonly instanceId = performance.now();
     constructor(ctxIn: Item | Project | Env) {
         super();
         if (ctxIn instanceof ProjectItem) {
             this._file = ctxIn;
+            this._file.addObserver(this);
             this._env = ctxIn.env;
             this._project = ctxIn.project;
         } else if (ctxIn instanceof Project) {
@@ -80,5 +92,6 @@ export default class FileInstance<EventMap extends Record<string, any> & Partial
     }
     async destroy() {
         await this.emit("destroy");
+        this.file?.removeObserver(this);
     }
 }

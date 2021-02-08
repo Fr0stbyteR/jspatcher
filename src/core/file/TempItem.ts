@@ -6,20 +6,22 @@ import ProjectItem from "./ProjectItem";
  * An item under TempMgr, this contains in-memory data/instance.
  */
 export default class TempItem extends ProjectItem {
-    protected readonly _fileMgr: TempManager;
-    get fileMgr() {
-        return this._fileMgr;
+    get fileMgr(): TempManager {
+        return this._fileMgr as TempManager;
     }
     /**
      * Override, could be any type
      */
-    protected _data: any;
     get data() {
-        return this._data;
+        return this._data as any;
     }
     async init() {
         await this.emit("ready");
         return this;
+    }
+    removeObserver(observer: any) {
+        super.removeObserver(observer);
+        if (this.observers.size === 0) this.destroy();
     }
     /**
      * Creating alias (do not copy the data, new item has the same ref)
@@ -57,13 +59,28 @@ export default class TempItem extends ProjectItem {
         await this.emitTreeChanged();
         await this.emit("destroyed");
     }
-    async save(newData: any) {
+    async save(newData: any, by: any) {
         this._data = newData;
+        this.emit("saved", by);
     }
     async saveAsCopy(parent: Folder, name: string, newData: ArrayBuffer) {
-        return super.saveAsCopy(parent, name, newData);
+        const item = new ProjectItem(this.env.fileMgr, this.project, parent, name, newData);
+        await this._fileMgr.putFile(item);
+        parent.items.add(item);
+        await this.emitTreeChanged();
+        return item;
     }
-    async saveAs(to: Folder, name: string, newData: ArrayBuffer) {
-        return super.saveAs(to, name, newData);
+    async saveAs(to: Folder, name: string, newData: ArrayBuffer, by: any) {
+        const item = new ProjectItem(this.env.fileMgr, this.project, to, name, newData);
+        await this.env.fileMgr.putFile(item);
+        const from = this.parent;
+        this.parent = to;
+        this._name = name;
+        const _this: ProjectItem = Object.setPrototypeOf(this, ProjectItem.prototype);
+        this.parent.items.add(_this);
+        await this.emitTreeChanged();
+        await this.emit("pathChanged", { from, to });
+        await this.emit("saved", by);
+        return this;
     }
 }

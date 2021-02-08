@@ -10,7 +10,7 @@ export interface PatcherTextEventMap {
 
 export default class PatcherText extends FileInstance<PatcherTextEventMap, TextFile | TempTextFile> {
     static async fromProjectItem(item: TextFile) {
-        return new this(item).init();
+        return new this(item).init(item.data);
     }
     text: string;
     get fileExtension() {
@@ -23,7 +23,7 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap, TextF
         const editor = new TextEditor(this);
         return editor.init();
     }
-    async init(data = this.file?.data) {
+    async init(data?: ArrayBuffer) {
         if (data) this.text = await new Response(data).text();
         else this.text = "";
         this.emit("ready");

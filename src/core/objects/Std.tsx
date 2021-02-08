@@ -3,6 +3,8 @@ import Patcher from "../patcher/Patcher";
 import { DefaultObject, Bang, isBang } from "./Base";
 import { TMeta } from "../types";
 import { SharedDataNoValue } from "../../utils/symbols";
+import ProjectItem, { ProjectItemEventMap } from "../file/ProjectItem";
+import TempItem from "../file/TempItem";
 
 class StdObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
     static package = "Std";
@@ -469,7 +471,7 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         });
     }
 }
-class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any, string | number], [any], [string | number, any]> {
+class v extends StdObject<{}, { key: string; value: any; sharedItem: ProjectItem | TempItem }, [Bang | any, any, string | number], [any], [string | number, any]> {
     static description = "Store anything as named sharable variable";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -497,59 +499,80 @@ class v extends StdObject<{}, { key: string; value: any }, [Bang | any, any, str
         optional: true,
         description: "Initial value"
     }];
-    state = { key: undefined as string, value: SharedDataNoValue as any };
+    state: { key: string; value: any; sharedItem: TempItem } = { key: this.box.args[0].toString(), value: SharedDataNoValue, sharedItem: null };
     subscribe() {
         super.subscribe();
-        const sharedDataKey = "_v";
-        const reload = (key: string) => {
-            if (this.state.key) this.sharedData.unsubscribe(sharedDataKey, this.state.key, this);
-            const { args } = this.box;
-            this.state.key = key;
-            if (typeof args[1] !== "undefined") this.state.value = args[1];
-            if (key) {
-                const shared = this.sharedData.get(sharedDataKey, key);
-                if (shared !== SharedDataNoValue) this.state.value = shared;
-                else this.sharedData.set(sharedDataKey, key, this.state.value, this);
-                this.sharedData.subscribe(sharedDataKey, this.state.key, this);
-            }
+        const handleFilePathChanged = () => {
+            this.setState({ key: this.state.sharedItem?.projectPath });
+        };
+        const handleSaved = (e: ProjectItemEventMap["saved"]) => {
+            if (e === this) return;
+            this.setState({ value: this.state.sharedItem?.data });
+        };
+        const subsribeItem = () => {
+            const file = this.state.sharedItem;
+            if (!file) return;
+            file.addObserver(this);
+            file.on("destroyed", reload);
+            file.on("nameChanged", handleFilePathChanged);
+            file.on("pathChanged", handleFilePathChanged);
+            file.on("saved", handleSaved);
+        };
+        const unsubsribeItem = () => {
+            const file = this.state.sharedItem;
+            if (!file) return;
+            file.off("destroyed", reload);
+            file.off("nameChanged", handleFilePathChanged);
+            file.off("pathChanged", handleFilePathChanged);
+            file.off("saved", handleSaved);
+            this.state.sharedItem?.removeObserver(this);
+        };
+        const reload = async () => {
+            unsubsribeItem();
+            const { key } = this.state;
+            const { item } = await this.getSharedItem(key, "unknown", () => this.state.value);
+            this.setState({ value: item.data, sharedItem: item });
+            subsribeItem();
         };
         this.on("preInit", () => {
             this.inlets = 3;
             this.outlets = 1;
         });
-        this.on("updateArgs", (args) => {
+        this.on("updateArgs", async (args) => {
             const key = typeof args[0] === "undefined" ? args[0] : args[0].toString();
             if (key !== this.state.key) {
-                reload(key);
+                this.setState({ key });
+                await reload();
             } else {
                 if (typeof args[1] !== "undefined") {
-                    this.state.value = args[1];
-                    if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
+                    this.setState({ value: args[1] });
+                    this.state.sharedItem?.save?.(this.state.value, this);
                 }
             }
         });
+        this.on("postInit", reload);
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 if (!isBang(data)) {
-                    this.state.value = data;
-                    if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
+                    this.setState({ value: data });
+                    this.state.sharedItem?.save?.(this.state.value, this);
                 }
                 this.outlet(0, this.state.value);
             } else if (inlet === 1) {
-                this.state.value = data;
-                if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
+                this.setState({ value: data });
+                this.state.sharedItem?.save?.(this.state.value, this);
             } else if (inlet === 2) {
                 if (typeof data === "string" || typeof data === "number") {
                     const key = data.toString() || "";
                     if (key !== this.state.key) {
-                        reload(key);
+                        this.setState({ key });
+                        reload();
                     }
                 }
             }
         });
-        this.on("sharedDataUpdated", ({ data }) => this.state.value = data);
         this.on("destroy", () => {
-            if (this.state.key) this.sharedData.unsubscribe(sharedDataKey, this.state.key, this);
+            unsubsribeItem();
         });
     }
 }

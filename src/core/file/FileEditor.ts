@@ -77,9 +77,12 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
     readonly editorId = performance.now();
     handleProjectSave = async () => this.save();
     handleProjectUnload = async () => this.destroy();
+    handleDestroy = () => this.destroy();
     constructor(instance: Instance) {
         super();
         this.instance = instance;
+        this.instance?.addObserver(this);
+        this.instance.on("destroy", this.handleDestroy);
         this.on("dirty", isDirty => this.file?.emit?.("dirty", isDirty));
         this.on("destroy", () => this.file?.emit?.("dirty", false));
         const handleReady = () => {
@@ -127,24 +130,26 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
         if (this.isReadonly) throw new Error("Cannot save readonly file");
         if (this.isInMemory) throw new Error("Cannot save in-memory instance");
         const data = await (this.file instanceof TempItem ? this.toTempData() : this.toFileData());
-        await this.file.save(data);
-        this.emit("saved");
+        await this.file.save(data, this);
+        await this.emit("saved");
     }
     async saveAs(parent: Folder, name: string) {
         const data = await this.toFileData();
         if (this.isTemporary) {
             await this.file.saveAsCopy(parent, name, data);
         } else if (this.isReadonly) {
-            await this.file.saveAs(parent, name, data);
+            await this.file.saveAs(parent, name, data, this);
         } else if (this.isInMemory) {
             this.file = await parent.addProjectItem(name, data) as any;
         } else {
-            await this.file.saveAs(parent, name, data);
+            await this.file.saveAs(parent, name, data, this);
         }
         this.isReadonly = false;
-        this.emit("saved");
+        await this.emit("saved");
     }
     async destroy() {
+        this.instance.off("destroy", this.handleDestroy);
+        this.instance.removeObserver(this);
         await this.emit("destroy");
     }
 }
