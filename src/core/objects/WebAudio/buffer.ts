@@ -8,8 +8,8 @@ import { ProjectItemEventMap } from "../../file/ProjectItem";
 
 interface BufferState {
     key: string;
-    value: PatcherAudio;
-    sharedItem: AudioFile | TempAudioFile;
+    audio: PatcherAudio;
+    file: AudioFile | TempAudioFile;
     numberOfChannels: number;
     length: number;
     sampleRate: number;
@@ -55,7 +55,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
         optional: true,
         description: "Initialize buffer's sample rate"
     }];
-    state: BufferState = { key: this.box.args[0]?.toString(), value: undefined, sharedItem: undefined, numberOfChannels: 1, length: this.audioCtx.sampleRate, sampleRate: this.audioCtx.sampleRate };
+    state: BufferState = { key: this.box.args[0]?.toString(), audio: undefined, file: undefined, numberOfChannels: 1, length: this.audioCtx.sampleRate, sampleRate: this.audioCtx.sampleRate };
     subscribe() {
         super.subscribe();
         const assertBuffer = (audio: PatcherAudio) => {
@@ -64,32 +64,34 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
             return audio.numberOfChannels === numberOfChannels && audio.length === length && audio.sampleRate === sampleRate;
         };
         const handleFilePathChanged = () => {
-            this.setState({ key: this.state.sharedItem?.projectPath });
+            this.setState({ key: this.state.file?.projectPath });
         };
         const handleSaved = async (e: ProjectItemEventMap["saved"]) => {
             if (e === this) return;
             await reload();
         };
         const subsribeItem = async () => {
-            const file = this.state.sharedItem;
-            if (!file) return;
-            await file.addObserver(this);
-            file.on("destroyed", reload);
-            file.on("nameChanged", handleFilePathChanged);
-            file.on("pathChanged", handleFilePathChanged);
-            file.on("saved", handleSaved);
+            const { audio, file } = this.state;
+            await audio.addObserver(this);
+            if (file) {
+                file.on("destroyed", reload);
+                file.on("nameChanged", handleFilePathChanged);
+                file.on("pathChanged", handleFilePathChanged);
+                file.on("saved", handleSaved);
+            }
         };
         const unsubscribeItem = async () => {
-            const file = this.state.sharedItem;
-            if (!file) return;
-            file.off("destroyed", reload);
-            file.off("nameChanged", handleFilePathChanged);
-            file.off("pathChanged", handleFilePathChanged);
-            file.off("saved", handleSaved);
-            await this.state.sharedItem?.removeObserver(this);
+            const { audio, file } = this.state;
+            if (file) {
+                file.off("destroyed", reload);
+                file.off("nameChanged", handleFilePathChanged);
+                file.off("pathChanged", handleFilePathChanged);
+                file.off("saved", handleSaved);
+            }
+            await audio.removeObserver(this);
         };
         const reload = async () => {
-            await unsubscribeItem();
+            if (this.state.audio) await unsubscribeItem();
             const { key } = this.state;
             let audio: PatcherAudio;
             try {
@@ -103,7 +105,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
                 } else {
                     audio = await item.instantiate();
                 }
-                this.setState({ value: audio, sharedItem: item });
+                this.setState({ audio, file: item });
             } catch (error) {
                 this.error(error);
             } finally {
@@ -121,7 +123,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
             const length = typeof args[2] === "number" ? ~~args[2] : this.audioCtx.sampleRate;
             const sampleRate = typeof args[3] === "number" ? ~~args[3] : this.audioCtx.sampleRate;
             this.setState({ key, numberOfChannels, length, sampleRate });
-            if (key !== oldKey || !assertBuffer(this.state.value)) {
+            if (key !== oldKey || !assertBuffer(this.state.audio)) {
                 reload();
             }
         });
@@ -130,10 +132,10 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
             if (inlet === 0) {
                 if (!isBang(data)) {
                     if (data instanceof PatcherAudio) {
-                        this.state.value.setAudio(data);
+                        this.state.audio.setAudio(data);
                     } else if (data instanceof AudioBuffer) {
                         const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, data);
-                        this.state.value.setAudio(audio);
+                        this.state.audio.setAudio(audio);
                     } else {
                         let audioBuffer: AudioBuffer;
                         try {
@@ -144,16 +146,16 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
                             return;
                         }
                         const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, audioBuffer);
-                        this.state.value.setAudio(audio);
+                        this.state.audio.setAudio(audio);
                     }
                 }
-                this.outlet(0, this.state.value);
+                this.outlet(0, this.state.audio);
             } else if (inlet === 1) {
                 if (data instanceof PatcherAudio) {
-                    this.state.value.setAudio(data);
+                    this.state.audio.setAudio(data);
                 } else if (data instanceof AudioBuffer) {
                     const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, data);
-                    this.state.value.setAudio(audio);
+                    this.state.audio.setAudio(audio);
                 } else {
                     let audioBuffer: AudioBuffer;
                     try {
@@ -164,7 +166,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
                         return;
                     }
                     const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, audioBuffer);
-                    this.state.value.setAudio(audio);
+                    this.state.audio.setAudio(audio);
                 }
             } else if (inlet === 2) {
                 if (typeof data === "string" || typeof data === "number") {

@@ -524,7 +524,7 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: ProjectItem
             file.off("nameChanged", handleFilePathChanged);
             file.off("pathChanged", handleFilePathChanged);
             file.off("saved", handleSaved);
-            await this.state.sharedItem?.removeObserver(this);
+            await file.removeObserver(this);
         };
         const reload = async () => {
             await unsubscribeItem();
