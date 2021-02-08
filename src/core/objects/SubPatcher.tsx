@@ -403,10 +403,10 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
             if (e.instance === this.state.patcher) return;
             reload();
         };
-        const subscribePatcher = () => {
+        const subscribePatcher = async () => {
             const { patcher } = this.state;
             const { file } = patcher;
-            patcher.addObserver(this);
+            await patcher.addObserver(this);
             patcher.on("outlet", handlePatcherOutlet);
             patcher.on("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
             patcher.on("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
@@ -422,7 +422,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
                 file.on("saved", handleSaved);
             }
         };
-        const unsubscribePatcher = () => {
+        const unsubscribePatcher = async () => {
             const { patcher } = this.state;
             const { file } = patcher;
             patcher.off("outlet", handlePatcherOutlet);
@@ -439,34 +439,40 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
                 file.off("pathChanged", handleFilePathChanged);
                 file.off("saved", handleSaved);
             }
-            patcher.removeObserver(this); // patcher will be destroyed if no observers left.
-        };
-        const handlePatcherReset = () => {
-            handlePatcherIOChanged(this.state.patcher.meta);
-            this.updateUI({ patcher: this.state.patcher });
+            await patcher.removeObserver(this); // patcher will be destroyed if no observers left.
         };
         const reload = async () => {
             if (this.state.patcher) {
                 this.disconnectAudio();
-                unsubscribePatcher();
+                await unsubscribePatcher();
             }
             const { key } = this.state;
-            const P = this.patcher.constructor as typeof Patcher;
+            let patcher: Patcher;
             let rawPatcher: RawPatcher;
-            const { item, isTemp } = await this.getSharedItem(key, "patcher", async () => {
-                const patcher = new P(this.patcher.project);
-                await patcher.load(this.data, this.type);
-                rawPatcher = patcher.toSerializable();
-                return rawPatcher;
-            });
-            const patcher = await item.instantiate();
-            if (isTemp) this.setData(rawPatcher || patcher.toSerializable());
-            this.setState({ patcher });
-            this.updateUI({ patcher });
-            handlePatcherReset();
-            subscribePatcher();
-            handlePatcherGraphChanged();
-            this.connectAudio();
+            try {
+                const { item, newItem } = await this.getSharedItem(key, "patcher", async () => {
+                    patcher = new this.Patcher(this.patcher.project);
+                    await patcher.load(this.data, this.type);
+                    rawPatcher = patcher.toSerializable();
+                    return rawPatcher;
+                });
+                if (newItem) {
+                    patcher.file = item;
+                    this.setData(rawPatcher);
+                } else {
+                    patcher = await item.instantiate();
+                    this.setData(patcher.toSerializable());
+                }
+                this.setState({ patcher });
+                this.updateUI({ patcher });
+            } catch (error) {
+                this.error(error);
+            } finally {
+                handlePatcherIOChanged(patcher.meta);
+                subscribePatcher();
+                handlePatcherGraphChanged();
+                this.connectAudio();
+            }
         };
         this.on("updateArgs", async (args) => {
             if (typeof args[0] === "string" || typeof args[0] === "undefined") {
@@ -499,7 +505,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         default: 0,
         description: "Polyphonic instrument voices count"
     }];
-    state = { code: undefined, merger: undefined, splitter: undefined, node: undefined, voices: ~~Math.max(0, this.box.args[1]), patcher: undefined, key: this.box.args[0] } as FaustPatcherState;
+    state: FaustPatcherState = { code: undefined, merger: undefined, splitter: undefined, node: undefined, voices: ~~Math.max(0, this.box.args[1]), patcher: undefined, key: this.box.args[0] };
     static UI = SubPatcherUI;
     type: "faust" | "gen" = "faust";
     handleFilePathChanged = () => {
@@ -509,10 +515,10 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         if (e.instance === this.state.patcher) return;
         this.reload();
     };
-    subscribePatcher = () => {
+    subscribePatcher = async () => {
         const { patcher } = this.state;
         const { file } = patcher;
-        patcher.addObserver(this);
+        await patcher.addObserver(this);
         patcher.on("graphChanged", this.handleGraphChanged);
         patcher.on("changed", this.handlePatcherChanged);
         if (file) {
@@ -522,7 +528,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
             file.on("saved", this.handleSaved);
         }
     };
-    unsubscribePatcher = () => {
+    unsubscribePatcher = async () => {
         const { patcher } = this.state;
         const { file } = patcher;
         patcher.off("graphChanged", this.handleGraphChanged);
@@ -533,7 +539,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
             file.off("pathChanged", this.handleFilePathChanged);
             file.off("saved", this.handleSaved);
         }
-        patcher.removeObserver(this); // patcher will be destroyed if no observers left.
+        await patcher.removeObserver(this); // patcher will be destroyed if no observers left.
     };
     async compilePatcher() {
         const code = this.state.patcher.toFaustDspCode();
@@ -557,24 +563,34 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
     reload = async () => {
         if (this.state.patcher) {
             this.disconnectAudio();
-            this.unsubscribePatcher();
+            await this.unsubscribePatcher();
         }
         const { key } = this.state;
-        const P = this.patcher.constructor as typeof Patcher;
+        let patcher: Patcher;
         let rawPatcher: RawPatcher;
-        const { item, isTemp } = await this.getSharedItem(key, "patcher", async () => {
-            const patcher = new P(this.patcher.project);
-            await patcher.load(this.data, this.type);
-            rawPatcher = patcher.toSerializable();
-            return rawPatcher;
-        });
-        const patcher = await item.instantiate();
-        if (isTemp) this.setData(rawPatcher || patcher.toSerializable());
-        this.setState({ patcher });
-        this.updateUI({ patcher });
-        this.subscribePatcher();
-        await this.handleGraphChanged();
-        this.connectAudio();
+        try {
+            const { item, newItem } = await this.getSharedItem(key, "patcher", async () => {
+                patcher = new this.Patcher(this.patcher.project);
+                await patcher.load(this.data, this.type);
+                rawPatcher = patcher.toSerializable();
+                return rawPatcher;
+            });
+            if (newItem) {
+                patcher.file = item;
+                this.setData(rawPatcher);
+            } else {
+                patcher = await item.instantiate();
+                this.setData(patcher.toSerializable());
+            }
+            this.setState({ patcher });
+            this.updateUI({ patcher });
+        } catch (error) {
+            this.error(error);
+        } finally {
+            await this.subscribePatcher();
+            await this.handleGraphChanged();
+            this.connectAudio();
+        }
     };
     handlePreInit = () => {};
     handleUpdateArgs = async (args: Partial<[string, number]>): Promise<void> => {

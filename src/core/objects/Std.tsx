@@ -2,7 +2,6 @@ import * as Util from "util";
 import Patcher from "../patcher/Patcher";
 import { DefaultObject, Bang, isBang } from "./Base";
 import { TMeta } from "../types";
-import { SharedDataNoValue } from "../../utils/symbols";
 import ProjectItem, { ProjectItemEventMap } from "../file/ProjectItem";
 import TempItem from "../file/TempItem";
 
@@ -499,7 +498,7 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: ProjectItem
         optional: true,
         description: "Initial value"
     }];
-    state: { key: string; value: any; sharedItem: TempItem } = { key: this.box.args[0].toString(), value: SharedDataNoValue, sharedItem: null };
+    state: { key: string; value: any; sharedItem: ProjectItem | TempItem } = { key: this.box.args[0]?.toString(), value: undefined, sharedItem: null };
     subscribe() {
         super.subscribe();
         const handleFilePathChanged = () => {
@@ -509,37 +508,42 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: ProjectItem
             if (e === this) return;
             this.setState({ value: this.state.sharedItem?.data });
         };
-        const subsribeItem = () => {
+        const subscribeItem = async () => {
             const file = this.state.sharedItem;
             if (!file) return;
-            file.addObserver(this);
+            await file.addObserver(this);
             file.on("destroyed", reload);
             file.on("nameChanged", handleFilePathChanged);
             file.on("pathChanged", handleFilePathChanged);
             file.on("saved", handleSaved);
         };
-        const unsubsribeItem = () => {
+        const unsubscribeItem = async () => {
             const file = this.state.sharedItem;
             if (!file) return;
             file.off("destroyed", reload);
             file.off("nameChanged", handleFilePathChanged);
             file.off("pathChanged", handleFilePathChanged);
             file.off("saved", handleSaved);
-            this.state.sharedItem?.removeObserver(this);
+            await this.state.sharedItem?.removeObserver(this);
         };
         const reload = async () => {
-            unsubsribeItem();
+            await unsubscribeItem();
             const { key } = this.state;
-            const { item } = await this.getSharedItem(key, "unknown", () => this.state.value);
-            this.setState({ value: item.data, sharedItem: item });
-            subsribeItem();
+            try {
+                const { item } = await this.getSharedItem(key, "unknown", () => this.state.value);
+                this.setState({ value: item.data, sharedItem: item });
+            } catch (error) {
+                this.error(error);
+            } finally {
+                await subscribeItem();
+            }
         };
         this.on("preInit", () => {
             this.inlets = 3;
             this.outlets = 1;
         });
         this.on("updateArgs", async (args) => {
-            const key = typeof args[0] === "undefined" ? args[0] : args[0].toString();
+            const key = args[0]?.toString();
             if (key !== this.state.key) {
                 this.setState({ key });
                 await reload();
@@ -571,9 +575,7 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: ProjectItem
                 }
             }
         });
-        this.on("destroy", () => {
-            unsubsribeItem();
-        });
+        this.on("destroy", unsubscribeItem);
     }
 }
 class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, any], [(...args: any[]) => any, ...any[]], [number]> {

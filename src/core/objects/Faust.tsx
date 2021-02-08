@@ -1109,7 +1109,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
     }];
     static UI = SubPatcherUI;
     type: "faust" | "gen" = "faust";
-    state: SubPatcherState = { inlets: 0, outlets: 0, defaultArgs: [], patcher: new (this.patcher.constructor as typeof Patcher)(this.patcher.project), key: this.box.args[0], cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
+    state: SubPatcherState = { inlets: 0, outlets: 0, defaultArgs: [], patcher: new this.Patcher(this.patcher.project), key: this.box.args[0], cachedCode: { exprs: ["process = 0"], onces: [], ins: 0, outs: 0 } };
     handleFilePathChanged = () => {
         this.setState({ key: this.state.patcher.file.projectPath });
     };
@@ -1117,10 +1117,10 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         if (e.instance === this.state.patcher) return;
         this.reload();
     };
-    subscribePatcher = () => {
+    subscribePatcher = async () => {
         const { patcher } = this.state;
         const { file } = patcher;
-        patcher.addObserver(this);
+        await patcher.addObserver(this);
         patcher.on("graphChanged", this.handleGraphChanged);
         patcher.on("changed", this.handlePatcherChanged);
         if (file) {
@@ -1130,7 +1130,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
             file.on("saved", this.reload);
         }
     };
-    unsubscribePatcher = () => {
+    unsubscribePatcher = async () => {
         const { patcher } = this.state;
         const { file } = patcher;
         patcher.off("graphChanged", this.handleGraphChanged);
@@ -1141,13 +1141,10 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
             file.off("pathChanged", this.handleFilePathChanged);
             file.off("saved", this.handleSaved);
         }
-        patcher.removeObserver(this); // patcher will be destroyed if no observers left.
+        await patcher.removeObserver(this); // patcher will be destroyed if no observers left.
         // const newPatcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
         // await newPatcher.load({}, this.type);
         // this.state.patcher = newPatcher;
-    };
-    handlePatcherReset = () => {
-        this.updateUI({ patcher: this.state.patcher });
     };
     handleGraphChanged = () => {
         const { ins, outs, exprs, onces } = inspectFaustPatcher(this.state.patcher);
@@ -1168,22 +1165,32 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
         this.patcher.emit("changed");
     };
     reload = async () => {
-        if (this.state.patcher) this.unsubscribePatcher();
+        if (this.state.patcher) await this.unsubscribePatcher();
         const { key } = this.state;
-        const P = this.patcher.constructor as typeof Patcher;
+        let patcher: Patcher;
         let rawPatcher: RawPatcher;
-        const { item, isTemp } = await this.getSharedItem(key, "patcher", async () => {
-            const patcher = new P(this.patcher.project);
-            await patcher.load(this.data, this.type);
-            rawPatcher = patcher.toSerializable();
-            return rawPatcher;
-        });
-        const patcher = await item.instantiate();
-        if (isTemp) this.setData(rawPatcher || patcher.toSerializable());
-        this.setState({ patcher });
-        this.handlePatcherReset();
-        this.subscribePatcher();
-        this.handleGraphChanged();
+        try {
+            const { item, newItem } = await this.getSharedItem(key, "patcher", async () => {
+                patcher = new this.Patcher(this.patcher.project);
+                await patcher.load(this.data, this.type);
+                rawPatcher = patcher.toSerializable();
+                return rawPatcher;
+            });
+            if (newItem) {
+                patcher.file = item;
+                this.setData(rawPatcher);
+            } else {
+                patcher = await item.instantiate();
+                this.setData(patcher.toSerializable());
+            }
+            this.setState({ patcher });
+            this.updateUI({ patcher });
+        } catch (error) {
+            this.error(error);
+        } finally {
+            await this.subscribePatcher();
+            this.handleGraphChanged();
+        }
     };
     handlePreInit = () => {
         this.state.patcher.props.mode = this.type;

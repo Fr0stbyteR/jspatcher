@@ -45,14 +45,14 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     get isDirty() {
         return this._isDirty;
     }
-    protected readonly observers = new Set<any>();
-    addObserver(observer: any) {
-        this.observers.add(observer);
-        this.emit("observers", this.observers);
+    protected readonly _observers = new Set<any>();
+    async addObserver(observer: any) {
+        this._observers.add(observer);
+        await this.emit("observers", this._observers);
     }
-    removeObserver(observer: any) {
-        this.observers.delete(observer);
-        this.emit("observers", this.observers);
+    async removeObserver(observer: any) {
+        this._observers.delete(observer);
+        await this.emit("observers", this._observers);
     }
     constructor(fileMgrIn: FileManager, projectIn: Project, parentIn: Folder, nameIn: string, dataIn?: ArrayBuffer) {
         super();

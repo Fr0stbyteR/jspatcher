@@ -1,7 +1,7 @@
 import TempItem from "./TempItem";
 
 export default class TempData extends TempItem {
-    type = "text" as const;
+    type = "unknown" as const;
     async instantiate(): Promise<any> {
         return this.data;
     }

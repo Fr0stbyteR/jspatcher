@@ -1,8 +1,21 @@
 import { SemanticICONS } from "semantic-ui-react";
 import { DefaultObject, Bang, isBang } from "../Base";
+import AudioFile from "../../audio/AudioFile";
+import TempAudioFile from "../../audio/TempAudioFile";
+import PatcherAudio from "../../audio/PatcherAudio";
 import { TMeta } from "../../types";
+import { ProjectItemEventMap } from "../../file/ProjectItem";
 
-export default class Buffer extends DefaultObject<{}, { key: string; value: AudioBuffer }, [Bang | File | ArrayBuffer, File | ArrayBuffer, string | number], [AudioBuffer], [string | number, number, number, number]> {
+interface BufferState {
+    key: string;
+    value: PatcherAudio;
+    sharedItem: AudioFile | TempAudioFile;
+    numberOfChannels: number;
+    length: number;
+    sampleRate: number;
+}
+
+export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File | ArrayBuffer | AudioBuffer | PatcherAudio, File | ArrayBuffer | AudioBuffer | PatcherAudio, string | number], [PatcherAudio], [string | number, number, number, number]> {
     static package = "WebAudio";
     static icon: SemanticICONS = "volume up";
     static author = "Fr0stbyteR";
@@ -11,11 +24,11 @@ export default class Buffer extends DefaultObject<{}, { key: string; value: Audi
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "anything",
-        description: "Bang to output stored buffer, file to decode, store the buffer then output it."
+        description: "Bang to output stored buffer, file to decode, AudioBuffer or PatcherAudio to store then output it as PatcherAudio."
     }, {
         isHot: false,
         type: "anything",
-        description: "File to decode, store the buffer."
+        description: "File to decode, AudioBuffer or PatcherAudio to store the buffer."
     }, {
         isHot: false,
         type: "anything",
@@ -23,7 +36,7 @@ export default class Buffer extends DefaultObject<{}, { key: string; value: Audi
     }];
     static outlets: TMeta["outlets"] = [{
         type: "anything",
-        description: "AudioBuffer"
+        description: "PatcherAudio"
     }];
     static args: TMeta["args"] = [{
         type: "anything",
@@ -42,41 +55,59 @@ export default class Buffer extends DefaultObject<{}, { key: string; value: Audi
         optional: true,
         description: "Initialize buffer's sample rate"
     }];
-    state = { key: undefined as string, value: undefined as AudioBuffer };
+    state: BufferState = { key: this.box.args[0]?.toString(), value: undefined, sharedItem: undefined, numberOfChannels: 1, length: this.audioCtx.sampleRate, sampleRate: this.audioCtx.sampleRate };
     subscribe() {
         super.subscribe();
-        const sharedDataKey = "_buffer";
-        const createBuffer = () => {
-            const { args } = this.box;
-            const { audioCtx } = this.patcher;
-            const channels = typeof args[1] === "number" ? ~~args[1] : 1;
-            const samples = typeof args[2] === "number" ? ~~args[2] : 1;
-            const sampleRate = typeof args[3] === "number" ? ~~args[3] : audioCtx.sampleRate;
-            return this.patcher.audioCtx.createBuffer(channels, samples, sampleRate);
+        const assertBuffer = (audio: PatcherAudio) => {
+            if (!audio) return false;
+            const { numberOfChannels, length, sampleRate } = this.state;
+            return audio.numberOfChannels === numberOfChannels && audio.length === length && audio.sampleRate === sampleRate;
         };
-        const assertBuffer = (buffer: AudioBuffer) => {
-            if (!buffer) return false;
-            const { args } = this.box;
-            const { audioCtx } = this.patcher;
-            const channels = typeof args[1] === "number" ? ~~args[1] : 1;
-            const samples = typeof args[2] === "number" ? ~~args[2] : 1;
-            const sampleRate = typeof args[3] === "number" ? ~~args[3] : audioCtx.sampleRate;
-            return buffer.numberOfChannels === channels && buffer.length !== samples && buffer.sampleRate !== sampleRate;
+        const handleFilePathChanged = () => {
+            this.setState({ key: this.state.sharedItem?.projectPath });
         };
-        const reload = (key: string) => {
-            if (this.state.key) this.sharedData.unsubscribe(sharedDataKey, this.state.key, this);
-            this.state.key = key;
-            if (key) {
-                const shared = this.sharedData.get(sharedDataKey, key);
-                if (assertBuffer(shared) && shared instanceof AudioBuffer) {
-                    this.state.value = shared;
+        const handleSaved = async (e: ProjectItemEventMap["saved"]) => {
+            if (e === this) return;
+            await reload();
+        };
+        const subsribeItem = async () => {
+            const file = this.state.sharedItem;
+            if (!file) return;
+            await file.addObserver(this);
+            file.on("destroyed", reload);
+            file.on("nameChanged", handleFilePathChanged);
+            file.on("pathChanged", handleFilePathChanged);
+            file.on("saved", handleSaved);
+        };
+        const unsubscribeItem = async () => {
+            const file = this.state.sharedItem;
+            if (!file) return;
+            file.off("destroyed", reload);
+            file.off("nameChanged", handleFilePathChanged);
+            file.off("pathChanged", handleFilePathChanged);
+            file.off("saved", handleSaved);
+            await this.state.sharedItem?.removeObserver(this);
+        };
+        const reload = async () => {
+            await unsubscribeItem();
+            const { key } = this.state;
+            let audio: PatcherAudio;
+            try {
+                const { item, newItem } = await this.getSharedItem(key, "audio", async () => {
+                    const { numberOfChannels, length, sampleRate } = this.state;
+                    audio = await PatcherAudio.fromSilence(this.patcher.project, numberOfChannels, length, sampleRate);
+                    return audio;
+                });
+                if (newItem) {
+                    audio.file = item;
                 } else {
-                    this.state.value = createBuffer();
-                    this.sharedData.set(sharedDataKey, key, this.state.value, this);
+                    audio = await item.instantiate();
                 }
-                this.sharedData.subscribe(sharedDataKey, this.state.key, this);
-            } else if (!assertBuffer(this.state.value)) {
-                this.state.value = createBuffer();
+                this.setState({ value: audio, sharedItem: item });
+            } catch (error) {
+                this.error(error);
+            } finally {
+                await subsribeItem();
             }
         };
         this.on("preInit", () => {
@@ -84,14 +115,46 @@ export default class Buffer extends DefaultObject<{}, { key: string; value: Audi
             this.outlets = 1;
         });
         this.on("updateArgs", (args) => {
-            const key = typeof args[0] === "undefined" ? args[0] : args[0].toString();
-            if (key !== this.state.key || !assertBuffer(this.state.value)) {
-                reload(key);
+            const oldKey = this.state.key;
+            const key = args[0]?.toString();
+            const numberOfChannels = typeof args[1] === "number" ? ~~args[1] : 1;
+            const length = typeof args[2] === "number" ? ~~args[2] : this.audioCtx.sampleRate;
+            const sampleRate = typeof args[3] === "number" ? ~~args[3] : this.audioCtx.sampleRate;
+            this.setState({ key, numberOfChannels, length, sampleRate });
+            if (key !== oldKey || !assertBuffer(this.state.value)) {
+                reload();
             }
         });
+        this.on("postInit", reload);
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
                 if (!isBang(data)) {
+                    if (data instanceof PatcherAudio) {
+                        this.state.value.setAudio(data);
+                    } else if (data instanceof AudioBuffer) {
+                        const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, data);
+                        this.state.value.setAudio(audio);
+                    } else {
+                        let audioBuffer: AudioBuffer;
+                        try {
+                            const ab = data instanceof ArrayBuffer ? data : await (data as File).arrayBuffer();
+                            audioBuffer = await this.patcher.audioCtx.decodeAudioData(ab);
+                        } catch (e) {
+                            this.error("Decode File failed.");
+                            return;
+                        }
+                        const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, audioBuffer);
+                        this.state.value.setAudio(audio);
+                    }
+                }
+                this.outlet(0, this.state.value);
+            } else if (inlet === 1) {
+                if (data instanceof PatcherAudio) {
+                    this.state.value.setAudio(data);
+                } else if (data instanceof AudioBuffer) {
+                    const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, data);
+                    this.state.value.setAudio(audio);
+                } else {
                     let audioBuffer: AudioBuffer;
                     try {
                         const ab = data instanceof ArrayBuffer ? data : await (data as File).arrayBuffer();
@@ -100,33 +163,16 @@ export default class Buffer extends DefaultObject<{}, { key: string; value: Audi
                         this.error("Decode File failed.");
                         return;
                     }
-                    this.state.value = audioBuffer;
-                    if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
+                    const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, audioBuffer);
+                    this.state.value.setAudio(audio);
                 }
-                this.outlet(0, this.state.value);
-            } else if (inlet === 1) {
-                let audioBuffer: AudioBuffer;
-                try {
-                    const ab = data instanceof ArrayBuffer ? data : await (data as File).arrayBuffer();
-                    audioBuffer = await this.patcher.audioCtx.decodeAudioData(ab);
-                } catch (e) {
-                    this.error("Decode File failed.");
-                    return;
-                }
-                this.state.value = audioBuffer;
-                if (this.state.key) this.sharedData.set(sharedDataKey, this.state.key, this.state.value, this);
             } else if (inlet === 2) {
                 if (typeof data === "string" || typeof data === "number") {
-                    const key = data.toString() || "";
-                    if (key !== this.state.key) {
-                        reload(key);
-                    }
+                    this.setState({ key: data?.toString() });
+                    reload();
                 }
             }
         });
-        this.on("sharedDataUpdated", ({ data }) => this.state.value = data);
-        this.on("destroy", () => {
-            if (this.state.key) this.sharedData.unsubscribe(sharedDataKey, this.state.key, this);
-        });
+        this.on("destroy", unsubscribeItem);
     }
 }

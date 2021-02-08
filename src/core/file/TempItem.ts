@@ -19,9 +19,9 @@ export default class TempItem extends ProjectItem {
         await this.emit("ready");
         return this;
     }
-    removeObserver(observer: any) {
-        super.removeObserver(observer);
-        if (this.observers.size === 0) this.destroy();
+    async removeObserver(observer: any) {
+        await super.removeObserver(observer);
+        if (this._observers.size === 0) await this.destroy();
     }
     /**
      * Creating alias (do not copy the data, new item has the same ref)

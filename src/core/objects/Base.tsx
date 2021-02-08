@@ -136,25 +136,26 @@ export abstract class AbstractObject<
      * If no ID provided, this will create a new key in temp
      * if no such ID found in files or in temp, will put the result of data() into it.
      */
-    async getSharedItem<T extends TempItemType>(id = performance.now().toString(), type: T = "unknown" as T, data?: () => Promise<TempItemByType<T>["data"]>): Promise<{ id: string; item: SharedItemByType<T>; isTemp: boolean }> {
+    async getSharedItem<T extends TempItemType>(id = performance.now().toString(), type: T = "unknown" as T, data?: () => Promise<TempItemByType<T>["data"]>): Promise<{ id: string; item: SharedItemByType<T>; newItem: boolean }> {
         let item: SharedItemByType<T>;
-        let isTemp = false;
+        let newItem = false;
         try {
             item = this.patcher.env.fileMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
         } catch {
-            isTemp = true;
             try {
                 item = this.patcher.env.tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
             } catch {
                 const d = await data?.();
                 try {
                     item = await this.patcher.env.tempMgr.root.addProjectItem(id, d, type) as SharedItemByType<T>;
+                    newItem = true;
                 } catch {
                     item = this.patcher.env.tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
                 }
             }
         }
-        return { id, item, isTemp };
+        if (item.type !== type) throw new Error(`Getting shared item ${id}, but returned item is of type ${item.type}, not of type ${type}.`);
+        return { id, item, newItem };
     }
     /**
      * Get prop value from box, if not defined, get from metadata default
