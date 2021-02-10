@@ -475,6 +475,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
             }
         };
         this.on("updateArgs", async (args) => {
+            if (!this.state.patcher) return;
             if (typeof args[0] === "string" || typeof args[0] === "undefined") {
                 const newKey = args[0];
                 if (newKey !== this.state.key) {

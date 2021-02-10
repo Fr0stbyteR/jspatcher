@@ -6,3 +6,13 @@
         padding-bottom: 6px;
     }
 }
+
+.ui.modal.fullscreen.audio-editor {
+    height: 90%;
+    left: auto !important;
+    & > i.close.icon {
+        color: #fff;
+        top: -1rem !important;
+        right: -1rem !important;
+    }
+}

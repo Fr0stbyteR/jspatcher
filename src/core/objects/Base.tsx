@@ -136,7 +136,7 @@ export abstract class AbstractObject<
      * If no ID provided, this will create a new key in temp
      * if no such ID found in files or in temp, will put the result of data() into it.
      */
-    async getSharedItem<T extends TempItemType>(id = performance.now().toString(), type: T = "unknown" as T, data?: () => Promise<TempItemByType<T>["data"]>): Promise<{ id: string; item: SharedItemByType<T>; newItem: boolean }> {
+    async getSharedItem<T extends TempItemType>(id = this.box.id, type: T = "unknown" as T, data?: () => Promise<TempItemByType<T>["data"]>): Promise<{ id: string; item: SharedItemByType<T>; newItem: boolean }> {
         let item: SharedItemByType<T>;
         let newItem = false;
         try {

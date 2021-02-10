@@ -17,11 +17,11 @@ export interface PatcherAudioEventMap {
 
 export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, AudioFile | TempAudioFile> {
     static async fromProjectItem(item: AudioFile) {
-        return new this(item).init(item.data);
+        return new this(item).init(item.data.slice(0));
     }
     static async fromArrayBuffer(ctxIn: ConstructorParameters<typeof PatcherAudio>[0], data: ArrayBuffer) {
         const audio = new PatcherAudio(ctxIn);
-        await audio.init(data);
+        await audio.init(data.slice(0));
         return audio;
     }
     static async fromNativeAudioBuffer(ctxIn: ConstructorParameters<typeof PatcherAudio>[0], bufferIn: AudioBuffer) {
