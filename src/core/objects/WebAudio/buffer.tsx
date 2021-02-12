@@ -60,7 +60,7 @@ export class BufferUI extends DefaultPopupUI<Buffer, {}, BufferUIState> {
         }
     }
     componentWillUnmount() {
-        this.state.editor?.off?.("changed", this.handleChanged);
+        this.state.editor?.off("changed", this.handleChanged);
         super.componentWillUnmount();
     }
     render() {
@@ -93,7 +93,7 @@ interface BufferState {
     sampleRate: number;
 }
 
-export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File | ArrayBuffer | AudioBuffer | PatcherAudio, File | ArrayBuffer | AudioBuffer | PatcherAudio, string | number], [PatcherAudio], [string | number, number, number, number], {}, BufferUIState> {
+export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File | ArrayBuffer | AudioBuffer | PatcherAudio, File | ArrayBuffer | AudioBuffer | PatcherAudio, string | number], [PatcherAudio, Bang], [string | number, number, number, number], {}, BufferUIState> {
     static package = "WebAudio";
     static icon: SemanticICONS = "volume up";
     static author = "Fr0stbyteR";
@@ -115,6 +115,9 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
     static outlets: TMeta["outlets"] = [{
         type: "anything",
         description: "PatcherAudio"
+    }, {
+        type: "bang",
+        description: "Output a bang while the PatcherAudio buffer object is loaded/changed."
     }];
     static args: TMeta["args"] = [{
         type: "anything",
@@ -190,11 +193,12 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
                 this.error(error);
             } finally {
                 await subsribeItem();
+                this.outlet(1, new Bang());
             }
         };
         this.on("preInit", () => {
             this.inlets = 3;
-            this.outlets = 1;
+            this.outlets = 2;
         });
         this.on("updateArgs", (args) => {
             if (!this.state.audio) return;

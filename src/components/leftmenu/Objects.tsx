@@ -162,7 +162,7 @@ export default class Objects extends React.PureComponent<{ env: Env; editor: Pat
     timer: number = undefined;
     handlePkgChanged = ({ pkg }: { pkg: TPackage }) => this.setState({ pkg: {} }, () => this.setState({ pkg }));
     handleEnvActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
-        this.state.editor?.instance?.off?.("libChanged", this.handlePkgChanged);
+        this.state.editor?.instance.off("libChanged", this.handlePkgChanged);
         if (editor instanceof PatcherEditor) {
             editor.instance.on("libChanged", this.handlePkgChanged);
             this.setState({ editor, pkg: editor.instance.activePkg });
@@ -174,7 +174,7 @@ export default class Objects extends React.PureComponent<{ env: Env; editor: Pat
         this.props.env.on("activeEditor", this.handleEnvActiveEditor);
     }
     componentWillUnmount() {
-        this.state.editor?.instance?.off?.("libChanged", this.handlePkgChanged);
+        this.state.editor?.instance.off("libChanged", this.handlePkgChanged);
         this.props.env.off("activeEditor", this.handleEnvActiveEditor);
     }
     handleKeyDown = (e: React.KeyboardEvent<Input>) => {

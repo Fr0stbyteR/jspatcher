@@ -37,4 +37,7 @@ export default class TempFolder extends Folder {
         await this.emitTreeChanged();
         return folder;
     }
+    findItem(itemIn: string): TempItem | TempFolder {
+        return super.findItem(itemIn) as TempItem | TempFolder;
+    }
 }

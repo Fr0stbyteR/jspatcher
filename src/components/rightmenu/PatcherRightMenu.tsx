@@ -87,19 +87,19 @@ export default class PatcherRightMenu extends React.PureComponent<P, S> {
         const envAudioCtx = this.props.env.audioCtx;
         const projAudioCtx = this.props.env.currentProject?.audioCtx;
         if (this.state.audioOn) {
-            projAudioCtx?.suspend?.();
+            projAudioCtx?.suspend();
             envAudioCtx.suspend();
         } else {
-            projAudioCtx?.resume?.();
+            projAudioCtx?.resume();
             envAudioCtx.resume();
         }
     };
     handleEnvAudioCtxStateChange = () => {
         const { state } = this.props.env.audioCtx;
         if (state === "running") {
-            this.props.env.currentProject?.audioCtx?.resume?.();
+            this.props.env.currentProject?.audioCtx?.resume();
         } else {
-            this.props.env.currentProject?.audioCtx?.suspend?.();
+            this.props.env.currentProject?.audioCtx?.suspend();
         }
         this.setState({ audioOn: state === "running" });
     };

@@ -1,21 +1,22 @@
 import * as Color from "color-js";
 import UIObject from "./Base";
+import PatcherAudio from "../../audio/PatcherAudio";
 import { TMeta, TPropsMeta } from "../../types";
-import { BaseUIState, CanvasUI } from "../BaseUI";
+import { BaseUIState, CanvasUI, CanvasUIState } from "../BaseUI";
 
 interface WaveformState {
-    key: string;
-    value: AudioBuffer;
+    audio: PatcherAudio;
 }
 interface WaveformUIProps {
     interleaved: boolean;
-    selection: [number, number];
-    zoom: number;
-    zoomOffset: number;
+    cursor: number;
+    viewRange: [number, number];
+    selRange: [number, number];
     range: number;
     autoRange: boolean;
     showStats: boolean;
     bgColor: string;
+    cursorColor: string;
     phosphorColor: string;
     hueOffset: number;
     textColor: string;
@@ -26,151 +27,142 @@ interface WaveformUIState extends WaveformState, BaseUIState, WaveformUIProps {}
 type WaveformProps = WaveformUIProps;
 export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
     static defaultSize = [120, 60] as [number, number];
-    componentDidMount() {
-        const { bgColor } = this.state;
-        const ctx = this.ctx;
-        if (!ctx) return;
-        const [width, height] = this.fullSize();
-        // Background
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, width, height);
-        super.componentDidMount();
-    }
     async paint() {
         const {
-            // width,
-            // height,
-            // zoom,
-            // zoomOffset,
-            interleaved,
-            // $cursor,
+            cursor,
             range,
-            autoRange,
+            viewRange,
             showStats,
             bgColor,
+            cursorColor,
             phosphorColor,
             hueOffset,
             textColor,
-            gridColor,
             seperatorColor,
-            value
+            audio
         } = this.state;
-        const ctx = this.ctx;
-        if (!ctx) return;
-
-        const left = 0;
-        const bottom = 0;
-
-        // Background
+        const { ctx } = this;
         const [width, height] = this.fullSize();
+
         ctx.clearRect(0, 0, width, height);
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, width, height);
 
-        if (!value) return;
-        const t: Float32Array[] = [];
-        for (let i = 0; i < value.numberOfChannels; i++) {
-            t[i] = value.getChannelData(i);
-        }
-        if (!t || !t.length || !t[0].length) return;
+        if (!audio) return;
 
-        const $ = 0;
+        const { audioBuffer: buffer, waveform } = audio;
+        const t = [];
+        for (let i = 0; i < buffer.numberOfChannels; i++) {
+            t[i] = buffer.getChannelData(i);
+        }
+        if (!t.length || !t[0].length) return;
         const channels = t.length;
-        const l = t[0].length;
+
         // Vertical Range
-        let min = -range;
-        let max = range;
-        let yFactor = range;
-        if (autoRange) {
-            // Fastest way to get min and max to have: 1. max abs value for y scaling, 2. mean value for zero-crossing
-            let i = channels;
-            let s = 0;
-            while (i--) {
-                let j = l;
-                while (j--) {
-                    s = t[i][j];
-                    if (s < min) min = s;
-                    else if (s > max) max = s;
-                }
-            }
-            yFactor = Math.max(1, Math.abs(min), Math.abs(max))/* * vzoom*/;
-        }
+        const yFactor = range;
         // Grids
-        ctx.strokeStyle = gridColor;
-        let vStep = 0.25;
-        while (yFactor / 2 / vStep > 2) vStep *= 2; // Minimum horizontal grids in channel one side = 2
-        ctx.beginPath();
-        ctx.setLineDash([]);
-        const gridChannels = interleaved ? channels : 1;
-        const channelHeight = (height - bottom) / gridChannels;
-        for (let i = 0; i < gridChannels; i++) {
-            let y = (i + 0.5) * channelHeight;
-            ctx.moveTo(left, y);
-            ctx.lineTo(width, y); // 0-line
-            for (let j = vStep; j < yFactor; j += vStep) {
-                y = (i + 0.5 + j / yFactor / 2) * channelHeight;
-                ctx.moveTo(left, y);
-                ctx.lineTo(width, y); // below 0
-                y = (i + 0.5 - j / yFactor / 2) * channelHeight;
-                ctx.moveTo(left, y);
-                ctx.lineTo(width, y); // above 0
-            }
-        }
-        ctx.stroke();
+        const gridChannels = channels;
+        const channelHeight = height / gridChannels;
 
         ctx.beginPath();
         ctx.setLineDash([4, 2]);
         ctx.strokeStyle = seperatorColor;
         for (let i = 1; i < gridChannels; i++) {
-            ctx.moveTo(left, i * channelHeight);
+            ctx.moveTo(0, i * channelHeight);
             ctx.lineTo(width, i * channelHeight);
         }
         ctx.stroke();
         ctx.setLineDash([]);
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1;
         const channelColor: string[] = [];
+        // Horizontal Range
+        const [$0, $1] = viewRange; // Draw start-end
+        const pixelsPerSamp = width / ($1 - $0);
+        const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp));
+        const waveformKey = Object.keys(waveform).filter(v => +v).reduce((acc, cur) => (+cur < sampsPerPixel && +cur > (acc || 0) ? +cur : acc), undefined as number);
         for (let i = 0; i < channels; i++) {
-            // Horizontal Range
-            let $0 = 0; // Draw start
-            let $1 = l; // Draw End
-            const $zerox = 0; // First Zero-crossing
-            const drawL = l; // Length to draw
-            $0 = Math.round($zerox/* + drawL * zoomOffset*/);
-            $1 = Math.round($zerox + drawL/* / zoom + drawL * zoomOffset*/);
-            const gridX = (width - left) / ($1 - $0);
-            const step = Math.max(1, Math.round(1 / gridX));
-
             ctx.beginPath();
             channelColor[i] = Color(phosphorColor).shiftHue(i * hueOffset).toHSL();
             ctx.strokeStyle = channelColor[i];
-            let maxInStep;
-            let minInStep;
-            for (let j = $0; j < $1; j++) {
-                const $j = (j + $) % l;
-                const samp = t[i][$j];
-                const $step = (j - $0) % step;
-                if ($step === 0) {
-                    maxInStep = samp;
-                    minInStep = samp;
+            ctx.fillStyle = channelColor[i];
+            if (waveformKey) {
+                const sampsPerPixel = 1 / pixelsPerSamp;
+                const { idx } = waveform[waveformKey];
+                const { min, max } = waveform[waveformKey][i];
+                let x = 0;
+                let maxInStep;
+                let minInStep;
+                for (let j = 0; j < idx.length - 1; j++) {
+                    const $ = idx[j];
+                    if ($ > $1) break;
+                    const $next = j === idx.length - 1 ? buffer.length : idx[j + 1];
+                    if ($next <= $0) continue;
+                    if (typeof maxInStep === "undefined") {
+                        maxInStep = max[j];
+                        minInStep = min[j];
+                    } else {
+                        if (min[j] < minInStep) minInStep = min[j];
+                        if (max[j] > maxInStep) maxInStep = max[j];
+                    }
+                    if ($next >= $0 + sampsPerPixel * (x + 1)) {
+                        let y = channelHeight * (i + 0.5 - maxInStep / yFactor * 0.5);
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                        if (minInStep !== maxInStep) {
+                            y = channelHeight * (i + 0.5 - minInStep / yFactor * 0.5);
+                            ctx.lineTo(x, y);
+                        }
+                        maxInStep = undefined;
+                        x++;
+                    }
                 }
-                if ($step !== step - 1) {
-                    if ($step !== 0) {
+            } else {
+                let maxInStep;
+                let minInStep;
+                const prev = t[i][$0 - 1] || 0;
+                const prevX = -0.5 * pixelsPerSamp;
+                const prevY = channelHeight * (i + 0.5 - prev / yFactor * 0.5);
+                ctx.moveTo(prevX, prevY);
+                for (let j = $0; j < $1; j++) {
+                    const samp = t[i][j];
+                    const $step = (j - $0) % sampsPerPixel;
+                    if ($step === 0) {
+                        maxInStep = samp;
+                        minInStep = samp;
+                    } else {
                         if (samp > maxInStep) maxInStep = samp;
                         if (samp < minInStep) minInStep = samp;
                     }
-                    continue;
+                    if ($step === sampsPerPixel - 1) {
+                        const x = (j - $step - $0 + 0.5) * pixelsPerSamp;
+                        let y = channelHeight * (i + 0.5 - maxInStep / yFactor * 0.5);
+                        ctx.lineTo(x, y);
+                        if (minInStep !== maxInStep && pixelsPerSamp < 1) {
+                            y = channelHeight * (i + 0.5 - minInStep / yFactor * 0.5);
+                            ctx.lineTo(x, y);
+                        }
+                        if (pixelsPerSamp > 10) ctx.fillRect(x - 2, y - 2, 4, 4);
+                    }
                 }
-                const x = (j - $0) * gridX + left;
-                let y = channelHeight * (+interleaved * i + 0.5 - maxInStep / yFactor * 0.5);
-                if (j === $0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-                if (minInStep !== maxInStep) {
-                    y = channelHeight * (+interleaved * i + 0.5 - minInStep / yFactor * 0.5);
-                    ctx.lineTo(x, y);
-                }
+                const next = t[i][$1] || 0;
+                const nextX = ($1 - $0 + 0.5) * pixelsPerSamp;
+                const nextY = channelHeight * (i + 0.5 - next / yFactor * 0.5);
+                ctx.lineTo(nextX, nextY);
             }
             ctx.stroke();
         }
+        // fade paths
+        ctx.strokeStyle = "yellow";
+        ctx.lineWidth = 1;
+        // cursor
+        if (cursor < $0 || cursor > $1) return;
+        ctx.strokeStyle = cursorColor;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        const cursorX = (cursor - $0) / ($1 - $0) * width;
+        ctx.moveTo(cursorX, 0);
+        ctx.lineTo(cursorX, height);
+        ctx.stroke();
         // Stats
         if (showStats) {
             ctx.font = "bold 12px Consolas, monospace";
@@ -182,22 +174,35 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
             ctx.fillText((-yFactor).toFixed(2), 2, height - 2);
         }
     }
+    componentDidMount() {
+        const { bgColor } = this.state;
+        const ctx = this.ctx;
+        if (!ctx) return;
+        const [width, height] = this.fullSize();
+        // Background
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, width, height);
+        this.state.audio?.on("changed", this.schedulePaint);
+        super.componentDidMount();
+    }
+    componentDidUpdate(prevProps: any, prevState: Readonly<WaveformUIState & CanvasUIState>) {
+        if (prevState.audio !== this.state.audio) {
+            prevState.audio?.off("changed", this.schedulePaint);
+            this.state.audio?.on("changed", this.schedulePaint);
+        }
+        super.componentDidUpdate(prevProps, prevState);
+    }
+    componentWillUnmount() {
+        this.state.audio?.off("changed", this.schedulePaint);
+        super.componentWillUnmount();
+    }
 }
-export default class waveform extends UIObject<{}, WaveformState, [AudioBuffer, string | number], [], [string | number], WaveformProps, WaveformUIState> {
+export default class waveform extends UIObject<{}, WaveformState, [PatcherAudio], [], [], WaveformProps, WaveformUIState> {
     static description = "Buffer waveform view";
     static inlets: TMeta["inlets"] = [{
-        isHot: true,
-        type: "object",
-        description: "AudioBuffer"
-    }, {
         isHot: false,
-        type: "anything",
-        description: "Buffer name"
-    }];
-    static args: TMeta["args"] = [{
-        type: "anything",
-        optional: true,
-        description: "Buffer name"
+        type: "object",
+        description: "Patcher Audio object (from buffer~)"
     }];
     static props: TPropsMeta<WaveformProps> = {
         interleaved: {
@@ -206,22 +211,22 @@ export default class waveform extends UIObject<{}, WaveformState, [AudioBuffer, 
             description: "Draw channels seperately",
             isUIState: true
         },
-        selection: {
-            type: "object",
-            default: [0, 1],
-            description: "Select a part of buffer",
-            isUIState: true
-        },
-        zoom: {
-            type: "number",
-            default: 1,
-            description: "Horizontal zoom factor",
-            isUIState: true
-        },
-        zoomOffset: {
+        cursor: {
             type: "number",
             default: 0,
-            description: "Horizontal zoom offset [0, 1)",
+            description: "Display a cursor",
+            isUIState: true
+        },
+        viewRange: {
+            type: "object",
+            default: [0, 1],
+            description: "Display only a part of the buffer",
+            isUIState: true
+        },
+        selRange: {
+            type: "object",
+            default: null,
+            description: "Nullable, display selection of a part of the buffer",
             isUIState: true
         },
         range: {
@@ -246,6 +251,12 @@ export default class waveform extends UIObject<{}, WaveformState, [AudioBuffer, 
             type: "color",
             default: "rgb(40, 40, 40)",
             description: "Background color",
+            isUIState: true
+        },
+        cursorColor: {
+            type: "color",
+            default: "white",
+            description: "Cursor color",
             isUIState: true
         },
         phosphorColor: {
@@ -280,55 +291,23 @@ export default class waveform extends UIObject<{}, WaveformState, [AudioBuffer, 
         }
     };
     static UI = WaveformUI;
-    state: WaveformState = { key: undefined as string, value: undefined as AudioBuffer };
+    state: WaveformState = { audio: undefined };
     subscribe() {
         super.subscribe();
-        const sharedDataKey = "_buffer";
-        const reload = (key: string) => {
-            if (this.state.key) this.sharedData.unsubscribe(sharedDataKey, this.state.key, this);
-            this.state.key = key;
-            if (key) {
-                const shared = this.sharedData.get(sharedDataKey, key);
-                this.state.value = shared instanceof AudioBuffer ? shared : undefined;
-                this.updateUI(this.state);
-                this.sharedData.subscribe(sharedDataKey, this.state.key, this);
-            }
-        };
         this.on("preInit", () => {
-            this.inlets = 2;
+            this.inlets = 1;
             this.outlets = 0;
-        });
-        this.on("updateArgs", (args) => {
-            const key = typeof args[0] === "undefined" ? args[0] : args[0].toString();
-            if (key !== this.state.key) {
-                reload(key);
-                this.updateUI(this.state);
-            }
         });
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
-                if (data instanceof AudioBuffer) {
-                    this.state.value = data;
+                if (data instanceof PatcherAudio) {
+                    this.setState({ audio: data });
                     this.updateUI(this.state);
-                }
-            } else if (inlet === 1) {
-                if (typeof data === "string" || typeof data === "number") {
-                    const key = data.toString() || "";
-                    if (key !== this.state.key) {
-                        reload(key);
-                        this.updateUI(this.state);
-                    }
+                    this.update(null, { selRange: null, viewRange: [0, data.length], cursor: 0 });
+                } else {
+                    this.error("Input data is not PatcherAudio instance");
                 }
             }
-        });
-        this.on("sharedDataUpdated", ({ data }) => {
-            if (data instanceof AudioBuffer) {
-                this.state.value = data;
-                this.updateUI(this.state);
-            }
-        });
-        this.on("destroy", () => {
-            if (this.state.key) this.sharedData.unsubscribe(sharedDataKey, this.state.key, this);
         });
     }
 }

@@ -27,7 +27,7 @@ export default class ui extends BaseObject<{}, S, [FaustAudioWorkletNode], [Reco
         state: DOMUIState = { ...this.state, children: this.props.object.state.root ? [this.props.object.state.root] : [] };
         componentDidMount() {
             super.componentDidMount();
-            this.props.object.state.faustUI?.resize?.();
+            this.props.object.state.faustUI?.resize();
         }
     };
     state: S = { node: undefined, faustUI: undefined, root: undefined };
@@ -39,16 +39,16 @@ export default class ui extends BaseObject<{}, S, [FaustAudioWorkletNode], [Reco
         });
         this.on("postInit", () => this.updateUI({ shadow: false }));
         const handleParamChangedByDSP = (e: CustomEvent<{ path: string, value: number }>) => {
-            this.state.faustUI?.paramChangeByDSP?.(e.detail.path, e.detail.value);
+            this.state.faustUI?.paramChangeByDSP(e.detail.path, e.detail.value);
         };
         const handleDestroyDSP = (e: CustomEvent<{ target: FaustAudioWorkletNode }>) => {
-            e.detail.target?.removeEventListener?.("paramChanged", handleParamChangedByDSP);
-            e.detail.target?.removeEventListener?.("destroy", handleDestroyDSP);
+            e.detail.target?.removeEventListener("paramChanged", handleParamChangedByDSP);
+            e.detail.target?.removeEventListener("destroy", handleDestroyDSP);
         };
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 if (data instanceof FaustAudioWorkletNode) {
-                    this.state.node?.removeEventListener?.("paramChanged", handleParamChangedByDSP);
+                    this.state.node?.removeEventListener("paramChanged", handleParamChangedByDSP);
                     const ui = data.getUI() as TFaustUI;
                     const root = document.createElement("div");
                     root.style.width = "100%";
@@ -80,8 +80,8 @@ export default class ui extends BaseObject<{}, S, [FaustAudioWorkletNode], [Reco
             }
         });
         this.on("destroy", () => {
-            this.state.node?.removeEventListener?.("paramChanged", handleParamChangedByDSP);
-            this.state.node?.removeEventListener?.("destroy", handleDestroyDSP);
+            this.state.node?.removeEventListener("paramChanged", handleParamChangedByDSP);
+            this.state.node?.removeEventListener("destroy", handleDestroyDSP);
         });
         const handleResize = () => {
             if (this.state.faustUI) this.state.faustUI.resize();

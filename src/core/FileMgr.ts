@@ -37,7 +37,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         return this.projectRoot.empty();
     }
     async init(project: Project, clean?: boolean) {
-        this.JsZip = await import("jszip");
+        this.JsZip = (await import("jszip") as any).default;
         await this.worker.init();
         if (clean) await this.worker.empty();
         this.root = new Folder(this, project, null, null);

@@ -1,5 +1,5 @@
 /* eslint-disable arrow-body-style */
-import { TMIDIEvent, TBPF, TRect, TPresentationRect, FileExtension, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit } from "../core/types";
+import { TMIDIEvent, TBPF, TRect, TPresentationRect, FileExtension, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit, TPatcherProps } from "../core/types";
 
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
@@ -195,7 +195,7 @@ export const extToType = (ext: FileExtension): Exclude<ProjectItemType, "folder"
     return "unknown";
 };
 
-export const max2js = (patcherIn: TMaxPatcher): RawPatcher => {
+export const max2js = (patcherIn: TMaxPatcher, mode = "max" as TPatcherProps["mode"]): RawPatcher => {
     const patcher: RawPatcher = { boxes: {}, lines: {} };
     const maxPatcher = (patcherIn as TMaxPatcher).patcher;
     patcher.props = {
@@ -203,7 +203,8 @@ export const max2js = (patcherIn: TMaxPatcher): RawPatcher => {
         editingBgColor: rgbaMax2Css(maxPatcher.editing_bgcolor),
         dependencies: [],
         grid: maxPatcher.gridsize,
-        openInPresentation: !!maxPatcher.openinpresentation
+        openInPresentation: !!maxPatcher.openinpresentation,
+        mode
     };
     const maxBoxes = maxPatcher.boxes;
     const maxLines = maxPatcher.lines;

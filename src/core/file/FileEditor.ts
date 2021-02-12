@@ -83,8 +83,8 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
         this.instance = instance;
         this.instance?.addObserver(this);
         this.instance.on("destroy", this.handleDestroy);
-        this.on("dirty", isDirty => this.file?.emit?.("dirty", isDirty));
-        this.on("destroy", () => this.file?.emit?.("dirty", false));
+        this.on("dirty", isDirty => this.file?.emit("dirty", isDirty));
+        this.on("destroy", () => this.file?.emit("dirty", false));
         const handleReady = () => {
             this._isReady = true;
             this.off("ready", handleReady);
@@ -148,6 +148,10 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
         await this.emit("saved");
     }
     async destroy() {
+        if (this.project) {
+            this.project.off("save", this.handleProjectSave);
+            this.project.off("unload", this.handleProjectUnload);
+        }
         this.instance.off("destroy", this.handleDestroy);
         this.instance.removeObserver(this);
         await this.emit("destroy");

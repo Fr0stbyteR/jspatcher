@@ -265,7 +265,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     }
     async newProject() {
         const oldProject = this.currentProject;
-        await oldProject?.unload?.();
+        await oldProject?.unload();
         const project = new Project(this);
         this.currentProject = project;
         await project.load(true);
@@ -273,12 +273,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         return project;
     }
     async reload() {
-        await this.currentProject?.unload?.();
-        await this.currentProject?.load?.();
+        await this.currentProject?.unload();
+        await this.currentProject?.load();
     }
     async loadFromZip(data: ArrayBuffer) {
         const oldProject = this.currentProject;
-        await oldProject?.unload?.();
+        await oldProject?.unload();
         await this.fileMgr.emptyProject();
         const project = new Project(this);
         this.currentProject = project;

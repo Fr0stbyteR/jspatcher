@@ -126,12 +126,6 @@ export abstract class AbstractObject<
         this.data = Object.assign(this.data, dataIn);
     }
     /**
-     * Get the shared data manager
-     */
-    get sharedData() {
-        return this._patcher.state.dataMgr;
-    }
-    /**
      * Get a shared item from files or temp
      * If no ID provided, this will create a new key in temp
      * if no such ID found in files or in temp, will put the result of data() into it.
@@ -145,12 +139,16 @@ export abstract class AbstractObject<
             try {
                 item = this.patcher.env.tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
             } catch {
-                const d = await data?.();
-                try {
-                    item = await this.patcher.env.tempMgr.root.addProjectItem(id, d, type) as SharedItemByType<T>;
-                    newItem = true;
-                } catch {
-                    item = this.patcher.env.tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
+                if (data) {
+                    const d = await data();
+                    try {
+                        item = await this.patcher.env.tempMgr.root.addProjectItem(id, d, type) as SharedItemByType<T>;
+                        newItem = true;
+                    } catch {
+                        item = this.patcher.env.tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
+                    }
+                } else {
+                    return { id, item: null, newItem };
                 }
             }
         }

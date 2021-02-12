@@ -521,7 +521,7 @@ export class CanvasUI<T extends BaseObject = BaseObject, P extends Partial<Canva
         this.schedulePaint();
         this.editor.on("presentation", this.schedulePaint);
     }
-    componentDidUpdate() { // But super.componentDidUpdate is not a function
+    componentDidUpdate(prevProps: Readonly<P & CanvasUIProps<T>>, prevState: Readonly<S & CanvasUIState>, snapshot?: any) { // super.componentDidUpdate is not a function
         this.schedulePaint();
     }
     componentWillUnmount() {

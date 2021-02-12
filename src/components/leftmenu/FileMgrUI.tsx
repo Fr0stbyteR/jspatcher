@@ -44,7 +44,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         deleteModalOpen: false,
         deleteAllModalOpen: false,
         newFolderModalOpen: false,
-        items: this.props.env.fileMgr.projectRoot?.getOrderedItems?.() || [],
+        items: this.props.env.fileMgr.projectRoot?.getOrderedItems() || [],
         fileDropping: false,
         moving: undefined
     };
@@ -57,7 +57,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         project.on("propsChanged", this.handleProjectPropsChanged);
     };
     handleEnvInstances = (instances: EnvEventMap["instances"]) => this.setState({ instances });
-    handleTreeChanged = () => this.setState({ items: this.props.env.fileMgr.projectRoot?.getOrderedItems?.() || [] });
+    handleTreeChanged = () => this.setState({ items: this.props.env.fileMgr.projectRoot?.getOrderedItems() || [] });
     handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();

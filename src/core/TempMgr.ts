@@ -3,6 +3,7 @@ import ProjectItem from "./file/ProjectItem";
 import FileManager from "./FileMgr";
 import Project from "./Project";
 import { RawProjectItem, RawProjectItems } from "./types";
+import TempItem from "./file/TempItem";
 
 export default class TempManager extends FileManager {
     root: TempFolder;
@@ -81,7 +82,7 @@ export default class TempManager extends FileManager {
     }
     getProjectItemFromPath(path: string) {
         const pathArray = path.split("/");
-        const itemArray: ProjectItem[] = [this.root];
+        const itemArray: (TempItem | TempFolder)[] = [this.root];
         for (let i = 0; i < pathArray.length; i++) {
             const id = pathArray[i];
             if (id.length === 0) continue;

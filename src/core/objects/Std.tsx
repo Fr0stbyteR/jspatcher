@@ -550,7 +550,7 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: ProjectItem
             } else {
                 if (typeof args[1] !== "undefined") {
                     this.setState({ value: args[1] });
-                    this.state.sharedItem?.save?.(this.state.value, this);
+                    this.state.sharedItem?.save(this.state.value, this);
                 }
             }
         });
@@ -559,12 +559,12 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: ProjectItem
             if (inlet === 0) {
                 if (!isBang(data)) {
                     this.setState({ value: data });
-                    this.state.sharedItem?.save?.(this.state.value, this);
+                    this.state.sharedItem?.save(this.state.value, this);
                 }
                 this.outlet(0, this.state.value);
             } else if (inlet === 1) {
                 this.setState({ value: data });
-                this.state.sharedItem?.save?.(this.state.value, this);
+                this.state.sharedItem?.save(this.state.value, this);
             } else if (inlet === 2) {
                 if (typeof data === "string" || typeof data === "number") {
                     const key = data.toString() || "";

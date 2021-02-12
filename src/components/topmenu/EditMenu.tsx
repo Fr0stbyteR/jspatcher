@@ -66,9 +66,9 @@ export default class EditMenu extends React.PureComponent<P, S> {
     }
     handleLocked = (locked: boolean) => this.setState({ locked });
     handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
-        this.state.editor?.off?.("locked", this.handleLocked);
+        this.state.editor?.off("locked", this.handleLocked);
         this.setState({ editor, locked: !!editor?.isLocked });
-        editor?.on?.("locked", this.handleLocked);
+        editor?.on("locked", this.handleLocked);
     };
     componentDidMount() {
         this.props.env.on("activeEditor", this.handleActiveEditor);

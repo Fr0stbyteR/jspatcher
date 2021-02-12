@@ -324,7 +324,7 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, SubPatcherUIState>
         }
     }
     componentWillUnmount() {
-        this.state.editor?.off?.("changed", this.handleChanged);
+        this.state.editor?.off("changed", this.handleChanged);
         super.componentWillUnmount();
     }
     render() {
@@ -665,7 +665,7 @@ export class BPatcherUI extends BaseUI<patcher, {}, SubPatcherUIState> {
         }
     }
     componentWillUnmount() {
-        this.state.editor?.off?.("changed", this.handleChanged);
+        this.state.editor?.off("changed", this.handleChanged);
         super.componentWillUnmount();
     }
     static dockable = true;

@@ -78,6 +78,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Aud
             this.waveform = new Waveform(this);
             await this.waveform.generate();
         });
+        this.on("setAudio", () => this.emit("changed"));
         await this.emit("postInit");
         this._isReady = true;
         await this.emit("ready");

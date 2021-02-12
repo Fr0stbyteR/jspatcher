@@ -16,7 +16,7 @@ export default class TextHistory extends History<TextEditorEventMap, TextEditor>
             if (this.editor.editor) {
                 this.editor.editor.focus();
                 if (!document.execCommand("undo")) {
-                    (this.editor.editor.getModel() as any).undo?.();
+                    (this.editor.editor.getModel() as any)?.undo();
                 }
                 this.editor.text = this.editor.editor.getValue();
                 e.oldText = this.editor.text;
@@ -39,7 +39,7 @@ export default class TextHistory extends History<TextEditorEventMap, TextEditor>
             if (this.editor.editor) {
                 this.editor.editor.focus();
                 if (!document.execCommand("undo")) {
-                    (this.editor.editor.getModel() as any)?.redo?.();
+                    (this.editor.editor.getModel() as any)?.redo();
                 }
                 this.editor.text = this.editor.editor.getValue();
                 e.text = this.editor.text;

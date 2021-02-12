@@ -81,10 +81,10 @@ export default class FileMenu extends React.PureComponent<P, S> {
     };
     handleClickSave = async () => {
         if (this.props.env.activeEditor?.isInMemory) this.setState({ showSaveAsModal: true });
-        else await this.props.env.activeEditor?.save?.();
+        else await this.props.env.activeEditor?.save();
     };
     handleClickSaveAll = async () => {
-        await this.props.env.currentProject?.save?.();
+        await this.props.env.currentProject?.save();
     };
     handleClickNewAudio = () => this.setState({ showNewAudioModal: true });
     handleNewAudioModalClose = () => this.setState({ showNewAudioModal: false });
@@ -101,7 +101,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
     handleSaveAsModalClose = () => this.setState({ showSaveAsModal: false });
     handleSaveAsModalConfirm = async (folder: Folder, name: string) => {
         this.setState({ showSaveAsModal: false });
-        await this.props.env.activeEditor?.saveAs?.(folder, name);
+        await this.props.env.activeEditor?.saveAs(folder, name);
     };
     handleClickExportProject = async () => {
         if (!this.props.env.currentProject) return;

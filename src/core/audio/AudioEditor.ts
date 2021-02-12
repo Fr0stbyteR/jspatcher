@@ -157,6 +157,7 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
             enabledChannels: new Array(this.numberOfChannels).fill(true)
         });
         this.instance.on("setAudio", this.handleSetAudio);
+        this.on("changed", () => this.instance.emit("changed"));
         await this.env.taskMgr.newTask(this, "Initializing Audio Editor...", async () => {
             await this.player.init();
             await this.recorder.init();
