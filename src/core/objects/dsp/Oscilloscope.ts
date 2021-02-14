@@ -165,6 +165,12 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             const gridX = (width - left) / ($1 - $0);
             const step = Math.max(1, Math.round(1 / gridX));
 
+            if (interleaved) {
+                ctx.save();
+                const clip = new Path2D();
+                clip.rect(0, i * channelHeight, width, channelHeight);
+                ctx.clip(clip);
+            }
             ctx.beginPath();
             channelColor[i] = Color(phosphorColor).shiftHue(i * hueOffset).toHSL();
             ctx.strokeStyle = channelColor[i];
@@ -195,6 +201,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
                 }
             }
             ctx.stroke();
+            if (interleaved) ctx.restore();
         }
         Atomics.store(lock, 0, 0);
         // Stats

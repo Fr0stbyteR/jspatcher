@@ -3,7 +3,7 @@ import { StrictModalProps, Modal } from "semantic-ui-react";
 import { DefaultObject, BaseObject } from "./Base";
 import Patcher from "../patcher/Patcher";
 import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
-import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState } from "./BaseUI";
+import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState, DefaultPopupUIProps } from "./BaseUI";
 import { ProjectItemEventMap } from "../file/ProjectItem";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
 import PatcherUI from "../../components/editors/patcher/PatcherUI";
@@ -306,7 +306,7 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, SubPatcherUIState>
             editor.on("changed", this.handleChanged);
         }
     }
-    componentDidUpdate(prevProps: any, prevState: Readonly<SubPatcherUIState & BaseUIState>) {
+    componentDidUpdate(prevProps: Readonly<DefaultPopupUIProps>, prevState: Readonly<SubPatcherUIState & DefaultPopupUIState>) {
         if (prevState.patcher !== this.state.patcher) {
             if (this.state.editor) {
                 this.state.editor.off("changed", this.handleChanged);
@@ -322,6 +322,7 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, SubPatcherUIState>
                 this.setState({ timestamp: performance.now(), editor: undefined });
             }
         }
+        super.componentDidUpdate(prevProps, prevState);
     }
     componentWillUnmount() {
         this.state.editor?.off("changed", this.handleChanged);

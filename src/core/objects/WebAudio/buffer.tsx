@@ -8,12 +8,13 @@ import AudioEditorUI from "../../../components/editors/audio/AudioEditorUI";
 import { DefaultObject, Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
 import { ProjectItemEventMap } from "../../file/ProjectItem";
-import { BaseUIState, DefaultPopupUI, DefaultPopupUIState } from "../BaseUI";
+import { DefaultPopupUI, DefaultPopupUIProps, DefaultPopupUIState } from "../BaseUI";
 
 interface BufferUIState {
     audio: PatcherAudio;
     timestamp: number;
     editor: AudioEditor;
+    dockEditor: AudioEditor;
 }
 
 export class BufferUI extends DefaultPopupUI<Buffer, {}, BufferUIState> {
@@ -21,53 +22,80 @@ export class BufferUI extends DefaultPopupUI<Buffer, {}, BufferUIState> {
         ...this.state,
         audio: this.object.state.audio,
         timestamp: performance.now(),
-        editor: undefined
+        editor: undefined,
+        dockEditor: undefined
     };
     static dockable = true;
+    async loadEditor() {
+        const key = this.props.inDock ? "editor" : "dockEditor";
+        const editor = new AudioEditor(this.object.state.audio);
+        await editor.init();
+        editor.on("changed", this.handleChanged);
+        this.setState({ timestamp: performance.now(), [key as "editor"]: editor }, () => editor.setActive());
+    }
+    unloadEditor() {
+        const key = this.props.inDock ? "editor" : "dockEditor";
+        const editor = this.state[key];
+        if (!editor) return;
+        editor.off("changed", this.handleChanged);
+        editor.destroy();
+        this.setState({ timestamp: performance.now(), [key as "editor"]: undefined }, () => this.props.editor.setActive());
+    }
     handleChanged = () => {
-        if (this.state.editor.isTemporary) this.state.editor.save();
+        const editor = this.props.inDock ? this.state.editor : this.state.dockEditor;
+        if (editor.isTemporary) editor.save();
     };
     handleDoubleClick = async () => {
         if (!this.editor.state.locked) return;
         if (!this.state.audio) return;
-        if (this.state.editor) {
-            this.state.editor.off("changed", this.handleChanged);
-            await this.state.editor.destroy();
-        }
-        const editor = new AudioEditor(this.object.state.audio);
-        await editor.init();
-        editor.on("changed", this.handleChanged);
-        this.setState({ modalOpen: true, timestamp: performance.now(), editor }, () => this.state.editor.setActive());
+        this.unloadEditor();
+        await this.loadEditor();
+        this.setState({ modalOpen: true });
     };
     handleClose = () => {
-        if (this.state.editor) {
-            this.state.editor.off("changed", this.handleChanged);
-            this.state.editor.destroy();
-        }
-        this.setState({ modalOpen: false, timestamp: performance.now(), editor: undefined }, () => this.props.editor.setActive());
+        this.unloadEditor();
+        this.setState({ modalOpen: false });
     };
     handleMouseDownModal = (e: React.MouseEvent) => e.stopPropagation();
     componentDidMount() {
         super.componentDidMount();
+        if (this.props.inDock) this.loadEditor();
     }
-    componentDidUpdate(prevProps: any, prevState: Readonly<BufferUIState & BaseUIState>) {
+    componentDidUpdate(prevProps: Readonly<DefaultPopupUIProps>, prevState: Readonly<BufferUIState & DefaultPopupUIState>) {
+        const key = this.props.inDock ? "editor" : "dockEditor";
+        const editor = this.state[key];
         if (prevState.audio !== this.state.audio) {
-            if (this.state.editor) {
-                this.state.editor.off("changed", this.handleChanged);
-                this.state.editor.destroy();
-                this.setState({ modalOpen: false, timestamp: performance.now(), editor: undefined });
+            if (editor) {
+                this.unloadEditor();
+                this.loadEditor();
             }
         }
+        if (prevProps.inDock !== this.props.inDock) {
+            if (this.props.inDock) {
+                this.loadEditor();
+            } else {
+                if (editor) {
+                    this.unloadEditor();
+                }
+            }
+        }
+        if (editor) {
+            if (prevState.width !== this.state.width || prevState.height !== this.state.height) {
+                editor.onUiResized();
+            }
+        }
+        super.componentDidUpdate(prevProps, prevState);
     }
     componentWillUnmount() {
-        this.state.editor?.off("changed", this.handleChanged);
+        this.unloadEditor();
         super.componentWillUnmount();
     }
     render() {
+        const editor = this.props.inDock ? this.state.editor : this.state.dockEditor;
         const content = <div className="editor-container" style={{ height: "100%", width: "100%", display: "flex", position: "relative" }}>
             {
-                this.state.editor
-                    ? <AudioEditorUI key={this.state.timestamp} editor={this.state.editor} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                editor
+                    ? <AudioEditorUI key={this.state.timestamp} editor={editor} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
                     : undefined
             }
         </div>;

@@ -19,6 +19,9 @@ export default class Waveform implements WaveformData {
     get length() {
         return this.audioBuffer.length;
     }
+    get steps() {
+        return Object.keys(this).filter(v => +v).map(v => +v).sort((a, b) => a - b);
+    }
 
     constructor(patcherAudioIn: PatcherAudio, waveformDataIn?: WaveformData) {
         this.worker = patcherAudioIn.env.waveformWorker;
@@ -253,7 +256,7 @@ export default class Waveform implements WaveformData {
         }
     }
     inverse() {
-        Object.keys(this).filter(v => +v).map(v => +v).forEach((stepLength) => {
+        this.steps.forEach((stepLength) => {
             const stepData = this[stepLength];
             for (let c = 0; c < stepData.length; c++) {
                 const { min, max } = stepData[c];
@@ -267,7 +270,7 @@ export default class Waveform implements WaveformData {
         });
     }
     reverse() {
-        Object.keys(this).filter(v => +v).map(v => +v).forEach((stepLength) => {
+        this.steps.forEach((stepLength) => {
             const stepData = this[stepLength];
             if (stepData.length) {
                 const { idx } = stepData;
@@ -348,7 +351,7 @@ export default class Waveform implements WaveformData {
         // split waveform
         const waveform1 = new Waveform(patcherAudio1);
         const waveform2 = new Waveform(patcherAudio2);
-        const waveformKeys = Object.keys(this).filter(v => +v).map(v => +v).sort((a, b) => a - b);
+        const waveformKeys = this.steps;
         for (let i = 0; i < waveformKeys.length; i++) {
             const stepLength = waveformKeys[i];
             const stepData = this[stepLength];
@@ -478,5 +481,15 @@ export default class Waveform implements WaveformData {
             }
         }
         return [waveform1, waveform2];
+    }
+    /**
+     * Find an existing waveform with a precision (could be samples per pixel)
+     * returning a waveform that is sufficient to the precision.
+     * (step is the largest value smaller than the precision)
+     */
+    findStep(precision: number) {
+        const key = this.steps.reduce<number>((acc, cur) => (cur < precision && cur > (acc || 0) ? cur : acc), undefined);
+        if (!key) return null;
+        return this[key];
     }
 }

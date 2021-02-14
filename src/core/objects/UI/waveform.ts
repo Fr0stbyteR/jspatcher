@@ -1,8 +1,10 @@
 import * as Color from "color-js";
 import UIObject from "./Base";
 import PatcherAudio from "../../audio/PatcherAudio";
-import { TMeta, TPropsMeta } from "../../types";
-import { BaseUIState, CanvasUI, CanvasUIState } from "../BaseUI";
+import { TAudioUnit, TMeta, TPropsMeta } from "../../types";
+import { CanvasUI, CanvasUIState } from "../BaseUI";
+import { getRuler } from "../../../components/editors/audio/AudioEditorMainUI";
+import { dbtoa } from "../../../utils/math";
 
 interface WaveformState {
     audio: PatcherAudio;
@@ -12,8 +14,8 @@ interface WaveformUIProps {
     cursor: number;
     viewRange: [number, number];
     selRange: [number, number];
-    range: number;
-    autoRange: boolean;
+    verticalRange: [number, number];
+    autoVerticalRange: boolean;
     showStats: boolean;
     bgColor: string;
     cursorColor: string;
@@ -22,15 +24,20 @@ interface WaveformUIProps {
     textColor: string;
     gridColor: string;
     seperatorColor: string;
+    audioUnit: TAudioUnit;
+    bpm: number;
 }
-interface WaveformUIState extends WaveformState, BaseUIState, WaveformUIProps {}
+interface WaveformUIState extends WaveformState, CanvasUIState, WaveformUIProps {}
 type WaveformProps = WaveformUIProps;
 export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
     static defaultSize = [120, 60] as [number, number];
+    state: WaveformUIState & WaveformState = { ...this.state, audio: this.object.state.audio };
     async paint() {
         const {
+            interleaved,
             cursor,
-            range,
+            autoVerticalRange,
+            verticalRange,
             viewRange,
             showStats,
             bgColor,
@@ -38,7 +45,10 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
             phosphorColor,
             hueOffset,
             textColor,
+            gridColor,
             seperatorColor,
+            audioUnit,
+            bpm,
             audio
         } = this.state;
         const { ctx } = this;
@@ -50,20 +60,74 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
 
         if (!audio) return;
 
-        const { audioBuffer: buffer, waveform } = audio;
-        const t = [];
-        for (let i = 0; i < buffer.numberOfChannels; i++) {
-            t[i] = buffer.getChannelData(i);
-        }
+        const { audioBuffer, waveform, numberOfChannels, length, sampleRate } = audio;
+        const t = audioBuffer.toArray();
         if (!t.length || !t[0].length) return;
-        const channels = t.length;
 
+        // View Range
+        let [$0, $1] = viewRange || [0, length];
+        if ($1 < $0) [$0, $1] = [$1, $0];
+        const pixelsPerSamp = width / ($1 - $0);
+        const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp));
         // Vertical Range
-        const yFactor = range;
+        let [yMin, yMax] = autoVerticalRange ? [-1, 1] : verticalRange;
+        if (autoVerticalRange) {
+            // Fastest way to get min and max to have: 1. max abs value for y scaling, 2. mean value for zero-crossing
+            let i = numberOfChannels;
+            let s = 0;
+            while (i--) {
+                let j = viewRange[1];
+                while (j-- > viewRange[0]) {
+                    s = t[i][j];
+                    if (s < yMin) yMin = s;
+                    else if (s > yMax) yMax = s;
+                }
+            }
+            const yFactor = Math.max(1, Math.abs(yMin), Math.abs(yMax));
+            [yMin, yMax] = [-yFactor, yFactor];
+        } else {
+            if (yMax < yMin) [yMin, yMax] = [yMax, yMin];
+        }
+        const calcY = (v: number, i: number) => channelHeight * (+interleaved * i + 1 - (v - yMin) / (yMax - yMin));
         // Grids
-        const gridChannels = channels;
+        const { ruler } = getRuler(viewRange, audioUnit, { bpm, sampleRate });
+        const gridChannels = interleaved ? numberOfChannels : 1;
         const channelHeight = height / gridChannels;
+        // Vertical
+        ctx.strokeStyle = gridColor;
+        ctx.beginPath();
+        for (const sampleIn in ruler) {
+            const sample = +sampleIn;
+            const x = (sample - $0 + 0.5) * pixelsPerSamp;
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
+        }
+        ctx.stroke();
 
+        // Horizontal
+        ctx.beginPath();
+        const range = [18, 12, 6, 3, 0, -3, -6, -12, -18].filter(v => dbtoa(v) < Math.max(Math.abs(yMin), Math.abs(yMax)));
+        for (let i = 0; i < numberOfChannels; i++) {
+            let y = calcY(0, i);
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+            for (let j = 0; j < range.length; j++) {
+                const a = dbtoa(range[j]);
+                if (a < yMax) {
+                    y = calcY(a, i);
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                }
+                if (a > yMin) {
+                    y = calcY(-a, i);
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                }
+            }
+        }
+        ctx.stroke();
+
+        // Seperator
         ctx.beginPath();
         ctx.setLineDash([4, 2]);
         ctx.strokeStyle = seperatorColor;
@@ -73,29 +137,32 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
         }
         ctx.stroke();
         ctx.setLineDash([]);
+        // Iteration
         ctx.lineWidth = 1;
         const channelColor: string[] = [];
-        // Horizontal Range
-        const [$0, $1] = viewRange; // Draw start-end
-        const pixelsPerSamp = width / ($1 - $0);
-        const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp));
-        const waveformKey = Object.keys(waveform).filter(v => +v).reduce((acc, cur) => (+cur < sampsPerPixel && +cur > (acc || 0) ? +cur : acc), undefined as number);
-        for (let i = 0; i < channels; i++) {
+        const currentWaveform = waveform.findStep(sampsPerPixel);
+        for (let i = 0; i < numberOfChannels; i++) {
+            if (interleaved) {
+                ctx.save();
+                const clip = new Path2D();
+                clip.rect(0, i * channelHeight, width, channelHeight);
+                ctx.clip(clip);
+            }
             ctx.beginPath();
             channelColor[i] = Color(phosphorColor).shiftHue(i * hueOffset).toHSL();
             ctx.strokeStyle = channelColor[i];
             ctx.fillStyle = channelColor[i];
-            if (waveformKey) {
+            if (currentWaveform) {
                 const sampsPerPixel = 1 / pixelsPerSamp;
-                const { idx } = waveform[waveformKey];
-                const { min, max } = waveform[waveformKey][i];
+                const { idx } = currentWaveform;
+                const { min, max } = currentWaveform[i];
                 let x = 0;
                 let maxInStep;
                 let minInStep;
                 for (let j = 0; j < idx.length - 1; j++) {
                     const $ = idx[j];
                     if ($ > $1) break;
-                    const $next = j === idx.length - 1 ? buffer.length : idx[j + 1];
+                    const $next = j === idx.length - 1 ? length : idx[j + 1];
                     if ($next <= $0) continue;
                     if (typeof maxInStep === "undefined") {
                         maxInStep = max[j];
@@ -105,11 +172,11 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
                         if (max[j] > maxInStep) maxInStep = max[j];
                     }
                     if ($next >= $0 + sampsPerPixel * (x + 1)) {
-                        let y = channelHeight * (i + 0.5 - maxInStep / yFactor * 0.5);
+                        let y = calcY(maxInStep, i);
                         if (x === 0) ctx.moveTo(x, y);
                         else ctx.lineTo(x, y);
                         if (minInStep !== maxInStep) {
-                            y = channelHeight * (i + 0.5 - minInStep / yFactor * 0.5);
+                            y = calcY(minInStep, i);
                             ctx.lineTo(x, y);
                         }
                         maxInStep = undefined;
@@ -121,7 +188,7 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
                 let minInStep;
                 const prev = t[i][$0 - 1] || 0;
                 const prevX = -0.5 * pixelsPerSamp;
-                const prevY = channelHeight * (i + 0.5 - prev / yFactor * 0.5);
+                const prevY = calcY(prev, i);
                 ctx.moveTo(prevX, prevY);
                 for (let j = $0; j < $1; j++) {
                     const samp = t[i][j];
@@ -135,10 +202,10 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
                     }
                     if ($step === sampsPerPixel - 1) {
                         const x = (j - $step - $0 + 0.5) * pixelsPerSamp;
-                        let y = channelHeight * (i + 0.5 - maxInStep / yFactor * 0.5);
+                        let y = calcY(maxInStep, i);
                         ctx.lineTo(x, y);
                         if (minInStep !== maxInStep && pixelsPerSamp < 1) {
-                            y = channelHeight * (i + 0.5 - minInStep / yFactor * 0.5);
+                            y = calcY(minInStep, i);
                             ctx.lineTo(x, y);
                         }
                         if (pixelsPerSamp > 10) ctx.fillRect(x - 2, y - 2, 4, 4);
@@ -146,32 +213,31 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
                 }
                 const next = t[i][$1] || 0;
                 const nextX = ($1 - $0 + 0.5) * pixelsPerSamp;
-                const nextY = channelHeight * (i + 0.5 - next / yFactor * 0.5);
+                const nextY = calcY(next, i);
                 ctx.lineTo(nextX, nextY);
             }
             ctx.stroke();
+            if (interleaved) ctx.restore();
         }
-        // fade paths
-        ctx.strokeStyle = "yellow";
-        ctx.lineWidth = 1;
         // cursor
-        if (cursor < $0 || cursor > $1) return;
-        ctx.strokeStyle = cursorColor;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        const cursorX = (cursor - $0) / ($1 - $0) * width;
-        ctx.moveTo(cursorX, 0);
-        ctx.lineTo(cursorX, height);
-        ctx.stroke();
+        if (cursor > $0 && cursor < $1) {
+            ctx.strokeStyle = cursorColor;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            const cursorX = (cursor - $0) / ($1 - $0) * width;
+            ctx.moveTo(cursorX, 0);
+            ctx.lineTo(cursorX, height);
+            ctx.stroke();
+        }
         // Stats
         if (showStats) {
             ctx.font = "bold 12px Consolas, monospace";
             ctx.fillStyle = textColor;
             ctx.textAlign = "left";
             ctx.textBaseline = "top";
-            ctx.fillText(yFactor.toFixed(2), 2, 2);
+            ctx.fillText(yMax.toFixed(2), 2, 2);
             ctx.textBaseline = "bottom";
-            ctx.fillText((-yFactor).toFixed(2), 2, height - 2);
+            ctx.fillText((yMax).toFixed(2), 2, height - 2);
         }
     }
     componentDidMount() {
@@ -229,16 +295,16 @@ export default class waveform extends UIObject<{}, WaveformState, [PatcherAudio]
             description: "Nullable, display selection of a part of the buffer",
             isUIState: true
         },
-        range: {
-            type: "number",
-            default: 1,
+        verticalRange: {
+            type: "object",
+            default: [-1, 1],
             description: "Vertical range",
             isUIState: true
         },
-        autoRange: {
+        autoVerticalRange: {
             type: "boolean",
             default: true,
-            description: "Auto adjust range if > 1",
+            description: "Auto adjust vertical range if > 1",
             isUIState: true
         },
         showStats: {
@@ -287,6 +353,19 @@ export default class waveform extends UIObject<{}, WaveformState, [PatcherAudio]
             type: "color",
             default: "white",
             description: "Channel seperator color",
+            isUIState: true
+        },
+        audioUnit: {
+            type: "enum",
+            default: "time",
+            enums: ["time", "sample", "measure"],
+            description: "Vertical grid mode",
+            isUIState: true
+        },
+        bpm: {
+            type: "number",
+            default: 60,
+            description: "If audioUnit is measure, a BPM can be used",
             isUIState: true
         }
     };

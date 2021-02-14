@@ -273,16 +273,21 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
         const [$0, $1] = viewRange; // Draw start-end
         const pixelsPerSamp = width / ($1 - $0);
         const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp));
-        const waveformKey = Object.keys(waveform).filter(v => +v).reduce((acc, cur) => (+cur < sampsPerPixel && +cur > (acc || 0) ? +cur : acc), undefined as number);
+        // Iteration
+        const currentWaveform = waveform.findStep(sampsPerPixel);
         for (let i = 0; i < channels; i++) {
+            ctx.save();
+            const clip = new Path2D();
+            clip.rect(0, i * channelHeight, width, channelHeight);
+            ctx.clip(clip);
             ctx.beginPath();
             channelColor[i] = Color(phosphorColor).shiftHue(i * hueOffset).toHSL();
             ctx.strokeStyle = channelColor[i];
             ctx.fillStyle = channelColor[i];
-            if (waveformKey) {
+            if (currentWaveform) {
                 const sampsPerPixel = 1 / pixelsPerSamp;
-                const { idx } = waveform[waveformKey];
-                const { min, max } = waveform[waveformKey][i];
+                const { idx } = currentWaveform;
+                const { min, max } = currentWaveform[i];
                 let x = 0;
                 let maxInStep;
                 let minInStep;
@@ -378,6 +383,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                 ctx.lineTo(nextX, nextY);
             }
             ctx.stroke();
+            ctx.restore();
         }
         // fade paths
         ctx.strokeStyle = "yellow";

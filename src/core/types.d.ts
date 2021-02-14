@@ -305,7 +305,7 @@ export type TArgMeta = {
 export type TArgsMeta = TArgMeta[];
 export type TPropMeta<T extends any = any> = {
     type: TMetaType;
-    enums?: string[];
+    enums?: T[];
     default: T;
     group?: string;
     description: string;
