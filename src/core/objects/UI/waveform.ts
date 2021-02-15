@@ -107,7 +107,7 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
         // Horizontal
         ctx.beginPath();
         const range = [18, 12, 6, 3, 0, -3, -6, -12, -18].filter(v => dbtoa(v) < Math.max(Math.abs(yMin), Math.abs(yMax)));
-        for (let i = 0; i < numberOfChannels; i++) {
+        for (let i = 0; i < gridChannels; i++) {
             let y = calcY(0, i);
             ctx.moveTo(0, y);
             ctx.lineTo(width, y);

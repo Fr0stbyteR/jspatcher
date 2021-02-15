@@ -231,27 +231,25 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
             seperatorColor,
             cursorColor
         } = audioDisplayOptions;
-        const { audioBuffer: buffer, waveform } = editor;
+        const { audioBuffer, waveform, numberOfChannels, length } = editor;
         const { ctx } = this;
         const [width, height] = this.fullSize();
 
         ctx.clearRect(0, 0, width, height);
 
-        if (!buffer) return;
+        if (!audioBuffer) return;
 
-        const l = buffer.length;
-        const t = [];
-        for (let i = 0; i < buffer.numberOfChannels; i++) {
-            t[i] = buffer.getChannelData(i);
-        }
+        const t = audioBuffer.toArray();
         if (!t.length || !t[0].length) return;
-        const channels = t.length;
-        const range = 1;
+        const verticalRange = 1;
 
         // Vertical Range
-        const yFactor = range;
+        const yFactor = verticalRange;
+        const yMin = -yFactor;
+        const yMax = yFactor;
+        const calcY = (v: number, i: number) => channelHeight * (i + 1 - (v - yMin) / (yMax - yMin));
         // Grids
-        const gridChannels = channels;
+        const gridChannels = numberOfChannels;
         const channelHeight = height / gridChannels;
         // Fades Path
         const fadeInPath: [number, number][] = [];
@@ -275,7 +273,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
         const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp));
         // Iteration
         const currentWaveform = waveform.findStep(sampsPerPixel);
-        for (let i = 0; i < channels; i++) {
+        for (let i = 0; i < numberOfChannels; i++) {
             ctx.save();
             const clip = new Path2D();
             clip.rect(0, i * channelHeight, width, channelHeight);
@@ -294,7 +292,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                 for (let j = 0; j < idx.length - 1; j++) {
                     const $ = idx[j];
                     if ($ > $1) break;
-                    const $next = j === idx.length - 1 ? buffer.length : idx[j + 1];
+                    const $next = j === idx.length - 1 ? length : idx[j + 1];
                     if ($next <= $0) continue;
                     if (typeof maxInStep === "undefined") {
                         maxInStep = max[j];
@@ -311,7 +309,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                             maxInStep *= fadeFactor;
                             if (i === 0) fadeInPath.push([x, fadeFactor]);
                         } else if (typeof fadeOutFrom === "number" && $ > fadeOutFrom) {
-                            fadeFactor = normExp((l - $) / (l - fadeOutFrom), fadeOutExp);
+                            fadeFactor = normExp((length - $) / (length - fadeOutFrom), fadeOutExp);
                             minInStep *= fadeFactor;
                             maxInStep *= fadeFactor;
                             if (i === 0) fadeOutPath.push([x, fadeFactor]);
@@ -321,11 +319,11 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                             maxInStep *= fadeFactor;
                             if (i === 0) fadePath.push([x, fadeFactor]);
                         }
-                        let y = channelHeight * (i + 0.5 - maxInStep / yFactor * 0.5);
+                        let y = calcY(maxInStep, i);
                         if (x === 0) ctx.moveTo(x, y);
                         else ctx.lineTo(x, y);
                         if (minInStep !== maxInStep) {
-                            y = channelHeight * (i + 0.5 - minInStep / yFactor * 0.5);
+                            y = calcY(minInStep, i);
                             ctx.lineTo(x, y);
                         }
                         maxInStep = undefined;
@@ -337,7 +335,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                 let minInStep;
                 const prev = t[i][$0 - 1] || 0;
                 const prevX = -0.5 * pixelsPerSamp;
-                const prevY = channelHeight * (i + 0.5 - prev / yFactor * 0.5);
+                const prevY = calcY(prev, i);
                 ctx.moveTo(prevX, prevY);
                 for (let j = $0; j < $1; j++) {
                     const samp = t[i][j];
@@ -358,7 +356,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                             maxInStep *= fadeFactor;
                             if (i === 0) fadeInPath.push([x, fadeFactor]);
                         } else if (typeof fadeOutFrom === "number" && j > fadeOutFrom) {
-                            fadeFactor = normExp((l - j) / (l - fadeOutFrom), fadeOutExp);
+                            fadeFactor = normExp((length - j) / (length - fadeOutFrom), fadeOutExp);
                             minInStep *= fadeFactor;
                             maxInStep *= fadeFactor;
                             if (i === 0) fadeOutPath.push([x, fadeFactor]);
@@ -368,10 +366,10 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                             maxInStep *= fadeFactor;
                             if (i === 0) fadePath.push([x, fadeFactor]);
                         }
-                        let y = channelHeight * (i + 0.5 - maxInStep / yFactor * 0.5);
+                        let y = calcY(maxInStep, i);
                         ctx.lineTo(x, y);
                         if (minInStep !== maxInStep && pixelsPerSamp < 1) {
-                            y = channelHeight * (i + 0.5 - minInStep / yFactor * 0.5);
+                            y = calcY(minInStep, i);
                             ctx.lineTo(x, y);
                         }
                         if (pixelsPerSamp > 10) ctx.fillRect(x - 2, y - 2, 4, 4);
@@ -379,7 +377,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                 }
                 const next = t[i][$1] || 0;
                 const nextX = ($1 - $0 + 0.5) * pixelsPerSamp;
-                const nextY = channelHeight * (i + 0.5 - next / yFactor * 0.5);
+                const nextY = calcY(next, i);
                 ctx.lineTo(nextX, nextY);
             }
             ctx.stroke();

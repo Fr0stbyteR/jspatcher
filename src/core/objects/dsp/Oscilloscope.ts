@@ -85,8 +85,8 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         const channels = t.length;
         const l = t[0].length;
         // Vertical Range
-        let min = -range;
-        let max = range;
+        let yMin = -range;
+        let yMax = range;
         let yFactor = range;
         if (autoRange) {
             // Fastest way to get min and max to have: 1. max abs value for y scaling, 2. mean value for zero-crossing
@@ -96,12 +96,13 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
                 let j = l;
                 while (j--) {
                     s = t[i][j];
-                    if (s < min) min = s;
-                    else if (s > max) max = s;
+                    if (s < yMin) yMin = s;
+                    else if (s > yMax) yMax = s;
                 }
             }
-            yFactor = Math.max(1, Math.abs(min), Math.abs(max))/* * vzoom*/;
+            yFactor = Math.max(1, Math.abs(yMin), Math.abs(yMax))/* * vzoom*/;
         }
+        const calcY = (v: number, i: number) => channelHeight * (+interleaved * i + 1 - (v - yMin) / (yMax - yMin));
         // Grids
         ctx.strokeStyle = gridColor;
         let vStep = 0.25;
@@ -111,14 +112,14 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         const gridChannels = interleaved ? channels : 1;
         const channelHeight = (height - bottom) / gridChannels;
         for (let i = 0; i < gridChannels; i++) {
-            let y = (i + 0.5) * channelHeight;
+            let y = calcY(0, i);
             ctx.moveTo(left, y);
             ctx.lineTo(width, y); // 0-line
             for (let j = vStep; j < yFactor; j += vStep) {
-                y = (i + 0.5 + j / yFactor / 2) * channelHeight;
+                y = calcY(j, i);
                 ctx.moveTo(left, y);
                 ctx.lineTo(width, y); // below 0
-                y = (i + 0.5 - j / yFactor / 2) * channelHeight;
+                y = calcY(-j, i);
                 ctx.moveTo(left, y);
                 ctx.lineTo(width, y); // above 0
             }
@@ -146,7 +147,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             let drawL = l; // Length to draw
             if (stablize) { // Stablization
                 if (i === 0) {
-                    const thresh = (min + max) * 0.5 + 0.001; // the zero-crossing with "offset"
+                    const thresh = (yMin + yMax) * 0.5 + 0.001; // the zero-crossing with "offset"
                     while ($zerox < l && t[i][($ + $zerox++) % l] > thresh); // Find first raise
                     if ($zerox >= l - 1) { // Found nothing, no stablization
                         $zerox = 0;
@@ -162,8 +163,8 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             }
             $0 = Math.round($zerox/* + drawL * zoomOffset*/);
             $1 = Math.round($zerox + drawL/* / zoom + drawL * zoomOffset*/);
-            const gridX = (width - left) / ($1 - $0);
-            const step = Math.max(1, Math.round(1 / gridX));
+            const pixelsPerSamp = (width - left) / ($1 - 1 - $0);
+            const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp));
 
             if (interleaved) {
                 ctx.save();
@@ -179,24 +180,24 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             for (let j = $0; j < $1; j++) {
                 const $j = (j + $) % l;
                 const samp = t[i][$j];
-                const $step = (j - $0) % step;
+                const $step = (j - $0) % sampsPerPixel;
                 if ($step === 0) {
                     maxInStep = samp;
                     minInStep = samp;
                 }
-                if ($step !== step - 1) {
+                if ($step !== sampsPerPixel - 1) {
                     if ($step !== 0) {
                         if (samp > maxInStep) maxInStep = samp;
                         if (samp < minInStep) minInStep = samp;
                     }
                     continue;
                 }
-                const x = (j - $0) * gridX + left;
-                let y = channelHeight * (+interleaved * i + 0.5 - maxInStep / yFactor * 0.5);
+                const x = (j - $step - $0) * pixelsPerSamp;
+                let y = calcY(maxInStep, i);
                 if (j === $0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
                 if (minInStep !== maxInStep) {
-                    y = channelHeight * (+interleaved * i + 0.5 - minInStep / yFactor * 0.5);
+                    y = calcY(minInStep, i);
                     ctx.lineTo(x, y);
                 }
             }
