@@ -1,7 +1,7 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
-import { TMeta, TBPF } from "../../types";
+import { TMeta, TBPF, TPropsMeta } from "../../types";
 
 type I = [Bang, TBPF, TBPF, TBPF, TBPF, TBPF, TBPF, PannerOptions];
 export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, PannerNode], [], PannerOptions> {
@@ -46,7 +46,7 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
         type: "object",
         description: "Instance: PannerNode"
     }];
-    static props: TMeta["props"] = {
+    static props: TPropsMeta<PannerOptions> = {
         coneInnerAngle: {
             type: "number",
             default: 360,

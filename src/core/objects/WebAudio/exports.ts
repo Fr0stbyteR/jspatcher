@@ -22,6 +22,7 @@ import WaveShaper from "./WaveShaper";
 import { AudioIn, AudioOut } from "./AudioIO";
 import Plugin from "./WebAudioPlugin";
 import Buffer from "./buffer";
+import BufferSrc from "./BufferSource";
 /*
 const {
     BaseAudioContext,
@@ -77,5 +78,6 @@ export default {
     "audioIn~": AudioIn,
     "audioOut~": AudioOut,
     "plugin~": Plugin,
-    "buffer~": Buffer
+    "buffer~": Buffer,
+    "bufferSource~": BufferSrc
 };
