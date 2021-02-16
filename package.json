@@ -76,5 +76,8 @@
     "worker-loader": "^3.0.7",
     "worklet-loader": "^1.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@grame/guidolib": "^1.7.1",
+    "@grame/libmusicxml": "^3.19.1"
+  }
 }

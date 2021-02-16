@@ -40,6 +40,12 @@ declare module "fftw-js" {
 }
 
 declare module "fftw-js/src/FFTW" {
-    const FFTWModule: (options: Partial<EmscriptenModule> & { ENVIRONMENT: Emscripten.EnvironmentType }) => EmscriptenModule & { cwrap: typeof cwrap };
+    interface FFTWModule extends EmscriptenModule {
+        cwrap: typeof cwrap;
+    }
+    const FFTWModule: {
+        (options?: Partial<EmscriptenModule & { ENVIRONMENT: Emscripten.EnvironmentType }>): FFTWModule;
+        new (options?: Partial<EmscriptenModule & { ENVIRONMENT: Emscripten.EnvironmentType }>): FFTWModule;
+    };
     export = FFTWModule;
 }

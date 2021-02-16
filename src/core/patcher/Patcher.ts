@@ -155,7 +155,11 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
                 patcher = max2js(patcherIn as TMaxPatcher);
             }
         } else if (mode === "js" || mode === "faust") {
-            patcher = patcherIn.patcher;
+            if ("data" in patcherIn && "patcher" in patcherIn) {
+                patcher = patcherIn.patcher;
+            } else {
+                patcher = patcherIn;
+            }
         }
         if (patcher.props) this.props = { ...this.props, ...patcher.props };
         if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
