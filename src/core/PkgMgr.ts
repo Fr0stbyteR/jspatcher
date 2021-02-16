@@ -173,6 +173,7 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
 
 export class GlobalPackageManager {
     js: TPackage;
+    jsaw: TPackage;
     faust: TPackage;
     max: TPackage;
     gen: TPackage;
@@ -197,6 +198,7 @@ export class GlobalPackageManager {
             SubPatcher: (await import("./objects/SubPatcher")).default,
             window: (await import("./objects/Window")).default
         };
+        this.jsaw = await (await import("./objects/JSAW")).default();
         this.faust = (await import("./objects/Faust")).default;
         this.gen = (await import("./objects/Gen")).default;
         this.max = (await import("./objects/Max")).default;
