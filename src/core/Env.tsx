@@ -5,7 +5,7 @@ import { detectOS, detectBrowserCore } from "../utils/utils";
 import { faustLangRegister } from "../misc/monaco-faust/register";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
-import { EnvOptions, TErrorLevel, TPackage, TPatcherLog, TSharedData, TSharedDataConsumers } from "./types";
+import { EnvOptions, TErrorLevel, TPackage, TPatcherLog } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
 import Importer from "./objects/importer/Importer";
 import { GlobalPackageManager } from "./PkgMgr";
@@ -55,8 +55,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly browser = detectBrowserCore();
     readonly language = /* navigator.language === "zh-CN" ? "zh-CN" : */"en";
     readonly supportAudioWorklet = !!window.AudioWorklet;
-    readonly data: TSharedData = {};
-    readonly dataConsumers: TSharedDataConsumers = {};
     readonly taskMgr = new TaskManager();
     readonly fileMgr = new FileManager(this);
     readonly tempMgr = new TempManager(this);

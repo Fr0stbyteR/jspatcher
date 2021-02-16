@@ -9,10 +9,18 @@ export class TypedEventEmitter<M> {
         if (!(eventName in this._listeners)) this._listeners[eventName] = [];
         return this._listeners[eventName];
     }
-    on<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => void) {
+    on<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => any) {
         if (this.getListeners(eventName).indexOf(listener) === -1) this.getListeners(eventName).push(listener);
     }
-    off<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => void) {
+    once<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => any) {
+        const listenerWithOff = (arg: M[K]) => {
+            const returnValue = listener(arg);
+            this.off(eventName, listenerWithOff);
+            return returnValue;
+        };
+        this.on(eventName, listenerWithOff);
+    }
+    off<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => any) {
         const i = this.getListeners(eventName).indexOf(listener);
         if (i !== -1) this.getListeners(eventName).splice(i, 1);
     }

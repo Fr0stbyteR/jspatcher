@@ -12,7 +12,7 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, {}, I
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "anything",
-        description: "Bang to output AudioBufferSourceNode instance, boolean to start/stop, AudioBuffer to set buffer"
+        description: "Bang to output AudioBufferSourceNode instance, boolean/number to start/stop, AudioBuffer/PatcherAudio to set buffer"
     }, {
         isHot: false,
         type: "signal",
@@ -142,6 +142,10 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, {}, I
                     }
                 }
             }
+        });
+        this.on("destroy", () => {
+            this.node.stop();
+            this.node.removeEventListener("ended", this.handleEnded);
         });
     }
     resetNode() {

@@ -1,8 +1,7 @@
 import { max2js, js2max } from "../../utils/utils";
 import Line from "./Line";
 import Box from "./Box";
-import SharedData from "../Shared";
-import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps, TSharedData, TPatcherEnv } from "../types";
+import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps } from "../types";
 
 import { toFaustDspCode } from "../objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "../objects/SubPatcher";
@@ -52,7 +51,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
     boxes: Record<string, Box> = {};
     props: TPatcherProps;
     _state: TPatcherState;
-    data: TSharedData;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
     constructor(ctxIn?: PatcherFile | TempPatcherFile | Project | Env) {
@@ -64,8 +62,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
             history: undefined,
             selected: [],
             pkgMgr: undefined,
-            dataConsumers: {},
-            dataMgr: undefined,
             preventEmitChanged: false
         };
         this.clear();
@@ -124,10 +120,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
             boxIndexCount: 0,
             lineIndexCount: 0
         };
-        this.data = {};
         this._state.selected = [];
         this._state.pkgMgr = this.project.pkgMgr;
-        this._state.dataMgr = new SharedData(this);
     }
     async init(data = this.file?.data, fileName = this.fileName) {
         if (data instanceof ArrayBuffer) {
@@ -140,7 +134,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
         }
         return this.load(data || {});
     }
-    async load(patcherIn: RawPatcher | TMaxPatcher | any, modeIn?: PatcherMode, data?: TSharedData) {
+    async load(patcherIn: RawPatcher | TMaxPatcher | any, modeIn?: PatcherMode) {
         this._state.isReady = false;
         this._state.preventEmitChanged = true;
         await this.unload();
@@ -150,7 +144,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
             this.emit("ready");
             return this;
         }
-        if (typeof data === "object") this._state.dataMgr.mergeEnvData(data);
         this.props.mode = (patcherIn.props && patcherIn.props.mode ? patcherIn.props.mode : modeIn) || "js";
         const { mode } = this.props;
         const $init: Promise<Box>[] = [];
@@ -162,12 +155,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
                 patcher = max2js(patcherIn as TMaxPatcher);
             }
         } else if (mode === "js" || mode === "faust") {
-            if ("data" in patcherIn && "patcher" in patcherIn) {
-                this._state.dataMgr.mergeEnvData(patcherIn.data);
-                patcher = patcherIn.patcher;
-            } else {
-                patcher = patcherIn;
-            }
+            patcher = patcherIn.patcher;
         }
         if (patcher.props) this.props = { ...this.props, ...patcher.props };
         if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
@@ -225,8 +213,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
     async loadFromURL(url: string) {
         try {
             const file = await fetch(url);
-            const parsed = await file.json() as RawPatcher | TPatcherEnv | TMaxPatcher;
-            if ("patcher" in parsed && "data" in parsed) return this.load(parsed.patcher, undefined, parsed.data);
+            const parsed = await file.json() as RawPatcher | TMaxPatcher;
             return this.load(parsed);
         } catch (e) {
             this.error(`Fetch file ${url} failed.`);
@@ -235,8 +222,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
     }
     async loadFromString(sIn: string) {
         try {
-            const parsed = JSON.parse(sIn) as RawPatcher | TPatcherEnv | TMaxPatcher;
-            if ("patcher" in parsed && "data" in parsed) return this.load(parsed.patcher, undefined, parsed.data);
+            const parsed = JSON.parse(sIn) as RawPatcher | TMaxPatcher;
             return this.load(parsed);
         } catch (e) {
             this.error(`Load from string: ${sIn.slice(20)}... failed.`);
@@ -251,15 +237,14 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
-            let parsed: RawPatcher | TPatcherEnv | TMaxPatcher;
+            let parsed: RawPatcher | TMaxPatcher;
             try {
                 parsed = JSON.parse(reader.result.toString());
             } catch (e) {
                 this.error((e as Error).message);
             }
             if (parsed) {
-                if ("patcher" in parsed && "data" in parsed) this.load(parsed.patcher, extMap[ext], parsed.data);
-                else this.load(parsed, extMap[ext]);
+                this.load(parsed, extMap[ext]);
                 this._state.name = name;
             }
         };
@@ -531,9 +516,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
     }
     toSerializable(): RawPatcher {
         return JSON.parse(this.toString());
-    }
-    toStringEnv(spacing = 4) {
-        return JSON.stringify({ patcher: this, data: this.env.data }, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
     }
     serialize() {
         return new Blob([this.toString()]).arrayBuffer();

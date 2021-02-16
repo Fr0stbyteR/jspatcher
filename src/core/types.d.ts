@@ -5,7 +5,6 @@ import Box from "./patcher/Box";
 import Line from "./patcher/Line";
 import PatcherHistory from "./patcher/PatcherHistory";
 import Env from "./Env";
-import SharedData from "./Shared";
 import { PackageManager } from "./PkgMgr";
 import TempPatcherFile from "./patcher/TempPatcherFile";
 import PatcherFile from "./patcher/PatcherFile";
@@ -110,8 +109,6 @@ export interface TPatcherState {
     history: PatcherHistory;
     selected: string[];
     pkgMgr: PackageManager;
-    dataConsumers: TSharedDataConsumers;
-    dataMgr: SharedData;
     preventEmitChanged: boolean;
 }
 export type TErrorLevel = "error" | "warn" | "info" | "none";
@@ -351,7 +348,6 @@ export type ObjectEventMap<D, S, I extends any[], A extends any[], P, U, E> = {
     "metaChanged": TMeta;
     "dataUpdated": Partial<D>;
     "stateUpdated": Partial<S>;
-    "sharedDataUpdated": { category: string; key: string; data: any };
 } & E;
 export type THistoryElement = {
     [key in keyof PatcherEventMap]?: PatcherEventMap[key][];

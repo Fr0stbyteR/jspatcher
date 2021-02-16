@@ -2,7 +2,7 @@ import { TypedEventEmitter } from "../utils/TypedEventEmitter";
 import Env from "./Env";
 import FileInstance from "./file/FileInstance";
 import { PackageManager } from "./PkgMgr";
-import { TDependencies, TPropsMeta, TSharedData, TSharedDataConsumers } from "./types";
+import { TDependencies, TPropsMeta } from "./types";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -45,8 +45,6 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
     readonly pkgMgr: PackageManager;
     readonly instances: FileInstance[];
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
-    readonly data: TSharedData = {};
-    readonly dataConsumers: TSharedDataConsumers = {};
     readonly props: ProjectProps = {
         dependencies: Project.props.dependencies.default,
         name: Project.props.name.default,
