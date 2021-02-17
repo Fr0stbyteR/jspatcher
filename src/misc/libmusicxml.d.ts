@@ -1,17 +1,9 @@
+/* eslint-disable @typescript-eslint/triple-slash-reference */
+/// <reference path="../../node_modules/@grame/libmusicxml/libmusicxml.d.ts"/>
+
 declare module "@grame/libmusicxml" {
-    interface LibMusicXMLAdapter {
-        libVersion(): number;
-        libVersionStr(): string;
-
-        musicxml2guidoVersion(): number;
-        musicxml2guidoVersionStr(): string;
-
-        string2guido(xml: string, generateBars: boolean): string;
-        xmlStringTranspose(xml: string, interval: number): string;
-    }
-
     interface MusicXMLModule extends EmscriptenModule {
-        libMusicXMLAdapter: new () => LibMusicXMLAdapter;
+        libMusicXMLAdapter: new () => libMusicXMLAdapter;
     }
     const MusicXMLModule: {
         (options?: Partial<EmscriptenModule & { ENVIRONMENT: Emscripten.EnvironmentType }>): MusicXMLModule;

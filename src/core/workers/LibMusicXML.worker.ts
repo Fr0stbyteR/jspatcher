@@ -3,6 +3,7 @@ import { ILibMusicXMLWorker } from "./LibMusicXMLWorker.types";
 import ProxyWorker from "./ProxyWorker";
 
 class LibMusicXML extends ProxyWorker<ILibMusicXMLWorker> implements ILibMusicXMLWorker {
+    private module: MusicXMLModule;
     private adapter: InstanceType<MusicXMLModule["libMusicXMLAdapter"]>;
     async init() {
         const locateFile = (url: string, dir: string) => "../deps/" + url;
@@ -10,7 +11,8 @@ class LibMusicXML extends ProxyWorker<ILibMusicXMLWorker> implements ILibMusicXM
         return new Promise<void>((resolve, reject) => {
             const module = new Module({ locateFile });
             module.onRuntimeInitialized = () => {
-                const Adapter = module.libMusicXMLAdapter;
+                this.module = module;
+                const Adapter = this.module.libMusicXMLAdapter;
                 this.adapter = new Adapter();
                 resolve();
             };

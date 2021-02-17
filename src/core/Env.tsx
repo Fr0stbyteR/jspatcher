@@ -15,6 +15,7 @@ import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
 import FfmpegWorker from "./workers/FfmpegWorker";
+import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
 import FileInstance, { AnyFileInstance } from "./file/FileInstance";
@@ -23,7 +24,7 @@ import UI from "../components/UI";
 import PatcherAudio from "./audio/PatcherAudio";
 import EditorContainer from "./EditorContainer";
 import AudioWorkletRegister from "./worklets/AudioWorkletRegister";
-import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
+import GuidoWorker from "./workers/GuidoWorker";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -52,6 +53,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly wavEncoderWorker = new WavEncoderWorker();
     readonly ffmpegWorker = new FfmpegWorker();
     readonly libMusicXMLWorker = new LibMusicXMLWorker();
+    readonly guidoWorker = new GuidoWorker();
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();
     readonly browser = detectBrowserCore();
@@ -189,6 +191,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
             });
             await this.taskMgr.newTask(this, "Loading LibMuscXML...", async () => {
                 await this.libMusicXMLWorker.init();
+            });
+            await this.taskMgr.newTask(this, "Loading Guido...", async () => {
+                await this.guidoWorker.init();
             });
             await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);
