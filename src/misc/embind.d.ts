@@ -1,4 +1,4 @@
-export interface RegisteredClass {
+interface RegisteredClass {
     baseClass: any;
     constructor: new (...args: any[]) => any;
     downcast: number;
@@ -10,7 +10,7 @@ export interface RegisteredClass {
     upcast: number;
 }
 
-export interface RegisteredPointer {
+interface RegisteredPointer {
     destructorFunction: (...args: any[]) => any;
     isConst: boolean;
     isReference: boolean;
@@ -26,7 +26,7 @@ export interface RegisteredPointer {
     toWireType: (destructors: any, handle: any) => any;
 }
 
-export interface ClassHandlePointerInfo {
+interface ClassHandlePointerInfo {
     count: { value: number };
     deleteScheduled: boolean;
     preservePointerOnDelete: boolean;
@@ -34,7 +34,7 @@ export interface ClassHandlePointerInfo {
     ptrType: RegisteredPointer;
 }
 
-export interface ClassHandle {
+interface ClassHandle {
     readonly $$: ClassHandlePointerInfo;
     clone(): this;
     delete(): void;

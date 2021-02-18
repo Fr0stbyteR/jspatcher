@@ -1,8 +1,18 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="../../node_modules/@grame/guidolib/libGUIDOEngine.d.ts"/>
 /// <reference path="../../node_modules/@grame/guidolib/guidoengine.ts"/>
+/// <reference path="./embind.d.ts"/>
 
 type EnumToObject<T extends Record<string, any>> = { [key in keyof Omit<T, number>]: { value: T[key]; }; } & { values: { [key: number]: { value: number } } };
+
+interface ARHandler extends ClassHandle {}
+interface GRHandler extends ClassHandle {}
+
+interface GuidoParser extends ClassHandle {}
+interface GuidoStream extends ClassHandle {}
+interface VGDevice extends ClassHandle {}
+
+interface PianoRoll extends ClassHandle {}
 
 declare module "@grame/guidolib" {
     interface BindingError extends Error {}
