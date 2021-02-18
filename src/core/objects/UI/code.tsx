@@ -22,7 +22,8 @@ export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
     handleChange = (value: string, event: editor.IModelContentChangedEvent) => {
         this.setState({ value });
-        this.object.data.value = value;
+        this.object.setData({ value });
+        this.object.emit("change");
     };
     handleKeyDown = (e: React.KeyboardEvent) => {
         e.stopPropagation();
@@ -50,7 +51,7 @@ export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
         );
     }
 }
-export default class code extends UIObject<{ value: string }, {}, [Bang, string], [string], [string], {}, { language: string; value: string }, { editorBlur: string; editorLoaded: never }> {
+export default class code extends UIObject<{ value: string }, {}, [Bang, string], [string, Bang], [string], {}, { language: string; value: string }, { editorBlur: string; editorLoaded: never; change: string }> {
     static description = "Code Editor";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -64,6 +65,9 @@ export default class code extends UIObject<{ value: string }, {}, [Bang, string]
     static outlets: TMeta["outlets"] = [{
         type: "string",
         description: "Code"
+    }, {
+        type: "bang",
+        description: "Bang when the code is changed"
     }];
     static args: TMeta["args"] = [{
         type: "string",
@@ -75,10 +79,11 @@ export default class code extends UIObject<{ value: string }, {}, [Bang, string]
         super.subscribe();
         this.on("preInit", () => {
             this.inlets = 2;
-            this.outlets = 1;
+            this.outlets = 2;
             if (typeof this.data.value === "undefined") this.setData({ value: "" });
         });
         this.on("editorLoaded", () => this.updateUI({ language: this.box.args[0] || "javascript" }));
+        this.on("change", () => this.outlet(1, new Bang()));
         this.on("updateArgs", (args) => {
             if (args[0]) this.updateUI({ language: args[0] });
         });

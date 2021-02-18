@@ -13,6 +13,15 @@ interface GuidoStream extends ClassHandle {}
 interface VGDevice extends ClassHandle {}
 
 interface PianoRoll extends ClassHandle {}
+interface ReducedProportional extends ClassHandle {}
+
+type $ARHandler = number;
+type $GRHandler = number;
+type $GuidoParser = number;
+type $GuidoStream = number;
+type $VGDevice = number;
+type $PianoRoll = number;
+type $ReducedProportional = number;
 
 declare module "@grame/guidolib" {
     interface BindingError extends Error {}
