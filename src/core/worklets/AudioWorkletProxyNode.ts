@@ -1,4 +1,4 @@
-import { TypedMessageEvent, MessagePortResponse } from "./TypedAudioWorklet";
+import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./TypedAudioWorklet";
 import { AudioWorkletProxyNode } from "./AudioWorkletProxyNode.types";
 
 const Node = class extends AudioWorkletNode {
@@ -14,7 +14,7 @@ const Node = class extends AudioWorkletNode {
             this.port.removeEventListener("message", handleMessage);
             this.port.close();
         };
-        const handleMessage = async (e: TypedMessageEvent) => {
+        const handleMessage = async (e: TypedMessageEvent<MessagePortResponse & MessagePortRequest>) => {
             const { id, call, args, value, error } = e.data;
             if (call) {
                 const r: MessagePortResponse = { id };

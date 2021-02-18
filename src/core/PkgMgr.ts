@@ -194,6 +194,7 @@ export class GlobalPackageManager {
             DSP: (await import("./objects/dsp/exports")).default,
             live: (await import("./objects/live/exports")).default,
             faust: (await import("./objects/faust/exports")).default,
+            guido: { view: (await import("./objects/guido/view")).default, ...Importer.import("guido", this.env.guidoWorker) },
             SubPatcher: (await import("./objects/SubPatcher")).default,
             window: (await import("./objects/Window")).default
         };
