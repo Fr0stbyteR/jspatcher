@@ -236,6 +236,7 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "ready": never;
     "unload": never;
     "changeBoxText": { box: Box; oldText: string; text: string };
+    "passiveDeleteLine": Line;
     "newLog": TPatcherLog;
     "generateCode": string;
     "graphChanged": never;

@@ -41,7 +41,9 @@ export default class PatcherHistory extends History<PatcherEditorEventMap, Patch
         } else if (type === "resized") {
             const e: PatcherEditorEventMap[typeof type] = event;
             const { selected, delta, type: t, presentation } = e;
-            this.editor.resize(selected, { x: -1 * delta.x, y: -1 * delta.y }, t, presentation);
+            const d = { x: -1 * delta.x, y: -1 * delta.y };
+            this.editor.resize(selected, d, t, presentation);
+            this.editor.resizeEnd(d, t);
         }
         this.redoMap[lastKey] = this.undoMap[lastKey];
         delete this.undoMap[lastKey];
@@ -81,6 +83,7 @@ export default class PatcherHistory extends History<PatcherEditorEventMap, Patch
             const e: PatcherEditorEventMap[typeof type] = event;
             const { selected, delta, type: t, presentation } = e;
             this.editor.resize(selected, delta, t, presentation);
+            this.editor.resizeEnd(delta, t);
         }
         this.undoMap[nextKey] = this.redoMap[nextKey];
         delete this.redoMap[nextKey];

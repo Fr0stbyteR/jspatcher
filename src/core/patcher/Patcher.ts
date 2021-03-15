@@ -329,6 +329,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
         const line = this.lines[lineID];
         if (!line) return null;
         line.destroy();
+        this.emit("passiveDeleteLine", line);
         this.emitGraphChanged();
         return line;
     }
