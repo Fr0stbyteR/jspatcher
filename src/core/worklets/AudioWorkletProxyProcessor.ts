@@ -1,4 +1,4 @@
-import { AudioWorkletGlobalScope, MessagePortResponse, TypedMessageEvent } from "./TypedAudioWorklet";
+import { AudioWorkletGlobalScope, MessagePortRequest, MessagePortResponse, TypedMessageEvent } from "./TypedAudioWorklet";
 import { AudioWorkletProxyProcessor } from "./AudioWorkletProxyProcessor.types";
 
 declare const globalThis: AudioWorkletGlobalScope;
@@ -18,7 +18,7 @@ const Processor = class extends AudioWorkletProcessor {
             this.port.removeEventListener("message", handleMessage);
             this.port.close();
         };
-        const handleMessage = async (e: TypedMessageEvent) => {
+        const handleMessage = async (e: TypedMessageEvent<MessagePortResponse & MessagePortRequest>) => {
             const { id, call, args, value, error } = e.data;
             if (call) {
                 const r: MessagePortResponse = { id };

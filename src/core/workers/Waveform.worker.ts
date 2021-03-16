@@ -3,7 +3,7 @@ import { WaveformData, WaveformStepData } from "../types";
 import ProxyWorker from "./ProxyWorker";
 
 const SAB = globalThis.SharedArrayBuffer || globalThis.ArrayBuffer;
-class Waveform extends ProxyWorker<IWaveformWorker> {
+class Waveform extends ProxyWorker<IWaveformWorker> implements IWaveformWorker {
     generate(buffer: Float32Array[], stepsFactor = 16) {
         const waveformData: WaveformData = {};
         if (buffer.length === 0) return waveformData;

@@ -1,5 +1,5 @@
 import { ProxyMain } from "./ProxyMain.types";
-import { TypedMessageEvent, MessagePortResponse } from "./Worker";
+import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./Worker";
 
 const Main = class {
     static get Worker(): typeof WebpackWorker {
@@ -13,7 +13,7 @@ const Main = class {
         const worker = new Ctor.Worker();
         const resolves: Record<number, ((...args: any[]) => any)> = {};
         const rejects: Record<number, ((...args: any[]) => any)> = {};
-        const handleMessage = async (e: TypedMessageEvent) => {
+        const handleMessage = async (e: TypedMessageEvent<MessagePortResponse & MessagePortRequest>) => {
             const { id, call, args, value, error } = e.data;
             if (call) {
                 const r: MessagePortResponse = { id };

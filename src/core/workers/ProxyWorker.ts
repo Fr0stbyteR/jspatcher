@@ -1,5 +1,5 @@
 import { ProxyWorker } from "./ProxyWorker.types";
-import { TypedMessageEvent, MessagePortResponse } from "./Worker";
+import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./Worker";
 
 const Worker = class {
     static get fnNames(): string[] {
@@ -9,7 +9,7 @@ const Worker = class {
         const resolves: Record<number, ((...args: any[]) => any)> = {};
         const rejects: Record<number, ((...args: any[]) => any)> = {};
         let messagePortRequestId = -1;
-        const handleMessage = async (e: TypedMessageEvent) => {
+        const handleMessage = async (e: TypedMessageEvent<MessagePortResponse & MessagePortRequest>) => {
             const { id, call, args, value, error } = e.data;
             if (call) {
                 const r: MessagePortResponse = { id };

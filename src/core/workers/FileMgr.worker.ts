@@ -6,7 +6,7 @@ import "../../scripts/PatchBrowserFSPreloadFile";
 import { IFileManagerWorker } from "./FileMgrWorker.types";
 import ProxyWorker from "./ProxyWorker";
 
-class FileMgr extends ProxyWorker<IFileManagerWorker> {
+class FileMgr extends ProxyWorker<IFileManagerWorker> implements IFileManagerWorker {
     fs: IndexedDB;
     init() {
         return new Promise<true>((resolve, reject) => IndexedDB.Create({ storeName: "JSPatcher" }, (e, r) => {

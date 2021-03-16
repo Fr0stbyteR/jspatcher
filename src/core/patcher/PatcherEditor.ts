@@ -75,6 +75,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         return "sitemap";
     }
     handleChangeBoxText = (e: PatcherEventMap["changeBoxText"]) => this.emit("changeBoxText", e);
+    handlePassiveDeleteLine = (e: PatcherEventMap["passiveDeleteLine"]) => this.emit("delete", { boxes: {}, lines: { [e.id]: e } });
     constructor(instance: Patcher) {
         super(instance);
         const { openInPresentation } = this.props;
@@ -97,6 +98,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             });
         }
         this.instance.on("changeBoxText", this.handleChangeBoxText);
+        this.instance.on("passiveDeleteLine", this.handlePassiveDeleteLine);
         const { openInPresentation } = this.props;
         this.setState({
             locked: true,
@@ -142,6 +144,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
                         : {};
             const obj = extMap[ext];
             if (obj) await this.createBox({ text: `${obj} ${path}`, ...boxIn });
+        } else if (type === "audio") {
+            await this.createBox({ text: `buffer~ ${path}`, ...boxIn });
         }
     }
     async deleteBox(boxID: string) {
@@ -341,6 +345,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.deselectAll();
         this.select(...Object.keys(objects.boxes));
         this.emit("create", created);
+        this.instance.emitGraphChanged();
     }
     async deleteSelected() {
         const boxSet = new Set<Box>();
@@ -365,6 +370,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         await Promise.all(promises);
         this.emit("selected", this.state.selected.slice());
         this.emit("delete", deleted);
+        this.instance.emitGraphChanged();
         return deleted;
     }
     async delete(objects: RawPatcher) {
@@ -380,6 +386,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         await Promise.all(promises);
         this.emit("selected", this.state.selected.slice());
         this.emit("delete", deleted);
+        this.instance.emitGraphChanged();
     }
     async cut() {
         if (this.state.locked) return;
