@@ -53,6 +53,10 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
     get isReady() {
         return this._isReady;
     }
+    protected _isDestroyed = false;
+    get isDestroyed() {
+        return this._isDestroyed;
+    }
     get isDirty() {
         return this.history.isDirty;
     }
@@ -148,12 +152,14 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
         await this.emit("saved");
     }
     async destroy() {
+        if (this.isDestroyed) return;
         if (this.project) {
             this.project.off("save", this.handleProjectSave);
             this.project.off("unload", this.handleProjectUnload);
         }
         this.instance.off("destroy", this.handleDestroy);
         this.instance.removeObserver(this);
+        this._isDestroyed = true;
         await this.emit("destroy");
     }
 }
