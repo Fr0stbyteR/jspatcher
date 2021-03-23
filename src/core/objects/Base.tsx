@@ -279,7 +279,7 @@ export abstract class AbstractObject<
      */
     fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(inlet: $, data: I[$]): this {
         if (inlet === 0) { // allow change props via first inlet with an props object
-            if (typeof data === "object") {
+            if (data !== null && typeof data === "object") {
                 const propsInKeys = Object.keys(data);
                 const propsKeys = Object.keys(this.meta.props);
                 if (propsInKeys.length && propsInKeys.every(k => propsKeys.indexOf(k) !== -1)) {
