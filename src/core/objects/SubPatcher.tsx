@@ -685,7 +685,7 @@ export class BPatcherUI extends BaseUI<patcher, {}, SubPatcherUIState> {
         const children = (
             <div style={{ height: "100%", width: "100%", display: "flex" }}>
                 {
-                    this.state.patcher
+                    this.state.editor
                         ? <PatcherUI key={this.state.timestamp} editor={this.state.editor} transparent runtime />
                         : undefined
                 }
