@@ -186,6 +186,7 @@ export class GlobalPackageManager {
             Base: (await import("./objects/Base")).default,
             Std: await import("./objects/Std"),
             new: (await import("./objects/importer/New")).default,
+            func: (await import("./objects/importer/Func")).default,
             UI: (await import("./objects/UI/exports")).default,
             Op: (await import("./objects/Op")).default,
             WebAudio: (await import("./objects/WebAudio/exports")).default,
