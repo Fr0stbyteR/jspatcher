@@ -90,7 +90,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
         }[this.props.mode];
     }
     get fileName() {
-        return `${this.file?.name || this._state.name}.${this.fileExtension}`;
+        return this.file?.name || `${this._state.name}.${this.fileExtension}`;
     }
     emitGraphChanged() {
         if (this._state.preventEmitChanged) return;
@@ -144,7 +144,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
             this.emit("ready");
             return this;
         }
-        this.props.mode = (patcherIn.props && patcherIn.props.mode ? patcherIn.props.mode : modeIn) || "js";
+        this.props.mode = patcherIn.props?.mode || modeIn || "js";
         const { mode } = this.props;
         const $init: Promise<Box>[] = [];
         let patcher;
@@ -161,7 +161,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
                 patcher = patcherIn;
             }
         }
-        if (patcher.props) this.props = { ...this.props, ...patcher.props };
+        if (patcher.props) this.props = { ...this.props, ...patcher.props, mode };
         if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
         if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
         if (mode === "js" && this.props.dependencies) {
