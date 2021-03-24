@@ -174,8 +174,6 @@ export default class BoxUI extends React.PureComponent<P, S> {
     };
     /**
      * if calculated width and height is different from expected, update rect
-     *
-     * @memberof BoxUI
      */
     inspectRectChange = () => {
         if (!this.refDiv.current) return;
@@ -201,7 +199,10 @@ export default class BoxUI extends React.PureComponent<P, S> {
     };
     handleSelected = (ids: string[]) => {
         const selected = !this.props.runtime && ids.indexOf(this.props.id) >= 0;
-        if (this.state.selected !== selected) this.setState({ selected });
+        if (this.state.selected !== selected) {
+            if (!selected) this.handlingToggleEditOnClick = false;
+            this.setState({ selected });
+        }
     };
     handlePatcherPresentationChanged = (inPresentationMode: boolean) => this.setState({ inPresentationMode });
     handlePresentationChanged = () => this.setState({ presentation: this.box.presentation, presentationRect: this.box.presentationRect.slice() as TRect });
