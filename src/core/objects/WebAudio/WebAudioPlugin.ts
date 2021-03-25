@@ -1,4 +1,4 @@
-import { WebAudioModule } from "wamsdk/src/api";
+import { WebAudioModule, WamNode } from "wamsdk/src/api";
 import { Bang, BaseObject, isBang } from "../Base";
 import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
@@ -8,9 +8,9 @@ class PluginUI extends DOMUI<Plugin> {
     state: DOMUIState = { ...this.state, children: this.object.state.children };
 }
 
-export type S = { node: AudioNode; plugin: WebAudioModule; children: ChildNode[] };
+export type S = { node: WamNode; plugin: WebAudioModule; children: ChildNode[] };
 type I = [Bang | number | string | TMIDIEvent | Record<string, TBPF>, ...TBPF[]];
-type O = (null | AudioNode)[];
+type O = (null | WamNode)[];
 export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIState> {
     static description = "Dynamically load WebAudioModule";
     static inlets: TMeta["inlets"] = [{
@@ -33,7 +33,7 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
         let WAPCtor: typeof WebAudioModule;
         let plugin: WebAudioModule;
         try {
-            WAPCtor = await import(/* webpackIgnore: true */url);
+            WAPCtor = (await import(/* webpackIgnore: true */url)).default;
         } catch (e) {
             this.error(e.message);
         }
@@ -106,7 +106,8 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
             } else if (typeof data === "string") {
                 await this.load(data);
             } else if (isMIDIEvent(data)) {
-                // if (this.state.node) this.state.node.onMidi(data);
+                const bytes = Array.from(data) as [number, number, number];
+                if (this.state.node) this.state.node.scheduleEvents({ type: "midi", data: { bytes } });
             } else if (typeof data === "object") {
                 if (this.state.node) {
                     for (const key in data) {
@@ -115,7 +116,7 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
                             let t = 0;
                             bpf.forEach((a) => {
                                 if (a.length > 1) t += a[1];
-                                this.state.plugin.audioNode.scheduleEvent({ type: "automation", data: { id: key, value: a[0], normalized: false }, time: this.audioCtx.currentTime + t });
+                                this.state.node.scheduleEvents({ type: "automation", data: { id: key, value: a[0], normalized: false }, time: this.audioCtx.currentTime + t });
                             });
                             // else this.state.node.setParam(key, bpf[bpf.length - 1][0]);
                         } catch (e) {
