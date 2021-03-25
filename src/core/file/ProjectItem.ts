@@ -145,13 +145,16 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
         await this.emitTreeChanged();
         return item;
     }
-    async saveAs(to: Folder, name: string, newData: ArrayBuffer, by: any) {
-        const item = this.clone(to, name, newData);
+    async saveAs(to: Folder, newName: string, newData: ArrayBuffer, by: any) {
+        const { parent, name, data } = this;
+        const from = parent;
+        this._data = newData;
+        await this.move(to, newName);
+        await this._fileMgr.putFile(this);
+        const item = this.clone(parent, name, data);
         await this._fileMgr.putFile(item);
-        const from = this.parent;
-        this.parent = to;
-        this._name = name;
-        this.parent.items.add(this);
+        parent.items.add(item);
+        parent.emitTreeChanged();
         await this.emitTreeChanged();
         await this.emit("pathChanged", { from, to });
         await this.emit("saved", by);
