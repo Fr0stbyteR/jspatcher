@@ -291,7 +291,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         const project = new Project(this);
         this.currentProject = project;
         await this.fileMgr.importFileZip(data);
-        await project.load();
+        // await project.load();
         this.emit("projectChanged", { project, oldProject });
         return project;
     }

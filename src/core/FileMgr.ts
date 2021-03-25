@@ -21,6 +21,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     JsZip: typeof JsZip;
     env: Env;
     worker: FileMgrWorker;
+    workerInited = false;
     root: Folder;
     get projectRoot() {
         return this.root.findItem(FileManager.projectFolderName) as Folder;
@@ -37,8 +38,11 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         return this.projectRoot.empty();
     }
     async init(project: Project, clean?: boolean) {
-        this.JsZip = (await import("jszip") as any).default;
-        await this.worker.init();
+        if (!this.JsZip) this.JsZip = (await import("jszip") as any).default;
+        if (!this.workerInited) {
+            await this.worker.init();
+            this.workerInited = true;
+        }
         if (clean) await this.worker.empty();
         this.root = new Folder(this, project, null, null);
         await this.root.init();
@@ -212,7 +216,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
             const zip = await jsZip.loadAsync(data);
             const unzip = async (zip: JsZip, to: Folder) => {
                 for (const $nameIn in zip.files) {
-                    const splitted = $nameIn.split("/");
+                    const splitted = $nameIn.split("/").filter(v => !!v);
                     const $file = zip.files[$nameIn];
                     let $to = to;
                     if ($file.dir) {
