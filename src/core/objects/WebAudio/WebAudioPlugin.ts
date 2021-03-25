@@ -107,7 +107,7 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
                 await this.load(data);
             } else if (isMIDIEvent(data)) {
                 const bytes = Array.from(data) as [number, number, number];
-                if (this.state.node) this.state.node.scheduleEvents({ type: "midi", data: { bytes } });
+                if (this.state.node) this.state.node.scheduleEvents({ type: "midi", data: { bytes }, time: this.audioCtx.currentTime });
             } else if (typeof data === "object") {
                 if (this.state.node) {
                     for (const key in data) {
