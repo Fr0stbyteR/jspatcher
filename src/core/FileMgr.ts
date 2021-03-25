@@ -205,8 +205,8 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         const data = await file.arrayBuffer();
         return to.addProjectItem(name, data);
     }
-    async importFileZip(data: ArrayBuffer, subfolder?: string, to: Folder = this.projectRoot) {
-        return this.env.taskMgr.newTask(this, "Unzipping file...", async (onUpdate) => {
+    async importFileZip(data: ArrayBuffer, subfolder?: string, to: Folder = this.projectRoot, taskHost: any = this) {
+        return this.env.taskMgr.newTask(taskHost, "Unzipping file...", async (onUpdate) => {
             let folder = to;
             if (subfolder) {
                 const name = to.uniqueName(subfolder);
@@ -232,7 +232,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
                             else $to = await $to.addFolder($name);
                         }
                         const $name = splitted[splitted.length - 1];
-                        const $data = await $file.async("arraybuffer", state => onUpdate(`${state.percent}% - ${state.currentFile}`));
+                        const $data = await $file.async("arraybuffer", state => onUpdate(`${$nameIn} - ${state.percent.toFixed(2)}%`));
                         if ($to.existItem($name)) continue;
                         await $to.addProjectItem($name, $data);
                     }
