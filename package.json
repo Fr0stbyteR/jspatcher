@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "webpack --mode development",
-    "build-watch": "webpack --mode development --watch",
+    "build-watch": "webpack --mode development --watch --stats-children",
     "dist": "webpack --mode production"
   },
   "keywords": [
@@ -40,6 +40,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "color-js": "^1.0.5",
     "copy-webpack-plugin": "^7.0.0",
+    "crypto-browserify": "^3.12.0",
     "css-loader": "^5.0.1",
     "eslint": "^7.18.0",
     "eslint-config-airbnb-base": "^14.2.1",

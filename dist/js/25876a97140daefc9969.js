@@ -6750,6 +6750,180 @@ var FileType;
 
 /***/ }),
 
+/***/ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataManager.js":
+/*!************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataManager.js ***!
+  \************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "HTMLDataManager": () => /* binding */ HTMLDataManager
+/* harmony export */ });
+/* harmony import */ var _dataProvider_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dataProvider.js */ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataProvider.js");
+/* harmony import */ var _data_webCustomData_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./data/webCustomData.js */ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/data/webCustomData.js");
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+
+var HTMLDataManager = /** @class */ (function () {
+    function HTMLDataManager(options) {
+        this.dataProviders = [];
+        this.setDataProviders(options.useDefaultDataProvider !== false, options.customDataProviders || []);
+    }
+    HTMLDataManager.prototype.setDataProviders = function (builtIn, providers) {
+        var _a;
+        this.dataProviders = [];
+        if (builtIn) {
+            this.dataProviders.push(new _dataProvider_js__WEBPACK_IMPORTED_MODULE_0__.HTMLDataProvider('html5', _data_webCustomData_js__WEBPACK_IMPORTED_MODULE_1__.htmlData));
+        }
+        (_a = this.dataProviders).push.apply(_a, providers);
+    };
+    HTMLDataManager.prototype.getDataProviders = function () {
+        return this.dataProviders;
+    };
+    return HTMLDataManager;
+}());
+
+
+
+/***/ }),
+
+/***/ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataProvider.js":
+/*!*************************************************************************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataProvider.js ***!
+  \*************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "HTMLDataProvider": () => /* binding */ HTMLDataProvider,
+/* harmony export */   "generateDocumentation": () => /* binding */ generateDocumentation
+/* harmony export */ });
+/* harmony import */ var _utils_markup_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/markup.js */ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/utils/markup.js");
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+var HTMLDataProvider = /** @class */ (function () {
+    /**
+     * Currently, unversioned data uses the V1 implementation
+     * In the future when the provider handles multiple versions of HTML custom data,
+     * use the latest implementation for unversioned data
+     */
+    function HTMLDataProvider(id, customData) {
+        var _this = this;
+        this.id = id;
+        this._tags = [];
+        this._tagMap = {};
+        this._valueSetMap = {};
+        this._tags = customData.tags || [];
+        this._globalAttributes = customData.globalAttributes || [];
+        this._tags.forEach(function (t) {
+            _this._tagMap[t.name.toLowerCase()] = t;
+        });
+        if (customData.valueSets) {
+            customData.valueSets.forEach(function (vs) {
+                _this._valueSetMap[vs.name] = vs.values;
+            });
+        }
+    }
+    HTMLDataProvider.prototype.isApplicable = function () {
+        return true;
+    };
+    HTMLDataProvider.prototype.getId = function () {
+        return this.id;
+    };
+    HTMLDataProvider.prototype.provideTags = function () {
+        return this._tags;
+    };
+    HTMLDataProvider.prototype.provideAttributes = function (tag) {
+        var attributes = [];
+        var processAttribute = function (a) {
+            attributes.push(a);
+        };
+        var tagEntry = this._tagMap[tag.toLowerCase()];
+        if (tagEntry) {
+            tagEntry.attributes.forEach(processAttribute);
+        }
+        this._globalAttributes.forEach(processAttribute);
+        return attributes;
+    };
+    HTMLDataProvider.prototype.provideValues = function (tag, attribute) {
+        var _this = this;
+        var values = [];
+        attribute = attribute.toLowerCase();
+        var processAttributes = function (attributes) {
+            attributes.forEach(function (a) {
+                if (a.name.toLowerCase() === attribute) {
+                    if (a.values) {
+                        a.values.forEach(function (v) {
+                            values.push(v);
+                        });
+                    }
+                    if (a.valueSet) {
+                        if (_this._valueSetMap[a.valueSet]) {
+                            _this._valueSetMap[a.valueSet].forEach(function (v) {
+                                values.push(v);
+                            });
+                        }
+                    }
+                }
+            });
+        };
+        var tagEntry = this._tagMap[tag.toLowerCase()];
+        if (!tagEntry) {
+            return [];
+        }
+        processAttributes(tagEntry.attributes);
+        processAttributes(this._globalAttributes);
+        return values;
+    };
+    return HTMLDataProvider;
+}());
+
+/**
+ * Generate Documentation used in hover/complete
+ * From `documentation` and `references`
+ */
+function generateDocumentation(item, doesSupportMarkdown) {
+    var result = {
+        kind: doesSupportMarkdown ? 'markdown' : 'plaintext',
+        value: ''
+    };
+    if (item.description) {
+        var normalizedDescription = (0,_utils_markup_js__WEBPACK_IMPORTED_MODULE_0__.normalizeMarkupContent)(item.description);
+        if (normalizedDescription) {
+            result.value += normalizedDescription.value;
+        }
+    }
+    if (item.references && item.references.length > 0) {
+        result.value += "\n\n";
+        if (doesSupportMarkdown) {
+            result.value += item.references.map(function (r) {
+                return "[" + r.name + "](" + r.url + ")";
+            }).join(' | ');
+        }
+        else {
+            result.value += item.references.map(function (r) {
+                return r.name + ": " + r.url;
+            }).join('\n');
+        }
+    }
+    if (result.value === '') {
+        return undefined;
+    }
+    return result;
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/data/webCustomData.js":
 /*!*******************************************************************************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/data/webCustomData.js ***!
@@ -12675,180 +12849,6 @@ var htmlData = {
         }
     ]
 };
-
-
-/***/ }),
-
-/***/ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataManager.js":
-/*!************************************************************************************************************************!*\
-  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataManager.js ***!
-  \************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "HTMLDataManager": () => /* binding */ HTMLDataManager
-/* harmony export */ });
-/* harmony import */ var _dataProvider_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dataProvider.js */ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataProvider.js");
-/* harmony import */ var _data_webCustomData_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./data/webCustomData.js */ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/data/webCustomData.js");
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
-
-var HTMLDataManager = /** @class */ (function () {
-    function HTMLDataManager(options) {
-        this.dataProviders = [];
-        this.setDataProviders(options.useDefaultDataProvider !== false, options.customDataProviders || []);
-    }
-    HTMLDataManager.prototype.setDataProviders = function (builtIn, providers) {
-        var _a;
-        this.dataProviders = [];
-        if (builtIn) {
-            this.dataProviders.push(new _dataProvider_js__WEBPACK_IMPORTED_MODULE_0__.HTMLDataProvider('html5', _data_webCustomData_js__WEBPACK_IMPORTED_MODULE_1__.htmlData));
-        }
-        (_a = this.dataProviders).push.apply(_a, providers);
-    };
-    HTMLDataManager.prototype.getDataProviders = function () {
-        return this.dataProviders;
-    };
-    return HTMLDataManager;
-}());
-
-
-
-/***/ }),
-
-/***/ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataProvider.js":
-/*!*************************************************************************************************************************!*\
-  !*** ./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/languageFacts/dataProvider.js ***!
-  \*************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "HTMLDataProvider": () => /* binding */ HTMLDataProvider,
-/* harmony export */   "generateDocumentation": () => /* binding */ generateDocumentation
-/* harmony export */ });
-/* harmony import */ var _utils_markup_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/markup.js */ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/utils/markup.js");
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
-var HTMLDataProvider = /** @class */ (function () {
-    /**
-     * Currently, unversioned data uses the V1 implementation
-     * In the future when the provider handles multiple versions of HTML custom data,
-     * use the latest implementation for unversioned data
-     */
-    function HTMLDataProvider(id, customData) {
-        var _this = this;
-        this.id = id;
-        this._tags = [];
-        this._tagMap = {};
-        this._valueSetMap = {};
-        this._tags = customData.tags || [];
-        this._globalAttributes = customData.globalAttributes || [];
-        this._tags.forEach(function (t) {
-            _this._tagMap[t.name.toLowerCase()] = t;
-        });
-        if (customData.valueSets) {
-            customData.valueSets.forEach(function (vs) {
-                _this._valueSetMap[vs.name] = vs.values;
-            });
-        }
-    }
-    HTMLDataProvider.prototype.isApplicable = function () {
-        return true;
-    };
-    HTMLDataProvider.prototype.getId = function () {
-        return this.id;
-    };
-    HTMLDataProvider.prototype.provideTags = function () {
-        return this._tags;
-    };
-    HTMLDataProvider.prototype.provideAttributes = function (tag) {
-        var attributes = [];
-        var processAttribute = function (a) {
-            attributes.push(a);
-        };
-        var tagEntry = this._tagMap[tag.toLowerCase()];
-        if (tagEntry) {
-            tagEntry.attributes.forEach(processAttribute);
-        }
-        this._globalAttributes.forEach(processAttribute);
-        return attributes;
-    };
-    HTMLDataProvider.prototype.provideValues = function (tag, attribute) {
-        var _this = this;
-        var values = [];
-        attribute = attribute.toLowerCase();
-        var processAttributes = function (attributes) {
-            attributes.forEach(function (a) {
-                if (a.name.toLowerCase() === attribute) {
-                    if (a.values) {
-                        a.values.forEach(function (v) {
-                            values.push(v);
-                        });
-                    }
-                    if (a.valueSet) {
-                        if (_this._valueSetMap[a.valueSet]) {
-                            _this._valueSetMap[a.valueSet].forEach(function (v) {
-                                values.push(v);
-                            });
-                        }
-                    }
-                }
-            });
-        };
-        var tagEntry = this._tagMap[tag.toLowerCase()];
-        if (!tagEntry) {
-            return [];
-        }
-        processAttributes(tagEntry.attributes);
-        processAttributes(this._globalAttributes);
-        return values;
-    };
-    return HTMLDataProvider;
-}());
-
-/**
- * Generate Documentation used in hover/complete
- * From `documentation` and `references`
- */
-function generateDocumentation(item, doesSupportMarkdown) {
-    var result = {
-        kind: doesSupportMarkdown ? 'markdown' : 'plaintext',
-        value: ''
-    };
-    if (item.description) {
-        var normalizedDescription = (0,_utils_markup_js__WEBPACK_IMPORTED_MODULE_0__.normalizeMarkupContent)(item.description);
-        if (normalizedDescription) {
-            result.value += normalizedDescription.value;
-        }
-    }
-    if (item.references && item.references.length > 0) {
-        result.value += "\n\n";
-        if (doesSupportMarkdown) {
-            result.value += item.references.map(function (r) {
-                return "[" + r.name + "](" + r.url + ")";
-            }).join(' | ');
-        }
-        else {
-            result.value += item.references.map(function (r) {
-                return r.name + ": " + r.url;
-            }).join('\n');
-        }
-    }
-    if (result.value === '') {
-        return undefined;
-    }
-    return result;
-}
 
 
 /***/ }),

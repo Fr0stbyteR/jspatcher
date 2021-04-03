@@ -15,7 +15,8 @@ const config = {
       "buffer": require.resolve("buffer"),
       "util": require.resolve("util"),
       "fs": false,
-      "stream": require.resolve("stream-browserify")
+      "stream": require.resolve("stream-browserify"),
+      "crypto": require.resolve("crypto-browserify")
     },
     extensions: ['.tsx', '.ts', '.js']
   },

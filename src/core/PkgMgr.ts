@@ -184,7 +184,7 @@ export class GlobalPackageManager {
     async init() {
         this.js = {
             Base: (await import("./objects/Base")).default,
-            Std: await import("./objects/Std"),
+            Std: (await import("./objects/Std")).default,
             new: (await import("./objects/importer/New")).default,
             func: (await import("./objects/importer/Func")).default,
             UI: (await import("./objects/UI/exports")).default,
