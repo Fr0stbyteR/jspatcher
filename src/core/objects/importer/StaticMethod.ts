@@ -34,7 +34,7 @@ export class StaticMethod extends Method<true> {
     execute() {
         const fn = this.imported;
         try {
-            this.state.result = fn(...this.state.inputs);
+            this.state.result = fn(...(this.getProp("spreadArgs") ? this.state.inputs.reduce<any[]>((acc, cur) => [...acc, ...cur], []) : this.state.inputs));
             return true;
         } catch (e) {
             this.error(e);

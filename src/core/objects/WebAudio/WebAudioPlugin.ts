@@ -95,6 +95,7 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
     handlePreInit = () => undefined as any;
     handlePostInit = async () => {
         if (this.box.args[0]) await this.load(this.box.args[0]);
+        this.on("updateArgs", this.handleUpdateArgs);
     };
     handleUpdateArgs = async (args: Partial<[string]>): Promise<void> => {
         if (typeof args[0] === "string") await this.load(this.box.args[0]);
@@ -141,7 +142,6 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
         super.subscribe();
         this.on("preInit", this.handlePreInit);
         this.on("postInit", this.handlePostInit);
-        this.on("updateArgs", this.handleUpdateArgs);
         this.on("inlet", this.handleInlet);
         this.on("destroy", this.handleDestroy);
     }

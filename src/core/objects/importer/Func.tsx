@@ -42,10 +42,10 @@ export default class Func extends DefaultObject<{}, S, [Bang], [TAnyFunction], a
                 else if (Wrapper.prototype instanceof StaticMethod || Wrapper.prototype instanceof Method) {
                     this.state.Wrapper = Wrapper as TWrapper;
                 } else {
-                    this.error("Given function is not constructable");
+                    this.error("Given identifier function is not a function");
                 }
             } else {
-                this.error("A constructor is needed.");
+                this.error("A function identifier is needed.");
             }
         });
         this.on("inlet", ({ data, inlet }) => {
