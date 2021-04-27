@@ -1,4 +1,4 @@
-import type * as GuidoModule from "@grame/guidolib";
+import type * as GuidoModule from "@shren/guidolib";
 import { IGuidoWorker } from "./GuidoWorker.types";
 import ProxyWorker from "./ProxyWorker";
 
@@ -23,20 +23,14 @@ class Guido extends ProxyWorker<IGuidoWorker> implements IGuidoWorker {
 
     async init() {
         const locateFile = (url: string, dir: string) => "../deps/" + url;
-        const Module = (await import("@grame/guidolib") as any).default as typeof GuidoModule;
-        return new Promise<void>((resolve, reject) => {
-            const module = new Module({ locateFile });
-            module.onRuntimeInitialized = () => {
-                this.module = module;
-                this.fEngine = new this.module.GuidoEngineAdapter();
-                this.fScoreMap = new this.module.GUIDOScoreMap();
-                this.fPianoRoll = new this.module.GUIDOPianoRollAdapter();
-                this.fFactory = new this.module.GUIDOFactoryAdapter();
-                this.fSPR = new this.module.GUIDOReducedProportionalAdapter();
-                this.fEngine.init();
-                resolve();
-            };
-        });
+        const Module = (await import("@shren/guidolib") as any).default as typeof GuidoModule;
+        this.module = await new Module({ locateFile });
+        this.fEngine = new this.module.GuidoEngineAdapter();
+        this.fScoreMap = new this.module.GUIDOScoreMap();
+        this.fPianoRoll = new this.module.GUIDOPianoRollAdapter();
+        this.fFactory = new this.module.GUIDOFactoryAdapter();
+        this.fSPR = new this.module.GUIDOReducedProportionalAdapter();
+        this.fEngine.init();
     }
 
     // ------------------------------------------------------------------------

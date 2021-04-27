@@ -1,7 +1,7 @@
 import Worker from "./Guido.worker.ts"; // eslint-disable-line import/extensions
 import { IGuidoWorker } from "./GuidoWorker.types";
 import ProxyMain from "./ProxyMain";
-import "@grame/guidolib/guido2-webfont/stylesheet.css";
+import "@shren/guidolib/guido2-webfont/stylesheet.css";
 
 export default class GuidoWorker extends ProxyMain<{}, IGuidoWorker> {
     static Worker = Worker;

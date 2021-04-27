@@ -15,13 +15,13 @@ interface Props extends GuidoLayoutSettings {
     bgColor: string;
 }
 
-export default class GuidoView extends UIObject<{}, State, [string], [string[]], [], Props, DOMUIState> {
+export default class GuidoView extends UIObject<{}, State, [string | $ARHandler], [string[]], [], Props, DOMUIState> {
     static package = "Guido";
     static description = "Get Guido Graphic Representation from code";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
         type: "string",
-        description: "Guido code to compile and display"
+        description: "Guido AR / GMN code to compile and display"
     }];
     static outlets: TMeta["outlets"] = [{
         type: "object",
@@ -94,8 +94,9 @@ export default class GuidoView extends UIObject<{}, State, [string], [string[]],
             const guido = this.patcher.env.guidoWorker;
             const { parser, gmn } = this.state;
             const ar = await guido.string2AR(parser, gmn);
+            if (this.state.gr) await guido.freeGR(this.state.gr);
             if (this.state.ar) await guido.freeAR(this.state.ar);
-            this.setState({ ar });
+            this.setState({ ar, gr: undefined });
         };
         const processGR = async () => {
             const guido = this.patcher.env.guidoWorker;
@@ -149,6 +150,18 @@ export default class GuidoView extends UIObject<{}, State, [string], [string[]],
                 this.error(error);
             }
         };
+        const processFromAR = async (ar: $ARHandler) => {
+            try {
+                const guido = this.patcher.env.guidoWorker;
+                if (this.state.gr) await guido.freeGR(this.state.gr);
+                if (this.state.ar) await guido.freeAR(this.state.ar);
+                this.setState({ ar, gr: undefined });
+                await processGR();
+                await processSVG();
+            } catch (error) {
+                this.error(error);
+            }
+        };
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 1;
@@ -162,6 +175,8 @@ export default class GuidoView extends UIObject<{}, State, [string], [string[]],
                 if (typeof data === "string") {
                     this.setState({ gmn: data });
                     process();
+                } else if (typeof data === "number") {
+                    processFromAR(data);
                 }
             }
         });

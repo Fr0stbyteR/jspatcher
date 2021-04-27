@@ -267,6 +267,49 @@ class gate extends StdObject<{}, { pass: boolean }, [any, any], [any], [any]> {
         });
     }
 }
+class obj extends StdObject<{}, { obj: Record<string, any> }, [Bang, ...any], [Record<string, any>], (string | number)[]> {
+    static description = "Construct an object with various properties";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "object",
+        description: "Bang to output current object and initialize a new one"
+    }, {
+        isHot: false,
+        type: "anything",
+        varLength: true,
+        description: "Value to set to the property"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "object",
+        description: "Created object"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: true,
+        varLength: true,
+        description: "Key / name of the property"
+    }];
+    state = { obj: {} as Record<string, any> };
+    subscribe() {
+        super.subscribe();
+        this.on("updateArgs", (args) => {
+            this.inlets = args.length + 1;
+        });
+        this.on("postInit", () => {
+            this.inlets = this.box.args.length + 1;
+            this.outlets = 1;
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                this.outlet(0, this.state.obj);
+                this.state.obj = {};
+            } else {
+                const propKey = this.box.args[inlet - 1];
+                this.state.obj[propKey] = data;
+            }
+        });
+    }
+}
 class set extends StdObject<{}, { key: string | number; value: any }, [Record<string, any> | any[], string | number, any], [Record<string, any> | any[]], [string | number, any]> {
     static description = "Set a property of incoming object";
     static inlets: TMeta["inlets"] = [{
@@ -374,6 +417,62 @@ class get extends StdObject<{}, { keys: (string | number)[] }, [Record<string, a
                         }
                     }
                 }
+            } else {
+                if (typeof data === "string" || typeof data === "number") this.state.keys[inlet - 1] = data;
+                else this.error("Key should be a number or a string");
+            }
+        });
+    }
+}
+class dget extends StdObject<{}, { keys: (string | number)[] }, [Record<string, any> | any[], ...(string | number)[]], any[], (string | number)[]> {
+    static description = "Get a deep property of incoming object";
+    static inlets: TMeta["inlets"] = [{
+        isHot: true,
+        type: "object",
+        description: "Object to get a property"
+    }, {
+        isHot: false,
+        type: "string",
+        varLength: true,
+        description: "Key / name of the property (recursive)"
+    }];
+    static outlets: TMeta["outlets"] = [{
+        type: "anything",
+        varLength: true,
+        description: "Value got"
+    }];
+    static args: TMeta["args"] = [{
+        type: "anything",
+        optional: false,
+        varLength: true,
+        description: "Initial key of the property (recursive)"
+    }];
+    state = { keys: [] as (string | number)[] };
+    resetIO = () => {
+        const { args } = this.box;
+        this.state.keys = args.slice();
+        this.inlets = 1 + args.length;
+        this.outlets = args.length;
+    };
+    subscribe() {
+        super.subscribe();
+        this.on("postInit", this.resetIO);
+        this.on("updateArgs", this.resetIO);
+        this.on("inlet", ({ data, inlet }) => {
+            if (inlet === 0) {
+                let v = data as any;
+                for (let i = 0; i < this.state.keys.length; i++) {
+                    const key = this.state.keys[i];
+                    if (typeof key === "string" || typeof key === "number") {
+                        try {
+                            v = v[key];
+                        } catch (e) {
+                            this.error((e as Error).message);
+                            return;
+                        }
+                    }
+                }
+                this.outlet(0, v);
             } else {
                 if (typeof data === "string" || typeof data === "number") this.state.keys[inlet - 1] = data;
                 else this.error("Key should be a number or a string");
@@ -813,4 +912,4 @@ class thispatcher extends StdObject<{}, {}, [Bang], [Patcher]> {
     }
 }
 
-export default { print, for: For, "for-in": ForIn, if: If, gate, sel, set, get, call, v, lambda, bang, loadbang, unloadbang, delay, thispatcher };
+export default { print, for: For, "for-in": ForIn, if: If, gate, sel, obj, set, get, dget, call, v, lambda, bang, loadbang, unloadbang, delay, thispatcher };

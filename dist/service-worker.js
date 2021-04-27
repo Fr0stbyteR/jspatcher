@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-6915de6f'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.2.1619116896704"
+    prefix: "0.0.2.1619353047637"
   });
   self.skipWaiting();
   workbox.clientsClaim();
@@ -282,7 +282,7 @@ define("./service-worker.js",['./workbox-6915de6f'], function (workbox) { 'use s
     "revision": "6024187832c1ad7af33a5103e57bcfc8"
   }, {
     "url": "deps/libGUIDOEngine.wasm",
-    "revision": "0abd2158ffc1e076d0a176f909195080"
+    "revision": "42914c6132a30517e800b4e840079cb6"
   }, {
     "url": "deps/libfaust-wasm.data",
     "revision": "c2c69cabe8df0cb7ecf0ff0f90484431"
@@ -309,7 +309,7 @@ define("./service-worker.js",['./workbox-6915de6f'], function (workbox) { 'use s
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "1293d1c6acc0def55ca831fdd2ad9c71"
+    "revision": "e176aeb3e2df8db46d0ee83709646783"
   }, {
     "url": "js/01125075dd5a77fcaf14.worklet.js",
     "revision": null
@@ -317,7 +317,10 @@ define("./service-worker.js",['./workbox-6915de6f'], function (workbox) { 'use s
     "url": "js/077af11455cd3c72e0fc.js",
     "revision": null
   }, {
-    "url": "js/1562b87763f051aabc60.worker.js",
+    "url": "js/0bbfbb294afa5615f79c.worker.js",
+    "revision": null
+  }, {
+    "url": "js/16a557a2a17f80565b7d.worker.js",
     "revision": null
   }, {
     "url": "js/1f12c8171623f5ead837.js",
@@ -331,9 +334,6 @@ define("./service-worker.js",['./workbox-6915de6f'], function (workbox) { 'use s
   }, {
     "url": "js/455af92e7e1dc39fdbc8060f6680ab32.worker.js",
     "revision": "582b0ba08d850bff237a9eebde3cd704"
-  }, {
-    "url": "js/49dcf1b6e547e2c030d3.js",
-    "revision": null
   }, {
     "url": "js/4c3849425ccb884bc452.worker.js",
     "revision": null
@@ -374,10 +374,10 @@ define("./service-worker.js",['./workbox-6915de6f'], function (workbox) { 'use s
     "url": "js/a75af1dffaa1c0f6ebf5.worklet.js",
     "revision": null
   }, {
-    "url": "js/a904d506e1a0a0b58d48.worker.js",
+    "url": "js/a9e0b4da7c66a0111b79.worker.js",
     "revision": null
   }, {
-    "url": "js/a9e0b4da7c66a0111b79.worker.js",
+    "url": "js/b0213ffd09239ea91101.js",
     "revision": null
   }, {
     "url": "js/b12c47a788d82c212255.js",
@@ -398,10 +398,10 @@ define("./service-worker.js",['./workbox-6915de6f'], function (workbox) { 'use s
     "url": "js/dbc3ec8130ec01e8bc89.js",
     "revision": null
   }, {
-    "url": "js/e14077e33139e9ad029b.worklet.js",
+    "url": "js/dc7af694d1a054e4bcca.js",
     "revision": null
   }, {
-    "url": "js/e4799d489a12b35cf07b.js",
+    "url": "js/e14077e33139e9ad029b.worklet.js",
     "revision": null
   }, {
     "url": "js/e75308fe71c1b5bad8b2.js",

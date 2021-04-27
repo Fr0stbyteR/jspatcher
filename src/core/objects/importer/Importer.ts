@@ -108,13 +108,11 @@ export default class Importer {
             if (newObj) this.writeInPath(out, [], newObj);
         }
         for (const key in props) {
-            if (all) {
-                if (typeof o === "function" && ["arguments", "caller", "length", "name", "__proto__"].indexOf(key) >= 0) continue;
-                if (typeof o === "object" && ["constructor", "__proto__"].indexOf(key) >= 0) continue;
-            }
+            if (typeof o === "function" && ["arguments", "caller", "length", "name", "__proto__"].indexOf(key) >= 0) continue;
+            if (typeof o === "object" && ["constructor", "__proto__"].indexOf(key) >= 0) continue;
             const prop = props[key];
             const newPath = [...path, key];
-            if (!all && !prop.enumerable && key !== "prototype") continue;
+            if (!all && !prop.enumerable && key.startsWith("_") && key !== "prototype") continue;
             const newObj = this.getObject(prop, pkgName, root, newPath);
             if (newObj) this.writeInPath(out, newPath.map((s, i) => (i !== newPath.length - 1 && s === "prototype" ? "" : s)), newObj);
             const value = prop.value;
