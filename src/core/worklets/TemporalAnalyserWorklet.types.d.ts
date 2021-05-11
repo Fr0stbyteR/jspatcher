@@ -12,5 +12,5 @@ export interface TemporalAnalysis {
     rms: number[];
     absMax: number[];
     zcr: number[];
-    buffer: { data: Float32Array[]; $: Uint32Array; $total: Uint32Array; lock: Int32Array };
+    buffer: { data: Float32Array[]; $read: Uint32Array; $write: Uint32Array; $total: Uint32Array };
 }

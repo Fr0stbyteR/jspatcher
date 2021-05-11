@@ -66,6 +66,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
         const bottom = 0;
 
         const { estimatedFreq, buffer } = await this.object.state.node.gets("estimatedFreq", "buffer");
+        const l = this.object.getProp("windowSize");
         const { sampleRate } = this.object.audioCtx;
 
         // Background
@@ -76,14 +77,12 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
 
         if (!buffer) return;
 
-        const { $: $ui32, data: t, lock } = buffer;
+        const { $read: $ui32, data: t } = buffer;
         if (!t || !t.length || !t[0].length) return;
 
-        while (Atomics.load(lock, 0));
-        Atomics.store(lock, 0, 1);
-        const $ = $ui32[0];
+        const $ = Atomics.load($ui32, 0);
         const channels = t.length;
-        const l = t[0].length;
+        const dl = t[0].length;
         // Vertical Range
         let yMin = -range;
         let yMax = range;
@@ -95,7 +94,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             while (i--) {
                 let j = l;
                 while (j--) {
-                    s = t[i][j];
+                    s = t[i][($ + j) % dl];
                     if (s < yMin) yMin = s;
                     else if (s > yMax) yMax = s;
                 }
@@ -148,11 +147,11 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             if (stablize) { // Stablization
                 if (i === 0) {
                     const thresh = (yMin + yMax) * 0.5 + 0.001; // the zero-crossing with "offset"
-                    while ($zerox < l && t[i][($ + $zerox++) % l] > thresh); // Find first raise
+                    while ($zerox < l && t[i][($ + $zerox++) % dl] > thresh); // Find first raise
                     if ($zerox >= l - 1) { // Found nothing, no stablization
                         $zerox = 0;
                     } else {
-                        while ($zerox < l && t[i][($ + $zerox++) % l] < thresh); // Find first drop
+                        while ($zerox < l && t[i][($ + $zerox++) % dl] < thresh); // Find first drop
                         $zerox--;
                         if ($zerox >= l - 1 || $zerox < 0) {
                             $zerox = 0;
@@ -178,7 +177,7 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             let maxInStep;
             let minInStep;
             for (let j = $0; j < $1; j++) {
-                const $j = (j + $) % l;
+                const $j = (j + $) % dl;
                 const samp = t[i][$j];
                 const $step = (j - $0) % sampsPerPixel;
                 if ($step === 0) {
@@ -204,7 +203,6 @@ export class OscilloscopeUI extends CanvasUI<Oscilloscope, {}, OscilloscopeUISta
             ctx.stroke();
             if (interleaved) ctx.restore();
         }
-        Atomics.store(lock, 0, 0);
         // Stats
         if (showStats) {
             ctx.font = "bold 12px Consolas, monospace";
