@@ -122,11 +122,9 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, S, I,
                         }
                     }
                 } else if (data instanceof AudioBuffer) {
-                    if (this.node.buffer) this.resetNode();
-                    this.node.buffer = data;
+                    if (data !== this.node.buffer) this.resetNode(data);
                 } else if (data instanceof PatcherAudio) {
-                    if (this.node.buffer) this.resetNode();
-                    this.node.buffer = data.audioBuffer;
+                    if (data.audioBuffer !== this.node.buffer) this.resetNode(data.audioBuffer);
                 }
             } else if (inlet >= 1 && inlet <= 2) {
                 try {
@@ -159,11 +157,12 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, S, I,
             this.node.removeEventListener("ended", this.handleEnded);
         });
     }
-    resetNode() {
+    resetNode(bufferIn?: AudioBuffer) {
         this.disconnectAudio();
         this.setState({ playing: false });
         this.node.removeEventListener("ended", this.handleEnded);
-        const { buffer, loop, loopStart, loopEnd } = this.node;
+        const { loop, loopStart, loopEnd } = this.node;
+        const buffer = bufferIn || this.node.buffer;
         const playbackRate = this.node.playbackRate.value;
         const detune = this.node.detune.value;
         this.node = this.audioCtx.createBufferSource();

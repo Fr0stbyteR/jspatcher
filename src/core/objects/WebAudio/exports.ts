@@ -23,6 +23,7 @@ import { AudioIn, AudioOut } from "./AudioIO";
 import Plugin from "./WebAudioPlugin";
 import Buffer from "./buffer";
 import BufferSrc from "./BufferSource";
+import Record from "./Record";
 /*
 const {
     BaseAudioContext,
@@ -79,5 +80,6 @@ export default {
     "audioOut~": AudioOut,
     "plugin~": Plugin,
     "buffer~": Buffer,
-    "bufferSource~": BufferSrc
+    "bufferSource~": BufferSrc,
+    "record~": Record
 };
