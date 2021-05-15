@@ -38,17 +38,20 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
             this.error(e.message);
         }
         let node: AudioNode;
-        let element: Element;
+        let element: HTMLElement;
         try {
             plugin = await WAPCtor.createInstance(this.audioCtx);
             node = plugin.audioNode;
-            element = await plugin.createGui();
+            element = await plugin.createGui() as HTMLElement;
         } catch (e) {
             if (e) this.error((e as Error).message);
             return;
         }
         this.disconnectAudio();
         this.handleDestroy();
+        element.style.width = "100%";
+        element.style.height = "100%";
+        element.style.position = "absolute";
         this.state.children = [element];
         this.updateUI({ children: this.state.children });
         node.channelInterpretation = "discrete";
@@ -89,8 +92,14 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
     }
     handleDestroy = () => {
         const { node, plugin } = this.state;
-        if (node) node.disconnect();
-        if (plugin) plugin.audioNode.destroy();
+        if (node) {
+            node.disconnect();
+            node.disconnectEvents();
+        }
+        if (plugin) {
+            plugin.audioNode.destroy();
+            if (this.state.children?.[0]) plugin.destroyGui(this.state.children[0] as Element);
+        }
     };
     handlePreInit = () => undefined as any;
     handlePostInit = async () => {
