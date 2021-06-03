@@ -10,6 +10,7 @@ const Node = class extends AudioWorkletNode {
         super(context, name, options);
         const resolves: Record<number, ((...args: any[]) => any)> = {};
         const rejects: Record<number, ((...args: any[]) => any)> = {};
+        let messagePortRequestId = 1;
         const handleDisposed = () => {
             this.port.removeEventListener("message", handleMessage);
             this.port.close();
@@ -40,7 +41,7 @@ const Node = class extends AudioWorkletNode {
         // eslint-disable-next-line
         const call = (call: string, ...args: any[]) => {
             return new Promise<any>((resolve, reject) => {
-                const id = performance.now();
+                const id = messagePortRequestId++;
                 resolves[id] = resolve;
                 rejects[id] = reject;
                 this.port.postMessage({ id, call, args });

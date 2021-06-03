@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.2.1621070442506"
+    prefix: "0.0.2.1622732394675"
   });
   self.skipWaiting();
   workbox.clientsClaim();
@@ -309,7 +309,10 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "a1c26ab2ff0e17bea25af469426d3ef9"
+    "revision": "56be726838cf0b97366836b30dbe81ef"
+  }, {
+    "url": "js/0357f57e115b5abb657b.worker.js",
+    "revision": null
   }, {
     "url": "js/0625d7050bcab6c230f4.js",
     "revision": null
@@ -365,10 +368,7 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "url": "js/4c6405378dc434b735f3.js",
     "revision": null
   }, {
-    "url": "js/550045a567959a57300d.worker.js",
-    "revision": null
-  }, {
-    "url": "js/58a2043d6a98145fbb91.worker.js",
+    "url": "js/5925dbdaf131c02af594.worker.js",
     "revision": null
   }, {
     "url": "js/603eea5d38e9dfaf57c7.js",
@@ -380,10 +380,10 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "url": "js/70ff708d07dec14b44c1.js",
     "revision": null
   }, {
-    "url": "js/817c3e779c9b30edea28.js",
+    "url": "js/7a86a3d90684c8da6688.worker.js",
     "revision": null
   }, {
-    "url": "js/820a4cafd7a4fdbd6f3f.worker.js",
+    "url": "js/817c3e779c9b30edea28.js",
     "revision": null
   }, {
     "url": "js/98a4c2d2c8499f3cbab9.js",
@@ -401,9 +401,6 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "url": "js/affa2c3b520743807eea.worklet.js",
     "revision": null
   }, {
-    "url": "js/b11083109cfcfef4448e.worker.js",
-    "revision": null
-  }, {
     "url": "js/b65a0744f469eb89d210.js",
     "revision": null
   }, {
@@ -413,7 +410,10 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "url": "js/caa639ea71b9fe5856d8.js",
     "revision": null
   }, {
-    "url": "js/ce14baf9d8640352b481.worker.js",
+    "url": "js/cee72465ea474f1cd843.worker.js",
+    "revision": null
+  }, {
+    "url": "js/d0239b0b7e75bae690cc.worker.js",
     "revision": null
   }, {
     "url": "js/d63c826e229c90273981bd45f77732ad.worker.js",
