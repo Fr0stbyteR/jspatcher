@@ -65,7 +65,7 @@
         }
     }
     &.unlocked > div.lines > div.line > svg > path, &.unlocked > div.lines > div.line > svg > line {
-        pointer-events: auto;
+        pointer-events: visibleStroke;
     }
     &.locked > div.lines > div.line > svg > path, &.locked > div.lines > div.line > svg > line {
         pointer-events: none;
