@@ -3,6 +3,7 @@ import AudioFile from "../audio/AudioFile";
 import ProjectItem from "./ProjectItem";
 import TextFile from "../text/TextFile";
 import PatcherFile from "../patcher/PatcherFile";
+import ImageFile from "../image/ImageFile";
 
 export default class Folder extends ProjectItem {
     type = "folder" as const;
@@ -27,6 +28,7 @@ export default class Folder extends ProjectItem {
         if (type === "patcher") return new PatcherFile(this.fileMgr, this.project, this, name, data);
         if (type === "audio") return new AudioFile(this.fileMgr, this.project, this, name, data);
         if (type === "text") return new TextFile(this.fileMgr, this.project, this, name, data);
+        if (type === "image") return new ImageFile(this.fileMgr, this.project, this, name, data);
         return new TextFile(this.fileMgr, this.project, this, name, data);
     }
     findItem(itemIn: string) {

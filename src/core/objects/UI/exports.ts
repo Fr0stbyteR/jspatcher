@@ -6,5 +6,6 @@ import view from "./view";
 import keyboard from "./keyboard";
 import bpf from "./bpf";
 import waveform from "./waveform";
+import img from "./img";
 
-export default { message, comment, code, menu, view, keyboard, bpf, waveform };
+export default { message, comment, code, menu, view, keyboard, bpf, waveform, img };

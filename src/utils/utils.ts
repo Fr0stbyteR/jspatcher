@@ -1,5 +1,5 @@
 /* eslint-disable arrow-body-style */
-import { TMIDIEvent, TBPF, TRect, TPresentationRect, FileExtension, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit, TPatcherProps } from "../core/types";
+import { TMIDIEvent, TBPF, TRect, TPresentationRect, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit, TPatcherProps } from "../core/types";
 
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
@@ -188,10 +188,12 @@ export const getPropertyDescriptors = (obj: Function | Record<string, any>): Pro
     return Object.assign(proto ? getPropertyDescriptors(proto) : {}, Object.getOwnPropertyDescriptors(obj));
 };
 
-export const extToType = (ext: FileExtension): Exclude<ProjectItemType, "folder"> => {
+export const extToType = (ext: string): Exclude<ProjectItemType, "folder"> => {
     if (["jspat", "maxpat", "gendsp", "dsppat"].indexOf(ext) !== -1) return "patcher";
     if (["wav", "aif", "aiff", "mp3", "aac", "flac", "ogg"].indexOf(ext) !== -1) return "audio";
-    if (["text", "json"].indexOf(ext) !== -1) return "text";
+    if (["txt", "json"].indexOf(ext) !== -1) return "text";
+    if (["apng", "avif", "gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "svg", "webp", "bmp", "ico", "cur", "tif", "tiff"].indexOf(ext) !== -1) return "image";
+    if (["mp4", "webm", "3gp"].indexOf(ext) !== -1) return "video";
     return "unknown";
 };
 

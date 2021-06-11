@@ -2,10 +2,11 @@ import * as JsZip from "jszip";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import Env from "./Env";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
-import { AudioFileExtension, PatcherFileExtension, ProjectItemType, RawProjectItem, TextFileExtension } from "./types";
+import { ProjectItemType, RawProjectItem } from "./types";
 import ProjectItem from "./file/ProjectItem";
 import Folder from "./file/Folder";
 import Project from "./Project";
+import { extToType } from "../utils/utils";
 
 export interface FileManagerEventMap {
     "ready": never;
@@ -15,9 +16,6 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     static maxFileSize = 133169152;
     static multipartSuffix = "jspatpart";
     static projectFolderName = "project";
-    static patcherFileExtensions: PatcherFileExtension[] = ["jspat", "maxpat", "gendsp", "dsppat"];
-    static audioFileExtensions: AudioFileExtension[] = ["wav", "mp3", "aif", "aiff", "aac", "flac", "ogg"];
-    static textFileExtensions: TextFileExtension[] = ["txt", "json"];
     JsZip: typeof JsZip;
     env: Env;
     worker: FileMgrWorker;
@@ -86,10 +84,9 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         return { name, type };
     }
     protected getTypeFromFileName(name: string): ProjectItemType {
-        if (FileManager.patcherFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "patcher";
-        if (FileManager.audioFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "audio";
-        if (FileManager.textFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "text";
-        return "unknown";
+        const splitted = name.split(".");
+        const ext = splitted[splitted.length - 1];
+        return extToType(ext);
     }
 
     async exists(path: string) {
