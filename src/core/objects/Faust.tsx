@@ -1119,32 +1119,36 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
     };
     subscribePatcher = async () => {
         const { patcher } = this.state;
-        const { file } = patcher;
-        await patcher.addObserver(this);
-        patcher.on("graphChanged", this.handleGraphChanged);
-        patcher.on("changed", this.handlePatcherChanged);
-        if (file) {
-            file.on("destroyed", this.reload);
-            file.on("nameChanged", this.handleFilePathChanged);
-            file.on("pathChanged", this.handleFilePathChanged);
-            file.on("saved", this.reload);
+        if (patcher) {
+            await patcher.addObserver(this);
+            patcher.on("graphChanged", this.handleGraphChanged);
+            patcher.on("changed", this.handlePatcherChanged);
+            const { file } = patcher;
+            if (file) {
+                file.on("destroyed", this.reload);
+                file.on("nameChanged", this.handleFilePathChanged);
+                file.on("pathChanged", this.handleFilePathChanged);
+                file.on("saved", this.reload);
+            }
         }
     };
     unsubscribePatcher = async () => {
         const { patcher } = this.state;
-        const { file } = patcher;
-        patcher.off("graphChanged", this.handleGraphChanged);
-        patcher.off("changed", this.handlePatcherChanged);
-        if (file) {
-            file.off("destroyed", this.reload);
-            file.off("nameChanged", this.handleFilePathChanged);
-            file.off("pathChanged", this.handleFilePathChanged);
-            file.off("saved", this.handleSaved);
+        if (patcher) {
+            patcher.off("graphChanged", this.handleGraphChanged);
+            patcher.off("changed", this.handlePatcherChanged);
+            const { file } = patcher;
+            if (file) {
+                file.off("destroyed", this.reload);
+                file.off("nameChanged", this.handleFilePathChanged);
+                file.off("pathChanged", this.handleFilePathChanged);
+                file.off("saved", this.handleSaved);
+            }
+            await patcher.removeObserver(this); // patcher will be destroyed if no observers left.
+            // const newPatcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
+            // await newPatcher.load({}, this.type);
+            // this.state.patcher = newPatcher;
         }
-        await patcher.removeObserver(this); // patcher will be destroyed if no observers left.
-        // const newPatcher = new (this.patcher.constructor as typeof Patcher)(this.patcher.project);
-        // await newPatcher.load({}, this.type);
-        // this.state.patcher = newPatcher;
     };
     handleGraphChanged = () => {
         const { ins, outs, exprs, onces } = inspectFaustPatcher(this.state.patcher);

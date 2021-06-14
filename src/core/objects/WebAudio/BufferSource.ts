@@ -104,6 +104,11 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, S, I,
                 this.error(e.message);
             }
         });
+        this.on("postInit", () => {
+            this.node.loop = this.getProp("loop");
+            this.node.loopStart = this.getProp("loopStart");
+            this.node.loopEnd = this.getProp("loopEnd");
+        });
         this.on("inlet", ({ data, inlet }) => {
             const paramMap = ["playbackRate", "detune"] as const;
             if (inlet === 0) {

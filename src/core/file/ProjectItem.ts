@@ -113,7 +113,7 @@ export default class ProjectItem extends TypedEventEmitter<ProjectItemEventMap> 
     }
     async move(to: Folder, newName = this.name) {
         if (to as ProjectItem === this) return;
-        if (to === this.parent) return;
+        if (to === this.parent && newName === this.name) return;
         if (to.existItem(newName)) throw new Error(`${newName} already exists in ${to.name}`);
         await this._fileMgr.rename(this.path, `${to.path}/${newName}`);
         const from = this.parent;

@@ -38,7 +38,7 @@ export type PatcherMode = "max" | "gen" | "faust" | "js";
 
 export type PatcherFileExtension = "jspat" | "maxpat" | "gendsp" | "dsppat";
 
-export type AudioFileExtension = "wav" | "aif" | "aiff" | "mp3" | "aac" | "flac" | "ogg";
+export type AudioFileExtension = "wav" | "aif" | "aiff" | "mp3" | "aac" | "flac" | "ogg" | "m4a";
 
 export type TextFileExtension = "txt" | "json";
 

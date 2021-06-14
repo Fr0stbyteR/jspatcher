@@ -558,6 +558,8 @@ export class LiveGain extends LiveObject<{}, LiveGainState, [number | Bang, numb
                 this.state.value = args[0];
                 this.validateValue();
                 this.updateUI({ value: this.state.value });
+                const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? dbtoa(this.state.value) : this.state.value;
+                this.applyBPF(this.state.gainNode.gain, [[paramValue, this.getProp("interp")]]);
             }
         });
         let lastMetering: "preFader" | "postFader";
@@ -586,11 +588,17 @@ export class LiveGain extends LiveObject<{}, LiveGainState, [number | Bang, numb
                 this.state.value = value;
                 this.validateValue();
                 this.updateUI({ value: this.state.value });
+                const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? dbtoa(this.state.value) : this.state.value;
+                this.applyBPF(this.state.gainNode.gain, [[paramValue, this.getProp("interp")]]);
             }
         });
         this.on("postInit", async () => {
             lastMode = this.getProp("mode");
-            this.applyBPF(this.state.gainNode.gain, [[this.getProp("mode") === "deciBel" ? dbtoa(this.state.value) : this.state.value]]);
+            this.state.value = this.box.args[0];
+            this.validateValue();
+            this.updateUI({ value: this.state.value });
+            const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? dbtoa(this.state.value) : this.state.value;
+            this.applyBPF(this.state.gainNode.gain, [[paramValue, this.getProp("interp")]]);
             this.state.bypassNode.connect(this.state.gainNode);
             await TemporalAnalyserNode.register(this.audioCtx.audioWorklet);
             this.state.analyserNode = new TemporalAnalyserNode(this.audioCtx);
