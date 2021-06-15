@@ -9,9 +9,9 @@ export interface ISpectralAnalyserNode {}
 export type SpectralAnalyserParameters = "windowSize" | "fftSize" | "fftOverlap" | "windowFunction";
 export type TWindowFunction = "blackman" | "hamming" | "hann" | "triangular";
 export interface SpectralAnalysis {
-    buffer: { data: Float32Array[]; $: Uint32Array; $total: Uint32Array; lock: Int32Array };
-    lastAmplitudes: { $frame: number; data: Float32Array[]; $totalFrames: number };
-    allAmplitudes: { $frame: Uint32Array; data: Float32Array[]; frames: number; fftBins: number; fftHopSize: number; $totalFrames: Uint32Array; lock: Int32Array };
+    buffer: { data: Float32Array[]; $read: Uint32Array; $write: Uint32Array; $total: Uint32Array };
+    lastAmplitudes: { data: Float32Array[]; $readFrame: Uint32Array; $writeFrame: Uint32Array; $totalFrames: Uint32Array };
+    allAmplitudes: { data: Float32Array[]; $readFrame: Uint32Array; $writeFrame: Uint32Array; $totalFrames: Uint32Array; frames: number; dataFrames: number; fftBins: number; fftHopSize: number };
     amplitude: number[];
     estimatedFreq: number[];
     centroid: number[];

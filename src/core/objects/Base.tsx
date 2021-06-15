@@ -4,7 +4,7 @@ import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import Patcher from "../patcher/Patcher";
 import Box from "../patcher/Box";
 import Line from "../patcher/Line";
-import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect, TempItemType, SharedItemByType, TempItemByType } from "../types";
+import { TAudioNodeInletConnection, TAudioNodeOutletConnection, TMeta, ObjectEventMap, TRect, ProjectItemType, SharedItemByType, TempItemByType, TempItemType } from "../types";
 import { BaseUI, DefaultUI, BaseUIState, DefaultUIState } from "./BaseUI";
 import "./Default.scss";
 import "./Base.scss";
@@ -130,7 +130,7 @@ export abstract class AbstractObject<
      * If no ID provided, this will create a new key in temp
      * if no such ID found in files or in temp, will put the result of data() into it.
      */
-    async getSharedItem<T extends TempItemType>(id = this.box.id, type: T = "unknown" as T, data?: () => Promise<TempItemByType<T>["data"]>, onceCreate?: (aitem: SharedItemByType<T>) => any): Promise<{ id: string; item: SharedItemByType<T>; newItem: boolean; off?: () => any }> {
+    async getSharedItem<T extends ProjectItemType>(id = this.box.id, type: T = "unknown" as T, data?: () => Promise<TempItemByType<T>["data"]>, onceCreate?: (aitem: SharedItemByType<T>) => any): Promise<{ id: string; item: SharedItemByType<T>; newItem: boolean; off?: () => any }> {
         let item: SharedItemByType<T>;
         let newItem = false;
         const { fileMgr, tempMgr } = this.patcher.env;
@@ -143,7 +143,7 @@ export abstract class AbstractObject<
                 if (data) {
                     const d = await data();
                     try {
-                        item = await tempMgr.root.addProjectItem(id, d, type) as SharedItemByType<T>;
+                        item = await tempMgr.root.addProjectItem(id, d, type as TempItemType) as SharedItemByType<T>;
                         newItem = true;
                     } catch {
                         item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
@@ -279,7 +279,7 @@ export abstract class AbstractObject<
      */
     fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(inlet: $, data: I[$]): this {
         if (inlet === 0) { // allow change props via first inlet with an props object
-            if (typeof data === "object") {
+            if (data !== null && typeof data === "object") {
                 const propsInKeys = Object.keys(data);
                 const propsKeys = Object.keys(this.meta.props);
                 if (propsInKeys.length && propsInKeys.every(k => propsKeys.indexOf(k) !== -1)) {

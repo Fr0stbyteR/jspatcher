@@ -1,4 +1,4 @@
-import { WebAudioModule } from "wamsdk/src/api";
+import { WebAudioModule, WamNode } from "wamsdk/src/api";
 import { Bang, BaseObject, isBang } from "../Base";
 import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
@@ -8,9 +8,9 @@ class PluginUI extends DOMUI<Plugin> {
     state: DOMUIState = { ...this.state, children: this.object.state.children };
 }
 
-export type S = { node: AudioNode; plugin: WebAudioModule; children: ChildNode[] };
+export type S = { node: WamNode; plugin: WebAudioModule; children: ChildNode[] };
 type I = [Bang | number | string | TMIDIEvent | Record<string, TBPF>, ...TBPF[]];
-type O = (null | AudioNode)[];
+type O = (null | WamNode)[];
 export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIState> {
     static description = "Dynamically load WebAudioModule";
     static inlets: TMeta["inlets"] = [{
@@ -33,22 +33,25 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
         let WAPCtor: typeof WebAudioModule;
         let plugin: WebAudioModule;
         try {
-            WAPCtor = await import(/* webpackIgnore: true */url);
+            WAPCtor = (await import(/* webpackIgnore: true */url)).default;
         } catch (e) {
             this.error(e.message);
         }
         let node: AudioNode;
-        let element: Element;
+        let element: HTMLElement;
         try {
             plugin = await WAPCtor.createInstance(this.audioCtx);
             node = plugin.audioNode;
-            element = await plugin.createGui();
+            element = await plugin.createGui() as HTMLElement;
         } catch (e) {
             if (e) this.error((e as Error).message);
             return;
         }
         this.disconnectAudio();
         this.handleDestroy();
+        element.style.width = "100%";
+        element.style.height = "100%";
+        element.style.position = "absolute";
         this.state.children = [element];
         this.updateUI({ children: this.state.children });
         node.channelInterpretation = "discrete";
@@ -89,12 +92,19 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
     }
     handleDestroy = () => {
         const { node, plugin } = this.state;
-        if (node) node.disconnect();
-        if (plugin) plugin.audioNode.destroy();
+        if (node) {
+            node.disconnect();
+            node.disconnectEvents();
+        }
+        if (plugin) {
+            plugin.audioNode.destroy();
+            if (this.state.children?.[0]) plugin.destroyGui(this.state.children[0] as Element);
+        }
     };
     handlePreInit = () => undefined as any;
     handlePostInit = async () => {
         if (this.box.args[0]) await this.load(this.box.args[0]);
+        this.on("updateArgs", this.handleUpdateArgs);
     };
     handleUpdateArgs = async (args: Partial<[string]>): Promise<void> => {
         if (typeof args[0] === "string") await this.load(this.box.args[0]);
@@ -106,7 +116,8 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
             } else if (typeof data === "string") {
                 await this.load(data);
             } else if (isMIDIEvent(data)) {
-                // if (this.state.node) this.state.node.onMidi(data);
+                const bytes = Array.from(data) as [number, number, number];
+                if (this.state.node) this.state.node.scheduleEvents({ type: "midi", data: { bytes }, time: this.audioCtx.currentTime });
             } else if (typeof data === "object") {
                 if (this.state.node) {
                     for (const key in data) {
@@ -115,7 +126,7 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
                             let t = 0;
                             bpf.forEach((a) => {
                                 if (a.length > 1) t += a[1];
-                                this.state.plugin.audioNode.scheduleEvent({ type: "automation", data: { id: key, value: a[0], normalized: false }, time: this.audioCtx.currentTime + t });
+                                this.state.node.scheduleEvents({ type: "automation", data: { id: key, value: a[0], normalized: false }, time: this.audioCtx.currentTime + t });
                             });
                             // else this.state.node.setParam(key, bpf[bpf.length - 1][0]);
                         } catch (e) {
@@ -140,7 +151,6 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
         super.subscribe();
         this.on("preInit", this.handlePreInit);
         this.on("postInit", this.handlePostInit);
-        this.on("updateArgs", this.handleUpdateArgs);
         this.on("inlet", this.handleInlet);
         this.on("destroy", this.handleDestroy);
     }

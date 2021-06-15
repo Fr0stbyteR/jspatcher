@@ -1,4 +1,5 @@
 import { rms, zcr, setTypedArray, absMax } from "../../utils/buffer";
+import { mod } from "../../utils/math";
 import yinEstimate from "../../utils/yin";
 import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./TypedAudioWorklet";
 import { ITemporalAnalyserProcessor, ITemporalAnalyserNode, TemporalAnalyserParameters, TemporalAnalysis } from "./TemporalAnalyserWorklet.types";
@@ -14,52 +15,38 @@ const { registerProcessor, sampleRate } = globalThis;
  */
 class TemporalAnalyserAtoms {
     private readonly _sab: SharedArrayBuffer;
-    private readonly _lock: Int32Array;
-    private readonly _$: Uint32Array;
+    private readonly _$read: Uint32Array;
+    private readonly _$write: Uint32Array;
     private readonly _$total: Uint32Array;
-    /**
-     * Atomic Lock
-     */
-    get lock(): number {
-        return globalThis.Atomics ? Atomics.load(this._lock, 0) : null;
+    /** Audio sample index reading in the window */
+    get $read(): number {
+        return this._$read[0];
     }
-    set lock(value: number) {
-        if (globalThis.Atomics) Atomics.store(this._lock, 0, value);
+    set $read(value: number) {
+        this._$read[0] = value;
     }
-    /**
-     * Next audio sample index to write into window
-     */
-    get $(): number {
-        return this._$[0];
+    /** Next audio sample index to write into the window */
+    get $write(): number {
+        return this._$write[0];
     }
-    set $(value: number) {
-        this._$[0] = value;
+    set $write(value: number) {
+        this._$write[0] = value;
     }
-    /**
-     * Total samples written counter
-     */
+    /** Total samples written counter */
     get $total(): number {
         return this._$total[0];
     }
     set $total(value: number) {
         this._$total[0] = value;
     }
-    /**
-     * Infinite loop until unlocked
-     */
-    wait() {
-        while (this.lock);
-    }
-    /**
-     * Get all atoms
-     */
+    /** Get all atoms */
     get asObject() {
-        return { $: this._$, $total: this._$total, lock: this._lock };
+        return { $write: this._$write, $read: this._$read, $total: this._$total };
     }
     constructor() {
         this._sab = new SharedArrayBuffer(3 * Uint32Array.BYTES_PER_ELEMENT);
-        this._lock = new Int32Array(this._sab, 0, 1);
-        this._$ = new Uint32Array(this._sab, 4, 1);
+        this._$read = new Uint32Array(this._sab, 0, 1);
+        this._$write = new Uint32Array(this._sab, 4, 1);
         this._$total = new Uint32Array(this._sab, 8, 1);
     }
 }
@@ -74,63 +61,47 @@ class TemporalAnalyserProcessor extends AudioWorkletProxyProcessor<ITemporalAnal
     }
     private destroyed = false;
     private readonly atoms = new TemporalAnalyserAtoms();
-    /**
-     * Concatenated audio data, array of channels
-     */
+    /** Concatenated audio data, array of channels */
     private readonly windowSab: SharedArrayBuffer[] = [];
-    /**
-     * Float32Array Buffer view of window
-     */
+    /** Float32Array Buffer view of window */
     private readonly window: Float32Array[] = [];
-    /**
-     * Atomic Lock
-     */
-    get lock() {
-        return this.atoms.lock;
+    /** Audio sample index reading in the window */
+    get $read() {
+        return this.atoms.$read;
     }
-    set lock(value: number) {
-        this.atoms.lock = value;
+    set $read(value: number) {
+        this.atoms.$read = value;
     }
-    /**
-     * Next audio sample index to write into window
-     */
-    get $() {
-        return this.atoms.$;
+    /** Next audio sample index to write into the window */
+    get $write() {
+        return this.atoms.$write;
     }
-    set $(value: number) {
-        this.atoms.$ = value;
+    set $write(value: number) {
+        this.atoms.$write = value;
     }
-    /**
-     * Total samples written counter
-     */
+    /** Total samples written counter */
     get $total() {
         return this.atoms.$total;
     }
     set $total(value: number) {
         this.atoms.$total = value;
     }
-    /**
-     * Infinite loop until unlocked
-     */
-    wait() {
-        this.atoms.wait();
-    }
     getRms() {
-        return this.window.map(rms);
+        return this.window.map(a => rms(a, this.$read, this.windowSize));
     }
     getAbsMax() {
-        return this.window.map(absMax);
+        return this.window.map(a => absMax(a, this.$read, this.windowSize));
     }
     getZcr() {
-        return this.window.map(zcr);
+        return this.window.map(a => zcr(a, this.$read, this.windowSize));
     }
     getEstimatedFreq(threshold?: number, probabilityThreshold?: number) {
         return this.window.map(ch => yinEstimate(ch, { sampleRate, threshold, probabilityThreshold }));
     }
     getBuffer() {
         const data = this.window;
-        const { $, $total, lock } = this.atoms.asObject;
-        return { data, $, $total, lock };
+        const { $read, $write, $total } = this.atoms.asObject;
+        return { data, $read, $write, $total };
     }
     gets<K extends keyof TemporalAnalysis>(...analysis: K[]) {
         const result: Partial<TemporalAnalysis> = {};
@@ -166,45 +137,40 @@ class TemporalAnalyserProcessor extends AudioWorkletProxyProcessor<ITemporalAnal
 
         const bufferSize = Math.max(...input.map(c => c.length)) || 128;
 
-        this.wait();
-        this.lock = 1;
-
-        this.$ %= windowSize;
+        const dataSize = windowSize + sampleRate;
+        this.$write %= dataSize;
         this.$total += bufferSize;
-        let { $ } = this;
+        let { $write } = this;
         // Init windows
         for (let i = 0; i < input.length; i++) {
-            $ = this.$;
+            $write = this.$write;
             if (!this.window[i]) { // Initialise channel if not exist
-                this.windowSab[i] = new SharedArrayBuffer(windowSize * Float32Array.BYTES_PER_ELEMENT);
-                this.window[i] = new Float32Array(windowSize);
+                this.windowSab[i] = new SharedArrayBuffer(dataSize * Float32Array.BYTES_PER_ELEMENT);
+                this.window[i] = new Float32Array(this.windowSab[i]);
             } else {
-                if (this.window[i].length !== windowSize) { // adjust window size if not corresponded
+                if (this.window[i].length !== dataSize) { // adjust window size if not corresponded
                     const oldWindow = this.window[i];
-                    const oldWindowSize = oldWindow.length;
-                    const windowSab = new SharedArrayBuffer(windowSize * Float32Array.BYTES_PER_ELEMENT);
+                    const windowSab = new SharedArrayBuffer(dataSize * Float32Array.BYTES_PER_ELEMENT);
                     const window = new Float32Array(windowSab);
-                    $ = setTypedArray(window, oldWindow, 0, $ - Math.min(windowSize, oldWindowSize));
+                    $write = setTypedArray(window, oldWindow, 0, $write - Math.min(dataSize, oldWindow.length));
                     this.windowSab[i] = windowSab;
                     this.window[i] = window;
                 }
             }
         }
-        this.$ = $;
+        this.$write = $write;
         // Write
         for (let i = 0; i < input.length; i++) {
             const window = this.window[i];
             const channel = input[i].length ? input[i] : new Float32Array(bufferSize);
-            $ = this.$;
-            if (bufferSize > windowSize) {
-                window.set(channel.subarray(bufferSize - windowSize));
-                $ = 0;
+            if (bufferSize > dataSize) {
+                $write = setTypedArray(window, channel.subarray(bufferSize - dataSize), this.$write);
             } else {
-                $ = setTypedArray(window, channel, $);
+                $write = setTypedArray(window, channel, this.$write);
             }
         }
-        this.$ = $;
-        this.lock = 0;
+        this.$write = $write;
+        this.$read = mod($write - windowSize, dataSize);
         return true;
     }
 }

@@ -47,24 +47,20 @@ class TransmitterProcessor extends AudioWorkletProxyProcessor<ITransmitterProces
         }
         if (input.length === 0) return true;
 
-        this.$ %= windowSize;
         const bufferSize = Math.max(...input.map(c => c.length)) || 128;
         this.$total += bufferSize;
-        let { $ } = this;
         // Init windows
         for (let i = 0; i < input.length; i++) {
-            $ = this.$;
             if (!this.window[i]) { // Initialise channel if not exist
                 this.window[i] = new Float32Array(windowSize);
             }
         }
-        this.$ = $;
+        let { $ } = this;
         // Write
         for (let i = 0; i < input.length; i++) {
             const window = this.window[i];
             const channel = input[i].length ? input[i] : new Float32Array(bufferSize);
-            $ = this.$;
-            $ = setTypedArray(window, channel, $);
+            $ = setTypedArray(window, channel, this.$);
         }
         this.$ = $;
         if ($ === 0) {

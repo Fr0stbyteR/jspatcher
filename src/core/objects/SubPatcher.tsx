@@ -406,41 +406,45 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
         };
         const subscribePatcher = async () => {
             const { patcher } = this.state;
-            const { file } = patcher;
-            await patcher.addObserver(this);
-            patcher.on("outlet", handlePatcherOutlet);
-            patcher.on("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
-            patcher.on("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
-            patcher.on("connectAudioInlet", handlePatcherConnectAudioInlet);
-            patcher.on("connectAudioOutlet", handlePatcherConnectAudioOutlet);
-            patcher.on("ioChanged", handlePatcherIOChanged);
-            patcher.on("graphChanged", handlePatcherGraphChanged);
-            patcher.on("changed", handlePatcherChanged);
-            if (file) {
-                file.on("destroyed", reload);
-                file.on("nameChanged", handleFilePathChanged);
-                file.on("pathChanged", handleFilePathChanged);
-                file.on("saved", handleSaved);
+            if (patcher) {
+                await patcher.addObserver(this);
+                patcher.on("outlet", handlePatcherOutlet);
+                patcher.on("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
+                patcher.on("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
+                patcher.on("connectAudioInlet", handlePatcherConnectAudioInlet);
+                patcher.on("connectAudioOutlet", handlePatcherConnectAudioOutlet);
+                patcher.on("ioChanged", handlePatcherIOChanged);
+                patcher.on("graphChanged", handlePatcherGraphChanged);
+                patcher.on("changed", handlePatcherChanged);
+                const { file } = patcher;
+                if (file) {
+                    file.on("destroyed", reload);
+                    file.on("nameChanged", handleFilePathChanged);
+                    file.on("pathChanged", handleFilePathChanged);
+                    file.on("saved", handleSaved);
+                }
             }
         };
         const unsubscribePatcher = async () => {
             const { patcher } = this.state;
-            const { file } = patcher;
-            patcher.off("outlet", handlePatcherOutlet);
-            patcher.off("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
-            patcher.off("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
-            patcher.off("connectAudioInlet", handlePatcherConnectAudioInlet);
-            patcher.off("connectAudioOutlet", handlePatcherConnectAudioOutlet);
-            patcher.off("ioChanged", handlePatcherIOChanged);
-            patcher.off("graphChanged", handlePatcherGraphChanged);
-            patcher.off("changed", handlePatcherChanged);
-            if (file) {
-                file.off("destroyed", reload);
-                file.off("nameChanged", handleFilePathChanged);
-                file.off("pathChanged", handleFilePathChanged);
-                file.off("saved", handleSaved);
+            if (patcher) {
+                patcher.off("outlet", handlePatcherOutlet);
+                patcher.off("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
+                patcher.off("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
+                patcher.off("connectAudioInlet", handlePatcherConnectAudioInlet);
+                patcher.off("connectAudioOutlet", handlePatcherConnectAudioOutlet);
+                patcher.off("ioChanged", handlePatcherIOChanged);
+                patcher.off("graphChanged", handlePatcherGraphChanged);
+                patcher.off("changed", handlePatcherChanged);
+                const { file } = patcher;
+                if (file) {
+                    file.off("destroyed", reload);
+                    file.off("nameChanged", handleFilePathChanged);
+                    file.off("pathChanged", handleFilePathChanged);
+                    file.off("saved", handleSaved);
+                }
+                await patcher.removeObserver(this); // patcher will be destroyed if no observers left.
             }
-            await patcher.removeObserver(this); // patcher will be destroyed if no observers left.
         };
         const reload = async () => {
             if (this.state.patcher) {
@@ -469,7 +473,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
             } catch (error) {
                 this.error(error);
             } finally {
-                handlePatcherIOChanged(patcher.meta);
+                handlePatcherIOChanged(this.state.patcher.meta);
                 subscribePatcher();
                 handlePatcherGraphChanged();
                 this.connectAudio();
@@ -519,29 +523,33 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
     };
     subscribePatcher = async () => {
         const { patcher } = this.state;
-        const { file } = patcher;
-        await patcher.addObserver(this);
-        patcher.on("graphChanged", this.handleGraphChanged);
-        patcher.on("changed", this.handlePatcherChanged);
-        if (file) {
-            file.on("destroyed", this.reload);
-            file.on("nameChanged", this.handleFilePathChanged);
-            file.on("pathChanged", this.handleFilePathChanged);
-            file.on("saved", this.handleSaved);
+        if (patcher) {
+            await patcher.addObserver(this);
+            patcher.on("graphChanged", this.handleGraphChanged);
+            patcher.on("changed", this.handlePatcherChanged);
+            const { file } = patcher;
+            if (file) {
+                file.on("destroyed", this.reload);
+                file.on("nameChanged", this.handleFilePathChanged);
+                file.on("pathChanged", this.handleFilePathChanged);
+                file.on("saved", this.handleSaved);
+            }
         }
     };
     unsubscribePatcher = async () => {
         const { patcher } = this.state;
-        const { file } = patcher;
-        patcher.off("graphChanged", this.handleGraphChanged);
-        patcher.off("changed", this.handlePatcherChanged);
-        if (file) {
-            file.off("destroyed", this.reload);
-            file.off("nameChanged", this.handleFilePathChanged);
-            file.off("pathChanged", this.handleFilePathChanged);
-            file.off("saved", this.handleSaved);
+        if (patcher) {
+            patcher.off("graphChanged", this.handleGraphChanged);
+            patcher.off("changed", this.handlePatcherChanged);
+            const { file } = patcher;
+            if (file) {
+                file.off("destroyed", this.reload);
+                file.off("nameChanged", this.handleFilePathChanged);
+                file.off("pathChanged", this.handleFilePathChanged);
+                file.off("saved", this.handleSaved);
+            }
+            await patcher.removeObserver(this); // patcher will be destroyed if no observers left.
         }
-        await patcher.removeObserver(this); // patcher will be destroyed if no observers left.
     };
     async compilePatcher() {
         const code = this.state.patcher.toFaustDspCode();
@@ -685,7 +693,7 @@ export class BPatcherUI extends BaseUI<patcher, {}, SubPatcherUIState> {
         const children = (
             <div style={{ height: "100%", width: "100%", display: "flex" }}>
                 {
-                    this.state.patcher
+                    this.state.editor
                         ? <PatcherUI key={this.state.timestamp} editor={this.state.editor} transparent runtime />
                         : undefined
                 }

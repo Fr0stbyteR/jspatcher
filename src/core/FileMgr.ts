@@ -2,10 +2,11 @@ import * as JsZip from "jszip";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import Env from "./Env";
 import { TypedEventEmitter } from "../utils/TypedEventEmitter";
-import { AudioFileExtension, PatcherFileExtension, ProjectItemType, RawProjectItem, TextFileExtension } from "./types";
+import { ProjectItemType, RawProjectItem } from "./types";
 import ProjectItem from "./file/ProjectItem";
 import Folder from "./file/Folder";
 import Project from "./Project";
+import { extToType } from "../utils/utils";
 
 export interface FileManagerEventMap {
     "ready": never;
@@ -15,12 +16,10 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     static maxFileSize = 133169152;
     static multipartSuffix = "jspatpart";
     static projectFolderName = "project";
-    static patcherFileExtensions: PatcherFileExtension[] = ["jspat", "maxpat", "gendsp", "dsppat"];
-    static audioFileExtensions: AudioFileExtension[] = ["wav", "mp3", "aif", "aiff", "aac", "flac", "ogg"];
-    static textFileExtensions: TextFileExtension[] = ["txt", "json"];
     JsZip: typeof JsZip;
     env: Env;
     worker: FileMgrWorker;
+    workerInited = false;
     root: Folder;
     get projectRoot() {
         return this.root.findItem(FileManager.projectFolderName) as Folder;
@@ -37,8 +36,11 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         return this.projectRoot.empty();
     }
     async init(project: Project, clean?: boolean) {
-        this.JsZip = (await import("jszip") as any).default;
-        await this.worker.init();
+        if (!this.JsZip) this.JsZip = (await import("jszip") as any).default;
+        if (!this.workerInited) {
+            await this.worker.init();
+            this.workerInited = true;
+        }
         if (clean) await this.worker.empty();
         this.root = new Folder(this, project, null, null);
         await this.root.init();
@@ -82,10 +84,9 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         return { name, type };
     }
     protected getTypeFromFileName(name: string): ProjectItemType {
-        if (FileManager.patcherFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "patcher";
-        if (FileManager.audioFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "audio";
-        if (FileManager.textFileExtensions.find(ext => name.endsWith(`.${ext}`))) return "text";
-        return "unknown";
+        const splitted = name.split(".");
+        const ext = splitted[splitted.length - 1];
+        return extToType(ext);
     }
 
     async exists(path: string) {
@@ -201,8 +202,8 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         const data = await file.arrayBuffer();
         return to.addProjectItem(name, data);
     }
-    async importFileZip(data: ArrayBuffer, subfolder?: string, to: Folder = this.projectRoot) {
-        return this.env.taskMgr.newTask(this, "Unzipping file...", async (onUpdate) => {
+    async importFileZip(data: ArrayBuffer, subfolder?: string, to: Folder = this.projectRoot, taskHost: any = this) {
+        return this.env.taskMgr.newTask(taskHost, "Unzipping file...", async (onUpdate) => {
             let folder = to;
             if (subfolder) {
                 const name = to.uniqueName(subfolder);
@@ -212,7 +213,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
             const zip = await jsZip.loadAsync(data);
             const unzip = async (zip: JsZip, to: Folder) => {
                 for (const $nameIn in zip.files) {
-                    const splitted = $nameIn.split("/");
+                    const splitted = $nameIn.split("/").filter(v => !!v);
                     const $file = zip.files[$nameIn];
                     let $to = to;
                     if ($file.dir) {
@@ -228,7 +229,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
                             else $to = await $to.addFolder($name);
                         }
                         const $name = splitted[splitted.length - 1];
-                        const $data = await $file.async("arraybuffer", state => onUpdate(`${state.percent}% - ${state.currentFile}`));
+                        const $data = await $file.async("arraybuffer", state => onUpdate(`${$nameIn} - ${state.percent.toFixed(2)}%`));
                         if ($to.existItem($name)) continue;
                         await $to.addProjectItem($name, $data);
                     }

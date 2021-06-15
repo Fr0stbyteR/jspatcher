@@ -1,3 +1,4 @@
+import { SemanticICONS } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import FileEditor from "../file/FileEditor";
@@ -19,6 +20,12 @@ export default class TextEditor extends FileEditor<PatcherText, TextEditorEventM
     editor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
     readonly _history: TextHistory = new TextHistory(this);
+    get fileExtension() {
+        return "txt";
+    }
+    get fileIcon(): SemanticICONS {
+        return "code";
+    }
     get history() {
         return this._history;
     }

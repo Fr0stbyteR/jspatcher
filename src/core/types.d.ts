@@ -13,6 +13,7 @@ import AudioFile from "./audio/AudioFile";
 import TempTextFile from "./text/TempTextFile";
 import TextFile from "./text/TextFile";
 import TempData from "./file/TempData";
+import ImageFile from "./image/ImageFile";
 
 declare global {
     interface Window {
@@ -37,19 +38,23 @@ export type PatcherMode = "max" | "gen" | "faust" | "js";
 
 export type PatcherFileExtension = "jspat" | "maxpat" | "gendsp" | "dsppat";
 
-export type AudioFileExtension = "wav" | "aif" | "aiff" | "mp3" | "aac" | "flac" | "ogg";
+export type AudioFileExtension = "wav" | "aif" | "aiff" | "mp3" | "aac" | "flac" | "ogg" | "m4a";
 
 export type TextFileExtension = "txt" | "json";
 
-export type FileExtension = PatcherFileExtension | AudioFileExtension | TextFileExtension;
+export type ImageFileExtension = "apng" | "avif" | "gif" | "jpg" | "jpeg" | "jfif" | "pjpeg" | "pjp" | "png" | "svg" | "webp" | "bmp" | "ico" | "cur" | "tif" | "tiff";
+
+export type VideoFileExtension = "mp4" | "webm" | "3gp";
+
+export type FileExtension = PatcherFileExtension | AudioFileExtension | TextFileExtension | ImageFileExtension | VideoFileExtension;
 
 export type TempItemType = "patcher" | "audio" | "text" | "unknown";
 
-export type SharedItemByType<T extends TempItemType> = T extends "patcher" ? TempPatcherFile | PatcherFile : T extends "audio" ? TempAudioFile | AudioFile : T extends "text" ? TempTextFile | TextFile : TempData;
+export type SharedItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile | PatcherFile : T extends "audio" ? TempAudioFile | AudioFile : T extends "text" ? TempTextFile | TextFile : T extends "image" ? ImageFile : TempData;
 
-export type TempItemByType<T extends TempItemType> = T extends "patcher" ? TempPatcherFile : T extends "audio" ? TempAudioFile : T extends "text" ? TempTextFile : TempData;
+export type TempItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile : T extends "audio" ? TempAudioFile : T extends "text" ? TempTextFile : TempData;
 
-export type ProjectItemType = "patcher" | "audio" | "text" | "folder" | "unknown";
+export type ProjectItemType = "patcher" | "audio" | "text" | "image" | "video" | "folder" | "unknown";
 
 export type ProjectItemDataType<T extends ProjectItemType = any> = T extends "folder" ? RawProjectItems : T extends "patcher" ? RawPatcher : T extends "text" ? string : ArrayBuffer;
 

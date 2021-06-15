@@ -15,7 +15,8 @@ const config = {
       "buffer": require.resolve("buffer"),
       "util": require.resolve("util"),
       "fs": false,
-      "stream": require.resolve("stream-browserify")
+      "stream": require.resolve("stream-browserify"),
+      "crypto": require.resolve("crypto-browserify")
     },
     extensions: ['.tsx', '.ts', '.js']
   },
@@ -93,9 +94,9 @@ const config = {
         { from: './src/html', to: './' },
         { from: './src/misc/monaco-faust/primitives.lib', to: './deps/' },
         { from: './src/misc/gen2faust.lib', to: './deps/' },
-        { from: './node_modules/faust2webaudio/dist/libfaust-wasm.*', to: './deps/[name].[ext]' },
+        { from: './node_modules/faust2webaudio/dist/libfaust-wasm.*', to: './deps/[name][ext]' },
         { from: './node_modules/@grame/libmusicxml/libmusicxml.wasm', to: './deps/' },
-        { from: './node_modules/@grame/guidolib/libGUIDOEngine.wasm', to: './deps/' }
+        { from: './node_modules/@shren/guidolib/libGUIDOEngine.wasm', to: './deps/' }
       ]
     }),
     new MonacoWebpackPlugin({

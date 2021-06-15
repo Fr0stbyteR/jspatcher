@@ -26,12 +26,12 @@ export class TypedEventEmitter<M> {
     }
     async emit<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
         const listeners = this.getListeners(eventName);
-        if (!listeners) return [];
+        if (!listeners.length) return [];
         return Promise.all(listeners.map(f => f(eventData)));
     }
     async emitSerial<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
         const listeners = this.getListeners(eventName);
-        if (!listeners) return [];
+        if (!listeners.length) return [];
         const returnValues = [];
         for (let i = 0; i < listeners.length; i++) {
             const listener = listeners[i];
@@ -41,7 +41,7 @@ export class TypedEventEmitter<M> {
     }
     emitSync<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]) {
         const listeners = this.getListeners(eventName);
-        if (!listeners) return [];
+        if (!listeners.length) return [];
         return listeners.map(f => f(eventData));
     }
     removeAllListeners(eventName?: Extract<keyof M, string>) {

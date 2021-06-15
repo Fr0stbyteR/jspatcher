@@ -5,10 +5,15 @@ const Worker = class {
     static get fnNames(): string[] {
         return [];
     }
+    _disposed = false;
     constructor() {
         const resolves: Record<number, ((...args: any[]) => any)> = {};
         const rejects: Record<number, ((...args: any[]) => any)> = {};
         let messagePortRequestId = -1;
+        const handleDisposed = () => {
+            removeEventListener("message", handleMessage);
+            close();
+        };
         const handleMessage = async (e: TypedMessageEvent<MessagePortResponse & MessagePortRequest>) => {
             const { id, call, args, value, error } = e.data;
             if (call) {
@@ -19,6 +24,7 @@ const Worker = class {
                     r.error = e;
                 }
                 postMessage(r as any);
+                if (this._disposed) handleDisposed();
             } else {
                 if (error) {
                     if (rejects[id]) rejects[id](error);

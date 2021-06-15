@@ -1,6 +1,7 @@
-import type * as GuidoModule from "@grame/guidolib";
-import { IGuidoWorker } from "./GuidoWorker.types";
+import type * as GuidoModule from "@shren/guidolib";
+import { IGuidoFactory, IGuidoWorker } from "./GuidoWorker.types";
 import ProxyWorker from "./ProxyWorker";
+import { MessagePortRequest } from "./Worker";
 
 class Guido extends ProxyWorker<IGuidoWorker> implements IGuidoWorker {
     private module: GuidoModule;
@@ -23,20 +24,14 @@ class Guido extends ProxyWorker<IGuidoWorker> implements IGuidoWorker {
 
     async init() {
         const locateFile = (url: string, dir: string) => "../deps/" + url;
-        const Module = (await import("@grame/guidolib") as any).default as typeof GuidoModule;
-        return new Promise<void>((resolve, reject) => {
-            const module = new Module({ locateFile });
-            module.onRuntimeInitialized = () => {
-                this.module = module;
-                this.fEngine = new this.module.GuidoEngineAdapter();
-                this.fScoreMap = new this.module.GUIDOScoreMap();
-                this.fPianoRoll = new this.module.GUIDOPianoRollAdapter();
-                this.fFactory = new this.module.GUIDOFactoryAdapter();
-                this.fSPR = new this.module.GUIDOReducedProportionalAdapter();
-                this.fEngine.init();
-                resolve();
-            };
-        });
+        const Module = (await import("@shren/guidolib") as any).default as typeof GuidoModule;
+        this.module = await new Module({ locateFile });
+        this.fEngine = new this.module.GuidoEngineAdapter();
+        this.fScoreMap = new this.module.GUIDOScoreMap();
+        this.fPianoRoll = new this.module.GUIDOPianoRollAdapter();
+        this.fFactory = new this.module.GUIDOFactoryAdapter();
+        this.fSPR = new this.module.GUIDOReducedProportionalAdapter();
+        this.fEngine.init();
     }
 
     // ------------------------------------------------------------------------
@@ -150,33 +145,42 @@ class Guido extends ProxyWorker<IGuidoWorker> implements IGuidoWorker {
 
     // ------------------------------------------------------------------------
     // Guido factory interface
-    openMusic() { return this.fFactory.openMusic(); }
-    closeMusic() { return this.o2$(this.fFactory.closeMusic()); }
-    openVoice() { return this.fFactory.openVoice(); }
-    closeVoice() { return this.fFactory.closeVoice(); }
-    openChord() { return this.fFactory.openChord(); }
-    closeChord() { return this.fFactory.closeChord(); }
-    insertCommata() { return this.fFactory.insertCommata(); }
+    _openMusic() { return this.fFactory.openMusic(); }
+    _closeMusic() { return this.o2$(this.fFactory.closeMusic()); }
+    _openVoice() { return this.fFactory.openVoice(); }
+    _closeVoice() { return this.fFactory.closeVoice(); }
+    _openChord() { return this.fFactory.openChord(); }
+    _closeChord() { return this.fFactory.closeChord(); }
+    _insertCommata() { return this.fFactory.insertCommata(); }
 
-    openEvent(name: string) { return this.fFactory.openEvent(name); }
-    closeEvent() { return this.fFactory.closeEvent(); }
-    addSharp() { return this.fFactory.addSharp(); }
-    addFlat() { return this.fFactory.addFlat(); }
-    setEventDots(dots: number) { return this.fFactory.setEventDots(dots); }
-    setEventAccidentals(acc: number) { return this.fFactory.setEventAccidentals(acc); }
-    setOctave(oct: number) { return this.fFactory.setOctave(oct); }
-    setDuration(numerator: number, denominator: number) { return this.fFactory.setDuration(numerator, denominator); }
+    _openEvent(name: string) { return this.fFactory.openEvent(name); }
+    _closeEvent() { return this.fFactory.closeEvent(); }
+    _addSharp() { return this.fFactory.addSharp(); }
+    _addFlat() { return this.fFactory.addFlat(); }
+    _setEventDots(dots: number) { return this.fFactory.setEventDots(dots); }
+    _setEventAccidentals(acc: number) { return this.fFactory.setEventAccidentals(acc); }
+    _setOctave(oct: number) { return this.fFactory.setOctave(oct); }
+    _setDuration(numerator: number, denominator: number) { return this.fFactory.setDuration(numerator, denominator); }
 
-    openTag(name: string, tagID: number) { return this.fFactory.openTag(name, tagID); }
-    openRangeTag(name: string, tagID: number) { return this.fFactory.openRangeTag(name, tagID); }
-    endTag() { return this.fFactory.endTag(); }
-    closeTag() { return this.fFactory.closeTag(); }
-    addTagParameterString(val: string) { return this.fFactory.addTagParameterString(val); }
-    addTagParameterInt(val: number) { return this.fFactory.addTagParameterInt(val); }
-    addTagParameterFloat(val: number) { return this.fFactory.addTagParameterFloat(val); }
+    _openTag(name: string, tagID: number) { return this.fFactory.openTag(name, tagID); }
+    _openRangeTag(name: string, tagID: number) { return this.fFactory.openRangeTag(name, tagID); }
+    _endTag() { return this.fFactory.endTag(); }
+    _closeTag() { return this.fFactory.closeTag(); }
+    _addTagParameterString(val: string) { return this.fFactory.addTagParameterString(val); }
+    _addTagParameterInt(val: number) { return this.fFactory.addTagParameterInt(val); }
+    _addTagParameterFloat(val: number) { return this.fFactory.addTagParameterFloat(val); }
 
-    setParameterName(name: string) { return this.fFactory.setParameterName(name); }
-    setParameterUnit(unit: string) { return this.fFactory.setParameterUnit(unit); }
+    _setParameterName(name: string) { return this.fFactory.setParameterName(name); }
+    _setParameterUnit(unit: string) { return this.fFactory.setParameterUnit(unit); }
+
+    __closeMusic(factoryQueue: MessagePortRequest<IGuidoFactory>[]) {
+        for (const request of factoryQueue) {
+            const { call, args } = request;
+            const internalCall = `_${call}` as `_${keyof IGuidoFactory}`;
+            (this[internalCall] as any)(...args);
+        }
+        return this._closeMusic();
+    }
 }
 // eslint-disable-next-line no-new
 new Guido();

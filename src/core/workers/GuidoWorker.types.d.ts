@@ -1,3 +1,5 @@
+import { MessagePortRequest } from "./Worker";
+
 export interface IGuidoWorker {
     init(): Promise<void>
     // ------------------------------------------------------------------------
@@ -112,31 +114,63 @@ export interface IGuidoWorker {
 
     // ------------------------------------------------------------------------
     // Guido factory interface
-    openMusic(): GuidoErrCode;
-    closeMusic(): $ARHandler;
-    openVoice(): GuidoErrCode;
-    closeVoice(): GuidoErrCode;
-    openChord(): GuidoErrCode;
-    closeChord(): GuidoErrCode;
-    insertCommata(): GuidoErrCode;
+    _openMusic(): GuidoErrCode;
+    _closeMusic(): $ARHandler;
+    _openVoice(): GuidoErrCode;
+    _closeVoice(): GuidoErrCode;
+    _openChord(): GuidoErrCode;
+    _closeChord(): GuidoErrCode;
+    _insertCommata(): GuidoErrCode;
 
-    openEvent(name: string): GuidoErrCode;
-    closeEvent(): GuidoErrCode;
-    addSharp(): GuidoErrCode;
-    addFlat(): GuidoErrCode;
-    setEventDots(dots: number): GuidoErrCode;
-    setEventAccidentals(acc: number): GuidoErrCode;
-    setOctave(oct: number): GuidoErrCode;
-    setDuration(numerator: number, denominator: number): GuidoErrCode;
+    _openEvent(name: string): GuidoErrCode;
+    _closeEvent(): GuidoErrCode;
+    _addSharp(): GuidoErrCode;
+    _addFlat(): GuidoErrCode;
+    _setEventDots(dots: number): GuidoErrCode;
+    _setEventAccidentals(acc: number): GuidoErrCode;
+    _setOctave(oct: number): GuidoErrCode;
+    _setDuration(numerator: number, denominator: number): GuidoErrCode;
 
-    openTag(name: string, tagID: number): GuidoErrCode;
-    openRangeTag(name: string, tagID: number): GuidoErrCode;
-    endTag(): GuidoErrCode;
-    closeTag(): GuidoErrCode;
-    addTagParameterString(val: string): GuidoErrCode;
-    addTagParameterInt(val: number): GuidoErrCode;
-    addTagParameterFloat(val: number): GuidoErrCode;
+    _openTag(name: string, tagID: number): GuidoErrCode;
+    _openRangeTag(name: string, tagID: number): GuidoErrCode;
+    _endTag(): GuidoErrCode;
+    _closeTag(): GuidoErrCode;
+    _addTagParameterString(val: string): GuidoErrCode;
+    _addTagParameterInt(val: number): GuidoErrCode;
+    _addTagParameterFloat(val: number): GuidoErrCode;
 
-    setParameterName(name: string): GuidoErrCode;
-    setParameterUnit(unit: string): GuidoErrCode;
+    _setParameterName(name: string): GuidoErrCode;
+    _setParameterUnit(unit: string): GuidoErrCode;
+
+    __closeMusic(factoryQueue: MessagePortRequest<IGuidoFactory>[]): $ARHandler;
+}
+
+export interface IGuidoFactory {
+    openMusic(): void;
+    // closeMusic(): Promise<$ARHandler>;
+    openVoice(): void;
+    closeVoice(): void;
+    openChord(): void;
+    closeChord(): void;
+    insertCommata(): void;
+
+    openEvent(name: string): void;
+    closeEvent(): void;
+    addSharp(): void;
+    addFlat(): void;
+    setEventDots(dots: number): void;
+    setEventAccidentals(acc: number): void;
+    setOctave(oct: number): void;
+    setDuration(numerator: number, denominator: number): void;
+
+    openTag(name: string, tagID: number): void;
+    openRangeTag(name: string, tagID: number): void;
+    endTag(): void;
+    closeTag(): void;
+    addTagParameterString(val: string): void;
+    addTagParameterInt(val: number): void;
+    addTagParameterFloat(val: number): void;
+
+    setParameterName(name: string): void;
+    setParameterUnit(unit: string): void;
 }

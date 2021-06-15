@@ -6,8 +6,12 @@ import PatcherAudio from "../../audio/PatcherAudio";
 
 type I = [Bang | boolean | number | PatcherAudio | AudioBuffer, TBPF, TBPF, boolean, number, number];
 type P = Omit<Required<AudioBufferSourceOptions>, "buffer">;
+interface S {
+    node: AudioBufferSourceNode;
+    playing: boolean;
+}
 
-export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, {}, I, [null, Bang, AudioBufferSourceNode], [], P> {
+export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, S, I, [null, Bang, AudioBufferSourceNode], [], P> {
     static description = "WebAudio AudioBufferSourceNode";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -68,7 +72,7 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, {}, I
             description: "An optional playhead position where looping should end if the loop attribute is true. If <=0 or > duration, loop will end at the end of the buffer."
         }
     };
-    state = { node: this.audioCtx.createBufferSource() };
+    state: S = { node: this.audioCtx.createBufferSource(), playing: false };
     inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.playbackRate }, { node: this.node.detune }];
     outletAudioConnections = [{ node: this.node, index: 0 }];
     handleEnded = () => {
@@ -100,6 +104,11 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, {}, I
                 this.error(e.message);
             }
         });
+        this.on("postInit", () => {
+            this.node.loop = this.getProp("loop");
+            this.node.loopStart = this.getProp("loopStart");
+            this.node.loopEnd = this.getProp("loopEnd");
+        });
         this.on("inlet", ({ data, inlet }) => {
             const paramMap = ["playbackRate", "detune"] as const;
             if (inlet === 0) {
@@ -107,15 +116,20 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, {}, I
                     this.outlet(2, this.node);
                 } else if (typeof data === "boolean" || typeof data === "number") {
                     if (data) {
-                        this.node.start();
+                        if (!this.state.playing) {
+                            this.node.start();
+                            this.setState({ playing: true });
+                        }
                     } else {
-                        this.node.stop();
-                        this.resetNode();
+                        if (this.state.playing) {
+                            this.node.stop();
+                            this.resetNode();
+                        }
                     }
                 } else if (data instanceof AudioBuffer) {
-                    this.node.buffer = data;
+                    if (data !== this.node.buffer) this.resetNode(data);
                 } else if (data instanceof PatcherAudio) {
-                    this.node.buffer = data.audioBuffer;
+                    if (data.audioBuffer !== this.node.buffer) this.resetNode(data.audioBuffer);
                 }
             } else if (inlet >= 1 && inlet <= 2) {
                 try {
@@ -144,14 +158,16 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, {}, I
             }
         });
         this.on("destroy", () => {
-            this.node.stop();
+            if (this.state.playing) this.node.stop();
             this.node.removeEventListener("ended", this.handleEnded);
         });
     }
-    resetNode() {
+    resetNode(bufferIn?: AudioBuffer) {
         this.disconnectAudio();
+        this.setState({ playing: false });
         this.node.removeEventListener("ended", this.handleEnded);
-        const { buffer, loop, loopStart, loopEnd } = this.node;
+        const { loop, loopStart, loopEnd } = this.node;
+        const buffer = bufferIn || this.node.buffer;
         const playbackRate = this.node.playbackRate.value;
         const detune = this.node.detune.value;
         this.node = this.audioCtx.createBufferSource();

@@ -77,7 +77,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         this.refOpenFile.current.click();
     };
     handleClickImportFolder = async () => {
-        this.refOpenProject.current.click();
+        this.refOpenFolder.current.click();
     };
     handleClickSave = async () => {
         if (this.props.env.activeEditor?.isInMemory) this.setState({ showSaveAsModal: true });

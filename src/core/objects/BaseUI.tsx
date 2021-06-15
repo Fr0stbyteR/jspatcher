@@ -384,6 +384,7 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
         let { text } = this.state;
         if (!this.props.editing || !text.length) return { Dropdown: undefined, query: undefined };
         if (text.startsWith("new ")) text = text.slice(4);
+        else if (text.startsWith("func ")) text = text.slice(5);
         const splitted = text.split(/\s/);
         if (splitted.length === 1) return { Dropdown: DefaultUIDropdownObjects, query: splitted[0] };
         const [className, ...argv] = splitted;
@@ -393,14 +394,17 @@ export class DefaultUI<T extends DefaultObject = DefaultObject, P extends Partia
     }
     getApplied(textIn: string) {
         let { text } = this.state;
-        let withNew = false;
+        let keyword = "";
         if (text.startsWith("new ")) {
-            withNew = true;
+            keyword = "new ";
             text = text.slice(4);
+        } else if (text.startsWith("func ")) {
+            keyword = "func ";
+            text = text.slice(5);
         }
         const splitted = text.split(/\s/);
         if (splitted.length === 1) {
-            return withNew ? `new ${textIn}` : textIn;
+            return `${keyword}${textIn}`;
         }
         return textIn;
     }

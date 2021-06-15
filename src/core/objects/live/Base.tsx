@@ -284,7 +284,7 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & Record<stri
         return getDisplayValue(value, type, unitStyle, units, enums);
     }
     validateValue() {
-        this.state.value = this.toValidValue(this.state.value);
+        this.state.value = this.toValidValue(this.state.value || 0);
         this.state.displayValue = this.toDisplayValue(this.state.value);
     }
     onChangeFromUI(e: { value: number; displayValue: string }) {

@@ -1,13 +1,19 @@
 import { Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
-import { TMeta } from "../../types";
+import { TMeta, TPropsMeta } from "../../types";
 
 type TAnyFunction = (...args: any[]) => any;
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; inputs: any[]; result: any };
 type I<Static extends boolean> = Static extends true ? [any | Bang, ...any[]] : [any | Bang, any, ...any[]];
 type O<Static extends boolean> = Static extends true ? [any, ...any[]] : [any, any, ...any[]];
-export class Method<Static extends boolean = false> extends ImportedObject<TAnyFunction, S<Static>, I<Static>, O<Static>, any[], { args: number; sync: boolean }, { loading: boolean }> {
+interface P {
+    args: number;
+    spreadArgs: boolean;
+    sync: boolean;
+}
+
+export class Method<Static extends boolean = false> extends ImportedObject<TAnyFunction, S<Static>, I<Static>, O<Static>, any[], P, { loading: boolean }> {
     static description = "Auto-imported method";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -36,11 +42,16 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
         varLength: true,
         description: "Set arguments while loaded"
     }];
-    static props: TMeta["props"] = {
+    static props: TPropsMeta<P> = {
         args: {
             type: "number",
             default: 0,
             description: "arguments count for method"
+        },
+        spreadArgs: {
+            type: "boolean",
+            default: false,
+            description: "arguments input will be spreaded if true"
         },
         sync: {
             type: "boolean",
@@ -87,7 +98,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
     execute() {
         const fn = this.imported;
         try {
-            this.state.result = fn.call(this.state.instance, ...this.state.inputs);
+            this.state.result = fn.call(this.state.instance, ...(this.getProp("spreadArgs") ? this.state.inputs.reduce<any[]>((acc, cur) => [...acc, ...cur], []) : this.state.inputs));
             return true;
         } catch (e) {
             this.error(e);

@@ -300,7 +300,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                         ? <span className="file-manager-item-collapse" onClick={this.handleClickCollapse}><Icon name={collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
                         : <span className="file-manager-item-marker" style={{ visibility: noActions ? "hidden" : dirty ? "visible" : "hidden" }} />
                     }
-                    <span className="file-manager-item-icon"><Icon name={type === "folder" ? collapsed ? "folder" : "folder open" : type === "audio" ? "music" : type === "patcher" ? "sitemap" : "code"} inverted size="small" /></span>
+                    <span className="file-manager-item-icon"><Icon name={type === "folder" ? collapsed ? "folder" : "folder open" : type === "audio" ? "music" : type === "patcher" ? "sitemap" : type === "image" ? "picture" : "code"} inverted size="small" /></span>
                     <span className="file-manager-item-name-container" {...(renaming ? { tabIndex: 0 } : {})} contentEditable={renaming} suppressContentEditableWarning>
                         <span className="file-manager-item-name" style={{ fontWeight: active ? 900 : "normal" }}>{fileName}</span>
                     </span>

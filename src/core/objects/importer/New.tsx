@@ -1,14 +1,23 @@
 import { StaticMethod } from "./StaticMethod";
 import { DefaultObject, Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
-import { TMeta } from "../../types";
+import { TMeta, TPropsMeta } from "../../types";
 
 class NewUI extends ImportedObjectUI<New> {
     prependColor = "rgb(78, 201, 176)";
 }
 type TAnyConstructor = new (...args: any[]) => any;
-type S = { Wrapper: typeof StaticMethod; inputs: any[]; result: any };
-export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [any, ...any[]], any[], { args: number }, { loading: boolean }> {
+interface P {
+    args: number;
+    spreadArgs: boolean;
+}
+interface S {
+    Wrapper: typeof StaticMethod;
+    inputs: any[];
+    result: any
+}
+
+export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [any, ...any[]], any[], P, { loading: boolean }> {
     static description = "Call function as a constructor";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -39,11 +48,16 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         varLength: true,
         description: "Set arguments while loaded"
     }];
-    static props: TMeta["props"] = {
+    static props: TPropsMeta<P> = {
         args: {
             type: "number",
             default: 0,
             description: "arguments count for method"
+        },
+        spreadArgs: {
+            type: "boolean",
+            default: false,
+            description: "arguments input will be spreaded if true"
         }
     };
     static UI = NewUI;
@@ -94,7 +108,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
     execute() {
         const Fn = this.imported;
         try {
-            this.state.result = new Fn(...this.state.inputs);
+            this.state.result = new Fn(...(this.getProp("spreadArgs") ? this.state.inputs.reduce<any[]>((acc, cur) => [...acc, ...cur], []) : this.state.inputs));
             return true;
         } catch (e) {
             this.error(e);

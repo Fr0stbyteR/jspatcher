@@ -1,3 +1,4 @@
+import { WamNode } from "wamsdk";
 import Patcher from "./Patcher";
 import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
 import { LineEventMap, TLine, TLineType, TMetaType } from "../types";
@@ -12,6 +13,9 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         if (!fromConnection.node) return false;
         if (!toConnection.node) return false;
         return true;
+    }
+    static isWamNode(x: any): x is WamNode {
+        return typeof x === "object" && x !== null && x?.module?.isWebAudioModule;
     }
     static compare(line1: Line, line2: Line) {
         return line2.positionHash - line1.positionHash;
@@ -103,6 +107,7 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
                 try {
                     if (isAudioParam) from.node.disconnect(to.node as AudioParam, from.index);
                     else from.node.disconnect(to.node as AudioNode, from.index, to.index);
+                    if (Line.isWamNode(from.node) && Line.isWamNode(to.node)) from.node.disconnectEvents(to.node);
                 } catch (e) {
                     this._patcher.error((e as Error).message);
                 }
@@ -126,6 +131,7 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
                 try {
                     if (isAudioParam) from.node.connect(to.node as AudioParam, from.index);
                     else from.node.connect(to.node as AudioNode, from.index, to.index);
+                    if (Line.isWamNode(from.node) && Line.isWamNode(to.node)) from.node.connectEvents(to.node);
                 } catch (e) {
                     this._patcher.error((e as Error).message);
                 }
