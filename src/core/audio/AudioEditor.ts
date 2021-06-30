@@ -1,14 +1,17 @@
-import { SemanticICONS } from "semantic-ui-react";
-import { WebAudioModule } from "wamsdk/src/api";
-import { TAudioPlayingState } from "../types";
+import type { SemanticICONS } from "semantic-ui-react";
+import type { WebAudioModule } from "wamsdk/src/api";
 import { dbtoa } from "../../utils/math";
-import AudioFile from "./AudioFile";
 import AudioHistory from "./AudioHistory";
 import AudioPlayer from "./AudioPlayer";
 import AudioRecorder from "./AudioRecorder";
 import FileEditor from "../file/FileEditor";
-import PatcherAudio from "./PatcherAudio";
 import TempAudioFile from "./TempAudioFile";
+import type PatcherAudio from "./PatcherAudio";
+import type { TAudioPlayingState } from "../types";
+import type PersistentProjectFile from "../file/PersistentProjectFile";
+import type Env from "../Env";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
 
 export interface AudioEditorEventMap {
     "pasted": { range?: [number, number]; cursor?: number; audio: PatcherAudio; oldAudio?: PatcherAudio };
@@ -56,8 +59,8 @@ export interface AudioEditorState {
 }
 
 export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEventMap> {
-    static async fromProjectItem(item: AudioFile | TempAudioFile) {
-        const audio = item instanceof TempAudioFile ? item.data : await item.instantiate();
+    static async fromProjectItem(fileIn: PersistentProjectFile | TempAudioFile, envIn: IJSPatcherEnv, projectIn?: IProject) {
+        const audio = fileIn instanceof TempAudioFile ? fileIn.data : await fileIn.instantiate(envIn, projectIn) as PatcherAudio;
         const editor = new this(audio);
         return editor.init();
     }
@@ -91,10 +94,10 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
     }
 
     get clipboard() {
-        return this.env.audioClipboard;
+        return (this.env as Env).audioClipboard;
     }
     set clipboard(audio: PatcherAudio) {
-        this.env.audioClipboard = audio;
+        (this.env as Env).audioClipboard = audio;
     }
     get ctx() {
         return this.instance.ctx;
@@ -292,27 +295,27 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
         if (!selRange) return;
         const [selStart, selEnd] = selRange;
         this.setSelRange(null);
-        this.env.audioClipboard = await this.instance.removeFromRange(selStart, selEnd);
-        const oldAudio = this.env.audioClipboard;
+        this.clipboard = await this.instance.removeFromRange(selStart, selEnd);
+        const oldAudio = this.clipboard;
         this.emit("cutEnd", { range: [selStart, selEnd], oldAudio });
     }
     async copy() {
         const { selRange } = this.state;
         if (!selRange) return;
         const [selStart, selEnd] = selRange;
-        this.env.audioClipboard = await this.instance.pick(selStart, selEnd, true);
+        this.clipboard = await this.instance.pick(selStart, selEnd, true);
     }
     async paste() {
-        const { audioClipboard } = this.env;
-        if (!audioClipboard) return;
+        const { clipboard } = this;
+        if (!clipboard) return;
         const { cursor, selRange } = this.state;
         if (selRange) {
             const [selStart, selEnd] = selRange;
-            const oldAudio = await this.instance.pasteToRange(audioClipboard, selStart, selEnd);
-            this.emit("pasted", { range: [selStart, selEnd], audio: audioClipboard, oldAudio });
+            const oldAudio = await this.instance.pasteToRange(clipboard, selStart, selEnd);
+            this.emit("pasted", { range: [selStart, selEnd], audio: clipboard, oldAudio });
         } else {
-            this.instance.insertToCursor(audioClipboard, cursor);
-            this.emit("pasted", { cursor, audio: audioClipboard });
+            this.instance.insertToCursor(clipboard, cursor);
+            this.emit("pasted", { cursor, audio: clipboard });
         }
     }
     async delete() {
@@ -467,12 +470,12 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
     setPreFxGain(gain: number) {
         this.state.preFxGain = gain;
         const { playing, monitoring } = this.state;
-        if (monitoring || playing === "playing") this.player.preFxGainNode.gain.setTargetAtTime(dbtoa(gain), this.env.audioCtx.currentTime, 0.01);
+        if (monitoring || playing === "playing") this.player.preFxGainNode.gain.setTargetAtTime(dbtoa(gain), (this.env as Env).audioCtx.currentTime, 0.01);
     }
     setPostFxGain(gain: number) {
         this.state.postFxGain = gain;
         const { playing, monitoring } = this.state;
-        if (monitoring || playing === "playing") this.player.postFxGainNode.gain.setTargetAtTime(dbtoa(gain), this.env.audioCtx.currentTime, 0.01);
+        if (monitoring || playing === "playing") this.player.postFxGainNode.gain.setTargetAtTime(dbtoa(gain), (this.env as Env).audioCtx.currentTime, 0.01);
     }
 
     async destroy() {

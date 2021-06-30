@@ -2,7 +2,7 @@ import * as React from "react";
 import { Modal, Button, InputOnChangeData, Form, Input } from "semantic-ui-react";
 import Env from "../../core/Env";
 import Folder from "../../core/file/Folder";
-import ProjectItem from "../../core/file/ProjectItem";
+import AbstractProjectItem from "../../core/file/AbstractProjectItem";
 import I18n from "../../i18n/I18n";
 import FileManagerUI from "../leftmenu/FileMgrUI";
 import "./SaveAsModal.scss";
@@ -32,7 +32,7 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
     get strings() {
         return I18n[this.props.lang].SaveAsModal;
     }
-    handleSelection = (selection: ProjectItem[]) => {
+    handleSelection = (selection: AbstractProjectItem[]) => {
         if (selection[0].type === "folder") this.setState({ folder: selection[0] as Folder });
     };
     handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {

@@ -7,7 +7,7 @@ import "./FileMgrUI.scss";
 import I18n from "../../i18n/I18n";
 import { ProjectItemUI } from "./ProjectItemUI";
 import { AnyFileInstance } from "../../core/file/FileInstance";
-import ProjectItem from "../../core/file/ProjectItem";
+import AbstractProjectItem from "../../core/file/AbstractProjectItem";
 import { ProjectEventMap } from "../../core/Project";
 import NewFolderModal from "../modals/NewFolderModal";
 import Folder from "../../core/file/Folder";
@@ -19,20 +19,20 @@ interface P {
     oneSelectionOnly?: true;
     folderSelectionOnly?: true;
     noActions?: true;
-    onSelection?: (selection: ProjectItem[]) => any;
+    onSelection?: (selection: AbstractProjectItem[]) => any;
 }
 
 interface S {
     projectName: string;
-    items: ProjectItem[];
+    items: AbstractProjectItem[];
     collapsed: boolean;
-    selected: ProjectItem[];
+    selected: AbstractProjectItem[];
     instances: AnyFileInstance[];
     deleteModalOpen: boolean;
     deleteAllModalOpen: boolean;
     newFolderModalOpen: boolean;
     fileDropping: boolean;
-    moving: ProjectItem;
+    moving: AbstractProjectItem;
 }
 
 export default class FileManagerUI extends React.PureComponent<P, S> {
@@ -137,10 +137,10 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         e.stopPropagation();
         this.setState({ newFolderModalOpen: true });
     };
-    handleDeleteItem = async (item: ProjectItem) => {
+    handleDeleteItem = async (item: AbstractProjectItem) => {
         this.setState({ selected: [item] }, () => this.setState({ deleteModalOpen: true }));
     };
-    handleClickItem = (item: ProjectItem, ctrl = false, shift = false) => {
+    handleClickItem = (item: AbstractProjectItem, ctrl = false, shift = false) => {
         const itemSelected = this.state.selected.indexOf(item) !== -1;
         if (this.props.oneSelectionOnly || (!ctrl && !shift) || this.state.selected.length === 0) {
             if (this.props.folderSelectionOnly && item.type !== "folder") return;
@@ -176,7 +176,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         const ctrl = this.props.env.os === "MacOS" ? metaKey : ctrlKey;
         this.handleClickItem(this.props.env.fileMgr.projectRoot, ctrl, shift);
     };
-    handleDoubleClickItem = async (item: ProjectItem) => {
+    handleDoubleClickItem = async (item: AbstractProjectItem) => {
         if (this.props.noActions) return;
         if (item.type === "folder") return;
         const editor = await item.instantiateEditor();
@@ -209,10 +209,10 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         await parent.addFolder(folderName);
         this.setState({ newFolderModalOpen: false });
     };
-    handleMoving = (moving: ProjectItem) => {
+    handleMoving = (moving: AbstractProjectItem) => {
         if (this.state.moving !== moving) this.setState({ moving });
     };
-    handleMoveTo = async (item?: ProjectItem, folder?: Folder) => {
+    handleMoveTo = async (item?: AbstractProjectItem, folder?: Folder) => {
         if (this.props.noActions) return;
         this.setState({ moving: undefined });
         if (!item) return;

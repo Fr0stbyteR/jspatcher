@@ -1,89 +1,104 @@
-import { TypedEventEmitter } from "../utils/TypedEventEmitter";
+import TypedEventEmitter from "../utils/TypedEventEmitter";
 
 export interface Task {
-    emitter: Object;
+    /** thread + numberId */
+    id: string;
+    timestamp: number;
+    thread: string;
+    emitter: Object | string;
     message: string;
     callback: (onUpdate?: (newMsg: string) => any) => any | Promise<any>;
 }
 
 export interface TaskError {
-    emitter: Object;
+    id: string;
+    timestamp: number;
+    thread: string;
+    emitter: Object | string;
     message: string;
     error: Error;
 }
 
-export interface Tasks { [timestamp: number]: Task }
-
-export interface Errors { [timestamp: number]: TaskError }
-
 export interface TaskManagerEventMap {
-    "tasks": Tasks;
-    "errors": Errors;
+    "taskBegin": Task;
+    "taskUpdate": Task;
+    "taskEnd": Task;
+    "taskError": TaskError;
+    "tasks": Task[];
+    "errors": TaskError[];
 }
 
 export default class TaskManager extends TypedEventEmitter<TaskManagerEventMap> {
-    tasks: Tasks = {};
-    errors: Errors = {};
-    async newTask<T extends Task["callback"] = Task["callback"]>(emitter: Object, message: string, callback: T) {
+    _id = 0;
+    _tasks: { [thread: string]: Task[] } = {};
+    _errors: { [thread: string]: TaskError[] } = {};
+    get tasks() {
+        const tasks: Task[] = [];
+        for (const key in this._tasks) {
+            tasks.push(...this._tasks[key].filter(e => !!e));
+        }
+        return tasks;
+    }
+    get errors() {
+        const errors: TaskError[] = [];
+        for (const key in this._errors) {
+            errors.push(...this._errors[key].filter(e => !!e));
+        }
+        return errors;
+    }
+    async newTask<T extends Task["callback"] = Task["callback"]>(emitter: string | Object, message: string, callback: T) {
+        const thread = globalThis.constructor.name;
         const timestamp = performance.now();
-        this.tasks = { ...this.tasks, [timestamp]: { emitter, message, callback } };
+        const id = thread + this._id++;
+        const task: Task = { id, thread, timestamp, emitter, message, callback };
+        if (!(thread in this._tasks)) this._tasks[thread] = [];
+        const $ = this._tasks[thread].push(task) - 1;
         this.emit("tasks", this.tasks);
+        this.emit("taskBegin", task);
         let returnValue: ReturnType<T> extends Promise<infer R> ? R : ReturnType<T>;
         const handleUpdate = (msg: string) => {
-            this.tasks = { ...this.tasks, [timestamp]: { emitter, message: `${message}: ${msg}`, callback } };
+            const task: Task = { id, thread, timestamp, emitter, message: `${message}: ${msg}`, callback };
+            this._tasks[thread][$] = task;
             this.emit("tasks", this.tasks);
+            this.emit("taskUpdate", task);
         };
         try {
             returnValue = await callback(handleUpdate);
         } catch (error) {
-            this.errors = { ...this.errors, [timestamp]: { emitter, message, error } };
+            const taskError: TaskError = { id, thread, timestamp, emitter, message, error };
+            if (!(thread in this._errors)) this._errors[thread] = [];
+            this._errors[thread].push(taskError);
             this.emit("errors", this.errors);
+            this.emit("taskError", taskError);
             throw error;
         } finally {
-            delete this.tasks[timestamp];
-            this.tasks = { ...this.tasks };
+            this._tasks[thread][$] = null;
             this.emit("tasks", this.tasks);
+            this.emit("taskEnd", task);
         }
         return returnValue;
     }
-    get lastError(): TaskError & { timestamp: number } {
-        const timestamps = Object.keys(this.errors);
-        if (!timestamps.length) return null;
-        const timestamp = timestamps.map(v => +v).sort((a, b) => b - a)[0];
-        return { timestamp, ...this.errors[timestamp] };
+    get lastError(): TaskError {
+        return this.errors.sort(((a, b) => b.timestamp - a.timestamp))[0];
     }
-    get lastTask(): Task & { timestamp: number } {
-        const timestamps = Object.keys(this.tasks);
-        if (!timestamps.length) return null;
-        const timestamp = timestamps.map(v => +v).sort((a, b) => b - a)[0];
-        return { timestamp, ...this.tasks[timestamp] };
+    get lastTask(): Task {
+        return this.tasks.sort(((a, b) => b.timestamp - a.timestamp))[0];
     }
-    getTasksFromEmitter(emitter: Object) {
-        const tasks: Tasks = {};
-        for (const taskTs in this.tasks) {
-            const task = this.tasks[taskTs];
-            if (task.emitter === emitter) tasks[taskTs] = task;
-        }
-        return tasks;
+    getTasksFromEmitter(emitter: string | Object) {
+        return this.tasks.filter(task => task.emitter === emitter);
     }
-    getErrorsFromEmitter(emitter: Object) {
-        const errors: Errors = {};
-        for (const errorTs in this.errors) {
-            const error = this.errors[errorTs];
-            if (error.emitter === emitter) errors[errorTs] = error;
-        }
-        return errors;
+    getErrorsFromEmitter(emitter: string | Object) {
+        return this.errors.filter(error => error.emitter === emitter);
     }
     dismissLastError() {
         const { lastError } = this;
         if (!lastError) return;
-        const { timestamp } = lastError;
-        delete this.errors[timestamp];
-        this.errors = { ...this.errors };
+        const $ = this._errors[lastError.thread].indexOf(lastError);
+        this._errors[lastError.thread][$] = null;
         this.emit("errors", this.errors);
     }
     dismissAllErrors() {
-        this.errors = {};
+        this._errors = {};
         this.emit("errors", this.errors);
     }
 }

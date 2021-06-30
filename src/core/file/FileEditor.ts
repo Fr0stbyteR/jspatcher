@@ -1,10 +1,12 @@
 import { SemanticICONS } from "semantic-ui-react";
-import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
-import FileInstance, { AnyFileInstance } from "./FileInstance";
-import Folder from "./Folder";
+import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import History from "./History";
-import ProjectItem from "./ProjectItem";
-import TempItem from "./TempItem";
+import TemporaryProjectFile from "./TemporaryProjectFile";
+import type { IFileInstance } from "./FileInstance";
+import type { IProjectFile } from "./AbstractProjectFile";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
+import type { IProjectFolder } from "./AbstractProjectFolder";
 
 export interface FileEditorEventMap {
     "ready": never;
@@ -15,11 +17,43 @@ export interface FileEditorEventMap {
     "destroy": never;
 }
 
+export interface IFileEditor<Instance extends IFileInstance = IFileInstance, EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> extends TypedEventEmitter<EventMap & FileEditorEventMap> {
+    readonly instance: Instance;
+    readonly env: IJSPatcherEnv;
+    readonly project: IProject;
+    readonly ctx: IFileInstance["ctx"];
+    readonly isInMemory: boolean;
+    readonly isTemporary: boolean;
+    isReadonly: boolean;
+    readonly isReady: boolean;
+    readonly isDestroyed: boolean;
+    readonly isDirty: boolean;
+    readonly isLocked: boolean;
+    readonly isActive: boolean;
+    readonly editorId: string;
+    readonly fileExtension: string;
+    readonly fileIcon: SemanticICONS;
+    history: History<any, any>;
+    file: IProjectFile;
+    setActive(): void;
+    undo(): Promise<void>;
+    redo(): Promise<void>;
+    copy(): Promise<void>;
+    cut(): Promise<void>;
+    paste(): Promise<void>;
+    deleteSelected(): Promise<any>;
+    selectAll(): Promise<void>;
+    onUiResized(): void;
+    save(): Promise<void>;
+    saveAs(parent: any, name: string): Promise<void>;
+    destroy(): Promise<void>;
+}
+
 export type AnyFileEditor = FileEditor<any, Record<string, any>>;
 
-export default class FileEditor<Instance extends FileInstance = FileInstance, EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> extends TypedEventEmitter<EventMap & FileEditorEventMap> {
-    static async fromProjectItem(item: ProjectItem | TempItem): Promise<FileEditor> {
-        return new this(await item.instantiate());
+export default class FileEditor<Instance extends IFileInstance = IFileInstance, EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> extends TypedEventEmitter<EventMap & FileEditorEventMap> implements IFileEditor<Instance, EventMap> {
+    static async fromProjectItem(fileIn: IProjectFile, envIn: IJSPatcherEnv, projectIn: IProject): Promise<FileEditor> {
+        return new this(await fileIn.instantiate(envIn, projectIn));
     }
     readonly instance: Instance;
     get env() {
@@ -76,9 +110,9 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
         this.env.activeEditor = this;
     }
     get isActive(): boolean {
-        return this.env.activeEditor === this;
+        return this.env.thread === "main" && this.env.activeEditor === this;
     }
-    readonly editorId = performance.now();
+    readonly editorId: string;
     handleProjectSave = async () => this.save();
     handleProjectUnload = async () => this.destroy();
     handleDestroy = () => this.destroy();
@@ -94,7 +128,8 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
             this.off("ready", handleReady);
         };
         this.on("ready", handleReady);
-        this.env.registerInstance(this.instance as AnyFileInstance);
+        this.editorId = this.env.generateId(this);
+        if (this.env.thread === "main") this.env.registerInstance(this.instance);
         if (this.project) {
             this.project.on("save", this.handleProjectSave);
             this.project.on("unload", this.handleProjectUnload);
@@ -133,11 +168,11 @@ export default class FileEditor<Instance extends FileInstance = FileInstance, Ev
     async save() {
         if (this.isReadonly) throw new Error("Cannot save readonly file");
         if (this.isInMemory) throw new Error("Cannot save in-memory instance");
-        const data = await (this.file instanceof TempItem ? this.toTempData() : this.toFileData());
+        const data = await (this.file instanceof TemporaryProjectFile ? this.toTempData() : this.toFileData());
         await this.file.save(data, this);
         await this.emit("saved");
     }
-    async saveAs(parent: Folder, name: string) {
+    async saveAs(parent: IProjectFolder, name: string) {
         const data = await this.toFileData();
         if (this.isTemporary) {
             await this.file.saveAsCopy(parent, name, data);

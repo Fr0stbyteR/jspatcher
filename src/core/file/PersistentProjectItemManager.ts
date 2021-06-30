@@ -1,64 +1,67 @@
-import * as JsZip from "jszip";
-import FileMgrWorker from "./workers/FileMgrWorker";
-import Env from "./Env";
-import { TypedEventEmitter } from "../utils/TypedEventEmitter";
-import { ProjectItemType, RawProjectItem } from "./types";
-import ProjectItem from "./file/ProjectItem";
-import Folder from "./file/Folder";
-import Project from "./Project";
-import { extToType } from "../utils/utils";
+import type * as JsZip from "jszip";
+import AbstractProjectItemManager, { IProjectItemManager } from "./AbstractProjectItemManager";
+import type FileMgrWorker from "../workers/FileMgrWorker";
+import { IProjectFolder } from "./AbstractProjectFolder";
+import { IJSPatcherEnv } from "../Env";
+import PersistentProjectFolder from "./PersistentProjectFolder";
 
-export interface FileManagerEventMap {
-    "ready": never;
-    "treeChanged": RawProjectItem<"folder">;
+export interface IPersistentProjectItemManager extends IProjectItemManager {
+    /** Read file data from backend */
+    readFile(path: string): Promise<ArrayBuffer>;
+    /** Read folder data from backend */
+    readDir(path?: string): Promise<{ isFolder: boolean; name: string }[]>;
+    getFileDetails(path: string, name: string): Promise<{ isFolder: boolean; name: string }>;
+    /** Returns if the path exists in the backend */
+    exists(path: string): Promise<boolean>;
+    /** Put a projectItem into the backend */
+    putFile(item: { isFolder: boolean; path: string; data?: ArrayBuffer }): Promise<void>;
+    writeFile(path: string, data: ArrayBuffer): Promise<void>;
+    remove(path: string, isFolder?: boolean): Promise<true>;
+    rename(oldPath: string, newPath: string): Promise<true>;
+    importFileZip(data: ArrayBuffer, subfolder?: string, to?: IProjectFolder, taskHost?: any): Promise<void>;
+    exportProjectZip(): Promise<ArrayBuffer>;
 }
-export default class FileManager extends TypedEventEmitter<FileManagerEventMap> {
+
+export default class PersistentProjectItemManager extends AbstractProjectItemManager implements IPersistentProjectItemManager {
     static maxFileSize = 133169152;
     static multipartSuffix = "jspatpart";
-    static projectFolderName = "project";
+    readonly worker: FileMgrWorker;
     JsZip: typeof JsZip;
-    env: Env;
-    worker: FileMgrWorker;
     workerInited = false;
-    root: Folder;
     get projectRoot() {
-        return this.root.findItem(FileManager.projectFolderName) as Folder;
+        return this.root.findItem(PersistentProjectItemManager.projectFolderName) as IProjectFolder;
     }
-    constructor(env: Env) {
-        super();
-        this.env = env;
-        this.worker = env.fileMgrWorker;
+    constructor(envIn: IJSPatcherEnv, worker?: FileMgrWorker) {
+        super(envIn);
+        this.worker = worker;
     }
     empty() {
         return this.worker.empty();
     }
-    emptyProject() {
-        return this.projectRoot.empty();
-    }
-    async init(project: Project, clean?: boolean) {
+    async init(clean?: boolean) {
         if (!this.JsZip) this.JsZip = (await import("jszip") as any).default;
         if (!this.workerInited) {
             await this.worker.init();
             this.workerInited = true;
         }
         if (clean) await this.worker.empty();
-        this.root = new Folder(this, project, null, null);
+        this.root = new PersistentProjectFolder(this, null, null);
         await this.root.init();
-        if (!this.projectRoot) await this.root.addFolder(FileManager.projectFolderName);
+        if (!this.projectRoot) await this.root.addFolder(PersistentProjectItemManager.projectFolderName);
         this.emit("ready");
         return this;
     }
     async readFile(path: string) {
         const exist = await this.worker.exists(path);
         if (exist) return this.worker.readFile(path);
-        const multipartFilePath = `${path}.${FileManager.multipartSuffix}`;
+        const multipartFilePath = `${path}.${PersistentProjectItemManager.multipartSuffix}`;
         const existMultipart = await this.worker.exists(multipartFilePath);
         if (existMultipart) {
             const multipartFile = await this.worker.readFile(multipartFilePath);
             const numberOfParts = new Uint8Array(multipartFile)[0];
             const parts: ArrayBuffer[] = [];
             for (let i = 0; i < numberOfParts; i++) {
-                const partPath = `${path}.${FileManager.multipartSuffix}${i + 1}`;
+                const partPath = `${path}.${PersistentProjectItemManager.multipartSuffix}${i + 1}`;
                 parts[i] = await this.worker.readFile(partPath);
             }
             const concatBlob = new Blob(parts);
@@ -71,37 +74,25 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         const exist = (await this.worker.exists(path)) && !(await this.worker.isFile(path));
         if (exist) {
             const rawFileNames = await this.worker.readdir(path);
-            const fileNames = rawFileNames.filter(name => !name.match(`\\.${FileManager.multipartSuffix}\\d+$`)).map(name => name.replace(new RegExp(`\\.${FileManager.multipartSuffix}$`), ""));
+            const fileNames = rawFileNames.filter(name => !name.match(`\\.${PersistentProjectItemManager.multipartSuffix}\\d+$`)).map(name => name.replace(new RegExp(`\\.${PersistentProjectItemManager.multipartSuffix}$`), ""));
             return Promise.all(fileNames.map(name => this.getFileDetails(path, name)));
         }
         throw new Error(`Cannot read path ${path}`);
     }
-    async getFileDetails(path: string, name: string): Promise<Omit<RawProjectItem, "data" | "items">> {
+    async getFileDetails(path: string, name: string): Promise<{ isFolder: boolean; name: string }> {
         const itemPath = `${path}/${name}`;
         const isFile = await this.worker.isFile(itemPath);
-        if (!isFile) return { name, type: "folder" };
-        const type: ProjectItemType = isFile ? this.getTypeFromFileName(name) : "folder";
-        return { name, type };
-    }
-    protected getTypeFromFileName(name: string): ProjectItemType {
-        const splitted = name.split(".");
-        const ext = splitted[splitted.length - 1];
-        return extToType(ext);
+        return { name, isFolder: !isFile };
     }
 
     async exists(path: string) {
-        const multipartFilePath = `${path}.${FileManager.multipartSuffix}`;
+        const multipartFilePath = `${path}.${PersistentProjectItemManager.multipartSuffix}`;
         const exist = await this.worker.exists(path);
         const existMultipart = await this.worker.exists(multipartFilePath);
         return exist || existMultipart;
     }
-
-    emitTreeChanged() {
-        this.emit("treeChanged", this.projectRoot.getTree());
-    }
-    async putFile(item: ProjectItem) {
-        const { data, path, type } = item;
-        if (type === "folder") {
+    async putFile({ data, path, isFolder }: { isFolder: boolean; path: string; data?: ArrayBuffer }) {
+        if (isFolder) {
             if (await this.exists(path)) return;
             await this.worker.mkdir(path);
             return;
@@ -109,7 +100,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
         await this.writeFile(path, data);
     }
     async writeFile(path: string, data: ArrayBuffer) {
-        const { maxFileSize, multipartSuffix } = FileManager;
+        const { maxFileSize, multipartSuffix } = PersistentProjectItemManager;
         if (await this.exists(path)) await this.remove(path);
         if (data.byteLength <= maxFileSize) {
             await this.worker.createFile(path, new Uint8Array(data));
@@ -143,13 +134,13 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
             }
             return this.worker.unlink(path);
         }
-        const multipartFilePath = `${path}.${FileManager.multipartSuffix}`;
+        const multipartFilePath = `${path}.${PersistentProjectItemManager.multipartSuffix}`;
         const existMultipart = await this.worker.exists(multipartFilePath);
         if (existMultipart) {
             const multipartFile = await this.worker.readFile(multipartFilePath);
             const numberOfParts = new Uint8Array(multipartFile)[0];
             for (let i = 0; i < numberOfParts; i++) {
-                const partPath = `${path}.${FileManager.multipartSuffix}${i + 1}`;
+                const partPath = `${path}.${PersistentProjectItemManager.multipartSuffix}${i + 1}`;
                 await this.worker.unlink(partPath);
             }
             return this.worker.unlink(multipartFilePath);
@@ -159,50 +150,27 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     async rename(oldPath: string, newPath: string) {
         const exist = await this.worker.exists(oldPath);
         if (exist) return this.worker.rename(oldPath, newPath);
-        const oldMultipartFilePath = `${oldPath}.${FileManager.multipartSuffix}`;
-        const newMultipartFilePath = `${newPath}.${FileManager.multipartSuffix}`;
+        const oldMultipartFilePath = `${oldPath}.${PersistentProjectItemManager.multipartSuffix}`;
+        const newMultipartFilePath = `${newPath}.${PersistentProjectItemManager.multipartSuffix}`;
         const existMultipart = await this.worker.exists(oldMultipartFilePath);
         if (existMultipart) {
             const multipartFile = await this.worker.readFile(oldMultipartFilePath);
             const numberOfParts = new Uint8Array(multipartFile)[0];
             for (let i = 0; i < numberOfParts; i++) {
-                const oldPartPath = `${oldPath}.${FileManager.multipartSuffix}${i + 1}`;
-                const newPartPath = `${newPath}.${FileManager.multipartSuffix}${i + 1}`;
+                const oldPartPath = `${oldPath}.${PersistentProjectItemManager.multipartSuffix}${i + 1}`;
+                const newPartPath = `${newPath}.${PersistentProjectItemManager.multipartSuffix}${i + 1}`;
                 await this.worker.rename(oldPartPath, newPartPath);
             }
             return this.worker.rename(oldMultipartFilePath, newMultipartFilePath);
         }
         throw new Error(`Cannot rename path ${oldPath}`);
     }
-    getProjectItemFromPath(path: string) {
-        const pathArray = path.split("/");
-        const itemArray: ProjectItem[] = [this.root, this.projectRoot];
-        for (let i = 0; i < pathArray.length; i++) {
-            const id = pathArray[i];
-            if (id.length === 0) continue;
-            if (id === ".") continue;
-            if (id === "..") {
-                itemArray.pop();
-                continue;
-            }
-            const cur = itemArray[itemArray.length - 1];
-            if (cur.type !== "folder") throw new Error(`${cur.name} from path ${path} is not a folder`);
-            const next = (cur as Folder).findItem(id);
-            if (!next) throw new Error(`Cannot find ${id} from path ${path}`);
-            itemArray.push(next);
-        }
-        return itemArray[itemArray.length - 1];
-    }
-    instantiateProjectPath(path: string) {
-        const item = this.getProjectItemFromPath(path);
-        return item.instantiate();
-    }
-    async importFile(file: File, to: Folder = this.projectRoot) {
+    async importFile(file: File, to: IProjectFolder = this.projectRoot) {
         const name = to.uniqueName(file.name);
         const data = await file.arrayBuffer();
         return to.addProjectItem(name, data);
     }
-    async importFileZip(data: ArrayBuffer, subfolder?: string, to: Folder = this.projectRoot, taskHost: any = this) {
+    async importFileZip(data: ArrayBuffer, subfolder?: string, to: IProjectFolder = this.projectRoot, taskHost: any = this) {
         return this.env.taskMgr.newTask(taskHost, "Unzipping file...", async (onUpdate) => {
             let folder = to;
             if (subfolder) {
@@ -211,7 +179,7 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
             }
             const jsZip = new this.JsZip();
             const zip = await jsZip.loadAsync(data);
-            const unzip = async (zip: JsZip, to: Folder) => {
+            const unzip = async (zip: JsZip, to: IProjectFolder) => {
                 for (const $nameIn in zip.files) {
                     const splitted = $nameIn.split("/").filter(v => !!v);
                     const $file = zip.files[$nameIn];
@@ -219,13 +187,13 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
                     if ($file.dir) {
                         for (let i = 0; i < splitted.length; i++) {
                             const $name = splitted[i];
-                            if ($to.existItem($name)) $to = $to.findItem($name) as Folder;
+                            if ($to.existItem($name)) $to = $to.findItem($name) as IProjectFolder;
                             else $to = await $to.addFolder($name);
                         }
                     } else {
                         for (let i = 0; i < splitted.length - 1; i++) {
                             const $name = splitted[i];
-                            if ($to.existItem($name)) $to = $to.findItem($name) as Folder;
+                            if ($to.existItem($name)) $to = $to.findItem($name) as IProjectFolder;
                             else $to = await $to.addFolder($name);
                         }
                         const $name = splitted[splitted.length - 1];
@@ -241,12 +209,12 @@ export default class FileManager extends TypedEventEmitter<FileManagerEventMap> 
     async exportProjectZip() {
         return this.env.taskMgr.newTask(this, "Zipping project...", async (onUpdate) => {
             const jsZip = new this.JsZip();
-            const toZip = (zip: JsZip, folder: Folder) => {
+            const toZip = (zip: JsZip, folder: IProjectFolder) => {
                 for (const item of folder.items) {
                     const { name } = item;
-                    if (item.type === "folder") {
+                    if (item.isFolder === true) {
                         const $zip = zip.folder(name);
-                        toZip($zip, item as Folder);
+                        toZip($zip, item);
                     } else {
                         zip.file(name, item.data);
                     }

@@ -4,7 +4,7 @@ import { DefaultObject, BaseObject } from "./Base";
 import Patcher from "../patcher/Patcher";
 import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
 import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState, DefaultPopupUIProps } from "./BaseUI";
-import { ProjectItemEventMap } from "../file/ProjectItem";
+import { ProjectFileEventMap } from "../file/AbstractProjectItem";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
 import PatcherUI from "../../components/editors/patcher/PatcherUI";
 import PatcherEditorUI from "../../components/editors/PatcherEditorUI";
@@ -400,7 +400,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
         const handleFilePathChanged = () => {
             this.setState({ key: this.state.patcher.file.projectPath });
         };
-        const handleSaved = (e: ProjectItemEventMap["saved"]) => {
+        const handleSaved = (e: ProjectFileEventMap["saved"]) => {
             if (e.instance === this.state.patcher) return;
             reload();
         };
@@ -517,7 +517,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
     handleFilePathChanged = () => {
         this.setState({ key: this.state.patcher.file.projectPath });
     };
-    handleSaved = (e: ProjectItemEventMap["saved"]) => {
+    handleSaved = (e: ProjectFileEventMap["saved"]) => {
         if (e.instance === this.state.patcher) return;
         this.reload();
     };

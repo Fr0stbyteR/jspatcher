@@ -3,7 +3,7 @@ import { Menu, Icon, Table, Ref } from "semantic-ui-react";
 import Box from "../../core/patcher/Box";
 import { TPatcherLog } from "../../core/types";
 import Env from "../../core/Env";
-import { isJSPatcherObject } from "../../core/objects/Base";
+import { isJSPatcherObject } from "../../core/objects/AbstractObject";
 
 interface P {
     env: Env;

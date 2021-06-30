@@ -1,0 +1,100 @@
+import TypedEventEmitter from "../../utils/TypedEventEmitter";
+import type { IObservee, ProjectItemType } from "../types";
+import type { IProjectItemManager } from "./AbstractProjectItemManager";
+import type { IProjectFile } from "./AbstractProjectFile";
+import type { IProjectFolder } from "./AbstractProjectFolder";
+
+export type IProjectFileOrFolder = IProjectFolder | IProjectFile;
+
+export interface ProjectItemEventMap {
+    "ready": never;
+    "nameChanged": { oldName: string; newName: string };
+    "pathChanged": { from: IProjectFolder; to: IProjectFolder };
+    "treeChanged": never;
+    "destroyed": never;
+    "observers": Set<any>;
+    "dirty": boolean;
+}
+
+export interface IProjectItem<EventMap extends Record<string, any> = {}, Manager extends IProjectItemManager = IProjectItemManager> extends TypedEventEmitter<ProjectItemEventMap & EventMap>, IObservee<string> {
+    readonly id: string;
+    readonly fileMgr: Manager;
+    readonly isFolder: boolean;
+    readonly type: ProjectItemType;
+    readonly name: string;
+    /** path used by the file manager */
+    readonly path: string;
+    /** parent path used by the file manager */
+    readonly parentPath: string;
+    /** path relative to the project root */
+    readonly projectPath: string;
+    /** Is the file is editing by some editor and modified (without saving the data), isDirty is true. */
+    readonly isDirty: boolean;
+    parent: IProjectFolder;
+    /** Load data */
+    init(): Promise<void>;
+    /** Clone with optional modifications */
+    clone(parentIn?: IProjectFolder, nameIn?: string): IProjectItem;
+    rename(newNameIn: string): Promise<void>;
+    move(to: IProjectFolder, newNameIn?: string): Promise<void>;
+    /** Delete current file from file manager and the parent folder. */
+    destroy(): Promise<void>;
+}
+
+export default abstract class AbstractProjectItem<EventMap extends Partial<ProjectItemEventMap> & Record<string, any> = {}, Manager extends IProjectItemManager = IProjectItemManager> extends TypedEventEmitter<ProjectItemEventMap & EventMap> implements IProjectItem<EventMap, Manager> {
+    readonly id: string;
+    get type(): ProjectItemType {
+        return "unknown";
+    }
+    readonly isFolder: boolean;
+    protected readonly _fileMgr;
+    get fileMgr() {
+        return this._fileMgr;
+    }
+    protected _name: string;
+    get name() {
+        return this._name;
+    }
+    parent: IProjectFolder;
+    private _isDirty: boolean;
+    get isDirty() {
+        return this._isDirty;
+    }
+    get path(): string {
+        return this.parent ? `${this.parentPath}/${this._name}` : "";
+    }
+    get parentPath() {
+        return this.parent?.path;
+    }
+    get projectPath() {
+        return this.path.replace(/^\/project/, "");
+    }
+    protected readonly _observers = new Set<string>();
+    async addObserver(observer: string) {
+        this._observers.add(observer);
+        await this.emit("observers", this._observers);
+    }
+    async removeObserver(observer: string) {
+        this._observers.delete(observer);
+        await this.emit("observers", this._observers);
+    }
+    constructor(fileMgrIn: Manager, parentIn: IProjectFolder, nameIn: string) {
+        super();
+        this._fileMgr = fileMgrIn;
+        this.id = fileMgrIn.generateItemId(this);
+        this.parent = parentIn;
+        this._name = nameIn;
+        this.on("dirty", dirty => this._isDirty = dirty);
+    }
+    abstract rename(newNameIn: string): Promise<void>;
+    abstract move(to: IProjectFolder, newNameIn?: string): Promise<void>;
+    abstract destroy(): Promise<void>;
+    abstract clone(parentIn?: IProjectFolder, nameIn?: string): IProjectItem;
+    async init() {
+        await this.emit("ready");
+    }
+    async emitTreeChanged() {
+        await this.emit("treeChanged");
+        await (this.parent || this.fileMgr).emitTreeChanged();
+    }
+}

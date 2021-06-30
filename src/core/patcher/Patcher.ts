@@ -6,13 +6,15 @@ import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode
 import { toFaustDspCode } from "../objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "../objects/SubPatcher";
 import FileInstance from "../file/FileInstance";
-import PatcherFile from "./PatcherFile";
 import PatcherEditor from "./PatcherEditor";
-import Env from "../Env";
-import Project from "../Project";
-import TempPatcherFile from "./TempPatcherFile";
+import type Env from "../Env";
+import type { IJSPatcherEnv } from "../Env";
+import type Project from "../Project";
+import type { IProject } from "../Project";
+import type TempPatcherFile from "./TempPatcherFile";
+import type PersistentProjectFile from "../file/PersistentProjectFile";
 
-export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile | TempPatcherFile> {
+export default class Patcher extends FileInstance<PatcherEventMap, PersistentProjectFile | TempPatcherFile> {
     static props: TPropsMeta<TPublicPatcherProps> = {
         dependencies: {
             type: "object",
@@ -40,8 +42,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
             default: false
         }
     };
-    static async fromProjectItem(item: PatcherFile): Promise<Patcher> {
-        return new this(item).init();
+    static async fromProjectItem(fileIn: PersistentProjectFile | TempPatcherFile, envIn: IJSPatcherEnv, projectIn?: IProject): Promise<Patcher> {
+        return new this(envIn, projectIn, fileIn).init();
     }
     async getEditor() {
         const editor = new PatcherEditor(this);
@@ -53,8 +55,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
     _state: TPatcherState;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
-    constructor(ctxIn?: PatcherFile | TempPatcherFile | Project | Env) {
-        super(ctxIn);
+    constructor(envIn: IJSPatcherEnv, projectIn?: IProject, fileIn?: PersistentProjectFile | TempPatcherFile) {
+        super(envIn, projectIn, fileIn);
         this._state = {
             name: "patcher",
             isReady: false,
@@ -79,14 +81,15 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
         return true;
     }
     get audioCtx() {
-        return this.project?.audioCtx || this.env.audioCtx;
+        return (this.project as Project)?.audioCtx || (this.env as Env).audioCtx;
     }
     get fileExtension() {
         return {
             js: "jspat",
             max: "maxpat",
             gen: "gendsp",
-            faust: "dsppat"
+            faust: "dsppat",
+            jsaw: "jsdsp"
         }[this.props.mode];
     }
     get fileName() {
@@ -154,7 +157,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PatcherFile |
             } else {
                 patcher = max2js(patcherIn as TMaxPatcher);
             }
-        } else if (mode === "js" || mode === "faust") {
+        } else if (mode === "js" || mode === "faust" || mode === "jsaw") {
             if ("data" in patcherIn && "patcher" in patcherIn) {
                 patcher = patcherIn.patcher;
             } else {

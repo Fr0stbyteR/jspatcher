@@ -43,6 +43,7 @@
         "import/first": "error",
         "import/newline-after-import": "warn",
         "import/no-amd": "error",
+        "import/no-duplicates": "off",
         "import/no-webpack-loader-syntax": "error",
         "import/no-extraneous-dependencies": "off",
         "import/prefer-default-export": "off",
@@ -202,10 +203,23 @@
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/explicit-member-accessibility": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/member-delimiter-style": [
+            "warn",
+            {
+                "multiline": {
+                    "delimiter": "semi",
+                    "requireLast": true
+                },
+                "singleline": {
+                    "delimiter": "semi",
+                    "requireLast": false
+                }
+            }
+        ],
+        "@typescript-eslint/no-duplicate-imports": "error",
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/prefer-interface": "off",
         "@typescript-eslint/no-array-constructor": "warn",
         "@typescript-eslint/no-namespace": "error",
         "@typescript-eslint/no-use-before-define": "off",
@@ -225,6 +239,7 @@
             }
         ],
         "@typescript-eslint/no-useless-constructor": "warn",
+        "@typescript-eslint/prefer-interface": "off",
         "@typescript-eslint/semi": ["error", "always"]
     },
     "parser": "@typescript-eslint/parser",

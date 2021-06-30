@@ -1,12 +1,14 @@
 import FileInstance from "../file/FileInstance";
 import ImageFile from "./ImageFile";
 import ImageEditor from "./ImageEditor";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
 
 export interface PatcherImageEventMap {}
 
 export default class PatcherImage extends FileInstance<PatcherImageEventMap, ImageFile> {
-    static async fromProjectItem(item: ImageFile) {
-        return new this(item).init(item.data);
+    static async fromProjectItem(fileIn: ImageFile, envIn: IJSPatcherEnv, projectIn: IProject) {
+        return new this(envIn, projectIn, fileIn).init(fileIn.data);
     }
     objectURL: string;
     async getEditor() {
@@ -24,7 +26,7 @@ export default class PatcherImage extends FileInstance<PatcherImageEventMap, Ima
         return (await fetch(this.objectURL)).arrayBuffer();
     }
     clone() {
-        const patcherText = new PatcherImage(this.ctx);
+        const patcherText = new PatcherImage(this.env, this.project, this.file);
         patcherText.objectURL = this.objectURL;
         return patcherText;
     }

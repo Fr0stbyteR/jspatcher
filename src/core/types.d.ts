@@ -1,5 +1,6 @@
 import { SemanticICONS } from "semantic-ui-react";
-import { BaseObject, AnyObject, AbstractObject } from "./objects/Base";
+import { BaseObject, AnyObject } from "./objects/Base";
+import AbstractObject from "./objects/AbstractObject";
 import Patcher from "./patcher/Patcher";
 import Box from "./patcher/Box";
 import Line from "./patcher/Line";
@@ -7,13 +8,11 @@ import PatcherHistory from "./patcher/PatcherHistory";
 import Env from "./Env";
 import { PackageManager } from "./PkgMgr";
 import TempPatcherFile from "./patcher/TempPatcherFile";
-import PatcherFile from "./patcher/PatcherFile";
 import TempAudioFile from "./audio/TempAudioFile";
-import AudioFile from "./audio/AudioFile";
 import TempTextFile from "./text/TempTextFile";
-import TextFile from "./text/TextFile";
 import TempData from "./file/TempData";
 import ImageFile from "./image/ImageFile";
+import PersistentProjectFile from "./file/PersistentProjectFile";
 
 declare global {
     interface Window {
@@ -21,10 +20,19 @@ declare global {
         webkitAudioContext?: typeof AudioContext;
         jspatcherEnv: Env;
     }
+    interface AudioWorkletGlobalScope {
+        jspatcherEnv: Env;
+    }
     interface HTMLMediaElement extends HTMLElement {
         sinkId: string;
         setSinkId?(sinkId: string): Promise<undefined>;
     }
+}
+
+/** This class will know of if itself is observed and perform reactions when the situation changed. */
+export interface IObservee<T = any> {
+    addObserver(observer: T): Promise<void>;
+    removeObserver(observer: T): Promise<void>;
 }
 
 export interface EnvOptions {
@@ -34,7 +42,7 @@ export interface EnvOptions {
     audioDisplayOptions: AudioDisplayOptions;
 }
 
-export type PatcherMode = "max" | "gen" | "faust" | "js";
+export type PatcherMode = "max" | "gen" | "faust" | "js" | "jsaw";
 
 export type PatcherFileExtension = "jspat" | "maxpat" | "gendsp" | "dsppat";
 
@@ -50,7 +58,7 @@ export type FileExtension = PatcherFileExtension | AudioFileExtension | TextFile
 
 export type TempItemType = "patcher" | "audio" | "text" | "unknown";
 
-export type SharedItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile | PatcherFile : T extends "audio" ? TempAudioFile | AudioFile : T extends "text" ? TempTextFile | TextFile : T extends "image" ? ImageFile : TempData;
+export type SharedItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile | PersistentProjectFile : T extends "audio" ? TempAudioFile | PersistentProjectFile : T extends "text" ? TempTextFile | PersistentProjectFile : T extends "image" ? ImageFile : TempData;
 
 export type TempItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile : T extends "audio" ? TempAudioFile : T extends "text" ? TempTextFile : TempData;
 
@@ -59,10 +67,12 @@ export type ProjectItemType = "patcher" | "audio" | "text" | "image" | "video" |
 export type ProjectItemDataType<T extends ProjectItemType = any> = T extends "folder" ? RawProjectItems : T extends "patcher" ? RawPatcher : T extends "text" ? string : ArrayBuffer;
 
 export interface RawProjectItem<T extends ProjectItemType = any> {
+    id: string;
     type: T;
+    isFolder: T extends "folder" ? true : false;
     name: string;
-    data: T extends "folder" ? never : ProjectItemDataType<T>;
-    items: T extends "folder" ? RawProjectItems : never;
+    data?: T extends "folder" ? never : ProjectItemDataType<T>;
+    items?: T extends "folder" ? RawProjectItems : never;
 }
 export type RawProjectItems = RawProjectItem[];
 
@@ -234,7 +244,7 @@ export interface JSPatcherFile extends FileState {
     createdTime: number;
     lastModifiedTime: number;
     instance: any;
-    history: any
+    history: any;
 }
 export interface PatcherEventMap extends TPublicPatcherProps {
     "postInited": never;

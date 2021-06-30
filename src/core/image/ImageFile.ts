@@ -1,13 +1,17 @@
-import ProjectItem from "../file/ProjectItem";
+import PersistentProjectFile from "../file/PersistentProjectFile";
 import ImageEditor from "./ImageEditor";
 import PatcherImage from "./PatcherImage";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
 
-export default class ImageFile extends ProjectItem {
-    type = "image" as const;
-    async instantiate(): Promise<PatcherImage> {
-        return PatcherImage.fromProjectItem(this);
+export default class ImageFile extends PersistentProjectFile {
+    get type() {
+        return "image" as const;
     }
-    async instantiateEditor(): Promise<ImageEditor> {
-        return ImageEditor.fromProjectItem(this);
+    async instantiate(envIn: IJSPatcherEnv, projectIn?: IProject) {
+        return PatcherImage.fromProjectItem(this, envIn, projectIn);
+    }
+    async instantiateEditor(envIn: IJSPatcherEnv, projectIn?: IProject) {
+        return ImageEditor.fromProjectItem(this, envIn, projectIn);
     }
 }

@@ -3,7 +3,7 @@ import { Dimmer, Loader } from "semantic-ui-react";
 import TopMenu from "./topmenu/TopMenu";
 import LeftMenu from "./leftmenu/LeftMenu";
 import Env from "../core/Env";
-import { Errors, TaskManagerEventMap, Tasks } from "../core/TaskMgr";
+import { TaskManagerEventMap, Task, TaskError } from "../core/TaskMgr";
 import StatusBar from "./StatusBar";
 import EditorContainerUI from "./editors/EditorContainerUI";
 import "./UI.scss";
@@ -15,10 +15,10 @@ interface P {
 }
 
 interface S {
-    tasks: Tasks;
-    errors: Errors;
-    envTasks: Tasks;
-    envErrors: Errors;
+    tasks: Task[];
+    errors: TaskError[];
+    envTasks: Task[];
+    envErrors: TaskError[];
     fileDropping: boolean;
 }
 
@@ -42,20 +42,20 @@ export default class UI extends React.PureComponent<P, S> {
     */
     handleTasks = (tasks: TaskManagerEventMap["tasks"]) => {
         if (this.props.env.loaded) {
-            this.setState({ tasks, envTasks: {}, envErrors: {} });
+            this.setState({ tasks, envTasks: [], envErrors: [] });
         } else {
             this.setState({ tasks, envTasks: this.props.env.taskMgr.getTasksFromEmitter(this.props.env) });
         }
     };
     handleErrors = (errors: TaskManagerEventMap["errors"]) => {
         if (this.props.env.loaded) {
-            this.setState({ errors, envTasks: {}, envErrors: {} });
+            this.setState({ errors, envTasks: [], envErrors: [] });
         } else {
             this.setState({ errors, envErrors: this.props.env.taskMgr.getErrorsFromEmitter(this.props.env) });
         }
     };
     handleEnvReady = () => {
-        this.setState({ envTasks: {}, envErrors: {} });
+        this.setState({ envTasks: [], envErrors: [] });
         this.props.env.off("ready", this.handleEnvReady);
     };
     handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -105,12 +105,12 @@ export default class UI extends React.PureComponent<P, S> {
     }
     render() {
         let dimmer: JSX.Element;
-        if (!this.props.env.loaded || Object.keys(this.state.envTasks).length) {
+        if (!this.props.env.loaded || this.state.envTasks.length) {
             const { envTasks, envErrors } = this.state;
             dimmer = <Dimmer active>
                 <Loader>
-                    {Object.keys(envTasks).map(t => <p key={t}>{envTasks[+t].message}</p>)}
-                    {Object.keys(envErrors).map(t => <p style={{ color: "red" }} key={t}>Error while: {envErrors[+t].message}: {envErrors[+t].error.message}</p>)}
+                    {envTasks.map(t => <p key={t.id}>{t.message}</p>)}
+                    {envErrors.map(t => <p style={{ color: "red" }} key={`Error${t.id}`}>Error while: {t.message}: {t.error.message}</p>)}
                 </Loader>
             </Dimmer>;
         }

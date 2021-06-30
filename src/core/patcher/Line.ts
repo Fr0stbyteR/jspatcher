@@ -1,6 +1,6 @@
 import { WamNode } from "wamsdk";
 import Patcher from "./Patcher";
-import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
+import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import { LineEventMap, TLine, TLineType, TMetaType } from "../types";
 import { AnyObject } from "../objects/Base";
 

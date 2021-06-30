@@ -1,10 +1,10 @@
 import Env from "./Env";
-import Project from "./Project";
 import Importer from "./objects/importer/Importer";
 import { TFlatPackage, TPackage, PatcherMode } from "./types";
-import { AnyObject, isJSPatcherObjectConstructor } from "./objects/Base";
+import { AnyObject } from "./objects/Base";
 import { ImporterDirSelfObject } from "../utils/symbols";
-import { TypedEventEmitter } from "../utils/TypedEventEmitter";
+import TypedEventEmitter from "../utils/TypedEventEmitter";
+import { isJSPatcherObjectConstructor } from "./objects/AbstractObject";
 
 export interface PackageManagerEventMap {
     "libChanged": PatcherMode;
@@ -12,15 +12,17 @@ export interface PackageManagerEventMap {
 }
 
 export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
-    private readonly global: GlobalPackageManager;
+    private readonly global: Partial<GlobalPackageManager>;
     readonly pkgJS: TPackage;
     readonly pkgFaust: TPackage;
     readonly pkgMax: TPackage;
     readonly pkgGen: TPackage;
+    readonly pkgJSAW: TPackage;
     private readonly libJS: TFlatPackage;
     private readonly libFaust: TFlatPackage;
     private readonly libMax: TFlatPackage;
     private readonly libGen: TFlatPackage;
+    private readonly libJSAW: TFlatPackage;
     /**
      * `[id, url]`
      *
@@ -28,25 +30,28 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
      * @memberof PackageManager
      */
     readonly imported: [string, string][] = [];
-    constructor(projectIn: Project) {
+    constructor(globalIn: Partial<GlobalPackageManager>) {
         super();
-        this.global = projectIn.env.pkgMgr;
-        const { js, faust, max, gen } = this.global;
+        this.global = globalIn;
+        const { js, faust, max, gen, jsaw } = this.global;
         this.pkgJS = { ...js };
         this.pkgFaust = { ...faust };
         this.pkgMax = { ...max };
         this.pkgGen = { ...gen };
+        this.pkgJSAW = { ...jsaw };
         this.libJS = this.packageRegister(this.pkgJS);
         this.libFaust = this.packageRegister(this.pkgFaust);
         this.libMax = this.packageRegister(this.pkgMax);
         this.libGen = this.packageRegister(this.pkgGen);
+        this.libJSAW = this.packageRegister(this.pkgJSAW);
     }
     getLib(lib: PatcherMode) {
         return {
             js: this.libJS,
             faust: this.libFaust,
             max: this.libMax,
-            gen: this.libGen
+            gen: this.libGen,
+            jsaw: this.libJSAW
         }[lib];
     }
     getPkg(lib: PatcherMode) {
@@ -54,7 +59,8 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
             js: this.pkgJS,
             faust: this.pkgFaust,
             max: this.pkgMax,
-            gen: this.pkgGen
+            gen: this.pkgGen,
+            jsaw: this.pkgJSAW
         }[lib];
     }
     async importFromNPM(pkgID: string, idIn?: string) {
@@ -63,6 +69,7 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
         return this.importFromURL(url, id);
     }
     async importFromURL(url: string, id: string) {
+        if (!this.global.getModuleFromURL) throw new Error("Cannot import from this context");
         if (this.imported.find(([$id, $url]) => $id === id && $url === url)) return;
         if (this.imported.find(([$id, $url]) => $id === id && $url !== url)) throw new Error(`Package with ID ${id} already exists.`);
         const jsModule = await this.global.getModuleFromURL(url, id);
@@ -97,11 +104,11 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
                 const full = path.join(".");
                 if (full in libOut) this.emit("pathDuplicated", full);
                 // this.patcher.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
-                else libOut[full] = el;
+                else libOut[full] = el as typeof AnyObject;
                 const p = path.slice();
                 while (p.length && path.length - p.length < rootifyDepth) {
                     const k = p.join(".");
-                    if (!(k in libOut)) libOut[k] = el;
+                    if (!(k in libOut)) libOut[k] = el as typeof AnyObject;
                     p.shift();
                 }
             }

@@ -2,7 +2,7 @@ import * as React from "react";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Dimmer, Loader } from "semantic-ui-react";
 import Env from "../../core/Env";
-import { Errors, Tasks } from "../../core/TaskMgr";
+import { TaskError, Task } from "../../core/TaskMgr";
 import TextEditor from "../../core/text/TextEditor";
 
 interface P {
@@ -12,8 +12,8 @@ interface P {
 }
 
 interface S {
-    tasks: Tasks;
-    errors: Errors;
+    tasks: Task[];
+    errors: TaskError[];
     editorLoaded: boolean;
     language: string;
 }
@@ -57,13 +57,13 @@ export default class TextEditorUI extends React.PureComponent<P, S> {
     }
     render() {
         let dimmer: JSX.Element;
-        if (Object.keys(this.state.tasks).length) {
+        if (this.state.tasks.length) {
             const { tasks, errors } = this.state;
             dimmer = <Dimmer active>
                 <Loader>
-                    <p>Loading Patcher...</p>
-                    {Object.keys(tasks).map(t => <p key={t}>{tasks[+t].message}</p>)}
-                    {Object.keys(errors).map(t => <p style={{ color: "red" }} key={t}>Error while: {errors[+t].message}: {errors[+t].error.message}</p>)}
+                    <p>Loading Text...</p>
+                    {tasks.map(t => <p key={t.id}>{t.message}</p>)}
+                    {errors.map(t => <p style={{ color: "red" }} key={`Error${t.id}`}>Error while: {t.message}: {t.error.message}</p>)}
                 </Loader>
             </Dimmer>;
         }

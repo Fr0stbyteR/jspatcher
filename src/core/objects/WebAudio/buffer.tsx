@@ -1,14 +1,14 @@
 import * as React from "react";
 import { Modal, SemanticICONS, StrictModalProps } from "semantic-ui-react";
-import AudioFile from "../../audio/AudioFile";
 import TempAudioFile from "../../audio/TempAudioFile";
 import PatcherAudio from "../../audio/PatcherAudio";
 import AudioEditor from "../../audio/AudioEditor";
 import AudioEditorUI from "../../../components/editors/audio/AudioEditorUI";
 import { DefaultObject, Bang, isBang } from "../Base";
 import { TMeta } from "../../types";
-import { ProjectItemEventMap } from "../../file/ProjectItem";
+import { ProjectFileEventMap } from "../../file/AbstractProjectFile";
 import { DefaultPopupUI, DefaultPopupUIProps, DefaultPopupUIState } from "../BaseUI";
+import PersistentProjectFile from "../../file/PersistentProjectFile";
 
 interface BufferUIState {
     audio: PatcherAudio;
@@ -115,7 +115,7 @@ export class BufferUI extends DefaultPopupUI<Buffer, {}, BufferUIState> {
 interface BufferState {
     key: string;
     audio: PatcherAudio;
-    file: AudioFile | TempAudioFile;
+    file: PersistentProjectFile | TempAudioFile;
     numberOfChannels: number;
     length: number;
     sampleRate: number;
@@ -176,7 +176,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
         const handleFilePathChanged = () => {
             this.setState({ key: this.state.file?.projectPath });
         };
-        const handleSaved = async (e: ProjectItemEventMap["saved"]) => {
+        const handleSaved = async (e: ProjectFileEventMap["saved"]) => {
             if (e.instance === this.state.audio) return;
             await reload();
         };
@@ -207,13 +207,13 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
             try {
                 const { item, newItem } = await this.getSharedItem(key, "audio", async () => {
                     const { numberOfChannels, length, sampleRate } = this.state;
-                    audio = await PatcherAudio.fromSilence(this.patcher.project, numberOfChannels, length, sampleRate);
+                    audio = await PatcherAudio.fromSilence([this.patcher.env, this.patcher.project], numberOfChannels, length, sampleRate);
                     return audio;
                 });
                 if (newItem) {
                     audio.file = item;
                 } else {
-                    audio = await item.instantiate();
+                    audio = await item.instantiate(this.patcher.env, this.patcher.project) as PatcherAudio;
                 }
                 this.setState({ audio, file: item });
                 this.updateUI({ audio });
@@ -247,7 +247,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
                     if (data instanceof PatcherAudio) {
                         this.state.audio.setAudio(data);
                     } else if (data instanceof AudioBuffer) {
-                        const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, data);
+                        const audio = await PatcherAudio.fromNativeAudioBuffer([this.patcher.env, this.patcher.project], data);
                         this.state.audio.setAudio(audio);
                     } else {
                         let audioBuffer: AudioBuffer;
@@ -258,7 +258,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
                             this.error("Decode File failed.");
                             return;
                         }
-                        const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, audioBuffer);
+                        const audio = await PatcherAudio.fromNativeAudioBuffer([this.patcher.env, this.patcher.project], audioBuffer);
                         this.state.audio.setAudio(audio);
                     }
                 }
@@ -267,7 +267,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
                 if (data instanceof PatcherAudio) {
                     this.state.audio.setAudio(data);
                 } else if (data instanceof AudioBuffer) {
-                    const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, data);
+                    const audio = await PatcherAudio.fromNativeAudioBuffer([this.patcher.env, this.patcher.project], data);
                     this.state.audio.setAudio(audio);
                 } else {
                     let audioBuffer: AudioBuffer;
@@ -278,7 +278,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
                         this.error("Decode File failed.");
                         return;
                     }
-                    const audio = await PatcherAudio.fromNativeAudioBuffer(this.patcher.project, audioBuffer);
+                    const audio = await PatcherAudio.fromNativeAudioBuffer([this.patcher.env, this.patcher.project], audioBuffer);
                     this.state.audio.setAudio(audio);
                 }
             } else if (inlet === 2) {

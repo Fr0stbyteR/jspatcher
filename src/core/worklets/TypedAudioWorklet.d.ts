@@ -1,4 +1,5 @@
 import { TypedMessagePort } from "../workers/Worker";
+import { IWorkletEnvProcessor } from "./WorkletEnv.types";
 
 export * from "../workers/Worker";
 
@@ -27,6 +28,7 @@ export interface AudioWorkletGlobalScope {
     currentTime: number;
     sampleRate: number;
     AudioWorkletProcessor: typeof TypedAudioWorkletProcessor;
+    jspatcherEnv: IWorkletEnvProcessor;
 }
 
 export type TypedAudioParamMap<P extends string = string> = ReadonlyMap<P, AudioParam>;
@@ -43,7 +45,8 @@ export interface TypedAudioWorkletNode<MsgIn = any, MsgOut = any, Par extends st
     removeEventListener<K extends keyof EventMap>(type: K, listener: (this: AudioWorkletNode, ev: CustomEvent<EventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
     removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
+
 export const TypedAudioWorkletNode: {
     prototype: TypedAudioWorkletNode;
-    new <MsgIn = any, MsgOut = any, Par extends string = string, Opt = any>(context: BaseAudioContext, name: string, options?: TypedAudioWorkletNodeOptions<Opt>): TypedAudioWorkletNode<MsgIn, MsgOut, Par>;
+    new <MsgIn = any, MsgOut = any, Par extends string = string, EventMap extends Record<string, any> = any, Opt = any>(context: BaseAudioContext, name: string, options?: TypedAudioWorkletNodeOptions<Opt>): TypedAudioWorkletNode<MsgIn, MsgOut, Par, EventMap>;
 };

@@ -8,7 +8,7 @@ import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
 import { CodeUI } from "./UI/code";
 import comment from "./UI/comment";
 import { ImporterDirSelfObject } from "../../utils/symbols";
-import { ProjectItemEventMap } from "../file/ProjectItem";
+import { ProjectFileEventMap } from "../file/AbstractProjectItem";
 
 type TObjectExpr = {
     exprs?: string[];
@@ -1113,7 +1113,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
     handleFilePathChanged = () => {
         this.setState({ key: this.state.patcher.file.projectPath });
     };
-    handleSaved = (e: ProjectItemEventMap["saved"]) => {
+    handleSaved = (e: ProjectFileEventMap["saved"]) => {
         if (e.instance === this.state.patcher) return;
         this.reload();
     };

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Icon } from "semantic-ui-react";
 import Env, { EnvEventMap } from "../../core/Env";
 import Folder from "../../core/file/Folder";
-import ProjectItem, { ProjectItemEventMap } from "../../core/file/ProjectItem";
+import AbstractProjectItem, { ProjectFileEventMap } from "../../core/file/AbstractProjectItem";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 import I18n from "../../i18n/I18n";
 import { findFromAscendants } from "../../utils/utils";
@@ -11,14 +11,14 @@ import NewFolderModal from "../modals/NewFolderModal";
 interface P {
     env: Env;
     lang: string;
-    item: ProjectItem;
-    selected: ProjectItem[];
-    onClick: (item: ProjectItem, ctrl?: boolean, shift?: boolean) => any;
-    onDoubleClick: (item: ProjectItem) => any;
-    onDelete: (item: ProjectItem) => any;
-    onMoving: (item: ProjectItem) => any;
-    onMoveTo: (item?: ProjectItem, folder?: Folder) => any;
-    moving: ProjectItem;
+    item: AbstractProjectItem;
+    selected: AbstractProjectItem[];
+    onClick: (item: AbstractProjectItem, ctrl?: boolean, shift?: boolean) => any;
+    onDoubleClick: (item: AbstractProjectItem) => any;
+    onDelete: (item: AbstractProjectItem) => any;
+    onMoving: (item: AbstractProjectItem) => any;
+    onMoveTo: (item?: AbstractProjectItem, folder?: Folder) => any;
+    moving: AbstractProjectItem;
     noActions?: true;
     folderSelectionOnly?: true;
 }
@@ -31,7 +31,7 @@ interface S {
     renaming: boolean;
     active: boolean;
     collapsed: boolean;
-    children: ProjectItem[];
+    children: AbstractProjectItem[];
     newFolderModalOpen: boolean;
     fileDropping: boolean;
 }
@@ -135,8 +135,8 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         this.setState({ newFolderModalOpen: false });
     };
     handleItemReady = () => this.setState({ loading: false });
-    handleItemDirty = (dirty: ProjectItemEventMap["dirty"]) => this.setState({ dirty });
-    handleItemNameChanged = ({ newName }: ProjectItemEventMap["nameChanged"]) => this.setState({ fileName: newName, filePath: this.props.item.path });
+    handleItemDirty = (dirty: ProjectFileEventMap["dirty"]) => this.setState({ dirty });
+    handleItemNameChanged = ({ newName }: ProjectFileEventMap["nameChanged"]) => this.setState({ fileName: newName, filePath: this.props.item.path });
     handleItemPathChanged = () => this.setState({ filePath: this.props.item.path });
     handleItemTreeChanged = () => this.setState({ children: (this.props.item as Folder)?.getOrderedItems?.() || [] });
     handleEnvActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => this.setState({ active: this.props.item === editor?.file });

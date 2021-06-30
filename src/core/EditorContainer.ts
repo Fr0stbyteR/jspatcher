@@ -1,4 +1,4 @@
-import { TypedEventEmitter } from "../utils/TypedEventEmitter";
+import TypedEventEmitter from "../utils/TypedEventEmitter";
 import Env, { EnvEventMap } from "./Env";
 import { AnyFileEditor } from "./file/FileEditor";
 

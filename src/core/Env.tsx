@@ -3,14 +3,14 @@ import * as ReactDOM from "react-dom";
 import { Faust, FaustAudioWorkletNode } from "faust2webaudio";
 import { detectOS, detectBrowserCore } from "../utils/utils";
 import { faustLangRegister } from "../misc/monaco-faust/register";
-import { TypedEventEmitter } from "../utils/TypedEventEmitter";
+import TypedEventEmitter from "../utils/TypedEventEmitter";
 import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
 import { EnvOptions, TErrorLevel, TPackage, TPatcherLog } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
 import Importer from "./objects/importer/Importer";
 import { GlobalPackageManager } from "./PkgMgr";
-import FileManager from "./FileMgr";
-import TempManager from "./TempMgr";
+import PersistentProjectItemManager from "./file/PersistentProjectItemManager";
+import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
@@ -18,36 +18,49 @@ import FfmpegWorker from "./workers/FfmpegWorker";
 import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
-import FileInstance, { AnyFileInstance } from "./file/FileInstance";
-import { AnyFileEditor } from "./file/FileEditor";
+import { IFileEditor } from "./file/FileEditor";
 import UI from "../components/UI";
 import PatcherAudio from "./audio/PatcherAudio";
 import EditorContainer from "./EditorContainer";
 import AudioWorkletRegister from "./worklets/AudioWorkletRegister";
 import GuidoWorker from "./workers/GuidoWorker";
+import type { IFileInstance } from "./file/FileInstance";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
 export interface EnvEventMap {
     "ready": never;
     "projectChanged": { project: Project; oldProject: Project };
-    "activeInstance": { instance: AnyFileInstance; oldInstance: AnyFileInstance };
-    "activeEditor": { editor: AnyFileEditor; oldEditor: AnyFileEditor };
-    "openInstance": AnyFileInstance;
-    "openEditor": AnyFileEditor;
-    "activeEditorContainer": { editorContainer: EditorContainer; oldEditorContainer: EditorContainer ;}
-    "instances": AnyFileInstance[];
+    "activeInstance": { instance: IFileInstance; oldInstance: IFileInstance };
+    "activeEditor": { editor: IFileEditor; oldEditor: IFileEditor };
+    "openInstance": IFileInstance;
+    "openEditor": IFileEditor;
+    "activeEditorContainer": { editorContainer: EditorContainer; oldEditorContainer: EditorContainer };
+    "instances": IFileInstance[];
     "newLog": TPatcherLog;
     "options": { options: EnvOptions; oldOptions: EnvOptions };
 }
 
+export interface IJSPatcherEnv extends TypedEventEmitter<EnvEventMap> {
+    readonly thread: "main" | "AudioWorklet";
+    /** Show as status what task is proceeding */
+    taskMgr: TaskManager;
+    activeInstance: IFileInstance;
+    activeEditor: IFileEditor;
+    /** Generate a global unique ID */
+    generateId(objectIn: object): string;
+    /**
+     * @returns A new unique ID for the instance
+     */
+    registerInstance(instanceIn: IFileInstance): string;
+    newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any): void;
+}
+
 /**
  * Should have maximum 1 instance of Env per page.
- *
- * @export
- * @class Env
  */
 export default class Env extends TypedEventEmitter<EnvEventMap> {
+    readonly thread = "main";
     readonly fileMgrWorker = new FileMgrWorker();
     readonly waveformWorker = new WaveformWorker();
     readonly wavEncoderWorker = new WavEncoderWorker();
@@ -60,8 +73,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly language = /* navigator.language === "zh-CN" ? "zh-CN" : */"en";
     readonly supportAudioWorklet = !!window.AudioWorklet;
     readonly taskMgr = new TaskManager();
-    readonly fileMgr = new FileManager(this);
-    readonly tempMgr = new TempManager(this);
+    readonly fileMgr = new PersistentProjectItemManager(this);
+    readonly tempMgr = new TemporaryProjectItemManager(this);
     readonly editorContainer = new EditorContainer(this);
     readonly log: TPatcherLog[] = [];
     readonly AudioWorkletRegister = AudioWorkletRegister;
@@ -74,21 +87,21 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     pkgMgr: GlobalPackageManager;
     audioClipboard: PatcherAudio;
     loaded = false;
-    private _activeInstance: AnyFileInstance;
-    get activeInstance(): AnyFileInstance {
+    private _activeInstance: IFileInstance;
+    get activeInstance(): IFileInstance {
         return this._activeInstance;
     }
-    set activeInstance(instance: AnyFileInstance) {
+    set activeInstance(instance: IFileInstance) {
         if (this._activeInstance === instance) return;
         const oldInstance = this._activeInstance;
         this._activeInstance = instance;
         this.emit("activeInstance", { instance, oldInstance });
     }
-    private _activeEditor: AnyFileEditor;
-    get activeEditor(): AnyFileEditor {
+    private _activeEditor: IFileEditor;
+    get activeEditor(): IFileEditor {
         return this._activeEditor;
     }
-    set activeEditor(editor: AnyFileEditor) {
+    set activeEditor(editor: IFileEditor) {
         if (this._activeEditor === editor) return;
         const oldEditor = this._activeEditor;
         this._activeEditor = editor;
@@ -109,7 +122,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         this.activeEditor = editorContainer.activeEditor;
         this.emit("activeEditorContainer", { editorContainer, oldEditorContainer });
     }
-    instances = new Set<FileInstance>();
+    instances = new Set<IFileInstance>();
     currentProject: Project;
     private _noUI: boolean;
     private _divRoot: HTMLDivElement;
@@ -202,19 +215,19 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
                 this.currentProject = project;
                 const { projectZip } = urlParamsOptions;
                 if (projectZip) {
-                    await this.fileMgr.init(project, true);
+                    await this.fileMgr.init(true);
                     onUpdate(projectZip);
                     try {
                         const response = await fetch(projectZip);
                         const data = await response.arrayBuffer();
                         await this.loadFromZip(data);
                     } catch (error) {
-                        await this.fileMgr.init(project, urlParamsOptions.init);
+                        await this.fileMgr.init(urlParamsOptions.init);
                     }
                 } else {
-                    await this.fileMgr.init(project, urlParamsOptions.init);
+                    await this.fileMgr.init(urlParamsOptions.init);
                 }
-                await this.tempMgr.init(project);
+                await this.tempMgr.init();
             });
             window.jspatcherEnv = this;
         });
@@ -225,7 +238,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
             try {
                 const item = this.fileMgr.getProjectItemFromPath(file);
                 if (item.type !== "folder") {
-                    const instance = await item.instantiate();
+                    const instance = await item.instantiate(this, this.currentProject);
                     this.openInstance(instance);
                 }
             } catch {}
@@ -255,21 +268,26 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         */
         return this;
     }
-    openInstance(i: AnyFileInstance) {
+    _generatedId = 1;
+    generateId(objectIn: object) {
+        return this.thread + objectIn.constructor.name + this._generatedId++;
+    }
+    openInstance(i: IFileInstance) {
         this.emit("openInstance", i);
         i.setActive();
     }
-    openEditor(e: AnyFileEditor) {
+    openEditor(e: IFileEditor) {
         this.emit("openEditor", e);
         e.setActive();
     }
-    registerInstance(i: AnyFileInstance) {
+    registerInstance(i: IFileInstance) {
         this.instances.add(i);
         i.on("destroy", () => {
             this.instances.delete(i);
             this.emit("instances", Array.from(this.instances));
         });
         this.emit("instances", Array.from(this.instances));
+        return this.generateId(i);
     }
     async newProject() {
         const oldProject = this.currentProject;

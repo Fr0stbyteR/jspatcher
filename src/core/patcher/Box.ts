@@ -1,6 +1,6 @@
 import Patcher from "./Patcher";
 import Line from "./Line";
-import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
+import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import { isTRect, parseToPrimitive, isTPresentationRect, isRectMovable, isRectResizable } from "../../utils/utils";
 import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect, TPresentationRect } from "../types";
 import { AnyObject } from "../objects/Base";

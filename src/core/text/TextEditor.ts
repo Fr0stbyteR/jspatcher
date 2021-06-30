@@ -1,19 +1,21 @@
-import { SemanticICONS } from "semantic-ui-react";
-import MonacoEditor from "react-monaco-editor";
-import { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import type { SemanticICONS } from "semantic-ui-react";
+import type MonacoEditor from "react-monaco-editor";
+import type { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import FileEditor from "../file/FileEditor";
-import PatcherText from "./PatcherText";
 import TempTextFile from "./TempTextFile";
-import TextFile from "./TextFile";
 import TextHistory from "./TextHistory";
+import type PatcherText from "./PatcherText";
+import type PersistentProjectFile from "../file/PersistentProjectFile";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
 
 export interface TextEditorEventMap {
     "textModified": { text: string; oldText: string };
 }
 
 export default class TextEditor extends FileEditor<PatcherText, TextEditorEventMap> {
-    static async fromProjectItem(item: TextFile | TempTextFile) {
-        const text = item instanceof TempTextFile ? item.data : await item.instantiate();
+    static async fromProjectItem(fileIn: PersistentProjectFile | TempTextFile, envIn: IJSPatcherEnv, projectIn?: IProject) {
+        const text = fileIn instanceof TempTextFile ? fileIn.data : await fileIn.instantiate(envIn, projectIn) as PatcherText;
         const editor = new this(text);
         return editor.init();
     }

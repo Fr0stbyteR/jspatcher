@@ -1,4 +1,4 @@
-import { TypedEventEmitter } from "../utils/TypedEventEmitter";
+import TypedEventEmitter from "../utils/TypedEventEmitter";
 import FileEditor from "./file/FileEditor";
 
 export interface EditorEventMap {

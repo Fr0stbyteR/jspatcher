@@ -1,15 +1,17 @@
 import FileInstance from "../file/FileInstance";
-import TextFile from "./TextFile";
 import TextEditor from "./TextEditor";
 import TempTextFile from "./TempTextFile";
+import type PersistentProjectFile from "../file/PersistentProjectFile";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
 
 export interface PatcherTextEventMap {
     "textModified": { text: string; oldText: string };
 }
 
-export default class PatcherText extends FileInstance<PatcherTextEventMap, TextFile | TempTextFile> {
-    static async fromProjectItem(item: TextFile) {
-        return new this(item).init(item.data);
+export default class PatcherText extends FileInstance<PatcherTextEventMap, PersistentProjectFile | TempTextFile> {
+    static async fromProjectItem(fileIn: PersistentProjectFile, envIn: IJSPatcherEnv, projectIn?: IProject) {
+        return new this(envIn, projectIn, fileIn).init(fileIn.data);
     }
     text: string;
     async getEditor() {
@@ -27,7 +29,7 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap, TextF
         return new Blob([this.text]).arrayBuffer();
     }
     clone() {
-        const patcherText = new PatcherText(this.ctx);
+        const patcherText = new PatcherText(this.env, this.project, this.file);
         patcherText.text = this.text;
         return patcherText;
     }

@@ -1,7 +1,9 @@
-import TempItem from "./TempItem";
+import TemporaryProjectFile from "./TemporaryProjectFile";
 
-export default class TempData extends TempItem {
-    type = "unknown" as const;
+export default class TempData extends TemporaryProjectFile {
+    get type() {
+        return "unknown" as const;
+    }
     async instantiate(): Promise<any> {
         return this.data;
     }

@@ -2,8 +2,8 @@ import * as Util from "util";
 import Patcher from "../patcher/Patcher";
 import { DefaultObject, Bang, isBang } from "./Base";
 import { TMeta } from "../types";
-import ProjectItem, { ProjectItemEventMap } from "../file/ProjectItem";
-import TempItem from "../file/TempItem";
+import AbstractProjectItem, { ProjectFileEventMap } from "../file/AbstractProjectItem";
+import TemporaryProjectFile from "../file/TemporaryProjectFile";
 
 class StdObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
     static package = "Std";
@@ -569,7 +569,7 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         });
     }
 }
-class v extends StdObject<{}, { key: string; value: any; sharedItem: ProjectItem | TempItem }, [Bang | any, any, string | number], [any], [string | number, any]> {
+class v extends StdObject<{}, { key: string; value: any; sharedItem: AbstractProjectItem | TemporaryProjectFile }, [Bang | any, any, string | number], [any], [string | number, any]> {
     static description = "Store anything as named sharable variable";
     static inlets: TMeta["inlets"] = [{
         isHot: true,
@@ -597,13 +597,13 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: ProjectItem
         optional: true,
         description: "Initial value"
     }];
-    state: { key: string; value: any; sharedItem: ProjectItem | TempItem } = { key: this.box.args[0]?.toString(), value: undefined, sharedItem: null };
+    state: { key: string; value: any; sharedItem: AbstractProjectItem | TemporaryProjectFile } = { key: this.box.args[0]?.toString(), value: undefined, sharedItem: null };
     subscribe() {
         super.subscribe();
         const handleFilePathChanged = () => {
             this.setState({ key: this.state.sharedItem?.projectPath });
         };
-        const handleSaved = (e: ProjectItemEventMap["saved"]) => {
+        const handleSaved = (e: ProjectFileEventMap["saved"]) => {
             if (e === this) return;
             this.setState({ value: this.state.sharedItem?.data });
         };

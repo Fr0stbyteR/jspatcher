@@ -1,14 +1,15 @@
 import { SemanticICONS } from "semantic-ui-react";
 import { isRectMovable, isRectResizable, isTRect } from "../../utils/utils";
 import FileEditor from "../file/FileEditor";
-import ProjectItem from "../file/ProjectItem";
 import { PatcherEventMap, RawPatcher, TBox, TLine, TMaxClipboard, TRect, TResizeHandlerType } from "../types";
 import Box from "./Box";
 import Line from "./Line";
 import Patcher from "./Patcher";
-import PatcherFile from "./PatcherFile";
 import PatcherHistory from "./PatcherHistory";
-import TempPatcherFile from "./TempPatcherFile";
+import type PersistentProjectFile from "../file/PersistentProjectFile";
+import type TempPatcherFile from "./TempPatcherFile";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
 
 export interface PatcherEditorEventMap extends PatcherEditorState {
     "create": RawPatcher;
@@ -34,8 +35,8 @@ export interface PatcherEditorState {
 }
 
 export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEventMap> {
-    static async fromProjectItem(item: PatcherFile | TempPatcherFile): Promise<PatcherEditor> {
-        const patcher = await item.instantiate();
+    static async fromProjectItem(fileIn: PersistentProjectFile | TempPatcherFile, envIn: IJSPatcherEnv, projectIn?: IProject): Promise<PatcherEditor> {
+        const patcher = await fileIn.instantiate(envIn, projectIn) as Patcher;
         const editor = new this(patcher);
         return editor.init();
     }
@@ -130,7 +131,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         await box.postInit();
         return box;
     }
-    async createBoxFromFile(file: ProjectItem, boxIn: Omit<TBox, "text">) {
+    async createBoxFromFile(file: PersistentProjectFile | TempPatcherFile, boxIn: Omit<TBox, "text">) {
         const path = file.projectPath;
         const type = file.type;
         const ext = file.fileExtension;

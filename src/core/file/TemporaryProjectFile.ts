@@ -1,25 +1,21 @@
-import TempManager from "../TempMgr";
-import Folder from "./Folder";
-import ProjectItem from "./ProjectItem";
+import AbstractProjectFile from "./AbstractProjectFile";
+import PersistentProjectFile from "./PersistentProjectFile";
+import type TemporaryProjectItemManager from "./TemporaryProjectItemManager";
+import type PersistentProjectItemManager from "./PersistentProjectItemManager";
+import type { IProjectFolder } from "./AbstractProjectFolder";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
+import type { IFileEditor } from "./FileEditor";
+import type { IFileInstance } from "./FileInstance";
 
 /**
  * An item under TempMgr, this contains in-memory data/instance.
  */
-export default class TempItem extends ProjectItem {
-    get fileMgr(): TempManager {
-        return this._fileMgr as TempManager;
-    }
-    /**
-     * Override, could be any type
-     */
-    get data() {
-        return this._data as any;
-    }
+export default class TemporaryProjectFile<Data = any> extends AbstractProjectFile<Data, TemporaryProjectItemManager> {
     async init() {
         await this.emit("ready");
-        return this;
     }
-    async removeObserver(observer: any) {
+    async removeObserver(observer: string) {
         await super.removeObserver(observer);
         if (this._observers.size === 0) await this.destroy();
     }
@@ -27,8 +23,8 @@ export default class TempItem extends ProjectItem {
      * Creating alias (do not copy the data, new item has the same ref)
      */
     clone(parentIn = this.parent, nameIn = this._name, dataIn = this.data) {
-        const Ctor = this.constructor as typeof ProjectItem;
-        return new Ctor(this._fileMgr, this.project, parentIn, nameIn, dataIn);
+        const Ctor = this.constructor as typeof TemporaryProjectFile;
+        return new Ctor(this._fileMgr, parentIn, nameIn, dataIn);
     }
     async rename(newNameIn: string) {
         const newName = newNameIn.trim();
@@ -39,8 +35,8 @@ export default class TempItem extends ProjectItem {
         await this.emitTreeChanged();
         await this.emit("nameChanged", { oldName, newName });
     }
-    async move(to: Folder, newName = this.name) {
-        if (to as ProjectItem === this) return;
+    async move(to: IProjectFolder, newName = this.name) {
+        if (to === this as any) return;
         if (to === this.parent) return;
         if (to.existItem(newName)) throw new Error(`${newName} already exists in ${to.name}`);
         const from = this.parent;
@@ -59,28 +55,35 @@ export default class TempItem extends ProjectItem {
         await this.emitTreeChanged();
         await this.emit("destroyed");
     }
-    async save(newData: any, by: any) {
+    async save(newData: Data, by: any) {
         this._data = newData;
         this.emit("saved", by);
     }
-    async saveAsCopy(parent: Folder, name: string, newData: ArrayBuffer) {
-        const item = new ProjectItem(this.env.fileMgr, this.project, parent, name, newData);
-        await this._fileMgr.putFile(item);
+    async saveAsCopy(parent: IProjectFolder, name: string, newData: ArrayBuffer, persistentMgr?: PersistentProjectItemManager) {
+        const item = new PersistentProjectFile(persistentMgr, parent, name, newData);
+        await persistentMgr.putFile(item);
         parent.items.add(item);
         await this.emitTreeChanged();
         return item;
     }
-    async saveAs(to: Folder, name: string, newData: ArrayBuffer, by: any) {
-        const item = new ProjectItem(this.env.fileMgr, this.project, to, name, newData);
-        await this.env.fileMgr.putFile(item);
+    async saveAs(to: IProjectFolder, name: string, newData: ArrayBuffer, by: any, persistentMgr: PersistentProjectItemManager) {
+        const item = new PersistentProjectFile(persistentMgr, to, name, newData);
+        await persistentMgr.putFile(item);
         const from = this.parent;
         this.parent = to;
         this._name = name;
-        const _this: ProjectItem = Object.setPrototypeOf(this, ProjectItem.prototype);
+        const _this: PersistentProjectFile = Object.setPrototypeOf(this, PersistentProjectFile.prototype);
         this.parent.items.add(_this);
         await this.emitTreeChanged();
         await this.emit("pathChanged", { from, to });
         await this.emit("saved", by);
         return this;
+    }
+    async instantiate(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileInstance> {
+        throw new Error("Not implemented.");
+        // new instance Patcher / AudioBuffer etc
+    }
+    async instantiateEditor(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileEditor> {
+        throw new Error("Not implemented.");
     }
 }

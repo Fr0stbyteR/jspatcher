@@ -1,5 +1,5 @@
 import type * as ffmpeg from "ffmpeg.js";
-import { TypedEventEmitter } from "../../utils/TypedEventEmitter";
+import TypedEventEmitter from "../../utils/TypedEventEmitter";
 
 export interface FfmpegWorkerEventMap {
     "ready": never;

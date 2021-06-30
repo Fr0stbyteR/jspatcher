@@ -2,7 +2,7 @@ import * as React from "react";
 import { Modal, Button, Input, Form, Table, InputOnChangeData, Dropdown, DropdownItemProps, DropdownProps, Checkbox, Icon } from "semantic-ui-react";
 import AudioEditor from "../../core/audio/AudioEditor";
 import GainInputUI from "../editors/audio/GainInput";
-import { Tasks, Errors, Task, TaskError } from "../../core/TaskMgr";
+import { Task, TaskError } from "../../core/TaskMgr";
 import I18n from "../../i18n/I18n";
 import { identityMatrix } from "../../utils/math";
 import "./AudioExportModal.scss";
@@ -20,8 +20,8 @@ interface P {
     onClose: () => any;
 }
 interface S {
-    tasks: Tasks;
-    errors: Errors;
+    tasks: Task[];
+    errors: TaskError[];
     type: TExportType;
     fileName: string;
     applyFx: boolean;
@@ -173,17 +173,11 @@ export default class AudioExportModal extends React.PureComponent<P, S> {
             </Table>
         );
     }
-    get lastError(): TaskError & { timestamp: number } {
-        const timestamps = Object.keys(this.state.errors);
-        if (!timestamps.length) return null;
-        const timestamp = timestamps.map(v => +v).sort((a, b) => b - a)[0];
-        return { timestamp, ...this.state.errors[timestamp] };
+    get lastError() {
+        return this.state.errors.sort(((a, b) => b.timestamp - a.timestamp))[0];
     }
-    get lastTask(): Task & { timestamp: number } {
-        const timestamps = Object.keys(this.state.tasks);
-        if (!timestamps.length) return null;
-        const timestamp = timestamps.map(v => +v).sort((a, b) => b - a)[0];
-        return { timestamp, ...this.state.tasks[timestamp] };
+    get lastTask() {
+        return this.state.tasks.sort(((a, b) => b.timestamp - a.timestamp))[0];
     }
     render() {
         const { lastError, lastTask } = this;

@@ -1,4 +1,4 @@
-import { TypedEventEmitter } from "../utils/TypedEventEmitter";
+import TypedEventEmitter from "../utils/TypedEventEmitter";
 import Env from "./Env";
 import FileInstance from "./file/FileInstance";
 import { PackageManager } from "./PkgMgr";
@@ -16,6 +16,10 @@ export interface ProjectProps {
     name: string;
     author: string;
     version: string;
+}
+
+export interface IProject extends TypedEventEmitter<ProjectEventMap> {
+    pkgMgr: PackageManager;
 }
 
 export default class Project extends TypedEventEmitter<ProjectEventMap> {
@@ -54,7 +58,7 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
     constructor(envIn: Env) {
         super();
         this.env = envIn;
-        this.pkgMgr = new PackageManager(this);
+        this.pkgMgr = new PackageManager(this.env.pkgMgr);
     }
     setProps(props: Partial<ProjectProps>) {
         let changed = false;
@@ -70,7 +74,7 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
         await this.emit("save");
     }
     async load(clean = false) {
-        await this.env.fileMgr.init(this, clean);
+        await this.env.fileMgr.init(clean);
     }
     async unload() {
         for (const i of this.env.instances) {

@@ -1,14 +1,16 @@
-import { SemanticICONS } from "semantic-ui-react";
+import type { SemanticICONS } from "semantic-ui-react";
 import FileEditor from "../file/FileEditor";
-import ImageFile from "./ImageFile";
 import History from "../file/History";
-import PatcherImage from "./PatcherImage";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
+import type ImageFile from "./ImageFile";
+import type PatcherImage from "./PatcherImage";
 
 export interface ImageEditorEventMap {}
 
 export default class ImageEditor extends FileEditor<PatcherImage, ImageEditorEventMap> {
-    static async fromProjectItem(item: ImageFile) {
-        const image = await item.instantiate();
+    static async fromProjectItem(fileIn: ImageFile, envIn: IJSPatcherEnv, projectIn?: IProject) {
+        const image = await fileIn.instantiate(envIn, projectIn);
         const editor = new this(image);
         return editor.init();
     }
