@@ -1,24 +1,25 @@
 import * as React from "react";
 import { Icon } from "semantic-ui-react";
 import Env, { EnvEventMap } from "../../core/Env";
-import Folder from "../../core/file/Folder";
-import AbstractProjectItem, { ProjectFileEventMap } from "../../core/file/AbstractProjectItem";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 import I18n from "../../i18n/I18n";
 import { findFromAscendants } from "../../utils/utils";
 import NewFolderModal from "../modals/NewFolderModal";
+import type { IProjectFolder } from "../../core/file/AbstractProjectFolder";
+import type { IProjectFileOrFolder, IProjectItem, ProjectItemEventMap } from "../../core/file/AbstractProjectItem";
+import type PersistentProjectFile from "../../core/file/PersistentProjectFile";
 
 interface P {
     env: Env;
     lang: string;
-    item: AbstractProjectItem;
-    selected: AbstractProjectItem[];
-    onClick: (item: AbstractProjectItem, ctrl?: boolean, shift?: boolean) => any;
-    onDoubleClick: (item: AbstractProjectItem) => any;
-    onDelete: (item: AbstractProjectItem) => any;
-    onMoving: (item: AbstractProjectItem) => any;
-    onMoveTo: (item?: AbstractProjectItem, folder?: Folder) => any;
-    moving: AbstractProjectItem;
+    item: IProjectFileOrFolder;
+    selected: IProjectFileOrFolder[];
+    onClick: (item: IProjectFileOrFolder, ctrl?: boolean, shift?: boolean) => any;
+    onDoubleClick: (item: IProjectFileOrFolder) => any;
+    onDelete: (item: IProjectFileOrFolder) => any;
+    onMoving: (item: IProjectFileOrFolder) => any;
+    onMoveTo: (item?: IProjectFileOrFolder, folder?: IProjectFolder) => any;
+    moving: IProjectFileOrFolder;
     noActions?: true;
     folderSelectionOnly?: true;
 }
@@ -31,12 +32,12 @@ interface S {
     renaming: boolean;
     active: boolean;
     collapsed: boolean;
-    children: AbstractProjectItem[];
+    children: IProjectFileOrFolder[];
     newFolderModalOpen: boolean;
     fileDropping: boolean;
 }
 
-export class ProjectItemUI extends React.PureComponent<P, S> {
+export default class ProjectItemUI extends React.PureComponent<P, S> {
     state: S = {
         fileName: this.props.item.name,
         filePath: this.props.item.path,
@@ -44,8 +45,8 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         dirty: this.props.item.isDirty,
         renaming: false,
         active: this.props.item === this.props.env.activeEditor?.file,
-        collapsed: this.props.item.type === "folder" && !!this.props.selected.find(item => (this.props.item as Folder).isParentOf(item)),
-        children: (this.props.item as Folder)?.getOrderedItems?.() || [],
+        collapsed: this.props.item.type === "folder" && !!this.props.selected.find(item => (this.props.item as IProjectFolder).isParentOf(item)),
+        children: (this.props.item as IProjectFolder)?.getOrderedItems?.() || [],
         newFolderModalOpen: false,
         fileDropping: false
     };
@@ -130,15 +131,15 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     handleNewFolderModalClose = () => {
         this.setState({ newFolderModalOpen: false });
     };
-    handleNewFolderModalConfirm = async (parent: Folder, folderName: string) => {
+    handleNewFolderModalConfirm = async (parent: IProjectFolder, folderName: string) => {
         await parent.addFolder(folderName);
         this.setState({ newFolderModalOpen: false });
     };
     handleItemReady = () => this.setState({ loading: false });
-    handleItemDirty = (dirty: ProjectFileEventMap["dirty"]) => this.setState({ dirty });
-    handleItemNameChanged = ({ newName }: ProjectFileEventMap["nameChanged"]) => this.setState({ fileName: newName, filePath: this.props.item.path });
+    handleItemDirty = (dirty: ProjectItemEventMap["dirty"]) => this.setState({ dirty });
+    handleItemNameChanged = ({ newName }: ProjectItemEventMap["nameChanged"]) => this.setState({ fileName: newName, filePath: this.props.item.path });
     handleItemPathChanged = () => this.setState({ filePath: this.props.item.path });
-    handleItemTreeChanged = () => this.setState({ children: (this.props.item as Folder)?.getOrderedItems?.() || [] });
+    handleItemTreeChanged = () => this.setState({ children: (this.props.item as IProjectFolder)?.getOrderedItems?.() || [] });
     handleEnvActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => this.setState({ active: this.props.item === editor?.file });
     handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
         if (this.props.item.type !== "folder") return;
@@ -166,7 +167,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
         const { dataTransfer } = e;
         if (dataTransfer && dataTransfer.files.length) {
             for (const file of e.dataTransfer.files) {
-                await this.props.env.fileMgr.importFile(file, this.props.item as Folder);
+                await this.props.env.fileMgr.importFile(file, this.props.item as IProjectFolder);
             }
         }
     };
@@ -253,13 +254,13 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                         const x = clientX - left + scrollLeft;
                         const y = clientY - top + scrollTop;
                         const { presentation } = editor.state;
-                        editor.createBoxFromFile(this.props.item, { inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
+                        editor.createBoxFromFile(this.props.item as PersistentProjectFile, { inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation });
                     }
                 }
             } else {
                 const path = (parent.firstChild as HTMLElement).getAttribute("data-id");
                 if (!path) this.props.onMoveTo();
-                else this.props.onMoveTo(this.props.item, this.props.env.fileMgr.getProjectItemFromPath(path.replace(/^\/project/, "")) as Folder);
+                else this.props.onMoveTo(this.props.item, this.props.env.fileMgr.getProjectItemFromPath(path.replace(/^\/project/, "")) as IProjectFolder);
             }
         };
         document.addEventListener("mousemove", handleMouseMove);
@@ -267,19 +268,21 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
     };
 
     componentDidMount() {
-        if (!this.props.item.data) this.props.item.on("ready", this.handleItemReady);
-        this.props.item.on("dirty", this.handleItemDirty);
-        this.props.item.on("nameChanged", this.handleItemNameChanged);
-        this.props.item.on("pathChanged", this.handleItemPathChanged);
-        this.props.item.on("treeChanged", this.handleItemTreeChanged);
+        if (this.props.item.isFolder) this.props.item.on("ready", this.handleItemReady);
+        const item = this.props.item as IProjectItem;
+        item.on("dirty", this.handleItemDirty);
+        item.on("nameChanged", this.handleItemNameChanged);
+        item.on("pathChanged", this.handleItemPathChanged);
+        item.on("treeChanged", this.handleItemTreeChanged);
         this.props.env.on("activeEditor", this.handleEnvActiveEditor);
     }
     componentWillUnmount() {
-        this.props.item.off("ready", this.handleItemReady);
-        this.props.item.off("dirty", this.handleItemDirty);
-        this.props.item.off("nameChanged", this.handleItemNameChanged);
-        this.props.item.off("pathChanged", this.handleItemPathChanged);
-        this.props.item.off("treeChanged", this.handleItemTreeChanged);
+        const item = this.props.item as IProjectItem;
+        item.off("ready", this.handleItemReady);
+        item.off("dirty", this.handleItemDirty);
+        item.off("nameChanged", this.handleItemNameChanged);
+        item.off("pathChanged", this.handleItemPathChanged);
+        item.off("treeChanged", this.handleItemTreeChanged);
         this.props.env.off("activeEditor", this.handleEnvActiveEditor);
     }
     render() {
@@ -315,7 +318,7 @@ export class ProjectItemUI extends React.PureComponent<P, S> {
                 </div>
                 {type === "folder" && !collapsed
                     ? <div className="file-manager-item-tree">
-                        <NewFolderModal lang={this.props.lang} open={this.state.newFolderModalOpen} onClose={this.handleNewFolderModalClose} onConfirm={this.handleNewFolderModalConfirm} folder={item as Folder} />
+                        <NewFolderModal lang={this.props.lang} open={this.state.newFolderModalOpen} onClose={this.handleNewFolderModalClose} onConfirm={this.handleNewFolderModalConfirm} folder={item as IProjectFolder} />
                         {this.state.children.map(item => <ProjectItemUI {...this.props} key={item.path} item={item} />)}
                     </div>
                     : undefined

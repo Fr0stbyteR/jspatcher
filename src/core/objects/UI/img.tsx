@@ -1,10 +1,10 @@
 import * as React from "react";
 import UIObject from "./Base";
 import { BaseUI, BaseUIState } from "../BaseUI";
-import { TMeta, TPropsMeta } from "../../types";
 import { isBang } from "../Base";
-import PatcherImage from "../../image/PatcherImage";
-import ImageFile from "../../image/ImageFile";
+import type { TMeta, TPropsMeta } from "../../types";
+import type PatcherImage from "../../image/PatcherImage";
+import type PersistentProjectFile from "../../file/PersistentProjectFile";
 
 interface U extends P {
     url: string;
@@ -28,7 +28,7 @@ class ImgUI extends BaseUI<img, P, U> {
 interface S {
     key: string;
     image: PatcherImage;
-    file: ImageFile;
+    file: PersistentProjectFile;
     url: string;
 }
 interface P {
@@ -101,7 +101,7 @@ export default class img extends UIObject<{}, S, [string | HTMLImageElement], [H
             let url: string;
             try {
                 const { item } = await this.getSharedItem(key, "image");
-                image = await item.instantiate();
+                image = await item.instantiate(this.patcher.env, this.patcher.project) as PatcherImage;
                 this.setState({ image, file: item });
                 url = image.objectURL;
             } catch {

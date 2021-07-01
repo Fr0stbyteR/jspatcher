@@ -3,15 +3,15 @@ import { Icon } from "semantic-ui-react";
 import Env, { EnvEventMap } from "../../core/Env";
 import DeleteModal from "../modals/DeleteModal";
 import DeleteAllModal from "../modals/DeleteAllModal";
-import "./FileMgrUI.scss";
 import I18n from "../../i18n/I18n";
-import { ProjectItemUI } from "./ProjectItemUI";
-import { AnyFileInstance } from "../../core/file/FileInstance";
-import AbstractProjectItem from "../../core/file/AbstractProjectItem";
-import { ProjectEventMap } from "../../core/Project";
+import ProjectItemUI from "./ProjectItemUI";
+import type { IFileInstance } from "../../core/file/FileInstance";
+import type { IProjectFileOrFolder } from "../../core/file/AbstractProjectItem";
+import type { ProjectEventMap } from "../../core/Project";
 import NewFolderModal from "../modals/NewFolderModal";
-import Folder from "../../core/file/Folder";
+import type { IProjectFolder } from "../../core/file/AbstractProjectFolder";
 import { findFromAscendants } from "../../utils/utils";
+import "./FileMgrUI.scss";
 
 interface P {
     env: Env;
@@ -19,20 +19,20 @@ interface P {
     oneSelectionOnly?: true;
     folderSelectionOnly?: true;
     noActions?: true;
-    onSelection?: (selection: AbstractProjectItem[]) => any;
+    onSelection?: (selection: IProjectFileOrFolder[]) => any;
 }
 
 interface S {
     projectName: string;
-    items: AbstractProjectItem[];
+    items: IProjectFileOrFolder[];
     collapsed: boolean;
-    selected: AbstractProjectItem[];
-    instances: AnyFileInstance[];
+    selected: IProjectFileOrFolder[];
+    instances: IFileInstance[];
     deleteModalOpen: boolean;
     deleteAllModalOpen: boolean;
     newFolderModalOpen: boolean;
     fileDropping: boolean;
-    moving: AbstractProjectItem;
+    moving: IProjectFileOrFolder;
 }
 
 export default class FileManagerUI extends React.PureComponent<P, S> {
@@ -137,10 +137,10 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         e.stopPropagation();
         this.setState({ newFolderModalOpen: true });
     };
-    handleDeleteItem = async (item: AbstractProjectItem) => {
+    handleDeleteItem = async (item: IProjectFileOrFolder) => {
         this.setState({ selected: [item] }, () => this.setState({ deleteModalOpen: true }));
     };
-    handleClickItem = (item: AbstractProjectItem, ctrl = false, shift = false) => {
+    handleClickItem = (item: IProjectFileOrFolder, ctrl = false, shift = false) => {
         const itemSelected = this.state.selected.indexOf(item) !== -1;
         if (this.props.oneSelectionOnly || (!ctrl && !shift) || this.state.selected.length === 0) {
             if (this.props.folderSelectionOnly && item.type !== "folder") return;
@@ -176,10 +176,10 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         const ctrl = this.props.env.os === "MacOS" ? metaKey : ctrlKey;
         this.handleClickItem(this.props.env.fileMgr.projectRoot, ctrl, shift);
     };
-    handleDoubleClickItem = async (item: AbstractProjectItem) => {
+    handleDoubleClickItem = async (item: IProjectFileOrFolder) => {
         if (this.props.noActions) return;
-        if (item.type === "folder") return;
-        const editor = await item.instantiateEditor();
+        if (item.isFolder === true) return;
+        const editor = await item.instantiateEditor(this.props.env, this.props.env.currentProject);
         this.props.env.openEditor(editor);
     };
     handleDeleteModalClose = () => this.setState({ deleteModalOpen: false });
@@ -205,14 +205,14 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
     handleNewFolderModalClose = () => {
         this.setState({ newFolderModalOpen: false });
     };
-    handleNewFolderModalConfirm = async (parent: Folder, folderName: string) => {
+    handleNewFolderModalConfirm = async (parent: IProjectFolder, folderName: string) => {
         await parent.addFolder(folderName);
         this.setState({ newFolderModalOpen: false });
     };
-    handleMoving = (moving: AbstractProjectItem) => {
+    handleMoving = (moving: IProjectFileOrFolder) => {
         if (this.state.moving !== moving) this.setState({ moving });
     };
-    handleMoveTo = async (item?: AbstractProjectItem, folder?: Folder) => {
+    handleMoveTo = async (item?: IProjectFileOrFolder, folder?: IProjectFolder) => {
         if (this.props.noActions) return;
         this.setState({ moving: undefined });
         if (!item) return;

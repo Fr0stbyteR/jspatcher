@@ -1,19 +1,19 @@
 import * as React from "react";
 import { Modal, Button, InputOnChangeData, Form, Input } from "semantic-ui-react";
-import Folder from "../../core/file/Folder";
+import { IProjectFolder } from "../../core/file/AbstractProjectFolder";
 import I18n from "../../i18n/I18n";
 
 interface P {
     lang: string;
     open: boolean;
     folderName?: string;
-    folder: Folder;
+    folder: IProjectFolder;
     onClose: () => any;
-    onConfirm: (parent: Folder, folderName: string) => any;
+    onConfirm: (parent: IProjectFolder, folderName: string) => any;
 }
 
 interface S {
-    folder: Folder;
+    folder: IProjectFolder;
     folderName: string;
     folderNameError: boolean;
 }

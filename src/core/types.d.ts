@@ -11,7 +11,6 @@ import TempPatcherFile from "./patcher/TempPatcherFile";
 import TempAudioFile from "./audio/TempAudioFile";
 import TempTextFile from "./text/TempTextFile";
 import TempData from "./file/TempData";
-import ImageFile from "./image/ImageFile";
 import PersistentProjectFile from "./file/PersistentProjectFile";
 
 declare global {
@@ -58,7 +57,7 @@ export type FileExtension = PatcherFileExtension | AudioFileExtension | TextFile
 
 export type TempItemType = "patcher" | "audio" | "text" | "unknown";
 
-export type SharedItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile | PersistentProjectFile : T extends "audio" ? TempAudioFile | PersistentProjectFile : T extends "text" ? TempTextFile | PersistentProjectFile : T extends "image" ? ImageFile : TempData;
+export type SharedItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile | PersistentProjectFile : T extends "audio" ? TempAudioFile | PersistentProjectFile : T extends "text" ? TempTextFile | PersistentProjectFile : T extends "image" ? PersistentProjectFile : TempData;
 
 export type TempItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile : T extends "audio" ? TempAudioFile : T extends "text" ? TempTextFile : TempData;
 

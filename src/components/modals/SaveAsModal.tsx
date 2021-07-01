@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Modal, Button, InputOnChangeData, Form, Input } from "semantic-ui-react";
 import Env from "../../core/Env";
-import Folder from "../../core/file/Folder";
-import AbstractProjectItem from "../../core/file/AbstractProjectItem";
+import { IProjectFolder } from "../../core/file/AbstractProjectFolder";
+import { IProjectItem } from "../../core/file/AbstractProjectItem";
 import I18n from "../../i18n/I18n";
 import FileManagerUI from "../leftmenu/FileMgrUI";
 import "./SaveAsModal.scss";
@@ -12,13 +12,13 @@ interface P {
     lang: string;
     open: boolean;
     fileName: string;
-    folder: Folder;
+    folder: IProjectFolder;
     onClose: () => any;
-    onConfirm: (folder: Folder, fileName: string) => any;
+    onConfirm: (folder: IProjectFolder, fileName: string) => any;
 }
 
 interface S {
-    folder: Folder;
+    folder: IProjectFolder;
     fileName: string;
     fileNameError: boolean;
 }
@@ -32,8 +32,8 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
     get strings() {
         return I18n[this.props.lang].SaveAsModal;
     }
-    handleSelection = (selection: AbstractProjectItem[]) => {
-        if (selection[0].type === "folder") this.setState({ folder: selection[0] as Folder });
+    handleSelection = (selection: IProjectItem[]) => {
+        if (selection[0].type === "folder") this.setState({ folder: selection[0] as IProjectFolder });
     };
     handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
         this.setState({ fileName: value, fileNameError: !!this.state.folder.findItem(value) });

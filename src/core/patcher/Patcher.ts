@@ -1,8 +1,6 @@
 import { max2js, js2max } from "../../utils/utils";
 import Line from "./Line";
 import Box from "./Box";
-import { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps } from "../types";
-
 import { toFaustDspCode } from "../objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "../objects/SubPatcher";
 import FileInstance from "../file/FileInstance";
@@ -13,6 +11,7 @@ import type Project from "../Project";
 import type { IProject } from "../Project";
 import type TempPatcherFile from "./TempPatcherFile";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
+import type { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps } from "../types";
 
 export default class Patcher extends FileInstance<PatcherEventMap, PersistentProjectFile | TempPatcherFile> {
     static props: TPropsMeta<TPublicPatcherProps> = {

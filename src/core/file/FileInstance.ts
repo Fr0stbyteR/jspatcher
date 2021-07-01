@@ -33,8 +33,6 @@ export interface IFileInstance<EventMap extends Record<string, any> & Partial<Fi
     destroy(): Promise<void>;
 }
 
-export type AnyFileInstance = IFileInstance<Record<string, any>>;
-
 export default abstract class FileInstance<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}, File extends IProjectFile = IProjectFile> extends TypedEventEmitter<EventMap & FileInstanceEventMap> implements IFileInstance<EventMap, File> {
     private readonly _env: IJSPatcherEnv;
     get env() {

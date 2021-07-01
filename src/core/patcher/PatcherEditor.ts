@@ -131,7 +131,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         await box.postInit();
         return box;
     }
-    async createBoxFromFile(file: PersistentProjectFile | TempPatcherFile, boxIn: Omit<TBox, "text">) {
+    async createBoxFromFile(file: PersistentProjectFile, boxIn: Omit<TBox, "text">) {
         const path = file.projectPath;
         const type = file.type;
         const ext = file.fileExtension;

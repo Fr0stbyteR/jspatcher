@@ -1,13 +1,13 @@
 import FileInstance from "../file/FileInstance";
-import ImageFile from "./ImageFile";
 import ImageEditor from "./ImageEditor";
+import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 
 export interface PatcherImageEventMap {}
 
-export default class PatcherImage extends FileInstance<PatcherImageEventMap, ImageFile> {
-    static async fromProjectItem(fileIn: ImageFile, envIn: IJSPatcherEnv, projectIn: IProject) {
+export default class PatcherImage extends FileInstance<PatcherImageEventMap, PersistentProjectFile> {
+    static async fromProjectItem(fileIn: PersistentProjectFile, envIn: IJSPatcherEnv, projectIn: IProject) {
         return new this(envIn, projectIn, fileIn).init(fileIn.data);
     }
     objectURL: string;

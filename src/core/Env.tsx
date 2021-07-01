@@ -9,7 +9,7 @@ import { EnvOptions, TErrorLevel, TPackage, TPatcherLog } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
 import Importer from "./objects/importer/Importer";
 import { GlobalPackageManager } from "./PkgMgr";
-import PersistentProjectItemManager from "./file/PersistentProjectItemManager";
+import PersistentProjectItemManager, { IPersistentProjectItemManager } from "./file/PersistentProjectItemManager";
 import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
@@ -25,6 +25,7 @@ import EditorContainer from "./EditorContainer";
 import AudioWorkletRegister from "./worklets/AudioWorkletRegister";
 import GuidoWorker from "./workers/GuidoWorker";
 import type { IFileInstance } from "./file/FileInstance";
+import type { IProjectItemManager } from "./file/AbstractProjectItemManager";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -45,6 +46,8 @@ export interface IJSPatcherEnv extends TypedEventEmitter<EnvEventMap> {
     readonly thread: "main" | "AudioWorklet";
     /** Show as status what task is proceeding */
     taskMgr: TaskManager;
+    fileMgr: IPersistentProjectItemManager;
+    tempMgr: IProjectItemManager;
     activeInstance: IFileInstance;
     activeEditor: IFileEditor;
     /** Generate a global unique ID */
@@ -73,8 +76,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly language = /* navigator.language === "zh-CN" ? "zh-CN" : */"en";
     readonly supportAudioWorklet = !!window.AudioWorklet;
     readonly taskMgr = new TaskManager();
-    readonly fileMgr = new PersistentProjectItemManager(this);
-    readonly tempMgr = new TemporaryProjectItemManager(this);
+    readonly fileMgr: PersistentProjectItemManager = new PersistentProjectItemManager(this, this.fileMgrWorker);
+    readonly tempMgr: TemporaryProjectItemManager = new TemporaryProjectItemManager(this);
     readonly editorContainer = new EditorContainer(this);
     readonly log: TPatcherLog[] = [];
     readonly AudioWorkletRegister = AudioWorkletRegister;
