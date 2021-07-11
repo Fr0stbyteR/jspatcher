@@ -240,7 +240,7 @@ export default class ProjectItemUI extends React.PureComponent<P, S> {
                 this.props.onMoveTo();
                 const patcherDiv = findFromAscendants(target as HTMLElement, e => e.classList.contains("patcher-container"));
                 if (patcherDiv) {
-                    const editorId = +patcherDiv.getAttribute("data-id");
+                    const editorId = patcherDiv.getAttribute("data-id");
                     const editor = this.props.env.editorContainer.findEditorFromId(editorId);
                     if (editor instanceof PatcherEditor) {
                         if (editor.state.locked) return;

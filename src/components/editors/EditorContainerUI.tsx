@@ -8,7 +8,7 @@ import AudioEditor from "../../core/audio/AudioEditor";
 import AudioEditorUI from "./audio/AudioEditorUI";
 import ImageEditorUI from "./ImageEditorUI";
 import "./EditorContainerUI.scss";
-import { AnyFileEditor } from "../../core/file/FileEditor";
+import { IFileEditor } from "../../core/file/FileEditor";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 import TextEditor from "../../core/text/TextEditor";
 import ImageEditor from "../../core/image/ImageEditor";
@@ -29,10 +29,10 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
         mode: this.props.editorContainer.mode,
         activeEditor: this.props.editorContainer.activeEditor
     };
-    handleCloseTab = async (editor: AnyFileEditor) => {
+    handleCloseTab = async (editor: IFileEditor) => {
         await editor.destroy();
     };
-    handleActiveTab = async (editor: AnyFileEditor) => {
+    handleActiveTab = async (editor: IFileEditor) => {
         this.setState({ activeEditor: editor });
         editor.setActive();
     };

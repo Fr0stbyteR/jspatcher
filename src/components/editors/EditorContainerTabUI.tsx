@@ -1,17 +1,17 @@
 import * as React from "react";
 import { Icon } from "semantic-ui-react";
-import Env from "../../core/Env";
-import { AnyFileEditor } from "../../core/file/FileEditor";
-import Folder from "../../core/file/Folder";
 import SaveAsModal from "../modals/SaveAsModal";
 import TabCloseModal from "../modals/TabCloseModal";
+import type Env from "../../core/Env";
+import type { IProjectFolder } from "../../core/file/AbstractProjectFolder";
+import type { IFileEditor } from "../../core/file/FileEditor";
 
 interface P {
     env: Env;
-    editor: AnyFileEditor;
+    editor: IFileEditor;
     active: boolean;
-    onActive: (editor: AnyFileEditor) => any;
-    onClose: (editor: AnyFileEditor) => any;
+    onActive: (editor: IFileEditor) => any;
+    onClose: (editor: IFileEditor) => any;
     lang: string;
 }
 
@@ -53,7 +53,7 @@ export class EditorContainerTabUI extends React.PureComponent<P, S> {
         }
     };
     handleSaveAsModalClose = () => this.setState({ saveAsModalOpen: false });
-    handleSaveAsModalConfirm = async (folder: Folder, name: string) => {
+    handleSaveAsModalConfirm = async (folder: IProjectFolder, name: string) => {
         this.setState({ saveAsModalOpen: false });
         await this.props.editor.saveAs(folder, name);
         this.props.onClose(this.props.editor);

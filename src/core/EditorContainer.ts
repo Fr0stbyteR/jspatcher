@@ -1,16 +1,16 @@
 import TypedEventEmitter from "../utils/TypedEventEmitter";
 import Env, { EnvEventMap } from "./Env";
-import { AnyFileEditor } from "./file/FileEditor";
+import { IFileEditor } from "./file/FileEditor";
 
 export type TSplitMode = "none" | "row" | "column";
 
 export type TSplitDirection = "left" | "right" | "top" | "bottom";
 
 export interface EditorContainerState {
-    editors: AnyFileEditor[];
+    editors: IFileEditor[];
     children: EditorContainer[];
     mode: TSplitMode;
-    activeEditor: AnyFileEditor;
+    activeEditor: IFileEditor;
 }
 
 export interface EditorContainerEventMap {
@@ -21,8 +21,8 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
     readonly _env: Env;
     readonly id = performance.now();
     readonly parent: EditorContainer;
-    activeEditor: AnyFileEditor;
-    editors: AnyFileEditor[] = [];
+    activeEditor: IFileEditor;
+    editors: IFileEditor[] = [];
     mode: TSplitMode = "none";
     children: EditorContainer[] = [];
     setActive() {
@@ -36,13 +36,13 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
     }
     getDescendantInstances() {
         if (this.editors) return this.editors.slice();
-        const editors: AnyFileEditor[] = [];
+        const editors: IFileEditor[] = [];
         for (const container of this.children) {
             editors.push(...container.getDescendantInstances());
         }
         return editors;
     }
-    constructor(env: Env, parent: EditorContainer = null, mode: TSplitMode = "none", editors: AnyFileEditor[] = []) {
+    constructor(env: Env, parent: EditorContainer = null, mode: TSplitMode = "none", editors: IFileEditor[] = []) {
         super();
         this._env = env;
         this.mode = mode;
@@ -53,7 +53,7 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
         this._env.on("activeEditor", this.handleActiveEditor);
         this._env.on("openEditor", this.handleOpenEditor);
     }
-    findEditorFromId(id: number) {
+    findEditorFromId(id: string) {
         return this.getDescendantInstances().find(i => i.editorId === id);
     }
     handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
