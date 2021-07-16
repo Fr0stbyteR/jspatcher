@@ -3,6 +3,7 @@ import AbstractProjectItemManager from "./AbstractProjectItemManager";
 import type { IProjectFileOrFolder } from "./AbstractProjectItem";
 
 export default class TemporaryProjectItemManager extends AbstractProjectItemManager {
+    root: TemporaryProjectFolder;
     async empty() {
         return true;
     }

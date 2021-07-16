@@ -164,20 +164,20 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.emit("create", { boxes: {}, lines: { [line.id]: line } });
         return line;
     }
-    deleteLine(lineID: string) {
-        this.deselect(lineID);
-        const line = this.instance.deleteLine(lineID);
+    deleteLine(lineId: string) {
+        this.deselect(lineId);
+        const line = this.instance.deleteLine(lineId);
         if (!line) return null;
         this.emit("delete", { boxes: {}, lines: { [line.id]: line } });
         return line;
     }
-    changeLineSrc(lineID: string, srcID: string, srcOutlet: number) {
-        const e = this.instance.changeLineSrc(lineID, srcID, srcOutlet);
+    changeLineSrc(lineId: string, srcID: string, srcOutlet: number) {
+        const e = this.instance.changeLineSrc(lineId, srcID, srcOutlet);
         this.emit("changeLineSrc", e);
         return e.line;
     }
-    changeLineDest(lineID: string, destID: string, destOutlet: number) {
-        const e = this.instance.changeLineDest(lineID, destID, destOutlet);
+    changeLineDest(lineId: string, destID: string, destOutlet: number) {
+        const e = this.instance.changeLineDest(lineId, destID, destOutlet);
         this.emit("changeLineDest", e);
         return e.line;
     }
@@ -306,8 +306,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             $postInit.push(box.postInit());
         });
         await Promise.all($postInit);
-        for (const lineID in clipboard.lines) {
-            const line = clipboard.lines[lineID];
+        for (const lineId in clipboard.lines) {
+            const line = clipboard.lines[lineId];
             line.id = "line-" + ++this.props.lineIndexCount;
             line.src[0] = idMap[line.src[0]];
             line.dest[0] = idMap[line.dest[0]];
@@ -337,8 +337,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         await Promise.all($init);
         await Promise.all($postInit);
-        for (const lineID in objects.lines) {
-            const lineIn = objects.lines[lineID];
+        for (const lineId in objects.lines) {
+            const lineIn = objects.lines[lineId];
             if (!this.instance.canCreateLine(lineIn)) continue;
             const line = new Line(this.instance, lineIn);
             this.lines[line.id] = line;

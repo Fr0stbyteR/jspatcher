@@ -110,7 +110,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
             return (this.env as Env).wavEncoderWorker.encode(audioData, options);
         });
     }
-    private encodeFfmpegWorker(wav: Uint8Array, inputFileName: string, outputFileName: string, ...args: string[]) {
+    private encodeFFmpegWorker(wav: Uint8Array, inputFileName: string, outputFileName: string, ...args: string[]) {
         return this.env.taskMgr.newTask(this, `Encoding audio ${outputFileName}...`, async (onUpdate) => {
             const { ffmpegWorker } = this.env as Env;
             const onExit = (code: number) => onUpdate(`ffmpeg process exited with code ${code}`);
@@ -134,13 +134,13 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
         const wav = new Uint8Array(await this.serialize());
         const inputFileName = "in.wav";
         const outputFileName = "out.mp3";
-        return this.encodeFfmpegWorker(wav, inputFileName, outputFileName, "-codec:a", "libmp3lame", "-b:a", `${bitrate}k`);
+        return this.encodeFFmpegWorker(wav, inputFileName, outputFileName, "-codec:a", "libmp3lame", "-b:a", `${bitrate}k`);
     }
     async encodeAac(bitrate: number) {
         const wav = new Uint8Array(await this.serialize());
         const inputFileName = "in.wav";
         const outputFileName = "out.m4a";
-        return this.encodeFfmpegWorker(wav, inputFileName, outputFileName, "-codec:a", "aac", "-b:a", `${bitrate}k`);
+        return this.encodeFFmpegWorker(wav, inputFileName, outputFileName, "-codec:a", "aac", "-b:a", `${bitrate}k`);
     }
     async clone() {
         const audio = new PatcherAudio(this.env, this.project, this.file);

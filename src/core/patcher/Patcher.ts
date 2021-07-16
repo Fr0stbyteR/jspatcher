@@ -11,10 +11,10 @@ import type Project from "../Project";
 import type { IProject } from "../Project";
 import type TempPatcherFile from "./TempPatcherFile";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
-import type { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TMeta, TPropsMeta, TPublicPatcherProps } from "../types";
+import type { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, IPropsMeta, TPublicPatcherProps, IJSPatcherObjectMeta } from "../types";
 
 export default class Patcher extends FileInstance<PatcherEventMap, PersistentProjectFile | TempPatcherFile> {
-    static props: TPropsMeta<TPublicPatcherProps> = {
+    static props: IPropsMeta<TPublicPatcherProps> = {
         dependencies: {
             type: "object",
             description: "Patcher dependencies",
@@ -327,16 +327,16 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         if (this.getLinesByBox(lineIn.src[0], lineIn.dest[0], lineIn.src[1], lineIn.dest[1]).length > 0) return false;
         return true;
     }
-    deleteLine(lineID: string) {
-        const line = this.lines[lineID];
+    deleteLine(lineId: string) {
+        const line = this.lines[lineId];
         if (!line) return null;
         line.destroy();
         if (!this._state.preventEmitChanged) this.emit("passiveDeleteLine", line);
         this.emitGraphChanged();
         return line;
     }
-    changeLineSrc(lineID: string, srcID: string, srcOutlet: number) {
-        const line = this.lines[lineID];
+    changeLineSrc(lineId: string, srcID: string, srcOutlet: number) {
+        const line = this.lines[lineId];
         // if (this.instance.getLinesByBox(srcID, line.destID, srcOutlet, line.destInlet).length > 0) return line;
         const oldSrc: [string, number] = [line.srcID, line.srcOutlet];
         const src: [string, number] = [srcID, srcOutlet];
@@ -344,8 +344,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.emitGraphChanged();
         return { line, oldSrc, src };
     }
-    changeLineDest(lineID: string, destID: string, destOutlet: number) {
-        const line = this.lines[lineID];
+    changeLineDest(lineId: string, destID: string, destOutlet: number) {
+        const line = this.lines[lineId];
         // if (this.getLinesByBox(line.srcID, destID, line.destInlet, destOutlet).length > 0) return line;
         const oldDest: [string, number] = [line.destID, line.destInlet];
         const dest: [string, number] = [destID, destOutlet];
@@ -439,7 +439,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             if (!oMap[i]) delete this._outletAudioConnections[i];
         }
     }
-    get meta(): TMeta {
+    get meta(): IJSPatcherObjectMeta {
         const { metaFromPatcher } = this;
         return {
             package: this.props.package || "",
@@ -451,9 +451,9 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             ...metaFromPatcher
         };
     }
-    get metaFromPatcher(): { inlets: TMeta["inlets"]; outlets: TMeta["outlets"]; args: TMeta["args"]; props: TMeta["props"] } {
-        const inlets: TMeta["inlets"] = [];
-        const outlets: TMeta["outlets"] = [];
+    get metaFromPatcher(): { inlets: IJSPatcherObjectMeta["inlets"]; outlets: IJSPatcherObjectMeta["outlets"]; args: IJSPatcherObjectMeta["args"]; props: IJSPatcherObjectMeta["props"] } {
+        const inlets: IJSPatcherObjectMeta["inlets"] = [];
+        const outlets: IJSPatcherObjectMeta["outlets"] = [];
         for (const boxID in this.boxes) {
             const box = this.boxes[boxID];
             if (box.object instanceof In) {

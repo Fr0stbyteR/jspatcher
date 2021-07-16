@@ -1,7 +1,7 @@
 import * as React from "react";
 import { toMIDI, iNormExp } from "../../../utils/math";
 import { BaseObject } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { BaseUI, BaseUIState, CanvasUI } from "../BaseUI";
 
 export const getDisplayValue = (value: number, type: string, unitstyle: string, units: string, enums: string[]) => {
@@ -170,7 +170,7 @@ export class LiveObject<D = {}, S extends Partial<LiveObjectState> & Record<stri
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Ab**ton Live User ?";
-    static props: TMeta["props"] = { /*
+    static props: IJSPatcherObjectMeta["props"] = { /*
         value: {
             type: "number",
             default: 0,

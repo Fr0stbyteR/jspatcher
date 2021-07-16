@@ -1,11 +1,11 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
-import { TMeta, TBPF } from "../../types";
+import { IJSPatcherObjectMeta, TBPF } from "../../types";
 
 export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Bang, TBPF], [null, StereoPannerNode], [number]> {
     static description = "WebAudio StereoPannerNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, bang to output StereoPannerNode instance"
@@ -14,14 +14,14 @@ export default class StereoPanner extends JSPAudioNode<StereoPannerNode, {}, [Ba
         type: "signal",
         description: "pan: bpf or node connection"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection"
     }, {
         type: "object",
         description: "Instance: StereoPannerNode"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         description: "Initial pan"

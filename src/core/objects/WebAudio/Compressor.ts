@@ -1,12 +1,12 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
-import { TMeta, TBPF } from "../../types";
+import { IJSPatcherObjectMeta, TBPF } from "../../types";
 
 type I = [Bang, TBPF, TBPF, TBPF, TBPF, TBPF];
 export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {}, I, [null, DynamicsCompressorNode], [], DynamicsCompressorOptions> {
     static description = "WebAudio DynamicsCompressorNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection (1 channel), bang to output DynamicsCompressorNode instance"
@@ -31,14 +31,14 @@ export default class Compressor extends JSPAudioNode<DynamicsCompressorNode, {},
         type: "signal",
         description: "release: bpf or node connection"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection (1 channel)"
     }, {
         type: "object",
         description: "Instance: DynamicsCompressorNode"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         threshold: {
             type: "number",
             default: -24,

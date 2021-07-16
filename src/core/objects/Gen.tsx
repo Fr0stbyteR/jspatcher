@@ -1,6 +1,6 @@
 import comment from "./UI/comment";
 import { LibOp, EmptyObject, InvalidObject, Const, In, Out, Rec, Send, Receive, Param, Expr, LibOpProps, FaustOpState, Gen } from "./Faust";
-import { TPackage, TPropsMeta } from "../types";
+import { TPackage, IPropsMeta } from "../types";
 import "./Gen.scss";
 
 export class GenLibOp<P extends Record<string, any> = {}> extends LibOp<P> {
@@ -28,7 +28,7 @@ interface CycleProps {
 }
 export class Cycle extends GenLibOp<CycleProps> {
     static description = "An interpolating oscillator that reads repeatedly through one cycle of a sine wave. By default it is driven by a frequency input, but if the @index attribute is set to 'phase', it can be driven by a phase input instead.";
-    static props: TPropsMeta<LibOpProps & CycleProps> = {
+    static props: IPropsMeta<LibOpProps & CycleProps> = {
         ...LibOp.props,
         index: {
             type: "enum",
@@ -48,7 +48,7 @@ interface InterpProps {
 }
 export class Interp extends GenLibOp<InterpProps> {
     static description = "An interpolating oscillator that reads repeatedly through one cycle of a sine wave. By default it is driven by a frequency input, but if the @index attribute is set to 'phase', it can be driven by a phase input instead.";
-    static props: TPropsMeta<LibOpProps & InterpProps> = {
+    static props: IPropsMeta<LibOpProps & InterpProps> = {
         ...LibOp.props,
         mode: {
             type: "enum",

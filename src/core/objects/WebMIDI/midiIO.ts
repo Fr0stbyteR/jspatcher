@@ -1,22 +1,22 @@
 import { DefaultWebMIDIObject } from "./Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { Bang, isBang } from "../Base";
 
 export class midiIn extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIAccess; search: string; port: WebMidi.MIDIInput }, [string | Bang], [Uint8Array, WebMidi.MIDIInput], [string]> {
     static description = "Get MIDI input from device name or ID";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "string to fetch device name or ID, bang to output MIDI port instance"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "MIDI message: Uint8Array"
     }, {
         type: "object",
         description: "Instance: MIDIPort"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "Device name or ID"
@@ -98,16 +98,16 @@ export class midiIn extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIA
 
 export class midiOut extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIAccess; search: string; port: WebMidi.MIDIOutput }, [Uint8Array | number[] | string | Bang], [WebMidi.MIDIOutput], [string]> {
     static description = "Get MIDI output from device name or ID";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Uint8Array or number[] to output MIDI message, string to fetch device name or ID, bang to output MIDI port instance"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Instance: MIDIPort"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "Device name or ID"

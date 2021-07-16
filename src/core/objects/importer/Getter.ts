@@ -1,26 +1,26 @@
 import { Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; result: any };
 type I<Static extends boolean> = Static extends true ? [Bang] : [any | Bang];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
 export class Getter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [], { sync: boolean }, { loading: boolean }> {
     static description = "Auto-imported getter";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Instance to read"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Value"
     }, {
         type: "anything",
         description: "Instance bypass"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         sync: {
             type: "boolean",
             default: false,

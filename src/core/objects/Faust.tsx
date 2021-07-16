@@ -2,7 +2,7 @@ import { DefaultObject } from "./Base";
 import Patcher from "../patcher/Patcher";
 import Box from "../patcher/Box";
 import Line from "../patcher/Line";
-import { TPackage, TMeta, TPropsMeta, RawPatcher } from "../types";
+import { TPackage, IJSPatcherObjectMeta, IPropsMeta, RawPatcher } from "../types";
 import { SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
 import { CodeUI } from "./UI/code";
@@ -35,18 +35,18 @@ export class FaustOp<D extends Record<string, any> = {}, S extends Partial<Faust
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Faust Operator";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         type: "number",
         isHot: true,
         varLength: true,
         description: "_"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         varLength: true,
         description: "_"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         varLength: true,
@@ -195,7 +195,7 @@ export class EmptyObject extends FaustOp<{}, { editing: boolean }> {
 }
 export class InvalidObject extends FaustOp {
     static description = "No-op";
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         bgColor: {
             type: "color",
             default: "rgb(128, 64, 64)",
@@ -216,7 +216,7 @@ interface GenParamProps {
 }
 export class Param extends FaustOp<{}, {}, [string, number, number, number, number], GenParamProps> {
     static description = "DSP Parameter";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "Parameter name / descriptor"
@@ -237,7 +237,7 @@ export class Param extends FaustOp<{}, {}, [string, number, number, number, numb
         optional: false,
         description: "Parameter step"
     }];
-    static props: TPropsMeta<GenParamProps> = {
+    static props: IPropsMeta<GenParamProps> = {
         default: {
             type: "number",
             default: 0,
@@ -287,7 +287,7 @@ class Nentry extends Param {
     }
 }
 class Checkbox extends Param {
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "Parameter name / descriptor"
@@ -308,7 +308,7 @@ class Button extends Checkbox {
 }
 class HBargraph extends FaustOp<{}, {}, [string, number, number]> {
     static description = "Bargraph monitor";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "UI name / descriptor"
@@ -368,7 +368,7 @@ class VBargraph extends HBargraph {
 }
 class HGroup extends FaustOp<{}, {}, [string]> {
     static description = "UI group";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "UI name / descriptor"
@@ -410,7 +410,7 @@ class TGroup extends HGroup {
 
 class Import extends FaustOp {
     static description = "Import a library";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: true,
         default: "stdfaust.lib",
@@ -426,7 +426,7 @@ class Import extends FaustOp {
 }
 export class In extends FaustOp {
     static description = "Signal Input";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: false,
         description: "Signal index (0-based)"
@@ -456,7 +456,7 @@ export class In extends FaustOp {
 }
 export class Out extends FaustOp {
     static description = "Signal Output";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: false,
         description: "Signal index (0-based)"
@@ -514,7 +514,7 @@ type TSendMap = Record<string, Send[]>;
 const sendMap: TSendMap = {};
 export class Send extends FaustOp<{}, { sendMap: TSendMap }> {
     static description = "Send Signal to receive";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "Send / Receive ID"
@@ -556,7 +556,7 @@ export class Send extends FaustOp<{}, { sendMap: TSendMap }> {
 }
 export class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
     static description = "Receive Signal from send";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "Send / Receive ID"
@@ -618,7 +618,7 @@ class Merge extends FaustOp {
 }
 export class Rec extends FaustOp {
     static description = "Recursion with 1-sample delay";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 1,
@@ -663,7 +663,7 @@ class Mem extends FaustOp {
 }
 export class Const extends FaustOp {
     static description = "Output a constant";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 0,
@@ -679,12 +679,12 @@ export class Const extends FaustOp {
 }
 class Group extends FaustOp<{}, {}, (number | "_")[], { ins: number }> {
     static description = "Group inlets like (x, x, x)";
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         varLength: true,
         description: "(...)"
     }];
-    static props: TPropsMeta<{ ins: number }> = {
+    static props: IPropsMeta<{ ins: number }> = {
         ins: {
             type: "number",
             default: 1,
@@ -708,7 +708,7 @@ class Group extends FaustOp<{}, {}, (number | "_")[], { ins: number }> {
 }
 class Waveform extends FaustOp {
     static description = "Waveform";
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         description: "a constant and indicating the size (as a number of samples) of the period"
     }, {
@@ -738,19 +738,19 @@ class SR extends FaustOp {
     }
 }
 class Iterator extends FaustOp {
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "number",
         description: "Result of the function to iterate"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         description: "Result of all iterations"
     }, {
         type: "number",
         description: "An incremental value on each iteration"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 0,
@@ -871,7 +871,7 @@ class Par extends Iterator {
 }
 export class Effect extends Iterator {
     static description = "Effect processor";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "number",
         description: "Effect output 1"
@@ -880,7 +880,7 @@ export class Effect extends Iterator {
         type: "number",
         description: "Effect output 2"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         description: "Effect input 1"
     }, {
@@ -1024,18 +1024,18 @@ export interface LibOpProps {
     outs: number;
 }
 export class LibOp<P extends Record<string, any> = {}> extends FaustOp<{}, {}, (number | "_")[], Partial<LibOpProps> & P> {
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "number",
         varLength: true,
         description: "Function input"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         varLength: true,
         description: "Function output"
     }];
-    static props: TPropsMeta<LibOpProps> = {
+    static props: IPropsMeta<LibOpProps> = {
         ins: {
             type: "number",
             default: undefined,
@@ -1090,18 +1090,18 @@ interface SubPatcherState extends FaustOpState {
 }
 export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [string], {}, { patcher: Patcher }> {
     static description = "Sub-patcher represents a sub-process";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "number",
         varLength: true,
         description: "Sub-patcher input"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         varLength: true,
         description: "Sub-patcher output"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: true,
         default: "",
@@ -1263,18 +1263,18 @@ export class Gen extends SubPatcher {
 }
 class Code extends FaustOp<{ value: string }, FaustOpState, [], LibOpProps, { language: string; value: string }, { editorBlur: string; editorLoaded: never }> {
     static description = "Code block a sub-process";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "number",
         varLength: true,
         description: "Sub-process input"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         varLength: true,
         description: "Sub-process output"
     }];
-    static props: TPropsMeta<LibOpProps> = {
+    static props: IPropsMeta<LibOpProps> = {
         ins: {
             type: "number",
             default: undefined,
@@ -1452,7 +1452,7 @@ for (const className in opMap.mathOps) {
     const Op = class extends FaustOp {
         static get _name() { return className; }
         static description = desc;
-        static outlets: TMeta["outlets"] = [{
+        static outlets: IJSPatcherObjectMeta["outlets"] = [{
             type: "number",
             description: outletDesc
         }];

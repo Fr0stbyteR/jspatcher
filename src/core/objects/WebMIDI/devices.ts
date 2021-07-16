@@ -1,23 +1,23 @@
 import { StrictDropdownItemProps } from "semantic-ui-react";
 import { Bang, isBang } from "../Base";
 import { DefaultWebMIDIObject } from "./Base";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 
 export class midiDevices extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIAccess }, [Bang | WebMidi.MIDIPortType[]], [WebMidi.MIDIPort[], StrictDropdownItemProps[]], WebMidi.MIDIPortType[], { autoUpdate: boolean }> {
     static description = "Enumerate MIDI devices";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "object",
         description: "Bang to enumerate, MIDIPortType[] to use a filter"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Array of MIDIPort"
     }, {
         type: "object",
         description: "Array of DropdownItemProps"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "enum",
         varLength: true,
         optional: true,
@@ -25,7 +25,7 @@ export class midiDevices extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.
         default: ["input", "output"],
         description: "Output only kinds of devices"
     }];
-    static props: TPropsMeta<{ autoUpdate: boolean }> = {
+    static props: IPropsMeta<{ autoUpdate: boolean }> = {
         autoUpdate: {
             type: "boolean",
             default: true,

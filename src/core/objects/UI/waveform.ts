@@ -1,7 +1,7 @@
 import * as Color from "color-js";
 import UIObject from "./Base";
 import PatcherAudio from "../../audio/PatcherAudio";
-import { TAudioUnit, TMeta, TPropsMeta } from "../../types";
+import { TAudioUnit, IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { CanvasUI, CanvasUIState } from "../BaseUI";
 import { getRuler } from "../../../components/editors/audio/AudioEditorMainUI";
 import { dbtoa } from "../../../utils/math";
@@ -265,12 +265,12 @@ export class WaveformUI extends CanvasUI<waveform, {}, WaveformUIState> {
 }
 export default class waveform extends UIObject<{}, WaveformState, [PatcherAudio], [], [], WaveformProps, WaveformUIState> {
     static description = "Buffer waveform view";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: false,
         type: "object",
         description: "Patcher Audio object (from buffer~)"
     }];
-    static props: TPropsMeta<WaveformProps> = {
+    static props: IPropsMeta<WaveformProps> = {
         interleaved: {
             type: "boolean",
             default: false,

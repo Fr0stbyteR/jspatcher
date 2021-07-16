@@ -1,7 +1,7 @@
 import { StaticMethod } from "./StaticMethod";
 import { DefaultObject, Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 
 class NewUI extends ImportedObjectUI<New> {
     prependColor = "rgb(78, 201, 176)";
@@ -19,7 +19,7 @@ interface S {
 
 export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [any, ...any[]], any[], P, { loading: boolean }> {
     static description = "Call function as a constructor";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Constructor argument, output instance constructed"
@@ -29,7 +29,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         varLength: true,
         description: "Constructor argument"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Instance constructed"
     }, {
@@ -37,7 +37,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         varLength: true,
         description: "Argument after constructor called"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         varLength: false,
@@ -48,7 +48,7 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
         varLength: true,
         description: "Set arguments while loaded"
     }];
-    static props: TPropsMeta<P> = {
+    static props: IPropsMeta<P> = {
         args: {
             type: "number",
             default: 0,

@@ -1,12 +1,12 @@
-import Patcher from "./Patcher";
-import Line from "./Line";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import { isTRect, parseToPrimitive, isTPresentationRect, isRectMovable, isRectResizable } from "../../utils/utils";
-import { BoxEventMap, TBox, TMaxBox, Data, Args, Props, Inputs, TRect, TPresentationRect } from "../types";
-import { AnyObject } from "../objects/Base";
+import type Patcher from "./Patcher";
+import type Line from "./Line";
+import type { BoxEventMap, TBox, TMaxBox, Data, Args, Props, TRect, TPresentationRect } from "../types";
+import type { IJSPatcherObject } from "../objects/AbstractObject";
 
-export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmitter<BoxEventMap> {
-    id: string;
+export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends TypedEventEmitter<BoxEventMap> {
+    readonly id: string;
     text = "";
     inlets = 0;
     outlets = 0;
@@ -20,7 +20,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
     _editing: boolean;
     private _parsed: { class: string; args: Args<T>; props: Props<T> };
     private _object: T;
-    private _Object: typeof AnyObject;
+    private _Object: typeof IJSPatcherObject;
     private readonly _patcher: Patcher;
     private readonly _inletLines: Set<Line>[];
     private readonly _outletLines: Set<Line>[];
@@ -67,14 +67,8 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
     }
     /**
      * Main function when receive data from a inlet (base 0)
-     *
-     * @template I
-     * @param {Inputs<T>[I]} data
-     * @param {I} inlet
-     * @returns
-     * @memberof Box
      */
-    fn<I extends keyof Pick<Inputs<T>, number>>(inlet: I, data: Inputs<T>[I]) {
+    fn(inlet: number, data: any) {
         this._object.fn(inlet, data);
         return this;
     }
@@ -82,7 +76,7 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         return this._Object.UI;
     }
     get defaultSize() {
-        return this.UI.defaultSize;
+        return this.UI?.defaultSize || [90, 20];
     }
     get meta() {
         return this._object.meta;
@@ -178,24 +172,24 @@ export default class Box<T extends AnyObject = AnyObject> extends TypedEventEmit
         return lines;
     }
     // called when inlet or outlet are connected or disconnected
-    connectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
-        if (this._object) this._object.connectedOutlet(outlet, destBox, destInlet, lineID);
+    connectedOutlet(outlet: number, destBoxId: string, destInlet: number, lineId: string) {
+        if (this._object) this._object.connectedOutlet(outlet, destBoxId, destInlet, lineId);
         this.emit("connectedPort", { isSrc: true, i: outlet });
         return this;
     }
-    connectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
-        if (this._object) this._object.connectedInlet(inlet, srcBox, srcOutlet, lineID);
+    connectedInlet(inlet: number, srcBoxId: string, srcOutlet: number, lineId: string) {
+        if (this._object) this._object.connectedInlet(inlet, srcBoxId, srcOutlet, lineId);
         this.emit("connectedPort", { isSrc: false, i: inlet });
         return this;
     }
-    disconnectedOutlet(outlet: number, destBox: Box, destInlet: number, lineID: string) {
-        if (this._object) this._object.disconnectedOutlet(outlet, destBox, destInlet, lineID);
+    disconnectedOutlet(outlet: number, destBoxId: string, destInlet: number, lineId: string) {
+        if (this._object) this._object.disconnectedOutlet(outlet, destBoxId, destInlet, lineId);
         const last = this._patcher.getLinesBySrcID(this.id)[outlet].length === 1;
         this.emit("disconnectedPort", { isSrc: true, i: outlet, last });
         return this;
     }
-    disconnectedInlet(inlet: number, srcBox: Box, srcOutlet: number, lineID: string) {
-        if (this._object) this._object.disconnectedInlet(inlet, srcBox, srcOutlet, lineID);
+    disconnectedInlet(inlet: number, srcBoxId: string, srcOutlet: number, lineId: string) {
+        if (this._object) this._object.disconnectedInlet(inlet, srcBoxId, srcOutlet, lineId);
         const last = this._patcher.getLinesByDestID(this.id)[inlet].length === 1;
         this.emit("disconnectedPort", { isSrc: false, i: inlet, last });
         return this;

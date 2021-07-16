@@ -1,11 +1,11 @@
-import { WamNode } from "wamsdk";
+import type { WamNode } from "wamsdk";
 import Patcher from "./Patcher";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
-import { LineEventMap, TLine, TLineType, TMetaType } from "../types";
-import { AnyObject } from "../objects/Base";
+import type { LineEventMap, TLine, TLineType, TMetaType } from "../types";
+import type { IJSPatcherObject } from "../objects/AbstractObject";
 
 export default class Line extends TypedEventEmitter<LineEventMap> {
-    static isConnectableByAudio(from: AnyObject, outlet: number, to: AnyObject, inlet: number) {
+    static isConnectableByAudio(from: IJSPatcherObject, outlet: number, to: IJSPatcherObject, inlet: number) {
         const fromConnection = from.outletAudioConnections[outlet];
         const toConnection = to.inletAudioConnections[inlet];
         if (!fromConnection) return false;
@@ -113,8 +113,8 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
                 }
             }
         }
-        srcBox.disconnectedOutlet(this.srcOutlet, destBox, this.destInlet, this.id);
-        destBox.disconnectedInlet(this.destInlet, srcBox, this.srcOutlet, this.id);
+        srcBox.disconnectedOutlet(this.srcOutlet, destBox.id, this.destInlet, this.id);
+        destBox.disconnectedInlet(this.destInlet, srcBox.id, this.srcOutlet, this.id);
         return this;
     }
     enable(bool?: boolean): Line {
@@ -137,8 +137,8 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
                 }
             }
         }
-        srcBox.connectedOutlet(this.srcOutlet, destBox, this.destInlet, this.id);
-        destBox.connectedInlet(this.destInlet, srcBox, this.srcOutlet, this.id);
+        srcBox.connectedOutlet(this.srcOutlet, destBox.id, this.destInlet, this.id);
+        destBox.connectedInlet(this.destInlet, srcBox.id, this.srcOutlet, this.id);
         this.disabled = false;
         return this;
     }

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
 import AudioEditor from "../../core/audio/AudioEditor";
 import Env, { EnvEventMap } from "../../core/Env";
-import { AnyFileEditor } from "../../core/file/FileEditor";
+import { IFileEditor } from "../../core/file/FileEditor";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 import AudioEditMenu from "./AudioEditMenu";
 import PatcherEditMenu from "./PatcherEditMenu";
@@ -13,7 +13,7 @@ interface P {
 }
 
 interface S {
-    editor: AnyFileEditor;
+    editor: IFileEditor;
     locked: boolean;
 }
 

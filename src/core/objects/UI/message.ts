@@ -1,7 +1,7 @@
 import * as Util from "util";
 import UIObject from "./Base";
 import ButtonUI from "./ButtonUI";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { Bang } from "../Base";
 import { BaseUI } from "../BaseUI";
 
@@ -14,7 +14,7 @@ class MessageUI extends ButtonUI<message> {
 }
 export default class message extends UIObject<{ text: string }, { buffer: any; editing: boolean }, [any, any], [any], [any], {}, { text: string }> {
     static description = "Message";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Trigger output the message"
@@ -23,7 +23,7 @@ export default class message extends UIObject<{ text: string }, { buffer: any; e
         type: "anything",
         description: "Set the message"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Message to send"
     }];

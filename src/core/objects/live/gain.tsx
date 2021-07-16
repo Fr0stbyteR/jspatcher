@@ -1,7 +1,7 @@
 import { LiveSliderProps } from "./slider";
 import { LiveMeterProps } from "./meter";
 import { LiveUIState, LiveUI, LiveObject, LiveObjectState } from "./Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { atodb, dbtoa, normExp } from "../../../utils/math";
 import { Bang, isBang } from "../Base";
 import TemporalAnalyserNode from "../../worklets/TemporalAnalyser";
@@ -283,12 +283,12 @@ export interface LiveGainState extends LiveObjectState {
 
 export class LiveGain extends LiveObject<{}, LiveGainState, [number | Bang, number], [undefined, number, string, number[]], [number], LiveGainProps, LiveGainUIState> {
     static description = "Gain slider and monitor";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Signal in, number to set gain"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Audio out"
     }, {
@@ -301,13 +301,13 @@ export class LiveGain extends LiveObject<{}, LiveGainState, [number | Bang, numb
         type: "object",
         description: "Amplitude value: number[]"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 0,
         description: "Initial value"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         shortName: {
             type: "string",
             default: "live.gain",

@@ -3,7 +3,7 @@ import { Popup } from "semantic-ui-react";
 import PatcherEditor, { PatcherEditorEventMap } from "../../../core/patcher/PatcherEditor";
 import Box from "../../../core/patcher/Box";
 import { TResizeHandlerType, BoxEventMap, TRect, TPresentationRect } from "../../../core/types";
-import { BaseUI } from "../../../core/objects/BaseUI";
+import { AbstractUI } from "../../../core/objects/BaseUI";
 import { isRectMovable, isRectResizable } from "../../../utils/utils";
 import "./BoxUI.scss";
 
@@ -19,7 +19,7 @@ interface S {
     presentationRect: TPresentationRect;
     presentation: boolean;
     inPresentationMode: boolean;
-    uiComponent: typeof BaseUI;
+    uiComponent: typeof AbstractUI;
     editing: boolean;
     highlight: boolean;
     error: boolean;

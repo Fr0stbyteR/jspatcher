@@ -1,12 +1,12 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
 import { isNumberArray } from "../../../utils/utils";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 type I = [Bang, number[], number[]];
 export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward: number[]; feedback: number[] }, I, [null, IIRFilterNode], [number[], number[]], {}> {
     static description = "WebAudio IIRFilterNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection (1 channel), bang to output IIRFilterNode instance"
@@ -19,14 +19,14 @@ export default class IIRFilter extends JSPAudioNode<IIRFilterNode, { feedforward
         type: "object",
         description: "feedback, A sequence of coefficients, change will reconstruct the node: number[]"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection (1 channel)"
     }, {
         type: "object",
         description: "Instance: IIRFilterNode"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "object",
         optional: false,
         default: [],

@@ -1,6 +1,6 @@
 import { Bang, isBang } from "../Base";
 import { ImportedObjectUI, ImportedObject } from "./ImportedObject";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export class PropertyUI extends ImportedObjectUI<Property> {
     prependColor = "rgb(220, 200, 170)";
@@ -11,7 +11,7 @@ type O<Static extends boolean> = Static extends true ? [any] : [any, any];
 type A<Static extends boolean> = Static extends true ? [any] : [];
 export class Property<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, A<Static>, {}, {}> {
     static description = "Auto-imported property";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Constructor argument, output instance constructed"
@@ -21,7 +21,7 @@ export class Property<Static extends boolean = false> extends ImportedObject<any
         varLength: true,
         description: "Constructor argument"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Value"
     }, {

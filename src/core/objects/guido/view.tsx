@@ -1,4 +1,4 @@
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import UIObject from "../UI/Base";
 
@@ -18,16 +18,16 @@ interface Props extends GuidoLayoutSettings {
 export default class GuidoView extends UIObject<{}, State, [string | $ARHandler], [string[]], [], Props, DOMUIState> {
     static package = "Guido";
     static description = "Get Guido Graphic Representation from code";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "string",
         description: "Guido AR / GMN code to compile and display"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "SVG codes"
     }];
-    static props: TPropsMeta<Props> = {
+    static props: IPropsMeta<Props> = {
         bgColor: {
             type: "color",
             default: "white",

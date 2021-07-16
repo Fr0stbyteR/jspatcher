@@ -1,5 +1,5 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { Bang } from "../Base";
 
 interface LiveButtonProps extends LiveUIProps {
@@ -72,25 +72,25 @@ class LiveButtonUI extends LiveUI<LiveButton, LiveButtonUIState> {
 
 export class LiveButton extends LiveObject<{}, {}, [any], [Bang, number], [number], LiveButtonProps, LiveButtonUIState> {
     static description = "Button";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "number",
         description: "Output a bang following transition prop."
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "bang",
         description: "Bang"
     }, {
         type: "number",
         description: "Current value"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 0,
         description: "Initial value"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         shortName: {
             type: "string",
             default: "live.button",

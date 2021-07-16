@@ -4,7 +4,7 @@ import { Checkbox, DropdownProps, DropdownItemProps, Dropdown, Table, Menu, Labe
 import Box from "../../core/patcher/Box";
 import Patcher from "../../core/patcher/Patcher";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
-import { TArgsMeta, TPropsMeta, TMeta, TPublicPatcherProps, TRect, TPresentationRect, TPatcherProps } from "../../core/types";
+import { IArgsMeta, IPropsMeta, IJSPatcherObjectMeta, TPublicPatcherProps, TRect, TPresentationRect, TPatcherProps } from "../../core/types";
 
 class InspectorBooleanItem extends React.PureComponent<{ itemKey: number | string; value: boolean; onChange: (value: boolean, key: number | string) => any }> {
     handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.itemKey);
@@ -130,7 +130,7 @@ class InspectorObjectItem extends React.PureComponent<{ itemKey: number | string
 class InpectorAnythingItem extends InspectorObjectItem {}
 type InspectorItemProps<MetaType extends "arg" | "prop"> = {
     patcher: Patcher;
-    meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number];
+    meta: MetaType extends "arg" ? IArgsMeta[number] : IPropsMeta[number];
     value: any;
     itemKey: MetaType extends "arg" ? number : string;
     onChange: (value: any, key: MetaType extends "arg" ? number : string) => any;
@@ -139,10 +139,10 @@ class InspectorItem<MetaType extends "arg" | "prop"> extends React.PureComponent
     state = { showColorPicker: false, inputEditing: false };
     refInput = React.createRef<HTMLInputElement>();
     key: MetaType extends "arg" ? number : string;
-    metaItem(meta: MetaType extends "arg" ? TArgsMeta[number] : TPropsMeta[number], value: any) {
+    metaItem(meta: MetaType extends "arg" ? IArgsMeta[number] : IPropsMeta[number], value: any) {
         const { type } = meta;
         const itemProps = { itemKey: this.key, value, onChange: this.props.onChange };
-        if ((meta as TArgsMeta[number]).varLength) {
+        if ((meta as IArgsMeta[number]).varLength) {
             if (type === "enum") return <InspectorEnumItem {...itemProps} multiple options={meta.enums.map((text, i) => ({ text, key: i, value: text }))} />;
             return <InpectorAnythingItem {...itemProps} />;
         }
@@ -188,7 +188,7 @@ class InspectorPropItem extends InspectorItem<"prop"> {
     }
 }
 type InspectorState = {
-    meta: TMeta;
+    meta: IJSPatcherObjectMeta;
     args: any[];
     props: Record<string, any>;
     patcherProps: TPublicPatcherProps;

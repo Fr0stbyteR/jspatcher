@@ -1,16 +1,16 @@
 import { Setter } from "./Setter";
 import { ImportedObjectUI } from "./ImportedObject";
 import { StaticPropertyUI } from "./StaticProperty";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export class StaticSetter extends Setter<true> {
     static description = "Auto-imported static setter";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: false,
         type: "anything",
         description: "Set the value"
     }];
-    static outlets: TMeta["outlets"] = [];
+    static outlets: IJSPatcherObjectMeta["outlets"] = [];
     initialInlets = 1;
     initialOutlets = 0;
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {

@@ -1,17 +1,17 @@
 import { DefaultObject, isBang } from "./Base";
-import { TMeta } from "../types";
+import { IJSPatcherObjectMeta } from "../types";
 
 abstract class JSOp<S = {}, I extends any[] = any[], O extends any[] = [any], A extends any[] = any[], P = {}> extends DefaultObject<{}, S, I, O, A, P> {
     static package = "Op";
 }
 class JSUnaryOp extends JSOp<{ result: any }, [any]> {
     static description = "Unary Operation";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "First element"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Result"
     }];
@@ -42,7 +42,7 @@ class JSUnaryOp extends JSOp<{ result: any }, [any]> {
 
 class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any]> {
     static description = "Binary Operation";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "First element"
@@ -51,11 +51,11 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any
         type: "anything",
         description: "Second element"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Result"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         default: 0,
@@ -95,7 +95,7 @@ class JSBinaryOp extends JSOp<{ arg: any; result: any }, [any, any], [any], [any
 
 class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [any], [any, any]> {
     static description = "Ternary Operation";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Test"
@@ -108,11 +108,11 @@ class JSTernaryOp extends JSOp<{ args: any[]; result: any }, [any, any, any], [a
         type: "anything",
         description: "False output"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Result"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         default: true,

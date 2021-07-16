@@ -2,7 +2,7 @@ import * as React from "react";
 import UIObject from "./Base";
 import { Bang, isBang } from "../Base";
 import { BaseUI, BaseUIState } from "../BaseUI";
-import { TBPF, TStrictBPF, TBPFPoint, TMeta, TPropsMeta } from "../../types";
+import { TBPF, TStrictBPF, TBPFPoint, IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { decodeBPF } from "../../../utils/utils";
 import { normExp, round, scaleClip } from "../../../utils/math";
 
@@ -308,7 +308,7 @@ export class BPFUI<T extends bpf> extends BaseUI<T, {}, BPFUIState> {
 }
 export default class bpf extends UIObject<BPFData, {}, [TBPF | Bang], [TStrictBPF], [], BPFUIProps, BPFUIProps & BPFData> {
     static description = "Break-point function editor";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         type: "anything",
         isHot: true,
         description: "Display & output a bpf, bang to output"
@@ -317,11 +317,11 @@ export default class bpf extends UIObject<BPFData, {}, [TBPF | Bang], [TStrictBP
         isHot: true,
         description: "Display without output"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "BPF triggered"
     }];
-    static props: TPropsMeta<BPFUIProps> = {
+    static props: IPropsMeta<BPFUIProps> = {
         domain: {
             type: "number",
             default: 1000,

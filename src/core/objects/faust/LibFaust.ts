@@ -1,16 +1,16 @@
 import { Faust } from "faust2webaudio";
 import { Bang, DefaultObject, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export default class libFaust extends DefaultObject<{}, {}, [Bang], [Faust]> {
     static package = "Faust";
     static description = "Get LibFaust instance";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Output LibFaust instance"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "LibFaust instance"
     }];

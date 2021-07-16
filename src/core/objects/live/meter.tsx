@@ -1,6 +1,6 @@
 import { LiveObject, LiveUI } from "./Base";
 import { BaseObject } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { atodb } from "../../../utils/math";
 import { CanvasUI, CanvasUIState } from "../BaseUI";
 import TemporalAnalyserNode from "../../worklets/TemporalAnalyser";
@@ -150,16 +150,16 @@ export class LiveMeter extends BaseObject<{}, LiveMeterState, [], [number[]], []
     static author = LiveObject.author;
     static version = LiveObject.version;
     static description = "Meter";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Signal to measure"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Amplitude value: number[]"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         min: {
             type: "number",
             default: -70,

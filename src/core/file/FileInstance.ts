@@ -2,7 +2,7 @@ import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { IObservee } from "../types";
-import type { AnyFileEditor } from "./FileEditor";
+import type { IFileEditor } from "./FileEditor";
 import type { IProjectFile } from "./AbstractProjectFile";
 import TemporaryProjectFile from "./TemporaryProjectFile";
 
@@ -28,7 +28,7 @@ export interface IFileInstance<EventMap extends Record<string, any> & Partial<Fi
     readonly _instanceId: string;
     init(): Promise<this>;
     setActive(): void;
-    getEditor(): Promise<AnyFileEditor>;
+    getEditor(): Promise<IFileEditor>;
     serialize(): Promise<ArrayBuffer>;
     destroy(): Promise<void>;
 }
@@ -78,7 +78,7 @@ export default abstract class FileInstance<EventMap extends Record<string, any> 
     get isActive(): boolean {
         return this.env.activeInstance === this;
     }
-    async getEditor(): Promise<AnyFileEditor> {
+    async getEditor(): Promise<IFileEditor> {
         throw new Error("Not implemented.");
     }
     protected readonly _observers = new Set<any>();

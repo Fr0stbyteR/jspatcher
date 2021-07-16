@@ -1,14 +1,14 @@
 import { Bang, DefaultObject, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export default class audioContext extends DefaultObject<{}, {}, [Bang], [AudioContext]> {
     static description = "Get currrent patcher's audio context";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Output current audio context"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Current audio context"
     }];

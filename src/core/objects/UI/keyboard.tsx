@@ -1,7 +1,7 @@
 import * as React from "react";
 import UIObject from "./Base";
 import { BaseUI, BaseUIState } from "../BaseUI";
-import { TMIDIEvent, TMeta, TPropsMeta } from "../../types";
+import { TMIDIEvent, IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { isMIDIEvent } from "../../../utils/utils";
 
 type KeyMap = number[];
@@ -178,7 +178,7 @@ export class KeyboardUI<T extends keyboard> extends BaseUI<T, {}, KeyboardUIStat
 }
 export default class keyboard extends UIObject<{}, KeyboardState, [TMIDIEvent | "flush", TMIDIEvent], [Uint8Array & { length: 3 }], [], KeyboardUIProps, KeyboardUIProps & KeyboardState> {
     static description = "Keyboard";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         type: "anything",
         isHot: true,
         description: 'Display & output same MIDI event, "flush" to flush active notes'
@@ -187,11 +187,11 @@ export default class keyboard extends UIObject<{}, KeyboardState, [TMIDIEvent | 
         isHot: true,
         description: "Display without output"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "MIDI event triggered"
     }];
-    static props: TPropsMeta<KeyboardUIProps> = {
+    static props: IPropsMeta<KeyboardUIProps> = {
         from: {
             type: "number",
             default: 24,

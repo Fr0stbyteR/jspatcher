@@ -1,5 +1,5 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
-import { TMeta, TRect } from "../../types";
+import { IJSPatcherObjectMeta, TRect } from "../../types";
 import { Bang, isBang } from "../Base";
 
 interface LiveTabProps extends LiveUIProps {
@@ -172,7 +172,7 @@ class LiveTabUI extends LiveUI<LiveTab, LiveTabUIState> {
 
 export class LiveTab extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTabProps, LiveTabUIState> {
     static description = "Buttons as tab";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "number",
         description: "Set and output the value"
@@ -181,20 +181,20 @@ export class LiveTab extends LiveObject<{}, {}, [number | Bang, number], [number
         type: "number",
         description: "Set without output the value"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         description: "Number value"
     }, {
         type: "string",
         description: "Display value"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 0,
         description: "Initial value"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         bgColor: {
             type: "color",
             default: "rgba(165, 165, 165, 1)",

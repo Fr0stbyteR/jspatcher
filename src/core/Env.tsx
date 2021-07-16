@@ -14,7 +14,7 @@ import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
-import FfmpegWorker from "./workers/FfmpegWorker";
+import FFmpegWorker from "./workers/FFmpegWorker";
 import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
@@ -25,7 +25,6 @@ import EditorContainer from "./EditorContainer";
 import AudioWorkletRegister from "./worklets/AudioWorkletRegister";
 import GuidoWorker from "./workers/GuidoWorker";
 import type { IFileInstance } from "./file/FileInstance";
-import type { IProjectItemManager } from "./file/AbstractProjectItemManager";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -47,7 +46,7 @@ export interface IJSPatcherEnv extends TypedEventEmitter<EnvEventMap> {
     /** Show as status what task is proceeding */
     taskMgr: TaskManager;
     fileMgr: IPersistentProjectItemManager;
-    tempMgr: IProjectItemManager;
+    tempMgr: TemporaryProjectItemManager;
     activeInstance: IFileInstance;
     activeEditor: IFileEditor;
     /** Generate a global unique ID */
@@ -67,7 +66,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly fileMgrWorker = new FileMgrWorker();
     readonly waveformWorker = new WaveformWorker();
     readonly wavEncoderWorker = new WavEncoderWorker();
-    readonly ffmpegWorker = new FfmpegWorker();
+    readonly ffmpegWorker = new FFmpegWorker();
     readonly libMusicXMLWorker = new LibMusicXMLWorker();
     readonly guidoWorker = new GuidoWorker();
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });

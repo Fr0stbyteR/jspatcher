@@ -1,9 +1,9 @@
 import JSPAudioNode from "./AudioNode";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...null[]], null[]> {
     static description = "WebAudio AudioNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, AudioNode instance to set the node."
@@ -12,7 +12,7 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
         type: "signal",
         description: "Node connection"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection"
     }];

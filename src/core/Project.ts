@@ -2,7 +2,7 @@ import TypedEventEmitter from "../utils/TypedEventEmitter";
 import Env from "./Env";
 import FileInstance from "./file/FileInstance";
 import { PackageManager } from "./PkgMgr";
-import { TDependencies, TPropsMeta } from "./types";
+import { TDependencies, IPropsMeta } from "./types";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -23,7 +23,7 @@ export interface IProject extends TypedEventEmitter<ProjectEventMap> {
 }
 
 export default class Project extends TypedEventEmitter<ProjectEventMap> {
-    static props: TPropsMeta<ProjectProps> = {
+    static props: IPropsMeta<ProjectProps> = {
         dependencies: {
             type: "object",
             description: "Project dependencies [id, url]",

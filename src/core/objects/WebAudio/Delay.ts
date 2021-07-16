@@ -1,11 +1,11 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
-import { TMeta, TBPF } from "../../types";
+import { IJSPatcherObjectMeta, TBPF } from "../../types";
 
 export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, TBPF], [null, DelayNode], [number]> {
     static description = "WebAudio DelayNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, bang to output DelayNode instance"
@@ -14,14 +14,14 @@ export default class Delay extends JSPAudioNode<DelayNode, {}, [Bang, TBPF], [nu
         type: "signal",
         description: "delayTime: bpf or node connection"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection"
     }, {
         type: "object",
         description: "Instance: DelayNode"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         description: "Initial delayTime"

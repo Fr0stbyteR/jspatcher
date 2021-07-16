@@ -1,22 +1,22 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export default class Splitter extends JSPAudioNode<ChannelSplitterNode, {}, [Bang], (null | ChannelSplitterNode)[], [number]> {
     static description = "WebAudio ChannelSplitterNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, bang to output ChannelSplitterNode instance, number to change outputs"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection (1 channel)"
     }, {
         type: "object",
         description: "Instance: ChannelSplitterNode"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         description: "Number of Outputs"

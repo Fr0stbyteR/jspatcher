@@ -2,7 +2,7 @@ import JSPAudioNode from "./AudioNode";
 import TransmitterNode from "../../worklets/Transmitter";
 import PatcherAudio from "../../audio/PatcherAudio";
 import OperableAudioBuffer from "../../audio/OperableAudioBuffer";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 
 type I = [boolean | number | PatcherAudio, boolean, number, number];
 interface P {
@@ -27,7 +27,7 @@ interface S {
 
 export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number], [], P> {
     static description = "Record audio into an audio buffer";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "signal to record, boolean/number to start/stop, AudioBuffer/PatcherAudio to set buffer"
@@ -44,11 +44,11 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
         type: "number",
         description: "loopEnd (seconds)"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         description: "sample index writted"
     }];
-    static props: TPropsMeta<P> = {
+    static props: IPropsMeta<P> = {
         mono: {
             type: "boolean",
             default: false,

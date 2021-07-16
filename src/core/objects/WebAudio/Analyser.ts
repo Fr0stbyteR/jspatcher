@@ -1,6 +1,6 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 type TOptions = {
     fftSize: 32 | 64 | 128 | 256 | 512 | 1024 | 2048 | 4096 | 8192 | 16384 | 32768;
@@ -12,7 +12,7 @@ type I = [Bang, Float32Array, Uint8Array, Float32Array, Uint8Array, Partial<TOpt
 type O = [null, Float32Array, Uint8Array, Float32Array, Uint8Array, AnalyserNode];
 export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], TOptions> {
     static description = "WebAudio AnalyserNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, bang to output AnalyserNode instance"
@@ -37,7 +37,7 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
         type: "object",
         description: "Options: { fftSize, minDecibels, maxDecibels, smoothingTimeConstant }"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection"
     }, {
@@ -56,7 +56,7 @@ export default class Analyser extends JSPAudioNode<AnalyserNode, {}, I, O, [], T
         type: "object",
         description: "Instance: AnalyserNode"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         fftSize: {
             type: "number",
             default: 2048,

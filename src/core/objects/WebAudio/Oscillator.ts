@@ -1,11 +1,11 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
-import { TMeta, TBPF } from "../../types";
+import { IJSPatcherObjectMeta, TBPF } from "../../types";
 
 export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, TBPF, TBPF, OscillatorType], [null, OscillatorNode], [number, OscillatorType], { detune: number }> {
     static description = "WebAudio OscillatorNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Output OscillatorNode instance"
@@ -23,14 +23,14 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
         enums: ["sine", "square", "sawtooth", "triangle", "custom"],
         description: 'type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection (1 channel)"
     }, {
         type: "object",
         description: "Instance: OscillatorNode"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 440,
@@ -42,7 +42,7 @@ export default class Oscillator extends JSPAudioNode<OscillatorNode, {}, [Bang, 
         default: "sine",
         description: 'Initial type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         detune: {
             type: "number",
             default: 0,

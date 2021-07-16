@@ -1,6 +1,6 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
-import { TMeta, TBPF, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, TBPF, IPropsMeta } from "../../types";
 import { decodeLine } from "../../../utils/utils";
 import PatcherAudio from "../../audio/PatcherAudio";
 
@@ -13,7 +13,7 @@ interface S {
 
 export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, S, I, [null, Bang, AudioBufferSourceNode], [], P> {
     static description = "WebAudio AudioBufferSourceNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Bang to output AudioBufferSourceNode instance, boolean/number to start/stop, AudioBuffer/PatcherAudio to set buffer"
@@ -38,14 +38,14 @@ export default class BufferSrc extends JSPAudioNode<AudioBufferSourceNode, S, I,
         type: "number",
         description: "loopEnd (seconds)"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection"
     }, {
         type: "object",
         description: "Instance: AudioBufferSourceNode"
     }];
-    static props: TPropsMeta<P> = {
+    static props: IPropsMeta<P> = {
         detune: {
             type: "number",
             default: 0,

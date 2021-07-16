@@ -3,7 +3,7 @@ import { StrictDropdownProps, DropdownProps, Dropdown, StrictDropdownItemProps }
 import UIObject from "./Base";
 import { BaseUI, BaseUIState } from "../BaseUI";
 import { isNumberArray } from "../../../utils/utils";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 
 /* eslint-disable object-property-newline */
 type MenuProps = Required<Pick<
@@ -79,7 +79,7 @@ class MenuUI extends BaseUI<menu, {}, MenuUIState> {
 }
 export default class menu extends UIObject<{}, {}, [number | string | number[] | string[], StrictDropdownItemProps[]], [any], [], MenuProps, MenuUIState, { query: number | string | number[] | string[] }> {
     static description = "Dropdown Menu";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "number or display text or array to select item(s)"
@@ -88,18 +88,18 @@ export default class menu extends UIObject<{}, {}, [number | string | number[] |
         type: "object",
         description: "Array of DropdownItemProps: { key, icon, text, value, ... }"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Selected value"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         varLength: true,
         optional: true,
         default: undefined,
         description: "Initial value(s)"
     }];
-    static props: TPropsMeta<MenuProps> = {
+    static props: IPropsMeta<MenuProps> = {
         clearable: {
             type: "boolean",
             default: false,

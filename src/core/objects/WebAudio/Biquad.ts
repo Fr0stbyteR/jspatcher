@@ -1,12 +1,12 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
-import { TMeta, TBPF } from "../../types";
+import { IJSPatcherObjectMeta, TBPF } from "../../types";
 
 type I = [Bang, TBPF, TBPF, TBPF, TBPF, BiquadFilterType];
 export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null, BiquadFilterNode], [], BiquadFilterOptions> {
     static description = "WebAudio BiquadFilterNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection (1 channel), bang to output BiquadFilterNode instance"
@@ -32,14 +32,14 @@ export default class Biquad extends JSPAudioNode<BiquadFilterNode, {}, I, [null,
         enums: ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"],
         description: 'type: "lowpass" | "highpass" | "bandpass" | "lowshelf" | "highshelf" | "peaking" | "notch" | "allpass"'
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection (1 channel)"
     }, {
         type: "object",
         description: "Instance: BiquadFilterNode"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         frequency: {
             type: "number",
             default: 350,

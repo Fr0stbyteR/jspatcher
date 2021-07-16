@@ -1,10 +1,9 @@
 import Env from "./Env";
 import Importer from "./objects/importer/Importer";
 import { TFlatPackage, TPackage, PatcherMode } from "./types";
-import { AnyObject } from "./objects/Base";
 import { ImporterDirSelfObject } from "../utils/symbols";
 import TypedEventEmitter from "../utils/TypedEventEmitter";
-import { isJSPatcherObjectConstructor } from "./objects/AbstractObject";
+import { isJSPatcherObjectConstructor, IJSPatcherObject } from "./objects/AbstractObject";
 
 export interface PackageManagerEventMap {
     "libChanged": PatcherMode;
@@ -104,11 +103,11 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
                 const full = path.join(".");
                 if (full in libOut) this.emit("pathDuplicated", full);
                 // this.patcher.newLog("warn", "Patcher", "Path duplicated, cannot register " + full, this);
-                else libOut[full] = el as typeof AnyObject;
+                else libOut[full] = el as typeof IJSPatcherObject;
                 const p = path.slice();
                 while (p.length && path.length - p.length < rootifyDepth) {
                     const k = p.join(".");
-                    if (!(k in libOut)) libOut[k] = el as typeof AnyObject;
+                    if (!(k in libOut)) libOut[k] = el as typeof IJSPatcherObject;
                     p.shift();
                 }
             }
@@ -134,14 +133,14 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
     }
     searchInLib(query: string, limit = Infinity, staticMethodOnly = false, lib: TFlatPackage) {
         const keys = Object.keys(lib).sort();
-        const items: { key: string; object: typeof AnyObject }[] = [];
+        const items: { key: string; object: typeof IJSPatcherObject }[] = [];
         for (let i = 0; i < keys.length; i++) {
             if (items.length >= limit) break;
             const key = keys[i];
             if (key.startsWith(query)) {
                 const o = lib[key];
                 if (staticMethodOnly) {
-                    if (o[ImporterDirSelfObject as unknown as keyof typeof AnyObject]) {
+                    if (o[ImporterDirSelfObject as unknown as keyof typeof IJSPatcherObject]) {
                         items.push({ key, object: o });
                     }
                 } else {
@@ -151,8 +150,8 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
         }
         return items;
     }
-    searchInPkg(query: string, limit = Infinity, staticMethodOnly = false, pkg: TPackage, path: string[] = []): { path: string[]; object?: typeof AnyObject | TPackage }[] {
-        const outs: { path: string[]; object?: typeof AnyObject | TPackage }[] = [];
+    searchInPkg(query: string, limit = Infinity, staticMethodOnly = false, pkg: TPackage, path: string[] = []): { path: string[]; object?: typeof IJSPatcherObject | TPackage }[] {
+        const outs: { path: string[]; object?: typeof IJSPatcherObject | TPackage }[] = [];
         for (const key in pkg) {
             if (outs.length >= limit) break;
             const o = pkg[key];
@@ -167,7 +166,7 @@ export class PackageManager extends TypedEventEmitter<PackageManagerEventMap> {
     }
     getFromPath(pathIn: (string | symbol)[], pkg: TPackage) {
         const path = pathIn.slice();
-        let o: TPackage | typeof AnyObject = pkg;
+        let o: TPackage | typeof IJSPatcherObject = pkg;
         while (path.length) {
             const key = path.shift() as any;
             o = (o as TPackage)[key];

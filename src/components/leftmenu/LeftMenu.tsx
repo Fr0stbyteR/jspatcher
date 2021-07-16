@@ -5,7 +5,7 @@ import Objects from "./Objects";
 import Packages from "./Packages";
 import VERSION from "../../scripts/version";
 import Env, { EnvEventMap } from "../../core/Env";
-import { AnyFileEditor } from "../../core/file/FileEditor";
+import { IFileEditor } from "../../core/file/FileEditor";
 import FileManagerUI from "./FileMgrUI";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 
@@ -37,7 +37,7 @@ interface P {
 
 interface S {
     active: TPanels;
-    editor: AnyFileEditor;
+    editor: IFileEditor;
 }
 
 export default class LeftMenu extends React.PureComponent<P, S> {

@@ -1,7 +1,7 @@
 import type * as ffmpeg from "ffmpeg.js";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 
-export interface FfmpegWorkerEventMap {
+export interface FFmpegWorkerEventMap {
     "ready": never;
     "run": never;
     "stdout": string;
@@ -12,7 +12,7 @@ export interface FfmpegWorkerEventMap {
     "abort": string;
 }
 
-export default class FfmpegWorker extends TypedEventEmitter<FfmpegWorkerEventMap> {
+export default class FFmpegWorker extends TypedEventEmitter<FFmpegWorkerEventMap> {
     worker: ffmpeg.Worker;
     isBusy = true;
     isReady = false;
@@ -27,7 +27,7 @@ export default class FfmpegWorker extends TypedEventEmitter<FfmpegWorkerEventMap
                 };
                 this.on("ready", handleReady);
                 this.worker = new Worker("./deps/ffmpeg.js-audio/ffmpeg-worker-audio.js");
-                this.worker.onmessage = opts => this.emit(opts.data.type as keyof FfmpegWorkerEventMap, opts.data.data);
+                this.worker.onmessage = opts => this.emit(opts.data.type as keyof FFmpegWorkerEventMap, opts.data.data);
             } catch (e) {
                 reject(e);
             }

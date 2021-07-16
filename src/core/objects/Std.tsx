@@ -1,7 +1,7 @@
 import * as Util from "util";
 import Patcher from "../patcher/Patcher";
 import { DefaultObject, Bang, isBang } from "./Base";
-import { TMeta } from "../types";
+import { IJSPatcherObjectMeta } from "../types";
 import AbstractProjectItem, { ProjectFileEventMap } from "../file/AbstractProjectItem";
 import TemporaryProjectFile from "../file/TemporaryProjectFile";
 
@@ -14,12 +14,12 @@ class StdObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[]
 
 class print extends StdObject<{}, { title: string }, [any], [], [string]> {
     static description = "Print to console";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Anything to stringify"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: true,
         default: "Print",
@@ -48,12 +48,12 @@ class print extends StdObject<{}, { title: string }, [any], [], [string]> {
 }
 class bang extends StdObject<{}, {}, [any], [Bang], []> {
     static description = "Transform to bang";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Anything to transform to a bang"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "bang",
         description: "Bang when inlet"
     }];
@@ -70,12 +70,12 @@ class bang extends StdObject<{}, {}, [any], [Bang], []> {
 }
 class loadbang extends StdObject<{}, {}, [], [Bang], []> {
     static description = "Bang when patcher is loaded";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Anything to transform to a bang"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "bang",
         description: "Bang when inlet"
     }];
@@ -90,12 +90,12 @@ class loadbang extends StdObject<{}, {}, [], [Bang], []> {
 }
 class unloadbang extends StdObject<{}, {}, [], [Bang], []> {
     static description = "Bang when patcher will be unloaded";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Anything to transform to a bang"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "bang",
         description: "Bang when inlet"
     }];
@@ -110,7 +110,7 @@ class unloadbang extends StdObject<{}, {}, [], [Bang], []> {
 }
 class For extends StdObject<{}, { start: number; end: number; step: number }, [Bang, number, number, number], [Bang, number], [number, number, number?]> {
     static description = "Number iterator";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Do iterations"
@@ -127,14 +127,14 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
         type: "number",
         description: "Set the step"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "bang",
         description: "Bang when finished"
     }, {
         type: "number",
         description: "Output all iterations one by one"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: false,
         description: "The starting point"
@@ -182,7 +182,7 @@ class For extends StdObject<{}, { start: number; end: number; step: number }, [B
 }
 class ForIn extends StdObject<{}, { buffer: any }, [any, any], [Bang, string | number | symbol, any], [Record<string, any>]> {
     static description = "Object key-value iterator";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Iterate input, bang to redo"
@@ -191,7 +191,7 @@ class ForIn extends StdObject<{}, { buffer: any }, [any, any], [Bang, string | n
         type: "object",
         description: "Set the iteration object"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "bang",
         description: "Bang when finished"
     }, {
@@ -201,7 +201,7 @@ class ForIn extends StdObject<{}, { buffer: any }, [any, any], [Bang, string | n
         type: "anything",
         description: "Value"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "object",
         optional: true,
         description: "Initial object to iterate"
@@ -229,7 +229,7 @@ class ForIn extends StdObject<{}, { buffer: any }, [any, any], [Bang, string | n
 }
 class gate extends StdObject<{}, { pass: boolean }, [any, any], [any], [any]> {
     static description = "Bypass or block incoming data";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Anything to bypass"
@@ -238,11 +238,11 @@ class gate extends StdObject<{}, { pass: boolean }, [any, any], [any], [any]> {
         type: "anything",
         description: "Test, falsable to block"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Anything bypass"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         default: true,
@@ -269,7 +269,7 @@ class gate extends StdObject<{}, { pass: boolean }, [any, any], [any], [any]> {
 }
 class obj extends StdObject<{}, { obj: Record<string, any> }, [Bang, ...any], [Record<string, any>], (string | number)[]> {
     static description = "Construct an object with various properties";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "object",
         description: "Bang to output current object and initialize a new one"
@@ -279,11 +279,11 @@ class obj extends StdObject<{}, { obj: Record<string, any> }, [Bang, ...any], [R
         varLength: true,
         description: "Value to set to the property"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Created object"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         varLength: true,
@@ -312,7 +312,7 @@ class obj extends StdObject<{}, { obj: Record<string, any> }, [Bang, ...any], [R
 }
 class set extends StdObject<{}, { key: string | number; value: any }, [Record<string, any> | any[], string | number, any], [Record<string, any> | any[]], [string | number, any]> {
     static description = "Set a property of incoming object";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "object",
         description: "Object to set a property"
@@ -325,11 +325,11 @@ class set extends StdObject<{}, { key: string | number; value: any }, [Record<st
         type: "anything",
         description: "Value to set to the property"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Object bypass"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: false,
         description: "Initial key of the property"
@@ -373,7 +373,7 @@ class set extends StdObject<{}, { key: string | number; value: any }, [Record<st
 }
 class get extends StdObject<{}, { keys: (string | number)[] }, [Record<string, any> | any[], ...(string | number)[]], any[], (string | number)[]> {
     static description = "Get properties of incoming object";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "object",
         description: "Object to get a property"
@@ -383,12 +383,12 @@ class get extends StdObject<{}, { keys: (string | number)[] }, [Record<string, a
         varLength: true,
         description: "Key / name of the property"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         varLength: true,
         description: "Value got"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: false,
         varLength: true,
@@ -426,7 +426,7 @@ class get extends StdObject<{}, { keys: (string | number)[] }, [Record<string, a
 }
 class dget extends StdObject<{}, { keys: (string | number)[] }, [Record<string, any> | any[], ...(string | number)[]], any[], (string | number)[]> {
     static description = "Get a deep property of incoming object";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "object",
         description: "Object to get a property"
@@ -436,12 +436,12 @@ class dget extends StdObject<{}, { keys: (string | number)[] }, [Record<string, 
         varLength: true,
         description: "Key / name of the property (recursive)"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         varLength: true,
         description: "Value got"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: false,
         varLength: true,
@@ -482,12 +482,12 @@ class dget extends StdObject<{}, { keys: (string | number)[] }, [Record<string, 
 }
 class If extends StdObject<{}, {}, [boolean], [Bang, Bang]> {
     static description = "Output a bang on true / false";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "boolean",
         description: "True for a bang to left outlet, false for right"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "bang",
         description: "True?"
     }, {
@@ -507,7 +507,7 @@ class If extends StdObject<{}, {}, [boolean], [Bang, Bang]> {
 }
 class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> {
     static description = "Output a bang on a matched inlet";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         varLength: false,
@@ -518,7 +518,7 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         varLength: true,
         description: "Set value for match"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "bang",
         varLength: false,
         description: "Bang if match"
@@ -527,7 +527,7 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
         varLength: false,
         description: "Bypass if not matched"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: false,
         varLength: true,
@@ -571,7 +571,7 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
 }
 class v extends StdObject<{}, { key: string; value: any; sharedItem: AbstractProjectItem | TemporaryProjectFile }, [Bang | any, any, string | number], [any], [string | number, any]> {
     static description = "Store anything as named sharable variable";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Bang to output stored value, anything to set the value then output it."
@@ -584,11 +584,11 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: AbstractPro
         type: "anything",
         description: "Set variable name."
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Value"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         description: "Variable name"
@@ -679,7 +679,7 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: AbstractPro
 }
 class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, any], [(...args: any[]) => any, ...any[]], [number]> {
     static description = "Generate anonymous function, output args when called";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Output anonymous function"
@@ -688,7 +688,7 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
         type: "anything",
         description: "Result of the anonymous function"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "function",
         description: "Anonymous function"
     }, {
@@ -699,7 +699,7 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
         varLength: true,
         description: "If args=0, outlet args as array, else argument of current index"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 0,
@@ -737,7 +737,7 @@ class lambda extends StdObject<{}, { argsCount: number; result: any }, [Bang, an
 }
 class delay extends StdObject<{}, { time: number; ref: Set<number> }, [any, number], [any]> {
     static description = "Delay an input";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Input to be delayed"
@@ -746,11 +746,11 @@ class delay extends StdObject<{}, { time: number; ref: Set<number> }, [any, numb
         type: "number",
         description: "Delay time in seconds"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Delayed input"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 0,
@@ -783,7 +783,7 @@ class delay extends StdObject<{}, { time: number; ref: Set<number> }, [any, numb
 type CallState = { instance: any; inputs: any[]; result: any };
 export class call extends DefaultObject<{}, CallState, [any | Bang, ...any[]], any[], [string, ...any[]], { args: number; sync: boolean }, { loading: boolean }> {
     static description = "Call a method of current object";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Instance to read"
@@ -793,7 +793,7 @@ export class call extends DefaultObject<{}, CallState, [any | Bang, ...any[]], a
         varLength: true,
         description: "Method argument"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Method return value"
     }, {
@@ -804,7 +804,7 @@ export class call extends DefaultObject<{}, CallState, [any | Bang, ...any[]], a
         varLength: true,
         description: "Argument after method called"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "Method name"
@@ -814,7 +814,7 @@ export class call extends DefaultObject<{}, CallState, [any | Bang, ...any[]], a
         varLength: true,
         description: "Set arguments while loaded"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         args: {
             type: "number",
             default: 0,
@@ -889,12 +889,12 @@ export class call extends DefaultObject<{}, CallState, [any | Bang, ...any[]], a
 }
 class thispatcher extends StdObject<{}, {}, [Bang], [Patcher]> {
     static description = "Current patcher instance";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Bang to output patcher instance"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Patcher instance"
     }];

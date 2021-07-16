@@ -1,11 +1,11 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 type I = [Bang, Float32Array, OverSampleType];
 export default class WaveShaper extends JSPAudioNode<WaveShaperNode, {}, I, [null, WaveShaperNode], [], { oversample?: OverSampleType }> {
     static description = "WebAudio WaveShaperNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, bang to output WaveShaperNode instance"
@@ -19,14 +19,14 @@ export default class WaveShaper extends JSPAudioNode<WaveShaperNode, {}, I, [nul
         enums: ["none", "2x", "4x"],
         description: 'oversample: "none" | "2x" | "4x"'
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection"
     }, {
         type: "object",
         description: "Instance: WaveShaperNode"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         oversample: {
             type: "enum",
             enums: ["none", "2x", "4x"],

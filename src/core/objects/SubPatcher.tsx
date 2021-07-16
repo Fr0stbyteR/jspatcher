@@ -2,7 +2,7 @@ import * as React from "react";
 import { StrictModalProps, Modal } from "semantic-ui-react";
 import { DefaultObject, BaseObject } from "./Base";
 import Patcher from "../patcher/Patcher";
-import { TMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
+import { IJSPatcherObjectMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
 import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState, DefaultPopupUIProps } from "./BaseUI";
 import { ProjectFileEventMap } from "../file/AbstractProjectItem";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
@@ -15,13 +15,13 @@ import "./SubPatcher.scss";
 export class In extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
     static package = "SubPatcher";
     static description = "Patcher inlet (data)";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: false,
         default: 1,
         description: "Inlet index (1-based)"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         description: {
             type: "string",
             default: "",
@@ -34,7 +34,7 @@ export class In extends DefaultObject<{}, { index: number }, [], [any], [number]
             description: "Inlet data type"
         }
     };
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: ""
     }];
@@ -75,13 +75,13 @@ export class In extends DefaultObject<{}, { index: number }, [], [any], [number]
 export class Out extends DefaultObject<{}, { index: number }, [any], [], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
     static package = "SubPatcher";
     static description = "Patcher outlet (data)";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: false,
         default: 1,
         description: "Outlet index (1-based)"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         description: {
             type: "string",
             default: "",
@@ -94,7 +94,7 @@ export class Out extends DefaultObject<{}, { index: number }, [any], [], [number
             description: "Outlet data type"
         }
     };
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         type: "anything",
         description: "",
         isHot: true
@@ -134,20 +134,20 @@ export class Out extends DefaultObject<{}, { index: number }, [any], [], [number
 export class AudioIn extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string }> {
     static package = "SubPatcher";
     static description = "Patcher inlet (audio)";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: false,
         default: 1,
         description: "Inlet index (1-based)"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         description: {
             type: "string",
             default: "",
             description: "Description text"
         }
     };
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: ""
     }];
@@ -205,20 +205,20 @@ export class AudioIn extends DefaultObject<{}, { index: number }, [], [any], [nu
 export class AudioOut extends DefaultObject<{}, { index: number }, [any], [], [number], { description: string }> {
     static package = "SubPatcher";
     static description = "Patcher outlet (audio)";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: false,
         default: 1,
         description: "Outlet index (1-based)"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         description: {
             type: "string",
             default: "",
             description: "Description text"
         }
     };
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         type: "signal",
         description: "",
         isHot: true
@@ -362,7 +362,7 @@ interface SubPatcherState {
 export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState, any[], any[], [string], {}, SubPatcherUIState> {
     static package = "SubPatcher";
     static description = "Sub-patcher";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: true,
         default: "",
@@ -378,7 +378,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
         const handlePatcherDisconnectAudioOutlet = (port: number) => this.disconnectAudioOutlet(port);
         const handlePatcherConnectAudioInlet = (port: number) => this.connectAudioInlet(port);
         const handlePatcherConnectAudioOutlet = (port: number) => this.connectAudioOutlet(port);
-        const handlePatcherIOChanged = (meta: TMeta) => {
+        const handlePatcherIOChanged = (meta: IJSPatcherObjectMeta) => {
             this.inletAudioConnections = this.state.patcher.inletAudioConnections.slice();
             this.outletAudioConnections = this.state.patcher.outletAudioConnections.slice();
             this.inlets = meta.inlets.length;
@@ -500,7 +500,7 @@ interface FaustPatcherState extends FaustNodeState, SubPatcherState {
 export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherState, [string, number], { patcher: Patcher }> {
     static package = "SubPatcher";
     static description = "Faust Sub-patcher, compiled to AudioNode";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: true,
         default: "",

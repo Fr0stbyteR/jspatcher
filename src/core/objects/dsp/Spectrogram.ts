@@ -2,7 +2,7 @@
 import { CanvasUI } from "../BaseUI";
 import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
 import { TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
 import { Bang, isBang } from "../Base";
 import { atodb } from "../../../utils/math";
@@ -169,12 +169,12 @@ export interface Props extends Omit<SpectrogramUIState, "cursorX" | "cursorY" | 
 }
 export class Spectrogram extends BaseDSP<{}, State, [Bang], [], [], Props, SpectrogramUIState> {
     static description = "Spectroscope";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Signal"
     }];
-    static props: TPropsMeta<Props> = {
+    static props: IPropsMeta<Props> = {
         windowSize: {
             type: "number",
             default: 1024,

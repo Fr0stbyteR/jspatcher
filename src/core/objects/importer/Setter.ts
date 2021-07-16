@@ -1,14 +1,14 @@
 import { Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; input: any };
 type I<Static extends boolean> = Static extends true ? [any] : [any | Bang, any];
 type O<Static extends boolean> = Static extends true ? [] : [any];
 export class Setter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [any], {}, {}> {
     static description = "Auto-imported setter";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Instance to set property"
@@ -17,11 +17,11 @@ export class Setter<Static extends boolean = false> extends ImportedObject<any, 
         type: "anything",
         description: "Set the value"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Instance bypass"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         varLength: false,

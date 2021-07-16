@@ -1,14 +1,14 @@
 import { Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; input: any; result: any };
 type I<Static extends boolean> = Static extends true ? [any] : [any | Bang, any];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
 export class SetterGetter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [any], { sync: boolean }, { loading: boolean }> {
     static description = "Auto-imported setter / getter";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Instance to manipulate"
@@ -17,20 +17,20 @@ export class SetterGetter<Static extends boolean = false> extends ImportedObject
         type: "anything",
         description: "Set the value"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Value"
     }, {
         type: "anything",
         description: "Instance bypass"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         varLength: false,
         description: "Initial value to set"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         sync: {
             type: "boolean",
             default: false,

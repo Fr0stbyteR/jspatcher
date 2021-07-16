@@ -2,7 +2,7 @@ import * as Color from "color-js";
 import { CanvasUI } from "../BaseUI";
 import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
 import { TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
 import { Bang, isBang } from "../Base";
 
@@ -234,12 +234,12 @@ export interface Props extends Omit<OscilloscopeUIState, "$cursor" | "zoom" | "z
 }
 export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, OscilloscopeUIState> {
     static description = "Oscilloscope";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Signal"
     }];
-    static props: TPropsMeta<Props> = {
+    static props: IPropsMeta<Props> = {
         windowSize: {
             type: "number",
             default: 1024,

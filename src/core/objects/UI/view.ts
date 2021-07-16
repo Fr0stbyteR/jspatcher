@@ -1,6 +1,6 @@
 import UIObject from "./Base";
 import { DOMUI, DOMUIState } from "../BaseUI";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { isBang } from "../Base";
 
 export class ViewUI extends DOMUI<view> {
@@ -12,17 +12,17 @@ export interface ViewProps {
 }
 export default class view extends UIObject<{}, { children: ChildNode[] }, [string | Element], [], [string], ViewProps, DOMUIState> {
     static description = "View HTML Element";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "HTML string or HTMLElement object to view"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: true,
         description: "initial innerHTML"
     }];
-    static props: TPropsMeta<ViewProps> = {
+    static props: IPropsMeta<ViewProps> = {
         shadow: {
             type: "boolean",
             default: true,

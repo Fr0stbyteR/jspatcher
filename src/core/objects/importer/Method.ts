@@ -1,7 +1,7 @@
 import { Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 
 type TAnyFunction = (...args: any[]) => any;
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; inputs: any[]; result: any };
@@ -15,7 +15,7 @@ interface P {
 
 export class Method<Static extends boolean = false> extends ImportedObject<TAnyFunction, S<Static>, I<Static>, O<Static>, any[], P, { loading: boolean }> {
     static description = "Auto-imported method";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Instance to read"
@@ -25,7 +25,7 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
         varLength: true,
         description: "Method argument"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Method return value"
     }, {
@@ -36,13 +36,13 @@ export class Method<Static extends boolean = false> extends ImportedObject<TAnyF
         varLength: true,
         description: "Argument after method called"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         varLength: true,
         description: "Set arguments while loaded"
     }];
-    static props: TPropsMeta<P> = {
+    static props: IPropsMeta<P> = {
         args: {
             type: "number",
             default: 0,

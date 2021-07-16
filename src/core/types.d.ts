@@ -1,6 +1,5 @@
-import { SemanticICONS } from "semantic-ui-react";
-import { BaseObject, AnyObject } from "./objects/Base";
-import AbstractObject from "./objects/AbstractObject";
+import { BaseObject } from "./objects/Base";
+import { IJSPatcherObject, IJSPatcherObjectMeta, TInletEvent, TOutletEvent } from "./objects/AbstractObject";
 import Patcher from "./patcher/Patcher";
 import Box from "./patcher/Box";
 import Line from "./patcher/Line";
@@ -12,6 +11,8 @@ import TempAudioFile from "./audio/TempAudioFile";
 import TempTextFile from "./text/TempTextFile";
 import TempData from "./file/TempData";
 import PersistentProjectFile from "./file/PersistentProjectFile";
+
+export * from "./objects/AbstractObject";
 
 declare global {
     interface Window {
@@ -182,8 +183,8 @@ export interface TMaxClipboard {
         modernui: number;
     };
 }
-export type TPackage = { [key: string]: typeof AnyObject | TPackage };
-export type TFlatPackage = { [key: string]: typeof AnyObject };
+export type TPackage = { [key: string]: typeof IJSPatcherObject | TPackage };
+export type TFlatPackage = { [key: string]: typeof IJSPatcherObject };
 export type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };
 export type TAudioNodeOutletConnection = { node: AudioNode; index: number };
 export type TPatcherAudioConnection = { node: GainNode; index: number };
@@ -255,7 +256,7 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "generateCode": string;
     "graphChanged": never;
     "changed": never;
-    "ioChanged": TMeta;
+    "ioChanged": IJSPatcherObjectMeta;
     "inlet": TInletEvent<any[]>;
     "outlet": TOutletEvent<any[]>;
     "disconnectAudioInlet": number;
@@ -282,7 +283,7 @@ export interface BoxEventMap {
     "textChanged": Box;
     "highlight": Box;
     "error": string;
-    "metaChanged": TMeta;
+    "metaChanged": IJSPatcherObjectMeta;
     "dataUpdated": any;
     "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
     "connectedPort": { isSrc: boolean; i: number; last?: false };
@@ -290,80 +291,7 @@ export interface BoxEventMap {
     "ioCountChanged": Box;
     "updatedFromObject": { args?: any[]; props?: Record<string, any> };
 }
-export type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "function" | "bang" | "color" | "enum";
-export type TInletMeta = {
-    isHot: boolean;
-    type: TMetaType;
-    enums?: string[];
-    varLength?: boolean;
-    description: string;
-};
-export type TInletsMeta = TInletMeta[];
-export type TOutletMeta = {
-    type: TMetaType;
-    enums?: string[];
-    varLength?: boolean;
-    description: string;
-};
-export type TOutletsMeta = TOutletMeta[];
-export type TArgMeta = {
-    type: TMetaType;
-    enums?: string[];
-    optional: boolean;
-    default?: any;
-    varLength?: boolean;
-    description: string;
-};
-export type TArgsMeta = TArgMeta[];
-export type TPropMeta<T extends any = any> = {
-    type: TMetaType;
-    enums?: T[];
-    default: T;
-    group?: string;
-    description: string;
-    isUIState?: boolean;
-};
-export type TPropsMeta<T extends Record<string, any> = Record<string, any>> = { [K in keyof T]: TPropMeta<T[K]> };
-export type TMeta = {
-    package: string; // div will have class "package-name" "package-name-objectname"
-    name: string;
-    icon: SemanticICONS; // semantic icon to display in UI
-    author: string;
-    version: string;
-    description: string;
-    inlets: TInletsMeta;
-    outlets: TOutletsMeta;
-    args: TArgsMeta;
-    props: TPropsMeta;
-};
 
-export type Data<T> = T extends AbstractObject<infer D, any, any, any, any, any, any, any> ? D : never;
-export type State<T> = T extends AbstractObject<any, infer S, any, any, any, any, any, any> ? S : never;
-export type Inputs<T> = T extends AbstractObject<any, any, infer I, any, any, any, any, any> ? I : never;
-export type Outputs<T> = T extends AbstractObject<any, any, any, infer O, any, any, any, any> ? O : never;
-export type Args<T> = T extends AbstractObject<any, any, any, any, infer A, any, any, any> ? A : never;
-export type Props<T> = T extends AbstractObject<any, any, any, any, any, infer P, any, any> ? P : never;
-export type UIState<T> = T extends AbstractObject<any, any, any, any, any, any, infer U, any> ? U : never;
-export type EventMap<T> = T extends AbstractObject<any, any, any, any, any, any, any, infer E> ? E : never;
-export type TInletEvent<I extends any[] = any[], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
-export type TOutletEvent<O extends any[] = any[], $ extends keyof Pick<O, number> = keyof Pick<O, number>> = { outlet: $; data: O[$] };
-export type ObjectEventMap<D, S, I extends any[], A extends any[], P, U, E> = {
-    "preInit": never;
-    "update": { args?: Partial<A>; props?: Partial<P> };
-    "updateArgs": Partial<A>;
-    "updateProps": Partial<P>;
-    "postInit": never;
-    "uiUpdate": Partial<U> | never;
-    "inlet": TInletEvent<I>;
-    "connectedInlet": { inlet: number; srcBox: Box; srcOutlet: number; lineID: string };
-    "connectedOutlet": { outlet: number; destBox: Box; destInlet: number; lineID: string };
-    "disconnectedInlet": { inlet: number; srcBox: Box; srcOutlet: number; lineID: string };
-    "disconnectedOutlet": { outlet: number; destBox: Box; destInlet: number; lineID: string };
-    "destroy": AnyObject;
-    "metaChanged": TMeta;
-    "dataUpdated": Partial<D>;
-    "stateUpdated": Partial<S>;
-} & E;
 export type THistoryElement = {
     [key in keyof PatcherEventMap]?: PatcherEventMap[key][];
 };

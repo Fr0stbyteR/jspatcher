@@ -1,7 +1,7 @@
 import { StaticMethod } from "./StaticMethod";
 import { DefaultObject, Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { Method } from "./Method";
 
 class FuncUI extends ImportedObjectUI<Func> {
@@ -12,16 +12,16 @@ type TWrapper = typeof StaticMethod | typeof Method;
 type S = { Wrapper: TWrapper };
 export default class Func extends DefaultObject<{}, S, [Bang], [TAnyFunction], any[], {}, {}> {
     static description = "Get the function itself";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Bang to get the function itself"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "function",
         description: "function"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         varLength: false,

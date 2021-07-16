@@ -1,15 +1,15 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export default class StreamDest extends JSPAudioNode<MediaStreamAudioDestinationNode, {}, [Bang], [MediaStreamAudioDestinationNode, MediaStream]> {
     static description = "WebAudio MediaStreamAudioDestinationNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, bang to output MediaStreamAudioDestinationNode instance with its stream"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Instance: MediaStreamAudioDestinationNode"
     }, {

@@ -1,12 +1,12 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
-import { TMeta, TBPF, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, TBPF, IPropsMeta } from "../../types";
 
 type I = [Bang, TBPF, TBPF, TBPF, TBPF, TBPF, TBPF, PannerOptions];
 export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, PannerNode], [], PannerOptions> {
     static description = "WebAudio PannerNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, bang to output PannerNode instance"
@@ -39,14 +39,14 @@ export default class Panner extends JSPAudioNode<PannerNode, {}, I, [null, Panne
         type: "object",
         description: "options: coneInnerAngle, coneOuterAngle, coneOuterGain, distanceModel, maxDistance, orientationX, orientationY, orientationZ, panningModel, positionX, positionY, positionZ, refDistance, rolloffFactor"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection (2 channel)"
     }, {
         type: "object",
         description: "Instance: PannerNode"
     }];
-    static props: TPropsMeta<PannerOptions> = {
+    static props: IPropsMeta<PannerOptions> = {
         coneInnerAngle: {
             type: "number",
             default: 360,

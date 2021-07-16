@@ -1,5 +1,5 @@
 import "./Max.scss";
-import { TMeta } from "../types";
+import { IJSPatcherObjectMeta } from "../types";
 import { DefaultObject, EmptyObject, InvalidObject } from "./Base";
 import { isNumberArray } from "../../utils/utils";
 
@@ -11,16 +11,16 @@ class DefaultMaxObject<D = {}, S = {}, I extends any[] = any[], O extends any[] 
 }
 class mtof extends DefaultMaxObject<{}, {}, [number | number[]], [number | number[]], [], { base: number }> {
     static description = "Convert a MIDI note number to frequency";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "MIDI note: number | number[]"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "The frequency corresponding to the received MIDI pitch value."
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         base: {
             type: "number",
             default: 440,
@@ -47,16 +47,16 @@ class mtof extends DefaultMaxObject<{}, {}, [number | number[]], [number | numbe
 }
 class ftom extends DefaultMaxObject<{}, {}, [number | number[]], [number | number[]], [], { base: number }> {
     static description = "Convert frequency to a MIDI note number";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "frequency value: number | number[]"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "The MIDI note value that corresponds to the input frequency."
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         base: {
             type: "number",
             default: 440,

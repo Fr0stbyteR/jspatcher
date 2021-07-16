@@ -1,14 +1,14 @@
 import { isBang } from "../Base";
 import { ImportedObjectUI } from "./ImportedObject";
 import { Property } from "./Property";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export class StaticPropertyUI extends ImportedObjectUI<StaticProperty> {
     prependColor = "rgb(156, 220, 254)";
 }
 export class StaticProperty extends Property<true> {
     static description = "Auto-imported static property";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Get the value"
@@ -17,11 +17,11 @@ export class StaticProperty extends Property<true> {
         type: "anything",
         description: "Set the value"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Value"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         description: "Set the value while loaded."

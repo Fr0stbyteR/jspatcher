@@ -1,6 +1,6 @@
 import { WebAudioModule, WamNode } from "wamsdk/src/api";
 import { Bang, BaseObject, isBang } from "../Base";
-import { TMIDIEvent, TBPF, TMeta, TInletMeta, TOutletMeta } from "../../types";
+import { TMIDIEvent, TBPF, IJSPatcherObjectMeta, IInletMeta, IOutletMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 
@@ -13,16 +13,16 @@ type I = [Bang | number | string | TMIDIEvent | Record<string, TBPF>, ...TBPF[]]
 type O = (null | WamNode)[];
 export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIState> {
     static description = "Dynamically load WebAudioModule";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "A bang to output the instance, url to load, or a param-bpf map, or a MIDI event"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "WebAudioModule instance"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "WebAudioModule URL"
@@ -60,10 +60,10 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
         Object.assign(this.state, { node, plugin } as S);
         const Ctor = this.constructor as typeof Plugin;
         const firstInletMeta = Ctor.inlets[0];
-        const firstInletSignalMeta: TInletMeta = { ...firstInletMeta, type: "signal" };
-        const inletMeta: TInletMeta = { isHot: false, type: "signal", description: "Node connection" };
-        const audioParamInletMeta: TInletMeta = { isHot: false, type: "number", description: ": bpf or node connection" };
-        const outletMeta: TOutletMeta = { type: "signal", description: "Node connection" };
+        const firstInletSignalMeta: IInletMeta = { ...firstInletMeta, type: "signal" };
+        const inletMeta: IInletMeta = { isHot: false, type: "signal", description: "Node connection" };
+        const audioParamInletMeta: IInletMeta = { isHot: false, type: "number", description: ": bpf or node connection" };
+        const outletMeta: IOutletMeta = { type: "signal", description: "Node connection" };
         const lastOutletMeta = Ctor.outlets[0];
         const factoryMeta = Ctor.meta;
         for (let i = 0; i < inlets; i++) {

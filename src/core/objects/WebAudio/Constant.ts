@@ -1,11 +1,11 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
 import { decodeLine } from "../../../utils/utils";
-import { TMeta, TBPF } from "../../types";
+import { IJSPatcherObjectMeta, TBPF } from "../../types";
 
 export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang, TBPF], [null, ConstantSourceNode], [number]> {
     static description = "WebAudio ConstantSourceNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Output ConstantSourceNode instance"
@@ -14,14 +14,14 @@ export default class Constant extends JSPAudioNode<ConstantSourceNode, {}, [Bang
         type: "signal",
         description: "offset: bpf or node connection"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection (1 channel)"
     }, {
         type: "object",
         description: "Instance: ConstantSourceNode"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         description: "Initial offset"

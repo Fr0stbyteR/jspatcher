@@ -1,11 +1,11 @@
 import { isBang } from "../Base";
 import { SetterGetter } from "./SetterGetter";
 import { StaticPropertyUI } from "./StaticProperty";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export class StaticSetterGetter extends SetterGetter<true> {
     static description = "Auto-imported static setter / getter";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Get the value"
@@ -14,7 +14,7 @@ export class StaticSetterGetter extends SetterGetter<true> {
         type: "anything",
         description: "Set the value"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Value"
     }];

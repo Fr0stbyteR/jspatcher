@@ -5,7 +5,7 @@ import { Dimmer, Loader } from "semantic-ui-react";
 import UIObject from "./Base";
 import { BaseUIState, BaseUI } from "../BaseUI";
 import { AnyObject, Bang, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 type CodeUIState = { language: string; value: string; editorLoaded: boolean; editing: boolean } & BaseUIState;
 export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
@@ -53,7 +53,7 @@ export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
 }
 export default class code extends UIObject<{ value: string }, {}, [Bang, string], [string, Bang], [string], {}, { language: string; value: string }, { editorBlur: string; editorLoaded: never; change: string }> {
     static description = "Code Editor";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Trigger output the code"
@@ -62,14 +62,14 @@ export default class code extends UIObject<{ value: string }, {}, [Bang, string]
         type: "string",
         description: "Set the code"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "string",
         description: "Code"
     }, {
         type: "bang",
         description: "Bang when the code is changed"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: true,
         default: "javascript",

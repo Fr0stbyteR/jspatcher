@@ -2,7 +2,7 @@ import * as React from "react";
 import UIObject from "./Base";
 import { BaseUIState, BaseUI, BaseUIProps } from "../BaseUI";
 import { selectElementRange } from "../../../utils/utils";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 
 interface CommentProps {
     bgColor: string;
@@ -79,13 +79,13 @@ class CommentUI extends BaseUI<comment, {}, { value: string }> {
 }
 export default class comment extends UIObject<{ value: string }, {}, [string], [], [string], CommentProps, CommentUIState> {
     static description = "Text Comment";
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: true,
         varLength: true,
         description: "Initial text"
     }];
-    static props: TPropsMeta<CommentProps> = {
+    static props: IPropsMeta<CommentProps> = {
         bgColor: {
             type: "color",
             default: "transparent",

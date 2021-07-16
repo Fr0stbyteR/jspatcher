@@ -1,16 +1,16 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 type I = [Bang | HTMLMediaElement];
 export default class Media extends JSPAudioNode<MediaElementAudioSourceNode, { element: HTMLMediaElement }, I, [null, MediaElementAudioSourceNode], [], {}> {
     static description = "WebAudio MediaElementAudioSourceNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "object",
         description: "HTMLMediaElement to construct node, bang to output MediaElementAudioSourceNode instance"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection"
     }, {

@@ -1,5 +1,5 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { Bang, isBang } from "../Base";
 import { fillRoundedRect } from "../../../utils/utils";
 
@@ -93,7 +93,7 @@ class LiveTextUI extends LiveUI<LiveText, LiveTextUIState> {
 
 export class LiveText extends LiveObject<{}, {}, [number | Bang, number], [number, string], [number], LiveTextProps, LiveTextUIState> {
     static description = "Button or toggle with text";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "number",
         description: "Set and output the value"
@@ -102,20 +102,20 @@ export class LiveText extends LiveObject<{}, {}, [number | Bang, number], [numbe
         type: "number",
         description: "Set without output the value"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "number",
         description: "Number value"
     }, {
         type: "string",
         description: "Display value"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 0,
         description: "Initial value"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         bgColor: {
             type: "color",
             default: "rgba(165, 165, 165, 1)",

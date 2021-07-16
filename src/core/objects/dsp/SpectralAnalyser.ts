@@ -1,7 +1,7 @@
 import { DefaultDSP } from "./Base";
 import { SpectralAnalysis, TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
 import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { Bang, isBang } from "../Base";
 
 export interface Props extends Record<keyof SpectralAnalysis, boolean> {
@@ -19,16 +19,16 @@ export interface State {
 type Outlet0 = Partial<SpectralAnalysis>;
 export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [], Props> {
     static description = "Spectral feature extractor";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Signal, bang to extract features"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Features chosen as object"
     }];
-    static props: TPropsMeta<Props> = {
+    static props: IPropsMeta<Props> = {
         speedLim: {
             type: "number",
             default: 16,

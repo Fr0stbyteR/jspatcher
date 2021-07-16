@@ -1,7 +1,7 @@
 import { FaustAudioWorkletNode } from "faust2webaudio";
 import { TFaustUI } from "faust2webaudio/src/types";
 import { FaustUI } from "../../../utils/faust-ui/FaustUI";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { BaseObject } from "../Base";
 import { DOMUI, DOMUIState } from "../BaseUI";
 
@@ -14,12 +14,12 @@ interface S {
 export default class ui extends BaseObject<{}, S, [FaustAudioWorkletNode], [Record<string, number>], [], {}, DOMUIState> {
     static package = "faust";
     static description = "Display a Faust UI";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: false,
         type: "object",
         description: "Compiled Faust AudioWorkletNode"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Changed parameter name-value map"
     }];

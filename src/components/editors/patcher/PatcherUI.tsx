@@ -317,12 +317,12 @@ class Lines extends React.PureComponent<LinesProps, LinesState> {
         this.setState({ timestamp: performance.now() });
     };
     handleReady = () => {
-        for (const lineID in this.lines) {
-            delete this.lines[lineID];
+        for (const lineId in this.lines) {
+            delete this.lines[lineId];
         }
-        for (const lineID in this.props.editor.lines) {
-            const line = this.props.editor.lines[lineID];
-            this.lines[lineID] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
+        for (const lineId in this.props.editor.lines) {
+            const line = this.props.editor.lines[lineId];
+            this.lines[lineId] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
         }
         this.setState({ timestamp: performance.now() });
     };

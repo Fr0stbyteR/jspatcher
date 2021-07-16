@@ -2,7 +2,7 @@ import * as React from "react";
 import UIObject from "./Base";
 import { BaseUI, BaseUIState } from "../BaseUI";
 import { isBang } from "../Base";
-import type { TMeta, TPropsMeta } from "../../types";
+import type { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import type PatcherImage from "../../image/PatcherImage";
 import type PersistentProjectFile from "../../file/PersistentProjectFile";
 
@@ -38,17 +38,17 @@ interface P {
 }
 export default class img extends UIObject<{}, S, [string | HTMLImageElement], [HTMLImageElement], [string], P, U> {
     static description = "Display an image";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Image file name or url"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: true,
         description: "Image file name or url"
     }];
-    static props: TPropsMeta<P> = {
+    static props: IPropsMeta<P> = {
         scroll: {
             type: "boolean",
             default: false,

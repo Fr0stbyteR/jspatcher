@@ -1,23 +1,23 @@
 import { StrictDropdownItemProps } from "semantic-ui-react";
 import { Bang, isBang } from "../Base";
 import { DefaultWebRTCObject } from "./Base";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 
 export class mediaDevices extends DefaultWebRTCObject<{}, {}, [Bang | MediaDeviceKind[]], [MediaDeviceInfo[], StrictDropdownItemProps[]], MediaDeviceKind[], { autoUpdate: boolean }> {
     static description = "Enumerate media devices";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "object",
         description: "Bang to enumerate, MediaDeviceKind[] to use a filter"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Array of MediaDeviceInfo"
     }, {
         type: "object",
         description: "Array of DropdownItemProps"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "enum",
         varLength: true,
         optional: true,
@@ -25,7 +25,7 @@ export class mediaDevices extends DefaultWebRTCObject<{}, {}, [Bang | MediaDevic
         default: ["audioinput", "audiooutput", "videoinput"],
         description: "Output only kinds of devices"
     }];
-    static props: TPropsMeta<{ autoUpdate: boolean }> = {
+    static props: IPropsMeta<{ autoUpdate: boolean }> = {
         autoUpdate: {
             type: "boolean",
             default: true,

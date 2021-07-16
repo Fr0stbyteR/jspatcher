@@ -1,9 +1,9 @@
 import { Bang, DefaultObject, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], [AudioWorklet, Bang]> {
     static description = "Get currrent patcher's audio worklet from context";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Output current audio worklet"
@@ -12,7 +12,7 @@ export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], 
         type: "string",
         description: "Code to add as module"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "Current audio worklet"
     }, {

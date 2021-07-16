@@ -5,8 +5,8 @@ import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import Box from "../patcher/Box";
 import PatcherEditor from "../patcher/PatcherEditor";
-import { BaseObject, AnyObject, DefaultObject, DefaultObjectUIProps } from "./Base";
-import AbstractObject from "./AbstractObject";
+import { BaseObject, DefaultObject, DefaultObjectUIProps } from "./Base";
+import { IJSPatcherObject, IPropsMeta, Props } from "./AbstractObject";
 import { selectElementPos, selectElementRange } from "../../utils/utils";
 import { TFlatPackage, TMetaType } from "../types";
 import { ImportedStaticMethodObject } from "../../utils/symbols";
@@ -14,7 +14,7 @@ import { StaticMethod } from "./importer/StaticMethod";
 import "./Default.scss";
 import "./Base.scss";
 
-export interface AbstractUIProps<T extends AbstractObject = AbstractObject> {
+export interface AbstractUIProps<T extends IJSPatcherObject = IJSPatcherObject> {
     object: T;
     editor: PatcherEditor;
     inDock?: boolean;
@@ -26,40 +26,24 @@ export interface AbstractUIState {
     height: number | string;
 }
 export abstract class AbstractUI<
-        T extends AbstractObject = AbstractObject,
+        T extends IJSPatcherObject = IJSPatcherObject,
         P extends Partial<AbstractUIProps<T>> & Record<string, any> = {},
         S extends Partial<AbstractUIState> & Record<string, any> = {}
 > extends React.PureComponent<AbstractUIProps<T> & P, S & AbstractUIState> {
     /**
      * Sizing rule
-     *
-     * @static
-     * @type {("horizontal" | "vertical" | "both" | "ratio")}
-     * @memberof AbstractUI
      */
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
     /**
      * Default Size while object is created.
-     *
-     * @static
-     * @type {[number, number]}
-     * @memberof AbstractUI
      */
     static defaultSize: [number, number];
     /**
      * If set to true, call this.props.onEditEnd at some point
-     *
-     * @static
-     * @type {boolean}
-     * @memberof AbstractUI
      */
     static editableOnUnlock: boolean;
     /**
      * If this UI can be displayed elsewhere
-     *
-     * @static
-     * @type {boolean}
-     * @memberof AbstractUI
      */
     static dockable: boolean;
     state: S & AbstractUIState = {
@@ -84,11 +68,12 @@ export abstract class AbstractUI<
         return this.props.object.box;
     }
     get objectProps() {
-        const props: Partial<S & BaseUIState> = {};
-        for (const key in this.object.meta.props) {
-            if (this.object.meta.props[key].isUIState) props[key as keyof (S & BaseUIState)] = (this.object as AnyObject).getProp(key);
+        const props: Partial<Props<T>> = {};
+        const objectProps = this.object.meta.props as IPropsMeta<Props<T>>;
+        for (const key in objectProps) {
+            if (objectProps[key].isUIState) props[key] = (this.object as any).getProp(key);
         }
-        return props as S & BaseUIState;
+        return props;
     }
     private _handleUIUpdate = (e?: Pick<S & AbstractUIState, keyof (S & AbstractUIState)>) => (e ? this.setState(e) : this.forceUpdate());
     private _handleResized = () => {
@@ -98,14 +83,14 @@ export abstract class AbstractUI<
     };
     componentDidMount() {
         delete this.box._editing;
-        this.object.on("uiUpdate", this._handleUIUpdate);
+        this.object.on("updateUI", this._handleUIUpdate);
         if (this.dockable && this.props.inDock) return;
         this.box.on("rectChanged", this._handleResized);
         this.box.on("presentationRectChanged", this._handleResized);
         this.editor.on("presentation", this._handleResized);
     }
     componentWillUnmount() {
-        this.object.off("uiUpdate", this._handleUIUpdate);
+        this.object.off("updateUI", this._handleUIUpdate);
         if (this.dockable && this.props.inDock) return;
         this.box.off("rectChanged", this._handleResized);
         this.box.off("presentationRectChanged", this._handleResized);
@@ -241,7 +226,7 @@ class DefaultUIDropdownObjects extends React.Component<DefaultUIDropdownObjectsP
     }
 }
 interface DefaultUIDropdownArgvItem { key: string | number; type: TMetaType; optional?: boolean; varLength?: boolean; description: string }
-interface DefaultUIDropdownArgvProps { obj: typeof AnyObject; argv: string[]; onSelect: (e: React.MouseEvent<HTMLTableRowElement>, value: string | number) => void }
+interface DefaultUIDropdownArgvProps { obj: typeof IJSPatcherObject; argv: string[]; onSelect: (e: React.MouseEvent<HTMLTableRowElement>, value: string | number) => void }
 interface DefaultUIDropdownArgvState { $: number; items: DefaultUIDropdownArgvItem[] }
 class DefaultUIDropdownArgv extends React.Component<DefaultUIDropdownArgvProps, DefaultUIDropdownArgvState> {
     state: DefaultUIDropdownArgvState = { $: -1, items: [] };

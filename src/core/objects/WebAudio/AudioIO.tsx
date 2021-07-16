@@ -1,6 +1,6 @@
 import * as React from "react";
 import JSPAudioNode from "./AudioNode";
-import { TMeta, TPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { Bang, isBang } from "../Base";
 import { DefaultUI } from "../BaseUI";
 
@@ -16,24 +16,24 @@ interface Constraints extends MediaTrackConstraintSet {
 }
 export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: string; stream: MediaStream }, [string | Bang], [null, MediaStreamAudioSourceNode], [string], Constraints> {
     static description = "Get Audio input from device name or ID";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "string to fetch device name or ID, bang to output Node"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection"
     }, {
         type: "object",
         description: "Instance: MediaStreamAudioSourceNode"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
         optional: false,
         description: "Device name or ID"
     }];
-    static props: TPropsMeta<Omit<Constraints, "deviceId">> = {
+    static props: IPropsMeta<Omit<Constraints, "deviceId">> = {
         autoGainControl: {
             type: "boolean",
             default: false,
@@ -144,12 +144,12 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
 const supportSetSinkId = window.MediaStreamAudioDestinationNode && HTMLMediaElement.prototype.setSinkId;
 export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | AudioDestinationNode, { search?: string; audio?: HTMLAudioElement; msadn?: MediaStreamAudioDestinationNode }, [string | Bang], [null, MediaStreamAudioDestinationNode | AudioDestinationNode], [string], Constraints> {
     static description = "Get Audio output from device name or ID (if supported)";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, string to fetch device name or ID, bang to output Node"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: `Instance: ${supportSetSinkId ? "MediaStreamAudioDestinationNode | " : ""}AudioDestinationNode`
     }];

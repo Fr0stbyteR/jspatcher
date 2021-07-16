@@ -1,7 +1,7 @@
 import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
 import FaustDynamicNode, { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
 import { Bang, isBang } from "../Base";
-import { TMeta, TBPF, TMIDIEvent, TInletMeta, TOutletMeta } from "../../types";
+import { IJSPatcherObjectMeta, TBPF, TMIDIEvent, IInletMeta, IOutletMeta } from "../../types";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 import { CodePopupUI, DefaultUI } from "../BaseUI";
 import { UnPromisifiedFunction } from "../../workers/Worker";
@@ -32,16 +32,16 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Dynamically generate WebAudioNode from Faust";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "A bang to output the node, code string to compile, number to set voices, or a param-bpf map, or a MIDI event"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "object",
         description: "FaustNode instance output: AudioWorkletNode | ScriptProcessor"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         default: 0,
@@ -63,10 +63,10 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
         Object.assign(this.state, { voices, merger, splitter, node } as S);
         const Ctor = this.constructor as typeof FaustNode;
         const firstInletMeta = Ctor.inlets[0];
-        const firstInletSignalMeta: TInletMeta = { ...firstInletMeta, type: "signal" };
-        const inletMeta: TInletMeta = { isHot: false, type: "signal", description: "Node connection" };
-        const audioParamInletMeta: TInletMeta = { isHot: false, type: "signal", description: ": bpf or node connection" };
-        const outletMeta: TOutletMeta = { type: "signal", description: "Node connection" };
+        const firstInletSignalMeta: IInletMeta = { ...firstInletMeta, type: "signal" };
+        const inletMeta: IInletMeta = { isHot: false, type: "signal", description: "Node connection" };
+        const audioParamInletMeta: IInletMeta = { isHot: false, type: "signal", description: ": bpf or node connection" };
+        const outletMeta: IOutletMeta = { type: "signal", description: "Node connection" };
         const lastOutletMeta = Ctor.outlets[0];
         const factoryMeta = Ctor.meta;
         for (let i = 0; i < inlets; i++) {

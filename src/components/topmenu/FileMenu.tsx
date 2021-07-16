@@ -1,13 +1,14 @@
 import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
-import Env, { EnvEventMap } from "../../core/Env";
 import Patcher from "../../core/patcher/Patcher";
 import PatcherText from "../../core/text/PatcherText";
-import Folder from "../../core/file/Folder";
 import SaveAsModal from "../modals/SaveAsModal";
-import { AnyFileEditor } from "../../core/file/FileEditor";
 import NewAudioModal from "../modals/NewAudioModal";
 import PatcherAudio from "../../core/audio/PatcherAudio";
+import type Env from "../../core/Env";
+import type { EnvEventMap } from "../../core/Env";
+import type { IFileEditor } from "../../core/file/FileEditor";
+import type { IProjectFolder } from "../../core/file/AbstractProjectFolder";
 
 interface P {
     env: Env;
@@ -15,7 +16,7 @@ interface P {
 }
 
 interface S {
-    editor: AnyFileEditor;
+    editor: IFileEditor;
     fileURL: string;
     fileName: string;
     showSaveAsModal: boolean;
@@ -35,31 +36,31 @@ export default class FileMenu extends React.PureComponent<P, S> {
         showNewAudioModal: false
     };
     handleClickNewJs = async () => {
-        const patcher = new Patcher(this.props.env.currentProject);
+        const patcher = new Patcher(this.props.env, this.props.env.currentProject);
         await patcher.load({}, "js");
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };
     handleClickNewMax = async () => {
-        const patcher = new Patcher(this.props.env.currentProject);
+        const patcher = new Patcher(this.props.env, this.props.env.currentProject);
         await patcher.load({}, "max");
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };
     handleClickNewGen = async () => {
-        const patcher = new Patcher(this.props.env.currentProject);
+        const patcher = new Patcher(this.props.env, this.props.env.currentProject);
         await patcher.load({}, "gen");
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };
     handleClickNewFaust = async () => {
-        const patcher = new Patcher(this.props.env.currentProject);
+        const patcher = new Patcher(this.props.env, this.props.env.currentProject);
         await patcher.load({}, "faust");
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };
     handleClickNewText = async () => {
-        const text = new PatcherText(this.props.env.currentProject);
+        const text = new PatcherText(this.props.env, this.props.env.currentProject);
         await text.init();
         const editor = await text.getEditor();
         this.props.env.openEditor(editor);
@@ -90,7 +91,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
     handleNewAudioModalClose = () => this.setState({ showNewAudioModal: false });
     handleNewAudioModalConfirm = async (numberOfChannels: number, sampleRate: number, length: number) => {
         this.setState({ showNewAudioModal: false });
-        const audio = new PatcherAudio(this.props.env.currentProject);
+        const audio = new PatcherAudio(this.props.env, this.props.env.currentProject);
         await audio.initWithOptions({ numberOfChannels, sampleRate, length });
         const editor = await audio.getEditor();
         this.props.env.openEditor(editor);
@@ -99,7 +100,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         this.setState({ showSaveAsModal: true });
     };
     handleSaveAsModalClose = () => this.setState({ showSaveAsModal: false });
-    handleSaveAsModalConfirm = async (folder: Folder, name: string) => {
+    handleSaveAsModalConfirm = async (folder: IProjectFolder, name: string) => {
         this.setState({ showSaveAsModal: false });
         await this.props.env.activeEditor?.saveAs(folder, name);
     };

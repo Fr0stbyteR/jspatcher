@@ -1,6 +1,6 @@
-import { TMeta, TRect } from "../types";
+import { IJSPatcherObjectMeta, TRect } from "../types";
 import AbstractObject from "./AbstractObject";
-import { DefaultUI, BaseUIState, DefaultUIState } from "./BaseUI";
+import { BaseUIState, DefaultUI, DefaultUIState } from "./BaseUI";
 import "./Default.scss";
 import "./Base.scss";
 
@@ -17,7 +17,7 @@ export class BaseObject<
     A extends any[] = any[], P extends Partial<BaseObjectProps> & Record<string, any> = {},
     U extends Partial<BaseUIState> & Record<string, any> = {}, E extends {} = {}
 > extends AbstractObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         hidden: {
             type: "boolean",
             default: false,
@@ -57,7 +57,7 @@ export class BaseObject<
             isUIState: true
         }
     };
-    static get meta(): TMeta {
+    static get meta(): IJSPatcherObjectMeta {
         const thisName = this._name;
         const superMeta = Object.getPrototypeOf(this).meta;
         const superProps = superMeta.props;
@@ -116,7 +116,7 @@ export class DefaultObject<
     A extends any[] = any[], P extends Partial<DefaultObjectProps> & Record<string, any> = {},
     U extends Partial<DefaultUIState> & Record<string, any> = {}, E extends {} = {}
 > extends BaseObject<D, S, I, O, A, P & DefaultObjectProps, U & DefaultUIState, E> {
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         bgColor: {
             type: "color",
             default: "rgb(51, 51, 51)",
@@ -171,19 +171,17 @@ export class DefaultObject<
     };
     static UI = DefaultUI;
 }
-export class AnyObject extends BaseObject<Record<string, any>, Record<string, any>, any[], any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> {}
 
-class EmptyObjectUI extends DefaultUI<EmptyObject> {}
 export class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Bypass input";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "output same thing"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "output same thing"
     }];
@@ -196,22 +194,21 @@ export class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], 
         });
         this.on("inlet", ({ data }) => this.outlet(0, data));
     }
-    static UI: typeof DefaultUI = EmptyObjectUI;
 }
 export class InvalidObject extends DefaultObject<{}, {}, [any], [undefined]> {
     static description = "invalid object";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: false,
         type: "anything",
         varLength: true,
         description: "nothing"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         varLength: true,
         description: "nothing"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         bgColor: {
             type: "color",
             default: "rgb(128, 64, 64)",

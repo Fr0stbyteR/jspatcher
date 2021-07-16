@@ -1,16 +1,16 @@
 import { isBang } from "../Base";
 import { Getter } from "./Getter";
 import { StaticPropertyUI } from "./StaticProperty";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export class StaticGetter extends Getter<true> {
     static description = "Auto-imported static getter";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "bang",
         description: "Get the value"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "Value"
     }];

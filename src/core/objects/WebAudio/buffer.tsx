@@ -5,7 +5,7 @@ import PatcherAudio from "../../audio/PatcherAudio";
 import AudioEditor from "../../audio/AudioEditor";
 import AudioEditorUI from "../../../components/editors/audio/AudioEditorUI";
 import { DefaultObject, Bang, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { ProjectFileEventMap } from "../../file/AbstractProjectFile";
 import { DefaultPopupUI, DefaultPopupUIProps, DefaultPopupUIState } from "../BaseUI";
 import PersistentProjectFile from "../../file/PersistentProjectFile";
@@ -127,7 +127,7 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Audio File Decoder";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "anything",
         description: "Bang to output stored buffer, file to decode, AudioBuffer or PatcherAudio to store then output it as PatcherAudio."
@@ -140,14 +140,14 @@ export default class Buffer extends DefaultObject<{}, BufferState, [Bang | File 
         type: "anything",
         description: "Set variable name."
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
         description: "PatcherAudio"
     }, {
         type: "bang",
         description: "Output a bang while the PatcherAudio buffer object is loaded/changed."
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "anything",
         optional: true,
         description: "Variable name"

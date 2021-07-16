@@ -1,10 +1,10 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | number, ...null[]], [null, ChannelMergerNode], [number]> {
     static description = "WebAudio ChannelMergerNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, bang to output DestinationNode instance, number to change inputs"
@@ -13,14 +13,14 @@ export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | 
         type: "signal",
         description: "Node connection"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection (n channels)"
     }, {
         type: "object",
         description: "Instance: ChannelMergerNode"
     }];
-    static args: TMeta["args"] = [{
+    static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
         optional: true,
         description: "Number of Inputs"

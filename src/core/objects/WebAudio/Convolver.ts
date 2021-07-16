@@ -1,12 +1,12 @@
 import JSPAudioNode from "./AudioNode";
 import { Bang, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 
 type I = [Bang, AudioBuffer, boolean];
 type O = [null, ConvolverNode];
 export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [], { normalize: boolean }> {
     static description = "WebAudio ConvolverNode";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "signal",
         description: "Node connection, bang to output ConvolverNode instance"
@@ -19,14 +19,14 @@ export default class Convolver extends JSPAudioNode<ConvolverNode, {}, I, O, [],
         type: "boolean",
         description: "normalize: boolean"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "signal",
         description: "Node connection (2-4 channels)"
     }, {
         type: "object",
         description: "Instance: ConvolverNode"
     }];
-    static props: TMeta["props"] = {
+    static props: IJSPatcherObjectMeta["props"] = {
         normalize: {
             type: "boolean",
             default: true,

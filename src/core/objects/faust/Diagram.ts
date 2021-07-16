@@ -1,5 +1,5 @@
 import { Bang, BaseObject, isBang } from "../Base";
-import { TMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../../types";
 import { DOMUI, DOMUIState } from "../BaseUI";
 import { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
 import "./Diagram.scss";
@@ -7,12 +7,12 @@ import "./Diagram.scss";
 export default class diagram extends BaseObject<{}, { svg: string, container: HTMLDivElement }, [Bang | string | DefaultFaustDynamicNodeState["node"]], [string], [], {}, DOMUIState> {
     static package = "Faust";
     static description = "Get Faust code diagram";
-    static inlets: TMeta["inlets"] = [{
+    static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "string",
         description: "Code or FaustNode to compile, bang to output only"
     }];
-    static outlets: TMeta["outlets"] = [{
+    static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "string",
         description: "SVG code"
     }];
