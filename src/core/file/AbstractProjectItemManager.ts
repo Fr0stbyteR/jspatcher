@@ -1,4 +1,4 @@
-import TypedEventEmitter from "../../utils/TypedEventEmitter";
+import TypedEventEmitter, { ITypedEventEmitter } from "../../utils/TypedEventEmitter";
 import { extToType } from "../../utils/utils";
 import type TaskMgr from "../TaskMgr";
 import type { IJSPatcherEnv } from "../Env";
@@ -6,7 +6,7 @@ import type { ProjectItemType, RawProjectItem } from "../types";
 import type { IFileInstance } from "./FileInstance";
 import type { IProjectFile } from "./AbstractProjectFile";
 import type { IProjectFolder } from "./AbstractProjectFolder";
-import type { IProjectFileOrFolder, IProjectItem, ProjectItemEventMap } from "./AbstractProjectItem";
+import type { IProjectItem, ProjectItemEventMap } from "./AbstractProjectItem";
 import { IProject } from "../Project";
 
 export interface ItemChangedEvent<K extends keyof ProjectItemEventMap = any> {
@@ -25,7 +25,7 @@ export interface ProjectItemManagerEventMap {
     "itemChanged": ItemChangedEvent;
 }
 
-export interface IProjectItemManager<EventMap extends Record<string, any> & Partial<ProjectItemManagerEventMap> = {}> extends TypedEventEmitter<EventMap & ProjectItemManagerEventMap> {
+export interface IProjectItemManager<EventMap extends Record<string, any> & Partial<ProjectItemManagerEventMap> = {}> extends ITypedEventEmitter<EventMap & ProjectItemManagerEventMap> {
     readonly id: string;
     readonly taskMgr: TaskMgr;
     readonly allItems: Set<IProjectFile | IProjectFolder>;
@@ -90,7 +90,7 @@ export default abstract class AbstractProjectItemManager<EventMap extends Record
     }
     getProjectItemFromPath(path: string) {
         const pathArray = path.split("/");
-        const itemArray: (IProjectFileOrFolder)[] = [this.root, this.projectRoot];
+        const itemArray: (IProjectFile | IProjectFolder)[] = [this.root, this.projectRoot];
         for (let i = 0; i < pathArray.length; i++) {
             const id = pathArray[i];
             if (id.length === 0) continue;

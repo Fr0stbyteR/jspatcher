@@ -1,10 +1,4 @@
 import AbstractProjectFile from "./AbstractProjectFile";
-import type { IJSPatcherEnv } from "../Env";
-import type { IProject } from "../Project";
-import type { IFileEditor } from "./FileEditor";
-import type { IFileInstance } from "./FileInstance";
-import type { IProjectFolder } from "./AbstractProjectFolder";
-import type PersistentProjectItemManager from "./PersistentProjectItemManager";
 import Patcher from "../patcher/Patcher";
 import PatcherAudio from "../audio/PatcherAudio";
 import PatcherImage from "../image/PatcherImage";
@@ -13,18 +7,41 @@ import PatcherEditor from "../patcher/PatcherEditor";
 import AudioEditor from "../audio/AudioEditor";
 import ImageEditor from "../image/ImageEditor";
 import TextEditor from "../text/TextEditor";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
+import type { IFileEditor } from "./FileEditor";
+import type { IFileInstance } from "./FileInstance";
+import type { IProjectFolder } from "./AbstractProjectFolder";
+import type { IPersistentProjectItemManager } from "./PersistentProjectItemManager";
 
-export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuffer, PersistentProjectItemManager> {
+export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuffer, IPersistentProjectItemManager> {
+    private _sab: SharedArrayBuffer;
+    get sab() {
+        return this._sab;
+    }
+    set data(dataIn: ArrayBuffer) {
+        this._data = dataIn;
+        if (dataIn instanceof SharedArrayBuffer) {
+            this._sab = dataIn;
+            return;
+        }
+        this._sab = new SharedArrayBuffer(dataIn.byteLength);
+        const ui8ab = new Uint8Array(dataIn);
+        const ui8sab = new Uint8Array(this._sab);
+        for (let i = 0; i < ui8ab.length; i++) {
+            ui8sab[i] = ui8ab[i];
+        }
+    }
     async init() {
-        this._data = await this.fileMgr.readFile(this.path);
+        this.data = await this.fileMgr.readFile(this.path);
         await this.emit("ready");
     }
-    clone(parentIn = this.parent, nameIn = this._name, dataIn = this._data) {
+    clone(parentIn = this.parent, nameIn = this._name, dataIn = this.data) {
         const Ctor = this.constructor as typeof PersistentProjectFile;
         return new Ctor(this._fileMgr, parentIn, nameIn, dataIn);
     }
     async save(newData: ArrayBuffer, by: any) {
-        this._data = newData;
+        this.data = newData;
         await this._fileMgr.putFile(this);
         await this.emit("saved", by);
     }
@@ -38,7 +55,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
     async saveAs(to: IProjectFolder, newName: string, newData: ArrayBuffer, by: any) {
         const { parent, name, data } = this;
         const from = parent;
-        this._data = newData;
+        this.data = newData;
         await this.move(to, newName);
         await this._fileMgr.putFile(this);
         const item = this.clone(parent, name, data);

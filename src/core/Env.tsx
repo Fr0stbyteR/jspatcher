@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import { Faust, FaustAudioWorkletNode } from "faust2webaudio";
 import { detectOS, detectBrowserCore } from "../utils/utils";
 import { faustLangRegister } from "../misc/monaco-faust/register";
-import TypedEventEmitter from "../utils/TypedEventEmitter";
+import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitter";
 import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
 import { EnvOptions, TErrorLevel, TPackage, TPatcherLog } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
@@ -41,8 +41,11 @@ export interface EnvEventMap {
     "options": { options: EnvOptions; oldOptions: EnvOptions };
 }
 
-export interface IJSPatcherEnv extends TypedEventEmitter<EnvEventMap> {
+export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
     readonly thread: "main" | "AudioWorklet";
+    readonly os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
+    readonly browser: "Unknown" | "Chromium" | "Gecko" | "WebKit";
+    readonly language: string;
     /** Show as status what task is proceeding */
     taskMgr: TaskManager;
     fileMgr: IPersistentProjectItemManager;
@@ -73,7 +76,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
     readonly os = detectOS();
     readonly browser = detectBrowserCore();
     readonly language = /* navigator.language === "zh-CN" ? "zh-CN" : */"en";
-    readonly supportAudioWorklet = !!window.AudioWorklet;
     readonly taskMgr = new TaskManager();
     readonly fileMgr: PersistentProjectItemManager = new PersistentProjectItemManager(this, this.fileMgrWorker);
     readonly tempMgr: TemporaryProjectItemManager = new TemporaryProjectItemManager(this);

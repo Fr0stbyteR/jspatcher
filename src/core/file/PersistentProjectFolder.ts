@@ -1,8 +1,8 @@
-import PersistentProjectItemManager from "./PersistentProjectItemManager";
 import PersistentProjectFile from "./PersistentProjectFile";
 import AbstractProjectFolder, { IProjectFolder } from "./AbstractProjectFolder";
+import type { IPersistentProjectItemManager } from "./PersistentProjectItemManager";
 
-export default class PersistentProjectFolder extends AbstractProjectFolder<PersistentProjectItemManager> {
+export default class PersistentProjectFolder extends AbstractProjectFolder<IPersistentProjectItemManager> {
     async init() {
         const items = await this.fileMgr.readDir(this.path || "/");
         for (const rawItem of items) {

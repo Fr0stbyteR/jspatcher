@@ -1,5 +1,5 @@
 import { SemanticICONS } from "semantic-ui-react";
-import TypedEventEmitter from "../../utils/TypedEventEmitter";
+import TypedEventEmitter, { ITypedEventEmitter } from "../../utils/TypedEventEmitter";
 import History from "./History";
 import TemporaryProjectFile from "./TemporaryProjectFile";
 import type { IFileInstance } from "./FileInstance";
@@ -17,7 +17,7 @@ export interface FileEditorEventMap {
     "destroy": never;
 }
 
-export interface IFileEditor<Instance extends IFileInstance = IFileInstance, EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> extends TypedEventEmitter<EventMap & FileEditorEventMap> {
+export interface IFileEditor<Instance extends IFileInstance = IFileInstance, EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> extends ITypedEventEmitter<EventMap & FileEditorEventMap> {
     readonly instance: Instance;
     readonly env: IJSPatcherEnv;
     readonly project: IProject;

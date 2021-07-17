@@ -1,4 +1,4 @@
-import TypedEventEmitter from "../../utils/TypedEventEmitter";
+import TypedEventEmitter, { ITypedEventEmitter } from "../../utils/TypedEventEmitter";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { IObservee } from "../types";
@@ -13,7 +13,7 @@ export interface FileInstanceEventMap {
     "destroy": never;
 }
 
-export interface IFileInstance<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}, File extends IProjectFile = IProjectFile> extends TypedEventEmitter<EventMap & FileInstanceEventMap>, IObservee {
+export interface IFileInstance<EventMap extends Record<string, any> & Partial<FileInstanceEventMap> = {}, File extends IProjectFile = IProjectFile> extends ITypedEventEmitter<EventMap & FileInstanceEventMap>, IObservee {
     file?: File;
     readonly env: IJSPatcherEnv;
     readonly project: IProject;

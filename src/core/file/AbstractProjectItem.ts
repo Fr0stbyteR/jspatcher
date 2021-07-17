@@ -1,4 +1,4 @@
-import TypedEventEmitter from "../../utils/TypedEventEmitter";
+import TypedEventEmitter, { ITypedEventEmitter } from "../../utils/TypedEventEmitter";
 import type { IObservee, ProjectItemType } from "../types";
 import type { IProjectItemManager } from "./AbstractProjectItemManager";
 import type { IProjectFile } from "./AbstractProjectFile";
@@ -16,7 +16,7 @@ export interface ProjectItemEventMap {
     "dirty": boolean;
 }
 
-export interface IProjectItem<EventMap extends Record<string, any> = {}, Manager extends IProjectItemManager = IProjectItemManager> extends TypedEventEmitter<ProjectItemEventMap & EventMap>, IObservee<string> {
+export interface IProjectItem<EventMap extends Record<string, any> = {}, Manager extends IProjectItemManager = IProjectItemManager> extends ITypedEventEmitter<ProjectItemEventMap & EventMap>, IObservee<string> {
     readonly id: string;
     readonly fileMgr: Manager;
     readonly isFolder: boolean;

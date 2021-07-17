@@ -1,14 +1,14 @@
 import * as React from "react";
 import * as Color from "color-js";
 import { Icon, SemanticICONS, StrictModalProps, Modal, Dimmer, Loader, Button } from "semantic-ui-react";
-import MonacoEditor from "react-monaco-editor";
-import { editor } from "monaco-editor/esm/vs/editor/editor.api";
-import Box from "../patcher/Box";
-import PatcherEditor from "../patcher/PatcherEditor";
-import { BaseObject, DefaultObject, DefaultObjectUIProps } from "./Base";
-import { IJSPatcherObject, IPropsMeta, Props } from "./AbstractObject";
+import type MonacoEditor from "react-monaco-editor";
+import type { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import type Box from "../patcher/Box";
+import type PatcherEditor from "../patcher/PatcherEditor";
+import type { BaseObject, DefaultObject, DefaultObjectUIProps } from "./Base";
+import type { IJSPatcherObject, IPropsMeta, Props } from "./AbstractObject";
 import { selectElementPos, selectElementRange } from "../../utils/utils";
-import { TFlatPackage, TMetaType } from "../types";
+import type { TFlatPackage, TMetaType } from "../types";
 import { ImportedStaticMethodObject } from "../../utils/symbols";
 import { StaticMethod } from "./importer/StaticMethod";
 import "./Default.scss";
@@ -30,21 +30,13 @@ export abstract class AbstractUI<
         P extends Partial<AbstractUIProps<T>> & Record<string, any> = {},
         S extends Partial<AbstractUIState> & Record<string, any> = {}
 > extends React.PureComponent<AbstractUIProps<T> & P, S & AbstractUIState> {
-    /**
-     * Sizing rule
-     */
+    /** Sizing rule */
     static sizing: "horizontal" | "vertical" | "both" | "ratio";
-    /**
-     * Default Size while object is created.
-     */
+    /** Default Size while object is created. */
     static defaultSize: [number, number];
-    /**
-     * If set to true, call this.props.onEditEnd at some point
-     */
+    /** If set to true, call this.props.onEditEnd at some point */
     static editableOnUnlock: boolean;
-    /**
-     * If this UI can be displayed elsewhere
-     */
+    /** If this UI can be displayed elsewhere */
     static dockable: boolean;
     state: S & AbstractUIState = {
         ...this.state,

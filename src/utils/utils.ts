@@ -103,6 +103,7 @@ export const detectOS = (): "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown" =
 export const detectBrowserCore = () => {
     if ((window as any).chrome) return "Chromium";
     if ((window as any).InstallTrigger) return "Gecko";
+    if (navigator.vendor.indexOf("Apple") !== -1) return "WebKit";
     return "Unknown";
 };
 export const roundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number | number[]) => {
@@ -332,4 +333,26 @@ export const convertUnitToSample = (str: string, unit: TAudioUnit, { sampleRate 
     h += ~~(min / 60);
     min %= 60;
     return (h * 3600 + min * 60 + s + ms / 1000) * sampleRate;
+};
+
+export const ab2sab = (ab: SharedArrayBuffer | ArrayBuffer) => {
+    if (ab instanceof ArrayBuffer) return ab;
+    const sab = new SharedArrayBuffer(ab.byteLength);
+    const ui8ab = new Uint8Array(ab);
+    const ui8sab = new Uint8Array(sab);
+    for (let i = 0; i < ui8ab.length; i++) {
+        ui8sab[i] = ui8ab[i];
+    }
+    return sab;
+};
+
+export const sab2ab = (sab: SharedArrayBuffer | ArrayBuffer) => {
+    if (sab instanceof SharedArrayBuffer) return sab;
+    const ab = new ArrayBuffer(sab.byteLength);
+    const ui8ab = new Uint8Array(ab);
+    const ui8sab = new Uint8Array(sab);
+    for (let i = 0; i < ui8sab.length; i++) {
+        ui8ab[i] = ui8sab[i];
+    }
+    return ab;
 };

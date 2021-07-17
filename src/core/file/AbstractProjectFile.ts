@@ -52,6 +52,9 @@ export default abstract class AbstractProjectFile<Data = ArrayBuffer, Manager ex
     get data() {
         return this._data;
     }
+    set data(dataIn: Data) {
+        this._data = dataIn;
+    }
     items: Set<AbstractProjectItem> = new Set();
     get fileExtension() {
         const splitted = this.name.split(".");

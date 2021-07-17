@@ -1,9 +1,9 @@
 import type * as JsZip from "jszip";
 import AbstractProjectItemManager, { IProjectItemManager } from "./AbstractProjectItemManager";
-import type FileMgrWorker from "../workers/FileMgrWorker";
-import { IProjectFolder } from "./AbstractProjectFolder";
-import { IJSPatcherEnv } from "../Env";
 import PersistentProjectFolder from "./PersistentProjectFolder";
+import type FileMgrWorker from "../workers/FileMgrWorker";
+import type { IProjectFolder } from "./AbstractProjectFolder";
+import type { IJSPatcherEnv } from "../Env";
 
 export interface IPersistentProjectItemManager extends IProjectItemManager {
     /** Read file data from backend */
@@ -29,7 +29,7 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
     JsZip: typeof JsZip;
     workerInited = false;
     get projectRoot() {
-        return this.root.findItem(PersistentProjectItemManager.projectFolderName) as IProjectFolder;
+        return this.root.findItem(AbstractProjectItemManager.projectFolderName) as IProjectFolder;
     }
     constructor(envIn: IJSPatcherEnv, worker?: FileMgrWorker) {
         super(envIn);
@@ -47,7 +47,7 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
         if (clean) await this.worker.empty();
         this.root = new PersistentProjectFolder(this, null, null);
         await this.root.init();
-        if (!this.projectRoot) await this.root.addFolder(PersistentProjectItemManager.projectFolderName);
+        if (!this.projectRoot) await this.root.addFolder(AbstractProjectItemManager.projectFolderName);
         this.emit("ready");
         return this;
     }
