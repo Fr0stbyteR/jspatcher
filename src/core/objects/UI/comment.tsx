@@ -22,6 +22,7 @@ class CommentUI extends BaseUI<comment, {}, { value: string }> {
     refSpan = React.createRef<HTMLSpanElement>();
     componentDidMount() {
         super.componentDidMount();
+        if (this.refSpan.current) this.refSpan.current.innerText = this.state.value;
         if (this.props.editing) this.toggleEdit(this.props.editing);
     }
     componentDidUpdate(prevProps: Readonly<BaseUIProps>) {
@@ -39,7 +40,7 @@ class CommentUI extends BaseUI<comment, {}, { value: string }> {
         } else {
             window.getSelection().removeAllRanges();
             span.blur();
-            this.props.object.setData({ value: span.textContent });
+            this.props.object.setData({ value: span.innerText });
         }
     }
     handleMouseDown = (e: React.MouseEvent) => (this.props.editing ? e.stopPropagation() : null);
