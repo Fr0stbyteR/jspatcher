@@ -14,7 +14,7 @@ import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
-import FFmpegWorker from "./workers/FFmpegWorker1";
+import FFmpegWorker from "./workers/FFmpegWorker";
 import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
