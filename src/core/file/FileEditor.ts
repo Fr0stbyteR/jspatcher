@@ -179,7 +179,7 @@ export default class FileEditor<Instance extends IFileInstance = IFileInstance, 
         } else if (this.isReadonly) {
             await this.file.saveAs(parent, name, data, this);
         } else if (this.isInMemory) {
-            this.file = await parent.addProjectItem(name, data) as any;
+            this.file = await parent.addFile(name, data) as any;
         } else {
             await this.file.saveAs(parent, name, data, this);
         }

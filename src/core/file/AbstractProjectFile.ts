@@ -55,7 +55,6 @@ export default abstract class AbstractProjectFile<Data = ArrayBuffer, Manager ex
     set data(dataIn: Data) {
         this._data = dataIn;
     }
-    items: Set<AbstractProjectItem> = new Set();
     get fileExtension() {
         const splitted = this.name.split(".");
         return splitted[splitted.length - 1];
@@ -69,19 +68,18 @@ export default abstract class AbstractProjectFile<Data = ArrayBuffer, Manager ex
         });
     }
     abstract clone(parentIn?: IProjectFolder, nameIn?: string, dataIn?: Data): IProjectFile<Data>;
-    async init() {
-        await this.emit("ready");
-    }
     abstract instantiate(env: IJSPatcherEnv, projectIn?: IProject): Promise<IFileInstance>;
     abstract instantiateEditor(env: IJSPatcherEnv, projectIn?: IProject): Promise<IFileEditor>;
     async save(newData: Data, by: any) {
         this._data = newData;
         await this.emit("saved", by);
+        await this.fileMgr.emitChanged();
     }
     async saveAsCopy(parent: IProjectFolder, name: string, newData: any, manager?: IProjectItemManager): Promise<IProjectFile> {
         const item = this.clone(parent, name, newData);
         parent.items.add(item);
         await this.emitTreeChanged();
+        await this.fileMgr.emitChanged();
         return item;
     }
     async saveAs(to: IProjectFolder, newName: string, newData: any, by: any, manager?: IProjectItemManager): Promise<IProjectFile> {
@@ -93,8 +91,9 @@ export default abstract class AbstractProjectFile<Data = ArrayBuffer, Manager ex
         parent.items.add(item);
         await parent.emitTreeChanged();
         await this.emitTreeChanged();
-        await this.emit("pathChanged", { from, to });
+        await this.emit("pathChanged", { from: from.path, to: to.path });
         await this.emit("saved", by);
+        await this.fileMgr.emitChanged();
         return item;
     }
 }

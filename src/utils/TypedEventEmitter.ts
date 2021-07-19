@@ -1,37 +1,25 @@
 export const $AnyEventType = Symbol("__TypedEventListener_AnyEventType");
-export interface ITypedEventEmitter<M> {
-    readonly listeners: {
-        [eventName: string]: ((e: any) => any)[];
-        [$AnyEventType]: ((e: { eventName: string; eventData?: any }) => any)[];
-    };
-    on<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => any): void;
-    once<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => any): void;
-    onAny<K extends Extract<keyof M, string>>(listener: (e: { eventName: K; eventData?: M[K] }) => any): void;
-    off<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => any): void;
-    offAny<K extends Extract<keyof M, string>>(listener: (e: { eventName: K; eventData?: M[K] }) => any): void;
-    emit<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]): Promise<any[]>;
-    emitSerial<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]): Promise<any[]>;
-    emitSync<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K]): any[];
-    offAll(eventName?: keyof M): void;
-    listenerCount(eventName: keyof M): number;
+export interface ITypedEventEmitter<M> extends Omit<TypedEventEmitter<M>, "_listeners" | "getListeners"> {
 }
 export interface IEmitOptions {
     /** if true, the emission will not trigger `onAny` listeners */
-    noEmitAny?: boolean;
+    excludeAny?: boolean;
+    /** Exclude listeners with emit */
+    exclude?: ((e: any) => any)[];
 }
 export class TypedEventEmitter<M> {
     private _listeners: { [eventName: string]: ((e: any) => any | Promise<any>)[]; [$AnyEventType]: ((e: { eventName: string; eventData?: any }) => any | Promise<any>)[] } = { [$AnyEventType]: [] };
     get listeners() {
         return this._listeners;
     }
-    private getListeners<K extends Extract<keyof M, string>>(eventName: K) {
+    private getListeners<K extends keyof M & string>(eventName: K) {
         if (!(eventName in this._listeners)) this._listeners[eventName] = [];
         return this._listeners[eventName];
     }
-    on<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => any) {
+    on<K extends keyof M & string>(eventName: K, listener: (e: M[K]) => any) {
         if (this.getListeners(eventName).indexOf(listener) === -1) this.getListeners(eventName).push(listener);
     }
-    once<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => any) {
+    once<K extends keyof M & string>(eventName: K, listener: (e: M[K]) => any) {
         const listenerWithOff = (arg: M[K]) => {
             const returnValue = listener(arg);
             this.off(eventName, listenerWithOff);
@@ -39,27 +27,37 @@ export class TypedEventEmitter<M> {
         };
         this.on(eventName, listenerWithOff);
     }
-    onAny<K extends Extract<keyof M, string>>(listener: (e: { eventName: K; eventData?: M[K] }) => any) {
+    onAny<K extends keyof M & string>(listener: (e: { eventName: K; eventData?: M[K] }) => any) {
         this._listeners[$AnyEventType].push(listener);
     }
-    off<K extends Extract<keyof M, string>>(eventName: K, listener: (e: M[K]) => any) {
+    off<K extends keyof M & string>(eventName: K, listener: (e: M[K]) => any) {
         const i = this.getListeners(eventName).indexOf(listener);
         if (i !== -1) this.getListeners(eventName).splice(i, 1);
     }
-    offAny<K extends Extract<keyof M, string>>(listener: (e: { eventName: K; eventData?: M[K] }) => any) {
+    offAny<K extends keyof M & string>(listener: (e: { eventName: K; eventData?: M[K] }) => any) {
         const i = this._listeners[$AnyEventType].indexOf(listener);
         if (i !== -1) this._listeners[$AnyEventType].splice(i, 1);
     }
-    async emit<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K], options?: IEmitOptions) {
-        const listeners = this.getListeners(eventName);
-        const anyListeners = options?.noEmitAny ? [] : this._listeners[$AnyEventType];
+    async emit<K extends keyof M & string>(eventName: K, eventData?: M[K], options?: IEmitOptions) {
+        let listeners = this.getListeners(eventName);
+        let anyListeners = options?.excludeAny ? [] : this._listeners[$AnyEventType];
         if (!listeners.length && !anyListeners.length) return [];
+        if (options?.exclude?.length) {
+            const { exclude } = options;
+            listeners = listeners.filter(l => exclude.indexOf(l) === -1);
+            anyListeners = anyListeners.filter(l => exclude.indexOf(l) === -1);
+        }
         return Promise.all([...listeners.map(f => f(eventData)), ...anyListeners.map(f => f({ eventName, eventData }))]);
     }
-    async emitSerial<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K], options?: IEmitOptions) {
-        const listeners = this.getListeners(eventName);
-        const anyListeners = options?.noEmitAny ? [] : this._listeners[$AnyEventType];
+    async emitSerial<K extends keyof M & string>(eventName: K, eventData?: M[K], options?: IEmitOptions) {
+        let listeners = this.getListeners(eventName);
+        let anyListeners = options?.excludeAny ? [] : this._listeners[$AnyEventType];
         if (!listeners.length && !anyListeners.length) return [];
+        if (options?.exclude?.length) {
+            const { exclude } = options;
+            listeners = listeners.filter(l => exclude.indexOf(l) === -1);
+            anyListeners = anyListeners.filter(l => exclude.indexOf(l) === -1);
+        }
         const returnValues = [];
         for (let i = 0; i < listeners.length; i++) {
             const listener = listeners[i];
@@ -71,20 +69,25 @@ export class TypedEventEmitter<M> {
         }
         return returnValues;
     }
-    emitSync<K extends Extract<keyof M, string>>(eventName: K, eventData?: M[K], options?: IEmitOptions) {
-        const listeners = this.getListeners(eventName);
-        const anyListeners = options?.noEmitAny ? [] : this._listeners[$AnyEventType];
+    emitSync<K extends keyof M & string>(eventName: K, eventData?: M[K], options?: IEmitOptions) {
+        let listeners = this.getListeners(eventName);
+        let anyListeners = options?.excludeAny ? [] : this._listeners[$AnyEventType];
         if (!listeners.length && !anyListeners.length) return [];
+        if (options?.exclude?.length) {
+            const { exclude } = options;
+            listeners = listeners.filter(l => exclude.indexOf(l) === -1);
+            anyListeners = anyListeners.filter(l => exclude.indexOf(l) === -1);
+        }
         return [...listeners.map(f => f(eventData)), ...anyListeners.map(f => f({ eventName, eventData }))];
     }
-    offAll(eventName?: Extract<keyof M, string>) {
+    offAll(eventName?: keyof M & string) {
         if (eventName) {
             this._listeners[eventName] = [];
         } else {
             this._listeners = { [$AnyEventType]: [] };
         }
     }
-    listenerCount(eventName: Extract<keyof M, string>) {
+    listenerCount(eventName: keyof M & string) {
         const anyListenerCount = this._listeners[$AnyEventType].length;
         if (!(eventName in this._listeners)) return anyListenerCount;
         return this._listeners[eventName].length + anyListenerCount;

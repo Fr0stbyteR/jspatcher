@@ -14,7 +14,7 @@ import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
-import FFmpegWorker from "./workers/FFmpegWorker";
+import FFmpegWorker from "./workers/FFmpegWorker1";
 import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
@@ -272,9 +272,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         */
         return this;
     }
-    _generatedId = 1;
+    readonly generatedId = new Uint32Array(new SharedArrayBuffer(Uint32Array.BYTES_PER_ELEMENT));
     generateId(objectIn: object) {
-        return this.thread + objectIn.constructor.name + this._generatedId++;
+        return this.thread + objectIn.constructor.name + Atomics.add(this.generatedId, 0, 1);
     }
     openInstance(i: IFileInstance) {
         this.emit("openInstance", i);

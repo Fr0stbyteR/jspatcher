@@ -13,6 +13,7 @@ export default class PersistentProjectFolder extends AbstractProjectFolder<IPers
             await item.init();
         }
         await this.emit("ready");
+        await this.fileMgr.emitChanged();
     }
     clone(parentIn = this.parent, nameIn = this._name) {
         const Ctor = this.constructor as typeof PersistentProjectFolder;
@@ -22,7 +23,7 @@ export default class PersistentProjectFolder extends AbstractProjectFolder<IPers
         if (isFolder) return new PersistentProjectFolder(this.fileMgr, this, nameIn);
         return new PersistentProjectFile(this.fileMgr, this, nameIn, dataIn);
     }
-    async addProjectItem(nameIn: string, dataIn = new ArrayBuffer(0)) {
+    async addFile(nameIn: string, dataIn = new ArrayBuffer(0)) {
         if (this.existItem(nameIn)) throw new Error(`${nameIn} already exists.`);
         const tempItem = new PersistentProjectFile(this.fileMgr, this, nameIn, dataIn);
         await this.fileMgr.putFile(tempItem);
@@ -64,7 +65,7 @@ export default class PersistentProjectFolder extends AbstractProjectFolder<IPers
         this.parent.items.add(this);
         await from.emitTreeChanged();
         await this.emitTreeChanged();
-        await this.emit("pathChanged", { from, to });
+        await this.emit("pathChanged", { from: from.path, to: to.path });
         if (oldName !== newName) await this.emit("nameChanged", { oldName, newName });
     }
     async destroy() {

@@ -225,10 +225,14 @@ export declare const IJSPatcherObject: {
 };
 
 export default abstract class AbstractObject<
-    D extends {} = {}, S extends {} = {},
-    I extends any[] = any[], O extends any[] = any[],
-    A extends any[] = any[], P extends {} = {},
-    U extends {} = {}, E extends Partial<JSPatcherObjectEventMap<D, S, I, A, P, U, {}>> & Record<string, any> = {}
+    D extends {} = {},
+    S extends {} = {},
+    I extends any[] = any[],
+    O extends any[] = any[],
+    A extends any[] = any[],
+    P extends {} = {},
+    U extends {} = {},
+    E extends Partial<JSPatcherObjectEventMap<D, S, I, A, P, U, {}>> & Record<string, any> = {}
 > extends TypedEventEmitter<JSPatcherObjectEventMap<D, S, I, A, P, U, E>> implements IJSPatcherObject<D, S, I, O, A, P, U, E> {
     static readonly isJSPatcherObjectConstructor = true as const;
     static package = "Base";
@@ -313,7 +317,7 @@ export default abstract class AbstractObject<
                 if (data) {
                     const d = await data();
                     try {
-                        item = await tempMgr.root.addProjectItem(id, d, type as TempItemType) as SharedItemByType<T>;
+                        item = await tempMgr.root.addFile(id, d, type as TempItemType) as SharedItemByType<T>;
                         newItem = true;
                     } catch {
                         item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;

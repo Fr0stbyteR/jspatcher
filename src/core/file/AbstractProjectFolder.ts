@@ -11,7 +11,7 @@ export interface IProjectFolder<Manager extends IProjectItemManager = IProjectIt
     findItem(itemIn: string): IProjectFileOrFolder;
     existItem(itemIn: IProjectFileOrFolder | string): boolean;
     uniqueName(nameIn: string): string;
-    addProjectItem(nameIn: string, dataIn?: any): Promise<IProjectFileOrFolder>;
+    addFile(nameIn: string, dataIn?: any): Promise<IProjectFileOrFolder>;
     addFolder(nameIn: string): Promise<IProjectFolder>;
     empty(): Promise<void>;
     getTree(): RawProjectItem<"folder">;
@@ -55,7 +55,7 @@ export default abstract class AbstractProjectFolder<Manager extends IProjectItem
         } while (this.existItem(nameIn));
         return name;
     }
-    abstract addProjectItem(nameIn: string, dataIn?: any): Promise<IProjectFileOrFolder>;
+    abstract addFile(nameIn: string, dataIn?: any): Promise<IProjectFileOrFolder>;
     abstract addFolder(nameIn: string): Promise<IProjectFolder>;
     async empty() {
         for (const item of this.items) {

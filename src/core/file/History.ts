@@ -11,7 +11,7 @@ export default class History<EventMap extends Record<string, any> & Partial<File
     capture = true;
     constructor(editorIn: Editor) {
         this.editor = editorIn;
-        this.eventListening.forEach(type => this.editor.on(type as Extract<keyof EventMap, string>, event => this.did(type, event)));
+        this.eventListening.forEach(type => this.editor.on(type as keyof EventMap & string, event => this.did(type, event)));
         this.editor.on("saved", this.handleSaved);
     }
     did(type: keyof EventMap, event: any) {
@@ -28,7 +28,7 @@ export default class History<EventMap extends Record<string, any> & Partial<File
         this.editor.emit("dirty", this.isDirty);
     }
     destroy() {
-        this.eventListening.forEach(type => this.editor.off(type as Extract<keyof EventMap, string>, event => this.did(type, event)));
+        this.eventListening.forEach(type => this.editor.off(type as keyof EventMap & string, event => this.did(type, event)));
     }
     get isDirty() {
         if (!this.saveTime) return this.isUndoable;

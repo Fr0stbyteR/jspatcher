@@ -1,24 +1,43 @@
 import processorURL from "./WorkletEnv.worklet.ts"; // eslint-disable-line import/extensions
 import AudioWorkletProxyNode from "./AudioWorkletProxyNode";
 import AudioWorkletRegister from "./AudioWorkletRegister";
+import { sab2ab } from "../../utils/utils";
 import type { WorkletEnvParameters, IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvEventMap, WorkletEnvOptions } from "./WorkletEnv.types";
 import type Env from "../Env";
 import type { Task, TaskError } from "../TaskMgr";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type PersistentProjectFolder from "../file/PersistentProjectFolder";
-import { sab2ab } from "../../utils/utils";
+import type { ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
 
 export const processorID = "__JSPatcher_WorkletEnv";
 
 export default class WorkletEnvNode extends AudioWorkletProxyNode<IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvParameters, WorkletEnvOptions, WorkletEnvEventMap> implements IWorkletEnvNode {
     static processorID = processorID;
     static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorID, processorURL);
-    static fnNames: (keyof IWorkletEnvProcessor)[] = [] as never[];
+    static fnNames: (keyof IWorkletEnvProcessor)[] = ["workletFileMgrDiff"];
     readonly env: Env;
     constructor(context: BaseAudioContext, mainEnv: Env) {
-        const { os, browser, language } = mainEnv;
-        super(context, processorID, { numberOfInputs: 0, numberOfOutputs: 0, processorOptions: { os, browser, language } });
+        super(context, processorID, {
+            numberOfInputs: 0,
+            numberOfOutputs: 0,
+            processorOptions: {
+                os: mainEnv.os,
+                browser: mainEnv.browser,
+                language: mainEnv.language,
+                generatedId: mainEnv.generatedId
+            }
+        });
         this.env = mainEnv;
+        this.bindFileMgr();
+    }
+    handleFileMgrChange = () => this.workletFileMgrDiff(this.fileMgr.getDataForDiff());
+    bindFileMgr() {
+        this.fileMgr.on("changed", this.handleFileMgrChange);
+    }
+    async fileMgrDiff(diff: ProjectItemManagerDataForDiff) {
+        this.fileMgr.off("changed", this.handleFileMgrChange);
+        await this.fileMgr.processDiff(diff);
+        this.fileMgr.on("changed", this.handleFileMgrChange);
     }
     taskBegin({ id, message, emitter }: Pick<Task, "id" | "message" | "emitter">) {
         this.env.taskMgr.newTask(emitter, message, onUpdate => new Promise<void>((resolve, reject) => {
@@ -72,5 +91,8 @@ export default class WorkletEnvNode extends AudioWorkletProxyNode<IWorkletEnvNod
     fileMgrWriteFile(path: string, dataIn: ArrayBuffer | SharedArrayBuffer) {
         const data = sab2ab(dataIn);
         return this.env.fileMgr.writeFile(path, data);
+    }
+    fileMgrGetPathIdMap() {
+        return this.env.fileMgr.getPathIdMap();
     }
 }

@@ -9,10 +9,10 @@ export type IProjectFileOrFolder = IProjectFolder | IProjectFile;
 export interface ProjectItemEventMap {
     "ready": never;
     "nameChanged": { oldName: string; newName: string };
-    "pathChanged": { from: IProjectFolder; to: IProjectFolder };
+    "pathChanged": { from: string; to: string };
     "treeChanged": never;
     "destroyed": never;
-    "observers": Set<any>;
+    "observers": Set<string>;
     "dirty": boolean;
 }
 
@@ -73,10 +73,12 @@ export default abstract class AbstractProjectItem<EventMap extends Partial<Proje
     async addObserver(observer: string) {
         this._observers.add(observer);
         await this.emit("observers", this._observers);
+        await this.fileMgr.emitChanged();
     }
     async removeObserver(observer: string) {
         this._observers.delete(observer);
         await this.emit("observers", this._observers);
+        await this.fileMgr.emitChanged();
     }
     constructor(fileMgrIn: Manager, parentIn: IProjectFolder, nameIn: string) {
         super();
@@ -92,6 +94,7 @@ export default abstract class AbstractProjectItem<EventMap extends Partial<Proje
     abstract clone(parentIn?: IProjectFolder, nameIn?: string): IProjectItem;
     async init() {
         await this.emit("ready");
+        await this.fileMgr.emitChanged();
     }
     async emitTreeChanged() {
         await this.emit("treeChanged");

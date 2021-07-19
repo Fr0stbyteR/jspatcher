@@ -4,12 +4,11 @@ import type TaskMgr from "../TaskMgr";
 import type { IJSPatcherEnv } from "../Env";
 import type { ProjectItemType, RawProjectItem } from "../types";
 import type { IFileInstance } from "./FileInstance";
-import type { IProjectFile } from "./AbstractProjectFile";
 import type { IProjectFolder } from "./AbstractProjectFolder";
-import type { IProjectItem, ProjectItemEventMap } from "./AbstractProjectItem";
+import type { IProjectFileOrFolder, IProjectItem, ProjectItemEventMap } from "./AbstractProjectItem";
 import { IProject } from "../Project";
 
-export interface ItemChangedEvent<K extends keyof ProjectItemEventMap = any> {
+export interface ItemChangedEvent<K extends keyof ProjectItemEventMap = keyof ProjectItemEventMap> {
     id: string;
     isFolder: boolean;
     path: string;
@@ -23,13 +22,14 @@ export interface ProjectItemManagerEventMap {
     "ready": never;
     "treeChanged": RawProjectItem<"folder">;
     "itemChanged": ItemChangedEvent;
+    "changed": never;
 }
 
 export interface IProjectItemManager<EventMap extends Record<string, any> & Partial<ProjectItemManagerEventMap> = {}> extends ITypedEventEmitter<EventMap & ProjectItemManagerEventMap> {
     readonly id: string;
     readonly taskMgr: TaskMgr;
-    readonly allItems: Set<IProjectFile | IProjectFolder>;
-    readonly allProjectItems: Set<IProjectFile | IProjectFolder>;
+    readonly allItems: Record<string, IProjectFileOrFolder>;
+    readonly allProjectItems: Record<string, IProjectFileOrFolder>;
     root: IProjectFolder;
     /** Enpty the backend file manager */
     empty(): Promise<any>;
@@ -38,31 +38,33 @@ export interface IProjectItemManager<EventMap extends Record<string, any> & Part
     /** Create all project items by analyzing the backend */
     init(clean?: boolean): Promise<this>;
     getTypeFromFileName(name: string): ProjectItemType;
-    getProjectItemFromId(id: string): IProjectFile | IProjectFolder;
-    getProjectItemFromPath(path: string): IProjectFile | IProjectFolder;
+    getProjectItemFromId(id: string): IProjectFileOrFolder;
+    getProjectItemFromPath(path: string): IProjectFileOrFolder;
+    getPathIdMap(): Record<string, string>;
     instantiateProjectPath(path: string, envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileInstance>;
     emitTreeChanged(): Promise<void>;
+    emitChanged(): Promise<void>;
     generateItemId(item: IProjectItem): string;
 }
 
-export default abstract class AbstractProjectItemManager<EventMap extends Record<string, any> & Partial<ProjectItemManagerEventMap> = {}> extends TypedEventEmitter<EventMap & ProjectItemManagerEventMap> implements IProjectItemManager {
+export default abstract class AbstractProjectItemManager<EventMap extends Record<string, any> & Partial<ProjectItemManagerEventMap> = {}> extends TypedEventEmitter<EventMap & ProjectItemManagerEventMap> implements IProjectItemManager<EventMap> {
     static projectFolderName = "project";
     readonly id: string;
     readonly env: IJSPatcherEnv;
     readonly taskMgr: TaskMgr;
     get allItems() {
-        const items = new Set<IProjectFile | IProjectFolder>();
-        const rec = (cur: IProjectFile | IProjectFolder) => {
-            items.add(cur);
+        const items: Record<string, IProjectFileOrFolder> = {};
+        const rec = (cur: IProjectFileOrFolder) => {
+            items[cur.id] = cur;
             if (cur.isFolder) cur.items.forEach(rec);
         };
         rec(this.root);
         return items;
     }
     get allProjectItems() {
-        const items = new Set<IProjectFile | IProjectFolder>();
-        const rec = (cur: IProjectFile | IProjectFolder) => {
-            items.add(cur);
+        const items: Record<string, IProjectFileOrFolder> = {};
+        const rec = (cur: IProjectFileOrFolder) => {
+            items[cur.id] = cur;
             if (cur.isFolder) cur.items.forEach(rec);
         };
         rec(this.projectRoot);
@@ -86,11 +88,11 @@ export default abstract class AbstractProjectItemManager<EventMap extends Record
         return extToType(ext);
     }
     getProjectItemFromId(id: string) {
-        return Array.from(this.allItems).find(i => i.id === id);
+        return this.allItems[id];
     }
     getProjectItemFromPath(path: string) {
         const pathArray = path.split("/");
-        const itemArray: (IProjectFile | IProjectFolder)[] = [this.root, this.projectRoot];
+        const itemArray: (IProjectFileOrFolder)[] = [this.root, this.projectRoot];
         for (let i = 0; i < pathArray.length; i++) {
             const id = pathArray[i];
             if (id.length === 0) continue;
@@ -107,6 +109,11 @@ export default abstract class AbstractProjectItemManager<EventMap extends Record
         }
         return itemArray[itemArray.length - 1];
     }
+    getPathIdMap() {
+        const map: Record<string, string> = {};
+        Object.entries(this.allItems).forEach(([id, { path }]) => map[path] = id);
+        return map;
+    }
     instantiateProjectPath(path: string, envIn: IJSPatcherEnv, projectIn: IProject) {
         const item = this.getProjectItemFromPath(path);
         if (item.isFolder === false) return item.instantiate(envIn, projectIn);
@@ -114,6 +121,9 @@ export default abstract class AbstractProjectItemManager<EventMap extends Record
     }
     async emitTreeChanged() {
         this.emit("treeChanged", this.root.getTree());
+    }
+    async emitChanged() {
+        this.emit("changed");
     }
     get projectRoot() {
         return this.root.findItem(AbstractProjectItemManager.projectFolderName) as IProjectFolder;

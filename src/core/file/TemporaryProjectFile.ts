@@ -12,11 +12,9 @@ import type { IFileInstance } from "./FileInstance";
  * An item under TempMgr, this contains in-memory data/instance.
  */
 export default class TemporaryProjectFile<Data = any> extends AbstractProjectFile<Data, TemporaryProjectItemManager> {
-    async init() {
-        await this.emit("ready");
-    }
     async removeObserver(observer: string) {
         await super.removeObserver(observer);
+        await this.fileMgr.emitChanged();
         if (this._observers.size === 0) await this.destroy();
     }
     /**
@@ -34,6 +32,7 @@ export default class TemporaryProjectFile<Data = any> extends AbstractProjectFil
         this._name = newName;
         await this.emitTreeChanged();
         await this.emit("nameChanged", { oldName, newName });
+        await this.fileMgr.emitChanged();
     }
     async move(to: IProjectFolder, newName = this.name) {
         if (to === this as any) return;
@@ -47,23 +46,27 @@ export default class TemporaryProjectFile<Data = any> extends AbstractProjectFil
         this.parent.items.add(this);
         await from.emitTreeChanged();
         await this.emitTreeChanged();
-        await this.emit("pathChanged", { from, to });
+        await this.emit("pathChanged", { from: from.path, to: to.path });
         if (oldName !== newName) await this.emit("nameChanged", { oldName, newName });
+        await this.fileMgr.emitChanged();
     }
     async destroy() {
         this.parent.items.delete(this);
         await this.emitTreeChanged();
         await this.emit("destroyed");
+        await this.fileMgr.emitChanged();
     }
     async save(newData: Data, by: any) {
         this._data = newData;
         this.emit("saved", by);
+        await this.fileMgr.emitChanged();
     }
     async saveAsCopy(parent: IProjectFolder, name: string, newData: ArrayBuffer, persistentMgr?: PersistentProjectItemManager) {
         const item = new PersistentProjectFile(persistentMgr, parent, name, newData);
         await persistentMgr.putFile(item);
         parent.items.add(item);
         await this.emitTreeChanged();
+        await this.fileMgr.emitChanged();
         return item;
     }
     async saveAs(to: IProjectFolder, name: string, newData: ArrayBuffer, by: any, persistentMgr: PersistentProjectItemManager) {
@@ -75,8 +78,9 @@ export default class TemporaryProjectFile<Data = any> extends AbstractProjectFil
         const _this: PersistentProjectFile = Object.setPrototypeOf(this, PersistentProjectFile.prototype);
         this.parent.items.add(_this);
         await this.emitTreeChanged();
-        await this.emit("pathChanged", { from, to });
+        await this.emit("pathChanged", { from: from.path, to: to.path });
         await this.emit("saved", by);
+        await this.fileMgr.emitChanged();
         return this;
     }
     async instantiate(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileInstance> {

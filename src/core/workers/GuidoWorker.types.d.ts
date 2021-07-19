@@ -1,7 +1,7 @@
 import { MessagePortRequest } from "./Worker";
 
 export interface IGuidoWorker {
-    init(): Promise<void>
+    init(): Promise<void>;
     // ------------------------------------------------------------------------
     // Guido Engine interface;
     start(): void;

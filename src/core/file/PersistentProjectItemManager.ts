@@ -1,9 +1,14 @@
 import type * as JsZip from "jszip";
 import AbstractProjectItemManager, { IProjectItemManager } from "./AbstractProjectItemManager";
 import PersistentProjectFolder from "./PersistentProjectFolder";
+import { sab2ab } from "../../utils/utils";
 import type FileMgrWorker from "../workers/FileMgrWorker";
 import type { IProjectFolder } from "./AbstractProjectFolder";
 import type { IJSPatcherEnv } from "../Env";
+import type PersistentProjectFile from "./PersistentProjectFile";
+import type { IProjectItem } from "./AbstractProjectItem";
+
+export type ProjectItemManagerDataForDiff = Record<string, { isFolder: true; parent: string; name: string; path: string } | { isFolder: false; data: SharedArrayBuffer; lastModifiedId: string; parent: string; name: string; path: string }>;
 
 export interface IPersistentProjectItemManager extends IProjectItemManager {
     /** Read file data from backend */
@@ -16,8 +21,10 @@ export interface IPersistentProjectItemManager extends IProjectItemManager {
     /** Put a projectItem into the backend */
     putFile(item: { isFolder: boolean; path: string; data?: ArrayBuffer }): Promise<void>;
     writeFile(path: string, data: ArrayBuffer): Promise<void>;
-    remove(path: string, isFolder?: boolean): Promise<true>;
-    rename(oldPath: string, newPath: string): Promise<true>;
+    remove(path: string, isFolder?: boolean): Promise<boolean>;
+    rename(oldPath: string, newPath: string): Promise<boolean>;
+    getDataForDiff(): ProjectItemManagerDataForDiff;
+    processDiff(diff: ProjectItemManagerDataForDiff): Promise<void>;
     importFileZip(data: ArrayBuffer, subfolder?: string, to?: IProjectFolder, taskHost?: any): Promise<void>;
     exportProjectZip(): Promise<ArrayBuffer>;
 }
@@ -28,6 +35,7 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
     readonly worker: FileMgrWorker;
     JsZip: typeof JsZip;
     workerInited = false;
+    cachedPathIdMap: Record<string, string> = {};
     get projectRoot() {
         return this.root.findItem(AbstractProjectItemManager.projectFolderName) as IProjectFolder;
     }
@@ -165,10 +173,58 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
         }
         throw new Error(`Cannot rename path ${oldPath}`);
     }
+    getDataForDiff() {
+        const map: ProjectItemManagerDataForDiff = {};
+        const { allItems } = this;
+        for (const id in allItems) {
+            const item = allItems[id] as PersistentProjectFile | PersistentProjectFolder;
+            if (item.isFolder === true) map[id] = { isFolder: item.isFolder, parent: item.parent.id, name: item.name, path: item.path };
+            else map[id] = { isFolder: item.isFolder, data: item.sab, lastModifiedId: item.lastModifiedId, parent: item.parent.id, name: item.name, path: item.path };
+        }
+        return map;
+    }
+    async processDiff(diff: ProjectItemManagerDataForDiff) {
+        for (const id in diff) {
+            const process = async (id: string): Promise<void> => {
+                const $item = diff[id];
+                const $parentId = $item.parent;
+                let parent = this.getProjectItemFromId($parentId);
+                if (!parent) await process($parentId);
+                parent = this.getProjectItemFromId($parentId) as PersistentProjectFolder;
+                const current = this.getProjectItemFromId(id) as PersistentProjectFile | PersistentProjectFolder;
+                if (!current) {
+                    if (parent.isFolder === true) {
+                        this.cachedPathIdMap[$item.path] = id;
+                        if ($item.isFolder === true) {
+                            await parent.addFolder($item.name);
+                        } else {
+                            const newFile = await parent.addFile($item.name, sab2ab($item.data)) as PersistentProjectFile;
+                            newFile.lastModifiedId = $item.lastModifiedId;
+                        }
+                    }
+                } else {
+                    if (current.isFolder === false && $item.isFolder === false) {
+                        if (current.lastModifiedId !== $item.lastModifiedId) await current.save(sab2ab($item.data), this);
+                        if (current.name !== $item.name) await current.rename($item.name);
+                        if (current.parent.id !== $item.parent) await current.move(parent);
+                    }
+                }
+            };
+            await process(id);
+        }
+    }
+    generateItemId(item: IProjectItem) {
+        if (item.path in this.cachedPathIdMap) {
+            const id = this.cachedPathIdMap[item.path];
+            delete this.cachedPathIdMap[item.path];
+            return id;
+        }
+        return super.generateItemId(item);
+    }
     async importFile(file: File, to: IProjectFolder = this.projectRoot) {
         const name = to.uniqueName(file.name);
         const data = await file.arrayBuffer();
-        return to.addProjectItem(name, data);
+        return to.addFile(name, data);
     }
     async importFileZip(data: ArrayBuffer, subfolder?: string, to: IProjectFolder = this.projectRoot, taskHost: any = this) {
         return this.env.taskMgr.newTask(taskHost, "Unzipping file...", async (onUpdate) => {
@@ -199,7 +255,7 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
                         const $name = splitted[splitted.length - 1];
                         const $data = await $file.async("arraybuffer", state => onUpdate(`${$nameIn} - ${state.percent.toFixed(2)}%`));
                         if ($to.existItem($name)) continue;
-                        await $to.addProjectItem($name, $data);
+                        await $to.addFile($name, $data);
                     }
                 }
             };

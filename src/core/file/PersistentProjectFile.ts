@@ -32,9 +32,15 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
             ui8sab[i] = ui8ab[i];
         }
     }
+    lastModifiedId: string;
+    constructor(fileMgrIn: IPersistentProjectItemManager, parentIn: IProjectFolder, nameIn: string, dataIn?: ArrayBuffer) {
+        super(fileMgrIn, parentIn, nameIn);
+        this.lastModifiedId = this.id;
+    }
     async init() {
         this.data = await this.fileMgr.readFile(this.path);
         await this.emit("ready");
+        await this.fileMgr.emitChanged();
     }
     clone(parentIn = this.parent, nameIn = this._name, dataIn = this.data) {
         const Ctor = this.constructor as typeof PersistentProjectFile;
@@ -42,20 +48,24 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
     }
     async save(newData: ArrayBuffer, by: any) {
         this.data = newData;
+        this.lastModifiedId = this.fileMgr.generateItemId(this);
         await this._fileMgr.putFile(this);
         await this.emit("saved", by);
+        await this.fileMgr.emitChanged();
     }
     async saveAsCopy(parent: IProjectFolder, name: string, newData: ArrayBuffer) {
         const item = this.clone(parent, name, newData);
         await this._fileMgr.putFile(item);
         parent.items.add(item);
         await this.emitTreeChanged();
+        await this.fileMgr.emitChanged();
         return item;
     }
     async saveAs(to: IProjectFolder, newName: string, newData: ArrayBuffer, by: any) {
         const { parent, name, data } = this;
         const from = parent;
         this.data = newData;
+        this.lastModifiedId = this.fileMgr.generateItemId(this);
         await this.move(to, newName);
         await this._fileMgr.putFile(this);
         const item = this.clone(parent, name, data);
@@ -63,8 +73,9 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
         parent.items.add(item);
         await parent.emitTreeChanged();
         await this.emitTreeChanged();
-        await this.emit("pathChanged", { from, to });
+        await this.emit("pathChanged", { from: from.path, to: to.path });
         await this.emit("saved", by);
+        await this.fileMgr.emitChanged();
         return item;
     }
     async rename(newNameIn: string) {
@@ -76,6 +87,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
         this._name = newName;
         await this.emitTreeChanged();
         await this.emit("nameChanged", { oldName, newName });
+        await this.fileMgr.emitChanged();
     }
     async move(to: IProjectFolder, newName = this.name) {
         if (to === this as any) return;
@@ -90,14 +102,16 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
         this.parent.items.add(this as any);
         await from.emitTreeChanged();
         await this.emitTreeChanged();
-        await this.emit("pathChanged", { from, to });
+        await this.emit("pathChanged", { from: from.path, to: to.path });
         if (oldName !== newName) await this.emit("nameChanged", { oldName, newName });
+        await this.fileMgr.emitChanged();
     }
     async destroy() {
         await this._fileMgr.remove(this.path, this.isFolder);
         this.parent.items.delete(this as any);
         await this.emitTreeChanged();
         await this.emit("destroyed");
+        await this.fileMgr.emitChanged();
     }
     async instantiate(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileInstance> {
         const { type } = this;
