@@ -1,8 +1,9 @@
 import { StaticMethod } from "./StaticMethod";
-import { DefaultObject, Bang, isBang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
 import { IJSPatcherObjectMeta } from "../../types";
 import { Method } from "./Method";
+import DefaultObject from "../base/DefaultObject";
 
 class FuncUI extends ImportedObjectUI<Func> {
     prependColor = "rgb(78, 201, 176)";

@@ -12,7 +12,7 @@ import { TPackage } from "../../types";
 import { AnyImportedObject } from "./ImportedObject";
 import { ImporterDirSelfObject } from "../../../utils/symbols";
 import { getPropertyDescriptors } from "../../../utils/utils";
-import { isJSPatcherObjectConstructor } from "../AbstractObject";
+import { isJSPatcherObjectConstructor } from "../base/AbstractObject";
 
 export default class Importer {
     static $self = ImporterDirSelfObject;

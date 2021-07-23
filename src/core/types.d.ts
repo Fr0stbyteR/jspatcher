@@ -1,5 +1,4 @@
-import { BaseObject } from "./objects/Base";
-import { IJSPatcherObject, IJSPatcherObjectMeta, TInletEvent, TOutletEvent } from "./objects/AbstractObject";
+import { IJSPatcherObject, IJSPatcherObjectMeta, TInletEvent, TOutletEvent } from "./objects/base/AbstractObject";
 import Patcher from "./patcher/Patcher";
 import Box from "./patcher/Box";
 import Line from "./patcher/Line";
@@ -12,7 +11,7 @@ import TempTextFile from "./text/TempTextFile";
 import TempData from "./file/TempData";
 import PersistentProjectFile from "./file/PersistentProjectFile";
 
-export * from "./objects/AbstractObject";
+export * from "./objects/base/AbstractObject";
 
 declare global {
     interface Window {
@@ -224,12 +223,6 @@ export interface TSharedData {
         [key: string]: any;
     };
 }
-export interface TSharedDataConsumers {
-    [category: string]: {
-        [key: string]: Set<BaseObject>;
-    };
-}
-
 export interface FileEventMap {
     "ready": boolean;
     "changed": never;

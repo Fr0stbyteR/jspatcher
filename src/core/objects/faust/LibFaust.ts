@@ -1,6 +1,7 @@
 import { Faust } from "faust2webaudio";
-import { Bang, DefaultObject, isBang } from "../Base";
+import { Bang, isBang } from "../Base";
 import { IJSPatcherObjectMeta } from "../../types";
+import DefaultObject from "../base/DefaultObject";
 
 export default class libFaust extends DefaultObject<{}, {}, [Bang], [Faust]> {
     static package = "Faust";

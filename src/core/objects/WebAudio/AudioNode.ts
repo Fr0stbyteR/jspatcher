@@ -1,5 +1,6 @@
 import { SemanticICONS } from "semantic-ui-react";
-import { Bang, DefaultObject } from "../Base";
+import { Bang } from "../Base";
+import DefaultObject from "../base/DefaultObject";
 
 export default abstract class JSPAudioNode<T extends AudioNode = AudioNode, S = {}, I extends [Bang | any, ...any[]] = [Bang], O extends (null | any | T)[] = [], A extends any[] = any[], P = {}> extends DefaultObject<{}, { node: T } & S, I, O, A, P> {
     static package = "WebAudio";

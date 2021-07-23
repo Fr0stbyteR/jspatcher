@@ -4,7 +4,7 @@ import Env, { EnvEventMap } from "../../core/Env";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 import { TPackage } from "../../core/types";
 import { ImporterDirSelfObject } from "../../utils/symbols";
-import { isJSPatcherObjectConstructor } from "../../core/objects/AbstractObject";
+import { isJSPatcherObjectConstructor } from "../../core/objects/base/AbstractObject";
 import "./LeftMenu.scss";
 
 class ObjectsItems extends React.PureComponent<{ editor: PatcherEditor; pkg: TPackage; path: string[]; search?: string }, { selected: (string | symbol)[] }> {

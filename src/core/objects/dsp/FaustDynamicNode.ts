@@ -1,6 +1,6 @@
 import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
-import { DefaultObject } from "../Base";
-import { DefaultUIState } from "../BaseUI";
+import DefaultObject from "../base/DefaultObject";
+import { DefaultUIState } from "../base/DefaultUI";
 
 export interface DefaultFaustDynamicNodeState {
     merger: ChannelMergerNode;

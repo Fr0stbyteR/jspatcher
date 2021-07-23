@@ -1,14 +1,14 @@
-import { DefaultObject } from "./Base";
 import Patcher from "../patcher/Patcher";
 import Box from "../patcher/Box";
 import Line from "../patcher/Line";
+import DefaultObject from "./base/DefaultObject";
 import { TPackage, IJSPatcherObjectMeta, IPropsMeta, RawPatcher } from "../types";
 import { SubPatcherUI } from "./SubPatcher";
 import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
 import { CodeUI } from "./UI/code";
 import comment from "./UI/comment";
 import { ImporterDirSelfObject } from "../../utils/symbols";
-import { ProjectFileEventMap } from "../file/AbstractProjectItem";
+import { ProjectItemEventMap } from "../file/AbstractProjectItem";
 
 type TObjectExpr = {
     exprs?: string[];
@@ -1113,7 +1113,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, SubPatcherState, [strin
     handleFilePathChanged = () => {
         this.setState({ key: this.state.patcher.file.projectPath });
     };
-    handleSaved = (e: ProjectFileEventMap["saved"]) => {
+    handleSaved = (e: ProjectItemEventMap["saved"]) => {
         if (e.instance === this.state.patcher) return;
         this.reload();
     };

@@ -1,5 +1,6 @@
-import { DefaultObject, isBang } from "./Base";
+import { isBang } from "./Base";
 import { IJSPatcherObjectMeta } from "../types";
+import DefaultObject from "./base/DefaultObject";
 
 abstract class JSOp<S = {}, I extends any[] = any[], O extends any[] = [any], A extends any[] = any[], P = {}> extends DefaultObject<{}, S, I, O, A, P> {
     static package = "Op";

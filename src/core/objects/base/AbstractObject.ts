@@ -1,11 +1,11 @@
 import type { SemanticICONS } from "semantic-ui-react";
-import TypedEventEmitter from "../../utils/TypedEventEmitter";
-import { stringifyError } from "../../utils/utils";
-import Line from "../patcher/Line";
-import type Box from "../patcher/Box";
-import type Patcher from "../patcher/Patcher";
-import type { ProjectItemType, TempItemByType, SharedItemByType, TempItemType, TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../types";
-import type { AbstractUI } from "./BaseUI";
+import TypedEventEmitter from "../../../utils/TypedEventEmitter";
+import { stringifyError } from "../../../utils/utils";
+import Line from "../../patcher/Line";
+import type Box from "../../patcher/Box";
+import type Patcher from "../../patcher/Patcher";
+import type { ProjectItemType, TempItemByType, SharedItemByType, TempItemType, TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../../types";
+import type AbstractUI from "./AbstracttUI";
 
 export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject => typeof x === "function" && x?.isJSPatcherObjectConstructor;
 
@@ -219,7 +219,10 @@ export declare const IJSPatcherObject: {
     args: IArgsMeta;
     props: IPropsMeta;
     readonly meta: IJSPatcherObjectMeta;
-    /** The UI that the object uses to display in the patcher, not available in other threads. */
+    /**
+     * The UI that the object uses to display in the patcher, not available in other threads.
+     * is `BaseUI` by default
+     */
     UI?: typeof AbstractUI;
     new (box: Box, patcher: Patcher): IJSPatcherObject;
 };

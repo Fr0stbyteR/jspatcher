@@ -1,4 +1,5 @@
-import { BaseObject, DefaultObject } from "../Base";
+import BaseObject from "../base/BaseObject";
+import DefaultObject from "../base/DefaultObject";
 
 export class BaseDSP<
     D extends {} = {}, S extends {} = {},

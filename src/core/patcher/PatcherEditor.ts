@@ -493,6 +493,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         // Emit events
         if (!delta.x && !delta.y) return;
         if (presentation !== this.state.presentation) return;
+        boxes.forEach(box => box.emit(presentation ? "presentationRectChanged" : "rectChanged", box));
         this.emit("moving", { selected: ids, delta, presentation });
         if (presentation) return;
         const lineSet = new Set<Line>();

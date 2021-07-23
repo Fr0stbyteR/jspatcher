@@ -3,7 +3,7 @@ import { isTRect, parseToPrimitive, isTPresentationRect, isRectMovable, isRectRe
 import type Patcher from "./Patcher";
 import type Line from "./Line";
 import type { BoxEventMap, TBox, TMaxBox, Data, Args, Props, TRect, TPresentationRect } from "../types";
-import type { IJSPatcherObject } from "../objects/AbstractObject";
+import type { IJSPatcherObject } from "../objects/base/AbstractObject";
 
 export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends TypedEventEmitter<BoxEventMap> {
     readonly id: string;

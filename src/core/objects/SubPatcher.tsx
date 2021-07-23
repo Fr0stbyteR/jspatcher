@@ -1,10 +1,11 @@
 import * as React from "react";
 import { StrictModalProps, Modal } from "semantic-ui-react";
-import { DefaultObject, BaseObject } from "./Base";
+import BaseObject from "./base/BaseObject";
+import DefaultObject from "./base/DefaultObject";
 import Patcher from "../patcher/Patcher";
 import { IJSPatcherObjectMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
 import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState, DefaultPopupUIProps } from "./BaseUI";
-import { ProjectFileEventMap } from "../file/AbstractProjectItem";
+import { ProjectItemEventMap } from "../file/AbstractProjectItem";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
 import PatcherUI from "../../components/editors/patcher/PatcherUI";
 import PatcherEditorUI from "../../components/editors/PatcherEditorUI";
@@ -400,7 +401,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
         const handleFilePathChanged = () => {
             this.setState({ key: this.state.patcher.file.projectPath });
         };
-        const handleSaved = (e: ProjectFileEventMap["saved"]) => {
+        const handleSaved = (e: ProjectItemEventMap["saved"]) => {
             if (e.instance === this.state.patcher) return;
             reload();
         };
@@ -517,7 +518,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
     handleFilePathChanged = () => {
         this.setState({ key: this.state.patcher.file.projectPath });
     };
-    handleSaved = (e: ProjectFileEventMap["saved"]) => {
+    handleSaved = (e: ProjectItemEventMap["saved"]) => {
         if (e.instance === this.state.patcher) return;
         this.reload();
     };

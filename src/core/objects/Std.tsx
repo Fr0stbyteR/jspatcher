@@ -1,9 +1,10 @@
 import * as Util from "util";
 import Patcher from "../patcher/Patcher";
-import { DefaultObject, Bang, isBang } from "./Base";
+import { Bang, isBang } from "./Base";
 import { IJSPatcherObjectMeta } from "../types";
-import AbstractProjectItem, { ProjectFileEventMap } from "../file/AbstractProjectItem";
+import AbstractProjectItem, { ProjectItemEventMap } from "../file/AbstractProjectItem";
 import TemporaryProjectFile from "../file/TemporaryProjectFile";
+import DefaultObject from "./base/DefaultObject";
 
 class StdObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
     static package = "Std";
@@ -603,7 +604,7 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: AbstractPro
         const handleFilePathChanged = () => {
             this.setState({ key: this.state.sharedItem?.projectPath });
         };
-        const handleSaved = (e: ProjectFileEventMap["saved"]) => {
+        const handleSaved = (e: ProjectItemEventMap["saved"]) => {
             if (e === this) return;
             this.setState({ value: this.state.sharedItem?.data });
         };

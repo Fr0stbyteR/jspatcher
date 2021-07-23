@@ -1,4 +1,5 @@
-import { Bang, DefaultObject, isBang } from "../Base";
+import { Bang, isBang } from "../Base";
+import DefaultObject from "../base/DefaultObject";
 import { IJSPatcherObjectMeta } from "../../types";
 
 export default class audioWorklet extends DefaultObject<{}, {}, [Bang, string], [AudioWorklet, Bang]> {

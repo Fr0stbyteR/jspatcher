@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Popup } from "semantic-ui-react";
 import PatcherEditor, { PatcherEditorEventMap } from "../../../core/patcher/PatcherEditor";
-import Box from "../../../core/patcher/Box";
-import { TResizeHandlerType, BoxEventMap, TRect, TPresentationRect } from "../../../core/types";
-import { AbstractUI } from "../../../core/objects/BaseUI";
+import BaseUI from "../../../core/objects/base/BaseUI";
 import { isRectMovable, isRectResizable } from "../../../utils/utils";
+import type Box from "../../../core/patcher/Box";
+import type { TResizeHandlerType, BoxEventMap, TRect, TPresentationRect } from "../../../core/types";
+import type AbstractUI from "../../../core/objects/base/AbstracttUI";
 import "./BoxUI.scss";
 
 interface P {
@@ -19,7 +20,7 @@ interface S {
     presentationRect: TPresentationRect;
     presentation: boolean;
     inPresentationMode: boolean;
-    uiComponent: typeof AbstractUI;
+    InnerUI: typeof AbstractUI;
     editing: boolean;
     highlight: boolean;
     error: boolean;
@@ -38,8 +39,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
         presentationRect: this.box.presentationRect.slice() as TPresentationRect,
         presentation: this.box.presentation,
         inPresentationMode: this.props.editor.state.presentation,
-        uiComponent: this.box.UI,
-        editing: this.box.UI.editableOnUnlock && this.box._editing,
+        InnerUI: this.box.UI || BaseUI,
+        editing: (this.box.UI || BaseUI).editableOnUnlock && this.box._editing,
         highlight: false,
         error: false,
         key: performance.now().toString()
@@ -56,13 +57,14 @@ export default class BoxUI extends React.PureComponent<P, S> {
         const { box } = this;
         if (!box) return;
         this.textChanged = true;
-        const { UI: uiComponent, presentation, _editing } = box;
+        const { presentation, _editing } = box;
+        const InnerUI = box.UI || BaseUI;
         let { rect, presentationRect } = box;
         rect = rect.slice() as TRect;
         presentationRect = presentationRect.slice() as TRect;
         const key = performance.now().toString();
-        const editing = uiComponent.editableOnUnlock && _editing;
-        this.setState({ rect, presentationRect, presentation, uiComponent, key, editing }, this.inspectRectChange);
+        const editing = InnerUI.editableOnUnlock && _editing;
+        this.setState({ rect, presentationRect, presentation, InnerUI, key, editing }, this.inspectRectChange);
     };
     handleRectChanged = () => this.setState({ rect: this.box.rect.slice() as TRect });
     handlePresentationRectChanged = () => this.setState({ presentationRect: this.box.presentationRect.slice() as TPresentationRect });
@@ -146,7 +148,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 handleDraggable();
             }
         } else if (this.state.selected) {
-            if (!this.state.editing && this.state.uiComponent.editableOnUnlock) this.handlingToggleEditOnClick = true; // Handle edit
+            if (!this.state.editing && this.state.InnerUI.editableOnUnlock) this.handlingToggleEditOnClick = true; // Handle edit
             handleDraggable();
         } else {
             this.props.editor.selectOnly(this.props.id);
@@ -166,7 +168,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 e.preventDefault();
             } else if (this.state.editing) {
                 this.refDiv.current.focus();
-            } else if (this.state.uiComponent.editableOnUnlock) {
+            } else if (this.state.InnerUI.editableOnUnlock) {
                 e.preventDefault();
                 this.setState({ editing: !this.state.editing });
             }
@@ -382,7 +384,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
     render() {
         const { box } = this;
         const rect = this.state.inPresentationMode ? this.state.presentationRect : this.state.rect;
-        const InnerUI = this.state.uiComponent;
+        const InnerUI = this.state.InnerUI;
         const divStyle = {
             left: rect[0],
             top: rect[1],
