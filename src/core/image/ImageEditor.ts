@@ -9,8 +9,8 @@ import type PatcherImage from "./PatcherImage";
 export interface ImageEditorEventMap {}
 
 export default class ImageEditor extends FileEditor<PatcherImage, ImageEditorEventMap> {
-    static async fromProjectItem(fileIn: PersistentProjectFile, envIn: IJSPatcherEnv, projectIn?: IProject) {
-        const image = await fileIn.instantiate(envIn, projectIn) as PatcherImage;
+    static async fromProjectItem({ file, env, project, instanceId }: { file: PersistentProjectFile; env: IJSPatcherEnv; project?: IProject; instanceId: string }) {
+        const image = await file.instantiate({ env, project, instanceId }) as PatcherImage;
         const editor = new this(image);
         return editor.init();
     }

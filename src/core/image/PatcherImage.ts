@@ -7,8 +7,8 @@ import type { IProject } from "../Project";
 export interface PatcherImageEventMap {}
 
 export default class PatcherImage extends FileInstance<PatcherImageEventMap, PersistentProjectFile> {
-    static async fromProjectItem(fileIn: PersistentProjectFile, envIn: IJSPatcherEnv, projectIn: IProject) {
-        return new this(envIn, projectIn, fileIn).init(fileIn.data);
+    static async fromProjectItem(options: { file: PersistentProjectFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
+        return new this(options).init(options.file.data);
     }
     objectURL: string;
     async getEditor() {
@@ -26,7 +26,7 @@ export default class PatcherImage extends FileInstance<PatcherImageEventMap, Per
         return (await fetch(this.objectURL)).arrayBuffer();
     }
     clone() {
-        const patcherText = new PatcherImage(this.env, this.project, this.file);
+        const patcherText = new PatcherImage({ env: this.env, project: this.project, file: this.file });
         patcherText.objectURL = this.objectURL;
         return patcherText;
     }

@@ -113,7 +113,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
         await this.emit("destroyed");
         await this.fileMgr.emitChanged();
     }
-    async instantiate(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileInstance> {
+    async instantiate({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileInstance> {
         const { type } = this;
         const Constructor = {
             patcher: Patcher,
@@ -123,10 +123,10 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
             video: undefined,
             unknown: undefined
         }[type];
-        if (Constructor) return Constructor.fromProjectItem(this as any, envIn, projectIn) as Promise<IFileInstance>;
+        if (Constructor) return Constructor.fromProjectItem({ file: this as any, env, project, instanceId }) as Promise<IFileInstance>;
         throw new Error("Not implemented.");
     }
-    async instantiateEditor(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileEditor> {
+    async instantiateEditor({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileEditor> {
         const { type } = this;
         const Constructor = {
             patcher: PatcherEditor,
@@ -136,7 +136,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
             video: undefined,
             unknown: undefined
         }[type];
-        if (Constructor) return Constructor.fromProjectItem(this as any, envIn, projectIn) as Promise<IFileEditor>;
+        if (Constructor) return Constructor.fromProjectItem({ file: this as any, env, project, instanceId }) as Promise<IFileEditor>;
         throw new Error("Not implemented.");
     }
 }

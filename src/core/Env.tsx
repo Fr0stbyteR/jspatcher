@@ -52,11 +52,11 @@ export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
     tempMgr: TemporaryProjectItemManager;
     activeInstance: IFileInstance;
     activeEditor: IFileEditor;
+    instances: Set<IFileInstance>;
     /** Generate a global unique ID */
     generateId(objectIn: object): string;
-    /**
-     * @returns A new unique ID for the instance
-     */
+    getInstanceById(id: string): IFileInstance;
+    /** @returns A new unique ID for the instance */
     registerInstance(instanceIn: IFileInstance): string;
     newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any): void;
 }
@@ -64,7 +64,7 @@ export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
 /**
  * Should have maximum 1 instance of Env per page.
  */
-export default class Env extends TypedEventEmitter<EnvEventMap> {
+export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPatcherEnv {
     readonly thread = "main";
     readonly fileMgrWorker = new FileMgrWorker();
     readonly waveformWorker = new WaveformWorker();
@@ -242,7 +242,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
             try {
                 const item = this.fileMgr.getProjectItemFromPath(file);
                 if (item.type !== "folder") {
-                    const instance = await item.instantiate(this, this.currentProject);
+                    const instance = await item.instantiate({ env: this, project: this.currentProject });
                     this.openInstance(instance);
                 }
             } catch {}
@@ -292,6 +292,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> {
         });
         this.emit("instances", Array.from(this.instances));
         return this.generateId(i);
+    }
+    getInstanceById(id: string) {
+        for (const instance of this.instances) {
+            if (instance.id === id) return instance;
+        }
+        return null;
     }
     async newProject() {
         const oldProject = this.currentProject;

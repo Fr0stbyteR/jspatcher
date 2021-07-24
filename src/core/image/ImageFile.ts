@@ -8,10 +8,10 @@ export default class ImageFile extends PersistentProjectFile {
     get type() {
         return "image" as const;
     }
-    async instantiate(envIn: IJSPatcherEnv, projectIn?: IProject) {
-        return PatcherImage.fromProjectItem(this, envIn, projectIn);
+    async instantiate({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<PatcherImage> {
+        return PatcherImage.fromProjectItem({ file: this, env, project, instanceId });
     }
-    async instantiateEditor(envIn: IJSPatcherEnv, projectIn?: IProject) {
-        return ImageEditor.fromProjectItem(this, envIn, projectIn);
+    async instantiateEditor({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<ImageEditor> {
+        return ImageEditor.fromProjectItem({ file: this, env, project, instanceId });
     }
 }

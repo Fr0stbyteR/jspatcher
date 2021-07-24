@@ -11,7 +11,7 @@ export default class TempAudioFile extends TemporaryProjectFile<PatcherAudio> {
     async instantiate() {
         return this.data;
     }
-    async instantiateEditor(envIn: IJSPatcherEnv, projectIn?: IProject) {
-        return AudioEditor.fromProjectItem(this, envIn, projectIn);
+    async instantiateEditor({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
+        return AudioEditor.fromProjectItem({ file: this, env, project, instanceId });
     }
 }

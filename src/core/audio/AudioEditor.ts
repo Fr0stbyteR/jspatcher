@@ -59,8 +59,8 @@ export interface AudioEditorState {
 }
 
 export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEventMap> {
-    static async fromProjectItem(fileIn: PersistentProjectFile | TempAudioFile, envIn: IJSPatcherEnv, projectIn?: IProject) {
-        const audio = fileIn instanceof TempAudioFile ? fileIn.data : await fileIn.instantiate(envIn, projectIn) as PatcherAudio;
+    static async fromProjectItem({ file, env, project, instanceId }: { file: PersistentProjectFile | TempAudioFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
+        const audio = file instanceof TempAudioFile ? file.data : await file.instantiate({ env, project, instanceId }) as PatcherAudio;
         const editor = new this(audio);
         return editor.init();
     }

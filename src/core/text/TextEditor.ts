@@ -14,8 +14,8 @@ export interface TextEditorEventMap {
 }
 
 export default class TextEditor extends FileEditor<PatcherText, TextEditorEventMap> {
-    static async fromProjectItem(fileIn: PersistentProjectFile | TempTextFile, envIn: IJSPatcherEnv, projectIn?: IProject) {
-        const text = fileIn instanceof TempTextFile ? fileIn.data : await fileIn.instantiate(envIn, projectIn) as PatcherText;
+    static async fromProjectItem({ file, env, project, instanceId }: { file: PersistentProjectFile | TempTextFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
+        const text = file instanceof TempTextFile ? file.data : await file.instantiate({ env, project, instanceId }) as PatcherText;
         const editor = new this(text);
         return editor.init();
     }

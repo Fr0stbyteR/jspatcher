@@ -36,31 +36,31 @@ export default class FileMenu extends React.PureComponent<P, S> {
         showNewAudioModal: false
     };
     handleClickNewJs = async () => {
-        const patcher = new Patcher(this.props.env, this.props.env.currentProject);
+        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
         await patcher.load({}, "js");
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };
     handleClickNewMax = async () => {
-        const patcher = new Patcher(this.props.env, this.props.env.currentProject);
+        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
         await patcher.load({}, "max");
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };
     handleClickNewGen = async () => {
-        const patcher = new Patcher(this.props.env, this.props.env.currentProject);
+        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
         await patcher.load({}, "gen");
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };
     handleClickNewFaust = async () => {
-        const patcher = new Patcher(this.props.env, this.props.env.currentProject);
+        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
         await patcher.load({}, "faust");
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };
     handleClickNewText = async () => {
-        const text = new PatcherText(this.props.env, this.props.env.currentProject);
+        const text = new PatcherText({ env: this.props.env, project: this.props.env.currentProject });
         await text.init();
         const editor = await text.getEditor();
         this.props.env.openEditor(editor);
@@ -91,7 +91,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
     handleNewAudioModalClose = () => this.setState({ showNewAudioModal: false });
     handleNewAudioModalConfirm = async (numberOfChannels: number, sampleRate: number, length: number) => {
         this.setState({ showNewAudioModal: false });
-        const audio = new PatcherAudio(this.props.env, this.props.env.currentProject);
+        const audio = new PatcherAudio({ env: this.props.env, project: this.props.env.currentProject });
         await audio.initWithOptions({ numberOfChannels, sampleRate, length });
         const editor = await audio.getEditor();
         this.props.env.openEditor(editor);

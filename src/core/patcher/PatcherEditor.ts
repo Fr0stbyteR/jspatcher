@@ -1,11 +1,11 @@
-import { SemanticICONS } from "semantic-ui-react";
+import type { SemanticICONS } from "semantic-ui-react";
 import { isRectMovable, isRectResizable, isTRect } from "../../utils/utils";
 import FileEditor from "../file/FileEditor";
-import { PatcherEventMap, RawPatcher, TBox, TLine, TMaxClipboard, TRect, TResizeHandlerType } from "../types";
 import Box from "./Box";
 import Line from "./Line";
-import Patcher from "./Patcher";
 import PatcherHistory from "./PatcherHistory";
+import type { PatcherEventMap, RawPatcher, TBox, TLine, TMaxClipboard, TRect, TResizeHandlerType } from "../types";
+import type Patcher from "./Patcher";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type TempPatcherFile from "./TempPatcherFile";
 import type { IJSPatcherEnv } from "../Env";
@@ -35,8 +35,8 @@ export interface PatcherEditorState {
 }
 
 export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEventMap> {
-    static async fromProjectItem(fileIn: PersistentProjectFile | TempPatcherFile, envIn: IJSPatcherEnv, projectIn?: IProject): Promise<PatcherEditor> {
-        const patcher = await fileIn.instantiate(envIn, projectIn) as Patcher;
+    static async fromProjectItem({ file, env, project, instanceId }: { file: PersistentProjectFile | TempPatcherFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<PatcherEditor> {
+        const patcher = await file.instantiate({ env, project, instanceId }) as Patcher;
         const editor = new this(patcher);
         return editor.init();
     }

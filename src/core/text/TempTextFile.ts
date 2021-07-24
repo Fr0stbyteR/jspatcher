@@ -11,7 +11,7 @@ export default class TempTextFile extends TemporaryProjectFile<PatcherText> {
     async instantiate() {
         return this.data;
     }
-    async instantiateEditor(envIn: IJSPatcherEnv, projectIn?: IProject) {
-        return TextEditor.fromProjectItem(this, envIn, projectIn);
+    async instantiateEditor({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
+        return TextEditor.fromProjectItem({ file: this, env, project, instanceId });
     }
 }

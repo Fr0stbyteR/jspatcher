@@ -83,11 +83,11 @@ export default class TemporaryProjectFile<Data = any> extends AbstractProjectFil
         await this.fileMgr.emitChanged();
         return this;
     }
-    async instantiate(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileInstance> {
+    async instantiate(options: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileInstance> {
         throw new Error("Not implemented.");
         // new instance Patcher / AudioBuffer etc
     }
-    async instantiateEditor(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileEditor> {
+    async instantiateEditor(options: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileEditor> {
         throw new Error("Not implemented.");
     }
 }

@@ -40,13 +40,26 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.bindTaskMgr();
         this.bindFileMgr();
     }
+    instances = new Set<IFileInstance>();
     activeInstance: IFileInstance<{}, IProjectFile<any, IProjectItemManager<{}>>>;
     activeEditor: IFileEditor<IFileInstance<{}, IProjectFile<any, IProjectItemManager<{}>>>, {}>;
     generateId(objectIn: object) {
         return this.thread + objectIn.constructor.name + Atomics.add(this.generatedId, 0, 1);
     }
-    registerInstance(instanceIn: IFileInstance<{}, IProjectFile<any, IProjectItemManager<{}>>>): string {
-        throw new Error("Method not implemented.");
+    registerInstance(i: IFileInstance) {
+        this.instances.add(i);
+        i.on("destroy", () => {
+            this.instances.delete(i);
+            this.emit("instances", Array.from(this.instances));
+        });
+        this.emit("instances", Array.from(this.instances));
+        return this.generateId(i);
+    }
+    getInstanceById(id: string) {
+        for (const instance of this.instances) {
+            if (instance.id === id) return instance;
+        }
+        return null;
     }
     newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any): void {
         throw new Error("Method not implemented.");

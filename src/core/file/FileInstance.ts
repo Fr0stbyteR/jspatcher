@@ -25,7 +25,7 @@ export interface IFileInstance<EventMap extends Record<string, any> & Partial<Fi
     isReadonly: boolean;
     isReady: boolean;
     readonly isActive: boolean;
-    readonly _instanceId: string;
+    readonly id: string;
     init(): Promise<this>;
     setActive(): void;
     getEditor(): Promise<IFileEditor>;
@@ -48,9 +48,9 @@ export default abstract class FileInstance<EventMap extends Record<string, any> 
     }
     set file(value) {
         if (value === this._file) return;
-        this._file?.removeObserver(this._instanceId);
+        this._file?.removeObserver(this._id);
         this._file = value;
-        this._file?.addObserver(this._instanceId);
+        this._file?.addObserver(this._id);
     }
     get ctx(): File | IProject | IJSPatcherEnv {
         return this.file || this.project || this.env;
@@ -91,14 +91,17 @@ export default abstract class FileInstance<EventMap extends Record<string, any> 
         await this.emit("observers", this._observers);
         if (this._observers.size === 0) await this.destroy();
     }
-    readonly _instanceId = performance.now().toString();
-    constructor(envIn: IJSPatcherEnv, projectIn?: IProject, fileIn?: File) {
+    readonly _id: string;
+    get id() {
+        return this._id;
+    }
+    constructor({ env, project, file, instanceId }: { env: IJSPatcherEnv; project?: IProject; file?: File; instanceId?: string }) {
         super();
-        this._env = envIn;
-        this._project = projectIn;
-        this._file = fileIn;
-        this._file.addObserver(this._instanceId);
-        this._instanceId = this.env.registerInstance(this);
+        this._env = env;
+        this._project = project;
+        this._file = file;
+        this._id = instanceId ?? this.env.registerInstance(this);
+        this._file.addObserver(this._id);
     }
     async init() {
         return this;
@@ -108,6 +111,6 @@ export default abstract class FileInstance<EventMap extends Record<string, any> 
     }
     async destroy() {
         await this.emit("destroy");
-        await this.file?.removeObserver(this._instanceId);
+        await this.file?.removeObserver(this._id);
     }
 }

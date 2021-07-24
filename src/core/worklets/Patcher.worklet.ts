@@ -1,18 +1,25 @@
 import Patcher from "../patcher/Patcher";
-import { PackageManager } from "../PkgMgr";
-import { RawPatcher } from "../types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
-import { IPatcherNode, IPatcherProcessor } from "./PatcherWorklet.types";
-import { AudioWorkletGlobalScope } from "./TypedAudioWorklet";
+import { IPatcherNode, PatcherParameters, IPatcherProcessor, PatcherOptions } from "./PatcherWorklet.types";
+import { AudioWorkletGlobalScope, TypedAudioParamDescriptor, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
 
 const processorID = "__JSPatcher_Patcher";
 declare const globalThis: AudioWorkletGlobalScope;
-const { registerProcessor } = globalThis;
+const { registerProcessor, jspatcherEnv } = globalThis;
 
 class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPatcherNode> {
-    patcher = new Patcher();
-    async load(patcherIn: RawPatcher) {
-        await this.patcher.load(patcherIn, "jsaw");
+    static get parameterDescriptors(): TypedAudioParamDescriptor<PatcherParameters>[] {
+        return new Array(128).map(i => ({
+            defaultValue: 1024,
+            maxValue: -Number.MAX_VALUE,
+            minValue: Number.MAX_VALUE,
+            name: `00${i}`.slice(-3)
+        }));
+    }
+    patcher: Patcher;
+    constructor(options?: TypedAudioWorkletNodeOptions<PatcherOptions>) {
+        super(options);
+        this.patcher = jspatcherEnv.getInstanceById(options.processorOptions.instanceId) as Patcher;
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][]) {
         if (this._disposed) return false;

@@ -41,8 +41,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             default: false
         }
     };
-    static async fromProjectItem(fileIn: PersistentProjectFile | TempPatcherFile, envIn: IJSPatcherEnv, projectIn?: IProject): Promise<Patcher> {
-        return new this(envIn, projectIn, fileIn).init();
+    static async fromProjectItem(options: { file: PersistentProjectFile | TempPatcherFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<Patcher> {
+        return new this(options).init();
     }
     async getEditor() {
         const editor = new PatcherEditor(this);
@@ -54,8 +54,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     _state: TPatcherState;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
-    constructor(envIn: IJSPatcherEnv, projectIn?: IProject, fileIn?: PersistentProjectFile | TempPatcherFile) {
-        super(envIn, projectIn, fileIn);
+    constructor(options: { env: IJSPatcherEnv; project?: IProject; file?: PersistentProjectFile | TempPatcherFile; instanceId?: string }) {
+        super(options);
         this._state = {
             name: "patcher",
             isReady: false,

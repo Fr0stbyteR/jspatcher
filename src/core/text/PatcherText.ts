@@ -10,8 +10,8 @@ export interface PatcherTextEventMap {
 }
 
 export default class PatcherText extends FileInstance<PatcherTextEventMap, PersistentProjectFile | TempTextFile> {
-    static async fromProjectItem(fileIn: PersistentProjectFile, envIn: IJSPatcherEnv, projectIn?: IProject) {
-        return new this(envIn, projectIn, fileIn).init(fileIn.data);
+    static async fromProjectItem(options: { file: PersistentProjectFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
+        return new this(options).init(options.file.data);
     }
     text: string;
     async getEditor() {
@@ -29,7 +29,7 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap, Persi
         return new Blob([this.text]).arrayBuffer();
     }
     clone() {
-        const patcherText = new PatcherText(this.env, this.project, this.file);
+        const patcherText = new PatcherText({ env: this.env, project: this.project, file: this.file });
         patcherText.text = this.text;
         return patcherText;
     }

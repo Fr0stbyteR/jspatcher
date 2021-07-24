@@ -52,8 +52,8 @@ export interface IFileEditor<Instance extends IFileInstance = IFileInstance, Eve
 export type AnyFileEditor = FileEditor<any, Record<string, any>>;
 
 export default class FileEditor<Instance extends IFileInstance = IFileInstance, EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> extends TypedEventEmitter<EventMap & FileEditorEventMap> implements IFileEditor<Instance, EventMap> {
-    static async fromProjectItem(fileIn: IProjectFile, envIn: IJSPatcherEnv, projectIn: IProject): Promise<FileEditor> {
-        return new this(await fileIn.instantiate(envIn, projectIn));
+    static async fromProjectItem({ file, env, project, instanceId }: { file: IProjectFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileEditor> {
+        return new this(await file.instantiate({ env, project, instanceId }));
     }
     readonly instance: Instance;
     get env() {

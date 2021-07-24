@@ -20,16 +20,16 @@ export interface PatcherAudioEventMap {
 }
 
 export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, PersistentProjectFile | TempAudioFile> {
-    static async fromProjectItem(fileIn: PersistentProjectFile, envIn: IJSPatcherEnv, projectIn?: IProject) {
-        return new this(envIn, projectIn, fileIn).init(fileIn.data.slice(0));
+    static async fromProjectItem(options: { file: PersistentProjectFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
+        return new this(options).init(options.file.data.slice(0));
     }
-    static async fromArrayBuffer(ctxIn: ConstructorParameters<typeof PatcherAudio>, data: ArrayBuffer) {
-        const audio = new PatcherAudio(...ctxIn);
+    static async fromArrayBuffer(options: ConstructorParameters<typeof PatcherAudio>[0], data: ArrayBuffer) {
+        const audio = new PatcherAudio(options);
         await audio.init(data.slice(0));
         return audio;
     }
-    static async fromNativeAudioBuffer(ctxIn: ConstructorParameters<typeof PatcherAudio>, bufferIn: AudioBuffer) {
-        const audio = new PatcherAudio(...ctxIn);
+    static async fromNativeAudioBuffer(options: ConstructorParameters<typeof PatcherAudio>[0], bufferIn: AudioBuffer) {
+        const audio = new PatcherAudio(options);
         const audioBuffer = Object.setPrototypeOf(bufferIn, OperableAudioBuffer.prototype);
         audio.audioBuffer = audioBuffer;
         audio.waveform = new Waveform(audio);
@@ -39,8 +39,8 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
         await audio.emit("ready");
         return audio;
     }
-    static async fromSilence(ctxIn: ConstructorParameters<typeof PatcherAudio>, numberOfChannels: number, length: number, sampleRate: number) {
-        const audio = new PatcherAudio(...ctxIn);
+    static async fromSilence(optionsIn: ConstructorParameters<typeof PatcherAudio>[0], numberOfChannels: number, length: number, sampleRate: number) {
+        const audio = new PatcherAudio(optionsIn);
         audio.audioBuffer = new OperableAudioBuffer({ length, numberOfChannels, sampleRate });
         audio.waveform = new Waveform(audio);
         audio.waveform.generateEmpty(numberOfChannels, length);
@@ -143,7 +143,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
         return this.encodeFFmpegWorker(wav, inputFileName, outputFileName, "-codec:a", "aac", "-b:a", `${bitrate}k`);
     }
     async clone() {
-        const audio = new PatcherAudio(this.env, this.project, this.file);
+        const audio = new PatcherAudio({ env: this.env, project: this.project, file: this.file });
         await audio.initWith({
             audioBuffer: this.audioBuffer.clone(),
             waveform: this.waveform.clone()
@@ -159,13 +159,13 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
     async silence(range: [number, number]) {
         const [selStart, selEnd] = range;
         const length = selEnd - selStart;
-        const audio = await PatcherAudio.fromSilence([this.env, this.project, this.file], this.numberOfChannels, length, this.sampleRate);
+        const audio = await PatcherAudio.fromSilence({ env: this.env, project: this.project, file: this.file }, this.numberOfChannels, length, this.sampleRate);
         const oldAudio = await this.pasteToRange(audio, selStart, selEnd);
         return { range: [selStart, selEnd] as [number, number], audio, oldAudio };
     }
     async insertSilence(length: number, from: number) {
         if (!length) return null;
-        const audio = await PatcherAudio.fromSilence([this.env, this.project, this.file], this.numberOfChannels, length, this.sampleRate);
+        const audio = await PatcherAudio.fromSilence({ env: this.env, project: this.project, file: this.file }, this.numberOfChannels, length, this.sampleRate);
         this.insertToCursor(audio, from);
         return { range: [from, from + length] as [number, number], audio };
     }
@@ -178,7 +178,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
         this.waveform.inverse();
     }
     async concat(that: PatcherAudio, numberOfChannels = this.audioBuffer.numberOfChannels) {
-        const audio = new PatcherAudio(this.env, this.project, this.file);
+        const audio = new PatcherAudio({ env: this.env, project: this.project, file: this.file });
         const audioBuffer = this.audioBuffer.concat(that.audioBuffer, numberOfChannels);
         audio.audioBuffer = audioBuffer;
         const waveform = this.waveform.concat(that.waveform, audio, numberOfChannels);
@@ -186,8 +186,8 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
         return audio;
     }
     async split(from: number) {
-        const audio1 = new PatcherAudio(this.env, this.project, this.file);
-        const audio2 = new PatcherAudio(this.env, this.project, this.file);
+        const audio1 = new PatcherAudio({ env: this.env, project: this.project, file: this.file });
+        const audio2 = new PatcherAudio({ env: this.env, project: this.project, file: this.file });
         const [ab1, ab2] = this.audioBuffer.split(from);
         audio1.audioBuffer = ab1;
         audio2.audioBuffer = ab2;
@@ -201,7 +201,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
         let audioBuffer: OperableAudioBuffer;
         let waveform: Waveform;
         if (from <= 0 && to >= this.length) {
-            picked = new PatcherAudio(this.env, this.project, this.file);
+            picked = new PatcherAudio({ env: this.env, project: this.project, file: this.file });
             if (clone) {
                 audioBuffer = this.audioBuffer.clone();
                 waveform = this.waveform.clone();
@@ -374,7 +374,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
                     }
                 });
             }
-            if (!applyPlugins && !needResample) return PatcherAudio.fromNativeAudioBuffer([this.env, this.project, this.file], mixBuffer);
+            if (!applyPlugins && !needResample) return PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.project, file: this.file }, mixBuffer);
             const offlineAudioCtx = new OfflineAudioContext(numberOfChannels, length, sampleRate);
             const source = offlineAudioCtx.createBufferSource();
             source.buffer = mixBuffer;
@@ -410,7 +410,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
             source.start(0);
             return this.env.taskMgr.newTask(this, "Applying plugins...", async () => {
                 const bufferOut = await offlineAudioCtx.startRendering();
-                return PatcherAudio.fromNativeAudioBuffer([this.env, this.project, this.file], bufferOut);
+                return PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.project, file: this.file }, bufferOut);
             });
         });
     }

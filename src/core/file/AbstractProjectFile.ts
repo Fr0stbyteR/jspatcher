@@ -21,8 +21,8 @@ export interface IProjectFile<Data = any, Manager extends IProjectItemManager = 
      * This method calls default instantiation (from the file manager).
      * Please use `FileInstance.fromProjectItem(item)` for a better instantiation.
      */
-    instantiate(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileInstance>;
-    instantiateEditor(envIn: IJSPatcherEnv, projectIn?: IProject): Promise<IFileEditor>;
+    instantiate(options: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileInstance>;
+    instantiateEditor(options: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileEditor>;
     /**
      * Save the data to the file manager
      *
@@ -68,8 +68,8 @@ export default abstract class AbstractProjectFile<Data = ArrayBuffer, Manager ex
         });
     }
     abstract clone(parentIn?: IProjectFolder, nameIn?: string, dataIn?: Data): IProjectFile<Data>;
-    abstract instantiate(env: IJSPatcherEnv, projectIn?: IProject): Promise<IFileInstance>;
-    abstract instantiateEditor(env: IJSPatcherEnv, projectIn?: IProject): Promise<IFileEditor>;
+    abstract instantiate(options: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileInstance>;
+    abstract instantiateEditor(options: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileEditor>;
     async save(newData: Data, by: any) {
         this._data = newData;
         await this.emit("saved", by);
