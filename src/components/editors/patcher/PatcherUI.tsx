@@ -376,12 +376,12 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
         this.setState({ timestamp: performance.now() });
     };
     handleReady = () => {
-        for (const boxID in this.boxes) {
-            delete this.boxes[boxID];
+        for (const boxId in this.boxes) {
+            delete this.boxes[boxId];
         }
-        for (const boxID in this.props.editor.boxes) {
-            const box = this.props.editor.boxes[boxID];
-            this.boxes[boxID] = <BoxUI {...this.props} id={box.id} key={box.id} />;
+        for (const boxId in this.props.editor.boxes) {
+            const box = this.props.editor.boxes[boxId];
+            this.boxes[boxId] = <BoxUI {...this.props} id={box.id} key={box.id} />;
         }
         this.setState({ timestamp: performance.now() });
     };

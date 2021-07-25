@@ -1,24 +1,37 @@
 import FileEditor, { FileEditorEventMap } from "./FileEditor";
 
-export default class History<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}, Editor extends FileEditor<any, EventMap> = FileEditor<any, EventMap>> {
+/** The class records some events and allows to perform undo/redo with a specific editor. */
+export default abstract class History<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}, Editor extends FileEditor<any, EventMap> = FileEditor<any, EventMap>> {
+    /** Related editor */
     editor: Editor;
+    /** Last save Timestamp */
     saveTime = 0;
-    undoMap: Record<number, { type: keyof EventMap; event: any }> = {};
-    redoMap: Record<number, { type: keyof EventMap; event: any }> = {};
-    get eventListening(): (keyof EventMap)[] {
+    /** Current index in the event queue */
+    $ = 0;
+    eventQueue: { timestamp: number; eventName: keyof EventMap & string; eventData?: EventMap[keyof EventMap & string] }[] = [];
+    /** Can be set to `false` to prevent recording events while undoing/redoing */
+    capture = true;
+    get eventListening(): (keyof EventMap & string)[] {
         return [];
     }
-    capture = true;
+    get now() {
+        if (globalThis.performance) {
+            if ("timeOrigin" in performance) return performance.now() + performance.timeOrigin;
+            return performance.now() + performance.timing.navigationStart;
+        }
+        return Date.now();
+    }
+    handleEditorEvent = ({ eventName, eventData }: { eventName: keyof EventMap & string; eventData?: any}) => {
+        if (this.eventListening.indexOf(eventName) === -1) return;
+        if (!this.capture) return;
+        this.eventQueue.splice(this.$);
+        this.$ = this.eventQueue.push({ eventName, eventData, timestamp: this.now });
+        this.emitChanged();
+    };
     constructor(editorIn: Editor) {
         this.editor = editorIn;
-        this.eventListening.forEach(type => this.editor.on(type as keyof EventMap & string, event => this.did(type, event)));
+        this.editor.onAny(this.handleEditorEvent);
         this.editor.on("saved", this.handleSaved);
-    }
-    did(type: keyof EventMap, event: any) {
-        if (!this.capture) return;
-        this.redoMap = {};
-        this.undoMap[performance.now()] = { type, event };
-        this.emitChanged();
     }
     emitChanged() {
         this.editor.emit("changed");
@@ -28,38 +41,51 @@ export default class History<EventMap extends Record<string, any> & Partial<File
         this.editor.emit("dirty", this.isDirty);
     }
     destroy() {
-        this.eventListening.forEach(type => this.editor.off(type as keyof EventMap & string, event => this.did(type, event)));
+        this.editor.offAny(this.handleEditorEvent);
     }
     get isDirty() {
         if (!this.saveTime) return this.isUndoable;
-        return this.saveTime !== Object.keys(this.undoMap).map(v => +v).sort((a, b) => b - a)[0];
+        return this.saveTime !== this.eventQueue[this.$ - 1]?.timestamp;
     }
     get isUndoable() {
-        return !!Object.keys(this.undoMap).length;
+        return this.$ !== 0;
     }
     get isRedoable() {
-        return !!Object.keys(this.redoMap).length;
+        return this.$ !== this.eventQueue.length;
     }
     handleSaved = () => {
-        const lastKey = Object.keys(this.undoMap).map(v => +v).sort((a, b) => b - a)[0];
-        this.saveTime = lastKey;
+        this.saveTime = this.eventQueue[this.$ - 1]?.timestamp;
         this.emitDirty();
     };
-    async undo() {
-        throw new Error("Not implemented.");
+    async undo(of?: (eventName: keyof EventMap & string, eventData?: any) => any) {
+        if (!this.editor) return;
+        if (!this.isUndoable) return;
+        this.capture = false;
+        const { eventName, eventData } = this.eventQueue[this.$ - 1];
+        await of?.(eventName, eventData);
+        this.$--;
+        this.capture = true;
+        this.emitChanged();
     }
-    async redo() {
-        throw new Error("Not implemented.");
+    async redo(of?: (eventName: keyof EventMap & string, eventData?: any) => any) {
+        if (!this.editor) return;
+        if (!this.isRedoable) return;
+        this.capture = false;
+        const { eventName, eventData } = this.eventQueue[this.$];
+        await of?.(eventName, eventData);
+        this.$++;
+        this.capture = true;
+        this.emitChanged();
     }
+    /** event at timestamp exclusive */
     async undoUntil(timestamp: number) {
-        const lastKey = Object.keys(this.undoMap).map(v => +v).sort((a, b) => b - a)[0];
-        while (lastKey > timestamp) {
+        while (this.isUndoable && this.eventQueue[this.$ - 1].timestamp > timestamp) {
             await this.undo();
         }
     }
+    /** event at timestamp inclusive */
     async redoUntil(timestamp: number) {
-        const nextKey = Object.keys(this.redoMap).map(v => +v).sort((a, b) => a - b)[0];
-        while (nextKey <= timestamp) {
+        while (this.isRedoable && this.eventQueue[this.$].timestamp <= timestamp) {
             await this.redo();
         }
     }

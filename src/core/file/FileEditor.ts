@@ -1,4 +1,4 @@
-import { SemanticICONS } from "semantic-ui-react";
+import type { SemanticICONS } from "semantic-ui-react";
 import TypedEventEmitter, { ITypedEventEmitter } from "../../utils/TypedEventEmitter";
 import History from "./History";
 import TemporaryProjectFile from "./TemporaryProjectFile";

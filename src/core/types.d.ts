@@ -1,17 +1,14 @@
-import { IJSPatcherObject, IJSPatcherObjectMeta, TInletEvent, TOutletEvent } from "./objects/base/AbstractObject";
-import Patcher from "./patcher/Patcher";
-import Box from "./patcher/Box";
-import Line from "./patcher/Line";
-import PatcherHistory from "./patcher/PatcherHistory";
-import Env from "./Env";
-import { PackageManager } from "./PkgMgr";
-import TempPatcherFile from "./patcher/TempPatcherFile";
-import TempAudioFile from "./audio/TempAudioFile";
-import TempTextFile from "./text/TempTextFile";
-import TempData from "./file/TempData";
-import PersistentProjectFile from "./file/PersistentProjectFile";
-
-export * from "./objects/base/AbstractObject";
+import type { IJSPatcherObject, IJSPatcherObjectMeta } from "./objects/base/AbstractObject";
+import type Patcher from "./patcher/Patcher";
+import type { TPatcherProps, TPublicPatcherProps } from "./patcher/Patcher";
+import type Box from "./patcher/Box";
+import type Line from "./patcher/Line";
+import type Env from "./Env";
+import type TempPatcherFile from "./patcher/TempPatcherFile";
+import type TempAudioFile from "./audio/TempAudioFile";
+import type TempTextFile from "./text/TempTextFile";
+import type TempData from "./file/TempData";
+import type PersistentProjectFile from "./file/PersistentProjectFile";
 
 declare global {
     interface Window {
@@ -94,39 +91,9 @@ export interface RawPatcher {
     boxes: Record<string, TBox>;
     props?: TPublicPatcherProps & Pick<TPatcherProps, "mode">;
 }
-export interface TPatcherEnv {
-    patcher: RawPatcher;
-    data: TSharedData;
-}
 
 export type TDependencies = [string, string][];
 
-export interface TPatcherProps {
-    mode: PatcherMode;
-    dependencies: TDependencies;
-    bgColor: string;
-    editingBgColor: string;
-    grid: [number, number];
-    boxIndexCount: number;
-    lineIndexCount: number;
-    package?: string;
-    name?: string;
-    author?: string;
-    version?: string;
-    description?: string;
-    openInPresentation: boolean;
-}
-export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid" | "openInPresentation">;
-
-export interface TPatcherState {
-    name: string;
-    isReady: boolean;
-    log: TPatcherLog[];
-    history: PatcherHistory;
-    selected: string[];
-    pkgMgr: PackageManager;
-    preventEmitChanged: boolean;
-}
 export type TErrorLevel = "error" | "warn" | "info" | "none";
 
 export interface TPatcherLog {
@@ -223,45 +190,6 @@ export interface TSharedData {
         [key: string]: any;
     };
 }
-export interface FileEventMap {
-    "ready": boolean;
-    "changed": never;
-    "destroyed": never;
-}
-export interface FileState {
-    isLoading: boolean;
-    isDirty: boolean;
-    isMemoryOnly: boolean;
-    isEditing: boolean;
-}
-export interface JSPatcherFile extends FileState {
-    type: "patcher" | "audio" | "text";
-    createdTime: number;
-    lastModifiedTime: number;
-    instance: any;
-    history: any;
-}
-export interface PatcherEventMap extends TPublicPatcherProps {
-    "postInited": never;
-    "ready": never;
-    "unload": never;
-    "changeBoxText": { box: Box; oldText: string; text: string };
-    "passiveDeleteLine": Line;
-    "newLog": TPatcherLog;
-    "generateCode": string;
-    "graphChanged": never;
-    "changed": never;
-    "ioChanged": IJSPatcherObjectMeta;
-    "inlet": TInletEvent<any[]>;
-    "outlet": TOutletEvent<any[]>;
-    "disconnectAudioInlet": number;
-    "disconnectAudioOutlet": number;
-    "connectAudioInlet": number;
-    "connectAudioOutlet": number;
-    "propsChanged": Partial<TPublicPatcherProps>;
-    "libChanged": { pkg: TPackage; lib: TFlatPackage };
-}
-
 export interface LineEventMap {
     "passData": any;
     "destPosChanged": { top: number; left: number };
@@ -286,10 +214,6 @@ export interface BoxEventMap {
     "ioCountChanged": Box;
     "updatedFromObject": { args?: any[]; props?: Record<string, any> };
 }
-
-export type THistoryElement = {
-    [key in keyof PatcherEventMap]?: PatcherEventMap[key][];
-};
 
 export type TBPF = string | number | number[] | number[][];
 export type TBPFPoint = [number, number, number];

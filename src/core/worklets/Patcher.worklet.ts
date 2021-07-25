@@ -1,13 +1,16 @@
-import Patcher from "../patcher/Patcher";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
-import { IPatcherNode, PatcherParameters, IPatcherProcessor, PatcherOptions } from "./PatcherWorklet.types";
-import { AudioWorkletGlobalScope, TypedAudioParamDescriptor, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
+import type Patcher from "../patcher/Patcher";
+import type { TOutletEvent } from "../objects/base/AbstractObject";
+import type { IPatcherNode, PatcherParameters, IPatcherProcessor, PatcherOptions } from "./PatcherWorklet.types";
+import type { AudioWorkletGlobalScope, TypedAudioParamDescriptor, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
+import type { PatcherEventMap } from "../patcher/Patcher";
 
 const processorID = "__JSPatcher_Patcher";
 declare const globalThis: AudioWorkletGlobalScope;
 const { registerProcessor, jspatcherEnv } = globalThis;
 
-class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPatcherNode> {
+class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPatcherNode, PatcherParameters, PatcherOptions> implements IPatcherProcessor {
+    static fnNames: (keyof IPatcherNode)[] = ["outlet"];
     static get parameterDescriptors(): TypedAudioParamDescriptor<PatcherParameters>[] {
         return new Array(128).map(i => ({
             defaultValue: 1024,
@@ -16,10 +19,17 @@ class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPa
             name: `00${i}`.slice(-3)
         }));
     }
-    patcher: Patcher;
+    readonly patcher: Patcher;
     constructor(options?: TypedAudioWorkletNodeOptions<PatcherOptions>) {
         super(options);
         this.patcher = jspatcherEnv.getInstanceById(options.processorOptions.instanceId) as Patcher;
+        this.patcher.on("outlet", this.handleOutlet);
+    }
+    handleOutlet = (e: TOutletEvent<any[], number>) => this.outlet(e.outlet, e.data);
+    fn(data: any, port: number) {
+        this.patcher.fn(data, port);
+    }
+    edit(e: PatcherEventMap["remoteEdit"]) {
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][]) {
         if (this._disposed) return false;

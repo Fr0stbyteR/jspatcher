@@ -6,6 +6,7 @@ import type Box from "../../patcher/Box";
 import type Patcher from "../../patcher/Patcher";
 import type { ProjectItemType, TempItemByType, SharedItemByType, TempItemType, TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../../types";
 import type AbstractUI from "./AbstracttUI";
+import type { IJSPatcherEnv } from "../../Env";
 
 export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject => typeof x === "function" && x?.isJSPatcherObjectConstructor;
 
@@ -58,14 +59,14 @@ export interface IJSPatcherObjectMeta<P extends Record<string, any> = Record<str
     props: IPropsMeta<P>;
 }
 
-export type Data<T> = T extends AbstractObject<infer D, any, any, any, any, any, any, any> ? D : never;
-export type State<T> = T extends AbstractObject<any, infer S, any, any, any, any, any, any> ? S : never;
-export type Inputs<T> = T extends AbstractObject<any, any, infer I, any, any, any, any, any> ? I : never;
-export type Outputs<T> = T extends AbstractObject<any, any, any, infer O, any, any, any, any> ? O : never;
-export type Args<T> = T extends AbstractObject<any, any, any, any, infer A, any, any, any> ? A : never;
-export type Props<T> = T extends AbstractObject<any, any, any, any, any, infer P, any, any> ? P : never;
-export type UIState<T> = T extends AbstractObject<any, any, any, any, any, any, infer U, any> ? U : never;
-export type EventMap<T> = T extends AbstractObject<any, any, any, any, any, any, any, infer E> ? E : never;
+export type Data<T> = T extends IJSPatcherObject<infer D, any, any, any, any, any, any, any> ? D : never;
+export type State<T> = T extends IJSPatcherObject<any, infer S, any, any, any, any, any, any> ? S : never;
+export type Inputs<T> = T extends IJSPatcherObject<any, any, infer I, any, any, any, any, any> ? I : never;
+export type Outputs<T> = T extends IJSPatcherObject<any, any, any, infer O, any, any, any, any> ? O : never;
+export type Args<T> = T extends IJSPatcherObject<any, any, any, any, infer A, any, any, any> ? A : never;
+export type Props<T> = T extends IJSPatcherObject<any, any, any, any, any, infer P, any, any> ? P : never;
+export type UIState<T> = T extends IJSPatcherObject<any, any, any, any, any, any, infer U, any> ? U : never;
+export type EventMap<T> = T extends IJSPatcherObject<any, any, any, any, any, any, any, infer E> ? E : never;
 export type TInletEvent<I extends any[] = any[], $ extends keyof Pick<I, number> = keyof Pick<I, number>> = { inlet: $; data: I[$] };
 export type TOutletEvent<O extends any[] = any[], $ extends keyof Pick<O, number> = keyof Pick<O, number>> = { outlet: $; data: O[$] };
 export type JSPatcherObjectEventMap<D, S, I extends any[], A extends any[], P, U, E> = {
@@ -132,6 +133,8 @@ export interface IJSPatcherObject<
     readonly Patcher: typeof Patcher;
     /** the box that the object lives in */
     readonly box: Box<this>;
+    /** the env that the object lives in */
+    readonly env: IJSPatcherEnv;
     readonly audioCtx?: AudioContext;
     meta: IJSPatcherObjectMeta<P>;
     setMeta(metaIn: Partial<IJSPatcherObjectMeta>): void;
@@ -205,6 +208,7 @@ export interface IJSPatcherObject<
     applyBPF(param: AudioParam, bpf: number[][]): void;
 }
 export declare const IJSPatcherObject: {
+    prototype: IJSPatcherObject;
     /** Should be true */
     readonly isJSPatcherObjectConstructor: true;
     /** div will have class "packageName" "packageName-objectName" */
@@ -226,6 +230,8 @@ export declare const IJSPatcherObject: {
     UI?: typeof AbstractUI;
     new (box: Box, patcher: Patcher): IJSPatcherObject;
 };
+
+export interface AnyJSPatcherObject extends IJSPatcherObject<Record<string, any>, Record<string, any>, any[], any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> {}
 
 export default abstract class AbstractObject<
     D extends {} = {},
@@ -267,6 +273,9 @@ export default abstract class AbstractObject<
     static UI: typeof AbstractUI;
 
     readonly isJSPatcherObject = true as const;
+    get class() {
+        return this.constructor.name;
+    }
     protected readonly _patcher: Patcher;
     get patcher() {
         return this._patcher;
@@ -277,6 +286,9 @@ export default abstract class AbstractObject<
     protected readonly _box: Box<this>;
     get box() {
         return this._box;
+    }
+    get env() {
+        return this.patcher.env;
     }
     get audioCtx() {
         return this.patcher.audioCtx;
@@ -307,54 +319,12 @@ export default abstract class AbstractObject<
     setData(dataIn: Partial<D>) {
         this.data = Object.assign(this.data, dataIn);
     }
-    async getSharedItem<T extends ProjectItemType>(id = this.box.id, type: T = "unknown" as T, data?: () => Promise<TempItemByType<T>["data"]>, onceCreate?: (aitem: SharedItemByType<T>) => any): Promise<{ id: string; item: SharedItemByType<T>; newItem: boolean; off?: () => any }> {
-        let item: SharedItemByType<T>;
-        let newItem = false;
-        const { fileMgr, tempMgr } = this.patcher.env;
-        try {
-            item = fileMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
-        } catch {
-            try {
-                item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
-            } catch {
-                if (data) {
-                    const d = await data();
-                    try {
-                        item = await tempMgr.root.addFile(id, d, type as TempItemType) as SharedItemByType<T>;
-                        newItem = true;
-                    } catch {
-                        item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
-                    }
-                } else {
-                    if (onceCreate) {
-                        const off = () => {
-                            fileMgr.off("treeChanged", handleFileMgrTreeChanged);
-                            tempMgr.off("treeChanged", handleTempMgrTreeChanged);
-                        };
-                        const handleFileMgrTreeChanged = () => {
-                            try {
-                                item = fileMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
-                                off();
-                                onceCreate(item);
-                            } catch {}
-                        };
-                        const handleTempMgrTreeChanged = () => {
-                            try {
-                                item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
-                                off();
-                                onceCreate(item);
-                            } catch {}
-                        };
-                        fileMgr.on("treeChanged", handleFileMgrTreeChanged);
-                        tempMgr.on("treeChanged", handleTempMgrTreeChanged);
-                        return { id, item: null, newItem, off };
-                    }
-                    return { id, item: null, newItem };
-                }
-            }
+    get props(): Partial<P> {
+        const props: Partial<P> = {};
+        for (const key in this.meta.props) {
+            props[key as keyof P] = this.getProp(key as keyof P);
         }
-        if (item.type !== type) throw new Error(`Getting shared item ${id}, but returned item is of type ${item.type}, not of type ${type}.`);
-        return { id, item, newItem };
+        return props;
     }
     getProp<K extends keyof P = keyof P>(key: K): P[K] {
         if (key === "rect") return this.box.rect as any;
@@ -362,13 +332,6 @@ export default abstract class AbstractObject<
         if (key === "background") return this.box.background as any;
         if (key === "presentation") return this.box.presentation as any;
         return typeof this.box.props[key] === "undefined" ? this.meta.props[key].default : this.box.props[key];
-    }
-    get props(): Partial<P> {
-        const props: Partial<P> = {};
-        for (const key in this.meta.props) {
-            props[key as keyof P] = this.getProp(key as keyof P);
-        }
-        return props;
     }
     get inlets() {
         return this._box.inlets;
@@ -388,9 +351,8 @@ export default abstract class AbstractObject<
     get inletLines() {
         return this._box.inletLines;
     }
-    get class() {
-        return this.constructor.name;
-    }
+    inletAudioConnections: TAudioNodeInletConnection[] = [];
+    outletAudioConnections: TAudioNodeOutletConnection[] = [];
     constructor(box: Box, patcher: Patcher) {
         super();
         // line connected = metaChange event subscribed
@@ -477,8 +439,6 @@ export default abstract class AbstractObject<
         this._box.highlight();
     }
 
-    inletAudioConnections: TAudioNodeInletConnection[] = [];
-    outletAudioConnections: TAudioNodeOutletConnection[] = [];
     connectAudio() {
         this.box.allLines.forEach(line => line.enable());
     }
@@ -519,5 +479,54 @@ export default abstract class AbstractObject<
                 param.linearRampToValueAtTime(a[0], currentTime + t);
             }
         });
+    }
+    async getSharedItem<T extends ProjectItemType>(id = this.box.id, type: T = "unknown" as T, data?: () => Promise<TempItemByType<T>["data"]>, onceCreate?: (aitem: SharedItemByType<T>) => any): Promise<{ id: string; item: SharedItemByType<T>; newItem: boolean; off?: () => any }> {
+        let item: SharedItemByType<T>;
+        let newItem = false;
+        const { fileMgr, tempMgr } = this.patcher.env;
+        try {
+            item = fileMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
+        } catch {
+            try {
+                item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
+            } catch {
+                if (data) {
+                    const d = await data();
+                    try {
+                        item = await tempMgr.root.addFile(id, d, type as TempItemType) as SharedItemByType<T>;
+                        newItem = true;
+                    } catch {
+                        item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
+                    }
+                } else {
+                    if (onceCreate) {
+                        const off = () => {
+                            fileMgr.off("treeChanged", handleFileMgrTreeChanged);
+                            tempMgr.off("treeChanged", handleTempMgrTreeChanged);
+                        };
+                        const handleFileMgrTreeChanged = () => {
+                            try {
+                                item = fileMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
+                                off();
+                                onceCreate(item);
+                            } catch {}
+                        };
+                        const handleTempMgrTreeChanged = () => {
+                            try {
+                                item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
+                                off();
+                                onceCreate(item);
+                            } catch {}
+                        };
+                        fileMgr.on("treeChanged", handleFileMgrTreeChanged);
+                        tempMgr.on("treeChanged", handleTempMgrTreeChanged);
+                        return { id, item: null, newItem, off };
+                    }
+                    return { id, item: null, newItem };
+                }
+            }
+        }
+        if (item.type !== type) throw new Error(`Getting shared item ${id}, but returned item is of type ${item.type}, not of type ${type}.`);
+        return { id, item, newItem };
     }
 }

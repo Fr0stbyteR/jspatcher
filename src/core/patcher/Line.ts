@@ -52,13 +52,13 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         return this.srcBox && this.srcBox.presentation && this.destBox && this.destBox.presentation;
     }
     setSrc(src: [string, number]) {
-        const srcID = src[0];
+        const srcId = src[0];
         const srcOutlet = src[1];
-        if (srcID === this.src[0] && srcOutlet === this.src[1]) return this;
+        if (srcId === this.src[0] && srcOutlet === this.src[1]) return this;
         this.srcBox.off("metaChanged", this.updateType);
         this.disable();
         this.srcBox.removeOutletLine(this);
-        this.src = [srcID, srcOutlet];
+        this.src = [srcId, srcOutlet];
         this.srcBox.addOutletLine(this);
         this.enable();
         this.srcBox.on("metaChanged", this.updateType);
@@ -73,13 +73,13 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         return this;
     }
     setDest(dest: [string, number]) {
-        const destID = dest[0];
+        const destId = dest[0];
         const destInlet = dest[1];
-        if (destID === this.dest[0] && destInlet === this.dest[1]) return this;
+        if (destId === this.dest[0] && destInlet === this.dest[1]) return this;
         this.destBox.off("metaChanged", this.updateType);
         this.disable();
         this.destBox.removeInletLine(this);
-        this.dest = [destID, destInlet];
+        this.dest = [destId, destInlet];
         this.destBox.addInletLine(this);
         this.enable();
         this.destBox.on("metaChanged", this.updateType);
@@ -98,7 +98,7 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         if (this.disabled) return this;
         this.disabled = true;
         const { srcBox, destBox } = this;
-        if (this._patcher.getLinesByBox(this.srcID, this.destID, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
+        if (this._patcher.getLinesByBox(this.srcId, this.destId, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
         if (this.isConnectableByAudio) {
             const from = this.srcBox.object.outletAudioConnections[this.srcOutlet];
             const to = this.destBox.object.inletAudioConnections[this.destInlet];
@@ -122,7 +122,7 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         if (!this.disabled) return this;
         const { srcBox, destBox } = this;
         if (this.srcOutlet >= srcBox.outlets || this.destInlet >= destBox.inlets) return this._patcher.deleteLine(this.id);
-        if (this._patcher.getLinesByBox(this.srcID, this.destID, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
+        if (this._patcher.getLinesByBox(this.srcId, this.destId, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
         if (this.isConnectableByAudio) {
             const from = this.srcBox.object.outletAudioConnections[this.srcOutlet];
             const to = this.destBox.object.inletAudioConnections[this.destInlet];
@@ -165,13 +165,13 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
     get destPos() {
         return this._patcher.boxes[this.dest[0]].getInletPos(this.dest[1]);
     }
-    get srcID() {
+    get srcId() {
         return this.src[0];
     }
     get srcOutlet() {
         return this.src[1];
     }
-    get destID() {
+    get destId() {
         return this.dest[0];
     }
     get destInlet() {

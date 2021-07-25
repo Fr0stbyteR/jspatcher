@@ -1,17 +1,68 @@
-import { max2js, js2max } from "../../utils/utils";
+import FileInstance from "../file/FileInstance";
+import PatcherEditor, { PatcherRemoteEditEventMap } from "./PatcherEditor";
 import Line from "./Line";
 import Box from "./Box";
+import { max2js, js2max } from "../../utils/utils";
 import { toFaustDspCode } from "../objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "../objects/SubPatcher";
-import FileInstance from "../file/FileInstance";
-import PatcherEditor from "./PatcherEditor";
 import type Env from "../Env";
 import type { IJSPatcherEnv } from "../Env";
 import type Project from "../Project";
 import type { IProject } from "../Project";
 import type TempPatcherFile from "./TempPatcherFile";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
-import type { TLine, TBox, PatcherEventMap, TPatcherProps, TPatcherState, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, IPropsMeta, TPublicPatcherProps, IJSPatcherObjectMeta } from "../types";
+import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta } from "../objects/base/AbstractObject";
+import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, TPatcherLog, TDependencies } from "../types";
+import type PatcherHistory from "./PatcherHistory";
+import type { PackageManager } from "../PkgMgr";
+
+export interface TPatcherProps {
+    mode: PatcherMode;
+    dependencies: TDependencies;
+    bgColor: string;
+    editingBgColor: string;
+    grid: [number, number];
+    boxIndexCount: number;
+    lineIndexCount: number;
+    package?: string;
+    name?: string;
+    author?: string;
+    version?: string;
+    description?: string;
+    openInPresentation: boolean;
+}
+export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid" | "openInPresentation">;
+
+export interface TPatcherState {
+    name: string;
+    isReady: boolean;
+    log: TPatcherLog[];
+    history: PatcherHistory;
+    selected: string[];
+    pkgMgr: PackageManager;
+    preventEmitChanged: boolean;
+}
+
+export interface PatcherEventMap extends TPublicPatcherProps {
+    "postInited": never;
+    "ready": never;
+    "unload": never;
+    "changeBoxText": { boxId: string; oldText: string; text: string };
+    "passiveDeleteLine": Line;
+    "newLog": TPatcherLog;
+    "graphChanged": never;
+    "changed": never;
+    "ioChanged": IJSPatcherObjectMeta;
+    "inlet": TInletEvent<any[]>;
+    "outlet": TOutletEvent<any[]>;
+    "disconnectAudioInlet": number;
+    "disconnectAudioOutlet": number;
+    "connectAudioInlet": number;
+    "connectAudioOutlet": number;
+    "propsChanged": Partial<TPublicPatcherProps>;
+    "libChanged": { pkg: TPackage; lib: TFlatPackage };
+    "remoteEdit": { eventName: keyof PatcherRemoteEditEventMap; eventData: PatcherRemoteEditEventMap[keyof PatcherRemoteEditEventMap] };
+}
 
 export default class Patcher extends FileInstance<PatcherEventMap, PersistentProjectFile | TempPatcherFile> {
     static props: IPropsMeta<TPublicPatcherProps> = {
@@ -298,15 +349,15 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     getObjectMeta(parsed: { class: string; args: any[]; props: Record<string, any> }) {
         return this.getObjectConstructor(parsed).meta;
     }
-    async changeBoxText(boxID: string, text: string) {
-        const oldText = this.boxes[boxID].text;
-        if (oldText === text) return this.boxes[boxID];
-        await this.boxes[boxID].changeText(text);
-        this.emit("changeBoxText", { oldText, text, box: this.boxes[boxID] });
-        return this.boxes[boxID];
+    async changeBoxText(boxId: string, text: string) {
+        const oldText = this.boxes[boxId].text;
+        if (oldText === text) return this.boxes[boxId];
+        await this.boxes[boxId].changeText(text);
+        this.emit("changeBoxText", { oldText, text, boxId });
+        return this.boxes[boxId];
     }
-    async deleteBox(boxID: string) {
-        const box = this.boxes[boxID];
+    async deleteBox(boxId: string) {
+        const box = this.boxes[boxId];
         if (!box) return null;
         await box.destroy();
         this.emitGraphChanged();
@@ -335,32 +386,32 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.emitGraphChanged();
         return line;
     }
-    changeLineSrc(lineId: string, srcID: string, srcOutlet: number) {
+    changeLineSrc(lineId: string, srcId: string, srcOutlet: number) {
         const line = this.lines[lineId];
-        // if (this.instance.getLinesByBox(srcID, line.destID, srcOutlet, line.destInlet).length > 0) return line;
-        const oldSrc: [string, number] = [line.srcID, line.srcOutlet];
-        const src: [string, number] = [srcID, srcOutlet];
+        // if (this.instance.getLinesByBox(srcId, line.destId, srcOutlet, line.destInlet).length > 0) return line;
+        const oldSrc: [string, number] = [line.srcId, line.srcOutlet];
+        const src: [string, number] = [srcId, srcOutlet];
         line.setSrc(src);
         this.emitGraphChanged();
-        return { line, oldSrc, src };
+        return { lineId, oldSrc, src };
     }
-    changeLineDest(lineId: string, destID: string, destOutlet: number) {
+    changeLineDest(lineId: string, destId: string, destOutlet: number) {
         const line = this.lines[lineId];
-        // if (this.getLinesByBox(line.srcID, destID, line.destInlet, destOutlet).length > 0) return line;
-        const oldDest: [string, number] = [line.destID, line.destInlet];
-        const dest: [string, number] = [destID, destOutlet];
+        // if (this.getLinesByBox(line.srcId, destId, line.destInlet, destOutlet).length > 0) return line;
+        const oldDest: [string, number] = [line.destId, line.destInlet];
+        const dest: [string, number] = [destId, destOutlet];
         line.setDest(dest);
         this.emitGraphChanged();
-        return { line, oldDest, dest };
+        return { lineId, oldDest, dest };
     }
-    getLinesBySrcID(srcID: string) {
+    getLinesBySrcID(srcId: string) {
         const result = [];
-        for (let i = 0; i < this.boxes[srcID].outlets; i++) { // Array.fill fills the array with same instance
+        for (let i = 0; i < this.boxes[srcId].outlets; i++) { // Array.fill fills the array with same instance
             result[i] = [];
         }
         for (const id in this.lines) {
             const line = this.lines[id];
-            if (line && line.srcID === srcID) {
+            if (line && line.srcId === srcId) {
                 const srcOutlet = line.srcOutlet;
                 if (!result[srcOutlet]) result[srcOutlet] = [id];
                 else result[srcOutlet].push(id);
@@ -368,14 +419,14 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         }
         return result;
     }
-    getLinesByDestID(destID: string) {
+    getLinesByDestID(destId: string) {
         const result = [];
-        for (let i = 0; i < this.boxes[destID].inlets; i++) {
+        for (let i = 0; i < this.boxes[destId].inlets; i++) {
             result[i] = [];
         }
         for (const id in this.lines) {
             const line = this.lines[id];
-            if (line && line.destID === destID) {
+            if (line && line.destId === destId) {
                 const destInlet = line.destInlet;
                 if (!result[destInlet]) result[destInlet] = [id];
                 else result[destInlet].push(id);
@@ -383,14 +434,14 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         }
         return result;
     }
-    getLinesByBox(srcID: string, destID: string, srcOutlet?: number, destInlet?: number) {
+    getLinesByBox(srcId: string, destId: string, srcOutlet?: number, destInlet?: number) {
         const result: string[] = [];
         let srcOuts: string[] = [];
         let destIns: string[] = [];
-        const srcOutsWraped = this.getLinesBySrcID(srcID);
+        const srcOutsWraped = this.getLinesBySrcID(srcId);
         if (srcOutlet !== undefined) srcOuts = srcOutsWraped[srcOutlet];
         else srcOutsWraped.forEach(el => srcOuts = srcOuts.concat(el));
-        const destInsWraped = this.getLinesByDestID(destID);
+        const destInsWraped = this.getLinesByDestID(destId);
         if (destInlet !== undefined) destIns = destInsWraped[destInlet];
         else destInsWraped.forEach(el => destIns = destIns.concat(el));
         if (!srcOuts || !destIns) return result;
@@ -427,8 +478,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     inspectAudioIO() {
         const iMap: boolean[] = [];
         const oMap: boolean[] = [];
-        for (const boxID in this.boxes) {
-            const box = this.boxes[boxID];
+        for (const boxId in this.boxes) {
+            const box = this.boxes[boxId];
             if (box.object instanceof AudioIn) iMap[box.object.state.index - 1] = true;
             else if (box.object instanceof AudioOut) oMap[box.object.state.index - 1] = true;
         }
@@ -454,8 +505,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     get metaFromPatcher(): { inlets: IJSPatcherObjectMeta["inlets"]; outlets: IJSPatcherObjectMeta["outlets"]; args: IJSPatcherObjectMeta["args"]; props: IJSPatcherObjectMeta["props"] } {
         const inlets: IJSPatcherObjectMeta["inlets"] = [];
         const outlets: IJSPatcherObjectMeta["outlets"] = [];
-        for (const boxID in this.boxes) {
-            const box = this.boxes[boxID];
+        for (const boxId in this.boxes) {
+            const box = this.boxes[boxId];
             if (box.object instanceof In) {
                 inlets[box.object.state.index - 1] = {
                     isHot: true,
@@ -514,7 +565,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     toFaustDspCode() {
         const code = toFaustDspCode(this);
-        this.emit("generateCode", code);
         return code;
     }
     toString(spacing?: number) {

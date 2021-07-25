@@ -164,7 +164,7 @@ export class LineUI extends React.PureComponent<P, S> {
             if (!this.dragged) return;
             if (nearest[0]) {
                 this.props.editor.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
-                if (line[isSrc ? "srcID" : "destID"] === nearest[0] && line[isSrc ? "srcOutlet" : "destInlet"] === nearest[1]) this.handleResetPos();
+                if (line[isSrc ? "srcId" : "destId"] === nearest[0] && line[isSrc ? "srcOutlet" : "destInlet"] === nearest[1]) this.handleResetPos();
                 else this.props.editor[isSrc ? "changeLineSrc" : "changeLineDest"](this.props.id, ...nearest);
             } else {
                 this.props.editor.deleteLine(this.props.id);

@@ -1579,8 +1579,8 @@ export const inspectFaustPatcher = (patcher: Patcher) => {
     let outs: Out[] = [];
     const effects: Effect[] = [];
     // Find outs and imports
-    for (const boxID in patcher.boxes) {
-        const box = patcher.boxes[boxID];
+    for (const boxId in patcher.boxes) {
+        const box = patcher.boxes[boxId];
         if (box.object instanceof Effect) effects.push(box.object);
         else if (box.object instanceof Out) outs.push(box.object);
         else if (box.object instanceof Import) imports.push(box.object);

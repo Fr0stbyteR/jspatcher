@@ -1,6 +1,7 @@
 import DefaultUI, { DefaultUIState } from "./DefaultUI";
 import BaseObject, { BaseObjectProps } from "./BaseObject";
 import type { IJSPatcherObjectMeta } from "./AbstractObject";
+import type Env from "../../Env";
 
 export interface DefaultObjectUIProps {
     bgColor: string;
@@ -77,4 +78,7 @@ export default class DefaultObject<
         }
     };
     static UI = DefaultUI;
+    get env() {
+        return super.env as Env;
+    }
 }

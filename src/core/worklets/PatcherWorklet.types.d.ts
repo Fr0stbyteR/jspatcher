@@ -1,6 +1,13 @@
-export interface IPatcherProcessor {}
+import type { PatcherEventMap } from "../patcher/Patcher";
 
-export interface IPatcherNode {}
+export interface IPatcherProcessor {
+    fn(data: any, port: number): void;
+    edit(e: PatcherEventMap["remoteEdit"]): void;
+}
+
+export interface IPatcherNode {
+    outlet(port: number, data: any): void;
+}
 
 export type PatcherParameters = string;
 

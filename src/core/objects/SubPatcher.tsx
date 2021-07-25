@@ -2,15 +2,16 @@ import * as React from "react";
 import { StrictModalProps, Modal } from "semantic-ui-react";
 import BaseObject from "./base/BaseObject";
 import DefaultObject from "./base/DefaultObject";
-import Patcher from "../patcher/Patcher";
-import { IJSPatcherObjectMeta, TMetaType, PatcherEventMap, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
-import { DefaultPopupUI, DefaultPopupUIState, BaseUI, BaseUIState, DefaultPopupUIProps } from "./BaseUI";
-import { ProjectItemEventMap } from "../file/AbstractProjectItem";
+import Patcher, { PatcherEventMap } from "../patcher/Patcher";
+import { IJSPatcherObjectMeta, TMetaType, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
+import { DefaultPopupUI, DefaultPopupUIState, DefaultPopupUIProps } from "./BaseUI";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
 import PatcherUI from "../../components/editors/patcher/PatcherUI";
 import PatcherEditorUI from "../../components/editors/PatcherEditorUI";
 import LeftMenu from "../../components/leftmenu/LeftMenu";
 import PatcherEditor from "../patcher/PatcherEditor";
+import BaseUI, { BaseUIState } from "./base/BaseUI";
+import type { ProjectFileEventMap } from "../file/AbstractProjectFile";
 import "./SubPatcher.scss";
 
 export class In extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
@@ -333,12 +334,12 @@ export class SubPatcherUI extends DefaultPopupUI<patcher, {}, SubPatcherUIState>
         const content = <div style={{ height: "100%", width: "100%", display: "flex", position: "relative" }}>
             <div className="ui-flex-row" style={{ flex: "1 1 auto", overflow: "auto" }}>
                 <div className="ui-left">
-                    <LeftMenu env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} noFileMgr />
+                    <LeftMenu env={this.env} lang={this.env.language} noFileMgr />
                 </div>
                 <div className="ui-center">
                     {
                         this.state.editor
-                            ? <PatcherEditorUI key={this.state.timestamp} editor={this.state.editor} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                            ? <PatcherEditorUI key={this.state.timestamp} editor={this.state.editor} env={this.env} lang={this.env.language} />
                             : undefined
                     }
                 </div>
@@ -401,7 +402,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
         const handleFilePathChanged = () => {
             this.setState({ key: this.state.patcher.file.projectPath });
         };
-        const handleSaved = (e: ProjectItemEventMap["saved"]) => {
+        const handleSaved = (e: ProjectFileEventMap["saved"]) => {
             if (e.instance === this.state.patcher) return;
             reload();
         };
@@ -457,7 +458,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
             let rawPatcher: RawPatcher;
             try {
                 const { item, newItem } = await this.getSharedItem(key, "patcher", async () => {
-                    patcher = new this.Patcher(this.patcher.project);
+                    patcher = new this.Patcher({ env: this.patcher.env, project: this.patcher.project });
                     await patcher.load(this.data, this.type);
                     rawPatcher = patcher.toSerializable();
                     return rawPatcher;
@@ -466,7 +467,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
                     patcher.file = item;
                     this.setData(rawPatcher);
                 } else {
-                    patcher = await item.instantiate();
+                    patcher = await item.instantiate({ env: this.patcher.env, project: this.patcher.project }) as Patcher;
                     this.setData(patcher.toSerializable());
                 }
                 this.setState({ patcher });
@@ -518,7 +519,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
     handleFilePathChanged = () => {
         this.setState({ key: this.state.patcher.file.projectPath });
     };
-    handleSaved = (e: ProjectItemEventMap["saved"]) => {
+    handleSaved = (e: ProjectFileEventMap["saved"]) => {
         if (e.instance === this.state.patcher) return;
         this.reload();
     };
@@ -581,7 +582,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
         let rawPatcher: RawPatcher;
         try {
             const { item, newItem } = await this.getSharedItem(key, "patcher", async () => {
-                patcher = new this.Patcher(this.patcher.project);
+                patcher = new this.Patcher({ env: this.patcher.env, project: this.patcher.project });
                 await patcher.load(this.data, this.type);
                 rawPatcher = patcher.toSerializable();
                 return rawPatcher;
@@ -590,7 +591,7 @@ export class faustPatcher extends FaustNode<Partial<RawPatcher>, FaustPatcherSta
                 patcher.file = item;
                 this.setData(rawPatcher);
             } else {
-                patcher = await item.instantiate();
+                patcher = await item.instantiate({ env: this.patcher.env, project: this.patcher.project }) as Patcher;
                 this.setData(patcher.toSerializable());
             }
             this.setState({ patcher });
@@ -685,7 +686,7 @@ export class BPatcherUI extends BaseUI<patcher, {}, SubPatcherUIState> {
                 <div style={{ height: "100%", width: "100%", display: "flex" }}>
                     {
                         this.state.editor
-                            ? <PatcherEditorUI key={this.state.timestamp} editor={this.state.editor} env={this.props.object.patcher.env} lang={this.props.object.patcher.env.language} />
+                            ? <PatcherEditorUI key={this.state.timestamp} editor={this.state.editor} env={this.env} lang={this.env.language} />
                             : undefined
                     }
                 </div>

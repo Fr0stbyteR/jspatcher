@@ -48,7 +48,7 @@ export default class TaskManager extends TypedEventEmitter<TaskManagerEventMap> 
     }
     async newTask<T extends Task["callback"] = Task["callback"]>(emitter: string | Object, message: string, callback: T) {
         const thread = globalThis.constructor.name;
-        const timestamp = performance.now();
+        const timestamp = Date.now();
         const id = thread + this._id++;
         const task: Task = { id, thread, timestamp, emitter, message, callback };
         if (!(thread in this._tasks)) this._tasks[thread] = [];

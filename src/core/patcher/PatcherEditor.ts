@@ -4,27 +4,30 @@ import FileEditor from "../file/FileEditor";
 import Box from "./Box";
 import Line from "./Line";
 import PatcherHistory from "./PatcherHistory";
-import type { PatcherEventMap, RawPatcher, TBox, TLine, TMaxClipboard, TRect, TResizeHandlerType } from "../types";
+import type { RawPatcher, TBox, TLine, TMaxClipboard, TRect, TResizeHandlerType } from "../types";
 import type Patcher from "./Patcher";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type TempPatcherFile from "./TempPatcherFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
+import type { PatcherEventMap } from "./Patcher";
 
 export interface PatcherEditorEventMap extends PatcherEditorState {
     "create": RawPatcher;
     "delete": RawPatcher;
-    "changeBoxText": { box: Box; oldText: string; text: string };
-    "changeLineSrc": { line: Line; oldSrc: [string, number]; src: [string, number] };
-    "changeLineDest": { line: Line; oldDest: [string, number]; dest: [string, number] };
+    "changeBoxText": { boxId: string; oldText: string; text: string };
+    "changeLineSrc": { lineId: string; oldSrc: [string, number]; src: [string, number] };
+    "changeLineDest": { lineId: string; oldDest: [string, number]; dest: [string, number] };
     "selected": string[];
     "moving": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
     "moved": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
     "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType; presentation: boolean };
     "tempLine": { findSrc: boolean; from: [string, number] };
-    "inspector": Box;
-    "dockUI": Box;
+    "inspector": never;
+    "dockUI": string;
 }
+
+export interface PatcherRemoteEditEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized"> {}
 
 export interface PatcherEditorState {
     locked: boolean;
@@ -100,6 +103,11 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         this.instance.on("changeBoxText", this.handleChangeBoxText);
         this.instance.on("passiveDeleteLine", this.handlePassiveDeleteLine);
+        this.onAny((e) => {
+            const keys = this.history.eventListening as (keyof PatcherRemoteEditEventMap)[];
+            if (keys.indexOf(e.eventName as keyof PatcherRemoteEditEventMap) === -1) return;
+            this.instance.emit("remoteEdit", e as { eventName: keyof PatcherRemoteEditEventMap; eventData: PatcherRemoteEditEventMap[keyof PatcherRemoteEditEventMap] });
+        });
         const { openInPresentation } = this.props;
         this.setState({
             locked: true,
@@ -151,9 +159,9 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             await this.createBox({ text: `img ${path}`, ...boxIn });
         }
     }
-    async deleteBox(boxID: string) {
-        this.deselect(boxID);
-        const box = await this.instance.deleteBox(boxID);
+    async deleteBox(boxId: string) {
+        this.deselect(boxId);
+        const box = await this.instance.deleteBox(boxId);
         if (!box) return null;
         this.emit("delete", { boxes: { [box.id]: box }, lines: {} });
         return box;
@@ -171,15 +179,13 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.emit("delete", { boxes: {}, lines: { [line.id]: line } });
         return line;
     }
-    changeLineSrc(lineId: string, srcID: string, srcOutlet: number) {
-        const e = this.instance.changeLineSrc(lineId, srcID, srcOutlet);
+    changeLineSrc(lineId: string, srcId: string, srcOutlet: number) {
+        const e = this.instance.changeLineSrc(lineId, srcId, srcOutlet);
         this.emit("changeLineSrc", e);
-        return e.line;
     }
-    changeLineDest(lineId: string, destID: string, destOutlet: number) {
-        const e = this.instance.changeLineDest(lineId, destID, destOutlet);
+    changeLineDest(lineId: string, destId: string, destOutlet: number) {
+        const e = this.instance.changeLineDest(lineId, destId, destOutlet);
         this.emit("changeLineDest", e);
-        return e.line;
     }
 
     select(...ids: string[]) {
@@ -222,7 +228,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
                 patcher.boxes[box.id] = box;
             });
         lineSet.forEach((line) => {
-            if (patcher.boxes[line.srcID] && patcher.boxes[line.destID]) patcher.lines[line.id] = line;
+            if (patcher.boxes[line.srcId] && patcher.boxes[line.destId]) patcher.lines[line.id] = line;
         });
         if (!Object.keys(patcher.boxes)) return undefined;
         return JSON.stringify(patcher, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
@@ -287,8 +293,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         if (Array.isArray(clipboard.boxes) || Array.isArray(clipboard.lines)) return pasted;
         this.instance.state.preventEmitChanged = true;
-        for (const boxID in clipboard.boxes) {
-            const box = clipboard.boxes[boxID];
+        for (const boxId in clipboard.boxes) {
+            const box = clipboard.boxes[boxId];
             if (this.boxes[box.id]) {
                 idMap[box.id] = "box-" + ++this.props.boxIndexCount;
                 box.id = idMap[box.id];
@@ -327,8 +333,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         const $init: Promise<Box>[] = [];
         const $postInit: Promise<Box>[] = [];
         const created: RawPatcher = { boxes: {}, lines: {} };
-        for (const boxID in objects.boxes) {
-            const boxIn = objects.boxes[boxID];
+        for (const boxId in objects.boxes) {
+            const boxIn = objects.boxes[boxId];
             const box = new Box(this.instance, boxIn);
             this.boxes[box.id] = box;
             created.boxes[box.id] = box;
@@ -432,16 +438,16 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         const { presentation } = this.state;
         const rectKey = presentation ? "presentationRect" : "rect";
         const select = selectedBefore.slice();
-        for (const boxID in this.boxes) {
-            const box = this.boxes[boxID];
+        for (const boxId in this.boxes) {
+            const box = this.boxes[boxId];
             if (presentation && !box.presentation) continue;
             const rect = box[rectKey];
             if (!isTRect(rect)) continue;
             const [boxLeft, boxTop, boxWidth, boxHeight] = rect;
             const [boxRight, boxBottom] = [boxLeft + boxWidth, boxTop + boxHeight];
             if (boxLeft < right && boxTop < bottom && boxRight > left && boxBottom > top) {
-                const i = select.indexOf(boxID);
-                if (i === -1) select.push(boxID);
+                const i = select.indexOf(boxId);
+                if (i === -1) select.push(boxId);
                 else select.splice(i, 1);
             }
         }
@@ -503,10 +509,10 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         });
         lineSet.forEach(line => line.emit("posChanged", line));
     }
-    resizeSelectedBox(boxID: string, dragOffset: { x: number; y: number }, type: TResizeHandlerType) {
+    resizeSelectedBox(boxId: string, dragOffset: { x: number; y: number }, type: TResizeHandlerType) {
         const { presentation, snapToGrid, selected } = this.state;
         const rectKey = presentation ? "presentationRect" : "rect";
-        const rect = this.boxes[boxID][rectKey];
+        const rect = this.boxes[boxId][rectKey];
         if (!isRectResizable(rect)) return { x: 0, y: 0 };
         const delta = { x: 0, y: 0 };
         // Round delta to grid
@@ -628,17 +634,17 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         return this;
     }
     inspector(box?: Box) {
-        if (box) this.emit("inspector", box);
+        if (box) this.emit("inspector");
         else if (this.state.selected.length) {
             const found = this.state.selected.find(id => id.startsWith("box"));
-            if (found && this.boxes[found]) this.emit("inspector", this.boxes[found]);
+            if (found && this.boxes[found]) this.emit("inspector");
         }
     }
     dockUI(box?: Box) {
-        if (box && box.UI.dockable) this.emit("dockUI", box);
+        if (box && box.UI.dockable) this.emit("dockUI", box.id);
         else if (this.state.selected.length) {
             const found = this.state.selected.find(id => id.startsWith("box"));
-            if (found && this.boxes[found] && this.boxes[found].UI.dockable) this.emit("dockUI", this.boxes[found]);
+            if (found && this.boxes[found] && this.boxes[found].UI.dockable) this.emit("dockUI", found);
         }
     }
     onUiResized() {}

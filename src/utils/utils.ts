@@ -1,5 +1,6 @@
 /* eslint-disable arrow-body-style */
-import { TMIDIEvent, TBPF, TRect, TPresentationRect, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit, TPatcherProps } from "../core/types";
+import type { TPatcherProps } from "../core/patcher/Patcher";
+import type { TMIDIEvent, TBPF, TRect, TPresentationRect, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit } from "../core/types";
 
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");

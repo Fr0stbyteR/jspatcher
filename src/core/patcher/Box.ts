@@ -2,10 +2,10 @@ import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import { isTRect, parseToPrimitive, isTPresentationRect, isRectMovable, isRectResizable } from "../../utils/utils";
 import type Patcher from "./Patcher";
 import type Line from "./Line";
-import type { BoxEventMap, TBox, TMaxBox, Data, Args, Props, TRect, TPresentationRect } from "../types";
-import type { IJSPatcherObject } from "../objects/base/AbstractObject";
+import type { BoxEventMap, TBox, TMaxBox, TRect, TPresentationRect } from "../types";
+import type { AnyJSPatcherObject, Args, Data, IJSPatcherObject, Props } from "../objects/base/AbstractObject";
 
-export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends TypedEventEmitter<BoxEventMap> {
+export default class Box<T extends IJSPatcherObject = AnyJSPatcherObject> extends TypedEventEmitter<BoxEventMap> {
     readonly id: string;
     text = "";
     inlets = 0;

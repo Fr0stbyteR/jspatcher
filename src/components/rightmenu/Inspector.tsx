@@ -1,10 +1,12 @@
 import * as React from "react";
 import { ColorResult, ChromePicker } from "react-color";
 import { Checkbox, DropdownProps, DropdownItemProps, Dropdown, Table, Menu, Label } from "semantic-ui-react";
-import Box from "../../core/patcher/Box";
-import Patcher from "../../core/patcher/Patcher";
-import PatcherEditor from "../../core/patcher/PatcherEditor";
-import { IArgsMeta, IPropsMeta, IJSPatcherObjectMeta, TPublicPatcherProps, TRect, TPresentationRect, TPatcherProps } from "../../core/types";
+import type Box from "../../core/patcher/Box";
+import type PatcherEditor from "../../core/patcher/PatcherEditor";
+import type Patcher from "../../core/patcher/Patcher";
+import type { TPatcherProps, TPublicPatcherProps } from "../../core/patcher/Patcher";
+import type { IArgsMeta, IJSPatcherObjectMeta, IPropsMeta } from "../../core/objects/base/AbstractObject";
+import type { TRect, TPresentationRect } from "../../core/types";
 
 class InspectorBooleanItem extends React.PureComponent<{ itemKey: number | string; value: boolean; onChange: (value: boolean, key: number | string) => any }> {
     handleChangeCheckbox = () => this.props.onChange(!this.props.value, this.props.itemKey);
@@ -234,8 +236,8 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
             this.setState({ meta: boxMeta, args: args.slice(), props: { ...props, presentation, background }, rect, presentationRect });
             return;
         }
-        const meta = { ...boxMeta };
-        const commonProps = { ...boxMeta.props };
+        const meta: IJSPatcherObjectMeta = { ...boxMeta };
+        const commonProps: IPropsMeta = { ...boxMeta.props };
         for (const key in commonProps) {
             const prop = commonProps[key];
             if (key === "rect" || key === "presentationRect") {
@@ -250,7 +252,7 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
                 let found = false;
                 const $box = boxes[j];
                 const $props = $box.props;
-                const $metaProps = $box.meta.props;
+                const $metaProps: IPropsMeta = $box.meta.props;
                 const $presentation = $box.presentation;
                 const $background = $box.background;
                 for (const $key in $metaProps) {
@@ -387,7 +389,7 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
                 table.push(item);
             });
         }
-        const boxIDs = this.props.editor.state.selected.filter(id => id.startsWith("box")).map(s => +s.slice(4)).sort((a, b) => a - b);
+        const boxIds = this.props.editor.state.selected.filter(id => id.startsWith("box")).map(s => +s.slice(4)).sort((a, b) => a - b);
         return (
             <>
                 <div className="inspector-table-container">
@@ -401,7 +403,7 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
                 </div>
                 <Menu icon inverted size="mini">
                     <Label.Group size="mini" color="grey">
-                        {boxIDs.length ? boxIDs.map(id => <Label style={{ margin: ".5em" }} key={id} content={id} />) : <Label style={{ margin: ".5em" }} content="Patcher" />}
+                        {boxIds.length ? boxIds.map(id => <Label style={{ margin: ".5em" }} key={id} content={id} />) : <Label style={{ margin: ".5em" }} content="Patcher" />}
                     </Label.Group>
                 </Menu>
             </>

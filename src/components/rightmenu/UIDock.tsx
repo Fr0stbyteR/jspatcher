@@ -1,17 +1,20 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
-import PatcherEditor from "../../core/patcher/PatcherEditor";
-import Box from "../../core/patcher/Box";
-import { BaseUI } from "../../core/objects/BaseUI";
+import type PatcherEditor from "../../core/patcher/PatcherEditor";
+import type Box from "../../core/patcher/Box";
+import type BaseUI from "../../core/objects/base/BaseUI";
+import type BaseObject from "../../core/objects/base/BaseObject";
 
-export default class UIDock extends React.PureComponent<{ editor: PatcherEditor; display: boolean; }, { box: Box; }> {
+export default class UIDock extends React.PureComponent<{ editor: PatcherEditor; display: boolean }, { box: Box }> {
     state = { box: undefined as Box };
     refDiv = React.createRef<HTMLDivElement>();
     refUI = React.createRef<BaseUI>();
     handleDestroy = () => this.setState({ box: undefined });
-    handleDock = (box: Box) => {
+    handleDock = (boxId: string) => {
         if (this.state.box) this.state.box.object.off("destroy", this.handleDestroy);
         this.setState({ box: undefined });
+        const box = this.props.editor.instance.boxes[boxId];
+        if (!box) return;
         this.forceUpdate(() => {
             box.object.on("destroy", this.handleDestroy);
             this.setState({ box });
@@ -46,7 +49,7 @@ export default class UIDock extends React.PureComponent<{ editor: PatcherEditor;
             <>
                 <div className="dock-ui" ref={this.refDiv}>
                     {box
-                        ? <box.UI object={box.object} editor={this.props.editor} editing={false} onEditEnd={() => undefined} inDock ref={this.refUI} />
+                        ? <box.UI object={box.object as BaseObject} editor={this.props.editor} editing={false} onEditEnd={() => undefined} inDock ref={this.refUI} />
                         : <div className="dock-ui-default">{ctrlKey} + Enter on selected box to dock UI</div>}
                 </div>
                 <Menu icon inverted size="mini">

@@ -1,4 +1,5 @@
 import * as React from "react";
+import type Env from "../../Env";
 import type Box from "../../patcher/Box";
 import type PatcherEditor from "../../patcher/PatcherEditor";
 import type { IJSPatcherObject, IPropsMeta, Props } from "./AbstractObject";
@@ -41,6 +42,9 @@ export default abstract class AbstractUI<
     }
     get patcher() {
         return this.props.object.patcher;
+    }
+    get env() {
+        return this.props.object.patcher.env as Env;
     }
     get editor() {
         return this.props.editor;
