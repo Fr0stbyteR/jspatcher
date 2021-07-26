@@ -1,6 +1,7 @@
 import FileInstance from "../file/FileInstance";
 import TextEditor from "./TextEditor";
 import TempTextFile from "./TempTextFile";
+import TextHistory from "./TextHistory";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
@@ -14,6 +15,7 @@ export default class PatcherText extends FileInstance<PatcherTextEventMap, Persi
         return new this(options).init(options.file.data);
     }
     text: string;
+    _history = new TextHistory();
     async getEditor() {
         const editor = new TextEditor(this);
         return editor.init();

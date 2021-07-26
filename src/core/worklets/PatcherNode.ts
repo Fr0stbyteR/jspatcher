@@ -11,7 +11,7 @@ const processorID = "__JSPatcher_Patcher";
 export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPatcherProcessor, PatcherParameters, PatcherOptions> implements IPatcherNode {
     static processorID = processorID;
     static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorID, processorURL);
-    static fnNames: (keyof IPatcherProcessor)[] = ["fn", "edit"];
+    static fnNames: (keyof IPatcherProcessor)[] = ["init", "fn", "sync"];
     readonly patcher: Patcher;
     constructor(context: BaseAudioContext, options: { env: IJSPatcherEnv; instanceId: string }) {
         super(context, processorID, {
@@ -20,10 +20,13 @@ export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPa
             processorOptions: { instanceId: options.instanceId }
         });
         this.patcher = options.env.getInstanceById(options.instanceId) as Patcher;
-        this.patcher.on("remoteEdit", this.handleRemoteEdit);
+        this.patcher.on("changed", this.handleChanged);
         this.patcher.on("inlet", this.handleInlet);
     }
-    handleRemoteEdit = (e: PatcherEventMap["remoteEdit"]) => this.edit(e);
+    handleChanged = () => {
+        const syncData = this.patcher.history.getSyncData();
+        this.sync(syncData);
+    };
     handleInlet = (e: PatcherEventMap["inlet"]) => this.fn(e.data, e.inlet);
     outlet(port: number, data: any) {
         this.patcher.outlet(port, data);

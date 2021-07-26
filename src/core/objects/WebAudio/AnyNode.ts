@@ -43,7 +43,7 @@ export default class AnyNode extends JSPAudioNode<AudioNode, {}, [AudioNode, ...
                     for (let i = 0; i < this.node.numberOfOutputs; i++) {
                         this.outletAudioConnections[i] = { node: this.node, index: i };
                     }
-                    this.meta = factoryMeta;
+                    this.setMeta(factoryMeta);
                     this.inlets = inlets;
                     this.outlets = outlets;
                     this.connectAudio();

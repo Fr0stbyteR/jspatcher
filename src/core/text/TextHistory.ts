@@ -1,44 +1,40 @@
 import History from "../file/History";
-import TextEditor, { TextEditorEventMap } from "./TextEditor";
+import TextEditor, { TextHistoryEventMap } from "./TextEditor";
 
-export default class TextHistory extends History<TextEditorEventMap, TextEditor> {
-    get eventListening(): (keyof TextEditorEventMap)[] {
+export default class TextHistory extends History<TextHistoryEventMap, TextEditor> {
+    get eventListening(): (keyof TextHistoryEventMap)[] {
         return ["textModified"];
     }
-    async undo() {
-        super.undo((eventName, eventData) => {
-            if (eventName === "textModified") {
-                const e: TextEditorEventMap[typeof eventName] = eventData;
-                const { oldText } = e;
-                if (this.editor.editor) {
-                    this.editor.editor.focus();
-                    if (!document.execCommand("undo")) {
-                        (this.editor.editor.getModel() as any)?.undo();
-                    }
-                    this.editor.text = this.editor.editor.getValue();
-                    e.oldText = this.editor.text;
-                } else {
-                    this.editor.text = oldText;
+    async undoOf(editor: TextEditor, eventName: keyof TextHistoryEventMap, eventData: any) {
+        if (eventName === "textModified") {
+            const e: TextHistoryEventMap[typeof eventName] = eventData;
+            const { oldText } = e;
+            if (editor.editor) {
+                editor.editor.focus();
+                if (!document.execCommand("undo")) {
+                    (editor.editor.getModel() as any)?.undo();
                 }
+                editor.text = editor.editor.getValue();
+                e.oldText = editor.text;
+            } else {
+                editor.text = oldText;
             }
-        });
+        }
     }
-    async redo() {
-        super.redo((eventName, eventData) => {
-            if (eventName === "textModified") {
-                const e: TextEditorEventMap[typeof eventName] = eventData;
-                const { text } = e;
-                if (this.editor.editor) {
-                    this.editor.editor.focus();
-                    if (!document.execCommand("undo")) {
-                        (this.editor.editor.getModel() as any)?.redo();
-                    }
-                    this.editor.text = this.editor.editor.getValue();
-                    e.text = this.editor.text;
-                } else {
-                    this.editor.text = text;
+    async redoOf(editor: TextEditor, eventName: keyof TextHistoryEventMap, eventData: any) {
+        if (eventName === "textModified") {
+            const e: TextHistoryEventMap[typeof eventName] = eventData;
+            const { text } = e;
+            if (editor.editor) {
+                editor.editor.focus();
+                if (!document.execCommand("undo")) {
+                    (editor.editor.getModel() as any)?.redo();
                 }
+                editor.text = editor.editor.getValue();
+                e.text = editor.text;
+            } else {
+                editor.text = text;
             }
-        });
+        }
     }
 }

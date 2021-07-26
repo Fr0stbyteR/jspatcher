@@ -1,8 +1,8 @@
 import type { WamNode } from "wamsdk";
 import Patcher from "./Patcher";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
-import type { LineEventMap, TLine, TLineType, TMetaType } from "../types";
-import type { IJSPatcherObject } from "../objects/base/AbstractObject";
+import type { LineEventMap, TLine, TLineType } from "../types";
+import type { IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
 
 export default class Line extends TypedEventEmitter<LineEventMap> {
     static isConnectableByAudio(from: IJSPatcherObject, outlet: number, to: IJSPatcherObject, inlet: number) {
@@ -203,5 +203,12 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
     };
     get type(): TLineType {
         return this._type;
+    }
+    toString() {
+        return JSON.stringify(this.toSerializable());
+    }
+    toSerializable(): TLine {
+        const { id, src, dest, disabled } = this;
+        return { id, src: [...src], dest: [...dest], disabled };
     }
 }

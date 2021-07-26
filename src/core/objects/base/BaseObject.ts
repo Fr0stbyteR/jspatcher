@@ -83,21 +83,22 @@ export default class BaseObject<
             }
         };
     }
+    isUIStateKey = (x: any): x is keyof (U & BaseUIState) => this.meta.props[x] && this.meta.props[x].isUIState;
+    updateUIFromProps = (props: Partial<P & BaseObjectProps>) => {
+        if (props) {
+            const uiState: Partial<U & BaseUIState> = {};
+            for (const key in props) {
+                if (this.isUIStateKey(key)) uiState[key as keyof (U & BaseUIState)] = props[key] as any;
+            }
+            this.updateUI(uiState);
+        }
+    };
     subscribe() {
         super.subscribe();
         this.on("metaChanged", meta => this.box.emit("metaChanged", meta));
         this.on("dataUpdated", data => this.box.emit("dataUpdated", data));
-        this.on("update", this.updateBox);
-        const isUIStateKey = (x: any): x is keyof (U & BaseUIState) => this.meta.props[x] && this.meta.props[x].isUIState;
-        const updateUIFromProps = (props: Partial<P & BaseObjectProps>) => {
-            if (props) {
-                const uiState: Partial<U & BaseUIState> = {};
-                for (const key in props) {
-                    if (isUIStateKey(key)) uiState[key as keyof (U & BaseUIState)] = props[key] as any;
-                }
-                this.updateUI(uiState);
-            }
-        };
-        this.on("updateProps", updateUIFromProps);
+        this.on("updateArgs", this.setArgs);
+        this.on("updateProps", this.setProps);
+        this.on("updateProps", this.updateUIFromProps);
     }
 }

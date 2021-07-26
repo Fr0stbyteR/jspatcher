@@ -84,7 +84,7 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
             const { defaultValue, minValue, maxValue } = param;
             factoryMeta.inlets[i] = { ...audioParamInletMeta, description: `${path}${audioParamInletMeta.description}: ${defaultValue} (${minValue} - ${maxValue})` };
         }
-        this.meta = factoryMeta;
+        this.setMeta(factoryMeta);
         this.inlets = (inlets || 1) + params.length;
         this.outlets = outlets + 1;
         this.connectAudio();

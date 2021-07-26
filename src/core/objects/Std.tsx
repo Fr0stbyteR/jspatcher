@@ -1,9 +1,10 @@
 import * as Util from "util";
 import Patcher from "../patcher/Patcher";
 import { Bang, isBang } from "./Base";
-import { IJSPatcherObjectMeta } from "../types";
-import AbstractProjectItem, { ProjectItemEventMap } from "../file/AbstractProjectItem";
+import { IJSPatcherObjectMeta } from "./base/AbstractObject";
+import AbstractProjectItem from "../file/AbstractProjectItem";
 import TemporaryProjectFile from "../file/TemporaryProjectFile";
+import AbstractProjectFile, { ProjectFileEventMap } from "../file/AbstractProjectFile";
 import DefaultObject from "./base/DefaultObject";
 
 class StdObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
@@ -550,7 +551,7 @@ class sel extends StdObject<{}, { array: any[] }, any[], (Bang | any)[], any[]> 
             meta.inlets[i + 1].description += ` index ${i}`;
         }
         meta.outlets[testsCount] = outletMeta1;
-        this.meta = meta;
+        this.setMeta(meta);
         this.state.array = args.slice();
         this.inlets = 1 + testsCount;
         this.outlets = testsCount + 1;
@@ -598,20 +599,20 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: AbstractPro
         optional: true,
         description: "Initial value"
     }];
-    state: { key: string; value: any; sharedItem: AbstractProjectItem | TemporaryProjectFile } = { key: this.box.args[0]?.toString(), value: undefined, sharedItem: null };
+    state: { key: string; value: any; sharedItem: AbstractProjectFile | TemporaryProjectFile } = { key: this.box.args[0]?.toString(), value: undefined, sharedItem: null };
     subscribe() {
         super.subscribe();
         const handleFilePathChanged = () => {
             this.setState({ key: this.state.sharedItem?.projectPath });
         };
-        const handleSaved = (e: ProjectItemEventMap["saved"]) => {
+        const handleSaved = (e: ProjectFileEventMap["saved"]) => {
             if (e === this) return;
             this.setState({ value: this.state.sharedItem?.data });
         };
         const subscribeItem = async () => {
             const file = this.state.sharedItem;
             if (!file) return;
-            await file.addObserver(this);
+            await file.addObserver(this.id);
             file.on("destroyed", reload);
             file.on("nameChanged", handleFilePathChanged);
             file.on("pathChanged", handleFilePathChanged);
@@ -624,7 +625,7 @@ class v extends StdObject<{}, { key: string; value: any; sharedItem: AbstractPro
             file.off("nameChanged", handleFilePathChanged);
             file.off("pathChanged", handleFilePathChanged);
             file.off("saved", handleSaved);
-            await file.removeObserver(this);
+            await file.removeObserver(this.id);
         };
         const reload = async () => {
             await unsubscribeItem();

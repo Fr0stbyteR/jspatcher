@@ -1,10 +1,11 @@
 import TypedEventEmitter, { ITypedEventEmitter } from "../../utils/TypedEventEmitter";
+import TemporaryProjectFile from "./TemporaryProjectFile";
+import type History from "./History";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { IObservee } from "../types";
 import type { IFileEditor } from "./FileEditor";
 import type { IProjectFile } from "./AbstractProjectFile";
-import TemporaryProjectFile from "./TemporaryProjectFile";
 
 export interface FileInstanceEventMap {
     "observers": Set<any>;
@@ -26,6 +27,7 @@ export interface IFileInstance<EventMap extends Record<string, any> & Partial<Fi
     isReady: boolean;
     readonly isActive: boolean;
     readonly id: string;
+    readonly history: History<any, any>;
     init(): Promise<this>;
     setActive(): void;
     getEditor(): Promise<IFileEditor>;
@@ -94,6 +96,10 @@ export default abstract class FileInstance<EventMap extends Record<string, any> 
     readonly _id: string;
     get id() {
         return this._id;
+    }
+    readonly _history: History<any, any>;
+    get history() {
+        return this._history;
     }
     constructor({ env, project, file, instanceId }: { env: IJSPatcherEnv; project?: IProject; file?: File; instanceId?: string }) {
         super();

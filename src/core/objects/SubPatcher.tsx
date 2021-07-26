@@ -64,7 +64,7 @@ export class In extends DefaultObject<{}, { index: number }, [], [any], [number]
             const { meta } = this;
             if (typeof props.description === "string") meta.outlets[0].description = props.description;
             if (typeof props.type === "string") meta.outlets[0].type = props.type || "anything";
-            this.meta = meta;
+            this.setMeta(meta);
         });
         this.patcher.on("inlet", this.handlePatcherInlet);
         this.on("destroy", () => {
@@ -122,7 +122,7 @@ export class Out extends DefaultObject<{}, { index: number }, [any], [], [number
             const { meta } = this;
             if (typeof props.description === "string") meta.inlets[0].description = props.description;
             if (typeof props.type === "string") meta.inlets[0].type = props.type || "anything";
-            this.meta = meta;
+            this.setMeta(meta);
         });
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) this.patcher.outlet(this.state.index - 1, data);
@@ -195,7 +195,7 @@ export class AudioIn extends DefaultObject<{}, { index: number }, [], [any], [nu
         this.on("updateProps", (props) => {
             const { meta } = this;
             if (typeof props.description === "string") meta.outlets[0].description = props.description;
-            this.meta = meta;
+            this.setMeta(meta);
         });
         this.on("destroy", () => {
             this.patcher.inspectAudioIO();
@@ -267,7 +267,7 @@ export class AudioOut extends DefaultObject<{}, { index: number }, [any], [], [n
         this.on("updateProps", (props) => {
             const { meta } = this;
             if (typeof props.description === "string") meta.outlets[0].description = props.description;
-            this.meta = meta;
+            this.setMeta(meta);
         });
         this.on("destroy", () => {
             this.patcher.inspectAudioIO();
@@ -386,7 +386,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
             this.inlets = meta.inlets.length;
             this.outlets = meta.outlets.length;
             const { inlets, outlets } = meta;
-            this.meta = { ...this.meta, inlets, outlets, args: patcher.args };
+            this.setMeta({ ...this.meta, inlets, outlets, args: patcher.args });
         };
         const handlePatcherGraphChanged = () => {
             this.patcher.emit("graphChanged");

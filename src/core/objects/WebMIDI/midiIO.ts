@@ -33,7 +33,7 @@ export class midiIn extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIA
         const enums = devices.map(d => d.name || d.id);
         const { meta } = this;
         meta.args[0] = { ...midiIn.args[0], type: "enum", enums };
-        this.meta = meta;
+        this.setMeta(meta);
     };
     handleMIDIMessage = (e: WebMidi.MIDIMessageEvent) => this.outlet(0, e.data);
     newSearch = async (search?: string) => {
@@ -124,7 +124,7 @@ export class midiOut extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDI
         const enums = devices.map(d => d.name || d.id);
         const { meta } = this;
         meta.args[0] = { ...midiOut.args[0], type: "enum", enums };
-        this.meta = meta;
+        this.setMeta(meta);
     };
     newSearch = async (search?: string) => {
         this.state.search = search;

@@ -3,7 +3,6 @@ import type MonacoEditor from "react-monaco-editor";
 import type { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import FileEditor from "../file/FileEditor";
 import TempTextFile from "./TempTextFile";
-import TextHistory from "./TextHistory";
 import type PatcherText from "./PatcherText";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
@@ -13,6 +12,8 @@ export interface TextEditorEventMap {
     "textModified": { text: string; oldText: string };
 }
 
+export interface TextHistoryEventMap extends TextEditorEventMap {}
+
 export default class TextEditor extends FileEditor<PatcherText, TextEditorEventMap> {
     static async fromProjectItem({ file, env, project, instanceId }: { file: PersistentProjectFile | TempTextFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
         const text = file instanceof TempTextFile ? file.data : await file.instantiate({ env, project, instanceId }) as PatcherText;
@@ -21,15 +22,11 @@ export default class TextEditor extends FileEditor<PatcherText, TextEditorEventM
     }
     editor: editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    readonly _history: TextHistory = new TextHistory(this);
     get fileExtension() {
         return "txt";
     }
     get fileIcon(): SemanticICONS {
         return "code";
-    }
-    get history() {
-        return this._history;
     }
     get text() {
         return this.instance.text;

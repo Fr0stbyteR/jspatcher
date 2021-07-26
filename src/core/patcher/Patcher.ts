@@ -1,7 +1,8 @@
 import FileInstance from "../file/FileInstance";
-import PatcherEditor, { PatcherRemoteEditEventMap } from "./PatcherEditor";
+import PatcherEditor from "./PatcherEditor";
 import Line from "./Line";
 import Box from "./Box";
+import PatcherHistory from "./PatcherHistory";
 import { max2js, js2max } from "../../utils/utils";
 import { toFaustDspCode } from "../objects/Faust";
 import { AudioIn, AudioOut, In, Out } from "../objects/SubPatcher";
@@ -13,7 +14,6 @@ import type TempPatcherFile from "./TempPatcherFile";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta } from "../objects/base/AbstractObject";
 import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, TPatcherLog, TDependencies } from "../types";
-import type PatcherHistory from "./PatcherHistory";
 import type { PackageManager } from "../PkgMgr";
 
 export interface TPatcherProps {
@@ -37,7 +37,6 @@ export interface TPatcherState {
     name: string;
     isReady: boolean;
     log: TPatcherLog[];
-    history: PatcherHistory;
     selected: string[];
     pkgMgr: PackageManager;
     preventEmitChanged: boolean;
@@ -61,7 +60,6 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "connectAudioOutlet": number;
     "propsChanged": Partial<TPublicPatcherProps>;
     "libChanged": { pkg: TPackage; lib: TFlatPackage };
-    "remoteEdit": { eventName: keyof PatcherRemoteEditEventMap; eventData: PatcherRemoteEditEventMap[keyof PatcherRemoteEditEventMap] };
 }
 
 export default class Patcher extends FileInstance<PatcherEventMap, PersistentProjectFile | TempPatcherFile> {
@@ -105,13 +103,13 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     _state: TPatcherState;
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
+    _history = new PatcherHistory();
     constructor(options: { env: IJSPatcherEnv; project?: IProject; file?: PersistentProjectFile | TempPatcherFile; instanceId?: string }) {
         super(options);
         this._state = {
             name: "patcher",
             isReady: false,
             log: [],
-            history: undefined,
             selected: [],
             pkgMgr: undefined,
             preventEmitChanged: false
@@ -332,7 +330,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.setProps({ dependencies: dependencies.slice() });
     }
     async createBox(boxIn: TBox) {
-        if (!boxIn.hasOwnProperty("id")) boxIn.id = "box-" + ++this.props.boxIndexCount;
+        if (!boxIn.id || (boxIn.id in this.boxes)) boxIn.id = "box-" + ++this.props.boxIndexCount;
         const box = new Box(this, boxIn);
         this.boxes[box.id] = box;
         await box.init();
@@ -365,7 +363,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     createLine(lineIn: TLine) {
         if (!this.canCreateLine(lineIn)) return null;
-        if (!lineIn.hasOwnProperty("id")) lineIn.id = "line-" + ++this.props.lineIndexCount;
+        if (!lineIn.id || (lineIn.id in this.lines)) lineIn.id = "line-" + ++this.props.lineIndexCount;
         const line = new Line(this, lineIn);
         this.lines[line.id] = line;
         line.enable();
@@ -568,8 +566,19 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         return code;
     }
     toString(spacing?: number) {
-        const obj: TMaxPatcher | Patcher = this.props.mode === "max" || this.props.mode === "gen" ? js2max(this) : this;
-        return JSON.stringify(obj, (k, v) => (k.charAt(0) === "_" ? undefined : v), spacing);
+        if (this.props.mode === "max" || this.props.mode === "gen") {
+            return JSON.stringify(js2max(this), undefined, spacing);
+        }
+        const { props } = this;
+        const boxes: RawPatcher["boxes"] = {};
+        const lines: RawPatcher["lines"] = {};
+        for (const id in boxes) {
+            boxes[id] = this.boxes[id].toSerializable();
+        }
+        for (const id in lines) {
+            lines[id] = this.lines[id].toSerializable();
+        }
+        return JSON.stringify({ boxes, lines, props }, undefined, spacing);
     }
     toSerializable(): RawPatcher {
         return JSON.parse(this.toString());

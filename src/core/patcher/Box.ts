@@ -418,7 +418,8 @@ export default class Box<T extends IJSPatcherObject = AnyJSPatcherObject> extend
         return objOut;
     }
     toString() {
-        return JSON.stringify(this, (k, v) => (k.charAt(0) === "_" ? undefined : v));
+        const { id, text, inlets, outlets, rect, background, presentation, presentationRect, args, props, data } = this;
+        return JSON.stringify({ id, text, inlets, outlets, rect, background, presentation, presentationRect, args, props, data });
     }
     toSerializable(): TBox {
         return JSON.parse(this.toString());

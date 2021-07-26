@@ -2,6 +2,7 @@ import type { WebAudioModule } from "wamsdk/src/api";
 import { dbtoa, isIdentityMatrix, normExp } from "../../utils/math";
 import AudioEditor from "./AudioEditor";
 import FileInstance from "../file/FileInstance";
+import AudioHistory from "./AudioHistory";
 import OperableAudioBuffer from "./OperableAudioBuffer";
 import Waveform from "../../utils/Waveform";
 import type { Options } from "../../utils/WavEncoder";
@@ -58,6 +59,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
     }
     audioBuffer: OperableAudioBuffer;
     waveform: Waveform;
+    _history = new AudioHistory();
 
     get length() {
         return this.audioBuffer.length;

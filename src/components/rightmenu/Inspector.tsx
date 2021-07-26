@@ -318,18 +318,18 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
     handleChange = (value: any, key: number | string) => {
         if (!this.box) return;
         if (typeof key === "number") {
-            const state = this.box.args.slice();
+            const args = this.box.args.slice();
             if (this.box.meta.args[key].varLength && Array.isArray(value)) {
-                state.splice(key);
-                state.push(...value);
+                args.splice(key);
+                args.push(...value);
             } else {
-                state[key] = value;
+                args[key] = value;
             }
-            this.boxes.forEach(box => box.object.update(state));
+            this.boxes.forEach(box => box.object.updateArgs(args));
         } else if (key === "rect") {
             this.boxes.forEach(box => box.setRect(value));
         } else {
-            this.boxes.forEach(box => box.object.update(undefined, { [key]: value }));
+            this.boxes.forEach(box => box.object.updateProps({ [key]: value }));
         }
         this.handleSelected();
     };

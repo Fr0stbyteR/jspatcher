@@ -33,7 +33,6 @@ export interface IFileEditor<Instance extends IFileInstance = IFileInstance, Eve
     readonly editorId: string;
     readonly fileExtension: string;
     readonly fileIcon: SemanticICONS;
-    history: History<any, any>;
     file: IProjectFile;
     setActive(): void;
     undo(): Promise<void>;
@@ -97,8 +96,8 @@ export default class FileEditor<Instance extends IFileInstance = IFileInstance, 
     get isLocked() {
         return false;
     }
-    get history(): History<any, any> {
-        return null;
+    get history(): History<Partial<EventMap>, this> {
+        return this.instance.history;
     }
     get fileExtension() {
         return "data";
@@ -121,6 +120,7 @@ export default class FileEditor<Instance extends IFileInstance = IFileInstance, 
         this.instance = instance;
         this.instance?.addObserver(this);
         this.instance.on("destroy", this.handleDestroy);
+        this.history.addEditor(this);
         this.on("dirty", isDirty => this.file?.emit("dirty", isDirty));
         this.on("destroy", () => this.file?.emit("dirty", false));
         const handleReady = () => {
@@ -194,6 +194,7 @@ export default class FileEditor<Instance extends IFileInstance = IFileInstance, 
         }
         this.instance.off("destroy", this.handleDestroy);
         this.instance.removeObserver(this);
+        this.history.removeEditor(this);
         this._isDestroyed = true;
         await this.emit("destroy");
     }

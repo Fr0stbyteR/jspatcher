@@ -2,7 +2,7 @@ import JSPAudioNode from "./AudioNode";
 import TransmitterNode from "../../worklets/Transmitter";
 import PatcherAudio from "../../audio/PatcherAudio";
 import OperableAudioBuffer from "../../audio/OperableAudioBuffer";
-import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
 
 type I = [boolean | number | PatcherAudio, boolean, number, number];
 interface P {
@@ -207,15 +207,15 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
                 }
             } else if (inlet === 1) {
                 if (typeof data === "boolean" || typeof data === "number") {
-                    this.updateBox({ props: { loop: !!data } });
+                    this.setProps({ loop: !!data });
                 }
             } else if (inlet === 2) {
                 if (typeof data === "number") {
-                    this.updateBox({ props: { loopStart: data } });
+                    this.setProps({ loopStart: data });
                 }
             } else if (inlet === 3) {
                 if (typeof data === "number") {
-                    this.updateBox({ props: { loopEnd: data } });
+                    this.setProps({ loopEnd: data });
                 }
             }
         });

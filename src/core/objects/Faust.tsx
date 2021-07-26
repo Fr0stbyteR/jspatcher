@@ -861,7 +861,7 @@ class Par extends Iterator {
             meta.outlets[i] = outlet0Meta;
         }
         meta.outlets[outlets - 1] = outlet1Meta;
-        this.meta = meta;
+        this.setMeta(meta);
         this.outlets = outlets;
     };
     subscribe() {

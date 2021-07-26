@@ -3,7 +3,6 @@ import { isRectMovable, isRectResizable, isTRect } from "../../utils/utils";
 import FileEditor from "../file/FileEditor";
 import Box from "./Box";
 import Line from "./Line";
-import PatcherHistory from "./PatcherHistory";
 import type { RawPatcher, TBox, TLine, TMaxClipboard, TRect, TResizeHandlerType } from "../types";
 import type Patcher from "./Patcher";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
@@ -27,7 +26,7 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "dockUI": string;
 }
 
-export interface PatcherRemoteEditEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized"> {}
+export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized"> {}
 
 export interface PatcherEditorState {
     locked: boolean;
@@ -52,10 +51,6 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     };
     get isLocked() {
         return this.state.locked;
-    }
-    readonly _history: PatcherHistory = new PatcherHistory(this);
-    get history() {
-        return this._history;
     }
     get boxes() {
         return this.instance.boxes;
@@ -103,11 +98,6 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         this.instance.on("changeBoxText", this.handleChangeBoxText);
         this.instance.on("passiveDeleteLine", this.handlePassiveDeleteLine);
-        this.onAny((e) => {
-            const keys = this.history.eventListening as (keyof PatcherRemoteEditEventMap)[];
-            if (keys.indexOf(e.eventName as keyof PatcherRemoteEditEventMap) === -1) return;
-            this.instance.emit("remoteEdit", e as { eventName: keyof PatcherRemoteEditEventMap; eventData: PatcherRemoteEditEventMap[keyof PatcherRemoteEditEventMap] });
-        });
         const { openInPresentation } = this.props;
         this.setState({
             locked: true,
@@ -135,7 +125,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     }
     async createBox(boxIn: TBox) {
         const box = await this.instance.createBox(boxIn);
-        this.emit("create", { boxes: { [box.id]: box }, lines: {} });
+        this.emit("create", { boxes: { [box.id]: box.toSerializable() }, lines: {} });
         await box.postInit();
         return box;
     }
@@ -163,20 +153,20 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.deselect(boxId);
         const box = await this.instance.deleteBox(boxId);
         if (!box) return null;
-        this.emit("delete", { boxes: { [box.id]: box }, lines: {} });
+        this.emit("delete", { boxes: { [box.id]: box.toSerializable() }, lines: {} });
         return box;
     }
     createLine(lineIn: TLine) {
         const line = this.instance.createLine(lineIn);
         if (!line) return null;
-        this.emit("create", { boxes: {}, lines: { [line.id]: line } });
+        this.emit("create", { boxes: {}, lines: { [line.id]: line.toSerializable() } });
         return line;
     }
     deleteLine(lineId: string) {
         this.deselect(lineId);
         const line = this.instance.deleteLine(lineId);
         if (!line) return null;
-        this.emit("delete", { boxes: {}, lines: { [line.id]: line } });
+        this.emit("delete", { boxes: {}, lines: { [line.id]: line.toSerializable() } });
         return line;
     }
     changeLineSrc(lineId: string, srcId: string, srcOutlet: number) {
@@ -215,7 +205,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     }
     deselectAll() {
         this.state.selected = [];
-        this.emit("selected", this.state.selected);
+        this.emit("selected", []);
     }
     selectedToString() {
         const lineSet = new Set<Line>();
@@ -225,13 +215,13 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             .map(id => this.boxes[id])
             .forEach((box) => {
                 box.allLines.forEach(line => lineSet.add(line));
-                patcher.boxes[box.id] = box;
+                patcher.boxes[box.id] = box.toSerializable();
             });
         lineSet.forEach((line) => {
-            if (patcher.boxes[line.srcId] && patcher.boxes[line.destId]) patcher.lines[line.id] = line;
+            if (patcher.boxes[line.srcId] && patcher.boxes[line.destId]) patcher.lines[line.id] = line.toSerializable();
         });
         if (!Object.keys(patcher.boxes)) return undefined;
-        return JSON.stringify(patcher, (k, v) => (k.charAt(0) === "_" ? undefined : v), 4);
+        return JSON.stringify(patcher, undefined, 4);
     }
     async pasteToPatcher(clipboard: RawPatcher | TMaxClipboard) {
         const idMap: Record<string, string> = {};
@@ -264,7 +254,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             }
             const createdBoxes = (await Promise.all($init)).filter(box => !!box);
             createdBoxes.forEach((box) => {
-                pasted.boxes[box.id] = box;
+                pasted.boxes[box.id] = box.toSerializable();
                 $postInit.push(box.postInit());
             });
             if (Array.isArray(clipboard.lines)) {
@@ -278,7 +268,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
                         dest: [idMap[lineArgs.destination[0].replace(/obj/, "box")], lineArgs.destination[1]]
                     };
                     const createdLine = this.instance.createLine(line);
-                    if (createdLine) pasted.lines[createdLine.id] = line;
+                    if (createdLine) pasted.lines[createdLine.id] = createdLine.toSerializable();
                 }
             }
             this.instance.state.preventEmitChanged = false;
@@ -308,7 +298,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         const createdBoxes = (await Promise.all($init)).filter(box => !!box);
         createdBoxes.forEach((box) => {
-            pasted.boxes[box.id] = box;
+            pasted.boxes[box.id] = box.toSerializable();
             $postInit.push(box.postInit());
         });
         await Promise.all($postInit);
@@ -318,7 +308,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             line.src[0] = idMap[line.src[0]];
             line.dest[0] = idMap[line.dest[0]];
             const createdLine = this.instance.createLine(line);
-            if (createdLine) pasted.lines[createdLine.id] = line;
+            if (createdLine) pasted.lines[createdLine.id] = createdLine.toSerializable();
         }
         this.instance.state.preventEmitChanged = false;
         if (Object.keys(pasted.boxes).length) {
@@ -337,7 +327,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             const boxIn = objects.boxes[boxId];
             const box = new Box(this.instance, boxIn);
             this.boxes[box.id] = box;
-            created.boxes[box.id] = box;
+            created.boxes[box.id] = box.toSerializable();
             $init.push(box.init());
             $postInit.push(box.postInit());
         }
@@ -348,7 +338,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             if (!this.instance.canCreateLine(lineIn)) continue;
             const line = new Line(this.instance, lineIn);
             this.lines[line.id] = line;
-            created.lines[line.id] = line;
+            created.lines[line.id] = line.toSerializable();
             line.enable();
         }
         this.deselectAll();
@@ -385,7 +375,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     async delete(objects: RawPatcher) {
         const deleted: RawPatcher = { boxes: {}, lines: {} };
         for (const id in objects.lines) {
-            deleted.lines[id] = this.lines[id].destroy();
+            deleted.lines[id] = this.lines[id].destroy().toSerializable();
         }
         const promises: Promise<Box>[] = [];
         for (const id in objects.boxes) {

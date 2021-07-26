@@ -3,7 +3,9 @@ import type Patcher from "../patcher/Patcher";
 import type { TOutletEvent } from "../objects/base/AbstractObject";
 import type { IPatcherNode, PatcherParameters, IPatcherProcessor, PatcherOptions } from "./PatcherWorklet.types";
 import type { AudioWorkletGlobalScope, TypedAudioParamDescriptor, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
-import type { PatcherEventMap } from "../patcher/Patcher";
+import type { IHistoryData } from "../file/History";
+import type { PatcherEditorEventMap } from "../patcher/PatcherEditor";
+import PatcherEditor from "../patcher/PatcherEditor";
 
 const processorID = "__JSPatcher_Patcher";
 declare const globalThis: AudioWorkletGlobalScope;
@@ -20,16 +22,22 @@ class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPa
         }));
     }
     readonly patcher: Patcher;
+    editor: PatcherEditor;
     constructor(options?: TypedAudioWorkletNodeOptions<PatcherOptions>) {
         super(options);
         this.patcher = jspatcherEnv.getInstanceById(options.processorOptions.instanceId) as Patcher;
+    }
+    async init() {
+        this.patcher.init();
         this.patcher.on("outlet", this.handleOutlet);
+        this.editor = await this.patcher.getEditor();
     }
     handleOutlet = (e: TOutletEvent<any[], number>) => this.outlet(e.outlet, e.data);
     fn(data: any, port: number) {
         this.patcher.fn(data, port);
     }
-    edit(e: PatcherEventMap["remoteEdit"]) {
+    sync(data: IHistoryData<PatcherEditorEventMap>) {
+        this.patcher.history.syncData(data);
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][]) {
         if (this._disposed) return false;

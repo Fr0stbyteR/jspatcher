@@ -1,7 +1,6 @@
 import type { SemanticICONS } from "semantic-ui-react";
 import type { WebAudioModule } from "wamsdk/src/api";
 import { dbtoa } from "../../utils/math";
-import AudioHistory from "./AudioHistory";
 import AudioPlayer from "./AudioPlayer";
 import AudioRecorder from "./AudioRecorder";
 import FileEditor from "../file/FileEditor";
@@ -42,6 +41,9 @@ export interface AudioEditorEventMap {
     "setAudio": never;
     "ready": never;
 }
+
+export interface AudioHistoryEventMap extends Pick<AudioEditorEventMap, "faded" | "fadedIn" | "fadedOut" | "cutEnd" | "pasted" | "deleted" | "silenced" | "insertedSilence" | "reversed" | "inversed" | "resampled" | "remixed" | "recorded"> {}
+
 export interface AudioEditorState {
     playing: TAudioPlayingState;
     monitoring: boolean;
@@ -88,11 +90,6 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
     get fileIcon(): SemanticICONS {
         return "music";
     }
-    readonly _history: AudioHistory = new AudioHistory(this);
-    get history() {
-        return this._history;
-    }
-
     get clipboard() {
         return (this.env as Env).audioClipboard;
     }

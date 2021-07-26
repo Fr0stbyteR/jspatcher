@@ -32,7 +32,7 @@ export default abstract class AbstractProjectFolder<Manager extends IProjectItem
     }
     constructor(fileMgrIn: Manager, parentIn: IProjectFolder, nameIn: string) {
         super(fileMgrIn, parentIn, nameIn);
-        this.onAny(({ eventName, eventData }) => {
+        this.onAny((eventName, eventData) => {
             const { id, isFolder, type, path } = this;
             this.fileMgr.emit("itemChanged", { id, isFolder, type, path, eventName, eventData });
         });

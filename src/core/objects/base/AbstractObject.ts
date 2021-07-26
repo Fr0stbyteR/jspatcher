@@ -74,16 +74,14 @@ export type JSPatcherObjectEventMap<D, S, I extends any[], A extends any[], P, U
     "preInit": never;
     /** Emitted after connections */
     "postInit": never;
-    /** Emitted on any changes to the args/props */
-    "update": { args?: Partial<A>; props?: Partial<P> };
-    /** Emitted immediately after update if there are any changes to the args */
+    /** Emitted immediately when the editor request changes to the args */
     "updateArgs": Partial<A>;
-    /** Emitted immediately after update if there are any changes to the props */
+    /** Emitted immediately when the editor request changes to the props */
     "updateProps": Partial<P>;
+    /** Emitted immediately when the editor request changes to the state */
+    "updateState": Partial<S>;
     /** The UI will listen to this event type. */
     "updateUI": Partial<U> | never;
-    /** Emitted when the object's state should be changed (by others). */
-    "setState": Partial<S>;
     /** Emitted if received any input */
     "inlet": TInletEvent<I>;
     /** Emitted when a new connection/disconnection is made on any I/O */
@@ -104,7 +102,7 @@ export type JSPatcherObjectEventMap<D, S, I extends any[], A extends any[], P, U
 /**
  * All JSPatcher Object should extends this class
  *
- * @template D serializable, type of `data` property, use `setData` to update. Data will be stored with the box in the serialized patcher.
+ * @template D serializable, type of `data` property, use `setData` to update. Data will be stored with the box in the serialized patcher. Will mark the patcher `dirty`.
  * @template S serializable, type of `state` property, use `setState` to update. State is temporary to the object instance. Can be updated from the host.
  * @template I type of inlets as an array.
  * @template O type of outlets as an array.
@@ -125,6 +123,8 @@ export interface IJSPatcherObject<
 > extends TypedEventEmitter<JSPatcherObjectEventMap<D, S, I, A, P, U, E>> {
     /** Should be true */
     readonly isJSPatcherObject: true;
+    /** Unique identifier of the object */
+    readonly id: string;
     /** constructor (class) name */
     readonly class: string;
     /** the patcher that the object lives in */
@@ -136,18 +136,21 @@ export interface IJSPatcherObject<
     /** the env that the object lives in */
     readonly env: IJSPatcherEnv;
     readonly audioCtx?: AudioContext;
-    meta: IJSPatcherObjectMeta<P>;
+    readonly meta: IJSPatcherObjectMeta<P>;
     setMeta(metaIn: Partial<IJSPatcherObjectMeta>): void;
     /** Serializable, use `setState` to update. State is temporary to the object instance. Can be updated from the host. */
     state: S;
     setState(stateIn: Partial<S>): void;
     /** Serializable, type of `data` property, use `setData` to update. Data will be stored with the box in the serialized patcher. */
-    data: D;
+    readonly data: D;
     setData(dataIn: Partial<D>): void;
     /** Get all props from box, if not defined, get from metadata default */
     readonly props: Partial<P>;
     /** Get prop value from box, if not defined, get from metadata default. */
     getProp<K extends keyof P = keyof P>(key: K): P[K];
+    setProps(props: Partial<P>): void;
+    readonly args: Partial<A>;
+    setArgs(args: Partial<A>): void;
     inlets: number;
     outlets: number;
     readonly inletLines: Set<Line>[];
@@ -160,8 +163,12 @@ export interface IJSPatcherObject<
     init(): Promise<void>;
     /** Will be called after the object attached to box */
     postInit(): Promise<void>;
-    /** Will be called when arguments and properties are changed. */
-    update(args?: Partial<A>, props?: Partial<P>): Promise<void>;
+    /** Will be called when need to change arguments */
+    updateArgs(args: Partial<A>): Promise<void>;
+    /** Will be called when need to change properties */
+    updateProps(props: Partial<P>): Promise<void>;
+    /** Will be called when need to change state */
+    updateState(state: Partial<S>): Promise<void>;
     /** Main function when receive data from a inlet (base 0). */
     fn<$ extends number = number>(inlet: $, data: I[$]): void;
     /** Called when object will be destroyed. */
@@ -177,8 +184,6 @@ export interface IJSPatcherObject<
     // for developer
     /** Update UI's React State. */
     updateUI(state: Partial<U>): void;
-    /** Store the input args and props with the box. */
-    updateBox: (e: { args?: Partial<A>; props?: Partial<P> }) => void;
     /** Output data with ith outlet. */
     outlet<$ extends number>(outlet: $, data: O[$]): void;
     /**
@@ -273,6 +278,7 @@ export default abstract class AbstractObject<
     static UI: typeof AbstractUI;
 
     readonly isJSPatcherObject = true as const;
+    readonly id: string;
     get class() {
         return this.constructor.name;
     }
@@ -294,30 +300,24 @@ export default abstract class AbstractObject<
         return this.patcher.audioCtx;
     }
     private _meta = (this.constructor as typeof AbstractObject).meta as IJSPatcherObjectMeta<P>;
-    get meta() {
+    get meta(): IJSPatcherObjectMeta<P> {
         return this._meta;
     }
-    set meta(metaIn: IJSPatcherObjectMeta<P>) {
-        this._meta = metaIn;
-        this.emit("metaChanged", this._meta);
-    }
     setMeta(metaIn: Partial<IJSPatcherObjectMeta<P>>) {
-        this.meta = Object.assign(this.meta, metaIn);
+        this._meta = Object.assign(this.meta, metaIn);
+        this.emit("metaChanged", this._meta);
     }
     state: S;
     setState(stateIn: Partial<S>) {
         this.state = Object.assign(this.state, stateIn);
         this.emit("stateUpdated", this.state);
     }
-    get data() {
+    get data(): D {
         return this._box.data;
     }
-    set data(dataIn: D) {
-        this._box.data = dataIn as any;
-        this.emit("dataUpdated", dataIn);
-    }
     setData(dataIn: Partial<D>) {
-        this.data = Object.assign(this.data, dataIn);
+        this._box.data = Object.assign(this.data, dataIn) as any;
+        this.emit("dataUpdated", dataIn);
     }
     get props(): Partial<P> {
         const props: Partial<P> = {};
@@ -333,6 +333,15 @@ export default abstract class AbstractObject<
         if (key === "presentation") return this.box.presentation as any;
         return typeof this.box.props[key] === "undefined" ? this.meta.props[key].default : this.box.props[key];
     }
+    setProps = (props: Partial<P>) => {
+        this.box.update({ props });
+    };
+    get args(): Partial<A> {
+        return this.box.args as any;
+    }
+    setArgs = (args: Partial<A>) => {
+        this.box.update({ args });
+    };
     get inlets() {
         return this._box.inlets;
     }
@@ -355,6 +364,7 @@ export default abstract class AbstractObject<
     outletAudioConnections: TAudioNodeOutletConnection[] = [];
     constructor(box: Box, patcher: Patcher) {
         super();
+        this.id = this.env.generateId(this);
         // line connected = metaChange event subscribed
         // patcher object outside, use _ for prevent recursive stringify
         this._patcher = patcher;
@@ -374,15 +384,14 @@ export default abstract class AbstractObject<
     updateUI(state: Partial<U>) {
         this.emit("updateUI", state);
     }
-    updateBox = (e: { args?: Partial<A>; props?: Partial<P> }) => {
-        this.box.update(e);
-    };
-    async update(args?: Partial<A>, props?: Partial<P>) {
-        const promises: Promise<void[]>[] = [];
-        promises.push(this.emit("update", { args, props }));
-        if (args && args.length) promises.push(this.emit("updateArgs", args));
-        if (props && Object.keys(props).length) promises.push(this.emit("updateProps", props));
-        await Promise.all(promises);
+    async updateArgs(args: Partial<A>) {
+        if (args && args.length) await this.emit("updateArgs", args);
+    }
+    async updateProps(props: Partial<P>) {
+        if (props && Object.keys(props).length) await this.emit("updateProps", props);
+    }
+    async updateState(state: Partial<S>) {
+        if (state && Object.keys(state).length) await this.emit("updateState", state);
     }
     fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(inlet: $, data: I[$]) {
         if (inlet === 0) { // allow change props via first inlet with an props object
@@ -390,7 +399,7 @@ export default abstract class AbstractObject<
                 const propsInKeys = Object.keys(data);
                 const propsKeys = Object.keys(this.meta.props);
                 if (propsInKeys.length && propsInKeys.every(k => propsKeys.indexOf(k) !== -1)) {
-                    this.update(undefined, data);
+                    this.updateProps(data);
                     return;
                 }
             }

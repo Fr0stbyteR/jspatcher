@@ -76,7 +76,7 @@ export class AudioIn extends JSPAudioNode<MediaStreamAudioSourceNode, { search: 
         const enums = devices.filter(d => d.kind === "audioinput").map(d => d.label || d.deviceId);
         const { meta } = this;
         meta.args[0] = { ...AudioIn.args[0], type: "enum", enums };
-        this.meta = meta;
+        this.setMeta(meta);
     };
     newSearch = async (search?: string) => {
         this.state.search = search;
@@ -180,7 +180,7 @@ export class AudioOut extends JSPAudioNode<MediaStreamAudioDestinationNode | Aud
         const enums = devices.filter(d => d.kind === "audiooutput").map(d => d.label || d.deviceId);
         const { meta } = this;
         meta.args[0] = { ...AudioOut.args[0], type: "enum", enums };
-        this.meta = meta;
+        this.setMeta(meta);
     };
     newSearch = async (search?: string) => {
         if (!supportSetSinkId) return;

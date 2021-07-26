@@ -1,10 +1,12 @@
 import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
 import FaustDynamicNode, { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
 import { Bang, isBang } from "../Base";
-import { IJSPatcherObjectMeta, TBPF, TMIDIEvent, IInletMeta, IOutletMeta } from "../../types";
+import { TBPF, TMIDIEvent } from "../../types";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
-import { CodePopupUI, DefaultUI } from "../BaseUI";
+import { CodePopupUI } from "../BaseUI";
 import { UnPromisifiedFunction } from "../../workers/Worker";
+import { IJSPatcherObjectMeta, IInletMeta, IOutletMeta } from "../base/AbstractObject";
+import DefaultUI from "../base/DefaultUI";
 
 class FaustNodeUI extends CodePopupUI<FaustNode> {
     editorLanguage = "faust";
@@ -12,7 +14,7 @@ class FaustNodeUI extends CodePopupUI<FaustNode> {
         return this.object.data.code;
     }
     handleSave = (code: string) => {
-        this.object.data.code = code;
+        this.object.setData({ code });
         this.object.newNode(code, this.object.state.voices);
     };
 }
@@ -68,7 +70,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
         const audioParamInletMeta: IInletMeta = { isHot: false, type: "signal", description: ": bpf or node connection" };
         const outletMeta: IOutletMeta = { type: "signal", description: "Node connection" };
         const lastOutletMeta = Ctor.outlets[0];
-        const factoryMeta = Ctor.meta;
+        const factoryMeta = Ctor.meta as this["meta"];
         for (let i = 0; i < inlets; i++) {
             if (i === 0) factoryMeta.inlets[i] = compiled.inlets ? firstInletSignalMeta : firstInletMeta;
             else factoryMeta.inlets[i] = inletMeta;
@@ -90,7 +92,7 @@ export default class FaustNode<D extends Partial<FaustNodeData> & Record<string,
                 this.inletAudioConnections[i] = { node: param };
             }
         }
-        this.meta = factoryMeta;
+        this.setMeta(factoryMeta);
         this.inlets = (inlets || 1) + (node instanceof AWN ? node.parameters.size : 0);
         this.outlets = outlets + 1;
         this.connectAudio();
