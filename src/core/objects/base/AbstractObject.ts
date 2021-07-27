@@ -59,6 +59,10 @@ export interface IJSPatcherObjectMeta<P extends Record<string, any> = Record<str
     props: IPropsMeta<P>;
 }
 
+export interface ObjectUpdateOptions {
+    undoable?: boolean;
+}
+
 export type Data<T> = T extends IJSPatcherObject<infer D, any, any, any, any, any, any, any> ? D : never;
 export type State<T> = T extends IJSPatcherObject<any, infer S, any, any, any, any, any, any> ? S : never;
 export type Inputs<T> = T extends IJSPatcherObject<any, any, infer I, any, any, any, any, any> ? I : never;
@@ -168,11 +172,11 @@ export interface IJSPatcherObject<
     /** Will be called after the object attached to box */
     postInit(): Promise<void>;
     /** Will be called when need to change arguments */
-    updateArgs(args: Partial<A>): Promise<void>;
+    updateArgs(args: Partial<A>, options?: ObjectUpdateOptions): Promise<void>;
     /** Will be called when need to change properties */
-    updateProps(props: Partial<P>): Promise<void>;
+    updateProps(props: Partial<P>, options?: ObjectUpdateOptions): Promise<void>;
     /** Will be called when need to change state */
-    updateState(state: Partial<S>): Promise<void>;
+    updateState(state: Partial<S>, options?: ObjectUpdateOptions): Promise<void>;
     /** Main function when receive data from a inlet (base 0). */
     fn<$ extends number = number>(inlet: $, data: I[$]): void;
     /** Called when object will be destroyed. */
@@ -397,19 +401,25 @@ export default abstract class AbstractObject<
     updateUI(state: Partial<U>) {
         this.emit("updateUI", state);
     }
-    async updateArgs(args: Partial<A>) {
-        if (args && args.length) {
+    async updateArgs(args: Partial<A>, options?: ObjectUpdateOptions) {
+        if (args?.length) {
+            const oldArgs = this.args.slice() as A;
             await this.emit("updateArgs", args);
+            if (options?.undoable) this.undoable({ oldArgs, args: this.args.slice() as A });
         }
     }
-    async updateProps(props: Partial<P>) {
+    async updateProps(props: Partial<P>, options?: ObjectUpdateOptions) {
         if (props && Object.keys(props).length) {
+            const oldProps = { ...this.props } as P;
             await this.emit("updateProps", props);
+            if (options?.undoable) this.undoable({ oldProps, props: { ...this.props } as P });
         }
     }
-    async updateState(state: Partial<S>) {
+    async updateState(state: Partial<S>, options?: ObjectUpdateOptions) {
         if (state && Object.keys(state).length) {
+            const oldState = { ...this.state };
             await this.emit("updateState", state);
+            if (options?.undoable) this.undoable({ oldState, state: { ...this.state } });
         }
     }
     fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(inlet: $, data: I[$]) {

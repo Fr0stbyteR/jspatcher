@@ -327,11 +327,13 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
             } else {
                 args[key] = value;
             }
-            this.boxes.forEach(box => box.object.updateArgs(args));
+            this.boxes.forEach(box => box.changeObject({ args }, { undoable: true }));
         } else if (key === "rect") {
             this.boxes.forEach(box => box.setRect(value));
+        } else if (key === "presentationRect") {
+            this.boxes.forEach(box => box.setPresentationRect(value));
         } else {
-            this.boxes.forEach(box => box.object.updateProps({ [key]: value }));
+            this.boxes.forEach(box => box.changeObject({ props: { [key]: value } }, { undoable: true }));
         }
         this.handleSelected();
     };

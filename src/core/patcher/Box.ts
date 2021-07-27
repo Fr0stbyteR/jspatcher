@@ -386,10 +386,10 @@ export default class Box<T extends IJSPatcherObject = AnyJSPatcherObject> extend
     undoable(e: { oldArgs?: Args<T>; args?: Args<T>; oldProps?: Props<T>; props?: Props<T>; oldState?: State<T>; state?: State<T> }) {
         this._patcher.boxChanged(this.id, e);
     }
-    async changeObject({ args, props, state }: { args?: Args<T>; props?: Props<T>; state?: State<T> }) {
-        if (args) await this._object.updateArgs(args);
-        if (props) await this._object.updateProps(props);
-        if (state) await this._object.updateState(state);
+    async changeObject({ args, props, state }: { args?: Args<T>; props?: Props<T>; state?: State<T> }, options?: { undoable?: boolean }) {
+        if (args) await this._object.updateArgs(args, options);
+        if (props) await this._object.updateProps(props, options);
+        if (state) await this._object.updateState(state, options);
     }
     async destroy() {
         this.allLines.forEach(line => this._patcher.deleteLine(line.id));
