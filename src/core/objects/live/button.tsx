@@ -1,6 +1,6 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { IJSPatcherObjectMeta } from "../../types";
-import { Bang } from "../Base";
+import { Bang } from "../base/index.jspatpkg";
 
 interface LiveButtonProps extends LiveUIProps {
     bgColor: string;

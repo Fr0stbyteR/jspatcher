@@ -1,6 +1,6 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { IJSPatcherObjectMeta } from "../../types";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import { normExp } from "../../../utils/math";
 
 export interface LiveSliderProps extends LiveUIProps {

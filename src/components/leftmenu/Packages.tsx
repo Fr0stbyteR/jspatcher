@@ -2,7 +2,7 @@ import * as React from "react";
 import { Menu, Input, Table, Button } from "semantic-ui-react";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 
-export default class Packages extends React.PureComponent<{ editor: PatcherEditor; }, { imports: [string, string][]; adding: boolean; }> {
+export default class Packages extends React.PureComponent<{ editor: PatcherEditor }, { imports: [string, string][]; adding: boolean }> {
     state = { imports: this.props.editor.instance.state.pkgMgr.imported.slice(), adding: false };
     refTable = React.createRef<HTMLTableElement>();
     handleLibChanged = () => {

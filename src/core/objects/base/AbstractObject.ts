@@ -223,7 +223,6 @@ export interface IJSPatcherObject<
     applyBPF(param: AudioParam, bpf: number[][]): void;
 }
 export declare const IJSPatcherObject: {
-    prototype: IJSPatcherObject;
     /** Should be true */
     readonly isJSPatcherObjectConstructor: true;
     /** div will have class "packageName" "packageName-objectName" */

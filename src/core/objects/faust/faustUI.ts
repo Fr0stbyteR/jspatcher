@@ -2,8 +2,8 @@ import { FaustAudioWorkletNode } from "faust2webaudio";
 import { TFaustUI } from "faust2webaudio/src/types";
 import { FaustUI } from "../../../utils/faust-ui/FaustUI";
 import { IJSPatcherObjectMeta } from "../../types";
-import { BaseObject } from "../Base";
-import { DOMUI, DOMUIState } from "../BaseUI";
+import { BaseObject } from "../base/index.jspatpkg";
+import { DOMUI, DOMUIState } from "../base/DOMUI";
 
 interface S {
     node: FaustAudioWorkletNode;

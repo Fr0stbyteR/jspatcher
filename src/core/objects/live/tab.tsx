@@ -1,6 +1,6 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { IJSPatcherObjectMeta, TRect } from "../../types";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 
 interface LiveTabProps extends LiveUIProps {
     bgColor: string;

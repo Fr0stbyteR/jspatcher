@@ -1,6 +1,6 @@
 import * as Util from "util";
 import Patcher from "../patcher/Patcher";
-import { Bang, isBang } from "./Base";
+import { Bang, isBang } from "./base/index.jspatpkg";
 import { IJSPatcherObjectMeta } from "./base/AbstractObject";
 import AbstractProjectItem from "../file/AbstractProjectItem";
 import TemporaryProjectFile from "../file/TemporaryProjectFile";

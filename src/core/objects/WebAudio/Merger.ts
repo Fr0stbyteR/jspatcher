@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import { IJSPatcherObjectMeta } from "../../types";
 
 export default class Merger extends JSPAudioNode<ChannelMergerNode, {}, [Bang | number, ...null[]], [null, ChannelMergerNode], [number]> {

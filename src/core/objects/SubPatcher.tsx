@@ -3,8 +3,6 @@ import { StrictModalProps, Modal } from "semantic-ui-react";
 import BaseObject from "./base/BaseObject";
 import DefaultObject from "./base/DefaultObject";
 import Patcher, { PatcherEventMap } from "../patcher/Patcher";
-import { IJSPatcherObjectMeta, TMetaType, TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
-import { DefaultPopupUI, DefaultPopupUIState, DefaultPopupUIProps } from "./BaseUI";
 import FaustNode, { FaustNodeState } from "./faust/FaustNode";
 import PatcherUI from "../../components/editors/patcher/PatcherUI";
 import PatcherEditorUI from "../../components/editors/PatcherEditorUI";
@@ -13,6 +11,9 @@ import PatcherEditor from "../patcher/PatcherEditor";
 import BaseUI, { BaseUIState } from "./base/BaseUI";
 import type { ProjectFileEventMap } from "../file/AbstractProjectFile";
 import "./SubPatcher.scss";
+import { TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
+import { TMetaType, IJSPatcherObjectMeta } from "./base/AbstractObject";
+import DefaultPopupUI, { DefaultPopupUIState, DefaultPopupUIProps } from "./base/DefaultPopupUI";
 
 export class In extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
     static package = "SubPatcher";

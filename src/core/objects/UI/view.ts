@@ -1,7 +1,7 @@
 import UIObject from "./Base";
-import { DOMUI, DOMUIState } from "../BaseUI";
+import { DOMUI, DOMUIState } from "../base/DOMUI";
 import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
-import { isBang } from "../Base";
+import { isBang } from "../base/index.jspatpkg";
 
 export class ViewUI extends DOMUI<view> {
     state: DOMUIState = { ...this.state, children: this.object.state.children, containerProps: this.object.getProp("containerProps") };

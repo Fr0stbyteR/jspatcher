@@ -1,6 +1,6 @@
 import { LiveUI, LiveObject, LiveUIState } from "./Base";
 import { IJSPatcherObjectMeta } from "../../types";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import { roundedRect, fillRoundedRect } from "../../../utils/utils";
 import { normExp, toRad } from "../../../utils/math";
 

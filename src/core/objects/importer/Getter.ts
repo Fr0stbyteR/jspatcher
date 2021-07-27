@@ -1,12 +1,12 @@
-import { Bang, isBang } from "../Base";
-import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
+import ImportedObject, { ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
-import { IJSPatcherObjectMeta } from "../../types";
+import Bang, { isBang } from "../base/Bang";
+import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; result: any };
 type I<Static extends boolean> = Static extends true ? [Bang] : [any | Bang];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
-export class Getter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [], { sync: boolean }, { loading: boolean }> {
+export default class Getter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [], { sync: boolean }, { loading: boolean }> {
     static description = "Auto-imported getter";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,

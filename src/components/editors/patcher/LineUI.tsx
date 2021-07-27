@@ -1,6 +1,6 @@
 import * as React from "react";
-import { TLineType } from "../../../core/types";
-import PatcherEditor from "../../../core/patcher/PatcherEditor";
+import type { TLineType } from "../../../core/types";
+import type PatcherEditor from "../../../core/patcher/PatcherEditor";
 import "./LineUI.scss";
 
 interface TPosition {
@@ -22,7 +22,7 @@ interface S {
     destHandlerPos: TPosition;
 }
 
-export class LineUI extends React.PureComponent<P, S> {
+export default class LineUI extends React.PureComponent<P, S> {
     line = this.props.editor.lines[this.props.id];
     state = { type: this.line.type, selected: false, dragging: false, destPos: this.line.destPos, srcPos: this.line.srcPos, srcHandlerPos: { left: 0, top: 0 }, destHandlerPos: { left: 0, top: 0 } };
     refDiv = React.createRef<HTMLDivElement>();

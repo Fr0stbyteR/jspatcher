@@ -2,8 +2,8 @@ import * as Util from "util";
 import UIObject from "./Base";
 import ButtonUI from "./ButtonUI";
 import { IJSPatcherObjectMeta } from "../../types";
-import { Bang } from "../Base";
-import { BaseUI } from "../BaseUI";
+import { Bang } from "../base/index.jspatpkg";
+import { BaseUI } from "../base/DOMUI";
 
 class MessageUI extends ButtonUI<message> {
     static editableOnUnlock = true;

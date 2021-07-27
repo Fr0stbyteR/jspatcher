@@ -1,8 +1,8 @@
 import * as React from "react";
 import JSPAudioNode from "./AudioNode";
 import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
-import { Bang, isBang } from "../Base";
-import { DefaultUI } from "../BaseUI";
+import { Bang, isBang } from "../base/index.jspatpkg";
+import { DefaultUI } from "../base/DOMUI";
 
 interface Constraints extends MediaTrackConstraintSet {
     deviceId: string;

@@ -1,6 +1,5 @@
-import PatcherText from "./PatcherText";
 import TemporaryProjectFile from "../file/TemporaryProjectFile";
-import TextEditor from "./TextEditor";
+import type PatcherText from "./PatcherText";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 
@@ -12,6 +11,7 @@ export default class TempTextFile extends TemporaryProjectFile<PatcherText> {
         return this.data;
     }
     async instantiateEditor({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
+        const TextEditor = (await import("./TextEditor")).default;
         return TextEditor.fromProjectItem({ file: this, env, project, instanceId });
     }
 }

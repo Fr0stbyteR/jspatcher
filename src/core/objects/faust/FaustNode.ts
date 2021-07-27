@@ -1,12 +1,12 @@
 import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
 import FaustDynamicNode, { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
-import { Bang, isBang } from "../Base";
 import { TBPF, TMIDIEvent } from "../../types";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
-import { CodePopupUI } from "../BaseUI";
 import { UnPromisifiedFunction } from "../../workers/Worker";
 import { IJSPatcherObjectMeta, IInletMeta, IOutletMeta } from "../base/AbstractObject";
 import DefaultUI from "../base/DefaultUI";
+import CodePopupUI from "../base/CodePopupUI";
+import Bang, { isBang } from "../base/Bang";
 
 class FaustNodeUI extends CodePopupUI<FaustNode> {
     editorLanguage = "faust";

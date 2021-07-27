@@ -1,9 +1,9 @@
-import Env from "./Env";
 import Importer from "./objects/importer/Importer";
-import { TFlatPackage, TPackage, PatcherMode } from "./types";
-import { ImporterDirSelfObject } from "../utils/symbols";
 import TypedEventEmitter from "../utils/TypedEventEmitter";
+import { ImporterDirSelfObject } from "../utils/symbols";
 import { isJSPatcherObjectConstructor, IJSPatcherObject } from "./objects/base/AbstractObject";
+import type Env from "./Env";
+import type { TFlatPackage, TPackage, PatcherMode } from "./types";
 
 export interface PackageManagerEventMap {
     "libChanged": PatcherMode;
@@ -190,7 +190,7 @@ export class GlobalPackageManager {
     }
     async init() {
         this.js = {
-            Base: (await import("./objects/Base")).default,
+            Base: await (await import("./objects/base/index.jspatpkg")).default()/* ,
             Std: (await import("./objects/Std")).default,
             new: (await import("./objects/importer/New")).default,
             func: (await import("./objects/importer/Func")).default,
@@ -204,14 +204,16 @@ export class GlobalPackageManager {
             faust: (await import("./objects/faust/exports")).default,
             guido: { view: (await import("./objects/guido/view")).default, ...Importer.import("guido", this.env.guidoWorker) },
             SubPatcher: (await import("./objects/SubPatcher")).default,
-            window: (await import("./objects/Window")).default
+            window: (await import("./objects/Window")).default*/
         };
+        /*
         this.jsaw = await (await import("./objects/JSAW")).default();
         this.faust = (await import("./objects/Faust")).default;
         this.gen = (await import("./objects/Gen")).default;
         this.max = (await import("./objects/Max")).default;
         this.add(this.env.faustAdditionalObjects, "js", ["faust"]);
         this.add(this.env.faustLibObjects, "faust");
+        */
         // this.add({ window: Window }, "js");
     }
     private add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {

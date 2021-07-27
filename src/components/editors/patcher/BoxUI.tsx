@@ -1,10 +1,12 @@
 import * as React from "react";
 import { Popup } from "semantic-ui-react";
-import PatcherEditor, { PatcherEditorEventMap } from "../../../core/patcher/PatcherEditor";
 import BaseUI from "../../../core/objects/base/BaseUI";
 import { isRectMovable, isRectResizable } from "../../../utils/utils";
+import type PatcherEditor from "../../../core/patcher/PatcherEditor";
+import type { PatcherEditorEventMap } from "../../../core/patcher/PatcherEditor";
 import type Box from "../../../core/patcher/Box";
-import type { TResizeHandlerType, BoxEventMap, TRect, TPresentationRect } from "../../../core/types";
+import type { BoxEventMap } from "../../../core/patcher/Box";
+import type { TResizeHandlerType, TRect, TPresentationRect } from "../../../core/types";
 import type AbstractUI from "../../../core/objects/base/AbstracttUI";
 import "./BoxUI.scss";
 

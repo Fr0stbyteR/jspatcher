@@ -1,5 +1,5 @@
 import JSPAudioNode from "./AudioNode";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import { IJSPatcherObjectMeta, TBPF, IPropsMeta } from "../../types";
 import { decodeLine } from "../../../utils/utils";
 import PatcherAudio from "../../audio/PatcherAudio";

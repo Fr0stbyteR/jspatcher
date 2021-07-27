@@ -83,7 +83,7 @@ export default class BaseObject<
             }
         };
     }
-    isUIStateKey = (x: any): x is keyof (U & BaseUIState) => this.meta.props[x] && this.meta.props[x].isUIState;
+    isUIStateKey = (x: any) => this.meta.props[x] && this.meta.props[x].isUIState;
     updateUIFromProps = (props: Partial<P & BaseObjectProps>) => {
         if (props) {
             const uiState: Partial<U & BaseUIState> = {};

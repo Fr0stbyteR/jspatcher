@@ -1,13 +1,14 @@
-import type { IJSPatcherEnv } from "../Env";
 import type { IPersistentProjectItemManager, ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
 import type { Task, TaskError } from "../TaskMgr";
-import type { PrefixKeys } from "../types";
+import type { PrefixKeys, TErrorLevel } from "../types";
 
-export interface IWorkletEnvProcessor extends IJSPatcherEnv {
+export interface IWorkletEnvProcessor {
     thread: "AudioWorklet";
+    init(): Promise<void>;
     workletFileMgrDiff(diff: ProjectItemManagerDataForDiff): void;
 }
 export interface IWorkletEnvNode extends PrefixKeys<Pick<IPersistentProjectItemManager, "readFile" | "readDir" | "getFileDetails" | "exists" | "putFile" | "writeFile" | "getPathIdMap">, "fileMgr"> {
+    envNewLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any): void;
     taskBegin(task: Pick<Task, "id" | "message" | "emitter">): void;
     taskUpdate(task: Pick<Task, "id" | "message">): void;
     taskError(error: Pick<TaskError, "id" | "error">): void;

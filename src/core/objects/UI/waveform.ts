@@ -2,7 +2,7 @@ import * as Color from "color-js";
 import UIObject from "./Base";
 import PatcherAudio from "../../audio/PatcherAudio";
 import { TAudioUnit, IJSPatcherObjectMeta, IPropsMeta } from "../../types";
-import { CanvasUI, CanvasUIState } from "../BaseUI";
+import { CanvasUI, CanvasUIState } from "../base/DOMUI";
 import { getRuler } from "../../../components/editors/audio/AudioEditorMainUI";
 import { dbtoa } from "../../../utils/math";
 

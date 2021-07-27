@@ -2,10 +2,10 @@ import * as React from "react";
 import { Dimmer, Loader } from "semantic-ui-react";
 import TopMenu from "./topmenu/TopMenu";
 import LeftMenu from "./leftmenu/LeftMenu";
-import Env from "../core/Env";
-import { TaskManagerEventMap, Task, TaskError } from "../core/TaskMgr";
 import StatusBar from "./StatusBar";
 import EditorContainerUI from "./editors/EditorContainerUI";
+import type Env from "../core/Env";
+import type { TaskManagerEventMap, Task, TaskError } from "../core/TaskMgr";
 import "./UI.scss";
 import "./zIndex.scss";
 

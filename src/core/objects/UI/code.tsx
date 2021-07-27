@@ -3,12 +3,13 @@ import MonacoEditor from "react-monaco-editor";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Dimmer, Loader } from "semantic-ui-react";
 import UIObject from "./Base";
-import { BaseUIState, BaseUI } from "../BaseUI";
-import { AnyObject, Bang, isBang } from "../Base";
-import { IJSPatcherObjectMeta } from "../../types";
+import { IJSPatcherObjectMeta } from "../base/AbstractObject";
+import Bang, { isBang } from "../base/Bang";
+import BaseUI, { BaseUIState } from "../base/BaseUI";
+import BaseObject from "../base/BaseObject";
 
 type CodeUIState = { language: string; value: string; editorLoaded: boolean; editing: boolean } & BaseUIState;
-export class CodeUI extends BaseUI<AnyObject, {}, CodeUIState> {
+export class CodeUI extends BaseUI<BaseObject<any, any, any, any, any, any, any, { "editorLoaded": never; "editorBlur": string; "change": never }>, {}, CodeUIState> {
     static sizing = "both" as const;
     static defaultSize: [number, number] = [400, 225];
     state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };

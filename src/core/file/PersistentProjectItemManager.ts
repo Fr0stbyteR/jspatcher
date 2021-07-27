@@ -178,8 +178,8 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
         const { allItems } = this;
         for (const id in allItems) {
             const item = allItems[id] as PersistentProjectFile | PersistentProjectFolder;
-            if (item.isFolder === true) map[id] = { isFolder: item.isFolder, parent: item.parent.id, name: item.name, path: item.path };
-            else map[id] = { isFolder: item.isFolder, data: item.sab, lastModifiedId: item.lastModifiedId, parent: item.parent.id, name: item.name, path: item.path };
+            if (item.isFolder === true) map[id] = { isFolder: item.isFolder, parent: item.parent?.id, name: item.name, path: item.path };
+            else map[id] = { isFolder: item.isFolder, data: item.sab, lastModifiedId: item.lastModifiedId, parent: item.parent?.id, name: item.name, path: item.path };
         }
         return map;
     }
@@ -206,7 +206,7 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
                     if (current.isFolder === false && $item.isFolder === false) {
                         if (current.lastModifiedId !== $item.lastModifiedId) await current.save(sab2ab($item.data), this);
                         if (current.name !== $item.name) await current.rename($item.name);
-                        if (current.parent.id !== $item.parent) await current.move(parent);
+                        if (current.parent?.id !== $item.parent) await current.move(parent);
                     }
                 }
             };

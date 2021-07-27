@@ -3,7 +3,7 @@ import { LiveMeterProps } from "./meter";
 import { LiveUIState, LiveUI, LiveObject, LiveObjectState } from "./Base";
 import { IJSPatcherObjectMeta } from "../../types";
 import { atodb, dbtoa, normExp } from "../../../utils/math";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import TemporalAnalyserNode from "../../worklets/TemporalAnalyser";
 
 interface LiveGainProps extends Omit<LiveSliderProps, "sliderColor">, LiveMeterProps {

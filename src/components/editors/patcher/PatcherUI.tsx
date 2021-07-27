@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as Color from "color-js";
-import PatcherEditor from "../../../core/patcher/PatcherEditor";
 import BoxUI from "./BoxUI";
-import { LineUI, TempLineUI } from "./LineUI";
-import { RawPatcher, TRect } from "../../../core/types";
+import LineUI, { TempLineUI } from "./LineUI";
 import { round } from "../../../utils/math";
+import type PatcherEditor from "../../../core/patcher/PatcherEditor";
+import type { RawPatcher, TRect } from "../../../core/types";
 import "./PatcherUI.scss";
 
 interface P {

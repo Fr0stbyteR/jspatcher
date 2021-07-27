@@ -2,7 +2,7 @@ import { DefaultDSP } from "./Base";
 import { SpectralAnalysis, TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
 import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
 import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 
 export interface Props extends Record<keyof SpectralAnalysis, boolean> {
     speedLim: number;

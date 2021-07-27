@@ -1,9 +1,9 @@
-import { isBang } from "../Base";
-import { SetterGetter } from "./SetterGetter";
+import SetterGetter from "./SetterGetter";
 import { StaticPropertyUI } from "./StaticProperty";
-import { IJSPatcherObjectMeta } from "../../types";
+import { isBang } from "../base/Bang";
+import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 
-export class StaticSetterGetter extends SetterGetter<true> {
+export default class StaticSetterGetter extends SetterGetter<true> {
     static description = "Auto-imported static setter / getter";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,

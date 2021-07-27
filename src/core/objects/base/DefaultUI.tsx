@@ -3,7 +3,7 @@ import * as Color from "color-js";
 import { SemanticICONS, Icon } from "semantic-ui-react";
 import { ImportedStaticMethodObject } from "../../../utils/symbols";
 import { selectElementRange, selectElementPos } from "../../../utils/utils";
-import { StaticMethod } from "../importer/StaticMethod";
+import StaticMethod from "../importer/StaticMethod";
 import BaseUI, { BaseUIProps, BaseUIState } from "./BaseUI";
 import type { TFlatPackage } from "../../types";
 import type { TMetaType, IJSPatcherObject } from "./AbstractObject";

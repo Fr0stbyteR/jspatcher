@@ -3,12 +3,11 @@ import TaskManager from "../TaskMgr";
 import TemporaryProjectItemManager from "../file/TemporaryProjectItemManager";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import WorkletProjectItemManager from "../file/WorkletProjectItemManager";
+import BaseObject from "../objects/base/BaseObject";
 import type { WorkletEnvParameters, IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvOptions } from "./WorkletEnv.types";
 import type { AudioWorkletGlobalScope, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
 import type { Task, TaskError } from "../TaskMgr";
-import type { EnvEventMap } from "../Env";
-import type { IProjectFile } from "../file/AbstractProjectFile";
-import type { IProjectItemManager } from "../file/AbstractProjectItemManager";
+import type { EnvEventMap, IJSPatcherEnv } from "../Env";
 import type { IFileEditor } from "../file/FileEditor";
 import type { IFileInstance } from "../file/FileInstance";
 import type { IPersistentProjectItemManager, ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
@@ -18,8 +17,8 @@ export const processorID = "__JSPatcher_WorkletEnv";
 declare const globalThis: AudioWorkletGlobalScope;
 const { registerProcessor } = globalThis;
 
-export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWorkletEnvProcessor, IWorkletEnvNode, WorkletEnvParameters, WorkletEnvOptions> implements IWorkletEnvProcessor {
-    static fnNames: (keyof IWorkletEnvNode)[] = ["taskBegin", "taskUpdate", "taskError", "taskEnd", "fileMgrExists", "fileMgrGetFileDetails", "fileMgrPutFile", "fileMgrReadDir", "fileMgrReadFile", "fileMgrWriteFile", "fileMgrGetPathIdMap", "fileMgrDiff"];
+export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWorkletEnvProcessor, IWorkletEnvNode, WorkletEnvParameters, WorkletEnvOptions> implements IWorkletEnvProcessor, IJSPatcherEnv {
+    static fnNames: (keyof IWorkletEnvNode)[] = ["envNewLog", "taskBegin", "taskUpdate", "taskError", "taskEnd", "fileMgrExists", "fileMgrGetFileDetails", "fileMgrPutFile", "fileMgrReadDir", "fileMgrReadFile", "fileMgrWriteFile", "fileMgrGetPathIdMap", "fileMgrDiff"];
     private readonly ee = new TypedEventEmitter<EnvEventMap>();
     readonly thread = "AudioWorklet";
     readonly os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
@@ -27,8 +26,9 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     readonly language: string;
     readonly generatedId: Uint32Array;
     readonly taskMgr = new TaskManager();
-    readonly fileMgr: IPersistentProjectItemManager = new WorkletProjectItemManager(this);
-    readonly tempMgr: TemporaryProjectItemManager = new TemporaryProjectItemManager(this);
+    readonly fileMgr: IPersistentProjectItemManager;
+    readonly tempMgr: TemporaryProjectItemManager;
+    readonly sdk = { BaseObject };
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
         super(options);
         const { os, browser, language, generatedId } = options.processorOptions;
@@ -36,13 +36,23 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.browser = browser;
         this.language = language;
         this.generatedId = generatedId;
+        this.fileMgr = new WorkletProjectItemManager(this);
+        this.tempMgr = new TemporaryProjectItemManager(this);
         globalThis.jspatcherEnv = this;
         this.bindTaskMgr();
         this.bindFileMgr();
     }
+    async init() {
+        await this.fileMgr.init();
+        await this.tempMgr.init();
+    }
     instances = new Set<IFileInstance>();
-    activeInstance: IFileInstance<{}, IProjectFile<any, IProjectItemManager<{}>>>;
-    activeEditor: IFileEditor<IFileInstance<{}, IProjectFile<any, IProjectItemManager<{}>>>, {}>;
+    activeInstance: IFileInstance;
+    activeEditor: IFileEditor;
+    newLog(errorLevel: TErrorLevel, title: string, message: string, emitterIn?: any) {
+        const emitter = typeof emitterIn === "string" ? emitterIn : typeof emitterIn === "object" ? emitterIn.constructor.name : typeof emitterIn === "function" ? emitterIn.name : "";
+        this.envNewLog(errorLevel, title, message, emitter);
+    }
     generateId(objectIn: object) {
         return this.thread + objectIn.constructor.name + Atomics.add(this.generatedId, 0, 1);
     }
@@ -60,9 +70,6 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
             if (instance.id === id) return instance;
         }
         return null;
-    }
-    newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any): void {
-        throw new Error("Method not implemented.");
     }
     get listeners() { return this.ee.listeners; }
     get on() { return this.ee.on; }

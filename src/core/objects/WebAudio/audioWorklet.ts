@@ -1,4 +1,4 @@
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import DefaultObject from "../base/DefaultObject";
 import { IJSPatcherObjectMeta } from "../../types";
 

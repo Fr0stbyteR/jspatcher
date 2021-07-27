@@ -1,12 +1,4 @@
 import AbstractProjectFile from "./AbstractProjectFile";
-import Patcher from "../patcher/Patcher";
-import PatcherAudio from "../audio/PatcherAudio";
-import PatcherImage from "../image/PatcherImage";
-import PatcherText from "../text/PatcherText";
-import PatcherEditor from "../patcher/PatcherEditor";
-import AudioEditor from "../audio/AudioEditor";
-import ImageEditor from "../image/ImageEditor";
-import TextEditor from "../text/TextEditor";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { IFileEditor } from "./FileEditor";
@@ -116,10 +108,10 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
     async instantiate({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileInstance> {
         const { type } = this;
         const Constructor = {
-            patcher: Patcher,
-            audio: PatcherAudio,
-            image: PatcherImage,
-            text: PatcherText,
+            patcher: (await import("../patcher/Patcher")).default,
+            audio: (await import("../audio/PatcherAudio")).default,
+            image: (await import("../image/PatcherImage")).default,
+            text: (await import("../text/PatcherText")).default,
             video: undefined,
             unknown: undefined
         }[type];
@@ -129,10 +121,10 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
     async instantiateEditor({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<IFileEditor> {
         const { type } = this;
         const Constructor = {
-            patcher: PatcherEditor,
-            audio: AudioEditor,
-            image: ImageEditor,
-            text: TextEditor,
+            patcher: (await import("../patcher/PatcherEditor")).default,
+            audio: (await import("../audio/AudioEditor")).default,
+            image: (await import("../image/ImageEditor")).default,
+            text: (await import("../text/TextEditor")).default,
             video: undefined,
             unknown: undefined
         }[type];

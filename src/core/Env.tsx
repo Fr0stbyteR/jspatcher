@@ -25,6 +25,8 @@ import EditorContainer from "./EditorContainer";
 import AudioWorkletRegister from "./worklets/AudioWorkletRegister";
 import GuidoWorker from "./workers/GuidoWorker";
 import type { IFileInstance } from "./file/FileInstance";
+import JSPatcherSDK, { IJSPatcherSDK } from "./SDK";
+import WorkletEnvNode from "./worklets/WorkletEnv";
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -46,6 +48,7 @@ export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
     readonly os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
     readonly browser: "Unknown" | "Chromium" | "Gecko" | "WebKit";
     readonly language: string;
+    readonly sdk: IJSPatcherSDK;
     /** Show as status what task is proceeding */
     taskMgr: TaskManager;
     fileMgr: IPersistentProjectItemManager;
@@ -66,6 +69,7 @@ export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
  */
 export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPatcherEnv {
     readonly thread = "main";
+    readonly generatedId = new Uint32Array(new SharedArrayBuffer(Uint32Array.BYTES_PER_ELEMENT));
     readonly fileMgrWorker = new FileMgrWorker();
     readonly waveformWorker = new WaveformWorker();
     readonly wavEncoderWorker = new WavEncoderWorker();
@@ -82,6 +86,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     readonly editorContainer = new EditorContainer(this);
     readonly log: TPatcherLog[] = [];
     readonly AudioWorkletRegister = AudioWorkletRegister;
+    readonly sdk = new JSPatcherSDK();
+    envNode: WorkletEnvNode;
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;
@@ -181,6 +187,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 this.Faust = Faust;
                 this.FaustAudioWorkletNode = FaustAudioWorkletNode;
             });
+            /*
             await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {
                 const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
                 await faust.ready;
@@ -197,6 +204,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 const gen2FaustLib = await gen2FaustLibFile.text();
                 this.faust.fs.writeFile("./libraries/gen2faust.lib", gen2FaustLib);
             });
+            */
             await this.taskMgr.newTask(this, "Loading Monaco Editor...", async () => {
                 const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
                 const { providers } = await faustLangRegister(monacoEditor, this.faust);
@@ -232,6 +240,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                     await this.fileMgr.init(urlParamsOptions.init);
                 }
                 await this.tempMgr.init();
+            });
+            await this.taskMgr.newTask("Env", "Loading Worklet...", async () => {
+                const { audioWorklet } = this.audioCtx;
+                await WorkletEnvNode.register(audioWorklet);
+                this.envNode = new WorkletEnvNode(this.audioCtx, this);
+                await this.envNode.init();
             });
             window.jspatcherEnv = this;
         });
@@ -272,7 +286,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         */
         return this;
     }
-    readonly generatedId = new Uint32Array(new SharedArrayBuffer(Uint32Array.BYTES_PER_ELEMENT));
     generateId(objectIn: object) {
         return this.thread + objectIn.constructor.name + Atomics.add(this.generatedId, 0, 1);
     }

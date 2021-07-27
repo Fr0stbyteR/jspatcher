@@ -1,8 +1,8 @@
 import * as React from "react";
 import UIObject from "./Base";
-import { BaseUIState, BaseUI, BaseUIProps } from "../BaseUI";
 import { selectElementRange } from "../../../utils/utils";
-import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
+import BaseUI, { BaseUIState, BaseUIProps } from "../base/BaseUI";
 
 interface CommentProps {
     bgColor: string;

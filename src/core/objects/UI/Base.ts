@@ -1,4 +1,4 @@
-import { BaseObject } from "../Base";
+import BaseObject from "../base/BaseObject";
 import "./UI.scss";
 
 export default class UIObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}, E = {}> extends BaseObject<D, S, I, O, A, P, U, E> {

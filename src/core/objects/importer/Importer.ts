@@ -1,24 +1,23 @@
-import { StaticMethod } from "./StaticMethod";
-import { StaticSetter } from "./StaticSetter";
-import { StaticSetterGetter } from "./StaticSetterGetter";
-import { StaticGetter } from "./StaticGetter";
-import { StaticProperty } from "./StaticProperty";
-import { Method } from "./Method";
-import { SetterGetter } from "./SetterGetter";
-import { Setter } from "./Setter";
-import { Getter } from "./Getter";
-import { Property } from "./Property";
+import StaticMethod from "./StaticMethod";
+import StaticSetter from "./StaticSetter";
+import StaticSetterGetter from "./StaticSetterGetter";
+import StaticGetter from "./StaticGetter";
+import StaticProperty from "./StaticProperty";
+import Method from "./Method";
+import SetterGetter from "./SetterGetter";
+import Setter from "./Setter";
+import Getter from "./Getter";
+import Property from "./Property";
 import { TPackage } from "../../types";
-import { AnyImportedObject } from "./ImportedObject";
 import { ImporterDirSelfObject } from "../../../utils/symbols";
 import { getPropertyDescriptors } from "../../../utils/utils";
-import { isJSPatcherObjectConstructor } from "../base/AbstractObject";
+import { IJSPatcherObject, isJSPatcherObjectConstructor } from "../base/AbstractObject";
 
 export default class Importer {
     static $self = ImporterDirSelfObject;
-    static getObject(p: PropertyDescriptor, pkgName: string, root: Record<string, any>, path: string[]): typeof AnyImportedObject {
+    static getObject(p: PropertyDescriptor, pkgName: string, root: Record<string, any>, path: string[]): typeof IJSPatcherObject {
         const isStatic = path[path.length - 2] !== "prototype";
-        let Super: typeof AnyImportedObject;
+        let Super: typeof IJSPatcherObject;
         const type = typeof p.value;
         if (type === "function") {
             if (isStatic) Super = StaticMethod;
@@ -55,7 +54,7 @@ export default class Importer {
         await Importer.importFrom("https://unpkg.com/webmidi", "MIDI").then(console.log);
     }
     */
-    static writeInPath(pkgIn: TPackage, pathIn: string[], object: typeof AnyImportedObject) {
+    static writeInPath(pkgIn: TPackage, pathIn: string[], object: typeof IJSPatcherObject) {
         if (pathIn.length === 0) {
             Object.assign(pkgIn, { [this.$self]: object });
             return;

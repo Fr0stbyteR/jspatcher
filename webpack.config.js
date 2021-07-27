@@ -24,6 +24,7 @@ const config = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
+    publicPath: "",
     library: 'JSPatcher',
     libraryTarget: 'umd',
     chunkFilename: 'js/[chunkhash].js'
@@ -43,7 +44,8 @@ const config = {
         use: [{
           loader: 'worker-loader',
           options: {
-            filename: 'js/[fullhash].worker.js'
+            filename: 'js/[fullhash].worker.js',
+            publicPath: "../"
           }
         }],
         exclude: /node_modules/

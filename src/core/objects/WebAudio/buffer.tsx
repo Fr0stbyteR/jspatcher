@@ -4,11 +4,11 @@ import TempAudioFile from "../../audio/TempAudioFile";
 import PatcherAudio from "../../audio/PatcherAudio";
 import AudioEditor from "../../audio/AudioEditor";
 import AudioEditorUI from "../../../components/editors/audio/AudioEditorUI";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import DefaultObject from "../base/DefaultObject";
 import { IJSPatcherObjectMeta } from "../../types";
 import { ProjectFileEventMap } from "../../file/AbstractProjectFile";
-import { DefaultPopupUI, DefaultPopupUIProps, DefaultPopupUIState } from "../BaseUI";
+import { DefaultPopupUI, DefaultPopupUIProps, DefaultPopupUIState } from "../base/DOMUI";
 import PersistentProjectFile from "../../file/PersistentProjectFile";
 
 interface BufferUIState {

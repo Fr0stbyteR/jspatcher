@@ -1,7 +1,7 @@
-import { Bang, isBang } from "../Base";
-import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
+import ImportedObject, { ImportedObjectUI } from "./ImportedObject";
 import { PropertyUI } from "./Property";
-import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
+import Bang, { isBang } from "../base/Bang";
+import type { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
 
 type TAnyFunction = (...args: any[]) => any;
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; inputs: any[]; result: any };
@@ -13,7 +13,7 @@ interface P {
     sync: boolean;
 }
 
-export class Method<Static extends boolean = false> extends ImportedObject<TAnyFunction, S<Static>, I<Static>, O<Static>, any[], P, { loading: boolean }> {
+export default class Method<Static extends boolean = false> extends ImportedObject<TAnyFunction, S<Static>, I<Static>, O<Static>, any[], P, { loading: boolean }> {
     static description = "Auto-imported method";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,

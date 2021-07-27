@@ -1,6 +1,6 @@
-import { Bang, isBang } from "../Base";
-import { ImportedObjectUI, ImportedObject } from "./ImportedObject";
-import { IJSPatcherObjectMeta } from "../../types";
+import ImportedObject, { ImportedObjectUI } from "./ImportedObject";
+import Bang, { isBang } from "../base/Bang";
+import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 
 export class PropertyUI extends ImportedObjectUI<Property> {
     prependColor = "rgb(220, 200, 170)";
@@ -9,7 +9,8 @@ type S<Static extends boolean> = { instance: Static extends true ? undefined : a
 type I<Static extends boolean> = Static extends true ? [Bang, any] : [any | Bang, any];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
 type A<Static extends boolean> = Static extends true ? [any] : [];
-export class Property<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, A<Static>, {}, {}> {
+
+export default class Property<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, A<Static>, {}, {}> {
     static description = "Auto-imported property";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,

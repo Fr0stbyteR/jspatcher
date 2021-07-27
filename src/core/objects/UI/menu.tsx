@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StrictDropdownProps, DropdownProps, Dropdown, StrictDropdownItemProps } from "semantic-ui-react";
 import UIObject from "./Base";
-import { BaseUI, BaseUIState } from "../BaseUI";
+import { BaseUI, BaseUIState } from "../base/DOMUI";
 import { isNumberArray } from "../../../utils/utils";
 import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 

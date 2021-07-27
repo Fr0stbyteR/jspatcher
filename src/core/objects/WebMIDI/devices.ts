@@ -1,5 +1,5 @@
 import { StrictDropdownItemProps } from "semantic-ui-react";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import { DefaultWebMIDIObject } from "./Base";
 import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 

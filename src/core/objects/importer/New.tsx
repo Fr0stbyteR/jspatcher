@@ -1,8 +1,8 @@
-import { StaticMethod } from "./StaticMethod";
-import { Bang, isBang } from "../Base";
-import { ImportedObject, ImportedObjectUI } from "./ImportedObject";
-import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
+import StaticMethod from "./StaticMethod";
+import ImportedObject, { ImportedObjectUI } from "./ImportedObject";
 import DefaultObject from "../base/DefaultObject";
+import Bang, { isBang } from "../base/Bang";
+import type { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
 
 class NewUI extends ImportedObjectUI<New> {
     prependColor = "rgb(78, 201, 176)";
@@ -15,7 +15,7 @@ interface P {
 interface S {
     Wrapper: typeof StaticMethod;
     inputs: any[];
-    result: any
+    result: any;
 }
 
 export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [any, ...any[]], any[], P, { loading: boolean }> {

@@ -2,7 +2,7 @@ import { DefaultDSP } from "./Base";
 import TemporalAnalyserNode from "../../worklets/TemporalAnalyser";
 import { TemporalAnalysis } from "../../worklets/TemporalAnalyserWorklet.types";
 import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 
 export interface Props extends Record<keyof TemporalAnalysis, boolean> {
     speedLim: number;

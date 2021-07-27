@@ -1,5 +1,5 @@
 import { Faust } from "faust2webaudio";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import { IJSPatcherObjectMeta } from "../../types";
 import DefaultObject from "../base/DefaultObject";
 

@@ -2,8 +2,8 @@ import type { IJSPatcherObject } from "./objects/base/AbstractObject";
 import type Patcher from "./patcher/Patcher";
 import type { TPatcherProps, TPublicPatcherProps } from "./patcher/Patcher";
 import type Box from "./patcher/Box";
-import type Line from "./patcher/Line";
 import type Env from "./Env";
+import type WorkletEnvProcessor from "./worklets/WorkletEnv.worklet";
 import type TempPatcherFile from "./patcher/TempPatcherFile";
 import type TempAudioFile from "./audio/TempAudioFile";
 import type TempTextFile from "./text/TempTextFile";
@@ -17,7 +17,7 @@ declare global {
         jspatcherEnv: Env;
     }
     interface AudioWorkletGlobalScope {
-        jspatcherEnv: Env;
+        jspatcherEnv: WorkletEnvProcessor;
     }
     interface HTMLMediaElement extends HTMLElement {
         sinkId: string;
@@ -189,13 +189,6 @@ export interface TSharedData {
     [category: string]: {
         [key: string]: any;
     };
-}
-export interface LineEventMap {
-    "passData": any;
-    "destPosChanged": { top: number; left: number };
-    "srcPosChanged": { top: number; left: number };
-    "posChanged": Line;
-    "typeChanged": TLineType;
 }
 
 export type TBPF = string | number | number[] | number[][];

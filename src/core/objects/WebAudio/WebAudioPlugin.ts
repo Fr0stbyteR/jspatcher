@@ -1,7 +1,7 @@
 import { WebAudioModule, WamNode } from "wamsdk/src/api";
-import { Bang, BaseObject, isBang } from "../Base";
+import { Bang, BaseObject, isBang } from "../base/index.jspatpkg";
 import { TMIDIEvent, TBPF, IJSPatcherObjectMeta, IInletMeta, IOutletMeta } from "../../types";
-import { DOMUI, DOMUIState } from "../BaseUI";
+import { DOMUI, DOMUIState } from "../base/DOMUI";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 
 class PluginUI extends DOMUI<Plugin> {

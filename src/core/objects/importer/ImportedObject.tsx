@@ -30,7 +30,7 @@ export class ImportedObjectUI<T extends DefaultObject> extends DefaultUI<T> {
         return <DefaultUI {...this.props} prependProps={{ style: { backgroundColor: this.prependColor } }} />;
     }
 }
-export abstract class ImportedObject<T, S, I extends any[], O extends any[], A extends any[], P, U> extends DefaultObject<{}, S, I, O, A, P, U> {
+export default abstract class ImportedObject<T, S, I extends any[], O extends any[], A extends any[], P, U> extends DefaultObject<{}, S, I, O, A, P, U> {
     static root: Record<string, any>;
     static path: string[];
     static description = "Auto-imported object";

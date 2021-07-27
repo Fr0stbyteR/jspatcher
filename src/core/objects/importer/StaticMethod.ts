@@ -1,10 +1,10 @@
-import { isBang } from "../Base";
 import { StaticPropertyUI } from "./StaticProperty";
-import { Method } from "./Method";
-import { IJSPatcherObjectMeta } from "../../types";
+import Method from "./Method";
 import { ImportedStaticMethodObject } from "../../../utils/symbols";
+import { isBang } from "../base/Bang";
+import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 
-export class StaticMethod extends Method<true> {
+export default class StaticMethod extends Method<true> {
     static [ImportedStaticMethodObject] = true;
     static description = "Auto-imported static method";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{

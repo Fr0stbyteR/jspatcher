@@ -1,6 +1,6 @@
 import { DefaultWebMIDIObject } from "./Base";
 import { IJSPatcherObjectMeta } from "../../types";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 
 export class midiIn extends DefaultWebMIDIObject<{}, { midiAccess: WebMidi.MIDIAccess; search: string; port: WebMidi.MIDIInput }, [string | Bang], [Uint8Array, WebMidi.MIDIInput], [string]> {
     static description = "Get MIDI input from device name or ID";

@@ -1,8 +1,16 @@
 import type { WamNode } from "wamsdk";
-import Patcher from "./Patcher";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
-import type { LineEventMap, TLine, TLineType } from "../types";
+import type Patcher from "./Patcher";
+import type { TLine, TLineType } from "../types";
 import type { IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
+
+export interface LineEventMap {
+    "passData": any;
+    "destPosChanged": { top: number; left: number };
+    "srcPosChanged": { top: number; left: number };
+    "posChanged": Line;
+    "typeChanged": TLineType;
+}
 
 export default class Line extends TypedEventEmitter<LineEventMap> {
     static isConnectableByAudio(from: IJSPatcherObject, outlet: number, to: IJSPatcherObject, inlet: number) {

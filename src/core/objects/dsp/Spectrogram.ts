@@ -1,10 +1,10 @@
 // import * as Color from "color-js";
-import { CanvasUI } from "../BaseUI";
+import { CanvasUI } from "../base/DOMUI";
 import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
 import { TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
 import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
-import { Bang, isBang } from "../Base";
+import { Bang, isBang } from "../base/index.jspatpkg";
 import { atodb } from "../../../utils/math";
 
 export interface SpectrogramUIState {

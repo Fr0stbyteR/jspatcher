@@ -249,7 +249,7 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
             const useDefault = !(key in props);
             const value = key === "presentation" ? presentation
                 : key === "background" ? background
-                    : useDefault ? prop.default : props[key];
+                    : useDefault ? prop.default : (props as any)[key];
             for (let j = 1; j < boxes.length; j++) {
                 let found = false;
                 const $box = boxes[j];
@@ -262,7 +262,7 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
                     const $useDefault = !($key in $props);
                     const $value = $key === "presentation" ? $presentation
                         : $key === "background" ? $background
-                            : $useDefault ? $prop.default : $props[$key];
+                            : $useDefault ? $prop.default : ($props as any)[$key];
                     if (key === $key && value === $value) {
                         found = true;
                         break;

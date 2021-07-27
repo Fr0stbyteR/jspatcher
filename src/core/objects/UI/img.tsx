@@ -1,7 +1,7 @@
 import * as React from "react";
 import UIObject from "./Base";
-import { BaseUI, BaseUIState } from "../BaseUI";
-import { isBang } from "../Base";
+import { BaseUI, BaseUIState } from "../base/DOMUI";
+import { isBang } from "../base/index.jspatpkg";
 import type { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import type PatcherImage from "../../image/PatcherImage";
 import type PersistentProjectFile from "../../file/PersistentProjectFile";

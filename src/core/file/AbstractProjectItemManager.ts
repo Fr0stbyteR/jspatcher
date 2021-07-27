@@ -116,7 +116,7 @@ export default abstract class AbstractProjectItemManager<EventMap extends Record
     }
     instantiateProjectPath(path: string, envIn: IJSPatcherEnv, projectIn: IProject) {
         const item = this.getProjectItemFromPath(path);
-        if (item.isFolder === false) return item.instantiate(envIn, projectIn);
+        if (item.isFolder === false) return item.instantiate({ env: envIn, project: projectIn });
         throw new Error(`Cannot instantiate ${item.name} from path ${path} as it is a folder`);
     }
     async emitTreeChanged() {

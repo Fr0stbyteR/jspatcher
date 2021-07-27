@@ -1,6 +1,6 @@
 import * as React from "react";
 import UIObject from "./Base";
-import { BaseUI, BaseUIState } from "../BaseUI";
+import { BaseUI, BaseUIState } from "../base/DOMUI";
 import { TMIDIEvent, IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { isMIDIEvent } from "../../../utils/utils";
 

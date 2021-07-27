@@ -1,9 +1,9 @@
-import { Setter } from "./Setter";
+import Setter from "./Setter";
 import { ImportedObjectUI } from "./ImportedObject";
 import { StaticPropertyUI } from "./StaticProperty";
-import { IJSPatcherObjectMeta } from "../../types";
+import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 
-export class StaticSetter extends Setter<true> {
+export default class StaticSetter extends Setter<true> {
     static description = "Auto-imported static setter";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: false,

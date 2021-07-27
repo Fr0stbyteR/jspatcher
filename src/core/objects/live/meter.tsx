@@ -1,8 +1,8 @@
 import { LiveObject, LiveUI } from "./Base";
-import { BaseObject } from "../Base";
+import { BaseObject } from "../base/index.jspatpkg";
 import { IJSPatcherObjectMeta } from "../../types";
 import { atodb } from "../../../utils/math";
-import { CanvasUI, CanvasUIState } from "../BaseUI";
+import { CanvasUI, CanvasUIState } from "../base/DOMUI";
 import TemporalAnalyserNode from "../../worklets/TemporalAnalyser";
 
 export interface LiveMeterProps {

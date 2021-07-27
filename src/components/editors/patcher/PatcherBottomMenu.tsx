@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Menu, Icon } from "semantic-ui-react";
-import PatcherEditor from "../../../core/patcher/PatcherEditor";
+import type PatcherEditor from "../../../core/patcher/PatcherEditor";
 import "./PatcherBottomMenu.scss";
 
 interface P {

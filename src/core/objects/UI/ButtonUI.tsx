@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Icon } from "semantic-ui-react";
-import { BaseObject } from "../Base";
-import { BaseUI, BaseUIProps, BaseUIState } from "../BaseUI";
+import { BaseObject } from "../base/index.jspatpkg";
+import { BaseUI, BaseUIProps, BaseUIState } from "../base/DOMUI";
 import { selectElementRange } from "../../../utils/utils";
 
 type ButtonUIState = { text: string; loading: boolean } & BaseUIState;

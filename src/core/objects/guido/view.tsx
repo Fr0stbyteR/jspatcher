@@ -1,5 +1,5 @@
 import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
-import { DOMUI, DOMUIState } from "../BaseUI";
+import { DOMUI, DOMUIState } from "../base/DOMUI";
 import UIObject from "../UI/Base";
 
 interface State {

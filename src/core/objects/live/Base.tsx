@@ -1,8 +1,8 @@
 import * as React from "react";
 import { toMIDI, iNormExp } from "../../../utils/math";
-import { BaseObject } from "../Base";
+import { BaseObject } from "../base/index.jspatpkg";
 import { IJSPatcherObjectMeta } from "../../types";
-import { BaseUI, BaseUIState, CanvasUI } from "../BaseUI";
+import { BaseUI, BaseUIState, CanvasUI } from "../base/DOMUI";
 
 export const getDisplayValue = (value: number, type: string, unitstyle: string, units: string, enums: string[]) => {
     if (type === "enum") return enums[value];
