@@ -46,7 +46,7 @@ export class In extends DefaultObject<{}, { index: number }, [], [any], [number]
     };
     subscribe() {
         super.subscribe();
-        this.on("metaChanged", () => this.patcher.changeIO());
+        this.on("metaUpdated", () => this.patcher.changeIO());
         this.on("preInit", () => {
             this.inlets = 0;
             this.outlets = 1;
@@ -104,7 +104,7 @@ export class Out extends DefaultObject<{}, { index: number }, [any], [], [number
     state = { index: undefined as number };
     subscribe() {
         super.subscribe();
-        this.on("metaChanged", () => this.patcher.changeIO());
+        this.on("metaUpdated", () => this.patcher.changeIO());
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 0;
@@ -158,7 +158,7 @@ export class AudioIn extends DefaultObject<{}, { index: number }, [], [any], [nu
     state = { index: undefined as number };
     subscribe() {
         super.subscribe();
-        this.on("metaChanged", () => this.patcher.changeIO());
+        this.on("metaUpdated", () => this.patcher.changeIO());
         this.on("preInit", () => {
             this.inlets = 0;
             this.outlets = 1;
@@ -230,7 +230,7 @@ export class AudioOut extends DefaultObject<{}, { index: number }, [any], [], [n
     state = { index: undefined as number };
     subscribe() {
         super.subscribe();
-        this.on("metaChanged", () => this.patcher.changeIO());
+        this.on("metaUpdated", () => this.patcher.changeIO());
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 0;

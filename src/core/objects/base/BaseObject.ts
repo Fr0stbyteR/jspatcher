@@ -95,8 +95,11 @@ export default class BaseObject<
     };
     subscribe() {
         super.subscribe();
-        this.on("metaChanged", meta => this.box.emit("metaChanged", meta));
-        this.on("dataUpdated", data => this.box.emit("dataUpdated", data));
+        this.on("metaUpdated", e => this.box.emit("metaUpdated", e));
+        this.on("argsUpdated", e => this.box.emit("argsUpdated", e));
+        this.on("propsUpdated", e => this.box.emit("propsUpdated", e));
+        this.on("dataUpdated", e => this.box.emit("dataUpdated", e));
+        this.on("stateUpdated", e => this.box.emit("stateUpdated", e));
         this.on("updateArgs", this.setArgs);
         this.on("updateProps", this.setProps);
         this.on("updateProps", this.updateUIFromProps);

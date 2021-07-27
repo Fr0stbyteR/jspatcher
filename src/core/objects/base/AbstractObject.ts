@@ -80,7 +80,7 @@ export type JSPatcherObjectEventMap<D, S, I extends any[], A extends any[], P, U
     "updateProps": Partial<P>;
     /** Emitted immediately when the editor request changes to the state */
     "updateState": Partial<S>;
-    /** The UI will listen to this event type. */
+    /** The UI will listen to this event type */
     "updateUI": Partial<U> | never;
     /** Emitted if received any input */
     "inlet": TInletEvent<I>;
@@ -89,14 +89,18 @@ export type JSPatcherObjectEventMap<D, S, I extends any[], A extends any[], P, U
     "connectedOutlet": { outlet: number; destBoxId: string; destInlet: number; lineId: string };
     "disconnectedInlet": { inlet: number; srcBoxId: string; srcOutlet: number; lineId: string };
     "disconnectedOutlet": { outlet: number; destBoxId: string; destInlet: number; lineId: string };
-    /** Emitted when the object will be destroyed, attach a callback to clean up. */
+    /** Emitted when the object will be destroyed, attach a callback to clean up */
     "destroy": never;
-    /** Emitted when the object's metadata is changed (by itself). */
-    "metaChanged": IJSPatcherObjectMeta;
-    /** Emitted when the object's data is changed (by itself). */
-    "dataUpdated": Partial<D>;
-    /** Emitted when the object's state is changed (by itself). */
-    "stateUpdated": Partial<S>;
+    /** Emitted when the object's metadata is changed (by itself) */
+    "metaUpdated": { oldMeta: IJSPatcherObjectMeta; meta: IJSPatcherObjectMeta };
+    /** Emitted when the object's args is changed */
+    "argsUpdated": { oldArgs: A; args: A };
+    /** Emitted when the object's data is changed */
+    "propsUpdated": { oldProps: P; props: P };
+    /** Emitted when the object's data is changed (by itself) */
+    "dataUpdated": { oldData: D; data: D };
+    /** Emitted when the object's state is changed */
+    "stateUpdated": { oldState: S; state: S };
 } & E;
 
 /**
@@ -193,6 +197,8 @@ export interface IJSPatcherObject<
      * but `[undefined, 1]` will also outlet undefined on first outlet
      */
     outletAll(outputs: Partial<O>): void;
+    /** Record an undoable operation to the patcher history */
+    undoable(e: { oldArgs?: A; args?: A; oldProps?: P; props?: P; oldState?: S; state?: S }): void;
     /**
      * Get a shared item from files or temp
      * If no ID provided, this will create a new key in temp
@@ -304,20 +310,23 @@ export default abstract class AbstractObject<
         return this._meta;
     }
     setMeta(metaIn: Partial<IJSPatcherObjectMeta<P>>) {
+        const oldMeta = { ...this.meta };
         this._meta = Object.assign(this.meta, metaIn);
-        this.emit("metaChanged", this._meta);
+        this.emit("metaUpdated", { oldMeta, meta: { ...this.meta } });
     }
     state: S;
-    setState(stateIn: Partial<S>) {
+    setState = (stateIn: Partial<S>) => {
+        const oldState = { ...this.state };
         this.state = Object.assign(this.state, stateIn);
-        this.emit("stateUpdated", this.state);
-    }
+        this.emit("stateUpdated", { oldState, state: { ...this.state } });
+    };
     get data(): D {
         return this._box.data;
     }
     setData(dataIn: Partial<D>) {
+        const oldData = { ...this._box.data };
         this._box.data = Object.assign(this.data, dataIn) as any;
-        this.emit("dataUpdated", dataIn);
+        this.emit("dataUpdated", { oldData, data: { ...this.data } });
     }
     get props(): Partial<P> {
         const props: Partial<P> = {};
@@ -334,13 +343,17 @@ export default abstract class AbstractObject<
         return typeof this.box.props[key] === "undefined" ? this.meta.props[key].default : this.box.props[key];
     }
     setProps = (props: Partial<P>) => {
+        const oldProps = { ...this.props } as P;
         this.box.update({ props });
+        this.emit("propsUpdated", { oldProps, props: { ...this.props } as P });
     };
     get args(): Partial<A> {
         return this.box.args as any;
     }
     setArgs = (args: Partial<A>) => {
+        const oldArgs = this.args.slice() as A;
         this.box.update({ args });
+        this.emit("argsUpdated", { oldArgs, args: this.args.slice() as A });
     };
     get inlets() {
         return this._box.inlets;
@@ -385,13 +398,19 @@ export default abstract class AbstractObject<
         this.emit("updateUI", state);
     }
     async updateArgs(args: Partial<A>) {
-        if (args && args.length) await this.emit("updateArgs", args);
+        if (args && args.length) {
+            await this.emit("updateArgs", args);
+        }
     }
     async updateProps(props: Partial<P>) {
-        if (props && Object.keys(props).length) await this.emit("updateProps", props);
+        if (props && Object.keys(props).length) {
+            await this.emit("updateProps", props);
+        }
     }
     async updateState(state: Partial<S>) {
-        if (state && Object.keys(state).length) await this.emit("updateState", state);
+        if (state && Object.keys(state).length) {
+            await this.emit("updateState", state);
+        }
     }
     fn<$ extends keyof Pick<I, number> = keyof Pick<I, number>>(inlet: $, data: I[$]) {
         if (inlet === 0) { // allow change props via first inlet with an props object
@@ -414,6 +433,9 @@ export default abstract class AbstractObject<
         for (let i = outputs.length - 1; i >= 0; i--) {
             if (i in outputs) this.outlet(i, outputs[i]);
         }
+    }
+    undoable(e: { oldArgs?: A; args?: A; oldProps?: P; props?: P; oldState?: S; state?: S }) {
+        this.box.undoable(e as any);
     }
     async destroy() {
         await this.emit("destroy");

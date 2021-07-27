@@ -1,4 +1,4 @@
-import type { IJSPatcherObject, IJSPatcherObjectMeta } from "./objects/base/AbstractObject";
+import type { IJSPatcherObject } from "./objects/base/AbstractObject";
 import type Patcher from "./patcher/Patcher";
 import type { TPatcherProps, TPublicPatcherProps } from "./patcher/Patcher";
 import type Box from "./patcher/Box";
@@ -196,23 +196,6 @@ export interface LineEventMap {
     "srcPosChanged": { top: number; left: number };
     "posChanged": Line;
     "typeChanged": TLineType;
-}
-
-export interface BoxEventMap {
-    "rectChanged": Box;
-    "presentationRectChanged": Box;
-    "backgroundChanged": Box;
-    "presentationChanged": Box;
-    "textChanged": Box;
-    "highlight": Box;
-    "error": string;
-    "metaChanged": IJSPatcherObjectMeta;
-    "dataUpdated": any;
-    "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
-    "connectedPort": { isSrc: boolean; i: number; last?: false };
-    "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
-    "ioCountChanged": Box;
-    "updatedFromObject": { args?: any[]; props?: Record<string, any> };
 }
 
 export type TBPF = string | number | number[] | number[][];

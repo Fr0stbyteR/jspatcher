@@ -2,8 +2,22 @@ import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import { isTRect, parseToPrimitive, isTPresentationRect, isRectMovable, isRectResizable } from "../../utils/utils";
 import type Patcher from "./Patcher";
 import type Line from "./Line";
-import type { BoxEventMap, TBox, TMaxBox, TRect, TPresentationRect } from "../types";
-import type { AnyJSPatcherObject, Args, Data, IJSPatcherObject, Props } from "../objects/base/AbstractObject";
+import type { TBox, TMaxBox, TRect, TPresentationRect } from "../types";
+import type { AnyJSPatcherObject, Args, Data, IJSPatcherObject, JSPatcherObjectEventMap, Props, State } from "../objects/base/AbstractObject";
+
+export interface BoxEventMap extends Pick<JSPatcherObjectEventMap<any, any, any, any, any, any, any>, "metaUpdated" | "argsUpdated" | "propsUpdated" | "dataUpdated" | "stateUpdated"> {
+    "rectChanged": Box;
+    "presentationRectChanged": Box;
+    "backgroundChanged": Box;
+    "presentationChanged": Box;
+    "textChanged": Box;
+    "highlight": Box;
+    "error": string;
+    "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
+    "connectedPort": { isSrc: boolean; i: number; last?: false };
+    "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
+    "ioCountChanged": Box;
+}
 
 export default class Box<T extends IJSPatcherObject = AnyJSPatcherObject> extends TypedEventEmitter<BoxEventMap> {
     readonly id: string;
@@ -43,7 +57,9 @@ export default class Box<T extends IJSPatcherObject = AnyJSPatcherObject> extend
         this.data = boxIn.data || (boxIn as any).prevData?.storage || {};
         this._editing = !!boxIn._editing;
         this._patcher = patcherIn;
-        this.on("dataUpdated", () => this._patcher.emit("changed"));
+        this.on("dataUpdated", () => this._patcher.emitChanged());
+        this.on("argsUpdated", () => this._patcher.emitChanged());
+        this.on("propsUpdated", () => this._patcher.emitChanged());
     }
     async init() {
         this._parsed = Box.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };
@@ -227,7 +243,7 @@ export default class Box<T extends IJSPatcherObject = AnyJSPatcherObject> extend
             this.presentationSize = defaultSize;
         }
         this.emit("textChanged", this);
-        this._object.emit("metaChanged", this._object.meta);
+        this._object.setMeta(this._object.meta);
         await this.postInit();
         return this;
     }
@@ -253,8 +269,6 @@ export default class Box<T extends IJSPatcherObject = AnyJSPatcherObject> extend
             }
             this.props = Object.assign(this.props, props);
         }
-        this.emit("updatedFromObject", { args, props });
-        this._patcher.emit("changed");
         return this;
     }
     get position() {
@@ -368,6 +382,14 @@ export default class Box<T extends IJSPatcherObject = AnyJSPatcherObject> extend
     }
     highlightPort(isSrc: boolean, i: number, highlight: boolean) {
         this.emit("highlightPort", { isSrc, i, highlight });
+    }
+    undoable(e: { oldArgs?: Args<T>; args?: Args<T>; oldProps?: Props<T>; props?: Props<T>; oldState?: State<T>; state?: State<T> }) {
+        this._patcher.boxChanged(this.id, e);
+    }
+    async changeObject({ args, props, state }: { args?: Args<T>; props?: Props<T>; state?: State<T> }) {
+        if (args) await this._object.updateArgs(args);
+        if (props) await this._object.updateProps(props);
+        if (state) await this._object.updateState(state);
     }
     async destroy() {
         this.allLines.forEach(line => this._patcher.deleteLine(line.id));

@@ -15,6 +15,7 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "create": RawPatcher;
     "delete": RawPatcher;
     "changeBoxText": { boxId: string; oldText: string; text: string };
+    "boxChanged": { boxId: string; oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any> };
     "changeLineSrc": { lineId: string; oldSrc: [string, number]; src: [string, number] };
     "changeLineDest": { lineId: string; oldDest: [string, number]; dest: [string, number] };
     "selected": string[];
@@ -26,7 +27,7 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "dockUI": string;
 }
 
-export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized"> {}
+export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized" | "boxChanged"> {}
 
 export interface PatcherEditorState {
     locked: boolean;
@@ -75,6 +76,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     }
     handleChangeBoxText = (e: PatcherEventMap["changeBoxText"]) => this.emit("changeBoxText", e);
     handlePassiveDeleteLine = (e: PatcherEventMap["passiveDeleteLine"]) => this.emit("delete", { boxes: {}, lines: { [e.id]: e } });
+    handleBoxChanged = (e: PatcherEventMap["boxChanged"]) => this.emit("boxChanged", e);
     constructor(instance: Patcher) {
         super(instance);
         const { openInPresentation } = this.props;
@@ -176,6 +178,9 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     changeLineDest(lineId: string, destId: string, destOutlet: number) {
         const e = this.instance.changeLineDest(lineId, destId, destOutlet);
         this.emit("changeLineDest", e);
+    }
+    async changeBox(boxId: string, change: { args?: any[]; props?: Record<string, any>; state?: Record<string, any> }) {
+        await this.instance.boxes[boxId]?.changeObject(change);
     }
 
     select(...ids: string[]) {

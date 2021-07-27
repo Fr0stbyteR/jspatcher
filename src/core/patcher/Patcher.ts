@@ -47,6 +47,7 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "ready": never;
     "unload": never;
     "changeBoxText": { boxId: string; oldText: string; text: string };
+    "boxChanged": { boxId: string; oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any> };
     "passiveDeleteLine": Line;
     "newLog": TPatcherLog;
     "graphChanged": never;
@@ -151,6 +152,9 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     emitChanged() {
         if (this._state.preventEmitChanged) return;
         this.emit("changed");
+    }
+    boxChanged(boxId: string, changed: { oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any> }) {
+        this.emit("boxChanged", { boxId, ...changed });
     }
     async clear() {
         if (Object.keys(this.boxes).length) {

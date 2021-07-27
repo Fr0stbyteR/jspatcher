@@ -4,7 +4,7 @@ import PatcherEditor, { PatcherHistoryEventMap } from "./PatcherEditor";
 export default class PatcherHistory extends History<PatcherHistoryEventMap, PatcherEditor> {
     get eventListening(): (keyof PatcherHistoryEventMap)[] {
         return [
-            "create", "delete", "changeBoxText",
+            "create", "delete", "changeBoxText", "boxChanged",
             "changeLineSrc", "changeLineDest", "moved", "resized"
         ];
     }
@@ -16,6 +16,10 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { boxId, oldText } = e;
             await editor.instance.changeBoxText(boxId, oldText);
+        } else if (eventName === "boxChanged") {
+            const e: PatcherHistoryEventMap[typeof eventName] = eventData;
+            const { boxId, oldArgs, oldProps, oldState } = e;
+            await editor.changeBox(boxId, { args: oldArgs, props: oldProps, state: oldState });
         } else if (eventName === "moved") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { selected, delta, presentation } = e;
@@ -49,6 +53,10 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { boxId, text } = e;
             await editor.instance.changeBoxText(boxId, text);
+        } else if (eventName === "boxChanged") {
+            const e: PatcherHistoryEventMap[typeof eventName] = eventData;
+            const { boxId, args, props, state } = e;
+            await editor.changeBox(boxId, { args, props, state });
         } else if (eventName === "moved") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { selected, delta, presentation } = e;

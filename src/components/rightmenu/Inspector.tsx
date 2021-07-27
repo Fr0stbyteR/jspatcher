@@ -206,7 +206,8 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
     handleBoxPresentationRectChanged = (box: Box) => this.setState({ presentationRect: box.presentationRect.slice() as TRect });
     unSubscribeBox = (force?: boolean) => {
         if (this.box && (force || this.boxes.indexOf(this.box) === -1)) {
-            this.box.off("updatedFromObject", this.handleBoxUpdate);
+            this.box.off("argsUpdated", this.handleBoxUpdate);
+            this.box.off("propsUpdated", this.handleBoxUpdate);
             this.box.off("rectChanged", this.handleBoxRectChanged);
             this.box.off("presentationRectChanged", this.handleBoxPresentationRectChanged);
             this.box.off("textChanged", this.handleSelected);
@@ -216,7 +217,8 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
     subscribeBox = () => {
         if (!this.box && this.boxes.length) {
             this.box = this.boxes[0];
-            this.box.on("updatedFromObject", this.handleBoxUpdate);
+            this.box.on("argsUpdated", this.handleBoxUpdate);
+            this.box.on("propsUpdated", this.handleBoxUpdate);
             this.box.on("rectChanged", this.handleBoxRectChanged);
             this.box.on("presentationRectChanged", this.handleBoxPresentationRectChanged);
             this.box.on("textChanged", this.handleSelected);
