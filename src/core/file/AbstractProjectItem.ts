@@ -42,7 +42,7 @@ export interface IProjectItem<EventMap extends Record<string, any> = {}, Manager
 }
 
 export default abstract class AbstractProjectItem<EventMap extends Partial<ProjectItemEventMap> & Record<string, any> = {}, Manager extends IProjectItemManager = IProjectItemManager> extends TypedEventEmitter<ProjectItemEventMap & EventMap> implements IProjectItem<EventMap, Manager> {
-    readonly id: string;
+    id: string;
     get type(): ProjectItemType {
         return "unknown";
     }
@@ -83,7 +83,6 @@ export default abstract class AbstractProjectItem<EventMap extends Partial<Proje
     constructor(fileMgrIn: Manager, parentIn: IProjectFolder, nameIn: string) {
         super();
         this._fileMgr = fileMgrIn;
-        this.id = fileMgrIn.generateItemId(this);
         this.parent = parentIn;
         this._name = nameIn;
         this.on("dirty", dirty => this._isDirty = dirty);
@@ -93,6 +92,7 @@ export default abstract class AbstractProjectItem<EventMap extends Partial<Proje
     abstract destroy(): Promise<void>;
     abstract clone(parentIn?: IProjectFolder, nameIn?: string): IProjectItem;
     async init() {
+        this.id = this.fileMgr.generateItemId(this);
         await this.emit("ready");
         await this.fileMgr.emitChanged();
     }

@@ -4,6 +4,7 @@ import type { IPersistentProjectItemManager } from "./PersistentProjectItemManag
 
 export default class PersistentProjectFolder extends AbstractProjectFolder<IPersistentProjectItemManager> {
     async init() {
+        this.id = this.fileMgr.generateItemId(this);
         const items = await this.fileMgr.readDir(this.path || "/");
         for (const rawItem of items) {
             const { name, isFolder } = rawItem;

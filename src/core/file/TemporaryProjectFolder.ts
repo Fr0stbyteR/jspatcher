@@ -9,6 +9,7 @@ import type TemporaryProjectItemManager from "./TemporaryProjectItemManager";
 
 export default class TemporaryProjectFolder extends AbstractProjectFolder<TemporaryProjectItemManager> {
     async init() {
+        this.id = this.fileMgr.generateItemId(this);
         await this.emit("ready");
     }
     clone(parentIn = this.parent, nameIn = this._name) {

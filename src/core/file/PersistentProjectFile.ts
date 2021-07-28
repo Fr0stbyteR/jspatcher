@@ -11,6 +11,9 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
     get sab() {
         return this._sab;
     }
+    get data() {
+        return this._data;
+    }
     set data(dataIn: ArrayBuffer) {
         this._data = dataIn;
         if (dataIn instanceof SharedArrayBuffer) {
@@ -30,6 +33,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
         this.lastModifiedId = this.id;
     }
     async init() {
+        this.id = this.fileMgr.generateItemId(this);
         this.data = await this.fileMgr.readFile(this.path);
         await this.emit("ready");
         await this.fileMgr.emitChanged();

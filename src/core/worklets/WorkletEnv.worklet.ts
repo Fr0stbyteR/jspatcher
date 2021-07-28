@@ -10,7 +10,7 @@ import type { Task, TaskError } from "../TaskMgr";
 import type { EnvEventMap, IJSPatcherEnv } from "../Env";
 import type { IFileEditor } from "../file/FileEditor";
 import type { IFileInstance } from "../file/FileInstance";
-import type { IPersistentProjectItemManager, ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
+import type { ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
 import type { TErrorLevel } from "../types";
 
 export const processorID = "__JSPatcher_WorkletEnv";
@@ -26,7 +26,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     readonly language: string;
     readonly generatedId: Uint32Array;
     readonly taskMgr = new TaskManager();
-    readonly fileMgr: IPersistentProjectItemManager;
+    readonly fileMgr: WorkletProjectItemManager;
     readonly tempMgr: TemporaryProjectItemManager;
     readonly sdk = { BaseObject };
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
@@ -39,12 +39,12 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.fileMgr = new WorkletProjectItemManager(this);
         this.tempMgr = new TemporaryProjectItemManager(this);
         globalThis.jspatcherEnv = this;
-        this.bindTaskMgr();
-        this.bindFileMgr();
     }
     async init() {
         await this.fileMgr.init();
         await this.tempMgr.init();
+        this.bindTaskMgr();
+        this.bindFileMgr();
     }
     instances = new Set<IFileInstance>();
     activeInstance: IFileInstance;
@@ -92,7 +92,10 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.taskMgr.on("taskError", handleTaskError);
         this.taskMgr.on("taskEnd", handleTaskEnd);
     }
-    handleFileMgrChange = () => this.fileMgrDiff(this.fileMgr.getDataForDiff());
+    handleFileMgrChange = () => {
+        if (this.fileMgr.disabled) return;
+        this.fileMgrDiff(this.fileMgr.getDataForDiff());
+    };
     bindFileMgr() {
         this.fileMgr.on("changed", this.handleFileMgrChange);
     }

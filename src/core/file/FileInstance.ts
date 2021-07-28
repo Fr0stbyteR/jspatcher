@@ -107,7 +107,7 @@ export default abstract class FileInstance<EventMap extends Record<string, any> 
         this._project = project;
         this._file = file;
         this._id = instanceId ?? this.env.registerInstance(this);
-        this._file.addObserver(this._id);
+        this._file?.addObserver(this._id);
     }
     async init() {
         return this;
