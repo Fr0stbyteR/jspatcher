@@ -469,6 +469,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         const rectKey = presentation ? "presentationRect" : "rect";
         let ids = selected.filter(id => id.startsWith("box") && this.boxes[id]);
         if (presentation) ids = ids.filter(id => isRectMovable(this.boxes[id][rectKey]));
+        const boxes = ids.map(id => this.boxes[id]);
+        boxes.forEach(box => box.emit(presentation ? "presentationRectChanged" : "rectChanged", box));
         this.emit("moved", { delta, selected: ids, presentation: this.state.presentation });
         this.instance.emitChanged();
     }
@@ -494,7 +496,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         // Emit events
         if (!delta.x && !delta.y) return;
         if (presentation !== this.state.presentation) return;
-        boxes.forEach(box => box.emit(presentation ? "presentationRectChanged" : "rectChanged", box));
+        // boxes.forEach(box => box.emit(presentation ? "presentationRectChanged" : "rectChanged", box));
         this.emit("moving", { selected: ids, delta, presentation });
         if (presentation) return;
         const lineSet = new Set<Line>();

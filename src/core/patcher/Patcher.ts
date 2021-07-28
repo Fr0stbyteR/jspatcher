@@ -3,16 +3,16 @@ import PatcherEditor from "./PatcherEditor";
 import Line from "./Line";
 import Box from "./Box";
 import PatcherHistory from "./PatcherHistory";
+import PatcherNode from "../worklets/PatcherNode";
 import { max2js, js2max } from "../../utils/utils";
-import { toFaustDspCode } from "../objects/Faust";
-import { AudioIn, AudioOut, In, Out } from "../objects/SubPatcher";
+import { toFaustDspCode } from "./FaustPatcherAnalyser";
 import type Env from "../Env";
-import type { IJSPatcherEnv } from "../Env";
 import type Project from "../Project";
-import type { IProject } from "../Project";
 import type TempPatcherFile from "./TempPatcherFile";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
-import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta } from "../objects/base/AbstractObject";
+import type { IJSPatcherEnv } from "../Env";
+import type { IProject } from "../Project";
+import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta, IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
 import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, TPatcherLog, TDependencies } from "../types";
 import type { PackageManager } from "../PkgMgr";
 
@@ -40,6 +40,7 @@ export interface TPatcherState {
     selected: string[];
     pkgMgr: PackageManager;
     preventEmitChanged: boolean;
+    patcherNode?: PatcherNode;
 }
 
 export interface PatcherEventMap extends TPublicPatcherProps {
@@ -112,10 +113,21 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             isReady: false,
             log: [],
             selected: [],
-            pkgMgr: undefined,
+            pkgMgr: this.project.pkgMgr,
             preventEmitChanged: false
         };
-        this.clear();
+        this.lines = {};
+        this.boxes = {};
+        this.props = {
+            mode: "js",
+            dependencies: Patcher.props.dependencies.default,
+            bgColor: Patcher.props.bgColor.default,
+            editingBgColor: Patcher.props.editingBgColor.default,
+            grid: Patcher.props.grid.default,
+            openInPresentation: Patcher.props.openInPresentation.default,
+            boxIndexCount: 0,
+            lineIndexCount: 0
+        };
     }
     get state() {
         return this._state;
@@ -155,28 +167,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     boxChanged(boxId: string, changed: { oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any> }) {
         this.emit("boxChanged", { boxId, ...changed });
-    }
-    async clear() {
-        if (Object.keys(this.boxes).length) {
-            this._state.preventEmitChanged = true;
-            await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].destroy()));
-            this._state.preventEmitChanged = false;
-            this.emitGraphChanged();
-        }
-        this.lines = {};
-        this.boxes = {};
-        this.props = {
-            mode: "js",
-            dependencies: Patcher.props.dependencies.default,
-            bgColor: Patcher.props.bgColor.default,
-            editingBgColor: Patcher.props.editingBgColor.default,
-            grid: Patcher.props.grid.default,
-            openInPresentation: Patcher.props.openInPresentation.default,
-            boxIndexCount: 0,
-            lineIndexCount: 0
-        };
-        this._state.selected = [];
-        this._state.pkgMgr = this.project.pkgMgr;
     }
     async init(data = this.file?.data, fileName = this.fileName) {
         if (data instanceof ArrayBuffer) {
@@ -261,6 +251,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                 if (numID > this.props.lineIndexCount) this.props.lineIndexCount = numID;
             }
         }
+        if (mode === "jsaw") {
+            await PatcherNode.register(this.audioCtx.audioWorklet);
+            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id });
+        }
         this._state.isReady = true;
         this._state.preventEmitChanged = false;
         this.emitGraphChanged();
@@ -313,7 +307,25 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     async unload() {
         await this.emit("unload");
-        await this.clear();
+        if (Object.keys(this.boxes).length) {
+            this._state.preventEmitChanged = true;
+            await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].destroy()));
+            this._state.preventEmitChanged = false;
+            this.emitGraphChanged();
+        }
+        this.lines = {};
+        this.boxes = {};
+        this.props = {
+            mode: "js",
+            dependencies: Patcher.props.dependencies.default,
+            bgColor: Patcher.props.bgColor.default,
+            editingBgColor: Patcher.props.editingBgColor.default,
+            grid: Patcher.props.grid.default,
+            openInPresentation: Patcher.props.openInPresentation.default,
+            boxIndexCount: 0,
+            lineIndexCount: 0
+        };
+        this._state.selected = [];
     }
     async destroy() {
         await this.unload();
@@ -482,8 +494,9 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const oMap: boolean[] = [];
         for (const boxId in this.boxes) {
             const box = this.boxes[boxId];
-            if (box.object instanceof AudioIn) iMap[box.object.state.index - 1] = true;
-            else if (box.object instanceof AudioOut) oMap[box.object.state.index - 1] = true;
+            const port = Math.max(1, ~~box.args[0]) - 1;
+            if (box.meta.isPatcherInlet === "audio") iMap[port] = true;
+            else if (box.meta.isPatcherOutlet === "audio") oMap[port] = true;
         }
         for (let i = 0; i < this._inletAudioConnections.length; i++) {
             if (!iMap[i]) delete this._inletAudioConnections[i];
@@ -501,35 +514,39 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             author: this.props.author || "",
             version: this.props.version || "",
             description: this.props.description || "",
+            isPatcherInlet: false,
+            isPatcherOutlet: false,
             ...metaFromPatcher
         };
     }
-    get metaFromPatcher(): { inlets: IJSPatcherObjectMeta["inlets"]; outlets: IJSPatcherObjectMeta["outlets"]; args: IJSPatcherObjectMeta["args"]; props: IJSPatcherObjectMeta["props"] } {
+    get metaFromPatcher(): Pick<IJSPatcherObjectMeta, "inlets" | "outlets" | "args" | "props"> {
         const inlets: IJSPatcherObjectMeta["inlets"] = [];
         const outlets: IJSPatcherObjectMeta["outlets"] = [];
         for (const boxId in this.boxes) {
-            const box = this.boxes[boxId];
-            if (box.object instanceof In) {
-                inlets[box.object.state.index - 1] = {
+            const box = this.boxes[boxId] as Box<IJSPatcherObject<any, any, any[], any[], any[], { description: string; type: TMetaType }>>;
+            const port = Math.max(1, ~~box.args[0]) - 1;
+            const description = box.props.description || "";
+            if (box.meta.isPatcherInlet === "data") {
+                inlets[port] = {
                     isHot: true,
-                    type: (box as Box<In>).props.type || "anything",
-                    description: (box as Box<In>).props.description || ""
+                    type: box.props.type || "anything",
+                    description
                 };
-            } else if (box.object instanceof AudioIn) {
-                inlets[box.object.state.index - 1] = {
+            } else if (box.meta.isPatcherInlet === "audio") {
+                inlets[port] = {
                     isHot: true,
                     type: "signal",
-                    description: (box as Box<AudioIn>).props.description || ""
+                    description
                 };
-            } else if (box.object instanceof Out) {
-                outlets[box.object.state.index - 1] = {
-                    type: (box as Box<Out>).props.type || "anything",
-                    description: (box as Box<Out>).props.description || ""
+            } else if (box.meta.isPatcherOutlet === "data") {
+                outlets[port] = {
+                    type: box.props.type || "anything",
+                    description
                 };
-            } else if (box.object instanceof AudioOut) {
-                outlets[box.object.state.index - 1] = {
+            } else if (box.meta.isPatcherOutlet === "audio") {
+                outlets[port] = {
                     type: "signal",
-                    description: (box as Box<AudioOut>).props.description || ""
+                    description
                 };
             }
         }

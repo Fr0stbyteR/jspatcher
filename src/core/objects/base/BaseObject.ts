@@ -80,7 +80,9 @@ export default class BaseObject<
             props: {
                 ...superProps,
                 ...thisProps
-            }
+            },
+            isPatcherInlet: this.isPatcherInlet,
+            isPatcherOutlet: this.isPatcherOutlet
         };
     }
     isUIStateKey = (x: any) => this.meta.props[x] && this.meta.props[x].isUIState;

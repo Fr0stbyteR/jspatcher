@@ -54,9 +54,11 @@ export interface IJSPatcherObjectMeta<P extends Record<string, any> = Record<str
     version: string;
     description: string;
     inlets: IInletsMeta;
-    outlets: IOutletMeta[];
-    args: IArgMeta[];
+    outlets: IOutletsMeta;
+    args: IArgsMeta;
     props: IPropsMeta<P>;
+    isPatcherInlet: "data" | "audio" | false;
+    isPatcherOutlet: "data" | "audio" | false;
 }
 
 export interface ObjectUpdateOptions {
@@ -236,6 +238,8 @@ export declare const IJSPatcherObject: {
     outlets: IOutletsMeta;
     args: IArgsMeta;
     props: IPropsMeta;
+    isPatcherInlet: "data" | "audio" | false;
+    isPatcherOutlet: "data" | "audio" | false;
     readonly meta: IJSPatcherObjectMeta;
     /**
      * The UI that the object uses to display in the patcher, not available in other threads.
@@ -270,6 +274,8 @@ export default abstract class AbstractObject<
     static outlets: IOutletsMeta = [];
     static args: IArgsMeta = [];
     static props: IPropsMeta = {};
+    static isPatcherInlet: "data" | "audio" | false = false;
+    static isPatcherOutlet: "data" | "audio" | false = false;
     static get meta(): IJSPatcherObjectMeta {
         return {
             package: this.package, // div will have class "package-name" "package-name-objectname"
@@ -281,7 +287,9 @@ export default abstract class AbstractObject<
             inlets: this.inlets,
             outlets: this.outlets,
             args: this.args,
-            props: this.props
+            props: this.props,
+            isPatcherInlet: this.isPatcherInlet,
+            isPatcherOutlet: this.isPatcherOutlet
         };
     }
     static UI: typeof AbstractUI;
@@ -380,12 +388,12 @@ export default abstract class AbstractObject<
     outletAudioConnections: TAudioNodeOutletConnection[] = [];
     constructor(box: Box, patcher: Patcher) {
         super();
-        this.id = this.env.generateId(this);
         // line connected = metaChange event subscribed
         // patcher object outside, use _ for prevent recursive stringify
         this._patcher = patcher;
         // the box which create this instance, use _ for prevent recursive stringify
         this._box = box as Box<this>;
+        this.id = this.env.generateId(this);
     }
     async init() {
         // process args and props

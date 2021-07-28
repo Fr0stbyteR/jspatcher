@@ -43,6 +43,7 @@ export default class WorkletProjectItemManager extends AbstractProjectItemManage
             const process = async (id: string): Promise<void> => {
                 const $item = diff[id];
                 const $parentId = $item.parent;
+                if (!$parentId) return;
                 let parent = this.getProjectItemFromId($parentId);
                 if (!parent) await process($parentId);
                 parent = this.getProjectItemFromId($parentId) as PersistentProjectFolder;

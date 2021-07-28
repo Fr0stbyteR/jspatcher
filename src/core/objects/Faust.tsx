@@ -1,21 +1,21 @@
-import Patcher from "../patcher/Patcher";
-import Box from "../patcher/Box";
-import Line from "../patcher/Line";
 import DefaultObject from "./base/DefaultObject";
-import { TPackage, RawPatcher } from "../types";
-import { SubPatcherUI } from "./SubPatcher";
-import { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
-import { CodeUI } from "./UI/code";
 import comment from "./UI/comment";
+import { SubPatcherUI } from "./SubPatcher";
+import { CodeUI } from "./UI/code";
 import { ImporterDirSelfObject } from "../../utils/symbols";
-import { ProjectFileEventMap } from "../file/AbstractProjectFile";
-import { IJSPatcherObjectMeta, IPropsMeta } from "./base/AbstractObject";
+import { inspectFaustPatcher, toFaustLambda } from "../patcher/FaustPatcherAnalyser";
+import type Patcher from "../patcher/Patcher";
+import type Line from "../patcher/Line";
+import type { TPackage, RawPatcher } from "../types";
+import type { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
+import type { ProjectFileEventMap } from "../file/AbstractProjectFile";
+import type { IJSPatcherObjectMeta, IPropsMeta } from "./base/AbstractObject";
 
 type TObjectExpr = {
     exprs?: string[];
     onces?: string[];
 };
-type TLineMap = Map<Line, string>;
+export type TLineMap = Map<Line, string>;
 
 const findOutletFromLineMap = (lineMap: TLineMap, linesIn: Set<Line>) => {
     const iterator = linesIn.values();
@@ -81,10 +81,12 @@ export class FaustOp<D extends Record<string, any> = {}, S extends Partial<Faust
     };
     handleUpdateArgs = (args: any[]) => this.handleUpdate({ args });
     handleUpdateProps = (props: Record<string, any>) => this.handleUpdate({ props });
+    handlePostInit = () => this.handleUpdate({ args: this.args, props: this.props });
     subscribe() {
         super.subscribe();
         this.on("updateArgs", this.handleUpdateArgs);
         this.on("updateProps", this.handleUpdateProps);
+        this.on("postInit", this.handlePostInit);
     }
     /**
      * Get the parameters' expression "in1, in2, in3"
@@ -311,6 +313,7 @@ class HBargraph extends FaustOp<{}, {}, [string, number, number]> {
         super.subscribe();
         this.off("updateArgs", this.handleUpdateArgs);
         this.off("updateProps", this.handleUpdateProps);
+        this.off("postInit", this.handlePostInit);
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 1;
@@ -364,6 +367,7 @@ class HGroup extends FaustOp<{}, {}, [string]> {
         super.subscribe();
         this.off("updateArgs", this.handleUpdateArgs);
         this.off("updateProps", this.handleUpdateProps);
+        this.off("postInit", this.handlePostInit);
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 1;
@@ -392,7 +396,7 @@ class TGroup extends HGroup {
     }
 }
 
-class Import extends FaustOp {
+export class Import extends FaustOp {
     static description = "Import a library";
     static args: IJSPatcherObjectMeta["args"] = [{
         type: "string",
@@ -409,6 +413,7 @@ class Import extends FaustOp {
     }
 }
 export class In extends FaustOp {
+    static isPatcherInlet = "audio" as const;
     static description = "Signal Input";
     static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
@@ -422,6 +427,7 @@ export class In extends FaustOp {
         super.subscribe();
         this.off("updateArgs", this.handleUpdateArgs);
         this.off("updateProps", this.handleUpdateProps);
+        this.off("postInit", this.handlePostInit);
         this.on("preInit", () => {
             this.inlets = 0;
             this.outlets = 1;
@@ -440,6 +446,7 @@ export class In extends FaustOp {
     }
 }
 export class Out extends FaustOp {
+    static isPatcherOutlet = "audio" as const;
     static description = "Signal Output";
     static args: IJSPatcherObjectMeta["args"] = [{
         type: "number",
@@ -453,6 +460,7 @@ export class Out extends FaustOp {
         super.subscribe();
         this.off("updateArgs", this.handleUpdateArgs);
         this.off("updateProps", this.handleUpdateProps);
+        this.off("postInit", this.handlePostInit);
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 0;
@@ -488,6 +496,7 @@ class Pass extends FaustOp {
         super.subscribe();
         this.off("updateArgs", this.handleUpdateArgs);
         this.off("updateProps", this.handleUpdateProps);
+        this.off("postInit", this.handlePostInit);
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 1;
@@ -559,6 +568,7 @@ export class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
         super.subscribe();
         this.off("updateArgs", this.handleUpdateArgs);
         this.off("updateProps", this.handleUpdateProps);
+        this.off("postInit", this.handlePostInit);
         this.on("preInit", () => {
             this.inlets = 0;
             this.outlets = 1;
@@ -620,6 +630,7 @@ export class Rec extends FaustOp {
         super.subscribe();
         this.off("updateArgs", this.handleUpdateArgs);
         this.off("updateProps", this.handleUpdateProps);
+        this.off("postInit", this.handlePostInit);
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 1;
@@ -726,7 +737,7 @@ class SR extends FaustOp {
         return ['import("stdfaust.lib");'];
     }
 }
-class Iterator extends FaustOp {
+export class Iterator extends FaustOp {
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
         type: "number",
@@ -750,6 +761,7 @@ class Iterator extends FaustOp {
         super.subscribe();
         this.off("updateArgs", this.handleUpdateArgs);
         this.off("updateProps", this.handleUpdateProps);
+        this.off("postInit", this.handlePostInit);
         this.on("preInit", () => {
             this.inlets = this.state.inlets;
             this.outlets = this.state.outlets;
@@ -1479,113 +1491,5 @@ export const getFaustLibObjects = (docs: TFaustDocs) => {
         pkg[path[0]] = Op;
     }
     return ops;
-};
-const mapLines = (box: Box, patcher: Patcher, visitedBoxes: Box[], ins: In[], recs: Rec[], lineMap: Map<Line, string>) => {
-    if (visitedBoxes.indexOf(box) >= 0) return;
-    visitedBoxes.push(box);
-    if (box.object instanceof Iterator && box !== visitedBoxes[0]) return;
-    const inletLines = Array.from(box.inletLines);
-    if (box.object instanceof Receive) {
-        const { sendID } = box.object;
-        if (sendMap[sendID]) {
-            sendMap[sendID].forEach(s => inletLines.push(...s.inletLines));
-        }
-    }
-    inletLines.forEach(lines => lines.forEach((line) => {
-        const { srcBox } = line;
-        if (srcBox.object instanceof In && ins.indexOf(srcBox.object) === -1) ins.push(srcBox.object);
-        else if (srcBox.object instanceof Rec && recs.indexOf(srcBox.object) === -1) recs.push(srcBox.object);
-        if (srcBox.object instanceof Effect) lineMap.set(line, "_");
-        else lineMap.set(line, `${(srcBox.object as FaustOp).resultID}_${line.srcOutlet}`);
-        mapLines(srcBox, patcher, visitedBoxes, ins, recs, lineMap);
-    }));
-};
-export const toFaustLambda = (patcher: Patcher, outs: FaustOp[], lambdaName: string) => {
-    const exprs: string[] = [];
-    const onces: string[] = [];
-    const mainIns: string[] = [];
-    const mainOuts: string[] = [];
-    const recIns: string[] = [];
-    const recOuts: string[] = [];
-    const visitedBoxes: Box[] = [];
-    let ins: In[] = [];
-    const recs: Rec[] = [];
-    const lineMap: TLineMap = new Map<Line, string>();
-    // Build graph
-    outs.forEach(out => mapLines(out.box, patcher, visitedBoxes, ins, recs, lineMap));
-    visitedBoxes.forEach((box) => {
-        if (box.object instanceof In) return;
-        if (box.object instanceof Out) return;
-        if (box.object instanceof Rec) return;
-        if (outs.indexOf(box.object as FaustOp) !== -1) return;
-        const { onces: o, exprs: e } = (box.object as FaustOp).toExpr(lineMap);
-        if (o) onces.push(...o.filter(v => onces.indexOf(v) === -1));
-        if (e) exprs.push(...e);
-    });
-    // Reverse order for readibility
-    exprs.reverse();
-    // Build rec in/outs
-    recs.forEach((rec) => {
-        exprs.push(...rec.toExpr(lineMap).exprs || []);
-        const recIn = rec.resultID;
-        const recOut = `${recIn}_0`;
-        recIns.push(recIn);
-        recOuts.push(recOut);
-    });
-    // Build main in/outs
-    ins = ins.sort((a, b) => a.index - b.index);
-    ins.forEach((in_) => {
-        const id = `${in_.resultID}_0`;
-        if (mainIns.indexOf(id) === -1) mainIns.push(id);
-    });
-    outs.forEach((out) => {
-        if (out instanceof Iterator) exprs.push(...out.toNormalExpr(lineMap).exprs || []);
-        else exprs.push(...out.toExpr(lineMap).exprs || []);
-        const id = out.resultID;
-        if (mainIns.indexOf(id) === -1) mainOuts.push(id);
-    });
-    // Generate Final expressions
-    exprs.forEach((s, i) => exprs[i] = `    ${s.replace(/\n/g, "\n    ")}`); // indent
-    if (recIns.length) {
-        exprs.unshift(`Main(${[...recOuts, ...mainIns].join(", ")}) = ${[...recIns, ...mainOuts].join(", ")} with {`);
-        exprs.push(
-            "};",
-            `Rec = ${recIns.map(() => "_").join(", ")} : ${recOuts.map(() => "_").join(", ")};`,
-            `${lambdaName} = Main ~ Rec : ${[...recIns.map(() => "!"), ...mainOuts.map(() => "_")].join(", ")};`
-        );
-    } else if (mainIns.length) {
-        exprs.unshift(`${lambdaName}(${mainIns.join(", ")}) = ${mainOuts.join(", ")} with {`);
-        exprs.push("};");
-    } else if (exprs.length) {
-        exprs.unshift(`${lambdaName} = ${mainOuts.join(", ")} with {`);
-        exprs.push("};");
-    } else {
-        exprs.push(`${lambdaName} = 0;`);
-    }
-    return { onces, exprs, ins, outs };
-};
-export const toFaustDspCode = (patcher: Patcher) => inspectFaustPatcher(patcher).code;
-export const inspectFaustPatcher = (patcher: Patcher) => {
-    const imports: Import[] = [];
-    let outs: Out[] = [];
-    const effects: Effect[] = [];
-    // Find outs and imports
-    for (const boxId in patcher.boxes) {
-        const box = patcher.boxes[boxId];
-        if (box.object instanceof Effect) effects.push(box.object);
-        else if (box.object instanceof Out) outs.push(box.object);
-        else if (box.object instanceof Import) imports.push(box.object);
-    }
-    outs = outs.sort((a, b) => a.index - b.index);
-    const { onces, exprs, ins } = toFaustLambda(patcher, outs, "process");
-    if (effects.length) {
-        const { onces: fxOnces, exprs: fxExprs, ins: fxIns } = toFaustLambda(patcher, [effects[0]], "effect");
-        onces.push(...fxOnces.filter(v => onces.indexOf(v) === -1));
-        exprs.push(...fxExprs);
-        ins.push(...fxIns);
-    }
-    imports.map(i => i.toOnceExpr()).forEach(o => onces.push(...o.filter(v => onces.indexOf(v) === -1)));
-    const code = `${onces.join("\n")}${onces.length ? "\n" : ""}${exprs.join("\n")}\n`;
-    return { code, onces, exprs, ins, outs };
 };
 export default faustOps;

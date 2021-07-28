@@ -52,10 +52,10 @@ export default class EditMenu extends React.PureComponent<P, S> {
         this.state.editor.selectAll();
     };
     onShortKey(e: KeyboardEvent) {
-        if (this.state.locked) return;
+        if (this.state.locked) return false;
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         const performed = this.refInstanceEditMenu.current?.onShortKey?.(e);
-        if (performed) return;
+        if (performed) return false;
         if (ctrlKey && e.key === "z") this.handleClickUndo();
         else if (ctrlKey && e.key === "y") this.handleClickRedo();
         else if (ctrlKey && e.key === "x") this.handleClickCut();
@@ -63,6 +63,10 @@ export default class EditMenu extends React.PureComponent<P, S> {
         else if (ctrlKey && e.key === "v") this.handleClickPaste();
         else if (e.key === "Delete" || e.key === "Backspace") this.handleClickDelete();
         else if (ctrlKey && e.key === "a") this.handleClickSelectAll();
+        else return false;
+        e.stopPropagation();
+        e.preventDefault();
+        return true;
     }
     handleLocked = (locked: boolean) => this.setState({ locked });
     handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {

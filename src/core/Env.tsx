@@ -187,7 +187,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 this.Faust = Faust;
                 this.FaustAudioWorkletNode = FaustAudioWorkletNode;
             });
-            /*
             await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {
                 const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
                 await faust.ready;
@@ -204,7 +203,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 const gen2FaustLib = await gen2FaustLibFile.text();
                 this.faust.fs.writeFile("./libraries/gen2faust.lib", gen2FaustLib);
             });
-            */
             await this.taskMgr.newTask(this, "Loading Monaco Editor...", async () => {
                 const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
                 const { providers } = await faustLangRegister(monacoEditor, this.faust);

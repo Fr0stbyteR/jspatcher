@@ -208,12 +208,12 @@ export class GlobalPackageManager {
         };
         /*
         this.jsaw = await (await import("./objects/JSAW")).default();
-        this.faust = (await import("./objects/Faust")).default;
         this.gen = (await import("./objects/Gen")).default;
         this.max = (await import("./objects/Max")).default;
         this.add(this.env.faustAdditionalObjects, "js", ["faust"]);
         this.add(this.env.faustLibObjects, "faust");
         */
+        this.faust = (await import("./objects/Faust")).default;
         // this.add({ window: Window }, "js");
     }
     private add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
