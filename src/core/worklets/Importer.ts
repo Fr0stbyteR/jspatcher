@@ -16,13 +16,13 @@ import { Getter } from "../objects/importer/Getter";
 import { Property } from "../objects/importer/Property";
 import { AnyImportedObject } from "../objects/importer/ImportedObject";
 
-export const processorID = "__JSPatcher_Importer";
+export const processorId = "__JSPatcher_Importer";
 export default class ImporterNode extends AudioWorkletProxyNode<IImporterNode, IImporterProcessor> implements IImporterNode {
-    static processorID = processorID;
-    static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorID, processorURL);
+    static processorId = processorId;
+    static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorId, processorURL);
     static fnNames: (keyof IImporterProcessor)[] = ["importGlobalThis"];
     constructor(context: BaseAudioContext) {
-        super(context, processorID, { numberOfInputs: 1, numberOfOutputs: 0 });
+        super(context, processorId, { numberOfInputs: 1, numberOfOutputs: 0 });
         const _destroy = this.destroy;
         this.destroy = async () => {
             await _destroy.call(this);

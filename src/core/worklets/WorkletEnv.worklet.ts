@@ -4,6 +4,7 @@ import TemporaryProjectItemManager from "../file/TemporaryProjectItemManager";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import WorkletProjectItemManager from "../file/WorkletProjectItemManager";
 import BaseObject from "../objects/base/BaseObject";
+import Patcher from "../patcher/Patcher";
 import type { WorkletEnvParameters, IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvOptions } from "./WorkletEnv.types";
 import type { AudioWorkletGlobalScope, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
 import type { Task, TaskError } from "../TaskMgr";
@@ -13,7 +14,7 @@ import type { IFileInstance } from "../file/FileInstance";
 import type { ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
 import type { TErrorLevel } from "../types";
 
-export const processorID = "__JSPatcher_WorkletEnv";
+export const processorId = "__JSPatcher_WorkletEnv";
 declare const globalThis: AudioWorkletGlobalScope;
 const { registerProcessor } = globalThis;
 
@@ -28,7 +29,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     readonly taskMgr = new TaskManager();
     readonly fileMgr: WorkletProjectItemManager;
     readonly tempMgr: TemporaryProjectItemManager;
-    readonly sdk = { BaseObject };
+    readonly sdk = { BaseObject, Patcher };
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
         super(options);
         const { os, browser, language, generatedId } = options.processorOptions;
@@ -111,7 +112,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
 }
 
 try {
-    registerProcessor(processorID, WorkletEnvProcessor);
+    registerProcessor(processorId, WorkletEnvProcessor);
 } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(error);

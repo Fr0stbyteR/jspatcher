@@ -5,19 +5,20 @@ import type Patcher from "../patcher/Patcher";
 import type { PatcherEventMap } from "../patcher/Patcher";
 import type { IPatcherNode, IPatcherProcessor, PatcherOptions, PatcherParameters } from "./PatcherWorklet.types";
 import type { IJSPatcherEnv } from "../Env";
+import type { RawPatcher } from "../types";
 
-const processorID = "__JSPatcher_Patcher";
+const processorId = "__JSPatcher_Patcher";
 
 export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPatcherProcessor, PatcherParameters, PatcherOptions> implements IPatcherNode {
-    static processorID = processorID;
-    static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorID, processorURL);
-    static fnNames: (keyof IPatcherProcessor)[] = ["init", "fn", "sync"];
+    static processorId = processorId;
+    static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorId, processorURL);
+    static fnNames: (keyof IPatcherProcessor)[] = ["init", "fn", "sync", "objectEmit"];
     readonly patcher: Patcher;
-    constructor(context: BaseAudioContext, options: { env: IJSPatcherEnv; instanceId: string }) {
-        super(context, processorID, {
+    constructor(context: BaseAudioContext, options: { env: IJSPatcherEnv; instanceId: string; fileId?: string; data?: RawPatcher }) {
+        super(context, processorId, {
             numberOfInputs: 1,
             numberOfOutputs: 1,
-            processorOptions: { instanceId: options.instanceId }
+            processorOptions: { instanceId: options.instanceId, fileId: options.fileId, data: options.data }
         });
         this.patcher = options.env.getInstanceById(options.instanceId) as Patcher;
         this.patcher.on("changed", this.handleChanged);
@@ -30,5 +31,8 @@ export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPa
     handleInlet = (e: PatcherEventMap["inlet"]) => this.fn(e.data, e.inlet);
     outlet(port: number, data: any) {
         this.patcher.outlet(port, data);
+    }
+    objectEmitFromWorklet(boxId: string, eventName: string, eventData: any) {
+        return this.patcher.boxes[boxId]?.object.emit(eventName as any, eventData);
     }
 }

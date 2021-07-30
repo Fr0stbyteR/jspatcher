@@ -10,15 +10,15 @@ import type PersistentProjectFolder from "../file/PersistentProjectFolder";
 import type { ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
 import { TErrorLevel } from "../types";
 
-export const processorID = "__JSPatcher_WorkletEnv";
+export const processorId = "__JSPatcher_WorkletEnv";
 
 export default class WorkletEnvNode extends AudioWorkletProxyNode<IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvParameters, WorkletEnvOptions, WorkletEnvEventMap> implements IWorkletEnvNode {
-    static processorID = processorID;
-    static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorID, processorURL);
+    static processorId = processorId;
+    static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorId, processorURL);
     static fnNames: (keyof IWorkletEnvProcessor)[] = ["init", "workletFileMgrDiff"];
     readonly env: Env;
     constructor(context: BaseAudioContext, mainEnv: Env) {
-        super(context, processorID, {
+        super(context, processorId, {
             numberOfInputs: 0,
             numberOfOutputs: 1,
             processorOptions: {

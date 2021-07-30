@@ -5,7 +5,7 @@ import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./TypedAudio
 import { ITemporalAnalyserProcessor, ITemporalAnalyserNode, TemporalAnalyserParameters, TemporalAnalysis } from "./TemporalAnalyserWorklet.types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 
-const processorID = "__JSPatcher_TemporalAnalyser";
+const processorId = "__JSPatcher_TemporalAnalyser";
 declare const globalThis: AudioWorkletGlobalScope & { SharedArrayBuffer: typeof SharedArrayBuffer | typeof ArrayBuffer; Atomics: typeof Atomics };
 if (!globalThis.SharedArrayBuffer) globalThis.SharedArrayBuffer = ArrayBuffer;
 const { registerProcessor, sampleRate } = globalThis;
@@ -175,7 +175,7 @@ class TemporalAnalyserProcessor extends AudioWorkletProxyProcessor<ITemporalAnal
     }
 }
 try {
-    registerProcessor(processorID, TemporalAnalyserProcessor);
+    registerProcessor(processorId, TemporalAnalyserProcessor);
 } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(error);

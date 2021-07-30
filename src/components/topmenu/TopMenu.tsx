@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Menu, Ref } from "semantic-ui-react";
-import "./TopMenu.scss";
-import Env from "../../core/Env";
+import type Env from "../../core/Env";
 import FileMenu from "./FileMenu";
 import EditMenu from "./EditMenu";
+import "./TopMenu.scss";
 
 interface P {
     env: Env;

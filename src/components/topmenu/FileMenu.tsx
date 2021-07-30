@@ -41,6 +41,12 @@ export default class FileMenu extends React.PureComponent<P, S> {
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };
+    handleClickNewJsAW = async () => {
+        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
+        await patcher.load({}, "jsaw");
+        const editor = await patcher.getEditor();
+        this.props.env.openEditor(editor);
+    };
     handleClickNewMax = async () => {
         const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
         await patcher.load({}, "max");
@@ -160,6 +166,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
                 <Dropdown item={true} icon={false} text="File">
                     <Dropdown.Menu style={{ minWidth: "max-content" }}>
                         <Dropdown.Item onClick={this.handleClickNewJs} text="New Js Patcher" description={`${ctrl} + Shift + N`} />
+                        <Dropdown.Item onClick={this.handleClickNewJsAW} text="New Js AudioWorklet Patcher" />
                         {/* <Dropdown.Item onClick={this.handleClickNewMax} text="New Max Patcher" /> */}
                         <Dropdown.Item onClick={this.handleClickNewGen} text="New Gen Patcher" />
                         <Dropdown.Item onClick={this.handleClickNewFaust} text="New Faust Patcher" />

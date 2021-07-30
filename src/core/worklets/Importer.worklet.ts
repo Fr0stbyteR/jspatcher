@@ -3,7 +3,7 @@ import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 import { ObjectDescriptor, CtorType, IImporterNode, IImporterProcessor, TAbstractPackage } from "./ImporterWorklet.types";
 import { AudioWorkletGlobalScope } from "./TypedAudioWorklet";
 
-const processorID = "__JSPatcher_Importer";
+const processorId = "__JSPatcher_Importer";
 declare const globalThis: AudioWorkletGlobalScope;
 const { registerProcessor } = globalThis;
 
@@ -109,7 +109,7 @@ class ImporterProcessor extends AudioWorkletProxyProcessor<IImporterProcessor, I
 }
 
 try {
-    registerProcessor(processorID, ImporterProcessor);
+    registerProcessor(processorId, ImporterProcessor);
 } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(error);

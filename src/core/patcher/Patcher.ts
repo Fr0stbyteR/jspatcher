@@ -3,7 +3,6 @@ import PatcherEditor from "./PatcherEditor";
 import Line from "./Line";
 import Box from "./Box";
 import PatcherHistory from "./PatcherHistory";
-import PatcherNode from "../worklets/PatcherNode";
 import { max2js, js2max } from "../../utils/utils";
 import { toFaustDspCode } from "./FaustPatcherAnalyser";
 import type Env from "../Env";
@@ -15,6 +14,7 @@ import type { IProject } from "../Project";
 import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta, IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
 import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, TPatcherLog, TDependencies } from "../types";
 import type { PackageManager } from "../PkgMgr";
+import type PatcherNode from "../worklets/PatcherNode";
 
 export interface TPatcherProps {
     mode: PatcherMode;
@@ -50,7 +50,6 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "changeBoxText": { boxId: string; oldText: string; text: string };
     "boxChanged": { boxId: string; oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any> };
     "passiveDeleteLine": Line;
-    "newLog": TPatcherLog;
     "graphChanged": never;
     "changed": never;
     "ioChanged": IJSPatcherObjectMeta;
@@ -252,8 +251,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             }
         }
         if (mode === "jsaw") {
+            const PatcherNode = (await import("../worklets/PatcherNode")).default;
             await PatcherNode.register(this.audioCtx.audioWorklet);
-            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id });
+            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id, fileId: this.file?.id, data: this.file ? this.toSerializable() : undefined });
+            await this.state.patcherNode.init();
         }
         this._state.isReady = true;
         this._state.preventEmitChanged = false;
@@ -559,10 +560,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.newLog("error", "Patcher", message, this);
     }
     newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any) {
-        const log = { errorLevel, title, message, emitter };
-        this._state.log.push(log);
         this.env.newLog(errorLevel, title, message, emitter);
-        this.emit("newLog", log);
     }
     setProps(props: Partial<TPublicPatcherProps>) {
         let changed = false;

@@ -1,5 +1,5 @@
-import { TypedMessagePort } from "../workers/Worker";
-import { IWorkletEnvProcessor } from "./WorkletEnv.types";
+import type { IJSPatcherEnv } from "../Env";
+import type { TypedMessagePort } from "../workers/Worker";
 
 export * from "../workers/Worker";
 
@@ -28,7 +28,7 @@ export interface AudioWorkletGlobalScope {
     currentTime: number;
     sampleRate: number;
     AudioWorkletProcessor: typeof TypedAudioWorkletProcessor;
-    jspatcherEnv: IWorkletEnvProcessor;
+    jspatcherEnv: IJSPatcherEnv;
 }
 
 export type TypedAudioParamMap<P extends string = string> = ReadonlyMap<P, AudioParam>;

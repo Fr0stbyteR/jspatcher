@@ -8,7 +8,7 @@ import { ISpectralAnalyserProcessor, ISpectralAnalyserNode, SpectralAnalyserPara
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 import { windowEnergyFactor } from "../../utils/windowEnergy";
 
-const processorID = "__JSPatcher_SpectralAnalyser";
+const processorId = "__JSPatcher_SpectralAnalyser";
 declare const globalThis: AudioWorkletGlobalScope & { SharedArrayBuffer: typeof SharedArrayBuffer | typeof ArrayBuffer; Atomics: typeof Atomics };
 if (!globalThis.SharedArrayBuffer) globalThis.SharedArrayBuffer = ArrayBuffer;
 const { registerProcessor, sampleRate } = globalThis;
@@ -385,7 +385,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
     }
 }
 try {
-    registerProcessor(processorID, SpectralAnalyserProcessor);
+    registerProcessor(processorId, SpectralAnalyserProcessor);
 } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(error);

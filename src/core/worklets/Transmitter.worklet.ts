@@ -3,7 +3,7 @@ import { AudioWorkletGlobalScope } from "./TypedAudioWorklet";
 import { ITransmitterProcessor, ITransmitterNode, TransmitterParameters } from "./TransmitterWorklet.types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 
-const processorID = "__JSPatcher_Transmitter";
+const processorId = "__JSPatcher_Transmitter";
 declare const globalThis: AudioWorkletGlobalScope;
 const { registerProcessor } = globalThis;
 
@@ -70,7 +70,7 @@ class TransmitterProcessor extends AudioWorkletProxyProcessor<ITransmitterProces
     }
 }
 try {
-    registerProcessor(processorID, TransmitterProcessor);
+    registerProcessor(processorId, TransmitterProcessor);
 } catch (error) {
     // eslint-disable-next-line no-console
     console.warn(error);

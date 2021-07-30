@@ -1,10 +1,9 @@
 import TypedEventEmitter from "../utils/TypedEventEmitter";
 import Env from "./Env";
 import FileInstance from "./file/FileInstance";
+import { IPropsMeta } from "./objects/base/AbstractObject";
 import { PackageManager } from "./PkgMgr";
-import { TDependencies, IPropsMeta } from "./types";
-
-const AudioContext = window.AudioContext || window.webkitAudioContext;
+import { TDependencies } from "./types";
 
 export interface ProjectEventMap {
     "propsChanged": Partial<ProjectProps>;
@@ -48,13 +47,15 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
     readonly env: Env;
     readonly pkgMgr: PackageManager;
     readonly instances: FileInstance[];
-    readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly props: ProjectProps = {
         dependencies: Project.props.dependencies.default,
         name: Project.props.name.default,
         author: Project.props.author.default,
         version: Project.props.version.default
     };
+    get audioCtx() {
+        return this.env.audioCtx;
+    }
     constructor(envIn: Env) {
         super();
         this.env = envIn;
