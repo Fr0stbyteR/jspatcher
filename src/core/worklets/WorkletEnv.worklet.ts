@@ -3,8 +3,13 @@ import TaskManager from "../TaskMgr";
 import TemporaryProjectItemManager from "../file/TemporaryProjectItemManager";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import WorkletProjectItemManager from "../file/WorkletProjectItemManager";
+import WorkletGlobalPackageManager from "../WorkletGlobalPkgMgr";
+import Project from "../Project";
+import PackageManager from "../PkgMgr";
 import BaseObject from "../objects/base/BaseObject";
 import Patcher from "../patcher/Patcher";
+import Box from "../patcher/Box";
+import Line from "../patcher/Line";
 import type { WorkletEnvParameters, IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvOptions } from "./WorkletEnv.types";
 import type { AudioWorkletGlobalScope, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
 import type { Task, TaskError } from "../TaskMgr";
@@ -29,7 +34,9 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     readonly taskMgr = new TaskManager();
     readonly fileMgr: WorkletProjectItemManager;
     readonly tempMgr: TemporaryProjectItemManager;
-    readonly sdk = { BaseObject, Patcher };
+    readonly pkgMgr: WorkletGlobalPackageManager;
+    readonly sdk = { BaseObject, Patcher, Box, Line };
+    currentProject: Project;
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
         super(options);
         const { os, browser, language, generatedId } = options.processorOptions;
@@ -39,9 +46,13 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.generatedId = generatedId;
         this.fileMgr = new WorkletProjectItemManager(this);
         this.tempMgr = new TemporaryProjectItemManager(this);
+        this.pkgMgr = new WorkletGlobalPackageManager(this);
         globalThis.jspatcherEnv = this;
     }
     async init() {
+        await this.pkgMgr.init();
+        const projectPkgMgr = new PackageManager(this.pkgMgr, null);
+        this.currentProject = new Project(this, projectPkgMgr);
         await this.fileMgr.init();
         await this.tempMgr.init();
         this.bindTaskMgr();
@@ -57,14 +68,15 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     generateId(objectIn: object) {
         return this.thread + objectIn.constructor.name + Atomics.add(this.generatedId, 0, 1);
     }
-    registerInstance(i: IFileInstance) {
+    registerInstance(i: IFileInstance, id?: string) {
         this.instances.add(i);
         i.on("destroy", () => {
             this.instances.delete(i);
             this.emit("instances", Array.from(this.instances));
         });
-        this.emit("instances", Array.from(this.instances));
-        return this.generateId(i);
+        this.ee.emit("instances", Array.from(this.instances));
+        if (!id) return this.generateId(i);
+        return id;
     }
     getInstanceById(id: string) {
         for (const instance of this.instances) {
@@ -72,6 +84,8 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         }
         return null;
     }
+    // get _listeners() { return this.ee._listeners; }
+    // get getListeners() { return this.ee.getListeners; }
     get listeners() { return this.ee.listeners; }
     get on() { return this.ee.on; }
     get once() { return this.ee.once; }

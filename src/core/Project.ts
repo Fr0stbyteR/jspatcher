@@ -1,9 +1,10 @@
 import TypedEventEmitter from "../utils/TypedEventEmitter";
-import Env from "./Env";
-import FileInstance from "./file/FileInstance";
-import { IPropsMeta } from "./objects/base/AbstractObject";
-import { PackageManager } from "./PkgMgr";
-import { TDependencies } from "./types";
+import type Env from "./Env";
+import type FileInstance from "./file/FileInstance";
+import type { IJSPatcherEnv } from "./Env";
+import type { IPropsMeta } from "./objects/base/AbstractObject";
+import type { IPackageManager } from "./PkgMgr";
+import type { TDependencies } from "./types";
 
 export interface ProjectEventMap {
     "propsChanged": Partial<ProjectProps>;
@@ -18,7 +19,7 @@ export interface ProjectProps {
 }
 
 export interface IProject extends TypedEventEmitter<ProjectEventMap> {
-    pkgMgr: PackageManager;
+    pkgMgr: IPackageManager;
 }
 
 export default class Project extends TypedEventEmitter<ProjectEventMap> {
@@ -44,8 +45,8 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
             default: "0.0.0"
         }
     };
-    readonly env: Env;
-    readonly pkgMgr: PackageManager;
+    readonly env: IJSPatcherEnv;
+    readonly pkgMgr: IPackageManager;
     readonly instances: FileInstance[];
     readonly props: ProjectProps = {
         dependencies: Project.props.dependencies.default,
@@ -54,12 +55,12 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
         version: Project.props.version.default
     };
     get audioCtx() {
-        return this.env.audioCtx;
+        return (this.env as Env).audioCtx;
     }
-    constructor(envIn: Env) {
+    constructor(envIn: IJSPatcherEnv, pkgMgr: IPackageManager) {
         super();
         this.env = envIn;
-        this.pkgMgr = new PackageManager(this.env.pkgMgr);
+        this.pkgMgr = pkgMgr;
     }
     setProps(props: Partial<ProjectProps>) {
         let changed = false;

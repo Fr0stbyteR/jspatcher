@@ -13,7 +13,7 @@ import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta, IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
 import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, TPatcherLog, TDependencies } from "../types";
-import type { PackageManager } from "../PkgMgr";
+import type { IPackageManager } from "../PkgMgr";
 import type PatcherNode from "../worklets/PatcherNode";
 
 export interface TPatcherProps {
@@ -38,7 +38,7 @@ export interface TPatcherState {
     isReady: boolean;
     log: TPatcherLog[];
     selected: string[];
-    pkgMgr: PackageManager;
+    pkgMgr: IPackageManager;
     preventEmitChanged: boolean;
     patcherNode?: PatcherNode;
 }
@@ -250,10 +250,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                 if (numID > this.props.lineIndexCount) this.props.lineIndexCount = numID;
             }
         }
-        if (mode === "jsaw") {
+        if (mode === "jsaw" && this.env.thread === "main") {
             const PatcherNode = (await import("../worklets/PatcherNode")).default;
             await PatcherNode.register(this.audioCtx.audioWorklet);
-            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id, fileId: this.file?.id, data: this.file ? this.toSerializable() : undefined });
+            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id, fileId: this.file?.id, data: this.file ? undefined : this.toSerializable() });
             await this.state.patcherNode.init();
         }
         this._state.isReady = true;
@@ -343,7 +343,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const i = dependencies.findIndex(t => t[1] === url);
         if (i === -1) return;
         dependencies.splice(i, 1);
-        this.state.pkgMgr.remove(url);
+        this.state.pkgMgr.removeURL(url);
         this.setProps({ dependencies: dependencies.slice() });
     }
     async createBox(boxIn: TBox) {

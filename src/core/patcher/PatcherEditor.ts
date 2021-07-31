@@ -77,6 +77,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     handleChangeBoxText = (e: PatcherEventMap["changeBoxText"]) => this.emit("changeBoxText", e);
     handlePassiveDeleteLine = (e: PatcherEventMap["passiveDeleteLine"]) => this.emit("delete", { boxes: {}, lines: { [e.id]: e } });
     handleBoxChanged = (e: PatcherEventMap["boxChanged"]) => this.emit("boxChanged", e);
+    handleChanged = () => this.instance.emitChanged();
     constructor(instance: Patcher) {
         super(instance);
         const { openInPresentation } = this.props;
@@ -98,6 +99,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
                 this.instance.on("ready", handleReady);
             });
         }
+        this.on("changed", this.handleChanged);
         this.instance.on("changeBoxText", this.handleChangeBoxText);
         this.instance.on("passiveDeleteLine", this.handlePassiveDeleteLine);
         const { openInPresentation } = this.props;
@@ -472,7 +474,6 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         const boxes = ids.map(id => this.boxes[id]);
         boxes.forEach(box => box.emit(presentation ? "presentationRectChanged" : "rectChanged", box));
         this.emit("moved", { delta, selected: ids, presentation: this.state.presentation });
-        this.instance.emitChanged();
     }
     move(selected: string[], delta: { x: number; y: number }, presentation: boolean) {
         this.select(...selected);
@@ -532,7 +533,6 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     resizeEnd(delta: { x: number; y: number }, type: TResizeHandlerType) {
         const { selected, presentation } = this.state;
         this.emit("resized", { delta, type, selected, presentation });
-        this.instance.emitChanged();
     }
     resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType, presentation: boolean) {
         this.select(...selected);

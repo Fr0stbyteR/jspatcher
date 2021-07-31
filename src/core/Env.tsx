@@ -8,7 +8,8 @@ import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
 import { EnvOptions, TErrorLevel, TPackage, TPatcherLog } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
 import Importer from "./objects/importer/Importer";
-import { GlobalPackageManager } from "./PkgMgr";
+import PackageManager from "./PkgMgr";
+import GlobalPackageManager from "./GlobalPkgMgr";
 import PersistentProjectItemManager, { IPersistentProjectItemManager } from "./file/PersistentProjectItemManager";
 import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
 import FileMgrWorker from "./workers/FileMgrWorker";
@@ -49,10 +50,12 @@ export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
     readonly browser: "Unknown" | "Chromium" | "Gecko" | "WebKit";
     readonly language: string;
     readonly sdk: IJSPatcherSDK;
+    readonly pkgMgr: Partial<GlobalPackageManager>;
     /** Show as status what task is proceeding */
-    taskMgr: TaskManager;
-    fileMgr: IPersistentProjectItemManager;
-    tempMgr: TemporaryProjectItemManager;
+    readonly taskMgr: TaskManager;
+    readonly fileMgr: IPersistentProjectItemManager;
+    readonly tempMgr: TemporaryProjectItemManager;
+    readonly currentProject: Project;
     activeInstance: IFileInstance;
     activeEditor: IFileEditor;
     instances: Set<IFileInstance>;
@@ -60,7 +63,7 @@ export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
     generateId(objectIn: object): string;
     getInstanceById(id: string): IFileInstance;
     /** @returns A new unique ID for the instance */
-    registerInstance(instanceIn: IFileInstance): string;
+    registerInstance(instanceIn: IFileInstance, id?: string): string;
     newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any): void;
 }
 
@@ -221,7 +224,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);
                 await this.pkgMgr.init();
-                const project = new Project(this);
+                const project = new Project(this, new PackageManager(this.pkgMgr, Importer));
                 this.currentProject = project;
                 const { projectZip } = urlParamsOptions;
                 if (projectZip) {
@@ -295,14 +298,15 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         this.emit("openEditor", e);
         e.setActive();
     }
-    registerInstance(i: IFileInstance) {
+    registerInstance(i: IFileInstance, id?: string) {
         this.instances.add(i);
         i.on("destroy", () => {
             this.instances.delete(i);
             this.emit("instances", Array.from(this.instances));
         });
         this.emit("instances", Array.from(this.instances));
-        return this.generateId(i);
+        if (!id) return this.generateId(i);
+        return id;
     }
     getInstanceById(id: string) {
         for (const instance of this.instances) {
@@ -313,7 +317,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     async newProject() {
         const oldProject = this.currentProject;
         await oldProject?.unload();
-        const project = new Project(this);
+        const project = new Project(this, new PackageManager(this.pkgMgr, Importer));
         this.currentProject = project;
         await project.load(true);
         this.emit("projectChanged", { project, oldProject });
@@ -327,7 +331,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         const oldProject = this.currentProject;
         await oldProject?.unload();
         await this.fileMgr.emptyProject();
-        const project = new Project(this);
+        const project = new Project(this, new PackageManager(this.pkgMgr, Importer));
         this.currentProject = project;
         await this.fileMgr.importFileZip(data, undefined, undefined, this);
         // await project.load();

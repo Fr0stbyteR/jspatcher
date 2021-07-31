@@ -4,10 +4,14 @@ import BaseUI from "./objects/base/BaseUI";
 import DefaultObject from "./objects/base/DefaultObject";
 import DefaultUI from "./objects/base/DefaultUI";
 import Patcher from "./patcher/Patcher";
+import Box from "./patcher/Box";
+import Line from "./patcher/Line";
 
 export interface IJSPatcherSDK {
     readonly React?: typeof React;
     readonly Patcher: typeof Patcher;
+    readonly Box: typeof Box;
+    readonly Line: typeof Line;
     readonly BaseObject: typeof BaseObject;
     readonly DefaultObject?: typeof DefaultObject;
     readonly BaseUI?: typeof BaseUI;
@@ -21,4 +25,6 @@ export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly BaseUI = BaseUI;
     readonly DefaultUI = DefaultUI;
     readonly Patcher = Patcher;
+    readonly Box = Box;
+    readonly Line = Line;
 }

@@ -23,6 +23,7 @@ class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPa
             name: `00${i}`.slice(-3)
         }));
     }
+    readonly env = jspatcherEnv;
     readonly instanceId: string;
     readonly file: PersistentProjectFile;
     readonly initData: RawPatcher;
@@ -32,12 +33,12 @@ class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPa
         super(options);
         const { instanceId, fileId, data } = options.processorOptions;
         this.instanceId = instanceId;
-        this.file = jspatcherEnv.fileMgr.getProjectItemFromId(fileId) as PersistentProjectFile;
+        this.file = this.env.fileMgr.getProjectItemFromId(fileId) as PersistentProjectFile;
         this.initData = data;
     }
     async init() {
-        const Patcher = jspatcherEnv.sdk.Patcher;
-        this.patcher = new Patcher({ env: jspatcherEnv, file: this.file, instanceId: this.instanceId });
+        const Patcher = this.env.sdk.Patcher;
+        this.patcher = new Patcher({ env: this.env, file: this.file, project: this.env.currentProject, instanceId: this.instanceId });
         await this.patcher.init(this.initData);
         this.patcher.on("outlet", this.handleOutlet);
         this.editor = await this.patcher.getEditor();
