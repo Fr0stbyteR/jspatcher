@@ -13,7 +13,7 @@ const processorId = "__JSPatcher_Patcher";
 declare const globalThis: AudioWorkletGlobalScope;
 const { registerProcessor, jspatcherEnv } = globalThis;
 
-class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPatcherNode, PatcherParameters, PatcherOptions> implements IPatcherProcessor {
+export default class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPatcherNode, PatcherParameters, PatcherOptions> implements IPatcherProcessor {
     static fnNames: (keyof IPatcherNode)[] = ["outlet", "objectEmitFromWorklet"];
     static get parameterDescriptors(): TypedAudioParamDescriptor<PatcherParameters>[] {
         return new Array(128).fill(null).map((v, i) => ({
@@ -39,6 +39,7 @@ class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPa
     async init() {
         const Patcher = this.env.sdk.Patcher;
         this.patcher = new Patcher({ env: this.env, file: this.file, project: this.env.currentProject, instanceId: this.instanceId });
+        this.patcher.state.patcherProcessor = this;
         await this.patcher.init(this.initData);
         this.patcher.on("outlet", this.handleOutlet);
         this.editor = await this.patcher.getEditor();
@@ -60,6 +61,12 @@ class PatcherProcessor extends AudioWorkletProxyProcessor<IPatcherProcessor, IPa
     }
     objectEmit(boxId: string, eventName: string, eventData: any) {
         return this.patcher.boxes[boxId]?.object.emit(eventName as any, eventData);
+    }
+    boxEmit(boxId: string, eventName: string, eventData: any) {
+        return this.patcher.boxes[boxId]?.emit(eventName as any, eventData);
+    }
+    lineEmit(lineId: string, eventName: string, eventData: any) {
+        return this.patcher.lines[lineId]?.emit(eventName as any, eventData);
     }
 }
 

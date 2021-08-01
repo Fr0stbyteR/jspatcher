@@ -37,4 +37,10 @@ export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPa
     objectEmitFromWorklet(boxId: string, eventName: string, eventData: any) {
         return this.patcher.boxes[boxId]?.object.emit(eventName as any, eventData);
     }
+    boxEmitFromWorklet(boxId: string, eventName: string, eventData: any) {
+        return this.patcher.boxes[boxId]?.emit(eventName as any, eventData);
+    }
+    lineEmitFromWorklet(lineId: string, eventName: string, eventData: any) {
+        return this.patcher.lines[lineId]?.emit(eventName as any, eventData);
+    }
 }

@@ -115,7 +115,7 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         }
     }
     async setIndex($: number) {
-        if ($ < this.$) await this.undoUntil(this.eventQueue[$ + 1].timestamp);
+        if ($ < this.$) await this.undoUntil(this.eventQueue[$].timestamp);
         else if ($ > this.$) await this.redoUntil(this.eventQueue[$ - 1].timestamp);
     }
     getSyncData(): IHistoryData<EventMap> {

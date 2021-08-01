@@ -15,6 +15,7 @@ import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta, IJSPa
 import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, TPatcherLog, TDependencies } from "../types";
 import type { IPackageManager } from "../PkgMgr";
 import type PatcherNode from "../worklets/PatcherNode";
+import type PatcherProcessor from "../worklets/Patcher.worklet";
 
 export interface TPatcherProps {
     mode: PatcherMode;
@@ -41,6 +42,7 @@ export interface TPatcherState {
     pkgMgr: IPackageManager;
     preventEmitChanged: boolean;
     patcherNode?: PatcherNode;
+    patcherProcessor?: PatcherProcessor;
 }
 
 export interface PatcherEventMap extends TPublicPatcherProps {

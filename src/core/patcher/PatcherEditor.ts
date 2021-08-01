@@ -102,6 +102,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.on("changed", this.handleChanged);
         this.instance.on("changeBoxText", this.handleChangeBoxText);
         this.instance.on("passiveDeleteLine", this.handlePassiveDeleteLine);
+        this.instance.on("boxChanged", this.handleBoxChanged);
         const { openInPresentation } = this.props;
         this.setState({
             locked: true,

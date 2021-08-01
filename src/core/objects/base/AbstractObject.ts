@@ -102,7 +102,7 @@ export type JSPatcherObjectEventMap<D, S, I extends any[], A extends any[], P, U
     /** Emitted when the object's args is changed */
     "argsUpdated": { oldArgs: A; args: A };
     /** Emitted when the object's data is changed */
-    "propsUpdated": { oldProps: P; props: P };
+    "propsUpdated": { oldProps: Partial<P>; props: Partial<P> };
     /** Emitted when the object's data is changed (by itself) */
     "dataUpdated": { oldData: D; data: D };
     /** Emitted when the object's state is changed */
@@ -204,7 +204,7 @@ export interface IJSPatcherObject<
      */
     outletAll(outputs: Partial<O>): void;
     /** Record an undoable operation to the patcher history */
-    undoable(e: { oldArgs?: A; args?: A; oldProps?: P; props?: P; oldState?: S; state?: S }): void;
+    undoable(e: { oldArgs?: A; args?: A; oldProps?: Partial<P>; props?: Partial<P>; oldState?: S; state?: S }): void;
     /**
      * Get a shared item from files or temp
      * If no ID provided, this will create a new key in temp
@@ -353,10 +353,18 @@ export default abstract class AbstractObject<
         if (key === "presentation") return this.box.presentation as any;
         return typeof this.box.props[key] === "undefined" ? this.meta.props[key].default : this.box.props[key];
     }
-    setProps = (props: Partial<P>) => {
-        const oldProps = { ...this.props } as P;
-        this.box.update({ props });
-        this.emit("propsUpdated", { oldProps, props: { ...this.props } as P });
+    setProps = (propsIn: Partial<P>) => {
+        const keys = Object.keys(propsIn);
+        const oldProps = { ...this.props } as Partial<P>;
+        this.box.update({ props: propsIn });
+        const props = { ...this.props } as Partial<P>;
+        for (const key in oldProps) {
+            if (keys.indexOf(key) === -1) {
+                delete oldProps[key];
+                delete props[key];
+            }
+        }
+        this.emit("propsUpdated", { oldProps, props });
     };
     get args(): Partial<A> {
         return this.box.args as any;
@@ -415,11 +423,19 @@ export default abstract class AbstractObject<
             if (options?.undoable) this.undoable({ oldArgs, args: this.args.slice() as A });
         }
     }
-    async updateProps(props: Partial<P>, options?: ObjectUpdateOptions) {
-        if (props && Object.keys(props).length) {
-            const oldProps = { ...this.props } as P;
-            await this.emit("updateProps", props);
-            if (options?.undoable) this.undoable({ oldProps, props: { ...this.props } as P });
+    async updateProps(propsIn: Partial<P>, options?: ObjectUpdateOptions) {
+        if (propsIn && Object.keys(propsIn).length) {
+            const keys = Object.keys(propsIn);
+            const oldProps = { ...this.props };
+            await this.emit("updateProps", propsIn);
+            const props = { ...this.props };
+            for (const key in oldProps) {
+                if (keys.indexOf(key) === -1) {
+                    delete oldProps[key];
+                    delete props[key];
+                }
+            }
+            if (options?.undoable) this.undoable({ oldProps, props });
         }
     }
     async updateState(state: Partial<S>, options?: ObjectUpdateOptions) {
@@ -451,7 +467,7 @@ export default abstract class AbstractObject<
             if (i in outputs) this.outlet(i, outputs[i]);
         }
     }
-    undoable(e: { oldArgs?: A; args?: A; oldProps?: P; props?: P; oldState?: S; state?: S }) {
+    undoable(e: { oldArgs?: A; args?: A; oldProps?: Partial<P>; props?: Partial<P>; oldState?: S; state?: S }) {
         this.box.undoable(e as any);
     }
     async destroy() {
