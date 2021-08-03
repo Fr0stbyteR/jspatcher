@@ -62,12 +62,6 @@ export default class PatcherProcessor extends AudioWorkletProxyProcessor<IPatche
     objectEmit(boxId: string, eventName: string, eventData: any) {
         return this.patcher.boxes[boxId]?.object.emit(eventName as any, eventData);
     }
-    boxEmit(boxId: string, eventName: string, eventData: any) {
-        return this.patcher.boxes[boxId]?.emit(eventName as any, eventData);
-    }
-    lineEmit(lineId: string, eventName: string, eventData: any) {
-        return this.patcher.lines[lineId]?.emit(eventName as any, eventData);
-    }
 }
 
 try {
