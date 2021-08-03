@@ -22,7 +22,7 @@ class CommentUI extends BaseUI<comment, {}, { value: string }> {
     refSpan = React.createRef<HTMLSpanElement>();
     componentDidMount() {
         super.componentDidMount();
-        if (this.refSpan.current) this.refSpan.current.innerText = this.state.value;
+        if (this.refSpan.current) this.refSpan.current.innerText = this.state.value || "";
         if (this.props.editing) this.toggleEdit(this.props.editing);
     }
     componentDidUpdate(prevProps: Readonly<BaseUIProps>) {
