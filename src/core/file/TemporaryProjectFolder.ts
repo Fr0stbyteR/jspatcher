@@ -28,7 +28,7 @@ export default class TemporaryProjectFolder extends AbstractProjectFolder<Tempor
         const item = this.createProjectItem(name, false, data, typeIn);
         this.items.add(item);
         await this.emitTreeChanged();
-        await this.fileMgr.emitChanged();
+        await item.init();
         return item;
     }
     async addFolder(name: string) {

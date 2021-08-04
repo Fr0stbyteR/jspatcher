@@ -114,32 +114,36 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
     }
     private encodeFFmpegWorker(wav: Uint8Array, inputFileName: string, outputFileName: string, ...args: string[]) {
         return this.env.taskMgr.newTask(this, `Encoding audio ${outputFileName}...`, async (onUpdate) => {
-            const { ffmpegWorker } = this.env as Env;
-            const onExit = (code: number) => onUpdate(`ffmpeg process exited with code ${code}`);
-            ffmpegWorker.on("stdout", onUpdate);
-            ffmpegWorker.on("stderr", onUpdate);
-            ffmpegWorker.on("exit", onExit);
+            const ffmpegWorker = await (this.env as Env).getFFmpeg();
+            // const handleProgress = (ratio: number) => onUpdate(`Encoding: ${(ratio * 100).toFixed(2)}%`);
+            ffmpegWorker.on("ffout", onUpdate);
+            ffmpegWorker.on("fferr", onUpdate);
+            ffmpegWorker.on("info", onUpdate);
+            // ffmpegWorker.on("progress", handleProgress);
             try {
                 const result = await ffmpegWorker.run({
-                    MEMFS: [{ data: wav, name: inputFileName }],
-                    arguments: ["-i", inputFileName, ...args, outputFileName]
+                    data: wav,
+                    input: inputFileName,
+                    output: outputFileName,
+                    args: ["-i", inputFileName, ...args, outputFileName]
                 });
-                return result.MEMFS[0].data.buffer;
+                return result;
             } finally {
-                ffmpegWorker.off("stdout", onUpdate);
-                ffmpegWorker.off("stderr", onUpdate);
-                ffmpegWorker.off("exit", onExit);
+                ffmpegWorker.off("ffout", onUpdate);
+                ffmpegWorker.off("fferr", onUpdate);
+                ffmpegWorker.off("info", onUpdate);
+                // ffmpegWorker.off("progress", handleProgress);
             }
         });
     }
     async encodeMp3(bitrate: number) {
-        const wav = new Uint8Array(await this.serialize());
+        const wav = new Uint8Array(await this.serialize({ shared: true }));
         const inputFileName = "in.wav";
         const outputFileName = "out.mp3";
         return this.encodeFFmpegWorker(wav, inputFileName, outputFileName, "-codec:a", "libmp3lame", "-b:a", `${bitrate}k`);
     }
     async encodeAac(bitrate: number) {
-        const wav = new Uint8Array(await this.serialize());
+        const wav = new Uint8Array(await this.serialize({ shared: true }));
         const inputFileName = "in.wav";
         const outputFileName = "out.m4a";
         return this.encodeFFmpegWorker(wav, inputFileName, outputFileName, "-codec:a", "aac", "-b:a", `${bitrate}k`);

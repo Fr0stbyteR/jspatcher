@@ -172,6 +172,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     get ready() {
         return this.init();
     }
+    async getFFmpeg() {
+        return this.taskMgr.newTask(this, "Loading ffmpeg...", async () => {
+            await this.ffmpegWorker.init();
+            return this.ffmpegWorker;
+        });
+    }
     async init() {
         const urlParams = new URLSearchParams(window.location.search);
         const urlParamsOptions = {
@@ -211,9 +217,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 const { providers } = await faustLangRegister(monacoEditor, this.faust);
                 this.faustDocs = providers.docs;
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
-            });
-            await this.taskMgr.newTask(this, "Loading ffmpeg...", async () => {
-                await this.ffmpegWorker.init();
             });
             await this.taskMgr.newTask(this, "Loading LibMuscXML...", async () => {
                 await this.libMusicXMLWorker.init();

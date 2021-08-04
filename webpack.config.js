@@ -94,6 +94,7 @@ const config = {
     new CopyWebpackPlugin({
       patterns: [
         { from: './src/html', to: './' },
+        { from: './node_modules/@ffmpeg/core/dist/ffmpeg-core.*', to: './deps/[name][ext]' },
         { from: './src/misc/monaco-faust/primitives.lib', to: './deps/' },
         { from: './src/misc/gen2faust.lib', to: './deps/' },
         { from: './node_modules/faust2webaudio/dist/libfaust-wasm.*', to: './deps/[name][ext]' },
@@ -110,7 +111,7 @@ const config = {
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       skipWaiting: true,
-      maximumFileSizeToCacheInBytes: 16 * 1024 * 1024,
+      maximumFileSizeToCacheInBytes: 32 * 1024 * 1024,
     })
     // new BundleAnalyzerPlugin()
   ],

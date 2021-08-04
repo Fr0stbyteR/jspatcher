@@ -31,10 +31,11 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
     constructor(fileMgrIn: IPersistentProjectItemManager, parentIn: IProjectFolder, nameIn: string, dataIn?: ArrayBuffer) {
         super(fileMgrIn, parentIn, nameIn);
         this.lastModifiedId = this.id;
+        this._data = dataIn;
     }
     async init() {
         this.id = this.fileMgr.generateItemId(this);
-        this.data = await this.fileMgr.readFile(this.path);
+        if (!this.data) this.data = await this.fileMgr.readFile(this.path);
         await this.emit("ready");
         await this.fileMgr.emitChanged();
     }

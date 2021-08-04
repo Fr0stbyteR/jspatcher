@@ -20,11 +20,11 @@ export default class PersistentProjectFolder extends AbstractProjectFolder<IPers
         const Ctor = this.constructor as typeof PersistentProjectFolder;
         return new Ctor(this._fileMgr, parentIn, nameIn);
     }
-    createProjectItem(nameIn: string, isFolder: boolean, dataIn = new ArrayBuffer(0)): PersistentProjectFolder | PersistentProjectFile {
+    createProjectItem(nameIn: string, isFolder: boolean, dataIn?: ArrayBuffer): PersistentProjectFolder | PersistentProjectFile {
         if (isFolder) return new PersistentProjectFolder(this.fileMgr, this, nameIn);
         return new PersistentProjectFile(this.fileMgr, this, nameIn, dataIn);
     }
-    async addFile(nameIn: string, dataIn = new ArrayBuffer(0)) {
+    async addFile(nameIn: string, dataIn?: ArrayBuffer) {
         if (this.existItem(nameIn)) throw new Error(`${nameIn} already exists.`);
         const tempItem = new PersistentProjectFile(this.fileMgr, this, nameIn, dataIn);
         await this.fileMgr.putFile(tempItem);
@@ -32,6 +32,7 @@ export default class PersistentProjectFolder extends AbstractProjectFolder<IPers
         const item = this.createProjectItem(nameIn, fileDetail.isFolder, dataIn);
         this.items.add(item);
         await this.emitTreeChanged();
+        item.init();
         return item;
     }
     async addFolder(name: string) {
