@@ -1,7 +1,8 @@
 import { ImporterDirSelfObject } from "../utils/symbols";
 import { isJSPatcherObjectConstructor } from "./objects/base/AbstractObject";
-import BaseObject from "./objects/base/BaseObject";
-import GlobalThis from "./objects/globalThis/index.jsdsppkg";
+import getBase from "./objects/base/index.jsdsppkg";
+import getGlobalThis from "./objects/globalThis/index.jsdsppkg";
+import { Func, New } from "./objects/importer/RemotedImporter";
 import type { TPackage, PatcherMode, ObjectDescriptor, TAbstractPackage } from "./types";
 import type { AnyImportedObject } from "./objects/importer/ImportedObject";
 import type WorkletEnvProcessor from "./worklets/WorkletEnv.worklet";
@@ -19,10 +20,10 @@ export default class WorkletGlobalPackageManager {
     }
     async init() {
         this.jsaw = {
-            Base: { BaseObject, EmptyObject: BaseObject, InvalidObject: BaseObject },
-            globalThis: GlobalThis
+            Base: { ...await getBase(), func: Func, new: New },
+            globalThis: await getGlobalThis()
         };
-        await this.env.addObjects(this.getDescriptors(GlobalThis, "globalThis"), "globalThis");
+        await this.env.addObjects(this.getDescriptors(this.jsaw.globalThis, "globalThis"), "globalThis");
     }
     toDescriptor(O: typeof AnyImportedObject, pkgName: string): ObjectDescriptor {
         const { path } = O;

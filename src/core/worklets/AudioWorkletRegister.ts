@@ -50,6 +50,3 @@ export default class AudioWorkletRegister {
         return promise;
     }
 }
-
-if (!window.jspatcherEnv) window.jspatcherEnv = { AudioWorkletRegister } as any;
-if (!window.jspatcherEnv.AudioWorkletRegister) (window.jspatcherEnv as any).AudioWorkletRegister = AudioWorkletRegister;

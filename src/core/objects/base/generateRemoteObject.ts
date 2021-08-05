@@ -11,7 +11,7 @@ export default <
     P extends {} = {},
     U extends {} = {},
     E extends Partial<RemoteEventMap> & Record<string, any> = RemoteEventMap
->(O: typeof BaseObject) => class extends generateDefaultObject<D, S, I, O, A, P, U, E & RemoteEventMap>(O) {
+>(O: typeof BaseObject) => class RemoteObject extends generateDefaultObject<D, S, I, O, A, P, U, E & RemoteEventMap>(O) {
     get proxy() {
         return this.patcher.state.patcherNode;
     }

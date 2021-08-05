@@ -1,3 +1,3 @@
 import RemotedImporter from "../importer/RemotedImporter";
 
-export default RemotedImporter.import("globalThis", globalThis, true);
+export default async () => RemotedImporter.import("globalThis", globalThis, true);

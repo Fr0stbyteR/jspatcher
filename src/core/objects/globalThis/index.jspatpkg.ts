@@ -80,7 +80,7 @@ const { // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Glo
     // WebAssembly
     WebAssembly
 } = window;*/
-const lib = DefaultImporter.import("globalThis", globalThis, true);
+// const lib = DefaultImporter.import("globalThis", globalThis, true);
 // Importer.import("Window", { Array }, lib);
 
-export default lib;
+export default async () => DefaultImporter.import("globalThis", globalThis, true);

@@ -9,7 +9,7 @@ export default <
     P extends {} = {},
     U extends {} = {},
     E extends {} = {}
->(O: typeof BaseObject) => class extends O<D, S, I, O, A, P, U, E> {
+>(O: typeof BaseObject) => class RemotedObject extends O<D, S, I, O, A, P, U, E> {
     get proxy() {
         return this.patcher.state.patcherProcessor;
     }

@@ -13,7 +13,7 @@ export default <
     P extends Partial<DefaultObjectProps> & Record<string, any> = {},
     U extends Partial<DefaultUIState> & Record<string, any> = {},
     E extends {} = {}
->(O: typeof BaseObject) => class extends O<D, S, I, O, A, P & DefaultObjectProps, U & DefaultUIState, E> {
+>(O: typeof BaseObject) => class DefaultObject extends O<D, S, I, O, A, P & DefaultObjectProps, U & DefaultUIState, E> {
     static props: IJSPatcherObjectMeta["props"] = {
         bgColor: {
             type: "color",
