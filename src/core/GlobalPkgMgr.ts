@@ -16,7 +16,8 @@ export default class GlobalPackageManager {
     }
     async init() {
         this.js = {
-            Base: await (await import("./objects/base/index.jspatpkg")).default()/* ,
+            Base: await (await import("./objects/base/index.jspatpkg")).default(),
+            globalThis: (await import("./objects/globalThis/index.jspatpkg")).default/* ,
             Std: (await import("./objects/Std")).default,
             new: (await import("./objects/importer/New")).default,
             func: (await import("./objects/importer/Func")).default,
@@ -29,8 +30,7 @@ export default class GlobalPackageManager {
             live: (await import("./objects/live/exports")).default,
             faust: (await import("./objects/faust/exports")).default,
             guido: { view: (await import("./objects/guido/view")).default, ...Importer.import("guido", this.env.guidoWorker) },
-            SubPatcher: (await import("./objects/SubPatcher")).default,
-            window: (await import("./objects/Window")).default*/
+            SubPatcher: (await import("./objects/SubPatcher")).default*/
         };
         this.jsaw = {
             Base: await (await import("./objects/base/index.jspatpkg")).default()
