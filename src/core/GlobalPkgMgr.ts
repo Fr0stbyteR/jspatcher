@@ -45,7 +45,7 @@ export default class GlobalPackageManager {
         this.faust = (await import("./objects/Faust")).default;
         // this.add({ window: Window }, "js");
     }
-    private add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
+    add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();
         let pkg = this[lib];
         while (path.length) {

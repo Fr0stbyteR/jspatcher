@@ -1,12 +1,9 @@
 import StaticMethod from "./StaticMethod";
-import ImportedObject, { ImportedObjectUI } from "./ImportedObject";
-import DefaultObject from "../base/DefaultObject";
+import BaseObject from "../base/BaseObject";
 import Bang, { isBang } from "../base/Bang";
+import type ImportedObject from "./ImportedObject";
 import type { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
 
-class NewUI extends ImportedObjectUI<New> {
-    prependColor = "rgb(78, 201, 176)";
-}
 type TAnyConstructor = new (...args: any[]) => any;
 interface P {
     args: number;
@@ -18,7 +15,7 @@ interface S {
     result: any;
 }
 
-export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [any, ...any[]], any[], P, { loading: boolean }> {
+export default class New extends BaseObject<{}, S, [any | Bang, ...any[]], [any, ...any[]], any[], P, { loading: boolean }> {
     static description = "Call function as a constructor";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
@@ -61,7 +58,6 @@ export default class New extends DefaultObject<{}, S, [any | Bang, ...any[]], [a
             description: "arguments input will be spreaded if true"
         }
     };
-    static UI = NewUI;
     state: S = { Wrapper: null, inputs: [], result: null };
     subscribe() {
         super.subscribe();

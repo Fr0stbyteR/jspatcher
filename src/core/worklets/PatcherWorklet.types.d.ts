@@ -7,6 +7,7 @@ export interface IPatcherProcessor {
     fn(data: any, port: number): void;
     sync(data: IHistoryData<PatcherEditorEventMap>): void;
     objectEmit(boxId: string, eventName: string, eventData: any): Promise<any>;
+    destroy(): void;
 }
 
 export interface IPatcherNode {

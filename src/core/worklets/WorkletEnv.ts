@@ -1,6 +1,7 @@
 import processorURL from "./WorkletEnv.worklet.ts"; // eslint-disable-line import/extensions
 import AudioWorkletProxyNode from "./AudioWorkletProxyNode";
 import AudioWorkletRegister from "./AudioWorkletRegister";
+import RemoteImporter from "../objects/importer/RemoteImporter";
 import { sab2ab } from "../../utils/utils";
 import type { WorkletEnvParameters, IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvEventMap, WorkletEnvOptions } from "./WorkletEnv.types";
 import type Env from "../Env";
@@ -8,7 +9,7 @@ import type { Task, TaskError } from "../TaskMgr";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type PersistentProjectFolder from "../file/PersistentProjectFolder";
 import type { ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
-import { TErrorLevel } from "../types";
+import type { TErrorLevel, TAbstractPackage } from "../types";
 
 export const processorId = "__JSPatcher_WorkletEnv";
 
@@ -100,5 +101,9 @@ export default class WorkletEnvNode extends AudioWorkletProxyNode<IWorkletEnvNod
     }
     fileMgrGetPathIdMap() {
         return this.env.fileMgr.getPathIdMap();
+    }
+    addObjects(descriptor: TAbstractPackage, pkgName: string) {
+        const pkg = RemoteImporter.getPackageFromDescriptors(descriptor, pkgName);
+        this.env.pkgMgr.add({ [pkgName]: pkg }, "jsaw");
     }
 }

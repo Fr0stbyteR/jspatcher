@@ -24,7 +24,7 @@ declare const globalThis: AudioWorkletGlobalScope;
 const { registerProcessor } = globalThis;
 
 export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWorkletEnvProcessor, IWorkletEnvNode, WorkletEnvParameters, WorkletEnvOptions> implements IWorkletEnvProcessor, IJSPatcherEnv {
-    static fnNames: (keyof IWorkletEnvNode)[] = ["envNewLog", "taskBegin", "taskUpdate", "taskError", "taskEnd", "fileMgrExists", "fileMgrGetFileDetails", "fileMgrPutFile", "fileMgrReadDir", "fileMgrReadFile", "fileMgrWriteFile", "fileMgrGetPathIdMap", "fileMgrDiff"];
+    static fnNames: (keyof IWorkletEnvNode)[] = ["envNewLog", "taskBegin", "taskUpdate", "taskError", "taskEnd", "fileMgrExists", "fileMgrGetFileDetails", "fileMgrPutFile", "fileMgrReadDir", "fileMgrReadFile", "fileMgrWriteFile", "fileMgrGetPathIdMap", "fileMgrDiff", "addObjects"];
     private readonly ee = new TypedEventEmitter<EnvEventMap>();
     readonly thread = "AudioWorklet";
     readonly os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
@@ -72,7 +72,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.instances.add(i);
         i.on("destroy", () => {
             this.instances.delete(i);
-            this.emit("instances", Array.from(this.instances));
+            this.ee.emit("instances", Array.from(this.instances));
         });
         this.ee.emit("instances", Array.from(this.instances));
         if (!id) return this.generateId(i);

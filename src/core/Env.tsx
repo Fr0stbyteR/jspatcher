@@ -7,7 +7,7 @@ import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitte
 import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
 import { EnvOptions, TErrorLevel, TPackage, TPatcherLog } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
-import Importer from "./objects/importer/Importer";
+import DefaultImporter from "./objects/importer/DefaultImporter";
 import PackageManager from "./PkgMgr";
 import GlobalPackageManager from "./GlobalPkgMgr";
 import PersistentProjectItemManager, { IPersistentProjectItemManager } from "./file/PersistentProjectItemManager";
@@ -199,7 +199,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {
                 const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
                 await faust.ready;
-                this.faustAdditionalObjects = Importer.import("faust", { FaustNode: this.FaustAudioWorkletNode }, true);
+                this.faustAdditionalObjects = DefaultImporter.import("faust", { FaustNode: this.FaustAudioWorkletNode }, true);
                 this.faust = faust;
             });
             await this.taskMgr.newTask(this, "Fetching Faust Standard Library...", async () => {
@@ -227,8 +227,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);
                 await this.pkgMgr.init();
-                const project = new Project(this, new PackageManager(this.pkgMgr, Importer));
-                this.currentProject = project;
                 const { projectZip } = urlParamsOptions;
                 if (projectZip) {
                     await this.fileMgr.init(true);
@@ -245,11 +243,15 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 }
                 await this.tempMgr.init();
             });
-            await this.taskMgr.newTask("Env", "Loading Worklet...", async () => {
+            await this.taskMgr.newTask(this, "Loading Worklet...", async () => {
                 const { audioWorklet } = this.audioCtx;
                 await WorkletEnvNode.register(audioWorklet);
                 this.envNode = new WorkletEnvNode(this.audioCtx, this);
                 await this.envNode.init();
+            });
+            await this.taskMgr.newTask(this, "Creating Project", async () => {
+                const project = new Project(this, new PackageManager(this.pkgMgr, DefaultImporter));
+                this.currentProject = project;
             });
             window.jspatcherEnv = this;
         });
@@ -320,7 +322,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     async newProject() {
         const oldProject = this.currentProject;
         await oldProject?.unload();
-        const project = new Project(this, new PackageManager(this.pkgMgr, Importer));
+        const project = new Project(this, new PackageManager(this.pkgMgr, DefaultImporter));
         this.currentProject = project;
         await project.load(true);
         this.emit("projectChanged", { project, oldProject });
@@ -334,7 +336,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         const oldProject = this.currentProject;
         await oldProject?.unload();
         await this.fileMgr.emptyProject();
-        const project = new Project(this, new PackageManager(this.pkgMgr, Importer));
+        const project = new Project(this, new PackageManager(this.pkgMgr, DefaultImporter));
         this.currentProject = project;
         await this.fileMgr.importFileZip(data, undefined, undefined, this);
         // await project.load();

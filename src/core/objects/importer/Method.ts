@@ -1,7 +1,7 @@
-import ImportedObject, { ImportedObjectUI } from "./ImportedObject";
-import { PropertyUI } from "./Property";
+import ImportedObject from "./ImportedObject";
 import Bang, { isBang } from "../base/Bang";
 import type { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
+import type { ImportedObjectType } from "../../types";
 
 type TAnyFunction = (...args: any[]) => any;
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; inputs: any[]; result: any };
@@ -14,6 +14,7 @@ interface P {
 }
 
 export default class Method<Static extends boolean = false> extends ImportedObject<TAnyFunction, S<Static>, I<Static>, O<Static>, any[], P, { loading: boolean }> {
+    static importedObjectType: ImportedObjectType = "Method";
     static description = "Auto-imported method";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
@@ -121,7 +122,6 @@ export default class Method<Static extends boolean = false> extends ImportedObje
         }
         return this.callback();
     }
-    static UI: typeof ImportedObjectUI = PropertyUI;
     set loading(loading: boolean) {
         this.updateUI({ loading });
     }

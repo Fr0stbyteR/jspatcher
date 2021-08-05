@@ -1,12 +1,10 @@
-import { ImportedObjectUI } from "./ImportedObject";
 import Property from "./Property";
 import { isBang } from "../base/Bang";
 import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
+import type { ImportedObjectType } from "../../types";
 
-export class StaticPropertyUI extends ImportedObjectUI<StaticProperty> {
-    prependColor = "rgb(156, 220, 254)";
-}
 export default class StaticProperty extends Property<true> {
+    static importedObjectType: ImportedObjectType = "StaticProperty";
     static description = "Auto-imported static property";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
@@ -44,5 +42,4 @@ export default class StaticProperty extends Property<true> {
         });
         this.on("inlet", this.handleInlet);
     }
-    static UI = StaticPropertyUI;
 }

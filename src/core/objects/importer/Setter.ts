@@ -1,13 +1,14 @@
-import ImportedObject, { ImportedObjectUI } from "./ImportedObject";
-import { PropertyUI } from "./Property";
+import ImportedObject from "./ImportedObject";
 import Bang, { isBang } from "../base/Bang";
 import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
+import type { ImportedObjectType } from "../../types";
 
 type S<Static extends boolean> = { instance: Static extends true ? undefined : any; input: any };
 type I<Static extends boolean> = Static extends true ? [any] : [any | Bang, any];
 type O<Static extends boolean> = Static extends true ? [] : [any];
 
 export default class Setter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [any], {}, {}> {
+    static importedObjectType: ImportedObjectType = "Setter";
     static description = "Auto-imported setter";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
@@ -58,5 +59,4 @@ export default class Setter<Static extends boolean = false> extends ImportedObje
         this.on("updateArgs", this.handleUpdateArgs);
         this.on("inlet", this.handleInlet);
     }
-    static UI: typeof ImportedObjectUI = PropertyUI;
 }

@@ -1,6 +1,6 @@
 import type { IPersistentProjectItemManager, ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
 import type { Task, TaskError } from "../TaskMgr";
-import type { PrefixKeys, TErrorLevel } from "../types";
+import type { PrefixKeys, TErrorLevel, TAbstractPackage } from "../types";
 
 export interface IWorkletEnvProcessor {
     thread: "AudioWorklet";
@@ -14,6 +14,7 @@ export interface IWorkletEnvNode extends PrefixKeys<Pick<IPersistentProjectItemM
     taskError(error: Pick<TaskError, "id" | "error">): void;
     taskEnd(task: Pick<Task, "id">): void;
     fileMgrDiff(diff: ProjectItemManagerDataForDiff): void;
+    addObjects(descriptors: TAbstractPackage, pkgName: string): void;
 }
 export interface WorkletEnvOptions {
     os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";

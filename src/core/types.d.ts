@@ -1,6 +1,6 @@
 import type { IJSPatcherObject } from "./objects/base/AbstractObject";
-import type Patcher from "./patcher/Patcher";
 import type { TPatcherProps, TPublicPatcherProps } from "./patcher/Patcher";
+import type Patcher from "./patcher/Patcher";
 import type Box from "./patcher/Box";
 import type Env from "./Env";
 import type WorkletEnvProcessor from "./worklets/WorkletEnv.worklet";
@@ -151,6 +151,15 @@ export interface TMaxClipboard {
         modernui: number;
     };
 }
+
+export type ImportedObjectType = `${"Static" | ""}Method` | `${"Static" | ""}SetterGetter` | `${"Static" | ""}Setter` | `${"Static" | ""}Getter` | `${"Static" | ""}Property`;
+export interface ObjectDescriptor {
+    isObjectDescriptor: true;
+    ctor: ImportedObjectType;
+    path: string[];
+    name: string;
+}
+export type TAbstractPackage = { [key: string]: ObjectDescriptor | TAbstractPackage };
 export type TPackage = { [key: string]: typeof IJSPatcherObject | TPackage };
 export type TFlatPackage = { [key: string]: typeof IJSPatcherObject };
 export type TAudioNodeInletConnection<T = AudioNode | AudioParam> = { node: T; index?: T extends AudioNode ? number : never };

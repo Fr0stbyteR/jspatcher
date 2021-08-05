@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow-restricted-names */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Importer from "./importer/Importer";
+import DefaultImporter from "../importer/DefaultImporter";
 /*
 const { // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
     // Lot of non-enumerables
@@ -80,7 +80,7 @@ const { // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Glo
     // WebAssembly
     WebAssembly
 } = window;*/
-const lib = Importer.import("window", window, true);
+const lib = DefaultImporter.import("globalThis", globalThis, true);
 // Importer.import("Window", { Array }, lib);
 
 export default lib;

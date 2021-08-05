@@ -1,17 +1,14 @@
 import StaticMethod from "./StaticMethod";
 import Method from "./Method";
-import DefaultObject from "../base/DefaultObject";
-import ImportedObject, { ImportedObjectUI } from "./ImportedObject";
-import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
+import BaseObject from "../base/BaseObject";
 import Bang, { isBang } from "../base/Bang";
+import type ImportedObject from "./ImportedObject";
+import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 
-class FuncUI extends ImportedObjectUI<Func> {
-    prependColor = "rgb(78, 201, 176)";
-}
 type TAnyFunction = (...args: any[]) => any;
 type TWrapper = typeof StaticMethod | typeof Method;
 type S = { Wrapper: TWrapper };
-export default class Func extends DefaultObject<{}, S, [Bang], [TAnyFunction], any[], {}, {}> {
+export default class Func extends BaseObject<{}, S, [Bang], [TAnyFunction], any[], {}, { loading: boolean }> {
     static description = "Get the function itself";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
@@ -28,7 +25,6 @@ export default class Func extends DefaultObject<{}, S, [Bang], [TAnyFunction], a
         varLength: false,
         description: "Function name"
     }];
-    static UI = FuncUI;
     state: S = { Wrapper: null };
     subscribe() {
         super.subscribe();

@@ -1,10 +1,11 @@
-import { StaticPropertyUI } from "./StaticProperty";
 import Method from "./Method";
 import { ImportedStaticMethodObject } from "../../../utils/symbols";
 import { isBang } from "../base/Bang";
 import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
+import type { ImportedObjectType } from "../../types";
 
 export default class StaticMethod extends Method<true> {
+    static importedObjectType: ImportedObjectType = "StaticMethod";
     static [ImportedStaticMethodObject] = true;
     static description = "Auto-imported static method";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
@@ -42,5 +43,4 @@ export default class StaticMethod extends Method<true> {
         }
     }
     callback = () => this.outletAll([this.state.result, ...this.state.inputs]);
-    static UI = StaticPropertyUI;
 }

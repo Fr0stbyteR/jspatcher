@@ -1,8 +1,10 @@
 import { ImporterDirSelfObject } from "../utils/symbols";
 import { isJSPatcherObjectConstructor } from "./objects/base/AbstractObject";
 import BaseObject from "./objects/base/BaseObject";
-import type { TPackage, PatcherMode } from "./types";
-import type { IJSPatcherEnv } from "./Env";
+import GlobalThis from "./objects/globalThis/index.jsdsppkg";
+import type { TPackage, PatcherMode, ObjectDescriptor, TAbstractPackage } from "./types";
+import type { AnyImportedObject } from "./objects/importer/ImportedObject";
+import type WorkletEnvProcessor from "./worklets/WorkletEnv.worklet";
 
 export default class WorkletGlobalPackageManager {
     js: TPackage;
@@ -10,17 +12,43 @@ export default class WorkletGlobalPackageManager {
     faust: TPackage;
     max: TPackage;
     gen: TPackage;
-    private readonly env: IJSPatcherEnv;
+    private readonly env: WorkletEnvProcessor;
     externals = new Map<string, Record<string, any>>();
-    constructor(envIn: IJSPatcherEnv) {
+    constructor(envIn: WorkletEnvProcessor) {
         this.env = envIn;
     }
     async init() {
         this.jsaw = {
-            Base: { BaseObject, EmptyObject: BaseObject, InvalidObject: BaseObject }
+            Base: { BaseObject, EmptyObject: BaseObject, InvalidObject: BaseObject },
+            globalThis: GlobalThis
+        };
+        await this.env.addObjects(this.getDescriptors(GlobalThis, "globalThis"), "globalThis");
+    }
+    toDescriptor(O: typeof AnyImportedObject, pkgName: string): ObjectDescriptor {
+        const { path } = O;
+        return {
+            isObjectDescriptor: true as const,
+            ctor: O.importedObjectType,
+            path,
+            name: path[path.length - 1] || pkgName
         };
     }
-    private add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
+    getDescriptors(pkgIn = this.jsaw.globalThis, pkgName = "globalThis") {
+        const $self = "__JSPatcher_Importer_ImporterDirSelfObject";
+        const pkg = Object.entries(pkgIn).reduce((acc, [k, v]) => {
+            if (typeof v === "function") {
+                const descriptor = this.toDescriptor(v, pkgName);
+                if (k as any === ImporterDirSelfObject) acc[$self] = descriptor;
+                else acc[k] = descriptor;
+            } else {
+                acc[k] = this.getDescriptors(v, pkgName);
+            }
+            return acc;
+        }, {} as TAbstractPackage);
+        if (ImporterDirSelfObject in pkgIn) pkg[$self] = this.toDescriptor((pkgIn as any)[ImporterDirSelfObject], pkgName);
+        return pkg;
+    }
+    add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();
         let pkg = this[lib];
         while (path.length) {

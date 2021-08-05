@@ -12,7 +12,7 @@ const processorId = "__JSPatcher_Patcher";
 export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPatcherProcessor, PatcherParameters, PatcherOptions> implements IPatcherNode {
     static processorId = processorId;
     static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorId, processorURL);
-    static fnNames: (keyof IPatcherProcessor)[] = ["init", "fn", "sync", "objectEmit"];
+    static fnNames: (keyof IPatcherProcessor)[] = ["init", "fn", "sync", "objectEmit", "destroy"];
     readonly patcher: Patcher;
     constructor(context: BaseAudioContext, options: { env: IJSPatcherEnv; instanceId: string; fileId?: string; data?: RawPatcher }) {
         super(context, processorId, {
@@ -24,6 +24,11 @@ export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPa
         this.patcher.on("changed", this.handleChanged);
         this.patcher.on("inlet", this.handleInlet);
         this.patcher.on("destroy", this.handleDestroy);
+        const _destroy = this.destroy;
+        this.destroy = async () => {
+            await _destroy.call(this);
+            this._disposed = true;
+        };
     }
     handleChanged = () => {
         const syncData = this.patcher.history.getSyncData();

@@ -1,9 +1,10 @@
 import Getter from "./Getter";
-import { StaticPropertyUI } from "./StaticProperty";
 import { isBang } from "../base/Bang";
 import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
+import type { ImportedObjectType } from "../../types";
 
 export default class StaticGetter extends Getter<true> {
+    static importedObjectType: ImportedObjectType = "StaticGetter";
     static description = "Auto-imported static getter";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
@@ -31,5 +32,4 @@ export default class StaticGetter extends Getter<true> {
         }
     }
     callback = () => this.outlet(0, this.state.result);
-    static UI = StaticPropertyUI;
 }
