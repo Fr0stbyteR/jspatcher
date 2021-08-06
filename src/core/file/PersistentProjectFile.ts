@@ -118,7 +118,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
             image: (await import("../image/PatcherImage")).default,
             text: (await import("../text/PatcherText")).default,
             video: undefined,
-            unknown: undefined
+            unknown: (await import("../text/PatcherText")).default
         }[type];
         if (Constructor) return Constructor.fromProjectItem({ file: this as any, env, project, instanceId }) as Promise<IFileInstance>;
         throw new Error("Not implemented.");
@@ -131,7 +131,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
             image: (await import("../image/ImageEditor")).default,
             text: (await import("../text/TextEditor")).default,
             video: undefined,
-            unknown: undefined
+            unknown: (await import("../text/TextEditor")).default
         }[type];
         if (Constructor) return Constructor.fromProjectItem({ file: this as any, env, project, instanceId }) as Promise<IFileEditor>;
         throw new Error("Not implemented.");

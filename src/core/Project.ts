@@ -1,6 +1,8 @@
 import TypedEventEmitter from "../utils/TypedEventEmitter";
+import { ab2str, str2ab } from "../utils/utils";
 import type Env from "./Env";
 import type FileInstance from "./file/FileInstance";
+import type PersistentProjectFile from "./file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "./Env";
 import type { IPropsMeta } from "./objects/base/AbstractObject";
 import type { IPackageManager } from "./PkgMgr";
@@ -45,6 +47,7 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
             default: "0.0.0"
         }
     };
+    readonly projectFilename = ".jspatproj";
     readonly env: IJSPatcherEnv;
     readonly pkgMgr: IPackageManager;
     readonly instances: FileInstance[];
@@ -77,6 +80,17 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
     }
     async load(clean = false) {
         await this.env.fileMgr.init(clean);
+        await this.init();
+    }
+    async init() {
+        try {
+            const item = this.env.fileMgr.getProjectItemFromPath(`./${this.projectFilename}`) as PersistentProjectFile;
+            const json = JSON.parse(ab2str(item.data)) as ProjectProps;
+            this.setProps(json);
+        } catch (error) {
+            const data = str2ab(JSON.stringify(this.props));
+            await this.env.fileMgr.projectRoot.addFile(this.projectFilename, data);
+        }
     }
     async unload() {
         for (const i of this.env.instances) {

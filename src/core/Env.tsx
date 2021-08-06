@@ -252,6 +252,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             await this.taskMgr.newTask(this, "Creating Project", async () => {
                 const project = new Project(this, new PackageManager(this.pkgMgr, DefaultImporter));
                 this.currentProject = project;
+                await project.init();
             });
             window.jspatcherEnv = this;
         });
@@ -339,7 +340,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         const project = new Project(this, new PackageManager(this.pkgMgr, DefaultImporter));
         this.currentProject = project;
         await this.fileMgr.importFileZip(data, undefined, undefined, this);
-        // await project.load();
+        await project.init();
         this.emit("projectChanged", { project, oldProject });
         return project;
     }

@@ -78,7 +78,7 @@ export default class WorkletEnvNode extends AudioWorkletProxyNode<IWorkletEnvNod
         this.dispatchEvent(new CustomEvent("taskEnd", { detail: task }));
     }
     async fileMgrReadFile(path: string) {
-        const item = this.env.fileMgr.getProjectItemFromPath(path.replace(/^\/project/, "")) as PersistentProjectFile | PersistentProjectFolder;
+        const item = this.env.fileMgr.getProjectItemFromPath(path.replace(new RegExp(`^/${this.env.fileMgr.projectFolderName}`), "")) as PersistentProjectFile | PersistentProjectFolder;
         if (item.isFolder === false) return item.sab;
         return null;
     }

@@ -260,7 +260,7 @@ export default class ProjectItemUI extends React.PureComponent<P, S> {
             } else {
                 const path = (parent.firstChild as HTMLElement).getAttribute("data-id");
                 if (!path) this.props.onMoveTo();
-                else this.props.onMoveTo(this.props.item, this.props.env.fileMgr.getProjectItemFromPath(path.replace(/^\/project/, "")) as IProjectFolder);
+                else this.props.onMoveTo(this.props.item, this.props.env.fileMgr.getProjectItemFromPath(path.replace(new RegExp(`^/${this.props.env.fileMgr.projectFolderName}`), "")) as IProjectFolder);
             }
         };
         document.addEventListener("mousemove", handleMouseMove);

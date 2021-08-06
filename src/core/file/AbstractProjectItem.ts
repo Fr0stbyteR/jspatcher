@@ -67,7 +67,7 @@ export default abstract class AbstractProjectItem<EventMap extends Partial<Proje
         return this.parent?.path;
     }
     get projectPath() {
-        return this.path.replace(/^\/project/, "");
+        return this.path.replace(new RegExp(`^/${this._fileMgr.projectFolderName}`), "");
     }
     protected readonly _observers = new Set<string>();
     async addObserver(observer: string) {

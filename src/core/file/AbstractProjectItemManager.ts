@@ -26,6 +26,7 @@ export interface ProjectItemManagerEventMap {
 }
 
 export interface IProjectItemManager<EventMap extends Record<string, any> & Partial<ProjectItemManagerEventMap> = {}> extends ITypedEventEmitter<EventMap & ProjectItemManagerEventMap> {
+    readonly projectFolderName: string;
     readonly id: string;
     readonly taskMgr: TaskMgr;
     readonly allItems: Record<string, IProjectFileOrFolder>;
@@ -48,7 +49,7 @@ export interface IProjectItemManager<EventMap extends Record<string, any> & Part
 }
 
 export default abstract class AbstractProjectItemManager<EventMap extends Record<string, any> & Partial<ProjectItemManagerEventMap> = {}> extends TypedEventEmitter<EventMap & ProjectItemManagerEventMap> implements IProjectItemManager<EventMap> {
-    static projectFolderName = "project";
+    readonly projectFolderName = "project";
     readonly id: string;
     readonly env: IJSPatcherEnv;
     readonly taskMgr: TaskMgr;
@@ -126,7 +127,7 @@ export default abstract class AbstractProjectItemManager<EventMap extends Record
         this.emit("changed");
     }
     get projectRoot() {
-        return this.root.findItem(AbstractProjectItemManager.projectFolderName) as IProjectFolder;
+        return this.root.findItem(this.projectFolderName) as IProjectFolder;
     }
     generateItemId(item: IProjectItem) {
         return this.env.generateId(item);

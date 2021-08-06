@@ -23,7 +23,7 @@ export default class WorkletProjectItemManager extends AbstractProjectItemManage
         this.cachedPathIdMap = await this.env.fileMgrGetPathIdMap();
         this.root = new PersistentProjectFolder(this, null, null);
         await this.root.init();
-        if (!this.projectRoot) await this.root.addFolder(AbstractProjectItemManager.projectFolderName);
+        if (!this.projectRoot) await this.root.addFolder(this.projectFolderName);
         this.emit("ready");
         return this;
     }

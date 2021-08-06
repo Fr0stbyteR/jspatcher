@@ -11,6 +11,7 @@ import type { IProjectItem } from "./AbstractProjectItem";
 export type ProjectItemManagerDataForDiff = Record<string, { isFolder: true; parent: string; name: string; path: string } | { isFolder: false; data: SharedArrayBuffer; lastModifiedId: string; parent: string; name: string; path: string }>;
 
 export interface IPersistentProjectItemManager extends IProjectItemManager {
+    readonly projectRoot: IProjectFolder;
     /** Read file data from backend */
     readFile(path: string): Promise<ArrayBuffer>;
     /** Read folder data from backend */
@@ -37,7 +38,7 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
     workerInited = false;
     cachedPathIdMap: Record<string, string> = {};
     get projectRoot() {
-        return this.root.findItem(AbstractProjectItemManager.projectFolderName) as IProjectFolder;
+        return this.root.findItem(this.projectFolderName) as IProjectFolder;
     }
     constructor(envIn: IJSPatcherEnv, worker?: FileMgrWorker) {
         super(envIn);
@@ -55,7 +56,7 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
         if (clean) await this.worker.empty();
         this.root = new PersistentProjectFolder(this, null, null);
         await this.root.init();
-        if (!this.projectRoot) await this.root.addFolder(AbstractProjectItemManager.projectFolderName);
+        if (!this.projectRoot) await this.root.addFolder(this.projectFolderName);
         this.emit("ready");
         return this;
     }
