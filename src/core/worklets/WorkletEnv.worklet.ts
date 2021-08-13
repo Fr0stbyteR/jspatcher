@@ -6,10 +6,7 @@ import WorkletProjectItemManager from "../file/WorkletProjectItemManager";
 import WorkletGlobalPackageManager from "../WorkletGlobalPackageManager";
 import Project from "../Project";
 import PackageManager from "../PkgMgr";
-import BaseObject from "../objects/base/BaseObject";
-import Patcher from "../patcher/Patcher";
-import Box from "../patcher/Box";
-import Line from "../patcher/Line";
+import JSPatcherWorkletSDK from "../WorkletSDK";
 import type { WorkletEnvParameters, IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvOptions } from "./WorkletEnv.types";
 import type { AudioWorkletGlobalScope, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
 import type { Task, TaskError } from "../TaskMgr";
@@ -35,7 +32,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     readonly fileMgr: WorkletProjectItemManager;
     readonly tempMgr: TemporaryProjectItemManager;
     readonly pkgMgr: WorkletGlobalPackageManager;
-    readonly sdk = { BaseObject, Patcher, Box, Line };
+    readonly sdk = new JSPatcherWorkletSDK();
     currentProject: Project;
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
         super(options);

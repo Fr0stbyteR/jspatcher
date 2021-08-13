@@ -40,8 +40,9 @@ export default class AudioOut extends BaseObject<{}, {}, [], [number, number], [
         });
         this.on("postInit", this.emitPatcherChangeIO);
         this.on("updateArgs", () => {
-            if (this.index !== this._.index) {
-                this._.index = this.index;
+            const { index } = this;
+            if (index !== this._.index) {
+                this._.index = index;
                 this.patcher.changeIO();
             }
         });

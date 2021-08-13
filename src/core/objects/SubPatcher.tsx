@@ -11,271 +11,9 @@ import PatcherEditor from "../patcher/PatcherEditor";
 import BaseUI, { BaseUIState } from "./base/BaseUI";
 import type { ProjectFileEventMap } from "../file/AbstractProjectFile";
 import "./SubPatcher.scss";
-import { TAudioNodeOutletConnection, TAudioNodeInletConnection, RawPatcher, PatcherMode } from "../types";
-import { TMetaType, IJSPatcherObjectMeta } from "./base/AbstractObject";
+import { RawPatcher, PatcherMode } from "../types";
+import { IJSPatcherObjectMeta } from "./base/AbstractObject";
 import DefaultPopupUI, { DefaultPopupUIState, DefaultPopupUIProps } from "./base/DefaultPopupUI";
-
-export class In extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
-    static package = "SubPatcher";
-    static description = "Patcher inlet (data)";
-    static args: IJSPatcherObjectMeta["args"] = [{
-        type: "number",
-        optional: false,
-        default: 1,
-        description: "Inlet index (1-based)"
-    }];
-    static props: IJSPatcherObjectMeta["props"] = {
-        description: {
-            type: "string",
-            default: "",
-            description: "Description text"
-        },
-        type: {
-            type: "enum",
-            enums: ["string", "number", "boolean", "object", "function", "anything", "bang", "color"],
-            default: "anything",
-            description: "Inlet data type"
-        }
-    };
-    static outlets: IJSPatcherObjectMeta["outlets"] = [{
-        type: "anything",
-        description: ""
-    }];
-    state = { index: undefined as number };
-    handlePatcherInlet = ({ data, inlet }: PatcherEventMap["dataInput"]) => {
-        if (inlet === this.state.index - 1) this.outlet(0, data);
-    };
-    subscribe() {
-        super.subscribe();
-        this.on("metaUpdated", () => this.patcher.changeIO());
-        this.on("preInit", () => {
-            this.inlets = 0;
-            this.outlets = 1;
-        });
-        this.on("postInit", () => this.patcher.changeIO());
-        this.on("updateArgs", (args) => {
-            const $ = Math.max(1, ~~args[0]);
-            if ($ !== this.state.index) {
-                this.state.index = $;
-                this.box.args[0] = $;
-                this.patcher.changeIO();
-            }
-        });
-        this.on("updateProps", (props) => {
-            const { meta } = this;
-            if (typeof props.description === "string") meta.outlets[0].description = props.description;
-            if (typeof props.type === "string") meta.outlets[0].type = props.type || "anything";
-            this.setMeta(meta);
-        });
-        this.patcher.on("inlet", this.handlePatcherInlet);
-        this.on("destroy", () => {
-            this.patcher.off("inlet", this.handlePatcherInlet);
-            this.patcher.changeIO();
-        });
-    }
-}
-
-export class Out extends DefaultObject<{}, { index: number }, [any], [], [number], { description: string; type: Exclude<TMetaType, "signal" | "enum"> }> {
-    static package = "SubPatcher";
-    static description = "Patcher outlet (data)";
-    static args: IJSPatcherObjectMeta["args"] = [{
-        type: "number",
-        optional: false,
-        default: 1,
-        description: "Outlet index (1-based)"
-    }];
-    static props: IJSPatcherObjectMeta["props"] = {
-        description: {
-            type: "string",
-            default: "",
-            description: "Description text"
-        },
-        type: {
-            type: "enum",
-            enums: ["string", "number", "boolean", "object", "function", "anything", "bang", "color"],
-            default: "anything",
-            description: "Outlet data type"
-        }
-    };
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
-        type: "anything",
-        description: "",
-        isHot: true
-    }];
-    state = { index: undefined as number };
-    subscribe() {
-        super.subscribe();
-        this.on("metaUpdated", () => this.patcher.changeIO());
-        this.on("preInit", () => {
-            this.inlets = 1;
-            this.outlets = 0;
-        });
-        this.on("postInit", () => this.patcher.changeIO());
-        this.on("updateArgs", (args) => {
-            const $ = Math.max(1, ~~args[0]);
-            if ($ !== this.state.index) {
-                this.state.index = $;
-                this.box.args[0] = $;
-                this.patcher.changeIO();
-            }
-        });
-        this.on("updateProps", (props) => {
-            const { meta } = this;
-            if (typeof props.description === "string") meta.inlets[0].description = props.description;
-            if (typeof props.type === "string") meta.inlets[0].type = props.type || "anything";
-            this.setMeta(meta);
-        });
-        this.on("inlet", ({ data, inlet }) => {
-            if (inlet === 0) this.patcher.outlet(this.state.index - 1, data);
-        });
-        this.on("destroy", () => {
-            this.patcher.changeIO();
-        });
-    }
-}
-
-export class AudioIn extends DefaultObject<{}, { index: number }, [], [any], [number], { description: string }> {
-    static package = "SubPatcher";
-    static description = "Patcher inlet (audio)";
-    static args: IJSPatcherObjectMeta["args"] = [{
-        type: "number",
-        optional: false,
-        default: 1,
-        description: "Inlet index (1-based)"
-    }];
-    static props: IJSPatcherObjectMeta["props"] = {
-        description: {
-            type: "string",
-            default: "",
-            description: "Description text"
-        }
-    };
-    static outlets: IJSPatcherObjectMeta["outlets"] = [{
-        type: "signal",
-        description: ""
-    }];
-    outletAudioConnections: TAudioNodeOutletConnection[] = [{ node: undefined as GainNode, index: 0 }];
-    _duringInit = true;
-    state = { index: undefined as number };
-    subscribe() {
-        super.subscribe();
-        this.on("metaUpdated", () => this.patcher.changeIO());
-        this.on("preInit", () => {
-            this.inlets = 0;
-            this.outlets = 1;
-        });
-        this.on("postInit", () => {
-            this._duringInit = false;
-            this.connectAudio();
-            this.patcher.changeIO();
-            this.patcher.connectAudioInlet(this.state.index - 1);
-            this.patcher.inspectAudioIO();
-        });
-        this.on("updateArgs", (args) => {
-            const $ = Math.max(1, ~~args[0]);
-            if ($ !== this.state.index) {
-                this.patcher.disconnectAudioInlet(this.state.index);
-                this.disconnectAudio();
-                this.state.index = $;
-                this.box.args[0] = $;
-                if (!this.patcher.inletAudioConnections[$ - 1]) {
-                    const node = this.audioCtx.createGain();
-                    node.channelInterpretation = "discrete";
-                    this.patcher.inletAudioConnections[$ - 1] = { node, index: 0 };
-                }
-                const { node } = this.patcher.inletAudioConnections[$ - 1];
-                this.outletAudioConnections[0].node = node;
-                if (!this._duringInit) {
-                    this.connectAudio();
-                    this.patcher.changeIO();
-                    this.patcher.connectAudioInlet($ - 1);
-                    this.patcher.inspectAudioIO();
-                }
-            }
-        });
-        this.on("updateProps", (props) => {
-            const { meta } = this;
-            if (typeof props.description === "string") meta.outlets[0].description = props.description;
-            this.setMeta(meta);
-        });
-        this.on("destroy", () => {
-            this.patcher.inspectAudioIO();
-            this.patcher.changeIO();
-        });
-    }
-}
-
-export class AudioOut extends DefaultObject<{}, { index: number }, [any], [], [number], { description: string }> {
-    static package = "SubPatcher";
-    static description = "Patcher outlet (audio)";
-    static args: IJSPatcherObjectMeta["args"] = [{
-        type: "number",
-        optional: false,
-        default: 1,
-        description: "Outlet index (1-based)"
-    }];
-    static props: IJSPatcherObjectMeta["props"] = {
-        description: {
-            type: "string",
-            default: "",
-            description: "Description text"
-        }
-    };
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
-        type: "signal",
-        description: "",
-        isHot: true
-    }];
-    inletAudioConnections: TAudioNodeInletConnection[] = [{ node: undefined as GainNode, index: 0 }];
-    _duringInit = true;
-    state = { index: undefined as number };
-    subscribe() {
-        super.subscribe();
-        this.on("metaUpdated", () => this.patcher.changeIO());
-        this.on("preInit", () => {
-            this.inlets = 1;
-            this.outlets = 0;
-        });
-        this.on("postInit", () => {
-            this._duringInit = false;
-            this.connectAudio();
-            this.patcher.changeIO();
-            this.patcher.connectAudioInlet(this.state.index - 1);
-            this.patcher.inspectAudioIO();
-        });
-        this.on("updateArgs", (args) => {
-            const $ = Math.max(1, ~~args[0]);
-            if ($ !== this.state.index) {
-                this.patcher.disconnectAudioOutlet(this.state.index);
-                this.disconnectAudio();
-                this.state.index = $;
-                this.box.args[0] = $;
-                if (!this.patcher.outletAudioConnections[$ - 1]) {
-                    const node = this.audioCtx.createGain();
-                    node.channelInterpretation = "discrete";
-                    this.patcher.outletAudioConnections[$ - 1] = { node, index: 0 };
-                }
-                const { node } = this.patcher.outletAudioConnections[$ - 1];
-                this.inletAudioConnections[0].node = node;
-                if (!this._duringInit) {
-                    this.connectAudio();
-                    this.patcher.changeIO();
-                    this.patcher.connectAudioOutlet($ - 1);
-                    this.patcher.inspectAudioIO();
-                }
-            }
-        });
-        this.on("updateProps", (props) => {
-            const { meta } = this;
-            if (typeof props.description === "string") meta.outlets[0].description = props.description;
-            this.setMeta(meta);
-        });
-        this.on("destroy", () => {
-            this.patcher.inspectAudioIO();
-            this.patcher.changeIO();
-        });
-    }
-}
 
 interface SubPatcherUIState {
     patcher: Patcher;
@@ -376,7 +114,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
     type: PatcherMode = "js";
     subscribe() {
         super.subscribe();
-        const handlePatcherOutlet = ({ outlet, data }: PatcherEventMap["dataOutput"]) => this.outlet(outlet, data);
+        const handlePatcherOutput = ({ outlet, data }: PatcherEventMap["dataOutput"]) => this.outlet(outlet, data);
         const handlePatcherDisconnectAudioInlet = (port: number) => this.disconnectAudioInlet(port);
         const handlePatcherDisconnectAudioOutlet = (port: number) => this.disconnectAudioOutlet(port);
         const handlePatcherConnectAudioInlet = (port: number) => this.connectAudioInlet(port);
@@ -411,7 +149,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
             const { patcher } = this.state;
             if (patcher) {
                 await patcher.addObserver(this);
-                patcher.on("outlet", handlePatcherOutlet);
+                patcher.on("dataOutput", handlePatcherOutput);
                 patcher.on("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
                 patcher.on("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
                 patcher.on("connectAudioInlet", handlePatcherConnectAudioInlet);
@@ -431,7 +169,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
         const unsubscribePatcher = async () => {
             const { patcher } = this.state;
             if (patcher) {
-                patcher.off("outlet", handlePatcherOutlet);
+                patcher.off("dataOutput", handlePatcherOutput);
                 patcher.off("disconnectAudioInlet", handlePatcherDisconnectAudioInlet);
                 patcher.off("disconnectAudioOutlet", handlePatcherDisconnectAudioOutlet);
                 patcher.off("connectAudioInlet", handlePatcherConnectAudioInlet);
@@ -711,10 +449,6 @@ export class bpatcher extends patcher {
 }
 
 export default {
-    in: In,
-    out: Out,
-    "in~": AudioIn,
-    "out~": AudioOut,
     patcher,
     p: patcher,
     faustPatcher,
