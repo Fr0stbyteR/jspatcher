@@ -3,7 +3,7 @@ import { ImporterDirSelfObject } from "../utils/symbols";
 import { isJSPatcherObjectConstructor, IJSPatcherObject } from "./objects/base/AbstractObject";
 import type ObjectImporter from "./objects/importer/Importer";
 import type { TFlatPackage, TPackage, PatcherMode } from "./types";
-import type GlobalPackageManager from "./GlobalPkgMgr";
+import type GlobalPackageManager from "./GlobalPackageManager";
 
 export interface PackageManagerEventMap {
     "libChanged": PatcherMode;

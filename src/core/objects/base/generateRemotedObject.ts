@@ -1,5 +1,6 @@
 import type BaseObject from "./BaseObject";
 
+/** Generate an object that can be used in the AudioWorklet as remoted. */
 export default <
     D extends {} = {},
     S extends {} = {},

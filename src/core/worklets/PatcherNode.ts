@@ -18,6 +18,9 @@ export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPa
         super(context, processorId, {
             numberOfInputs: 1,
             numberOfOutputs: 1,
+            channelCount: 16,
+            channelCountMode: "explicit",
+            channelInterpretation: "discrete",
             processorOptions: { instanceId: options.instanceId, fileId: options.fileId, data: options.data }
         });
         this.patcher = options.env.getInstanceById(options.instanceId) as Patcher;
@@ -34,7 +37,7 @@ export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPa
         const syncData = this.patcher.history.getSyncData();
         this.sync(syncData);
     };
-    handleInlet = (e: PatcherEventMap["inlet"]) => this.fn(e.data, e.inlet);
+    handleInlet = (e: PatcherEventMap["dataInput"]) => this.fn(e.data, e.inlet);
     handleDestroy = () => this.destroy();
     outlet(port: number, data: any) {
         this.patcher.outlet(port, data);

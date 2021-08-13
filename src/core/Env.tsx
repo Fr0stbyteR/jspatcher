@@ -9,7 +9,7 @@ import { EnvOptions, TErrorLevel, TPackage, TPatcherLog } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
 import DefaultImporter from "./objects/importer/DefaultImporter";
 import PackageManager from "./PkgMgr";
-import GlobalPackageManager from "./GlobalPkgMgr";
+import GlobalPackageManager from "./GlobalPackageManager";
 import PersistentProjectItemManager, { IPersistentProjectItemManager } from "./file/PersistentProjectItemManager";
 import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
 import FileMgrWorker from "./workers/FileMgrWorker";

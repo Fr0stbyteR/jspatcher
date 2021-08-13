@@ -560,8 +560,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         if (type === "se" || type === "s" || type === "sw") delta.y = Math.max(delta.y, 15 - height);
         if (type === "nw" || type === "n" || type === "ne") delta.y = Math.min(delta.y, height - 15);
         boxes.forEach((box) => {
-            const sizingX = box.UI.sizing === "horizontal" || box.UI.sizing === "both";
-            const sizingY = box.UI.sizing === "vertical" || box.UI.sizing === "both";
+            const sizingX = box.UI ? box.UI?.sizing === "horizontal" || box.UI?.sizing === "both" : true;
+            const sizingY = box.UI ? box.UI?.sizing === "vertical" || box.UI?.sizing === "both" : true;
             if (delta.x && sizingX) {
                 if (type === "ne" || type === "e" || type === "se") (box[rectKey] as TRect)[2] += delta.x;
                 if (type === "sw" || type === "w" || type === "nw") {

@@ -3,7 +3,7 @@ import TaskManager from "../TaskMgr";
 import TemporaryProjectItemManager from "../file/TemporaryProjectItemManager";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import WorkletProjectItemManager from "../file/WorkletProjectItemManager";
-import WorkletGlobalPackageManager from "../WorkletGlobalPkgMgr";
+import WorkletGlobalPackageManager from "../WorkletGlobalPackageManager";
 import Project from "../Project";
 import PackageManager from "../PkgMgr";
 import BaseObject from "../objects/base/BaseObject";

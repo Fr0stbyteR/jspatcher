@@ -42,7 +42,7 @@ export class In extends DefaultObject<{}, { index: number }, [], [any], [number]
         description: ""
     }];
     state = { index: undefined as number };
-    handlePatcherInlet = ({ data, inlet }: PatcherEventMap["inlet"]) => {
+    handlePatcherInlet = ({ data, inlet }: PatcherEventMap["dataInput"]) => {
         if (inlet === this.state.index - 1) this.outlet(0, data);
     };
     subscribe() {
@@ -376,7 +376,7 @@ export class patcher extends DefaultObject<Partial<RawPatcher>, SubPatcherState,
     type: PatcherMode = "js";
     subscribe() {
         super.subscribe();
-        const handlePatcherOutlet = ({ outlet, data }: PatcherEventMap["outlet"]) => this.outlet(outlet, data);
+        const handlePatcherOutlet = ({ outlet, data }: PatcherEventMap["dataOutput"]) => this.outlet(outlet, data);
         const handlePatcherDisconnectAudioInlet = (port: number) => this.disconnectAudioInlet(port);
         const handlePatcherDisconnectAudioOutlet = (port: number) => this.disconnectAudioOutlet(port);
         const handlePatcherConnectAudioInlet = (port: number) => this.connectAudioInlet(port);

@@ -57,7 +57,7 @@ export interface IJSPatcherObjectMeta<P extends Record<string, any> = Record<str
     outlets: IOutletsMeta;
     args: IArgsMeta;
     props: IPropsMeta<P>;
-    isPatcherInlet: "data" | "audio" | false;
+    isPatcherInlet: "data" | "audio" | "parameter" | false;
     isPatcherOutlet: "data" | "audio" | false;
 }
 

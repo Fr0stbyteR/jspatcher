@@ -1,8 +1,7 @@
 import { ImporterDirSelfObject } from "../utils/symbols";
 import { isJSPatcherObjectConstructor } from "./objects/base/AbstractObject";
-import getBase from "./objects/base/index.jsdsppkg";
+import getBase from "./objects/base/index.jsdsppkg.aw";
 import getGlobalThis from "./objects/globalThis/index.jsdsppkg";
-import { Func, New } from "./objects/importer/RemotedImporter";
 import type { TPackage, PatcherMode, ObjectDescriptor, TAbstractPackage } from "./types";
 import type { AnyImportedObject } from "./objects/importer/ImportedObject";
 import type WorkletEnvProcessor from "./worklets/WorkletEnv.worklet";
@@ -20,7 +19,7 @@ export default class WorkletGlobalPackageManager {
     }
     async init() {
         this.jsaw = {
-            Base: { ...await getBase(), func: Func, new: New },
+            Base: await getBase(),
             globalThis: await getGlobalThis()
         };
         await this.env.addObjects(this.getDescriptors(this.jsaw.globalThis, "globalThis"), "globalThis");

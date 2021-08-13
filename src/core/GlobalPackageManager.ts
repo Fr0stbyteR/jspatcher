@@ -16,11 +16,7 @@ export default class GlobalPackageManager {
     }
     async init() {
         this.js = {
-            Base: {
-                ...await (await import("./objects/base/index.jspatpkg")).default(),
-                func: (await import("./objects/importer/DefaultImporter")).Func,
-                new: (await import("./objects/importer/DefaultImporter")).New
-            },
+            Base: await (await import("./objects/base/index.jspatpkg")).default(),
             globalThis: await (await import("./objects/globalThis/index.jspatpkg")).default()/* ,
             Std: (await import("./objects/Std")).default,
             new: (await import("./objects/importer/New")).default,
@@ -37,11 +33,7 @@ export default class GlobalPackageManager {
             SubPatcher: (await import("./objects/SubPatcher")).default*/
         };
         this.jsaw = {
-            Base: {
-                ...await (await import("./objects/base/index.jspatpkg")).default(),
-                func: (await import("./objects/importer/RemoteImporter")).Func,
-                new: (await import("./objects/importer/RemoteImporter")).New
-            }
+            Base: await (await import("./objects/base/index.jsdsppkg.main")).default()
         };
         /*
         this.jsaw = await (await import("./objects/JSAW")).default();

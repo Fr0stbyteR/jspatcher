@@ -55,8 +55,11 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "graphChanged": never;
     "changed": never;
     "ioChanged": IJSPatcherObjectMeta;
-    "inlet": TInletEvent<any[]>;
-    "outlet": TOutletEvent<any[]>;
+    "dataInput": TInletEvent<any[]>;
+    "dataOutput": TOutletEvent<any[]>;
+    "audioInput": { input: number; index: number; sample: number };
+    "paramInput": { param: string; index: number; sample: number };
+    "audioOutput": { output: number; index: number; sample: number };
     "disconnectAudioInlet": number;
     "disconnectAudioOutlet": number;
     "connectAudioInlet": number;
@@ -466,10 +469,19 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         return result;
     }
     fn(data: any, inlet: number) {
-        this.emit("inlet", { data, inlet });
+        this.emit("dataInput", { data, inlet });
+    }
+    inputAudio(input: number, index: number, sample: number) {
+        this.emit("audioInput", { input, index, sample });
+    }
+    inputParam(param: string, index: number, sample: number) {
+        this.emit("paramInput", { param, index, sample });
+    }
+    outputAudio(output: number, index: number, sample: number) {
+        this.emit("audioOutput", { output, index, sample });
     }
     outlet(outlet: number, data: any) {
-        this.emit("outlet", { data, outlet });
+        this.emit("dataOutput", { data, outlet });
     }
     get inletAudioConnections() {
         return this._inletAudioConnections;
@@ -493,20 +505,24 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.emit("ioChanged", this.meta);
     }
     inspectAudioIO() {
-        const iMap: boolean[] = [];
-        const oMap: boolean[] = [];
+        const inputBoxes: Box[] = [];
+        const outputBoxes: Box[] = [];
+        const parametersBoxes: [string, Box][] = [];
         for (const boxId in this.boxes) {
             const box = this.boxes[boxId];
-            const port = Math.max(1, ~~box.args[0]) - 1;
-            if (box.meta.isPatcherInlet === "audio") iMap[port] = true;
-            else if (box.meta.isPatcherOutlet === "audio") oMap[port] = true;
+            const arg0 = box.args[0];
+            const port = Math.max(1, ~~arg0) - 1;
+            if (box.meta.isPatcherInlet === "audio") inputBoxes[port] = box;
+            else if (box.meta.isPatcherInlet === "parameter") parametersBoxes.push([arg0, box]);
+            else if (box.meta.isPatcherOutlet === "audio") outputBoxes[port] = box;
         }
         for (let i = 0; i < this._inletAudioConnections.length; i++) {
-            if (!iMap[i]) delete this._inletAudioConnections[i];
+            if (!inputBoxes[i]) delete this._inletAudioConnections[i];
         }
         for (let i = 0; i < this._outletAudioConnections.length; i++) {
-            if (!oMap[i]) delete this._outletAudioConnections[i];
+            if (!outputBoxes[i]) delete this._outletAudioConnections[i];
         }
+        return { inputBoxes, outputBoxes, parametersBoxes };
     }
     get meta(): IJSPatcherObjectMeta {
         const { metaFromPatcher } = this;
@@ -529,7 +545,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             const box = this.boxes[boxId] as Box<IJSPatcherObject<any, any, any[], any[], any[], { description: string; type: TMetaType }>>;
             const port = Math.max(1, ~~box.args[0]) - 1;
             const description = box.props.description || "";
-            if (box.meta.isPatcherInlet === "data") {
+            if (box.meta.isPatcherInlet === "data" && !inlets[port]) {
                 inlets[port] = {
                     isHot: true,
                     type: box.props.type || "anything",
@@ -541,7 +557,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                     type: "signal",
                     description
                 };
-            } else if (box.meta.isPatcherOutlet === "data") {
+            } else if (box.meta.isPatcherOutlet === "data" && !outlets[port]) {
                 outlets[port] = {
                     type: box.props.type || "anything",
                     description

@@ -2,6 +2,7 @@ import generateDefaultObject from "./generateDefaultObject";
 import type BaseObject from "./BaseObject";
 import type { RemoteEventMap } from "./RemoteObject";
 
+/** Generate an object that can be used in the main thread to remote an AudioWorklet object. */
 export default <
     D extends {} = {},
     S extends {} = {},
