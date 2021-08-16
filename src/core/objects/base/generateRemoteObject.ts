@@ -22,5 +22,10 @@ export default <
             this.inlets = inlets;
             this.outlets = outlets;
         });
+        this.offAll("inlet");
+    }
+    outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]) {
+        if (outlet >= this.outlets) return;
+        this.proxy.objectEmit(this.box.id, "outlet", { outlet, data });
     }
 };

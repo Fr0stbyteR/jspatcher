@@ -52,7 +52,7 @@ export default abstract class Importer {
         } catch (e) {
             return out;
         }
-        if (typeof o === "undefined" || o === null || stack.indexOf(o) !== -1 || (depth && o === globalThis)) return out; // cyclic object
+        if (typeof o === "undefined" || o === null || stack.indexOf(o) !== -1 || (depth && o === globalThis) || o === (globalThis as any).jspatcherEnv) return out; // cyclic object
         stack[depth] = o;
         let props: Record<string, TypedPropertyDescriptor<any> | PropertyDescriptor>;
         try { // mitigate opener.location.href error

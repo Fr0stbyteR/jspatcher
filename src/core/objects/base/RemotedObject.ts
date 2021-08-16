@@ -17,7 +17,7 @@ export default class RemotedObject<
         super.subscribe();
         const handleBoxIoCountChanged = () => {
             const { id, inlets, outlets } = this.box;
-            this.proxy.objectEmitFromWorklet(id, "boxIoCountChanged", { inlets, outlets });
+            this.proxy?.objectEmitFromWorklet(id, "boxIoCountChanged", { inlets, outlets });
         };
         this.box.on("ioCountChanged", handleBoxIoCountChanged);
         this.on("destroy", () => this.box.off("ioCountChanged", handleBoxIoCountChanged));

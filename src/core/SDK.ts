@@ -9,6 +9,7 @@ import Line from "./patcher/Line";
 import generateRemoteObject from "./objects/base/generateRemoteObject";
 import generateRemotedObject from "./objects/base/generateRemotedObject";
 import generateDefaultObject from "./objects/base/generateDefaultObject";
+import Bang, { isBang } from "./objects/base/Bang";
 
 export interface IJSPatcherSDK {
     readonly React?: typeof React;
@@ -22,6 +23,8 @@ export interface IJSPatcherSDK {
     readonly generateDefaultObject?: typeof generateDefaultObject;
     readonly generateRemoteObject?: typeof generateRemoteObject;
     readonly generateRemotedObject: typeof generateRemotedObject;
+    readonly Bang: typeof Bang;
+    readonly isBang: typeof isBang;
 }
 
 export default class JSPatcherSDK implements IJSPatcherSDK {
@@ -36,4 +39,6 @@ export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly generateDefaultObject = generateDefaultObject;
     readonly generateRemoteObject = generateRemoteObject;
     readonly generateRemotedObject = generateRemotedObject;
+    readonly Bang = Bang;
+    readonly isBang = isBang;
 }

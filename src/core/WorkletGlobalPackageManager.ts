@@ -5,6 +5,7 @@ import getGlobalThis from "./objects/globalThis/index.jsdsppkg";
 import type { TPackage, PatcherMode, ObjectDescriptor, TAbstractPackage } from "./types";
 import type { AnyImportedObject } from "./objects/importer/ImportedObject";
 import type WorkletEnvProcessor from "./worklets/WorkletEnv.worklet";
+import type { PackageGetter } from "./GlobalPackageManager";
 
 export default class WorkletGlobalPackageManager {
     js: TPackage;
@@ -58,5 +59,19 @@ export default class WorkletGlobalPackageManager {
             pkg = pkg[key] as TPackage;
         }
         Object.assign(pkg, pkgIn);
+    }
+    async fetchModule(url: string) {
+        const toExport = {};
+        globalThis.exports = toExport;
+        globalThis.module = { exports: toExport } as any;
+        await this.env.addWorkletModule(url);
+        const exported = globalThis.module.exports;
+        delete globalThis.exports;
+        delete globalThis.module;
+        return exported;
+    }
+    async importPackage(url: string, id: string) {
+        const getter: PackageGetter = (await this.fetchModule(url)).default;
+        this.add(await getter(this.env), "jsaw", [id]);
     }
 }

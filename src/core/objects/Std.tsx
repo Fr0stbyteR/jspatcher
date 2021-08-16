@@ -1,11 +1,11 @@
 import * as Util from "util";
 import Patcher from "../patcher/Patcher";
-import { Bang, isBang } from "./base/index.jspatpkg";
 import { IJSPatcherObjectMeta } from "./base/AbstractObject";
 import AbstractProjectItem from "../file/AbstractProjectItem";
 import TemporaryProjectFile from "../file/TemporaryProjectFile";
 import AbstractProjectFile, { ProjectFileEventMap } from "../file/AbstractProjectFile";
 import DefaultObject from "./base/DefaultObject";
+import Bang, { isBang } from "./base/Bang";
 
 class StdObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}> extends DefaultObject<D, S, I, O, A, P, U> {
     static package = "Std";

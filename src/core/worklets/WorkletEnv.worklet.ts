@@ -21,7 +21,7 @@ declare const globalThis: AudioWorkletGlobalScope;
 const { registerProcessor } = globalThis;
 
 export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWorkletEnvProcessor, IWorkletEnvNode, WorkletEnvParameters, WorkletEnvOptions> implements IWorkletEnvProcessor, IJSPatcherEnv {
-    static fnNames: (keyof IWorkletEnvNode)[] = ["envNewLog", "taskBegin", "taskUpdate", "taskError", "taskEnd", "fileMgrExists", "fileMgrGetFileDetails", "fileMgrPutFile", "fileMgrReadDir", "fileMgrReadFile", "fileMgrWriteFile", "fileMgrGetPathIdMap", "fileMgrDiff", "addObjects"];
+    static fnNames: (keyof IWorkletEnvNode)[] = ["envNewLog", "taskBegin", "taskUpdate", "taskError", "taskEnd", "fileMgrExists", "fileMgrGetFileDetails", "fileMgrPutFile", "fileMgrReadDir", "fileMgrReadFile", "fileMgrWriteFile", "fileMgrGetPathIdMap", "fileMgrDiff", "addObjects", "addWorkletModule"];
     private readonly ee = new TypedEventEmitter<EnvEventMap>();
     readonly thread = "AudioWorklet";
     readonly os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
@@ -36,6 +36,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     currentProject: Project;
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
         super(options);
+        globalThis.jspatcherEnv = this;
         const { os, browser, language, generatedId } = options.processorOptions;
         this.os = os;
         this.browser = browser;
@@ -44,7 +45,6 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.fileMgr = new WorkletProjectItemManager(this);
         this.tempMgr = new TemporaryProjectItemManager(this);
         this.pkgMgr = new WorkletGlobalPackageManager(this);
-        globalThis.jspatcherEnv = this;
     }
     async init() {
         await this.pkgMgr.init();
@@ -115,6 +115,9 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.fileMgr.off("changed", this.handleFileMgrChange);
         await this.fileMgr.processDiff(diff);
         this.fileMgr.on("changed", this.handleFileMgrChange);
+    }
+    async importPackage(url: string, id: string) {
+        await this.pkgMgr.importPackage(url, id);
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][]) {
         if (this._disposed) return false;

@@ -6,6 +6,7 @@ export interface IWorkletEnvProcessor {
     thread: "AudioWorklet";
     init(): Promise<void>;
     workletFileMgrDiff(diff: ProjectItemManagerDataForDiff): void;
+    importPackage(url: string, id: string): Promise<void>;
 }
 export interface IWorkletEnvNode extends PrefixKeys<Pick<IPersistentProjectItemManager, "readFile" | "readDir" | "getFileDetails" | "exists" | "putFile" | "writeFile" | "getPathIdMap">, "fileMgr"> {
     envNewLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any): void;
@@ -15,6 +16,7 @@ export interface IWorkletEnvNode extends PrefixKeys<Pick<IPersistentProjectItemM
     taskEnd(task: Pick<Task, "id">): void;
     fileMgrDiff(diff: ProjectItemManagerDataForDiff): void;
     addObjects(descriptors: TAbstractPackage, pkgName: string): void;
+    addWorkletModule(url: string): Promise<void>;
 }
 export interface WorkletEnvOptions {
     os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";

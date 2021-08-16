@@ -255,12 +255,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                 if (numID > this.props.lineIndexCount) this.props.lineIndexCount = numID;
             }
         }
-        if (mode === "jsaw" && this.env.thread === "main") {
-            const PatcherNode = (await import("../worklets/PatcherNode")).default;
-            await PatcherNode.register(this.audioCtx.audioWorklet);
-            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id, fileId: this.file?.id, data: this.file ? undefined : this.toSerializable() });
-            await this.state.patcherNode.init();
-        }
         this._state.isReady = true;
         this._state.preventEmitChanged = false;
         this.emitGraphChanged();
@@ -268,6 +262,16 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].postInit()));
         this.emit("postInited");
         return this;
+    }
+    async getPatcherNode() {
+        if (this.props.mode === "jsaw" && this.env.thread === "main") {
+            const PatcherNode = (await import("../worklets/PatcherNode")).default;
+            await PatcherNode.register(this.audioCtx.audioWorklet);
+            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id, fileId: this.file?.id, data: this.file ? undefined : this.toSerializable() });
+            await this.state.patcherNode.init();
+            return this.state.patcherNode;
+        }
+        return null;
     }
     async loadFromURL(url: string) {
         try {

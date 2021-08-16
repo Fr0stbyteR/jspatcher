@@ -25,7 +25,7 @@ export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPa
         });
         this.patcher = options.env.getInstanceById(options.instanceId) as Patcher;
         this.patcher.on("changed", this.handleChanged);
-        this.patcher.on("inlet", this.handleInlet);
+        this.patcher.on("dataInput", this.handleInput);
         this.patcher.on("destroy", this.handleDestroy);
         const _destroy = this.destroy;
         this.destroy = async () => {
@@ -37,7 +37,7 @@ export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPa
         const syncData = this.patcher.history.getSyncData();
         this.sync(syncData);
     };
-    handleInlet = (e: PatcherEventMap["dataInput"]) => this.fn(e.data, e.inlet);
+    handleInput = (e: PatcherEventMap["dataInput"]) => this.fn(e.data, e.inlet);
     handleDestroy = () => this.destroy();
     outlet(port: number, data: any) {
         this.patcher.outlet(port, data);

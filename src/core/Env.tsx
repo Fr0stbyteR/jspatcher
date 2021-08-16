@@ -167,6 +167,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     }
     constructor(root?: HTMLDivElement) {
         super();
+        window.jspatcherEnv = this;
         this._divRoot = root;
     }
     get ready() {
@@ -249,12 +250,15 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 this.envNode = new WorkletEnvNode(this.audioCtx, this);
                 await this.envNode.init();
             });
+            await this.taskMgr.newTask(this, "Fetching packages...", async (onUpdate) => {
+                onUpdate("std");
+                await this.pkgMgr.importFromURL("./packages/std/index.js");
+            });
             await this.taskMgr.newTask(this, "Creating Project", async () => {
                 const project = new Project(this, new PackageManager(this.pkgMgr, DefaultImporter));
                 this.currentProject = project;
                 await project.init();
             });
-            window.jspatcherEnv = this;
         });
         this.loaded = true;
         await this.emit("ready");

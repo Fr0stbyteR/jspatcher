@@ -1,7 +1,24 @@
 import { ImporterDirSelfObject } from "../utils/symbols";
 import { isJSPatcherObjectConstructor } from "./objects/base/AbstractObject";
+import DefaultImporter from "./objects/importer/DefaultImporter";
 import type Env from "./Env";
+import type { IJSPatcherEnv } from "./Env";
 import type { TPackage, PatcherMode } from "./types";
+
+export interface IExternalPackage {
+    isJSPatcherPackage: true;
+    name: string;
+    version: string;
+    description: string;
+    keywords: string[];
+    license: string;
+    thumbnail: string;
+    jspatpkg?: string;
+    "jsdsppkg.main"?: string;
+    "jsdsppkg.aw"?: string;
+    baseUrl?: string;
+}
+export type PackageGetter = (env: IJSPatcherEnv) => Promise<TPackage>;
 
 export default class GlobalPackageManager {
     js: TPackage;
@@ -10,7 +27,8 @@ export default class GlobalPackageManager {
     max: TPackage;
     gen: TPackage;
     private readonly env: Env;
-    externals = new Map<string, Record<string, any>>();
+    readonly externals = new Map<string, Record<string, any>>();
+    readonly importedPackages: IExternalPackage[] = [];
     constructor(envIn: Env) {
         this.env = envIn;
     }
@@ -43,7 +61,7 @@ export default class GlobalPackageManager {
         this.add(this.env.faustLibObjects, "faust");
         */
         this.faust = (await import("./objects/Faust")).default;
-        // this.add({ window: Window }, "js");
+        // this.add({ globalThis: globalThis }, "js");
     }
     add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();
@@ -63,23 +81,56 @@ export default class GlobalPackageManager {
     private async fetchModule(url: string) {
         let exported;
         const toExport = {};
-        window.exports = toExport;
-        window.module = { exports: toExport } as any;
+        globalThis.exports = toExport;
+        globalThis.module = { exports: toExport } as any;
         const esm = await import(/* webpackIgnore: true */url);
         const esmKeys = Object.keys(esm);
         if (esmKeys.length === 1 && esmKeys[0] === "default") exported = esm.default;
         else if (esmKeys.length) exported = esm;
-        else exported = window.module.exports;
-        delete window.exports;
-        delete window.module;
+        else exported = globalThis.module.exports;
+        delete globalThis.exports;
+        delete globalThis.module;
         return exported;
     }
-    async getModuleFromURL(url: string, id: string) {
+    async addWorkletModule(url: string) {
+        await this.env.audioCtx.audioWorklet.addModule(url);
+    }
+    async getModuleFromURL(url: string, id?: string) {
         if (this.externals.has(url)) return this.externals.get(url);
         const rawModule = await this.fetchModule(url);
         const m = typeof rawModule === "object" ? rawModule : { [id]: rawModule };
         if (!Object.keys(m).length) throw new Error(`Module ${id} from ${url} is empty`);
         this.externals.set(url, m);
         return m;
+    }
+    async resolveModule(m: any, url: string, id?: string) {
+        if (typeof m === "object" && m !== null) {
+            if (m.default?.isJSPatcherPackage) {
+                if (this.importedPackages.find(p => p.name === m.name)) return;
+                const p: IExternalPackage = { ...m.default, baseUrl: new URL(".", new URL(url, location.href)).href };
+                this.importedPackages.push(p);
+                if (p.jspatpkg) {
+                    const url = new URL(p.jspatpkg, p.baseUrl).href;
+                    const getter: PackageGetter = (await this.fetchModule(url)).default;
+                    this.add(await getter(this.env), "js", [p.name]);
+                }
+                if (p["jsdsppkg.main"]) {
+                    const url = new URL(p["jsdsppkg.main"], p.baseUrl).href;
+                    const getter: PackageGetter = (await this.fetchModule(url)).default;
+                    this.add(await getter(this.env), "jsaw", [p.name]);
+                }
+                if (p["jsdsppkg.aw"]) {
+                    const url = new URL(p["jsdsppkg.aw"], p.baseUrl).href;
+                    await this.env.envNode.importPackage(url, p.name);
+                }
+            } else {
+                const pkg = DefaultImporter.import(id, m);
+                this.add(pkg, "js", [id]);
+            }
+        }
+    }
+    async importFromURL(url: string, id?: string) {
+        const m = await this.getModuleFromURL(url, id);
+        await this.resolveModule(m, url, id);
     }
 }

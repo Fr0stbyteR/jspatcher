@@ -16,7 +16,7 @@ export const processorId = "__JSPatcher_WorkletEnv";
 export default class WorkletEnvNode extends AudioWorkletProxyNode<IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvParameters, WorkletEnvOptions, WorkletEnvEventMap> implements IWorkletEnvNode {
     static processorId = processorId;
     static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorId, processorURL);
-    static fnNames: (keyof IWorkletEnvProcessor)[] = ["init", "workletFileMgrDiff"];
+    static fnNames: (keyof IWorkletEnvProcessor)[] = ["init", "workletFileMgrDiff", "importPackage"];
     readonly env: Env;
     constructor(context: BaseAudioContext, mainEnv: Env) {
         super(context, processorId, {
@@ -105,5 +105,8 @@ export default class WorkletEnvNode extends AudioWorkletProxyNode<IWorkletEnvNod
     addObjects(descriptor: TAbstractPackage, pkgName: string) {
         const pkg = RemoteImporter.getPackageFromDescriptors(descriptor, pkgName);
         this.env.pkgMgr.add({ [pkgName]: pkg }, "jsaw");
+    }
+    async addWorkletModule(url: string) {
+        await this.env.pkgMgr.addWorkletModule(url);
     }
 }
