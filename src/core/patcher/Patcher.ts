@@ -3,6 +3,7 @@ import PatcherEditor from "./PatcherEditor";
 import Line from "./Line";
 import Box from "./Box";
 import PatcherHistory from "./PatcherHistory";
+import PackageManager, { IPackageManager } from "../PackageManager";
 import { max2js, js2max } from "../../utils/utils";
 import { toFaustDspCode } from "./FaustPatcherAnalyser";
 import type Env from "../Env";
@@ -13,7 +14,6 @@ import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta, IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
 import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, TPatcherLog, TDependencies } from "../types";
-import type { IPackageManager } from "../PkgMgr";
 import type PatcherNode from "../worklets/PatcherNode";
 import type PatcherProcessor from "../worklets/Patcher.worklet";
 
@@ -117,7 +117,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             isReady: false,
             log: [],
             selected: [],
-            pkgMgr: this.project.pkgMgr,
+            pkgMgr: undefined,
             preventEmitChanged: false
         };
         this.lines = {};
@@ -137,10 +137,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         return this._state;
     }
     get activePkg() {
-        return this._state.pkgMgr.getPkg(this.props.mode);
+        return this._state.pkgMgr.pkg;
     }
     get activeLib() {
-        return this._state.pkgMgr.getLib(this.props.mode);
+        return this._state.pkgMgr.lib;
     }
     get isReady() {
         return true;
@@ -194,6 +194,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             return this;
         }
         this.props.mode = patcherIn.props?.mode || modeIn || "js";
+        this.state.pkgMgr = new PackageManager(this);
         const { mode } = this.props;
         const $init: Promise<Box>[] = [];
         let patcher;
@@ -347,12 +348,12 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         dependencies.push([namespace, url]);
         this.setProps({ dependencies: dependencies.slice() });
     }
-    removePackage(url: string) {
+    removePackage(id: string) {
         const { dependencies } = this.props;
-        const i = dependencies.findIndex(t => t[1] === url);
+        const i = dependencies.findIndex(t => t[0] === id);
         if (i === -1) return;
         dependencies.splice(i, 1);
-        this.state.pkgMgr.removeURL(url);
+        this.state.pkgMgr.remove(id);
         this.setProps({ dependencies: dependencies.slice() });
     }
     async createBox(boxIn: TBox) {
@@ -613,10 +614,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const { props } = this;
         const boxes: RawPatcher["boxes"] = {};
         const lines: RawPatcher["lines"] = {};
-        for (const id in boxes) {
+        for (const id in this.boxes) {
             boxes[id] = this.boxes[id].toSerializable();
         }
-        for (const id in lines) {
+        for (const id in this.lines) {
             lines[id] = this.lines[id].toSerializable();
         }
         return JSON.stringify({ boxes, lines, props }, undefined, spacing);

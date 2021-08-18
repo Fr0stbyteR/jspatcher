@@ -44,10 +44,6 @@ export default class PatcherEditorUI extends React.PureComponent<P, S> {
         this.props.env.taskMgr.off("errors", this.handleErrors);
         this.setState({ editorReady: true });
     };
-    handleUnmountReady = () => {
-        this.props.editor.off("ready", this.handleUnmountReady);
-        this.props.editor.destroy();
-    };
     componentDidMount() {
         if (this.state.editorReady) return;
         this.props.editor.on("ready", this.handleReady);
@@ -55,8 +51,8 @@ export default class PatcherEditorUI extends React.PureComponent<P, S> {
         this.props.env.taskMgr.on("errors", this.handleErrors);
     }
     componentWillUnmount() {
-        if (this.state.editorReady) this.props.editor.destroy();
-        else this.props.editor.on("ready", this.handleUnmountReady);
+        // if (this.state.editorReady) this.props.editor.destroy();
+        // else this.props.editor.on("ready", this.handleUnmountReady);
         this.props.editor.off("ready", this.handleReady);
         this.props.env.taskMgr.off("tasks", this.handleTasks);
         this.props.env.taskMgr.off("errors", this.handleErrors);

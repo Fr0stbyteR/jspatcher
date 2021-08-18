@@ -174,7 +174,7 @@ export interface IJSPatcherObject<
     /** Will be called after the object attached to box */
     postInit(): Promise<void>;
     /** Will be called when need to change arguments */
-    updateArgs(args: Partial<A>, options?: ObjectUpdateOptions): Promise<void>;
+    updateArgs(args: A, options?: ObjectUpdateOptions): Promise<void>;
     /** Will be called when need to change properties */
     updateProps(props: Partial<P>, options?: ObjectUpdateOptions): Promise<void>;
     /** Will be called when need to change state */
@@ -416,7 +416,7 @@ export default abstract class AbstractObject<
     updateUI(state: Partial<U>) {
         this.emit("updateUI", state);
     }
-    async updateArgs(args: Partial<A>, options?: ObjectUpdateOptions) {
+    async updateArgs(args: A, options?: ObjectUpdateOptions) {
         if (args?.length) {
             const oldArgs = this.args.slice() as A;
             await this.emit("updateArgs", args);

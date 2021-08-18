@@ -1,105 +1,46 @@
 import TypedEventEmitter from "../utils/TypedEventEmitter";
 import { ImporterDirSelfObject } from "../utils/symbols";
 import { isJSPatcherObjectConstructor, IJSPatcherObject } from "./objects/base/AbstractObject";
-import type ObjectImporter from "./objects/importer/Importer";
-import type { TFlatPackage, TPackage, PatcherMode } from "./types";
-import type GlobalPackageManager from "./GlobalPackageManager";
+import type { TFlatPackage, TPackage } from "./types";
+import type Patcher from "./patcher/Patcher";
 
 export interface PackageManagerEventMap {
-    "libChanged": PatcherMode;
+    "libChanged": never;
     "pathDuplicated": string;
 }
 
 export interface IPackageManager extends TypedEventEmitter<PackageManagerEventMap> {
-    getLib(lib: PatcherMode): TFlatPackage;
-    getPkg(lib: PatcherMode): TPackage;
+    pkg: TPackage;
+    lib: TFlatPackage;
     importFromURL(url: string, id: string): Promise<void>;
-    removeURL(url: string): void;
-    add(pkgIn: TPackage, lib: PatcherMode, pathIn?: string[]): void;
+    remove(id: string): void;
 }
 
 export default class PackageManager extends TypedEventEmitter<PackageManagerEventMap> implements IPackageManager {
-    private readonly global: Partial<GlobalPackageManager>;
-    private readonly Importer: typeof ObjectImporter;
-    readonly pkgJS: TPackage;
-    readonly pkgFaust: TPackage;
-    readonly pkgMax: TPackage;
-    readonly pkgGen: TPackage;
-    readonly pkgJSAW: TPackage;
-    private readonly libJS: TFlatPackage;
-    private readonly libFaust: TFlatPackage;
-    private readonly libMax: TFlatPackage;
-    private readonly libGen: TFlatPackage;
-    private readonly libJSAW: TFlatPackage;
-    /** `[id, url]` */
-    readonly imported: [string, string][] = [];
-    constructor(globalIn: Partial<GlobalPackageManager>, Importer?: typeof ObjectImporter) {
+    private readonly patcher: Patcher;
+    pkg: TPackage;
+    lib: TFlatPackage;
+    get global() {
+        return this.patcher.env.pkgMgr;
+    }
+    get mode() {
+        return this.patcher.props.mode;
+    }
+    constructor(patcher: Patcher) {
         super();
-        this.Importer = Importer;
-        this.global = globalIn;
-        const { js, faust, max, gen, jsaw } = this.global;
-        this.pkgJS = { ...js };
-        this.pkgFaust = { ...faust };
-        this.pkgMax = { ...max };
-        this.pkgGen = { ...gen };
-        this.pkgJSAW = { ...jsaw };
-        this.libJS = this.packageRegister(this.pkgJS);
-        this.libFaust = this.packageRegister(this.pkgFaust);
-        this.libMax = this.packageRegister(this.pkgMax);
-        this.libGen = this.packageRegister(this.pkgGen);
-        this.libJSAW = this.packageRegister(this.pkgJSAW);
+        this.patcher = patcher;
+        this.init();
     }
-    getLib(lib: PatcherMode) {
-        return {
-            js: this.libJS,
-            faust: this.libFaust,
-            max: this.libMax,
-            gen: this.libGen,
-            jsaw: this.libJSAW
-        }[lib];
+    init() {
+        this.pkg = { ...this.global[this.mode] };
+        this.lib = this.packageRegister(this.pkg);
     }
-    getPkg(lib: PatcherMode) {
-        return {
-            js: this.pkgJS,
-            faust: this.pkgFaust,
-            max: this.pkgMax,
-            gen: this.pkgGen,
-            jsaw: this.pkgJSAW
-        }[lib];
-    }
-    async importFromNPM(pkgID: string, idIn?: string) {
-        const id = idIn || pkgID.split("/").pop();
-        const url = `https://unpkg.com/${pkgID}`;
-        return this.importFromURL(url, id);
-    }
+    remove(id: string) {}
     async importFromURL(url: string, id: string) {
-        if (!this.Importer) return;
-        if (!this.global.getModuleFromURL) throw new Error("Cannot import from this context");
-        if (this.imported.find(([$id, $url]) => $id === id && $url === url)) return;
-        if (this.imported.find(([$id, $url]) => $id === id && $url !== url)) throw new Error(`Package with ID ${id} already exists.`);
-        const jsModule = await this.global.getModuleFromURL(url, id);
-        const pkg = this.Importer.import(id, jsModule);
-        this.imported.push([id, url]);
-        this.add(pkg, "js", [id]);
-    }
-    removeURL(url: string) {
-        const { imported } = this;
-        const i = imported.findIndex(t => t[1] === url);
-        if (i === -1) return;
-        imported.splice(i, 1);
-    }
-    add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
-        const path = pathIn.slice();
-        let pkg = this.getPkg(lib);
-        while (path.length) {
-            const key = path.shift();
-            if (!pkg[key]) pkg[key] = {};
-            else if (isJSPatcherObjectConstructor(pkg[key])) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
-            pkg = pkg[key] as TPackage;
-        }
-        Object.assign(pkg, pkgIn);
-        this.packageRegister(pkgIn, this.getLib(lib), 2, pathIn);
-        this.emit("libChanged", lib);
+        if (!this.global.importFromURL) throw new Error("Cannot import from this context");
+        await this.global.importFromURL(url, id);
+        this.init();
+        this.emit("libChanged");
     }
     packageRegister(pkg: TPackage, libOut: TFlatPackage = {}, rootifyDepth = Infinity, pathIn?: string[]) {
         const path = pathIn ? pathIn.slice() : [];

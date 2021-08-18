@@ -8,7 +8,6 @@ import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
 import { EnvOptions, TErrorLevel, TPackage, TPatcherLog } from "./types";
 import { getFaustLibObjects } from "./objects/Faust";
 import DefaultImporter from "./objects/importer/DefaultImporter";
-import PackageManager from "./PkgMgr";
 import GlobalPackageManager from "./GlobalPackageManager";
 import PersistentProjectItemManager, { IPersistentProjectItemManager } from "./file/PersistentProjectItemManager";
 import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
@@ -173,6 +172,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     get ready() {
         return this.init();
     }
+    async getFaust() {
+        return this.faust;
+    }
     async getFFmpeg() {
         return this.taskMgr.newTask(this, "Loading ffmpeg...", async () => {
             await this.ffmpegWorker.init();
@@ -253,9 +255,11 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             await this.taskMgr.newTask(this, "Fetching packages...", async (onUpdate) => {
                 onUpdate("std");
                 await this.pkgMgr.importFromURL("./packages/std/index.js");
+                onUpdate("op");
+                await this.pkgMgr.importFromURL("./packages/op/index.js");
             });
             await this.taskMgr.newTask(this, "Creating Project", async () => {
-                const project = new Project(this, new PackageManager(this.pkgMgr, DefaultImporter));
+                const project = new Project(this);
                 this.currentProject = project;
                 await project.init();
             });
@@ -327,7 +331,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     async newProject() {
         const oldProject = this.currentProject;
         await oldProject?.unload();
-        const project = new Project(this, new PackageManager(this.pkgMgr, DefaultImporter));
+        const project = new Project(this);
         this.currentProject = project;
         await project.load(true);
         this.emit("projectChanged", { project, oldProject });
@@ -341,7 +345,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         const oldProject = this.currentProject;
         await oldProject?.unload();
         await this.fileMgr.emptyProject();
-        const project = new Project(this, new PackageManager(this.pkgMgr, DefaultImporter));
+        const project = new Project(this);
         this.currentProject = project;
         await this.fileMgr.importFileZip(data, undefined, undefined, this);
         await project.init();

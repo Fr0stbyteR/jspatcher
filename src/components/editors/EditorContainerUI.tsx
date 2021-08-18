@@ -30,7 +30,8 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
         activeEditor: this.props.editorContainer.activeEditor
     };
     handleCloseTab = async (editor: IFileEditor) => {
-        await editor.destroy();
+        if (editor.isReady) await editor.destroy();
+        else editor.once("ready", () => editor.destroy());
     };
     handleActiveTab = async (editor: IFileEditor) => {
         this.setState({ activeEditor: editor });

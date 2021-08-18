@@ -42,7 +42,7 @@ export default class AudioIn extends BaseObject<{}, {}, [], [number, number], [n
         this.on("metaUpdated", this.emitPatcherChangeIO);
         this.on("preInit", () => {
             this.inlets = 0;
-            this.outlets = 1;
+            this.outlets = 2;
         });
         this.on("postInit", this.emitPatcherChangeIO);
         this.on("updateArgs", () => {
@@ -58,7 +58,7 @@ export default class AudioIn extends BaseObject<{}, {}, [], [number, number], [n
             this.setMeta({ outlets: [outlet0] });
             this.emitPatcherChangeIO();
         });
-        this.patcher.on("audioInput", this.handlePatcherInput);
+        if (this.env.thread === "AudioWorklet") this.patcher.on("audioInput", this.handlePatcherInput);
         this.on("destroy", () => {
             this.patcher.off("audioInput", this.handlePatcherInput);
             this.patcher.changeIO();

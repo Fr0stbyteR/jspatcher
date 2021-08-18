@@ -44,9 +44,10 @@ export default class Param extends BaseObject<{}, {}, [], [number, number], [str
             this.setMeta({ outlets: [outlet0] });
             this.emitPatcherChangeIO();
         });
-        this.on("inlet", ({ data, inlet }) => {
-            if (inlet === 0) this.outlet(0, data);
+        if (this.env.thread === "AudioWorklet") this.patcher.on("paramInput", this.handlePatcherInput);
+        this.on("destroy", () => {
+            this.patcher.off("paramInput", this.handlePatcherInput);
+            this.patcher.changeIO();
         });
-        this.on("destroy", this.emitPatcherChangeIO);
     }
 }

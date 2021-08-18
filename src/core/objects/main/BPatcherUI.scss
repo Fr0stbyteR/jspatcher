@@ -1,12 +1,3 @@
-.ui.modal.fullscreen.subpatcher {
-    height: 90%;
-    left: auto !important;
-    & > i.close.icon {
-        color: #fff;
-        top: -1rem !important;
-        right: -1rem !important;
-    }
-}
 .patcher {
     & div.box-ui > div.package-subpatcher-bpatcher {
         position: relative;

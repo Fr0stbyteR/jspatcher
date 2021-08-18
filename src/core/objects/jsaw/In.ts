@@ -63,7 +63,7 @@ export default class In extends BaseObject<{}, {}, [], [any], [number], P> {
             this.setMeta({ outlets: [outlet0] });
             this.emitPatcherChangeIO();
         });
-        this.patcher.on("dataInput", this.handlePatcherInput);
+        if (this.env.thread === "AudioWorklet") this.patcher.on("dataInput", this.handlePatcherInput);
         this.on("destroy", () => {
             this.patcher.off("dataInput", this.handlePatcherInput);
             this.patcher.changeIO();

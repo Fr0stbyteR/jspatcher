@@ -367,7 +367,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         const deleted: RawPatcher = { boxes: {}, lines: {} };
         const promises: Promise<Box>[] = [];
         lineSet.forEach((line) => {
-            deleted.lines[line.id] = line;
+            deleted.lines[line.id] = line.toSerializable();
             line.destroy();
         });
         boxSet.forEach((box) => {

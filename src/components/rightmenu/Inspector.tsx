@@ -145,14 +145,14 @@ class InspectorItem<MetaType extends "arg" | "prop"> extends React.PureComponent
         const { type } = meta;
         const itemProps = { itemKey: this.key, value, onChange: this.props.onChange };
         if ((meta as IArgsMeta[number]).varLength) {
-            if (type === "enum") return <InspectorEnumItem {...itemProps} multiple options={meta.enums.map((text, i) => ({ text, key: i, value: text }))} />;
+            if (type === "enum") return <InspectorEnumItem {...itemProps} multiple options={(meta.enums as any[]).map((text, i) => ({ text, key: i, value: text }))} />;
             return <InpectorAnythingItem {...itemProps} />;
         }
         if (type === "boolean") return <InspectorBooleanItem {...itemProps} />;
         if (type === "number") return <InspectorNumberItem {...itemProps} />;
         if (type === "string") return <InspectorStringItem {...itemProps} />;
         if (type === "color") return <InspectorColorItem {...itemProps} />;
-        if (type === "enum") return <InspectorEnumItem {...itemProps} options={meta.enums.map((text, i) => ({ text, key: i, value: text }))} />;
+        if (type === "enum") return <InspectorEnumItem {...itemProps} options={(meta.enums as any[]).map((text, i) => ({ text, key: i, value: text }))} />;
         if (type === "object") return <InspectorObjectItem {...itemProps} />;
         if (type === "anything") return <InpectorAnythingItem {...itemProps} />;
         return <></>;

@@ -30,8 +30,7 @@ export default abstract class History<EventMap extends Record<string, any> & Par
     }
     get now() {
         if (globalThis.performance) {
-            if ("timeOrigin" in performance) return performance.now() + performance.timeOrigin;
-            return performance.now() + performance.timing.navigationStart;
+            return performance.now() + (performance.timeOrigin || performance.timing.navigationStart);
         }
         return Date.now();
     }

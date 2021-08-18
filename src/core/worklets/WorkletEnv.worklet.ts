@@ -5,7 +5,6 @@ import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import WorkletProjectItemManager from "../file/WorkletProjectItemManager";
 import WorkletGlobalPackageManager from "../WorkletGlobalPackageManager";
 import Project from "../Project";
-import PackageManager from "../PkgMgr";
 import JSPatcherWorkletSDK from "../WorkletSDK";
 import type { WorkletEnvParameters, IWorkletEnvNode, IWorkletEnvProcessor, WorkletEnvOptions } from "./WorkletEnv.types";
 import type { AudioWorkletGlobalScope, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
@@ -48,8 +47,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     }
     async init() {
         await this.pkgMgr.init();
-        const projectPkgMgr = new PackageManager(this.pkgMgr, null);
-        this.currentProject = new Project(this, projectPkgMgr);
+        this.currentProject = new Project(this);
         await this.fileMgr.init();
         await this.tempMgr.init();
         this.bindTaskMgr();

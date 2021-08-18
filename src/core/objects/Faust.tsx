@@ -1,6 +1,6 @@
 import DefaultObject from "./base/DefaultObject";
 import comment from "./UI/comment";
-import { SubPatcherUI } from "./SubPatcher";
+import SubPatcherUI from "./main/SubPatcherUI";
 import { CodeUI } from "./UI/code";
 import { ImporterDirSelfObject } from "../../utils/symbols";
 import { inspectFaustPatcher, toFaustLambda } from "../patcher/FaustPatcherAnalyser";

@@ -5,8 +5,6 @@ import type FileInstance from "./file/FileInstance";
 import type PersistentProjectFile from "./file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "./Env";
 import type { IPropsMeta } from "./objects/base/AbstractObject";
-import type { IPackageManager } from "./PkgMgr";
-import type { TDependencies } from "./types";
 
 export interface ProjectEventMap {
     "propsChanged": Partial<ProjectProps>;
@@ -14,23 +12,16 @@ export interface ProjectEventMap {
     "unload": never;
 }
 export interface ProjectProps {
-    dependencies: TDependencies;
     name: string;
     author: string;
     version: string;
 }
 
 export interface IProject extends TypedEventEmitter<ProjectEventMap> {
-    pkgMgr: IPackageManager;
 }
 
 export default class Project extends TypedEventEmitter<ProjectEventMap> {
     static props: IPropsMeta<ProjectProps> = {
-        dependencies: {
-            type: "object",
-            description: "Project dependencies [id, url]",
-            default: []
-        },
         name: {
             type: "string",
             description: "Project name",
@@ -49,10 +40,8 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
     };
     readonly projectFilename = ".jspatproj";
     readonly env: IJSPatcherEnv;
-    readonly pkgMgr: IPackageManager;
     readonly instances: FileInstance[];
     readonly props: ProjectProps = {
-        dependencies: Project.props.dependencies.default,
         name: Project.props.name.default,
         author: Project.props.author.default,
         version: Project.props.version.default
@@ -60,10 +49,9 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
     get audioCtx() {
         return (this.env as Env).audioCtx;
     }
-    constructor(envIn: IJSPatcherEnv, pkgMgr: IPackageManager) {
+    constructor(envIn: IJSPatcherEnv) {
         super();
         this.env = envIn;
-        this.pkgMgr = pkgMgr;
     }
     setProps(props: Partial<ProjectProps>) {
         let changed = false;

@@ -35,7 +35,7 @@ export default class AudioOut extends BaseObject<{}, {}, [], [number, number], [
         super.subscribe();
         this.on("metaUpdated", this.emitPatcherChangeIO);
         this.on("preInit", () => {
-            this.inlets = 1;
+            this.inlets = 2;
             this.outlets = 0;
         });
         this.on("postInit", this.emitPatcherChangeIO);
