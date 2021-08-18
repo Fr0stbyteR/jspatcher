@@ -1,6 +1,6 @@
 {
   "name": "@jspatcher/jspatcher",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "patcher js",
   "scripts": {
     "build": "webpack --mode development",
