@@ -1,8 +1,8 @@
-import JSPAudioNode from "./AudioNode";
 import TransmitterNode from "../../worklets/Transmitter";
 import PatcherAudio from "../../audio/PatcherAudio";
 import OperableAudioBuffer from "../../audio/OperableAudioBuffer";
-import { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
+import DefaultObject from "../base/DefaultObject";
+import type { IInletsMeta, IOutletsMeta, IPropsMeta } from "../base/AbstractObject";
 
 type I = [boolean | number | PatcherAudio, boolean, number, number];
 interface P {
@@ -13,7 +13,7 @@ interface P {
     loopEnd: number;
     append: boolean;
 }
-interface S {
+interface IS {
     dummyNode: ConstantSourceNode;
     node: TransmitterNode;
     audio: PatcherAudio;
@@ -25,9 +25,10 @@ interface S {
     inPlace: boolean;
 }
 
-export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number], [], P> {
+export default class Record extends DefaultObject<{}, {}, I, [number], [], P> {
     static description = "Record audio into an audio buffer";
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
+    static icon = "volume up" as const;
+    static inlets: IInletsMeta = [{
         isHot: true,
         type: "signal",
         description: "signal to record, boolean/number to start/stop, AudioBuffer/PatcherAudio to set buffer"
@@ -44,7 +45,7 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
         type: "number",
         description: "loopEnd (seconds)"
     }];
-    static outlets: IJSPatcherObjectMeta["outlets"] = [{
+    static outlets: IOutletsMeta = [{
         type: "number",
         description: "sample index writted"
     }];
@@ -80,7 +81,13 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
             description: "Allows buffer to growth when recording exceeds the end."
         }
     };
-    state: S = {
+    set node(nodeIn: TransmitterNode) {
+        this._.node = nodeIn;
+    }
+    get node() {
+        return this._.node;
+    }
+    _: IS = {
         node: undefined,
         audio: undefined,
         dummyNode: this.audioCtx.createConstantSource(),
@@ -92,8 +99,8 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
         inPlace: true
     };
     handleReceiveBuffer = async (bufferIn: Float32Array[], $total: number) => {
-        if (!this.state.recording) return;
-        const { $, audio } = this.state;
+        if (!this._.recording) return;
+        const { $, audio } = this._;
         const { length, numberOfChannels, sampleRate } = audio;
         const mono = this.getProp("mono");
         const channelOffset = this.getProp("channelOffset");
@@ -118,7 +125,7 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
             }
             audio.audioBuffer = newBuffer;
             audio.waveform.update($, newLength);
-            this.setState({ $: $target });
+            this._.$ = $target;
         } else {
             for (let i = 0; i < numberOfChannels; i++) {
                 const channel = audio.audioBuffer.getChannelData(i);
@@ -130,17 +137,17 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
                             const $sSplit = buffer.length - ($copyEnd - $start);
                             channel.set(buffer.subarray($sSplit), $start);
                             channel.set(buffer.subarray(0, $sSplit), $);
-                            this.setState({ $: $copyEnd });
+                            this._.$ = $copyEnd;
                             audio.waveform.update($, $end);
                             audio.waveform.update($start, $copyEnd);
                         } else {
                             channel.set(bufferIn[i].subarray(0, $end - $), $);
-                            this.setState({ $: $end });
+                            this._.$ = $end;
                             audio.waveform.update($, $end);
                         }
                     } else {
                         channel.set(bufferIn[i], $);
-                        this.setState({ $: $target });
+                        this._.$ = $target;
                         audio.waveform.update($, $target);
                     }
                 }
@@ -148,27 +155,27 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
         }
         audio.emit("setAudio");
         audio.emit("changed");
-        this.outlet(0, this.state.$);
-        if (!append && !loop && this.state.$ === $end) {
+        this.outlet(0, this._.$);
+        if (!append && !loop && this._.$ === $end) {
             await this.stop();
         }
     };
     async start() {
         if (!this.node) return false;
-        this.setState({ $: this.getProp("loop") ? this.getProp("loopStart") : 0 });
-        this.setState({ recording: true });
+        this._.$ = this.getProp("loop") ? this.getProp("loopStart") : 0;
+        this._.recording = true;
         await this.node.reset();
         await this.node.start();
         return true;
     }
     async stop() {
-        this.setState({ recording: false });
+        this._.recording = false;
         if (!this.node) return;
         await this.node.stop();
-        const { inPlace, $, $end } = this.state;
-        if (!inPlace && $ > $end && $ < this.state.audio.length) {
-            const [audio] = await this.state.audio.split($);
-            this.state.audio.setAudio(audio);
+        const { inPlace, $, $end } = this._;
+        if (!inPlace && $ > $end && $ < this._.audio.length) {
+            const [audio] = await this._.audio.split($);
+            this._.audio.setAudio(audio);
         }
     }
     subscribe() {
@@ -182,28 +189,28 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
             const node = new TransmitterNode(this.audioCtx);
             node.handleReceiveBuffer = this.handleReceiveBuffer;
             this.node = node;
-            this.state.dummyNode.offset.value = 0;
-            this.state.dummyNode.connect(this.node);
-            this.state.dummyNode.start();
+            this._.dummyNode.offset.value = 0;
+            this._.dummyNode.connect(this.node);
+            this._.dummyNode.start();
             this.disconnectAudioInlet();
             this.inletAudioConnections = [{ node: this.node, index: 0 }];
-            this.setState({ node });
+            this._.node = node;
             this.connectAudioInlet();
         });
         this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
                 if (typeof data === "boolean" || typeof data === "number") {
                     if (data) {
-                        if (!this.state.recording) {
+                        if (!this._.recording) {
                             await this.start();
                         }
                     } else {
-                        if (this.state.recording) {
+                        if (this._.recording) {
                             await this.stop();
                         }
                     }
                 } else if (data instanceof PatcherAudio) {
-                    this.setState({ audio: data });
+                    this._.audio = data;
                 }
             } else if (inlet === 1) {
                 if (typeof data === "boolean" || typeof data === "number") {
@@ -220,8 +227,8 @@ export default class Record extends JSPAudioNode<TransmitterNode, S, I, [number]
             }
         });
         this.on("destroy", async () => {
-            this.state.dummyNode.disconnect();
-            if (this.state.recording) await this.stop();
+            this._.dummyNode.disconnect();
+            if (this._.recording) await this.stop();
             await this.node.destroy();
         });
     }

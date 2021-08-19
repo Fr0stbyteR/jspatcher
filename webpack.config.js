@@ -27,7 +27,8 @@ const config = {
     publicPath: "",
     library: 'JSPatcher',
     libraryTarget: 'umd',
-    chunkFilename: 'js/[chunkhash].js'
+    chunkFilename: 'js/[chunkhash].js',
+    assetModuleFilename: 'assets/[hash][ext][query]'
   },
   module: {
     rules: [{
@@ -64,13 +65,10 @@ const config = {
       },
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        use: [{
-          loader: 'file-loader',
-          options: {
-            outputPath: 'assets/',
-            publicPath: 'assets/'
-          }
-        }]
+        type: 'asset',
+        generator: {
+            filename: 'assets/[hash][ext][query]'
+        }
       },
       {
         test: /\.js$/,
@@ -101,7 +99,8 @@ const config = {
         { from: './node_modules/@grame/libmusicxml/libmusicxml.wasm', to: './deps/' },
         { from: './node_modules/@shren/guidolib/libGUIDOEngine.wasm', to: './deps/' },
         { from: './node_modules/@jspatcher/package-std/dist', to: './packages/std/' },
-        { from: './node_modules/@jspatcher/package-op/dist', to: './packages/op/' }
+        { from: './node_modules/@jspatcher/package-op/dist', to: './packages/op/' },
+        { from: './node_modules/@jspatcher/package-webaudio/dist', to: './packages/webaudio/' }
       ],
       
     }),
@@ -123,6 +122,8 @@ const config = {
     ignored: /node_modules/
   }
 };
+process.traceDeprecation = true;
+
 module.exports = (env, argv) => {
   if (argv.mode === 'development') {
     config.devtool = 'source-map';

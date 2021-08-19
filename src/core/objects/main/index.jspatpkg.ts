@@ -7,6 +7,9 @@ import FaustPatcher from "./FaustPatcher";
 import GenPatcher from "./GenPatcher";
 import BPatcher from "./BPatcher";
 import DspSubPatcher from "./DspSubPatcher";
+import Buffer from "./Buffer";
+import Record from "./Record";
+import Plugin from "./WebAudioModule";
 
 export default async () => ({
     in: In,
@@ -19,5 +22,8 @@ export default async () => ({
     faustPatcher: FaustPatcher,
     pfaust: FaustPatcher,
     gen: GenPatcher,
-    bpatcher: BPatcher
+    bpatcher: BPatcher,
+    "buffer~": Buffer,
+    "record~": Record,
+    "plugin~": Plugin
 });

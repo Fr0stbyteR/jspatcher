@@ -1,34 +1,43 @@
-import { WebAudioModule, WamNode } from "wamsdk/src/api";
-import { Bang, BaseObject, isBang } from "../base/index.jspatpkg";
-import { TMIDIEvent, TBPF, IJSPatcherObjectMeta, IInletMeta, IOutletMeta } from "../../types";
-import { DOMUI, DOMUIState } from "../base/DOMUI";
+import type { WebAudioModule, WamNode } from "wamsdk/src/api";
+import Bang, { isBang } from "../base/Bang";
+import BaseObject from "../base/BaseObject";
+import DOMUI, { DOMUIState } from "../base/DOMUI";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
+import type { TMIDIEvent, TBPF } from "../../types";
+import type { IInletMeta, IOutletMeta, IInletsMeta, IOutletsMeta, IArgsMeta } from "../base/AbstractObject";
 
 class PluginUI extends DOMUI<Plugin> {
-    state: DOMUIState = { ...this.state, children: this.object.state.children };
+    state: DOMUIState = { ...this.state, children: this.object._.children };
 }
 
-export type S = { node: WamNode; plugin: WebAudioModule; children: ChildNode[] };
+export interface IS {
+    splitter: ChannelSplitterNode;
+    merger: ChannelMergerNode;
+    node: WamNode;
+    plugin: WebAudioModule;
+    children: ChildNode[];
+}
+
 type I = [Bang | number | string | TMIDIEvent | Record<string, TBPF>, ...TBPF[]];
 type O = (null | WamNode)[];
-export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIState> {
+export default class Plugin extends BaseObject<{}, {}, I, O, [string], {}, DOMUIState> {
     static description = "Dynamically load WebAudioModule";
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
+    static inlets: IInletsMeta = [{
         isHot: true,
         type: "anything",
         description: "A bang to output the instance, url to load, or a param-bpf map, or a MIDI event"
     }];
-    static outlets: IJSPatcherObjectMeta["outlets"] = [{
+    static outlets: IOutletsMeta = [{
         type: "object",
         description: "WebAudioModule instance"
     }];
-    static args: IJSPatcherObjectMeta["args"] = [{
+    static args: IArgsMeta = [{
         type: "string",
         optional: false,
         description: "WebAudioModule URL"
     }];
     static UI = PluginUI;
-    state = { merger: undefined, splitter: undefined, node: undefined, plugin: undefined, children: [] } as S;
+    _: IS = { merger: undefined, splitter: undefined, node: undefined, plugin: undefined, children: [] };
     async load(url: string) {
         let WAPCtor: typeof WebAudioModule;
         let plugin: WebAudioModule;
@@ -52,12 +61,12 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
         element.style.width = "100%";
         element.style.height = "100%";
         element.style.position = "absolute";
-        this.state.children = [element];
-        this.updateUI({ children: this.state.children });
+        this._.children = [element];
+        this.updateUI({ children: this._.children });
         node.channelInterpretation = "discrete";
         const inlets = node.numberOfInputs;
         const outlets = node.numberOfOutputs;
-        Object.assign(this.state, { node, plugin } as S);
+        Object.assign(this._, { node, plugin });
         const Ctor = this.constructor as typeof Plugin;
         const firstInletMeta = Ctor.inlets[0];
         const firstInletSignalMeta: IInletMeta = { ...firstInletMeta, type: "signal" };
@@ -65,7 +74,7 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
         const audioParamInletMeta: IInletMeta = { isHot: false, type: "number", description: ": bpf or node connection" };
         const outletMeta: IOutletMeta = { type: "signal", description: "Node connection" };
         const lastOutletMeta = Ctor.outlets[0];
-        const factoryMeta = Ctor.meta;
+        const factoryMeta = Ctor.meta as this["meta"];
         for (let i = 0; i < inlets; i++) {
             if (i === 0) factoryMeta.inlets[i] = inlets ? firstInletSignalMeta : firstInletMeta;
             else factoryMeta.inlets[i] = inletMeta;
@@ -88,23 +97,22 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
         this.inlets = (inlets || 1) + params.length;
         this.outlets = outlets + 1;
         this.connectAudio();
-        this.outlet(this.outlets - 1, this.state.node);
+        this.outlet(this.outlets - 1, this._.node);
     }
     handleDestroy = () => {
-        const { node, plugin } = this.state;
+        const { node, plugin } = this._;
         if (node) {
             node.disconnect();
             node.disconnectEvents();
         }
         if (plugin) {
             plugin.audioNode.destroy();
-            if (this.state.children?.[0]) plugin.destroyGui(this.state.children[0] as Element);
+            if (this._.children?.[0]) plugin.destroyGui(this._.children[0] as Element);
         }
     };
     handlePreInit = () => undefined as any;
     handlePostInit = async () => {
-        if (this.box.args[0]) await this.load(this.box.args[0]);
-        this.on("updateArgs", this.handleUpdateArgs);
+        await this.handleUpdateArgs(this.args);
     };
     handleUpdateArgs = async (args: Partial<[string]>): Promise<void> => {
         if (typeof args[0] === "string") await this.load(this.box.args[0]);
@@ -112,23 +120,23 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
     handleInlet = async ({ data, inlet }: { data: I[number]; inlet: number }) => {
         if (inlet === 0) {
             if (isBang(data)) {
-                if (this.state.node) this.outlet(this.outlets - 1, this.state.node);
+                if (this._.node) this.outlet(this.outlets - 1, this._.node);
             } else if (typeof data === "string") {
                 await this.load(data);
             } else if (isMIDIEvent(data)) {
                 const bytes = Array.from(data) as [number, number, number];
-                if (this.state.node) this.state.node.scheduleEvents({ type: "midi", data: { bytes }, time: this.audioCtx.currentTime });
+                if (this._.node) this._.node.scheduleEvents({ type: "wam-midi", data: { bytes }, time: this.audioCtx.currentTime });
             } else if (typeof data === "object") {
-                if (this.state.node) {
+                if (this._.node) {
                     for (const key in data) {
                         try {
                             const bpf = decodeLine((data as Record<string, TBPF>)[key]);
                             let t = 0;
                             bpf.forEach((a) => {
                                 if (a.length > 1) t += a[1];
-                                this.state.node.scheduleEvents({ type: "automation", data: { id: key, value: a[0], normalized: false }, time: this.audioCtx.currentTime + t });
+                                this._.node.scheduleEvents({ type: "wam-automation", data: { id: key, value: a[0], normalized: false }, time: this.audioCtx.currentTime + t });
                             });
-                            // else this.state.node.setParam(key, bpf[bpf.length - 1][0]);
+                            // else this._.node.setParam(key, bpf[bpf.length - 1][0]);
                         } catch (e) {
                             this.error(e.message);
                         }
@@ -151,6 +159,7 @@ export default class Plugin extends BaseObject<{}, S, I, O, [string], {}, DOMUIS
         super.subscribe();
         this.on("preInit", this.handlePreInit);
         this.on("postInit", this.handlePostInit);
+        this.on("updateArgs", this.handleUpdateArgs);
         this.on("inlet", this.handleInlet);
         this.on("destroy", this.handleDestroy);
     }

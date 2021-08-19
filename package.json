@@ -3,9 +3,10 @@
   "version": "0.0.3",
   "description": "patcher js",
   "scripts": {
-    "build": "webpack --mode development",
-    "build-watch": "webpack --mode development --watch --stats-children",
-    "dist": "webpack --mode production"
+    "prebuild": "node ./src/scripts/patchSemanticUICss.js",
+    "build": "npm run prebuild && webpack --mode development",
+    "build-watch": "npm run prebuild && webpack --mode development --watch --stats-children",
+    "dist": "npm run prebuild && webpack --mode production"
   },
   "keywords": [
     "js",
@@ -27,6 +28,7 @@
     "@grame/libmusicxml": "^3.19.1",
     "@jspatcher/package-op": "^1.0.2",
     "@jspatcher/package-std": "^1.0.3",
+    "@jspatcher/package-webaudio": "^1.0.0",
     "@shren/guidolib": "^1.7.3",
     "@types/emscripten": "^1.39.5",
     "@types/jszip": "^3.4.1",
@@ -51,7 +53,6 @@
     "eslint-plugin-react": "^7.24.0",
     "faust2webaudio": "github:grame-cncm/faust2webaudio",
     "fftw-js": "^0.1.4",
-    "file-loader": "^6.2.0",
     "jszip": "^3.7.1",
     "lato-font": "^3.0.0",
     "monaco-editor": "^0.27.0",
@@ -71,7 +72,6 @@
     "stylelint": "^13.13.1",
     "stylelint-config-recommended": "^5.0.0",
     "typescript": "^4.3.5",
-    "url-loader": "^4.1.1",
     "util": "^0.12.4",
     "wamsdk": "file:../webaudiomodule/packages/sdk",
     "webpack": "^5.50.0",
