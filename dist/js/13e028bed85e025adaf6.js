@@ -1,3 +1,4 @@
+"use strict";
 (self["webpackChunkJSPatcher"] = self["webpackChunkJSPatcher"] || []).push([["src_core_objects_globalThis_index_jspatpkg_ts"],{
 
 /***/ "./src/core/objects/globalThis/index.jspatpkg.ts":
@@ -6,7 +7,6 @@
   \*******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)

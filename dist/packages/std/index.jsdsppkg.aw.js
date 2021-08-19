@@ -161,23 +161,30 @@ class call extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
 
   subscribe() {
     super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = this.initialInlets;
-      this.outlets = this.initialOutlets;
-    });
-    this.on("updateArgs", args => {
+
+    const handleArgs = args => {
       this._.inputs = args.slice(1);
       const argsCount = Math.max(args.length - 1, ~~+this.getProp("args"));
       this.inlets = Math.max(1, this.initialInlets + argsCount);
       this.outlets = this.initialOutlets + argsCount;
-    });
-    this.on("updateProps", props => {
+    };
+
+    const handleProps = props => {
       if (props.args && typeof props.args === "number" && props.args >= 0) {
         const argsCount = Math.max(this.box.args.length - 1, ~~props.args);
         this.inlets = Math.max(1, this.initialInlets + argsCount);
         this.outlets = this.initialOutlets + argsCount;
       }
+    };
+
+    this.on("postInit", () => {
+      if (this.args.length) handleArgs(this.args);
+      if (this.props) handleProps(this.props);
+      if (this.inlets < this.initialInlets) this.inlets = this.initialInlets;
+      if (this.outlets < this.initialOutlets) this.outlets = this.initialOutlets;
     });
+    this.on("updateArgs", handleArgs);
+    this.on("updateProps", handleProps);
     this.on("inlet", _ref => {
       let {
         data,
@@ -280,88 +287,6 @@ _defineProperty(call, "props", {
     description: "If true and in case the result is a Promise, instead of waiting for result, will output the Promise object"
   }
 });
-
-/***/ }),
-
-/***/ "./src/objects/delay.ts":
-/*!******************************!*\
-  !*** ./src/objects/delay.ts ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ delay)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class delay extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      time: 0,
-      ref: new Set()
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 1;
-    });
-    this.on("updateArgs", () => {
-      const {
-        args
-      } = this.box;
-      if (typeof args[0] === "number") this._.time = +args[0];
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        this._.ref.add(window.setTimeout(() => this.outlet(0, data), this._.time || 0));
-      } else if (inlet === 1) {
-        this._.time = +data;
-      }
-    });
-    this.on("destroy", () => {
-      this._.ref.forEach(ref => window.clearTimeout(ref));
-    });
-  }
-
-}
-
-_defineProperty(delay, "description", "Delay an input");
-
-_defineProperty(delay, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Input to be delayed"
-}, {
-  isHot: false,
-  type: "number",
-  description: "Delay time in seconds"
-}]);
-
-_defineProperty(delay, "outlets", [{
-  type: "anything",
-  description: "Delayed input"
-}]);
-
-_defineProperty(delay, "args", [{
-  type: "number",
-  optional: true,
-  default: 0,
-  description: "Default delay time"
-}]);
 
 /***/ }),
 
@@ -483,7 +408,7 @@ class ForIn extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      buffer: null
+      buffer: this.args[0]
     });
   }
 
@@ -569,9 +494,9 @@ class For extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      start: 0,
-      end: 0,
-      step: 1
+      start: +this.args[0] || 0,
+      end: +this.args[1] || 0,
+      step: +this.args[2] || 1
     });
   }
 
@@ -683,7 +608,7 @@ class gate extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      pass: true
+      pass: this.args[0] === "undefined" || this.args[0] === "" || !!this.args[0]
     });
   }
 
@@ -907,7 +832,7 @@ class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     _this = this;
 
     _defineProperty(this, "_", {
-      argsCount: 0,
+      argsCount: typeof this.args[0] === "number" && this.args[0] >= 0 ? ~~this.args[0] : 0,
       result: undefined
     });
 
@@ -932,13 +857,9 @@ class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super.subscribe();
     this.on("preInit", () => {
       this.inlets = 2;
-      this.outlets = 3;
+      this.outlets = 3 + this._.argsCount;
     });
-    this.on("updateArgs", () => {
-      const {
-        args
-      } = this.box;
-
+    this.on("updateArgs", args => {
       if (typeof args[0] === "number" && args[0] >= 0) {
         this._.argsCount = ~~args[0];
         this.outlets = 2 + this._.argsCount;
@@ -952,7 +873,9 @@ class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
 
       if (inlet === 0) {
         if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(0, this.lambda);
-      } else if (inlet === 1) this._.result = data;
+      } else if (inlet === 1) {
+        this._.result = data;
+      }
     });
   }
 
@@ -1071,7 +994,7 @@ class obj extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.inlets = args.length + 1;
     });
     this.on("postInit", () => {
-      this.inlets = this.box.args.length + 1;
+      this.inlets = this.args.length + 1;
       this.outlets = 1;
     });
     this.on("inlet", _ref => {
@@ -1141,7 +1064,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 class print extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
   get title() {
-    return "".concat(this.args[0]);
+    return "".concat(this.args[0] || "Print");
   }
 
   subscribe() {
@@ -1317,8 +1240,8 @@ class set extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      key: undefined,
-      value: undefined
+      key: typeof this.args[0] === "string" || typeof this.args[0] === "number" ? this.args[0] : undefined,
+      value: this.args[1]
     });
   }
 
@@ -1586,11 +1509,7 @@ class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     };
 
-    this.on("preInit", () => {
-      this.inlets = 3;
-      this.outlets = 1;
-    });
-    this.on("updateArgs", async args => {
+    const handleArgs = async args => {
       var _args$;
 
       const key = (_args$ = args[0]) === null || _args$ === void 0 ? void 0 : _args$.toString();
@@ -1608,7 +1527,13 @@ class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
           (_this$_$sharedItem3 = this._.sharedItem) === null || _this$_$sharedItem3 === void 0 ? void 0 : _this$_$sharedItem3.save(this.state.value, this);
         }
       }
+    };
+
+    this.on("preInit", () => {
+      this.inlets = 3;
+      this.outlets = 1;
     });
+    this.on("updateArgs", handleArgs);
     this.on("updateState", _ref => {
       var _this$_$sharedItem4;
 
@@ -1621,7 +1546,9 @@ class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       (_this$_$sharedItem4 = this._.sharedItem) === null || _this$_$sharedItem4 === void 0 ? void 0 : _this$_$sharedItem4.save(this.state.value, this);
       this.outlet(0, this.state.value);
     });
-    this.on("postInit", reload);
+    this.on("postInit", () => {
+      return handleArgs(this.args);
+    });
     this.on("inlet", _ref2 => {
       let {
         data,
@@ -3821,7 +3748,7 @@ module.exports = $gOPD;
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-std","version":"1.0.0","description":"The standard package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-std","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@types/react":"^17.0.18","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","jspatcher":"file:../../jspatcher","react":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-std","version":"1.0.2","description":"The standard package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-std","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"0.0.2","@types/react":"^17.0.18","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","react":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
 
 /***/ })
 
@@ -3951,25 +3878,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_if__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./objects/if */ "./src/objects/if.ts");
 /* harmony import */ var _objects_bang__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./objects/bang */ "./src/objects/bang.ts");
 /* harmony import */ var _objects_call__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./objects/call */ "./src/objects/call.ts");
-/* harmony import */ var _objects_delay__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./objects/delay */ "./src/objects/delay.ts");
-/* harmony import */ var _objects_dget__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./objects/dget */ "./src/objects/dget.ts");
-/* harmony import */ var _objects_gate__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./objects/gate */ "./src/objects/gate.ts");
-/* harmony import */ var _objects_get__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./objects/get */ "./src/objects/get.ts");
-/* harmony import */ var _objects_lambda__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./objects/lambda */ "./src/objects/lambda.ts");
-/* harmony import */ var _objects_loadbang__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./objects/loadbang */ "./src/objects/loadbang.ts");
-/* harmony import */ var _objects_obj__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./objects/obj */ "./src/objects/obj.ts");
-/* harmony import */ var _objects_print__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./objects/print */ "./src/objects/print.ts");
-/* harmony import */ var _objects_sel__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./objects/sel */ "./src/objects/sel.ts");
-/* harmony import */ var _objects_set__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./objects/set */ "./src/objects/set.ts");
-/* harmony import */ var _objects_thispatcher__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./objects/thispatcher */ "./src/objects/thispatcher.ts");
-/* harmony import */ var _objects_v__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./objects/v */ "./src/objects/v.ts");
-/* harmony import */ var _objects_unloadbang__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./objects/unloadbang */ "./src/objects/unloadbang.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
+/* harmony import */ var _objects_dget__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./objects/dget */ "./src/objects/dget.ts");
+/* harmony import */ var _objects_gate__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./objects/gate */ "./src/objects/gate.ts");
+/* harmony import */ var _objects_get__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./objects/get */ "./src/objects/get.ts");
+/* harmony import */ var _objects_lambda__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./objects/lambda */ "./src/objects/lambda.ts");
+/* harmony import */ var _objects_loadbang__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./objects/loadbang */ "./src/objects/loadbang.ts");
+/* harmony import */ var _objects_obj__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./objects/obj */ "./src/objects/obj.ts");
+/* harmony import */ var _objects_print__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./objects/print */ "./src/objects/print.ts");
+/* harmony import */ var _objects_sel__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./objects/sel */ "./src/objects/sel.ts");
+/* harmony import */ var _objects_set__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./objects/set */ "./src/objects/set.ts");
+/* harmony import */ var _objects_thispatcher__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./objects/thispatcher */ "./src/objects/thispatcher.ts");
+/* harmony import */ var _objects_v__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./objects/v */ "./src/objects/v.ts");
+/* harmony import */ var _objects_unloadbang__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./objects/unloadbang */ "./src/objects/unloadbang.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
 
 
 
 
-
+ // import delay from "./objects/delay";
 
 
 
@@ -3986,24 +3912,24 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => {
   return {
-    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_print__WEBPACK_IMPORTED_MODULE_12__.default),
-    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__.default),
-    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__.default),
-    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__.default),
-    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_7__.default),
-    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_13__.default),
-    obj: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_11__.default),
-    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_set__WEBPACK_IMPORTED_MODULE_14__.default),
-    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_get__WEBPACK_IMPORTED_MODULE_8__.default),
-    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_6__.default),
-    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__.default),
-    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_v__WEBPACK_IMPORTED_MODULE_16__.default),
-    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_9__.default),
-    bang: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default),
-    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_10__.default),
-    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_17__.default),
-    delay: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_delay__WEBPACK_IMPORTED_MODULE_5__.default),
-    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_15__.default)
+    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_print__WEBPACK_IMPORTED_MODULE_11__.default),
+    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__.default),
+    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__.default),
+    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__.default),
+    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_6__.default),
+    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_12__.default),
+    obj: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_10__.default),
+    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_set__WEBPACK_IMPORTED_MODULE_13__.default),
+    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_get__WEBPACK_IMPORTED_MODULE_7__.default),
+    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_5__.default),
+    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__.default),
+    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_v__WEBPACK_IMPORTED_MODULE_15__.default),
+    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_8__.default),
+    bang: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default),
+    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_9__.default),
+    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_16__.default),
+    // delay: generateRemotedObject(delay as typeof BaseObject),
+    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_17__.generateRemotedObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_14__.default)
   };
 });
 })();

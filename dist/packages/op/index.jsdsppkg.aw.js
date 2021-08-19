@@ -98,7 +98,7 @@ class Binary extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     _defineProperty(this, "execute", void 0);
 
     _defineProperty(this, "_", {
-      arg: undefined,
+      arg: this.args[0],
       result: undefined
     });
   }
@@ -287,8 +287,8 @@ class Ternary extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      args: [true, false],
-      result: true
+      args: [this.args.length ? this.args[0] : true, this.args.length > 1 ? this.args[1] : false],
+      result: undefined
     });
   }
 
@@ -299,11 +299,8 @@ class Ternary extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       this.outlets = 1;
     });
     this.on("updateArgs", args => {
-      this._.args = [true, false];
-      this._.result = true;
-      if (!args || args.length === 0) return;
-      this._.args[0] = args[0];
-      this._.args[1] = args[1];
+      this._.args = [args.length ? args[0] : true, args.length > 1 ? args[1] : false];
+      this._.result = undefined;
     });
     this.on("inlet", _ref => {
       let {
@@ -503,7 +500,7 @@ const {
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-op","version":"1.0.0","description":"The operators package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-op","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"0.0.2","@types/react":"^17.0.18","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","react":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-op","version":"1.0.1","description":"The operators package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-op","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"0.0.2","@types/react":"^17.0.18","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","react":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
 
 /***/ })
 

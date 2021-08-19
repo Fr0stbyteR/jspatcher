@@ -81,7 +81,7 @@ if (!self.define) {
     });
   };
 }
-define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use strict';
+define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use strict';
 
   /**
   * Welcome to your Workbox-powered service worker!
@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.2.1629279129039"
+    prefix: "0.0.3.1629378858557"
   });
   self.skipWaiting();
   workbox.clientsClaim();
@@ -107,169 +107,172 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
    */
 
   workbox.precacheAndRoute([{
-    "url": "assets/08eb0932dc2145b3f6b23d1eeb9e22f4.woff",
+    "url": "assets/00aa018e3ae78d50160b.ttf",
     "revision": null
   }, {
-    "url": "assets/0d0882bc6997a213dace5d0bbe174036.woff",
+    "url": "assets/08eb0932dc2145b3f6b2.woff",
     "revision": null
   }, {
-    "url": "assets/1d2ca94dfba6f8d87cfda33b32f0febc.woff",
+    "url": "assets/0d0882bc6997a213dace.woff",
     "revision": null
   }, {
-    "url": "assets/1fd1d41f8c400da7af75c5c1821fd164.woff",
+    "url": "assets/1d2ca94dfba6f8d87cfd.woff",
     "revision": null
   }, {
-    "url": "assets/21b3848a32fce5b0f5014948186f6964.woff2",
+    "url": "assets/1fd1d41f8c400da7af75.woff",
     "revision": null
   }, {
-    "url": "assets/278156e41e0ad908cf7f841b17130502.woff2",
+    "url": "assets/21b3848a32fce5b0f501.woff2",
     "revision": null
   }, {
-    "url": "assets/34b49f334f41cea8e3655802530d4c67.woff2",
+    "url": "assets/278156e41e0ad908cf7f.woff2",
     "revision": null
   }, {
-    "url": "assets/353a3bb93ba34c9b047610960d97fbb4.woff2",
+    "url": "assets/34b49f334f41cea8e365.woff2",
     "revision": null
   }, {
-    "url": "assets/38c6d8bab26db77d8c806813e1497763.woff2",
+    "url": "assets/353a3bb93ba34c9b0476.woff2",
     "revision": null
   }, {
-    "url": "assets/3e22a5367c2e68d6e4ba56d2a827141e.woff2",
+    "url": "assets/38c6d8bab26db77d8c80.woff2",
     "revision": null
   }, {
-    "url": "assets/3e6b99809852a8290c42c97dc1b66efb.woff",
+    "url": "assets/3e22a5367c2e68d6e4ba.woff2",
     "revision": null
   }, {
-    "url": "assets/3fdee263fe69b843601fc2a6eb5baf24.woff",
+    "url": "assets/3e6b99809852a8290c42.woff",
     "revision": null
   }, {
-    "url": "assets/425399f81e4ce7cbd967685402ba0260.woff",
+    "url": "assets/3fdee263fe69b843601f.woff",
     "revision": null
   }, {
-    "url": "assets/46957bf0a71db58833138e00cb6f4eb8.woff2",
+    "url": "assets/425399f81e4ce7cbd967.woff",
     "revision": null
   }, {
-    "url": "assets/5367103510b27b78482794590e1ce3b0.ttf",
+    "url": "assets/46957bf0a71db5883313.woff2",
     "revision": null
   }, {
-    "url": "assets/546b4809e90728a64a4f91e399a1e6f4.woff",
+    "url": "assets/5367103510b27b784827.ttf",
     "revision": null
   }, {
-    "url": "assets/598d09137818c7135a2483a669590a65.woff",
+    "url": "assets/546b4809e90728a64a4f.woff",
     "revision": null
   }, {
-    "url": "assets/5b824a726edcf6642539e81a3534f3ad.woff",
+    "url": "assets/598d09137818c7135a24.woff",
     "revision": null
   }, {
-    "url": "assets/62a9c838c99d073c7ba6ac08698de9a1.woff",
+    "url": "assets/5b824a726edcf6642539.woff",
     "revision": null
   }, {
-    "url": "assets/62d9dae4e0040e81c980950003df0e07.svg",
+    "url": "assets/62a9c838c99d073c7ba6.woff",
     "revision": null
   }, {
-    "url": "assets/65a2fb6d9aaa164b41a039302093995b.ttf",
+    "url": "assets/62d9dae4e0040e81c980.svg",
     "revision": null
   }, {
-    "url": "assets/6729d29753e000c17489ed43135ba8d5.svg",
+    "url": "assets/65a2fb6d9aaa164b41a0.ttf",
     "revision": null
   }, {
-    "url": "assets/687a4990ea22bb1a49d469a5d9319790.woff2",
+    "url": "assets/6729d29753e000c17489.svg",
     "revision": null
   }, {
-    "url": "assets/6ae7abff1b20614e4a70a75f8f64a8e8.woff2",
+    "url": "assets/68664da4962ed33db33e.ttf",
     "revision": null
   }, {
-    "url": "assets/6cfa65c63939188f33ef0e3a68d09306.woff",
+    "url": "assets/687a4990ea22bb1a49d4.woff2",
     "revision": null
   }, {
-    "url": "assets/6d20cff5b3255dd0078f935c34e2b882.woff2",
+    "url": "assets/6ae7abff1b20614e4a70.woff2",
     "revision": null
   }, {
-    "url": "assets/73d2c04510d153b6da5291b538422faf.woff2",
+    "url": "assets/6cfa65c63939188f33ef.woff",
     "revision": null
   }, {
-    "url": "assets/74d8acf8740a672d680194959e476053.ttf",
+    "url": "assets/6d20cff5b3255dd0078f.woff2",
     "revision": null
   }, {
-    "url": "assets/752905fa5edf21fc52a10a0c1ca9c7a4.eot",
+    "url": "assets/73d2c04510d153b6da52.woff2",
     "revision": null
   }, {
-    "url": "assets/75614cfcfedd509b1f7ac1c26c53bb7f.woff2",
+    "url": "assets/752905fa5edf21fc52a1.eot",
     "revision": null
   }, {
-    "url": "assets/75f024ce11d1fb961e8c4602e54a17a6.woff2",
+    "url": "assets/75614cfcfedd509b1f7a.woff2",
     "revision": null
   }, {
-    "url": "assets/7d1b926dcecd9fd7425ea7a81a737391.woff",
+    "url": "assets/75f024ce11d1fb961e8c.woff2",
     "revision": null
   }, {
-    "url": "assets/848f3a6e80058194c450d0bc7e93080f.woff",
+    "url": "assets/7d1b926dcecd9fd7425e.woff",
     "revision": null
   }, {
-    "url": "assets/863985d67436f8342e2d913563648040.woff2",
+    "url": "assets/848f3a6e80058194c450.woff",
     "revision": null
   }, {
-    "url": "assets/89b618086a797a8be0f4549489bb2993.woff",
+    "url": "assets/863985d67436f8342e2d.woff2",
     "revision": null
   }, {
-    "url": "assets/8ea310a0c29539324b47b89d3d371ff0.woff",
+    "url": "assets/89b618086a797a8be0f4.woff",
     "revision": null
   }, {
-    "url": "assets/99f63ae7a743f21ab30847ed06a698d9.png",
+    "url": "assets/8ea310a0c29539324b47.woff",
     "revision": null
   }, {
-    "url": "assets/9ba7233345056c919454146973e10ee2.woff",
+    "url": "assets/99f63ae7a743f21ab308.png",
     "revision": null
   }, {
-    "url": "assets/9c4845b4b41ef40a22faee76144fa816.svg",
+    "url": "assets/9ba7233345056c919454.woff",
     "revision": null
   }, {
-    "url": "assets/a01e3f2d6c83dc3aee175e2482b3f777.eot",
+    "url": "assets/9c4845b4b41ef40a22fa.svg",
     "revision": null
   }, {
-    "url": "assets/a071abba7e9bd90947f74e34f411dfbc.woff2",
+    "url": "assets/a01e3f2d6c83dc3aee17.eot",
     "revision": null
   }, {
-    "url": "assets/a6069540692725c247f13984a9598a92.woff2",
+    "url": "assets/a071abba7e9bd90947f7.woff2",
     "revision": null
   }, {
-    "url": "assets/b9c017a718cdeb8538b85b43da63bafc.woff2",
+    "url": "assets/a6069540692725c247f1.woff2",
     "revision": null
   }, {
-    "url": "assets/bb5de40edffdbd3ab519a2079528029b.woff2",
+    "url": "assets/b9c017a718cdeb8538b8.woff2",
     "revision": null
   }, {
-    "url": "assets/c656b8caa454ed19b9a2ef7f4f5b8fea.ttf",
+    "url": "assets/bb5de40edffdbd3ab519.woff2",
     "revision": null
   }, {
-    "url": "assets/c66465590541129e82d3d6f725c5658b.woff",
+    "url": "assets/c656b8caa454ed19b9a2.ttf",
     "revision": null
   }, {
-    "url": "assets/cac87dc00c87a5d74711d0276713808a.woff",
+    "url": "assets/c66465590541129e82d3.woff",
     "revision": null
   }, {
-    "url": "assets/d68fa3e67dbb653a13cec44b1bcabcfe.eot",
+    "url": "assets/cac87dc00c87a5d74711.woff",
     "revision": null
   }, {
-    "url": "assets/dcb1947bf381a2824c71d3d56201be3d.woff2",
+    "url": "assets/d68fa3e67dbb653a13ce.eot",
     "revision": null
   }, {
-    "url": "assets/ddae9b1ba9b0b42f58809904b0b21349.woff",
+    "url": "assets/dcb1947bf381a2824c71.woff2",
     "revision": null
   }, {
-    "url": "assets/ddf3ba7c143ea711126ca33713e335e6.woff2",
+    "url": "assets/ddae9b1ba9b0b42f5880.woff",
     "revision": null
   }, {
-    "url": "assets/e014213d2c1456d5f1af91a9b0cdbc08.woff",
+    "url": "assets/ddf3ba7c143ea711126c.woff2",
     "revision": null
   }, {
-    "url": "assets/e244488c8cc2f53371535d542a499b57.woff2",
+    "url": "assets/e014213d2c1456d5f1af.woff",
     "revision": null
   }, {
-    "url": "assets/e48918f9c91871c0ce3ecf2a3ee0a416.woff2",
+    "url": "assets/e244488c8cc2f5337153.woff2",
     "revision": null
   }, {
-    "url": "assets/ed49088eb627c1c0155d8b711767f15c.woff",
+    "url": "assets/e48918f9c91871c0ce3e.woff2",
+    "revision": null
+  }, {
+    "url": "assets/ed49088eb627c1c0155d.woff",
     "revision": null
   }, {
     "url": "deps/ffmpeg-core.js",
@@ -288,10 +291,10 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "revision": "42914c6132a30517e800b4e840079cb6"
   }, {
     "url": "deps/libfaust-wasm.data",
-    "revision": "a219c93a13520e76127e3ff8d53c8b09"
+    "revision": "836e793b78757b60af64d91c5ee82c9a"
   }, {
     "url": "deps/libfaust-wasm.wasm",
-    "revision": "7ddc30bcc9a183f590c818822946d841"
+    "revision": "3c35020c41314aa9bf9742f7550de5f7"
   }, {
     "url": "deps/libmusicxml.wasm",
     "revision": "f2855aa8cdc4f78211ffa8273dd3025e"
@@ -312,9 +315,15 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "781b81505a5f929f237145a26ee7e5fa"
+    "revision": "02193ad4d3be9b05992d05c2677ac026"
+  }, {
+    "url": "js/006e4183aec04d6b291c.worker.js",
+    "revision": null
   }, {
     "url": "js/0357f57e115b5abb657b.worker.js",
+    "revision": null
+  }, {
+    "url": "js/050af9cf174d44917415.js",
     "revision": null
   }, {
     "url": "js/0c3018b73d160e6c6afa.js",
@@ -323,41 +332,38 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "url": "js/0f231b66ecd63691cefa.js",
     "revision": null
   }, {
-    "url": "js/1155f3740c2a4beec8de.js",
-    "revision": null
-  }, {
     "url": "js/13e028bed85e025adaf6.js",
     "revision": null
   }, {
-    "url": "js/1ef399c770e904a1365b.js",
-    "revision": null
-  }, {
-    "url": "js/1fa607897f81373df3bd.worker.js",
-    "revision": null
-  }, {
-    "url": "js/2d53b7fef0725e282d4d.worker.js",
+    "url": "js/1fa98b65059d4f73de9c.worker.js",
     "revision": null
   }, {
     "url": "js/2da973d99ed3f3263f1b.worklet.js",
     "revision": null
   }, {
-    "url": "js/44b984dc08ce632ed35c.js",
+    "url": "js/35ddcd64328b4a626501.js",
+    "revision": null
+  }, {
+    "url": "js/3b38340aa3dca6efa0c6.js",
+    "revision": null
+  }, {
+    "url": "js/3fcc4438c29811f44ac3.js",
+    "revision": null
+  }, {
+    "url": "js/42c226ba879c96932fa0.js",
     "revision": null
   }, {
     "url": "js/455af92e7e1dc39fdbc8060f6680ab32.worker.js",
-    "revision": "a9dc446b993b47cad1309be3b1e59b73"
+    "revision": "8c96644c873a4fec0ef7a30bea08671e"
   }, {
-    "url": "js/4c6405378dc434b735f3.js",
-    "revision": null
-  }, {
-    "url": "js/555e6f65c493b8e6601b.js",
+    "url": "js/520afea1add719af61b2.js",
     "revision": null
   }, {
     "url": "js/5925dbdaf131c02af594.worker.js",
     "revision": null
   }, {
     "url": "js/6b1ed1bedd96f08944b0e5a8b12c4739.worker.js",
-    "revision": "d30e137c71ab82b4c92a22b3f967b2ac"
+    "revision": "73c8bdb14346f1b6d5668c26ec4dd1bb"
   }, {
     "url": "js/70ff708d07dec14b44c1.js",
     "revision": null
@@ -365,19 +371,25 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "url": "js/7ae8201faea4de318b7a.worklet.js",
     "revision": null
   }, {
-    "url": "js/9a5a0e64a5ceac43921d.js",
+    "url": "js/7b7c146764e4b3a77746.js",
     "revision": null
   }, {
-    "url": "js/9b3cc38265bf952cf09e.js",
+    "url": "js/7e971f7eda4062696834.worklet.js",
     "revision": null
   }, {
-    "url": "js/ab721a5b1e8852770568.js",
+    "url": "js/81d0db20b0d487c9f6fc.worker.js",
     "revision": null
   }, {
-    "url": "js/abc7d02e6589b2c23b75.worker.js",
+    "url": "js/84dbda608f4a836c8ff3.js",
     "revision": null
   }, {
-    "url": "js/b65a0744f469eb89d210.js",
+    "url": "js/a7acfcca6fb672f16df9.js",
+    "revision": null
+  }, {
+    "url": "js/ad9e7c97d7b6324e8f0e.js",
+    "revision": null
+  }, {
+    "url": "js/af13b36e21b5d6d8eeaa.js",
     "revision": null
   }, {
     "url": "js/b862f93c77ff2d6bfe33.worklet.js",
@@ -387,60 +399,66 @@ define("./service-worker.js",['./workbox-1a5fdfa9'], function (workbox) { 'use s
     "revision": null
   }, {
     "url": "js/d63c826e229c90273981bd45f77732ad.worker.js",
-    "revision": "9ee9657bd10ac846554e5999c32e9cf8"
+    "revision": "6ed5d287357e41f6c3c6e55d45215ef3"
+  }, {
+    "url": "js/ea41a0a95e25fbd11756.js",
+    "revision": null
   }, {
     "url": "js/ed59606c427fb184edcb.js",
     "revision": null
   }, {
-    "url": "js/ff5b9ebb2570e528fa11.worklet.js",
-    "revision": null
-  }, {
-    "url": "js/ffb70f2295da81448811.worker.js",
+    "url": "js/f00f0a59e2855fa8eda5.worker.js",
     "revision": null
   }, {
     "url": "manifest.json",
     "revision": "1cbaa3cdd5ba147975aa27bb8a1914f4"
   }, {
     "url": "packages/op/index.js",
-    "revision": "a3010d074464628ed73810a68172d605"
+    "revision": "a3382b70a1ee9ebbd8fc2e8dccc5f5ee"
   }, {
     "url": "packages/op/index.jsdsppkg.aw.js",
-    "revision": "f71eed02e37f2248c855ee804fe4a0ec"
+    "revision": "9573c666bfe9b394a39f4fbfcd0599c0"
   }, {
     "url": "packages/op/index.jsdsppkg.main.js",
-    "revision": "a8d86a7325cb1d659a1320797a56c36f"
+    "revision": "5a383cb0cd0ea53bd6db4ad5874ac71c"
   }, {
     "url": "packages/op/index.jspatpkg.js",
-    "revision": "de623ddd981f8cd6b406bd9cfb5f6387"
+    "revision": "49fd8b56cd59b41b5d7853fe3cc8bb51"
   }, {
     "url": "packages/std/index.js",
-    "revision": "fbfb9a72026c9ac093dbacce02f05b4f"
+    "revision": "a286adc1f16707c07fcce44765f8428c"
   }, {
     "url": "packages/std/index.jsdsppkg.aw.js",
-    "revision": "1ec6432fe3552f6745c8003737687c87"
+    "revision": "5dbf513ba77875d135b9454d22c2f620"
   }, {
     "url": "packages/std/index.jsdsppkg.main.js",
-    "revision": "23e79658c3ca449175ea8ef7678d5ad9"
+    "revision": "3184fabc6c216ea18915261a8fcc65b9"
   }, {
     "url": "packages/std/index.jspatpkg.js",
-    "revision": "befb6ac3397689426719ef6b81c7cdc5"
+    "revision": "d042a457b0a2b6de959ea8397cbba56c"
   }, {
-    "url": "src_core_audio_AudioEditor_ts-src_core_audio_AudioRecorder_ts-src_core_audio_PatcherAudio_ts.js/ff5b9ebb2570e528fa11.worklet.js",
+    "url": "packages/webaudio/index.js",
+    "revision": "3526c48be6c6d64efe2c6c000bee3db4"
+  }, {
+    "url": "packages/webaudio/index.jspatpkg.js",
+    "revision": "21fdd0cf99fae8fae0aa7d4e285fadef"
+  }, {
+    "url": "src_core_audio_AudioEditor_ts-src_core_audio_AudioRecorder_ts-src_core_audio_PatcherAudio_ts.js/7e971f7eda4062696834.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_image_ImageEditor_ts.js/ff5b9ebb2570e528fa11.worklet.js",
+    "url": "src_core_image_ImageEditor_ts.js/7e971f7eda4062696834.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_image_PatcherImage_ts.js/ff5b9ebb2570e528fa11.worklet.js",
+    "url": "src_core_image_PatcherImage_ts.js/7e971f7eda4062696834.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_text_PatcherText_ts.js/ff5b9ebb2570e528fa11.worklet.js",
+    "url": "src_core_text_PatcherText_ts.js/7e971f7eda4062696834.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_text_TextEditor_ts.js/ff5b9ebb2570e528fa11.worklet.js",
+    "url": "src_core_text_TextEditor_ts.js/7e971f7eda4062696834.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_worklets_PatcherNode_ts.js/ff5b9ebb2570e528fa11.worklet.js",
+    "url": "src_core_worklets_PatcherNode_ts.js/7e971f7eda4062696834.worklet.js",
     "revision": null
   }], {});
   workbox.cleanupOutdatedCaches();

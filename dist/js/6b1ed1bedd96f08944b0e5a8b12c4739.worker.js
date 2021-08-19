@@ -2,305 +2,6 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/monaco-editor/esm/vs/base/common/arrays.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/monaco-editor/esm/vs/base/common/arrays.js ***!
-  \*****************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "tail": () => (/* binding */ tail),
-/* harmony export */   "tail2": () => (/* binding */ tail2),
-/* harmony export */   "equals": () => (/* binding */ equals),
-/* harmony export */   "binarySearch": () => (/* binding */ binarySearch),
-/* harmony export */   "findFirstInSorted": () => (/* binding */ findFirstInSorted),
-/* harmony export */   "quickSelect": () => (/* binding */ quickSelect),
-/* harmony export */   "mergeSort": () => (/* binding */ mergeSort),
-/* harmony export */   "groupBy": () => (/* binding */ groupBy),
-/* harmony export */   "coalesce": () => (/* binding */ coalesce),
-/* harmony export */   "isFalsyOrEmpty": () => (/* binding */ isFalsyOrEmpty),
-/* harmony export */   "isNonEmptyArray": () => (/* binding */ isNonEmptyArray),
-/* harmony export */   "distinct": () => (/* binding */ distinct),
-/* harmony export */   "distinctES6": () => (/* binding */ distinctES6),
-/* harmony export */   "firstOrDefault": () => (/* binding */ firstOrDefault),
-/* harmony export */   "flatten": () => (/* binding */ flatten),
-/* harmony export */   "range": () => (/* binding */ range),
-/* harmony export */   "arrayInsert": () => (/* binding */ arrayInsert),
-/* harmony export */   "pushToStart": () => (/* binding */ pushToStart),
-/* harmony export */   "pushToEnd": () => (/* binding */ pushToEnd),
-/* harmony export */   "asArray": () => (/* binding */ asArray)
-/* harmony export */ });
-/**
- * Returns the last element of an array.
- * @param array The array.
- * @param n Which element from the end (default is zero).
- */
-function tail(array, n = 0) {
-    return array[array.length - (1 + n)];
-}
-function tail2(arr) {
-    if (arr.length === 0) {
-        throw new Error('Invalid tail call');
-    }
-    return [arr.slice(0, arr.length - 1), arr[arr.length - 1]];
-}
-function equals(one, other, itemEquals = (a, b) => a === b) {
-    if (one === other) {
-        return true;
-    }
-    if (!one || !other) {
-        return false;
-    }
-    if (one.length !== other.length) {
-        return false;
-    }
-    for (let i = 0, len = one.length; i < len; i++) {
-        if (!itemEquals(one[i], other[i])) {
-            return false;
-        }
-    }
-    return true;
-}
-function binarySearch(array, key, comparator) {
-    let low = 0, high = array.length - 1;
-    while (low <= high) {
-        const mid = ((low + high) / 2) | 0;
-        const comp = comparator(array[mid], key);
-        if (comp < 0) {
-            low = mid + 1;
-        }
-        else if (comp > 0) {
-            high = mid - 1;
-        }
-        else {
-            return mid;
-        }
-    }
-    return -(low + 1);
-}
-/**
- * Takes a sorted array and a function p. The array is sorted in such a way that all elements where p(x) is false
- * are located before all elements where p(x) is true.
- * @returns the least x for which p(x) is true or array.length if no element fullfills the given function.
- */
-function findFirstInSorted(array, p) {
-    let low = 0, high = array.length;
-    if (high === 0) {
-        return 0; // no children
-    }
-    while (low < high) {
-        const mid = Math.floor((low + high) / 2);
-        if (p(array[mid])) {
-            high = mid;
-        }
-        else {
-            low = mid + 1;
-        }
-    }
-    return low;
-}
-function quickSelect(nth, data, compare) {
-    nth = nth | 0;
-    if (nth >= data.length) {
-        throw new TypeError('invalid index');
-    }
-    let pivotValue = data[Math.floor(data.length * Math.random())];
-    let lower = [];
-    let higher = [];
-    let pivots = [];
-    for (let value of data) {
-        const val = compare(value, pivotValue);
-        if (val < 0) {
-            lower.push(value);
-        }
-        else if (val > 0) {
-            higher.push(value);
-        }
-        else {
-            pivots.push(value);
-        }
-    }
-    if (nth < lower.length) {
-        return quickSelect(nth, lower, compare);
-    }
-    else if (nth < lower.length + pivots.length) {
-        return pivots[0];
-    }
-    else {
-        return quickSelect(nth - (lower.length + pivots.length), higher, compare);
-    }
-}
-/**
- * Like `Array#sort` but always stable. Usually runs a little slower `than Array#sort`
- * so only use this when actually needing stable sort.
- */
-function mergeSort(data, compare) {
-    _sort(data, compare, 0, data.length - 1, []);
-    return data;
-}
-function _merge(a, compare, lo, mid, hi, aux) {
-    let leftIdx = lo, rightIdx = mid + 1;
-    for (let i = lo; i <= hi; i++) {
-        aux[i] = a[i];
-    }
-    for (let i = lo; i <= hi; i++) {
-        if (leftIdx > mid) {
-            // left side consumed
-            a[i] = aux[rightIdx++];
-        }
-        else if (rightIdx > hi) {
-            // right side consumed
-            a[i] = aux[leftIdx++];
-        }
-        else if (compare(aux[rightIdx], aux[leftIdx]) < 0) {
-            // right element is less -> comes first
-            a[i] = aux[rightIdx++];
-        }
-        else {
-            // left element comes first (less or equal)
-            a[i] = aux[leftIdx++];
-        }
-    }
-}
-function _sort(a, compare, lo, hi, aux) {
-    if (hi <= lo) {
-        return;
-    }
-    const mid = lo + ((hi - lo) / 2) | 0;
-    _sort(a, compare, lo, mid, aux);
-    _sort(a, compare, mid + 1, hi, aux);
-    if (compare(a[mid], a[mid + 1]) <= 0) {
-        // left and right are sorted and if the last-left element is less
-        // or equals than the first-right element there is nothing else
-        // to do
-        return;
-    }
-    _merge(a, compare, lo, mid, hi, aux);
-}
-function groupBy(data, compare) {
-    const result = [];
-    let currentGroup = undefined;
-    for (const element of mergeSort(data.slice(0), compare)) {
-        if (!currentGroup || compare(currentGroup[0], element) !== 0) {
-            currentGroup = [element];
-            result.push(currentGroup);
-        }
-        else {
-            currentGroup.push(element);
-        }
-    }
-    return result;
-}
-/**
- * @returns New array with all falsy values removed. The original array IS NOT modified.
- */
-function coalesce(array) {
-    return array.filter(e => !!e);
-}
-/**
- * @returns false if the provided object is an array and not empty.
- */
-function isFalsyOrEmpty(obj) {
-    return !Array.isArray(obj) || obj.length === 0;
-}
-function isNonEmptyArray(obj) {
-    return Array.isArray(obj) && obj.length > 0;
-}
-/**
- * Removes duplicates from the given array. The optional keyFn allows to specify
- * how elements are checked for equalness by returning a unique string for each.
- */
-function distinct(array, keyFn) {
-    if (!keyFn) {
-        return array.filter((element, position) => {
-            return array.indexOf(element) === position;
-        });
-    }
-    const seen = Object.create(null);
-    return array.filter((elem) => {
-        const key = keyFn(elem);
-        if (seen[key]) {
-            return false;
-        }
-        seen[key] = true;
-        return true;
-    });
-}
-function distinctES6(array) {
-    const seen = new Set();
-    return array.filter(element => {
-        if (seen.has(element)) {
-            return false;
-        }
-        seen.add(element);
-        return true;
-    });
-}
-function firstOrDefault(array, notFoundValue) {
-    return array.length > 0 ? array[0] : notFoundValue;
-}
-function flatten(arr) {
-    return [].concat(...arr);
-}
-function range(arg, to) {
-    let from = typeof to === 'number' ? arg : 0;
-    if (typeof to === 'number') {
-        from = arg;
-    }
-    else {
-        from = 0;
-        to = arg;
-    }
-    const result = [];
-    if (from <= to) {
-        for (let i = from; i < to; i++) {
-            result.push(i);
-        }
-    }
-    else {
-        for (let i = from; i > to; i--) {
-            result.push(i);
-        }
-    }
-    return result;
-}
-/**
- * Insert `insertArr` inside `target` at `insertIndex`.
- * Please don't touch unless you understand https://jsperf.com/inserting-an-array-within-an-array
- */
-function arrayInsert(target, insertIndex, insertArr) {
-    const before = target.slice(0, insertIndex);
-    const after = target.slice(insertIndex);
-    return before.concat(insertArr, after);
-}
-/**
- * Pushes an element to the start of the array, if found.
- */
-function pushToStart(arr, value) {
-    const index = arr.indexOf(value);
-    if (index > -1) {
-        arr.splice(index, 1);
-        arr.unshift(value);
-    }
-}
-/**
- * Pushes an element to the end of the array, if found.
- */
-function pushToEnd(arr, value) {
-    const index = arr.indexOf(value);
-    if (index > -1) {
-        arr.splice(index, 1);
-        arr.push(value);
-    }
-}
-function asArray(x) {
-    return Array.isArray(x) ? x : [x];
-}
-
-
-/***/ }),
-
 /***/ "./node_modules/monaco-editor/esm/vs/base/common/cancellation.js":
 /*!***********************************************************************!*\
   !*** ./node_modules/monaco-editor/esm/vs/base/common/cancellation.js ***!
@@ -594,6 +295,8 @@ class LcsDiff {
      */
     constructor(originalSequence, modifiedSequence, continueProcessingPredicate = null) {
         this.ContinueProcessingPredicate = continueProcessingPredicate;
+        this._originalSequence = originalSequence;
+        this._modifiedSequence = modifiedSequence;
         const [originalStringElements, originalElementsOrHash, originalHasStrings] = LcsDiff._getElements(originalSequence);
         const [modifiedStringElements, modifiedElementsOrHash, modifiedHasStrings] = LcsDiff._getElements(modifiedSequence);
         this._hasStrings = (originalHasStrings && modifiedHasStrings);
@@ -626,6 +329,20 @@ class LcsDiff {
             return false;
         }
         return (this._hasStrings ? this._originalStringElements[originalIndex] === this._modifiedStringElements[newIndex] : true);
+    }
+    ElementsAreStrictEqual(originalIndex, newIndex) {
+        if (!this.ElementsAreEqual(originalIndex, newIndex)) {
+            return false;
+        }
+        const originalElement = LcsDiff._getStrictElement(this._originalSequence, originalIndex);
+        const modifiedElement = LcsDiff._getStrictElement(this._modifiedSequence, newIndex);
+        return (originalElement === modifiedElement);
+    }
+    static _getStrictElement(sequence, index) {
+        if (typeof sequence.getStrictElement === 'function') {
+            return sequence.getStrictElement(index);
+        }
+        return null;
     }
     OriginalElementsAreEqual(index1, index2) {
         if (this._originalElementsOrHash[index1] !== this._originalElementsOrHash[index2]) {
@@ -1061,10 +778,16 @@ class LcsDiff {
             const modifiedStop = (i < changes.length - 1) ? changes[i + 1].modifiedStart : this._modifiedElementsOrHash.length;
             const checkOriginal = change.originalLength > 0;
             const checkModified = change.modifiedLength > 0;
-            while (change.originalStart + change.originalLength < originalStop &&
-                change.modifiedStart + change.modifiedLength < modifiedStop &&
-                (!checkOriginal || this.OriginalElementsAreEqual(change.originalStart, change.originalStart + change.originalLength)) &&
-                (!checkModified || this.ModifiedElementsAreEqual(change.modifiedStart, change.modifiedStart + change.modifiedLength))) {
+            while (change.originalStart + change.originalLength < originalStop
+                && change.modifiedStart + change.modifiedLength < modifiedStop
+                && (!checkOriginal || this.OriginalElementsAreEqual(change.originalStart, change.originalStart + change.originalLength))
+                && (!checkModified || this.ModifiedElementsAreEqual(change.modifiedStart, change.modifiedStart + change.modifiedLength))) {
+                const startStrictEqual = this.ElementsAreStrictEqual(change.originalStart, change.modifiedStart);
+                const endStrictEqual = this.ElementsAreStrictEqual(change.originalStart + change.originalLength, change.modifiedStart + change.modifiedLength);
+                if (endStrictEqual && !startStrictEqual) {
+                    // moving the change down would create an equal change, but the elements are not strict equal
+                    break;
+                }
                 change.originalStart++;
                 change.modifiedStart++;
             }
@@ -1083,12 +806,8 @@ class LcsDiff {
             let modifiedStop = 0;
             if (i > 0) {
                 const prevChange = changes[i - 1];
-                if (prevChange.originalLength > 0) {
-                    originalStop = prevChange.originalStart + prevChange.originalLength;
-                }
-                if (prevChange.modifiedLength > 0) {
-                    modifiedStop = prevChange.modifiedStart + prevChange.modifiedLength;
-                }
+                originalStop = prevChange.originalStart + prevChange.originalLength;
+                modifiedStop = prevChange.modifiedStart + prevChange.modifiedLength;
             }
             const checkOriginal = change.originalLength > 0;
             const checkModified = change.modifiedLength > 0;
@@ -1106,7 +825,9 @@ class LcsDiff {
                 if (checkModified && !this.ModifiedElementsAreEqual(modifiedStart, modifiedStart + change.modifiedLength)) {
                     break;
                 }
-                const score = this._boundaryScore(originalStart, change.originalLength, modifiedStart, change.modifiedLength);
+                const touchingPreviousChange = (originalStart === originalStop && modifiedStart === modifiedStop);
+                const score = ((touchingPreviousChange ? 5 : 0)
+                    + this._boundaryScore(originalStart, change.originalLength, modifiedStart, change.modifiedLength));
                 if (score > bestScore) {
                     bestScore = score;
                     bestDelta = delta;
@@ -1114,6 +835,13 @@ class LcsDiff {
             }
             change.originalStart -= bestDelta;
             change.modifiedStart -= bestDelta;
+            const mergedChangeArr = [null];
+            if (i > 0 && this.ChangesOverlap(changes[i - 1], changes[i], mergedChangeArr)) {
+                changes[i - 1] = mergedChangeArr[0];
+                changes.splice(i, 1);
+                i++;
+                continue;
+            }
         }
         // There could be multiple longest common substrings.
         // Give preference to the ones containing longer lines
@@ -1485,6 +1213,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "Event": () => (/* binding */ Event),
 /* harmony export */   "Emitter": () => (/* binding */ Emitter),
 /* harmony export */   "PauseableEmitter": () => (/* binding */ PauseableEmitter),
+/* harmony export */   "DebounceEmitter": () => (/* binding */ DebounceEmitter),
 /* harmony export */   "EventBufferer": () => (/* binding */ EventBufferer),
 /* harmony export */   "Relay": () => (/* binding */ Relay)
 /* harmony export */ });
@@ -1492,10 +1221,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lifecycle.js */ "./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js");
 /* harmony import */ var _linkedList_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./linkedList.js */ "./node_modules/monaco-editor/esm/vs/base/common/linkedList.js");
 /* harmony import */ var _stopwatch_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./stopwatch.js */ "./node_modules/monaco-editor/esm/vs/base/common/stopwatch.js");
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
 
 
 
@@ -1531,16 +1256,14 @@ var Event;
     }
     Event.once = once;
     /**
-     * Given an event and a `map` function, returns another event which maps each element
-     * through the mapping function.
+     * @deprecated DO NOT use, this leaks memory
      */
     function map(event, map) {
         return snapshot((listener, thisArgs = null, disposables) => event(i => listener.call(thisArgs, map(i)), null, disposables));
     }
     Event.map = map;
     /**
-     * Given an event and an `each` function, returns another identical event and calls
-     * the `each` function per each element.
+     * @deprecated DO NOT use, this leaks memory
      */
     function forEach(event, each) {
         return snapshot((listener, thisArgs = null, disposables) => event(i => { each(i); listener.call(thisArgs, i); }, null, disposables));
@@ -1562,8 +1285,7 @@ var Event;
     }
     Event.any = any;
     /**
-     * Given an event and a `merge` function, returns another event which maps each element
-     * and the cumulative result through the `merge` function. Similar to `map`, but with memory.
+     * @deprecated DO NOT use, this leaks memory
      */
     function reduce(event, merge, initial) {
         let output = initial;
@@ -1574,9 +1296,7 @@ var Event;
     }
     Event.reduce = reduce;
     /**
-     * Given a chain of event processing functions (filter, map, etc), each
-     * function will be invoked per event & per listener. Snapshotting an event
-     * chain allows each function to be invoked just once per event.
+     * @deprecated DO NOT use, this leaks memory
      */
     function snapshot(event) {
         let listener;
@@ -1590,7 +1310,9 @@ var Event;
         });
         return emitter.event;
     }
-    Event.snapshot = snapshot;
+    /**
+     * @deprecated DO NOT use, this leaks memory
+     */
     function debounce(event, merge, delay = 100, leading = false, leakWarningThreshold) {
         let subscription;
         let output = undefined;
@@ -1626,24 +1348,13 @@ var Event;
     }
     Event.debounce = debounce;
     /**
-     * Given an event, it returns another event which fires only once and as soon as
-     * the input event emits. The event data is the number of millis it took for the
-     * event to fire.
+     * @deprecated DO NOT use, this leaks memory
      */
-    function stopwatch(event) {
-        const start = new Date().getTime();
-        return map(once(event), _ => new Date().getTime() - start);
-    }
-    Event.stopwatch = stopwatch;
-    /**
-     * Given an event, it returns another event which fires only when the event
-     * element changes.
-     */
-    function latch(event) {
+    function latch(event, equals = (a, b) => a === b) {
         let firstCall = true;
         let cache;
         return filter(event, value => {
-            const shouldEmit = firstCall || value !== cache;
+            const shouldEmit = firstCall || !equals(value, cache);
             firstCall = false;
             cache = value;
             return shouldEmit;
@@ -1651,26 +1362,17 @@ var Event;
     }
     Event.latch = latch;
     /**
-     * Buffers the provided event until a first listener comes
-     * along, at which point fire all the events at once and
-     * pipe the event from then on.
-     *
-     * ```typescript
-     * const emitter = new Emitter<number>();
-     * const event = emitter.event;
-     * const bufferedEvent = buffer(event);
-     *
-     * emitter.fire(1);
-     * emitter.fire(2);
-     * emitter.fire(3);
-     * // nothing...
-     *
-     * const listener = bufferedEvent(num => console.log(num));
-     * // 1, 2, 3
-     *
-     * emitter.fire(4);
-     * // 4
-     * ```
+     * @deprecated DO NOT use, this leaks memory
+     */
+    function split(event, isT) {
+        return [
+            Event.filter(event, isT),
+            Event.filter(event, e => !isT(e)),
+        ];
+    }
+    Event.split = split;
+    /**
+     * @deprecated DO NOT use, this leaks memory
      */
     function buffer(event, nextTick = false, _buffer = []) {
         let buffer = _buffer.slice();
@@ -1743,6 +1445,9 @@ var Event;
             return once(this.event)(listener, thisArgs, disposables);
         }
     }
+    /**
+     * @deprecated DO NOT use, this leaks memory
+     */
     function chain(event) {
         return new ChainableEvent(event);
     }
@@ -1763,23 +1468,6 @@ var Event;
         return result.event;
     }
     Event.fromDOMEventEmitter = fromDOMEventEmitter;
-    function fromPromise(promise) {
-        const emitter = new Emitter();
-        let shouldEmit = false;
-        promise
-            .then(undefined, () => null)
-            .then(() => {
-            if (!shouldEmit) {
-                setTimeout(() => emitter.fire(undefined), 0);
-            }
-            else {
-                emitter.fire(undefined);
-            }
-        });
-        shouldEmit = true;
-        return emitter.event;
-    }
-    Event.fromPromise = fromPromise;
     function toPromise(event) {
         return new Promise(resolve => once(event)(resolve));
     }
@@ -1909,24 +1597,20 @@ class Emitter {
                 }
                 // check and record this emitter for potential leakage
                 const removeMonitor = (_a = this._leakageMon) === null || _a === void 0 ? void 0 : _a.check(this._listeners.size);
-                let result;
-                result = {
-                    dispose: () => {
-                        if (removeMonitor) {
-                            removeMonitor();
-                        }
-                        result.dispose = Emitter._noop;
-                        if (!this._disposed) {
-                            remove();
-                            if (this._options && this._options.onLastListenerRemove) {
-                                const hasListeners = (this._listeners && !this._listeners.isEmpty());
-                                if (!hasListeners) {
-                                    this._options.onLastListenerRemove(this);
-                                }
+                const result = (0,_lifecycle_js__WEBPACK_IMPORTED_MODULE_1__.toDisposable)(() => {
+                    if (removeMonitor) {
+                        removeMonitor();
+                    }
+                    if (!this._disposed) {
+                        remove();
+                        if (this._options && this._options.onLastListenerRemove) {
+                            const hasListeners = (this._listeners && !this._listeners.isEmpty());
+                            if (!hasListeners) {
+                                this._options.onLastListenerRemove(this);
                             }
                         }
                     }
-                };
+                });
                 if (disposables instanceof _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__.DisposableStore) {
                     disposables.add(result);
                 }
@@ -1974,14 +1658,16 @@ class Emitter {
         }
     }
     dispose() {
-        var _a, _b, _c;
-        (_a = this._listeners) === null || _a === void 0 ? void 0 : _a.clear();
-        (_b = this._deliveryQueue) === null || _b === void 0 ? void 0 : _b.clear();
-        (_c = this._leakageMon) === null || _c === void 0 ? void 0 : _c.dispose();
-        this._disposed = true;
+        var _a, _b, _c, _d, _e;
+        if (!this._disposed) {
+            this._disposed = true;
+            (_a = this._listeners) === null || _a === void 0 ? void 0 : _a.clear();
+            (_b = this._deliveryQueue) === null || _b === void 0 ? void 0 : _b.clear();
+            (_d = (_c = this._options) === null || _c === void 0 ? void 0 : _c.onLastListenerRemove) === null || _d === void 0 ? void 0 : _d.call(_c);
+            (_e = this._leakageMon) === null || _e === void 0 ? void 0 : _e.dispose();
+        }
     }
 }
-Emitter._noop = function () { };
 class PauseableEmitter extends Emitter {
     constructor(options) {
         super(options);
@@ -2019,6 +1705,23 @@ class PauseableEmitter extends Emitter {
                 super.fire(event);
             }
         }
+    }
+}
+class DebounceEmitter extends PauseableEmitter {
+    constructor(options) {
+        var _a;
+        super(options);
+        this._delay = (_a = options.delay) !== null && _a !== void 0 ? _a : 100;
+    }
+    fire(event) {
+        if (!this._handle) {
+            this.pause();
+            this._handle = setTimeout(() => {
+                this._handle = undefined;
+                this.resume();
+            }, this._delay);
+        }
+        super.fire(event);
     }
 }
 /**
@@ -2101,6 +1804,37 @@ class Relay {
         this.inputEventListener.dispose();
         this.emitter.dispose();
     }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/monaco-editor/esm/vs/base/common/functional.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/monaco-editor/esm/vs/base/common/functional.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "once": () => (/* binding */ once)
+/* harmony export */ });
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+function once(fn) {
+    const _this = this;
+    let didCall = false;
+    let result;
+    return function () {
+        if (didCall) {
+            return result;
+        }
+        didCall = true;
+        result = fn.apply(_this, arguments);
+        return result;
+    };
 }
 
 
@@ -2451,8 +2185,9 @@ var Iterable;
     }
     Iterable.filter = filter;
     function* map(iterable, fn) {
+        let index = 0;
         for (const element of iterable) {
-            yield fn(element);
+            yield fn(element, index++);
         }
     }
     Iterable.map = map;
@@ -2826,7 +2561,8 @@ class ResolvedKeybinding {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "trackDisposable": () => (/* binding */ trackDisposable),
+/* harmony export */   "setDisposableTracker": () => (/* binding */ setDisposableTracker),
+/* harmony export */   "markAsSingleton": () => (/* binding */ markAsSingleton),
 /* harmony export */   "MultiDisposeError": () => (/* binding */ MultiDisposeError),
 /* harmony export */   "isDisposable": () => (/* binding */ isDisposable),
 /* harmony export */   "dispose": () => (/* binding */ dispose),
@@ -2837,7 +2573,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "MutableDisposable": () => (/* binding */ MutableDisposable),
 /* harmony export */   "ImmortalReference": () => (/* binding */ ImmortalReference)
 /* harmony export */ });
-/* harmony import */ var _iterator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./iterator.js */ "./node_modules/monaco-editor/esm/vs/base/common/iterator.js");
+/* harmony import */ var _functional_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./functional.js */ "./node_modules/monaco-editor/esm/vs/base/common/functional.js");
+/* harmony import */ var _iterator_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./iterator.js */ "./node_modules/monaco-editor/esm/vs/base/common/iterator.js");
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 
 /**
  * Enables logging of potentially leaked disposables.
@@ -2848,9 +2590,12 @@ __webpack_require__.r(__webpack_exports__);
  */
 const TRACK_DISPOSABLES = false;
 let disposableTracker = null;
+function setDisposableTracker(tracker) {
+    disposableTracker = tracker;
+}
 if (TRACK_DISPOSABLES) {
     const __is_disposable_tracked__ = '__is_disposable_tracked__';
-    disposableTracker = new class {
+    setDisposableTracker(new class {
         trackDisposable(x) {
             const stack = new Error('Potentially leaked disposable').stack;
             setTimeout(() => {
@@ -2859,30 +2604,53 @@ if (TRACK_DISPOSABLES) {
                 }
             }, 3000);
         }
-        markTracked(x) {
-            if (x && x !== Disposable.None) {
+        setParent(child, parent) {
+            if (child && child !== Disposable.None) {
                 try {
-                    x[__is_disposable_tracked__] = true;
+                    child[__is_disposable_tracked__] = true;
                 }
                 catch (_a) {
                     // noop
                 }
             }
         }
-    };
+        markAsDisposed(disposable) {
+            if (disposable && disposable !== Disposable.None) {
+                try {
+                    disposable[__is_disposable_tracked__] = true;
+                }
+                catch (_a) {
+                    // noop
+                }
+            }
+        }
+        markAsSingleton(disposable) { }
+    });
 }
-function markTracked(x) {
+function trackDisposable(x) {
+    disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.trackDisposable(x);
+    return x;
+}
+function markAsDisposed(disposable) {
+    disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.markAsDisposed(disposable);
+}
+function setParentOfDisposable(child, parent) {
+    disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.setParent(child, parent);
+}
+function setParentOfDisposables(children, parent) {
     if (!disposableTracker) {
         return;
     }
-    disposableTracker.markTracked(x);
-}
-function trackDisposable(x) {
-    if (!disposableTracker) {
-        return x;
+    for (const child of children) {
+        disposableTracker.setParent(child, parent);
     }
-    disposableTracker.trackDisposable(x);
-    return x;
+}
+/**
+ * Indicates that the given object is a singleton which does not need to be disposed.
+*/
+function markAsSingleton(singleton) {
+    disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.markAsSingleton(singleton);
+    return singleton;
 }
 class MultiDisposeError extends Error {
     constructor(errors) {
@@ -2894,11 +2662,10 @@ function isDisposable(thing) {
     return typeof thing.dispose === 'function' && thing.dispose.length === 0;
 }
 function dispose(arg) {
-    if (_iterator_js__WEBPACK_IMPORTED_MODULE_0__.Iterable.is(arg)) {
+    if (_iterator_js__WEBPACK_IMPORTED_MODULE_1__.Iterable.is(arg)) {
         let errors = [];
         for (const d of arg) {
             if (d) {
-                markTracked(d);
                 try {
                     d.dispose();
                 }
@@ -2916,21 +2683,21 @@ function dispose(arg) {
         return Array.isArray(arg) ? [] : arg;
     }
     else if (arg) {
-        markTracked(arg);
         arg.dispose();
         return arg;
     }
 }
 function combinedDisposable(...disposables) {
-    disposables.forEach(markTracked);
-    return toDisposable(() => dispose(disposables));
+    const parent = toDisposable(() => dispose(disposables));
+    setParentOfDisposables(disposables, parent);
+    return parent;
 }
 function toDisposable(fn) {
     const self = trackDisposable({
-        dispose: () => {
-            markTracked(self);
+        dispose: (0,_functional_js__WEBPACK_IMPORTED_MODULE_0__.once)(() => {
+            markAsDisposed(self);
             fn();
-        }
+        })
     });
     return self;
 }
@@ -2938,6 +2705,7 @@ class DisposableStore {
     constructor() {
         this._toDispose = new Set();
         this._isDisposed = false;
+        trackDisposable(this);
     }
     /**
      * Dispose of all registered disposables and mark this object as disposed.
@@ -2948,7 +2716,7 @@ class DisposableStore {
         if (this._isDisposed) {
             return;
         }
-        markTracked(this);
+        markAsDisposed(this);
         this._isDisposed = true;
         this.clear();
     }
@@ -2963,23 +2731,23 @@ class DisposableStore {
             this._toDispose.clear();
         }
     }
-    add(t) {
-        if (!t) {
-            return t;
+    add(o) {
+        if (!o) {
+            return o;
         }
-        if (t === this) {
+        if (o === this) {
             throw new Error('Cannot register a disposable on itself!');
         }
-        markTracked(t);
+        setParentOfDisposable(o, this);
         if (this._isDisposed) {
             if (!DisposableStore.DISABLE_DISPOSED_WARNING) {
                 console.warn(new Error('Trying to add a disposable to a DisposableStore that has already been disposed of. The added object will be leaked!').stack);
             }
         }
         else {
-            this._toDispose.add(t);
+            this._toDispose.add(o);
         }
-        return t;
+        return o;
     }
 }
 DisposableStore.DISABLE_DISPOSED_WARNING = false;
@@ -2987,16 +2755,17 @@ class Disposable {
     constructor() {
         this._store = new DisposableStore();
         trackDisposable(this);
+        setParentOfDisposable(this._store, this);
     }
     dispose() {
-        markTracked(this);
+        markAsDisposed(this);
         this._store.dispose();
     }
-    _register(t) {
-        if (t === this) {
+    _register(o) {
+        if (o === this) {
             throw new Error('Cannot register a disposable on itself!');
         }
-        return this._store.add(t);
+        return this._store.add(o);
     }
 }
 Disposable.None = Object.freeze({ dispose() { } });
@@ -3021,7 +2790,7 @@ class MutableDisposable {
         }
         (_a = this._value) === null || _a === void 0 ? void 0 : _a.dispose();
         if (value) {
-            markTracked(value);
+            setParentOfDisposable(value, this);
         }
         this._value = value;
     }
@@ -3031,9 +2800,21 @@ class MutableDisposable {
     dispose() {
         var _a;
         this._isDisposed = true;
-        markTracked(this);
+        markAsDisposed(this);
         (_a = this._value) === null || _a === void 0 ? void 0 : _a.dispose();
         this._value = undefined;
+    }
+    /**
+     * Clears the value, but does not dispose it.
+     * The old value is returned.
+    */
+    clearAndLeak() {
+        const oldValue = this._value;
+        this._value = undefined;
+        if (oldValue) {
+            setParentOfDisposable(oldValue, null);
+        }
+        return oldValue;
     }
 }
 class ImmortalReference {
@@ -3081,6 +2862,13 @@ class LinkedList {
         return this._first === Node.Undefined;
     }
     clear() {
+        let node = this._first;
+        while (node !== Node.Undefined) {
+            const next = node.next;
+            node.prev = Node.Undefined;
+            node.next = Node.Undefined;
+            node = next;
+        }
         this._first = Node.Undefined;
         this._last = Node.Undefined;
         this._size = 0;
@@ -4587,6 +4375,7 @@ const sep = (({}) === 'win32' ? win32.sep : posix.sep);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "globals": () => (/* binding */ globals),
 /* harmony export */   "isElectronSandboxed": () => (/* binding */ isElectronSandboxed),
 /* harmony export */   "browserCodeLoadingCacheStrategy": () => (/* binding */ browserCodeLoadingCacheStrategy),
 /* harmony export */   "isPreferringBrowserCodeLoad": () => (/* binding */ isPreferringBrowserCodeLoad),
@@ -4597,7 +4386,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "isWeb": () => (/* binding */ isWeb),
 /* harmony export */   "isIOS": () => (/* binding */ isIOS),
 /* harmony export */   "userAgent": () => (/* binding */ userAgent),
-/* harmony export */   "globals": () => (/* binding */ globals),
 /* harmony export */   "setImmediate": () => (/* binding */ setImmediate),
 /* harmony export */   "OS": () => (/* binding */ OS),
 /* harmony export */   "isLittleEndian": () => (/* binding */ isLittleEndian)
@@ -4619,15 +4407,15 @@ let _locale = undefined;
 let _language = LANGUAGE_DEFAULT;
 let _translationsConfigFile = undefined;
 let _userAgent = undefined;
-const _globals = (typeof self === 'object' ? self : typeof __webpack_require__.g === 'object' ? __webpack_require__.g : {});
+const globals = (typeof self === 'object' ? self : typeof __webpack_require__.g === 'object' ? __webpack_require__.g : {});
 let nodeProcess = undefined;
-if (typeof process !== 'undefined') {
+if (typeof globals.vscode !== 'undefined' && typeof globals.vscode.process !== 'undefined') {
+    // Native environment (sandboxed)
+    nodeProcess = globals.vscode.process;
+}
+else if (typeof process !== 'undefined') {
     // Native environment (non-sandboxed)
     nodeProcess = process;
-}
-else if (typeof _globals.vscode !== 'undefined') {
-    // Native environment (sandboxed)
-    nodeProcess = _globals.vscode.process;
 }
 const isElectronRenderer = typeof ((_a = nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.versions) === null || _a === void 0 ? void 0 : _a.electron) === 'string' && nodeProcess.type === 'renderer';
 const isElectronSandboxed = isElectronRenderer && (nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.sandboxed);
@@ -4637,7 +4425,7 @@ const browserCodeLoadingCacheStrategy = (() => {
         return 'bypassHeatCheck';
     }
     // Otherwise, only enabled conditionally
-    const env = nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.env['ENABLE_VSCODE_BROWSER_CODE_LOADING'];
+    const env = nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.env['VSCODE_BROWSER_CODE_LOADING'];
     if (typeof env === 'string') {
         if (env === 'none' || env === 'code' || env === 'bypassHeatCheck' || env === 'bypassHeatCheckAndEagerCompile') {
             return env;
@@ -4702,7 +4490,6 @@ const isNative = _isNative;
 const isWeb = _isWeb;
 const isIOS = _isIOS;
 const userAgent = _userAgent;
-const globals = _globals;
 const setImmediate = (function defineSetImmediate() {
     if (globals.setImmediate) {
         return globals.setImmediate.bind(globals);
@@ -4731,7 +4518,7 @@ const setImmediate = (function defineSetImmediate() {
             globals.postMessage({ vscodeSetImmediateId: myId }, '*');
         };
     }
-    if (nodeProcess && typeof nodeProcess.nextTick === 'function') {
+    if (typeof (nodeProcess === null || nodeProcess === void 0 ? void 0 : nodeProcess.nextTick) === 'function') {
         return nodeProcess.nextTick.bind(nodeProcess);
     }
     const _promise = Promise.resolve();
@@ -4774,19 +4561,23 @@ __webpack_require__.r(__webpack_exports__);
  *--------------------------------------------------------------------------------------------*/
 
 let safeProcess;
-// Native node.js environment
-if (typeof process !== 'undefined') {
-    safeProcess = process;
-}
 // Native sandbox environment
-else if (typeof _platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode !== 'undefined') {
+if (typeof _platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode !== 'undefined' && typeof _platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode.process !== 'undefined') {
+    const sandboxProcess = _platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode.process;
     safeProcess = {
-        // Supported
-        get platform() { return _platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode.process.platform; },
-        get env() { return _platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode.process.env; },
-        nextTick(callback) { return (0,_platform_js__WEBPACK_IMPORTED_MODULE_0__.setImmediate)(callback); },
-        // Unsupported
-        cwd() { return _platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode.process.env.VSCODE_CWD || _platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode.process.execPath.substr(0, _platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode.process.execPath.lastIndexOf(_platform_js__WEBPACK_IMPORTED_MODULE_0__.globals.vscode.process.platform === 'win32' ? '\\' : '/')); }
+        get platform() { return sandboxProcess.platform; },
+        get env() { return sandboxProcess.env; },
+        cwd() { return sandboxProcess.cwd(); },
+        nextTick(callback) { return (0,_platform_js__WEBPACK_IMPORTED_MODULE_0__.setImmediate)(callback); }
+    };
+}
+// Native node.js environment
+else if (typeof process !== 'undefined') {
+    safeProcess = {
+        get platform() { return ({}); },
+        get env() { return ({"NODE_ENV":"development"}); },
+        cwd() { return ({"NODE_ENV":"development"})['VSCODE_CWD'] || process.cwd(); },
+        nextTick(callback) { return process.nextTick(callback); }
     };
 }
 // Web environment
@@ -4796,12 +4587,28 @@ else {
         get platform() { return _platform_js__WEBPACK_IMPORTED_MODULE_0__.isWindows ? 'win32' : _platform_js__WEBPACK_IMPORTED_MODULE_0__.isMacintosh ? 'darwin' : 'linux'; },
         nextTick(callback) { return (0,_platform_js__WEBPACK_IMPORTED_MODULE_0__.setImmediate)(callback); },
         // Unsupported
-        get env() { return Object.create(null); },
+        get env() { return {}; },
         cwd() { return '/'; }
     };
 }
+/**
+ * Provides safe access to the `cwd` property in node.js, sandboxed or web
+ * environments.
+ *
+ * Note: in web, this property is hardcoded to be `/`.
+ */
 const cwd = safeProcess.cwd;
+/**
+ * Provides safe access to the `env` property in node.js, sandboxed or web
+ * environments.
+ *
+ * Note: in web, this property is hardcoded to be `{}`.
+ */
 const env = safeProcess.env;
+/**
+ * Provides safe access to the `platform` property in node.js, sandboxed or web
+ * environments.
+ */
 const platform = safeProcess.platform;
 
 
@@ -4904,7 +4711,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "containsUppercaseCharacter": () => (/* binding */ containsUppercaseCharacter),
 /* harmony export */   "singleLetterHash": () => (/* binding */ singleLetterHash),
 /* harmony export */   "getGraphemeBreakType": () => (/* binding */ getGraphemeBreakType),
-/* harmony export */   "breakBetweenGraphemeBreakType": () => (/* binding */ breakBetweenGraphemeBreakType)
+/* harmony export */   "breakBetweenGraphemeBreakType": () => (/* binding */ breakBetweenGraphemeBreakType),
+/* harmony export */   "getLeftDeleteOffset": () => (/* binding */ getLeftDeleteOffset)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -5617,6 +5425,60 @@ function getGraphemeBreakRawData() {
     return JSON.parse('[0,0,0,51592,51592,11,44424,44424,11,72251,72254,5,7150,7150,7,48008,48008,11,55176,55176,11,128420,128420,14,3276,3277,5,9979,9980,14,46216,46216,11,49800,49800,11,53384,53384,11,70726,70726,5,122915,122916,5,129320,129327,14,2558,2558,5,5906,5908,5,9762,9763,14,43360,43388,8,45320,45320,11,47112,47112,11,48904,48904,11,50696,50696,11,52488,52488,11,54280,54280,11,70082,70083,1,71350,71350,7,73111,73111,5,127892,127893,14,128726,128727,14,129473,129474,14,2027,2035,5,2901,2902,5,3784,3789,5,6754,6754,5,8418,8420,5,9877,9877,14,11088,11088,14,44008,44008,5,44872,44872,11,45768,45768,11,46664,46664,11,47560,47560,11,48456,48456,11,49352,49352,11,50248,50248,11,51144,51144,11,52040,52040,11,52936,52936,11,53832,53832,11,54728,54728,11,69811,69814,5,70459,70460,5,71096,71099,7,71998,71998,5,72874,72880,5,119149,119149,7,127374,127374,14,128335,128335,14,128482,128482,14,128765,128767,14,129399,129400,14,129680,129685,14,1476,1477,5,2377,2380,7,2759,2760,5,3137,3140,7,3458,3459,7,4153,4154,5,6432,6434,5,6978,6978,5,7675,7679,5,9723,9726,14,9823,9823,14,9919,9923,14,10035,10036,14,42736,42737,5,43596,43596,5,44200,44200,11,44648,44648,11,45096,45096,11,45544,45544,11,45992,45992,11,46440,46440,11,46888,46888,11,47336,47336,11,47784,47784,11,48232,48232,11,48680,48680,11,49128,49128,11,49576,49576,11,50024,50024,11,50472,50472,11,50920,50920,11,51368,51368,11,51816,51816,11,52264,52264,11,52712,52712,11,53160,53160,11,53608,53608,11,54056,54056,11,54504,54504,11,54952,54952,11,68108,68111,5,69933,69940,5,70197,70197,7,70498,70499,7,70845,70845,5,71229,71229,5,71727,71735,5,72154,72155,5,72344,72345,5,73023,73029,5,94095,94098,5,121403,121452,5,126981,127182,14,127538,127546,14,127990,127990,14,128391,128391,14,128445,128449,14,128500,128505,14,128752,128752,14,129160,129167,14,129356,129356,14,129432,129442,14,129648,129651,14,129751,131069,14,173,173,4,1757,1757,1,2274,2274,1,2494,2494,5,2641,2641,5,2876,2876,5,3014,3016,7,3262,3262,7,3393,3396,5,3570,3571,7,3968,3972,5,4228,4228,7,6086,6086,5,6679,6680,5,6912,6915,5,7080,7081,5,7380,7392,5,8252,8252,14,9096,9096,14,9748,9749,14,9784,9786,14,9833,9850,14,9890,9894,14,9938,9938,14,9999,9999,14,10085,10087,14,12349,12349,14,43136,43137,7,43454,43456,7,43755,43755,7,44088,44088,11,44312,44312,11,44536,44536,11,44760,44760,11,44984,44984,11,45208,45208,11,45432,45432,11,45656,45656,11,45880,45880,11,46104,46104,11,46328,46328,11,46552,46552,11,46776,46776,11,47000,47000,11,47224,47224,11,47448,47448,11,47672,47672,11,47896,47896,11,48120,48120,11,48344,48344,11,48568,48568,11,48792,48792,11,49016,49016,11,49240,49240,11,49464,49464,11,49688,49688,11,49912,49912,11,50136,50136,11,50360,50360,11,50584,50584,11,50808,50808,11,51032,51032,11,51256,51256,11,51480,51480,11,51704,51704,11,51928,51928,11,52152,52152,11,52376,52376,11,52600,52600,11,52824,52824,11,53048,53048,11,53272,53272,11,53496,53496,11,53720,53720,11,53944,53944,11,54168,54168,11,54392,54392,11,54616,54616,11,54840,54840,11,55064,55064,11,65438,65439,5,69633,69633,5,69837,69837,1,70018,70018,7,70188,70190,7,70368,70370,7,70465,70468,7,70712,70719,5,70835,70840,5,70850,70851,5,71132,71133,5,71340,71340,7,71458,71461,5,71985,71989,7,72002,72002,7,72193,72202,5,72281,72283,5,72766,72766,7,72885,72886,5,73104,73105,5,92912,92916,5,113824,113827,4,119173,119179,5,121505,121519,5,125136,125142,5,127279,127279,14,127489,127490,14,127570,127743,14,127900,127901,14,128254,128254,14,128369,128370,14,128400,128400,14,128425,128432,14,128468,128475,14,128489,128494,14,128715,128720,14,128745,128745,14,128759,128760,14,129004,129023,14,129296,129304,14,129340,129342,14,129388,129392,14,129404,129407,14,129454,129455,14,129485,129487,14,129659,129663,14,129719,129727,14,917536,917631,5,13,13,2,1160,1161,5,1564,1564,4,1807,1807,1,2085,2087,5,2363,2363,7,2402,2403,5,2507,2508,7,2622,2624,7,2691,2691,7,2786,2787,5,2881,2884,5,3006,3006,5,3072,3072,5,3170,3171,5,3267,3268,7,3330,3331,7,3406,3406,1,3538,3540,5,3655,3662,5,3897,3897,5,4038,4038,5,4184,4185,5,4352,4447,8,6068,6069,5,6155,6157,5,6448,6449,7,6742,6742,5,6783,6783,5,6966,6970,5,7042,7042,7,7143,7143,7,7212,7219,5,7412,7412,5,8206,8207,4,8294,8303,4,8596,8601,14,9410,9410,14,9742,9742,14,9757,9757,14,9770,9770,14,9794,9794,14,9828,9828,14,9855,9855,14,9882,9882,14,9900,9903,14,9929,9933,14,9963,9967,14,9987,9988,14,10006,10006,14,10062,10062,14,10175,10175,14,11744,11775,5,42607,42607,5,43043,43044,7,43263,43263,5,43444,43445,7,43569,43570,5,43698,43700,5,43766,43766,5,44032,44032,11,44144,44144,11,44256,44256,11,44368,44368,11,44480,44480,11,44592,44592,11,44704,44704,11,44816,44816,11,44928,44928,11,45040,45040,11,45152,45152,11,45264,45264,11,45376,45376,11,45488,45488,11,45600,45600,11,45712,45712,11,45824,45824,11,45936,45936,11,46048,46048,11,46160,46160,11,46272,46272,11,46384,46384,11,46496,46496,11,46608,46608,11,46720,46720,11,46832,46832,11,46944,46944,11,47056,47056,11,47168,47168,11,47280,47280,11,47392,47392,11,47504,47504,11,47616,47616,11,47728,47728,11,47840,47840,11,47952,47952,11,48064,48064,11,48176,48176,11,48288,48288,11,48400,48400,11,48512,48512,11,48624,48624,11,48736,48736,11,48848,48848,11,48960,48960,11,49072,49072,11,49184,49184,11,49296,49296,11,49408,49408,11,49520,49520,11,49632,49632,11,49744,49744,11,49856,49856,11,49968,49968,11,50080,50080,11,50192,50192,11,50304,50304,11,50416,50416,11,50528,50528,11,50640,50640,11,50752,50752,11,50864,50864,11,50976,50976,11,51088,51088,11,51200,51200,11,51312,51312,11,51424,51424,11,51536,51536,11,51648,51648,11,51760,51760,11,51872,51872,11,51984,51984,11,52096,52096,11,52208,52208,11,52320,52320,11,52432,52432,11,52544,52544,11,52656,52656,11,52768,52768,11,52880,52880,11,52992,52992,11,53104,53104,11,53216,53216,11,53328,53328,11,53440,53440,11,53552,53552,11,53664,53664,11,53776,53776,11,53888,53888,11,54000,54000,11,54112,54112,11,54224,54224,11,54336,54336,11,54448,54448,11,54560,54560,11,54672,54672,11,54784,54784,11,54896,54896,11,55008,55008,11,55120,55120,11,64286,64286,5,66272,66272,5,68900,68903,5,69762,69762,7,69817,69818,5,69927,69931,5,70003,70003,5,70070,70078,5,70094,70094,7,70194,70195,7,70206,70206,5,70400,70401,5,70463,70463,7,70475,70477,7,70512,70516,5,70722,70724,5,70832,70832,5,70842,70842,5,70847,70848,5,71088,71089,7,71102,71102,7,71219,71226,5,71231,71232,5,71342,71343,7,71453,71455,5,71463,71467,5,71737,71738,5,71995,71996,5,72000,72000,7,72145,72147,7,72160,72160,5,72249,72249,7,72273,72278,5,72330,72342,5,72752,72758,5,72850,72871,5,72882,72883,5,73018,73018,5,73031,73031,5,73109,73109,5,73461,73462,7,94031,94031,5,94192,94193,7,119142,119142,7,119155,119162,4,119362,119364,5,121476,121476,5,122888,122904,5,123184,123190,5,126976,126979,14,127184,127231,14,127344,127345,14,127405,127461,14,127514,127514,14,127561,127567,14,127778,127779,14,127896,127896,14,127985,127986,14,127995,127999,5,128326,128328,14,128360,128366,14,128378,128378,14,128394,128397,14,128405,128406,14,128422,128423,14,128435,128443,14,128453,128464,14,128479,128480,14,128484,128487,14,128496,128498,14,128640,128709,14,128723,128724,14,128736,128741,14,128747,128748,14,128755,128755,14,128762,128762,14,128981,128991,14,129096,129103,14,129292,129292,14,129311,129311,14,129329,129330,14,129344,129349,14,129360,129374,14,129394,129394,14,129402,129402,14,129413,129425,14,129445,129450,14,129466,129471,14,129483,129483,14,129511,129535,14,129653,129655,14,129667,129670,14,129705,129711,14,129731,129743,14,917505,917505,4,917760,917999,5,10,10,3,127,159,4,768,879,5,1471,1471,5,1536,1541,1,1648,1648,5,1767,1768,5,1840,1866,5,2070,2073,5,2137,2139,5,2307,2307,7,2366,2368,7,2382,2383,7,2434,2435,7,2497,2500,5,2519,2519,5,2563,2563,7,2631,2632,5,2677,2677,5,2750,2752,7,2763,2764,7,2817,2817,5,2879,2879,5,2891,2892,7,2914,2915,5,3008,3008,5,3021,3021,5,3076,3076,5,3146,3149,5,3202,3203,7,3264,3265,7,3271,3272,7,3298,3299,5,3390,3390,5,3402,3404,7,3426,3427,5,3535,3535,5,3544,3550,7,3635,3635,7,3763,3763,7,3893,3893,5,3953,3966,5,3981,3991,5,4145,4145,7,4157,4158,5,4209,4212,5,4237,4237,5,4520,4607,10,5970,5971,5,6071,6077,5,6089,6099,5,6277,6278,5,6439,6440,5,6451,6456,7,6683,6683,5,6744,6750,5,6765,6770,7,6846,6846,5,6964,6964,5,6972,6972,5,7019,7027,5,7074,7077,5,7083,7085,5,7146,7148,7,7154,7155,7,7222,7223,5,7394,7400,5,7416,7417,5,8204,8204,5,8233,8233,4,8288,8292,4,8413,8416,5,8482,8482,14,8986,8987,14,9193,9203,14,9654,9654,14,9733,9733,14,9745,9745,14,9752,9752,14,9760,9760,14,9766,9766,14,9774,9775,14,9792,9792,14,9800,9811,14,9825,9826,14,9831,9831,14,9852,9853,14,9872,9873,14,9880,9880,14,9885,9887,14,9896,9897,14,9906,9916,14,9926,9927,14,9936,9936,14,9941,9960,14,9974,9974,14,9982,9985,14,9992,9997,14,10002,10002,14,10017,10017,14,10055,10055,14,10071,10071,14,10145,10145,14,11013,11015,14,11503,11505,5,12334,12335,5,12951,12951,14,42612,42621,5,43014,43014,5,43047,43047,7,43204,43205,5,43335,43345,5,43395,43395,7,43450,43451,7,43561,43566,5,43573,43574,5,43644,43644,5,43710,43711,5,43758,43759,7,44005,44005,5,44012,44012,7,44060,44060,11,44116,44116,11,44172,44172,11,44228,44228,11,44284,44284,11,44340,44340,11,44396,44396,11,44452,44452,11,44508,44508,11,44564,44564,11,44620,44620,11,44676,44676,11,44732,44732,11,44788,44788,11,44844,44844,11,44900,44900,11,44956,44956,11,45012,45012,11,45068,45068,11,45124,45124,11,45180,45180,11,45236,45236,11,45292,45292,11,45348,45348,11,45404,45404,11,45460,45460,11,45516,45516,11,45572,45572,11,45628,45628,11,45684,45684,11,45740,45740,11,45796,45796,11,45852,45852,11,45908,45908,11,45964,45964,11,46020,46020,11,46076,46076,11,46132,46132,11,46188,46188,11,46244,46244,11,46300,46300,11,46356,46356,11,46412,46412,11,46468,46468,11,46524,46524,11,46580,46580,11,46636,46636,11,46692,46692,11,46748,46748,11,46804,46804,11,46860,46860,11,46916,46916,11,46972,46972,11,47028,47028,11,47084,47084,11,47140,47140,11,47196,47196,11,47252,47252,11,47308,47308,11,47364,47364,11,47420,47420,11,47476,47476,11,47532,47532,11,47588,47588,11,47644,47644,11,47700,47700,11,47756,47756,11,47812,47812,11,47868,47868,11,47924,47924,11,47980,47980,11,48036,48036,11,48092,48092,11,48148,48148,11,48204,48204,11,48260,48260,11,48316,48316,11,48372,48372,11,48428,48428,11,48484,48484,11,48540,48540,11,48596,48596,11,48652,48652,11,48708,48708,11,48764,48764,11,48820,48820,11,48876,48876,11,48932,48932,11,48988,48988,11,49044,49044,11,49100,49100,11,49156,49156,11,49212,49212,11,49268,49268,11,49324,49324,11,49380,49380,11,49436,49436,11,49492,49492,11,49548,49548,11,49604,49604,11,49660,49660,11,49716,49716,11,49772,49772,11,49828,49828,11,49884,49884,11,49940,49940,11,49996,49996,11,50052,50052,11,50108,50108,11,50164,50164,11,50220,50220,11,50276,50276,11,50332,50332,11,50388,50388,11,50444,50444,11,50500,50500,11,50556,50556,11,50612,50612,11,50668,50668,11,50724,50724,11,50780,50780,11,50836,50836,11,50892,50892,11,50948,50948,11,51004,51004,11,51060,51060,11,51116,51116,11,51172,51172,11,51228,51228,11,51284,51284,11,51340,51340,11,51396,51396,11,51452,51452,11,51508,51508,11,51564,51564,11,51620,51620,11,51676,51676,11,51732,51732,11,51788,51788,11,51844,51844,11,51900,51900,11,51956,51956,11,52012,52012,11,52068,52068,11,52124,52124,11,52180,52180,11,52236,52236,11,52292,52292,11,52348,52348,11,52404,52404,11,52460,52460,11,52516,52516,11,52572,52572,11,52628,52628,11,52684,52684,11,52740,52740,11,52796,52796,11,52852,52852,11,52908,52908,11,52964,52964,11,53020,53020,11,53076,53076,11,53132,53132,11,53188,53188,11,53244,53244,11,53300,53300,11,53356,53356,11,53412,53412,11,53468,53468,11,53524,53524,11,53580,53580,11,53636,53636,11,53692,53692,11,53748,53748,11,53804,53804,11,53860,53860,11,53916,53916,11,53972,53972,11,54028,54028,11,54084,54084,11,54140,54140,11,54196,54196,11,54252,54252,11,54308,54308,11,54364,54364,11,54420,54420,11,54476,54476,11,54532,54532,11,54588,54588,11,54644,54644,11,54700,54700,11,54756,54756,11,54812,54812,11,54868,54868,11,54924,54924,11,54980,54980,11,55036,55036,11,55092,55092,11,55148,55148,11,55216,55238,9,65056,65071,5,65529,65531,4,68097,68099,5,68159,68159,5,69446,69456,5,69688,69702,5,69808,69810,7,69815,69816,7,69821,69821,1,69888,69890,5,69932,69932,7,69957,69958,7,70016,70017,5,70067,70069,7,70079,70080,7,70089,70092,5,70095,70095,5,70191,70193,5,70196,70196,5,70198,70199,5,70367,70367,5,70371,70378,5,70402,70403,7,70462,70462,5,70464,70464,5,70471,70472,7,70487,70487,5,70502,70508,5,70709,70711,7,70720,70721,7,70725,70725,7,70750,70750,5,70833,70834,7,70841,70841,7,70843,70844,7,70846,70846,7,70849,70849,7,71087,71087,5,71090,71093,5,71100,71101,5,71103,71104,5,71216,71218,7,71227,71228,7,71230,71230,7,71339,71339,5,71341,71341,5,71344,71349,5,71351,71351,5,71456,71457,7,71462,71462,7,71724,71726,7,71736,71736,7,71984,71984,5,71991,71992,7,71997,71997,7,71999,71999,1,72001,72001,1,72003,72003,5,72148,72151,5,72156,72159,7,72164,72164,7,72243,72248,5,72250,72250,1,72263,72263,5,72279,72280,7,72324,72329,1,72343,72343,7,72751,72751,7,72760,72765,5,72767,72767,5,72873,72873,7,72881,72881,7,72884,72884,7,73009,73014,5,73020,73021,5,73030,73030,1,73098,73102,7,73107,73108,7,73110,73110,7,73459,73460,5,78896,78904,4,92976,92982,5,94033,94087,7,94180,94180,5,113821,113822,5,119141,119141,5,119143,119145,5,119150,119154,5,119163,119170,5,119210,119213,5,121344,121398,5,121461,121461,5,121499,121503,5,122880,122886,5,122907,122913,5,122918,122922,5,123628,123631,5,125252,125258,5,126980,126980,14,127183,127183,14,127245,127247,14,127340,127343,14,127358,127359,14,127377,127386,14,127462,127487,6,127491,127503,14,127535,127535,14,127548,127551,14,127568,127569,14,127744,127777,14,127780,127891,14,127894,127895,14,127897,127899,14,127902,127984,14,127987,127989,14,127991,127994,14,128000,128253,14,128255,128317,14,128329,128334,14,128336,128359,14,128367,128368,14,128371,128377,14,128379,128390,14,128392,128393,14,128398,128399,14,128401,128404,14,128407,128419,14,128421,128421,14,128424,128424,14,128433,128434,14,128444,128444,14,128450,128452,14,128465,128467,14,128476,128478,14,128481,128481,14,128483,128483,14,128488,128488,14,128495,128495,14,128499,128499,14,128506,128591,14,128710,128714,14,128721,128722,14,128725,128725,14,128728,128735,14,128742,128744,14,128746,128746,14,128749,128751,14,128753,128754,14,128756,128758,14,128761,128761,14,128763,128764,14,128884,128895,14,128992,129003,14,129036,129039,14,129114,129119,14,129198,129279,14,129293,129295,14,129305,129310,14,129312,129319,14,129328,129328,14,129331,129338,14,129343,129343,14,129351,129355,14,129357,129359,14,129375,129387,14,129393,129393,14,129395,129398,14,129401,129401,14,129403,129403,14,129408,129412,14,129426,129431,14,129443,129444,14,129451,129453,14,129456,129465,14,129472,129472,14,129475,129482,14,129484,129484,14,129488,129510,14,129536,129647,14,129652,129652,14,129656,129658,14,129664,129666,14,129671,129679,14,129686,129704,14,129712,129718,14,129728,129730,14,129744,129750,14,917504,917504,4,917506,917535,4,917632,917759,4,918000,921599,4,0,9,4,11,12,4,14,31,4,169,169,14,174,174,14,1155,1159,5,1425,1469,5,1473,1474,5,1479,1479,5,1552,1562,5,1611,1631,5,1750,1756,5,1759,1764,5,1770,1773,5,1809,1809,5,1958,1968,5,2045,2045,5,2075,2083,5,2089,2093,5,2259,2273,5,2275,2306,5,2362,2362,5,2364,2364,5,2369,2376,5,2381,2381,5,2385,2391,5,2433,2433,5,2492,2492,5,2495,2496,7,2503,2504,7,2509,2509,5,2530,2531,5,2561,2562,5,2620,2620,5,2625,2626,5,2635,2637,5,2672,2673,5,2689,2690,5,2748,2748,5,2753,2757,5,2761,2761,7,2765,2765,5,2810,2815,5,2818,2819,7,2878,2878,5,2880,2880,7,2887,2888,7,2893,2893,5,2903,2903,5,2946,2946,5,3007,3007,7,3009,3010,7,3018,3020,7,3031,3031,5,3073,3075,7,3134,3136,5,3142,3144,5,3157,3158,5,3201,3201,5,3260,3260,5,3263,3263,5,3266,3266,5,3270,3270,5,3274,3275,7,3285,3286,5,3328,3329,5,3387,3388,5,3391,3392,7,3398,3400,7,3405,3405,5,3415,3415,5,3457,3457,5,3530,3530,5,3536,3537,7,3542,3542,5,3551,3551,5,3633,3633,5,3636,3642,5,3761,3761,5,3764,3772,5,3864,3865,5,3895,3895,5,3902,3903,7,3967,3967,7,3974,3975,5,3993,4028,5,4141,4144,5,4146,4151,5,4155,4156,7,4182,4183,7,4190,4192,5,4226,4226,5,4229,4230,5,4253,4253,5,4448,4519,9,4957,4959,5,5938,5940,5,6002,6003,5,6070,6070,7,6078,6085,7,6087,6088,7,6109,6109,5,6158,6158,4,6313,6313,5,6435,6438,7,6441,6443,7,6450,6450,5,6457,6459,5,6681,6682,7,6741,6741,7,6743,6743,7,6752,6752,5,6757,6764,5,6771,6780,5,6832,6845,5,6847,6848,5,6916,6916,7,6965,6965,5,6971,6971,7,6973,6977,7,6979,6980,7,7040,7041,5,7073,7073,7,7078,7079,7,7082,7082,7,7142,7142,5,7144,7145,5,7149,7149,5,7151,7153,5,7204,7211,7,7220,7221,7,7376,7378,5,7393,7393,7,7405,7405,5,7415,7415,7,7616,7673,5,8203,8203,4,8205,8205,13,8232,8232,4,8234,8238,4,8265,8265,14,8293,8293,4,8400,8412,5,8417,8417,5,8421,8432,5,8505,8505,14,8617,8618,14,9000,9000,14,9167,9167,14,9208,9210,14,9642,9643,14,9664,9664,14,9728,9732,14,9735,9741,14,9743,9744,14,9746,9746,14,9750,9751,14,9753,9756,14,9758,9759,14,9761,9761,14,9764,9765,14,9767,9769,14,9771,9773,14,9776,9783,14,9787,9791,14,9793,9793,14,9795,9799,14,9812,9822,14,9824,9824,14,9827,9827,14,9829,9830,14,9832,9832,14,9851,9851,14,9854,9854,14,9856,9861,14,9874,9876,14,9878,9879,14,9881,9881,14,9883,9884,14,9888,9889,14,9895,9895,14,9898,9899,14,9904,9905,14,9917,9918,14,9924,9925,14,9928,9928,14,9934,9935,14,9937,9937,14,9939,9940,14,9961,9962,14,9968,9973,14,9975,9978,14,9981,9981,14,9986,9986,14,9989,9989,14,9998,9998,14,10000,10001,14,10004,10004,14,10013,10013,14,10024,10024,14,10052,10052,14,10060,10060,14,10067,10069,14,10083,10084,14,10133,10135,14,10160,10160,14,10548,10549,14,11035,11036,14,11093,11093,14,11647,11647,5,12330,12333,5,12336,12336,14,12441,12442,5,12953,12953,14,42608,42610,5,42654,42655,5,43010,43010,5,43019,43019,5,43045,43046,5,43052,43052,5,43188,43203,7,43232,43249,5,43302,43309,5,43346,43347,7,43392,43394,5,43443,43443,5,43446,43449,5,43452,43453,5,43493,43493,5,43567,43568,7,43571,43572,7,43587,43587,5,43597,43597,7,43696,43696,5,43703,43704,5,43713,43713,5,43756,43757,5,43765,43765,7,44003,44004,7,44006,44007,7,44009,44010,7,44013,44013,5,44033,44059,12,44061,44087,12,44089,44115,12,44117,44143,12,44145,44171,12,44173,44199,12,44201,44227,12,44229,44255,12,44257,44283,12,44285,44311,12,44313,44339,12,44341,44367,12,44369,44395,12,44397,44423,12,44425,44451,12,44453,44479,12,44481,44507,12,44509,44535,12,44537,44563,12,44565,44591,12,44593,44619,12,44621,44647,12,44649,44675,12,44677,44703,12,44705,44731,12,44733,44759,12,44761,44787,12,44789,44815,12,44817,44843,12,44845,44871,12,44873,44899,12,44901,44927,12,44929,44955,12,44957,44983,12,44985,45011,12,45013,45039,12,45041,45067,12,45069,45095,12,45097,45123,12,45125,45151,12,45153,45179,12,45181,45207,12,45209,45235,12,45237,45263,12,45265,45291,12,45293,45319,12,45321,45347,12,45349,45375,12,45377,45403,12,45405,45431,12,45433,45459,12,45461,45487,12,45489,45515,12,45517,45543,12,45545,45571,12,45573,45599,12,45601,45627,12,45629,45655,12,45657,45683,12,45685,45711,12,45713,45739,12,45741,45767,12,45769,45795,12,45797,45823,12,45825,45851,12,45853,45879,12,45881,45907,12,45909,45935,12,45937,45963,12,45965,45991,12,45993,46019,12,46021,46047,12,46049,46075,12,46077,46103,12,46105,46131,12,46133,46159,12,46161,46187,12,46189,46215,12,46217,46243,12,46245,46271,12,46273,46299,12,46301,46327,12,46329,46355,12,46357,46383,12,46385,46411,12,46413,46439,12,46441,46467,12,46469,46495,12,46497,46523,12,46525,46551,12,46553,46579,12,46581,46607,12,46609,46635,12,46637,46663,12,46665,46691,12,46693,46719,12,46721,46747,12,46749,46775,12,46777,46803,12,46805,46831,12,46833,46859,12,46861,46887,12,46889,46915,12,46917,46943,12,46945,46971,12,46973,46999,12,47001,47027,12,47029,47055,12,47057,47083,12,47085,47111,12,47113,47139,12,47141,47167,12,47169,47195,12,47197,47223,12,47225,47251,12,47253,47279,12,47281,47307,12,47309,47335,12,47337,47363,12,47365,47391,12,47393,47419,12,47421,47447,12,47449,47475,12,47477,47503,12,47505,47531,12,47533,47559,12,47561,47587,12,47589,47615,12,47617,47643,12,47645,47671,12,47673,47699,12,47701,47727,12,47729,47755,12,47757,47783,12,47785,47811,12,47813,47839,12,47841,47867,12,47869,47895,12,47897,47923,12,47925,47951,12,47953,47979,12,47981,48007,12,48009,48035,12,48037,48063,12,48065,48091,12,48093,48119,12,48121,48147,12,48149,48175,12,48177,48203,12,48205,48231,12,48233,48259,12,48261,48287,12,48289,48315,12,48317,48343,12,48345,48371,12,48373,48399,12,48401,48427,12,48429,48455,12,48457,48483,12,48485,48511,12,48513,48539,12,48541,48567,12,48569,48595,12,48597,48623,12,48625,48651,12,48653,48679,12,48681,48707,12,48709,48735,12,48737,48763,12,48765,48791,12,48793,48819,12,48821,48847,12,48849,48875,12,48877,48903,12,48905,48931,12,48933,48959,12,48961,48987,12,48989,49015,12,49017,49043,12,49045,49071,12,49073,49099,12,49101,49127,12,49129,49155,12,49157,49183,12,49185,49211,12,49213,49239,12,49241,49267,12,49269,49295,12,49297,49323,12,49325,49351,12,49353,49379,12,49381,49407,12,49409,49435,12,49437,49463,12,49465,49491,12,49493,49519,12,49521,49547,12,49549,49575,12,49577,49603,12,49605,49631,12,49633,49659,12,49661,49687,12,49689,49715,12,49717,49743,12,49745,49771,12,49773,49799,12,49801,49827,12,49829,49855,12,49857,49883,12,49885,49911,12,49913,49939,12,49941,49967,12,49969,49995,12,49997,50023,12,50025,50051,12,50053,50079,12,50081,50107,12,50109,50135,12,50137,50163,12,50165,50191,12,50193,50219,12,50221,50247,12,50249,50275,12,50277,50303,12,50305,50331,12,50333,50359,12,50361,50387,12,50389,50415,12,50417,50443,12,50445,50471,12,50473,50499,12,50501,50527,12,50529,50555,12,50557,50583,12,50585,50611,12,50613,50639,12,50641,50667,12,50669,50695,12,50697,50723,12,50725,50751,12,50753,50779,12,50781,50807,12,50809,50835,12,50837,50863,12,50865,50891,12,50893,50919,12,50921,50947,12,50949,50975,12,50977,51003,12,51005,51031,12,51033,51059,12,51061,51087,12,51089,51115,12,51117,51143,12,51145,51171,12,51173,51199,12,51201,51227,12,51229,51255,12,51257,51283,12,51285,51311,12,51313,51339,12,51341,51367,12,51369,51395,12,51397,51423,12,51425,51451,12,51453,51479,12,51481,51507,12,51509,51535,12,51537,51563,12,51565,51591,12,51593,51619,12,51621,51647,12,51649,51675,12,51677,51703,12,51705,51731,12,51733,51759,12,51761,51787,12,51789,51815,12,51817,51843,12,51845,51871,12,51873,51899,12,51901,51927,12,51929,51955,12,51957,51983,12,51985,52011,12,52013,52039,12,52041,52067,12,52069,52095,12,52097,52123,12,52125,52151,12,52153,52179,12,52181,52207,12,52209,52235,12,52237,52263,12,52265,52291,12,52293,52319,12,52321,52347,12,52349,52375,12,52377,52403,12,52405,52431,12,52433,52459,12,52461,52487,12,52489,52515,12,52517,52543,12,52545,52571,12,52573,52599,12,52601,52627,12,52629,52655,12,52657,52683,12,52685,52711,12,52713,52739,12,52741,52767,12,52769,52795,12,52797,52823,12,52825,52851,12,52853,52879,12,52881,52907,12,52909,52935,12,52937,52963,12,52965,52991,12,52993,53019,12,53021,53047,12,53049,53075,12,53077,53103,12,53105,53131,12,53133,53159,12,53161,53187,12,53189,53215,12,53217,53243,12,53245,53271,12,53273,53299,12,53301,53327,12,53329,53355,12,53357,53383,12,53385,53411,12,53413,53439,12,53441,53467,12,53469,53495,12,53497,53523,12,53525,53551,12,53553,53579,12,53581,53607,12,53609,53635,12,53637,53663,12,53665,53691,12,53693,53719,12,53721,53747,12,53749,53775,12,53777,53803,12,53805,53831,12,53833,53859,12,53861,53887,12,53889,53915,12,53917,53943,12,53945,53971,12,53973,53999,12,54001,54027,12,54029,54055,12,54057,54083,12,54085,54111,12,54113,54139,12,54141,54167,12,54169,54195,12,54197,54223,12,54225,54251,12,54253,54279,12,54281,54307,12,54309,54335,12,54337,54363,12,54365,54391,12,54393,54419,12,54421,54447,12,54449,54475,12,54477,54503,12,54505,54531,12,54533,54559,12,54561,54587,12,54589,54615,12,54617,54643,12,54645,54671,12,54673,54699,12,54701,54727,12,54729,54755,12,54757,54783,12,54785,54811,12,54813,54839,12,54841,54867,12,54869,54895,12,54897,54923,12,54925,54951,12,54953,54979,12,54981,55007,12,55009,55035,12,55037,55063,12,55065,55091,12,55093,55119,12,55121,55147,12,55149,55175,12,55177,55203,12,55243,55291,10,65024,65039,5,65279,65279,4,65520,65528,4,66045,66045,5,66422,66426,5,68101,68102,5,68152,68154,5,68325,68326,5,69291,69292,5,69632,69632,7,69634,69634,7,69759,69761,5]');
 }
 //#endregion
+/**
+ * Computes the offset after performing a left delete on the given string,
+ * while considering unicode grapheme/emoji rules.
+*/
+function getLeftDeleteOffset(offset, str) {
+    if (offset === 0) {
+        return 0;
+    }
+    // Try to delete emoji part.
+    const emojiOffset = getOffsetBeforeLastEmojiComponent(offset, str);
+    if (emojiOffset !== undefined) {
+        return emojiOffset;
+    }
+    // Otherwise, just skip a single code point.
+    const codePoint = getPrevCodePoint(str, offset);
+    offset -= getUTF16Length(codePoint);
+    return offset;
+}
+function getOffsetBeforeLastEmojiComponent(offset, str) {
+    // See https://www.unicode.org/reports/tr51/tr51-14.html#EBNF_and_Regex for the
+    // structure of emojis.
+    let codePoint = getPrevCodePoint(str, offset);
+    offset -= getUTF16Length(codePoint);
+    // Skip modifiers
+    while ((isEmojiModifier(codePoint) || codePoint === 65039 /* emojiVariantSelector */ || codePoint === 8419 /* enclosingKeyCap */)) {
+        if (offset === 0) {
+            // Cannot skip modifier, no preceding emoji base.
+            return undefined;
+        }
+        codePoint = getPrevCodePoint(str, offset);
+        offset -= getUTF16Length(codePoint);
+    }
+    // Expect base emoji
+    if (!isEmojiImprecise(codePoint)) {
+        // Unexpected code point, not a valid emoji.
+        return undefined;
+    }
+    if (offset >= 0) {
+        // Skip optional ZWJ code points that combine multiple emojis.
+        // In theory, we should check if that ZWJ actually combines multiple emojis
+        // to prevent deleting ZWJs in situations we didn't account for.
+        const optionalZwjCodePoint = getPrevCodePoint(str, offset);
+        if (optionalZwjCodePoint === 8205 /* zwj */) {
+            offset -= getUTF16Length(optionalZwjCodePoint);
+        }
+    }
+    return offset;
+}
+function getUTF16Length(codePoint) {
+    return codePoint >= 65536 /* UNICODE_SUPPLEMENTARY_PLANE_BEGIN */ ? 2 : 1;
+}
+function isEmojiModifier(codePoint) {
+    return 0x1F3FB <= codePoint && codePoint <= 0x1F3FF;
+}
 
 
 /***/ }),
@@ -5644,7 +5506,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getAllPropertyNames": () => (/* binding */ getAllPropertyNames),
 /* harmony export */   "getAllMethodNames": () => (/* binding */ getAllMethodNames),
 /* harmony export */   "createProxyObject": () => (/* binding */ createProxyObject),
-/* harmony export */   "withNullAsUndefined": () => (/* binding */ withNullAsUndefined)
+/* harmony export */   "withNullAsUndefined": () => (/* binding */ withNullAsUndefined),
+/* harmony export */   "assertNever": () => (/* binding */ assertNever)
 /* harmony export */ });
 /**
  * @returns whether the provided parameter is a JavaScript Array or not.
@@ -5784,6 +5647,9 @@ function createProxyObject(methodNames, invoke) {
  */
 function withNullAsUndefined(x) {
     return x === null ? undefined : x;
+}
+function assertNever(value, message = 'Unreachable') {
+    throw new Error(message);
 }
 
 
@@ -6100,7 +5966,9 @@ class URI {
         return new Uri('file', authority, path, _empty, _empty);
     }
     static from(components) {
-        return new Uri(components.scheme, components.authority, components.path, components.query, components.fragment);
+        const result = new Uri(components.scheme, components.authority, components.path, components.query, components.fragment);
+        _validateUri(result, true);
+        return result;
     }
     /**
      * Join a URI path with path fragments and normalizes the resulting path.
@@ -6183,7 +6051,7 @@ class Uri extends URI {
     }
     toJSON() {
         const res = {
-            $mid: 1
+            $mid: 1 /* Uri */
         };
         // cached state
         if (this._fsPath) {
@@ -7479,6 +7347,7 @@ __webpack_require__.r(__webpack_exports__);
  *--------------------------------------------------------------------------------------------*/
 class Token {
     constructor(offset, type, language) {
+        this._tokenBrand = undefined;
         this.offset = offset | 0; // @perf
         this.type = type;
         this.language = language;
@@ -7489,12 +7358,14 @@ class Token {
 }
 class TokenizationResult {
     constructor(tokens, endState) {
+        this._tokenizationResultBrand = undefined;
         this.tokens = tokens;
         this.endState = endState;
     }
 }
 class TokenizationResult2 {
     constructor(tokens, endState) {
+        this._tokenizationResult2Brand = undefined;
         this.tokens = tokens;
         this.endState = endState;
     }
@@ -7544,6 +7415,9 @@ class LineSequence {
             elements[i] = this.lines[i].substring(this._startColumns[i] - 1, this._endColumns[i] - 1);
         }
         return elements;
+    }
+    getStrictElement(index) {
+        return this.lines[index];
     }
     getStartLineNumber(i) {
         return i + 1;
@@ -7946,6 +7820,9 @@ class MirrorTextModel {
     dispose() {
         this._lines.length = 0;
     }
+    get version() {
+        return this._versionId;
+    }
     getText() {
         if (this._cachedTextValue === null) {
             this._cachedTextValue = this._lines.join(this._eol);
@@ -8279,7 +8156,7 @@ let _classifier = null;
 function getClassifier() {
     if (_classifier === null) {
         _classifier = new _core_characterClassifier_js__WEBPACK_IMPORTED_MODULE_0__.CharacterClassifier(0 /* None */);
-        const FORCE_TERMINATION_CHARACTERS = ' \t<>\'\"、。｡､，．：；‘“〈《「『【〔（［｛｢｣｝］）〕】』」》〉”’｀～…';
+        const FORCE_TERMINATION_CHARACTERS = ' \t<>\'\"、。｡､，．：；‘〈「『〔（［｛｢｣｝］）〕』」〉’｀～…';
         for (let i = 0; i < FORCE_TERMINATION_CHARACTERS.length; i++) {
             _classifier.set(FORCE_TERMINATION_CHARACTERS.charCodeAt(i), 1 /* ForceTermination */);
         }
@@ -8567,20 +8444,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "EditorSimpleWorker": () => (/* binding */ EditorSimpleWorker),
 /* harmony export */   "create": () => (/* binding */ create)
 /* harmony export */ });
-/* harmony import */ var _base_common_arrays_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/arrays.js */ "./node_modules/monaco-editor/esm/vs/base/common/arrays.js");
-/* harmony import */ var _base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/diff/diff.js */ "./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js");
-/* harmony import */ var _base_common_platform_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../base/common/platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
-/* harmony import */ var _base_common_uri_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../base/common/uri.js */ "./node_modules/monaco-editor/esm/vs/base/common/uri.js");
-/* harmony import */ var _core_position_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../core/position.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
-/* harmony import */ var _core_range_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../core/range.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
-/* harmony import */ var _diff_diffComputer_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../diff/diffComputer.js */ "./node_modules/monaco-editor/esm/vs/editor/common/diff/diffComputer.js");
-/* harmony import */ var _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../model/mirrorTextModel.js */ "./node_modules/monaco-editor/esm/vs/editor/common/model/mirrorTextModel.js");
-/* harmony import */ var _model_wordHelper_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../model/wordHelper.js */ "./node_modules/monaco-editor/esm/vs/editor/common/model/wordHelper.js");
-/* harmony import */ var _modes_linkComputer_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../modes/linkComputer.js */ "./node_modules/monaco-editor/esm/vs/editor/common/modes/linkComputer.js");
-/* harmony import */ var _modes_supports_inplaceReplaceSupport_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../modes/supports/inplaceReplaceSupport.js */ "./node_modules/monaco-editor/esm/vs/editor/common/modes/supports/inplaceReplaceSupport.js");
-/* harmony import */ var _standalone_standaloneBase_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../standalone/standaloneBase.js */ "./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneBase.js");
-/* harmony import */ var _base_common_types_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../../base/common/types.js */ "./node_modules/monaco-editor/esm/vs/base/common/types.js");
-/* harmony import */ var _base_common_stopwatch_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../../base/common/stopwatch.js */ "./node_modules/monaco-editor/esm/vs/base/common/stopwatch.js");
+/* harmony import */ var _base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/diff/diff.js */ "./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js");
+/* harmony import */ var _base_common_platform_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
+/* harmony import */ var _base_common_uri_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../base/common/uri.js */ "./node_modules/monaco-editor/esm/vs/base/common/uri.js");
+/* harmony import */ var _core_position_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../core/position.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
+/* harmony import */ var _core_range_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../core/range.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
+/* harmony import */ var _diff_diffComputer_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../diff/diffComputer.js */ "./node_modules/monaco-editor/esm/vs/editor/common/diff/diffComputer.js");
+/* harmony import */ var _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../model/mirrorTextModel.js */ "./node_modules/monaco-editor/esm/vs/editor/common/model/mirrorTextModel.js");
+/* harmony import */ var _model_wordHelper_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../model/wordHelper.js */ "./node_modules/monaco-editor/esm/vs/editor/common/model/wordHelper.js");
+/* harmony import */ var _modes_linkComputer_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../modes/linkComputer.js */ "./node_modules/monaco-editor/esm/vs/editor/common/modes/linkComputer.js");
+/* harmony import */ var _modes_supports_inplaceReplaceSupport_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../modes/supports/inplaceReplaceSupport.js */ "./node_modules/monaco-editor/esm/vs/editor/common/modes/supports/inplaceReplaceSupport.js");
+/* harmony import */ var _standalone_standaloneBase_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../standalone/standaloneBase.js */ "./node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneBase.js");
+/* harmony import */ var _base_common_types_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../../../base/common/types.js */ "./node_modules/monaco-editor/esm/vs/base/common/types.js");
+/* harmony import */ var _base_common_stopwatch_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../../base/common/stopwatch.js */ "./node_modules/monaco-editor/esm/vs/base/common/stopwatch.js");
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -8607,16 +8483,12 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
 /**
  * @internal
  */
-class MirrorModel extends _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_7__.MirrorTextModel {
+class MirrorModel extends _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_6__.MirrorTextModel {
     get uri() {
         return this._uri;
-    }
-    get version() {
-        return this._versionId;
     }
     get eol() {
         return this._eol;
@@ -8634,9 +8506,9 @@ class MirrorModel extends _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_7__
         return this._lines[lineNumber - 1];
     }
     getWordAtPosition(position, wordDefinition) {
-        let wordAtText = (0,_model_wordHelper_js__WEBPACK_IMPORTED_MODULE_8__.getWordAtText)(position.column, (0,_model_wordHelper_js__WEBPACK_IMPORTED_MODULE_8__.ensureValidWordDefinition)(wordDefinition), this._lines[position.lineNumber - 1], 0);
+        let wordAtText = (0,_model_wordHelper_js__WEBPACK_IMPORTED_MODULE_7__.getWordAtText)(position.column, (0,_model_wordHelper_js__WEBPACK_IMPORTED_MODULE_7__.ensureValidWordDefinition)(wordDefinition), this._lines[position.lineNumber - 1], 0);
         if (wordAtText) {
-            return new _core_range_js__WEBPACK_IMPORTED_MODULE_5__.Range(position.lineNumber, wordAtText.startColumn, position.lineNumber, wordAtText.endColumn);
+            return new _core_range_js__WEBPACK_IMPORTED_MODULE_4__.Range(position.lineNumber, wordAtText.startColumn, position.lineNumber, wordAtText.endColumn);
         }
         return null;
     }
@@ -8715,7 +8587,7 @@ class MirrorModel extends _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_7__
     offsetAt(position) {
         position = this._validatePosition(position);
         this._ensureLineStarts();
-        return this._lineStarts.getAccumulatedValue(position.lineNumber - 2) + (position.column - 1);
+        return this._lineStarts.getPrefixSum(position.lineNumber - 2) + (position.column - 1);
     }
     positionAt(offset) {
         offset = Math.floor(offset);
@@ -8746,7 +8618,7 @@ class MirrorModel extends _model_mirrorTextModel_js__WEBPACK_IMPORTED_MODULE_7__
         return range;
     }
     _validatePosition(position) {
-        if (!_core_position_js__WEBPACK_IMPORTED_MODULE_4__.Position.isIPosition(position)) {
+        if (!_core_position_js__WEBPACK_IMPORTED_MODULE_3__.Position.isIPosition(position)) {
             throw new Error('bad position');
         }
         let { lineNumber, column } = position;
@@ -8802,7 +8674,7 @@ class EditorSimpleWorker {
         return all;
     }
     acceptNewModel(data) {
-        this._models[data.url] = new MirrorModel(_base_common_uri_js__WEBPACK_IMPORTED_MODULE_3__.URI.parse(data.url), data.lines, data.EOL, data.versionId);
+        this._models[data.url] = new MirrorModel(_base_common_uri_js__WEBPACK_IMPORTED_MODULE_2__.URI.parse(data.url), data.lines, data.EOL, data.versionId);
     }
     acceptModelChanged(strURL, e) {
         if (!this._models[strURL]) {
@@ -8827,7 +8699,7 @@ class EditorSimpleWorker {
             }
             const originalLines = original.getLinesContent();
             const modifiedLines = modified.getLinesContent();
-            const diffComputer = new _diff_diffComputer_js__WEBPACK_IMPORTED_MODULE_6__.DiffComputer(originalLines, modifiedLines, {
+            const diffComputer = new _diff_diffComputer_js__WEBPACK_IMPORTED_MODULE_5__.DiffComputer(originalLines, modifiedLines, {
                 shouldComputeCharChanges: true,
                 shouldPostProcessCharChanges: true,
                 shouldIgnoreTrimWhitespace: ignoreTrimWhitespace,
@@ -8866,9 +8738,9 @@ class EditorSimpleWorker {
             }
             const result = [];
             let lastEol = undefined;
-            edits = (0,_base_common_arrays_js__WEBPACK_IMPORTED_MODULE_0__.mergeSort)(edits, (a, b) => {
+            edits = edits.slice(0).sort((a, b) => {
                 if (a.range && b.range) {
-                    return _core_range_js__WEBPACK_IMPORTED_MODULE_5__.Range.compareRangesUsingStarts(a.range, b.range);
+                    return _core_range_js__WEBPACK_IMPORTED_MODULE_4__.Range.compareRangesUsingStarts(a.range, b.range);
                 }
                 // eol only changes should go to the end
                 let aRng = a.range ? 0 : 1;
@@ -8879,7 +8751,7 @@ class EditorSimpleWorker {
                 if (typeof eol === 'number') {
                     lastEol = eol;
                 }
-                if (_core_range_js__WEBPACK_IMPORTED_MODULE_5__.Range.isEmpty(range) && !text) {
+                if (_core_range_js__WEBPACK_IMPORTED_MODULE_4__.Range.isEmpty(range) && !text) {
                     // empty change
                     continue;
                 }
@@ -8895,8 +8767,8 @@ class EditorSimpleWorker {
                     continue;
                 }
                 // compute diff between original and edit.text
-                const changes = (0,_base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_1__.stringDiff)(original, text, false);
-                const editOffset = model.offsetAt(_core_range_js__WEBPACK_IMPORTED_MODULE_5__.Range.lift(range).getStartPosition());
+                const changes = (0,_base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_0__.stringDiff)(original, text, false);
+                const editOffset = model.offsetAt(_core_range_js__WEBPACK_IMPORTED_MODULE_4__.Range.lift(range).getStartPosition());
                 for (const change of changes) {
                     const start = model.positionAt(editOffset + change.originalStart);
                     const end = model.positionAt(editOffset + change.originalStart + change.originalLength);
@@ -8922,12 +8794,12 @@ class EditorSimpleWorker {
             if (!model) {
                 return null;
             }
-            return (0,_modes_linkComputer_js__WEBPACK_IMPORTED_MODULE_9__.computeLinks)(model);
+            return (0,_modes_linkComputer_js__WEBPACK_IMPORTED_MODULE_8__.computeLinks)(model);
         });
     }
     textualSuggest(modelUrls, leadingWord, wordDef, wordDefFlags) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sw = new _base_common_stopwatch_js__WEBPACK_IMPORTED_MODULE_13__.StopWatch(true);
+            const sw = new _base_common_stopwatch_js__WEBPACK_IMPORTED_MODULE_12__.StopWatch(true);
             const wordDefRegExp = new RegExp(wordDef, wordDefFlags);
             const seen = new Set();
             outer: for (let url of modelUrls) {
@@ -9002,7 +8874,7 @@ class EditorSimpleWorker {
                 return null;
             }
             let word = model.getValueInRange(wordRange);
-            let result = _modes_supports_inplaceReplaceSupport_js__WEBPACK_IMPORTED_MODULE_10__.BasicInplaceReplace.INSTANCE.navigateValueSet(range, selectionText, wordRange, word, up);
+            let result = _modes_supports_inplaceReplaceSupport_js__WEBPACK_IMPORTED_MODULE_9__.BasicInplaceReplace.INSTANCE.navigateValueSet(range, selectionText, wordRange, word, up);
             return result;
         });
     }
@@ -9011,7 +8883,7 @@ class EditorSimpleWorker {
         const proxyMethodRequest = (method, args) => {
             return this._host.fhr(method, args);
         };
-        const foreignHost = _base_common_types_js__WEBPACK_IMPORTED_MODULE_12__.createProxyObject(foreignHostMethods, proxyMethodRequest);
+        const foreignHost = _base_common_types_js__WEBPACK_IMPORTED_MODULE_11__.createProxyObject(foreignHostMethods, proxyMethodRequest);
         let ctx = {
             host: foreignHost,
             getMirrorModels: () => {
@@ -9021,7 +8893,7 @@ class EditorSimpleWorker {
         if (this._foreignModuleFactory) {
             this._foreignModule = this._foreignModuleFactory(ctx, createData);
             // static foreing module
-            return Promise.resolve(_base_common_types_js__WEBPACK_IMPORTED_MODULE_12__.getAllMethodNames(this._foreignModule));
+            return Promise.resolve(_base_common_types_js__WEBPACK_IMPORTED_MODULE_11__.getAllMethodNames(this._foreignModule));
         }
         // ESM-comment-begin
         // 		return new Promise<any>((resolve, reject) => {
@@ -9064,7 +8936,7 @@ function create(host) {
 }
 if (typeof importScripts === 'function') {
     // Running in a web worker
-    _base_common_platform_js__WEBPACK_IMPORTED_MODULE_2__.globals.monaco = (0,_standalone_standaloneBase_js__WEBPACK_IMPORTED_MODULE_11__.createMonacoBaseAPI)();
+    _base_common_platform_js__WEBPACK_IMPORTED_MODULE_1__.globals.monaco = (0,_standalone_standaloneBase_js__WEBPACK_IMPORTED_MODULE_10__.createMonacoBaseAPI)();
 }
 
 
@@ -9156,7 +9028,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "EndOfLinePreference": () => (/* binding */ EndOfLinePreference),
 /* harmony export */   "EndOfLineSequence": () => (/* binding */ EndOfLineSequence),
 /* harmony export */   "IndentAction": () => (/* binding */ IndentAction),
-/* harmony export */   "InlineHintKind": () => (/* binding */ InlineHintKind),
+/* harmony export */   "InlayHintKind": () => (/* binding */ InlayHintKind),
+/* harmony export */   "InlineCompletionTriggerKind": () => (/* binding */ InlineCompletionTriggerKind),
 /* harmony export */   "KeyCode": () => (/* binding */ KeyCode),
 /* harmony export */   "MarkerSeverity": () => (/* binding */ MarkerSeverity),
 /* harmony export */   "MarkerTag": () => (/* binding */ MarkerTag),
@@ -9350,126 +9223,131 @@ var EditorOption;
     EditorOption[EditorOption["accessibilityPageSize"] = 3] = "accessibilityPageSize";
     EditorOption[EditorOption["ariaLabel"] = 4] = "ariaLabel";
     EditorOption[EditorOption["autoClosingBrackets"] = 5] = "autoClosingBrackets";
-    EditorOption[EditorOption["autoClosingOvertype"] = 6] = "autoClosingOvertype";
-    EditorOption[EditorOption["autoClosingQuotes"] = 7] = "autoClosingQuotes";
-    EditorOption[EditorOption["autoIndent"] = 8] = "autoIndent";
-    EditorOption[EditorOption["automaticLayout"] = 9] = "automaticLayout";
-    EditorOption[EditorOption["autoSurround"] = 10] = "autoSurround";
-    EditorOption[EditorOption["codeLens"] = 11] = "codeLens";
-    EditorOption[EditorOption["codeLensFontFamily"] = 12] = "codeLensFontFamily";
-    EditorOption[EditorOption["codeLensFontSize"] = 13] = "codeLensFontSize";
-    EditorOption[EditorOption["colorDecorators"] = 14] = "colorDecorators";
-    EditorOption[EditorOption["columnSelection"] = 15] = "columnSelection";
-    EditorOption[EditorOption["comments"] = 16] = "comments";
-    EditorOption[EditorOption["contextmenu"] = 17] = "contextmenu";
-    EditorOption[EditorOption["copyWithSyntaxHighlighting"] = 18] = "copyWithSyntaxHighlighting";
-    EditorOption[EditorOption["cursorBlinking"] = 19] = "cursorBlinking";
-    EditorOption[EditorOption["cursorSmoothCaretAnimation"] = 20] = "cursorSmoothCaretAnimation";
-    EditorOption[EditorOption["cursorStyle"] = 21] = "cursorStyle";
-    EditorOption[EditorOption["cursorSurroundingLines"] = 22] = "cursorSurroundingLines";
-    EditorOption[EditorOption["cursorSurroundingLinesStyle"] = 23] = "cursorSurroundingLinesStyle";
-    EditorOption[EditorOption["cursorWidth"] = 24] = "cursorWidth";
-    EditorOption[EditorOption["disableLayerHinting"] = 25] = "disableLayerHinting";
-    EditorOption[EditorOption["disableMonospaceOptimizations"] = 26] = "disableMonospaceOptimizations";
-    EditorOption[EditorOption["dragAndDrop"] = 27] = "dragAndDrop";
-    EditorOption[EditorOption["emptySelectionClipboard"] = 28] = "emptySelectionClipboard";
-    EditorOption[EditorOption["extraEditorClassName"] = 29] = "extraEditorClassName";
-    EditorOption[EditorOption["fastScrollSensitivity"] = 30] = "fastScrollSensitivity";
-    EditorOption[EditorOption["find"] = 31] = "find";
-    EditorOption[EditorOption["fixedOverflowWidgets"] = 32] = "fixedOverflowWidgets";
-    EditorOption[EditorOption["folding"] = 33] = "folding";
-    EditorOption[EditorOption["foldingStrategy"] = 34] = "foldingStrategy";
-    EditorOption[EditorOption["foldingHighlight"] = 35] = "foldingHighlight";
-    EditorOption[EditorOption["unfoldOnClickAfterEndOfLine"] = 36] = "unfoldOnClickAfterEndOfLine";
-    EditorOption[EditorOption["fontFamily"] = 37] = "fontFamily";
-    EditorOption[EditorOption["fontInfo"] = 38] = "fontInfo";
-    EditorOption[EditorOption["fontLigatures"] = 39] = "fontLigatures";
-    EditorOption[EditorOption["fontSize"] = 40] = "fontSize";
-    EditorOption[EditorOption["fontWeight"] = 41] = "fontWeight";
-    EditorOption[EditorOption["formatOnPaste"] = 42] = "formatOnPaste";
-    EditorOption[EditorOption["formatOnType"] = 43] = "formatOnType";
-    EditorOption[EditorOption["glyphMargin"] = 44] = "glyphMargin";
-    EditorOption[EditorOption["gotoLocation"] = 45] = "gotoLocation";
-    EditorOption[EditorOption["hideCursorInOverviewRuler"] = 46] = "hideCursorInOverviewRuler";
-    EditorOption[EditorOption["highlightActiveIndentGuide"] = 47] = "highlightActiveIndentGuide";
-    EditorOption[EditorOption["hover"] = 48] = "hover";
-    EditorOption[EditorOption["inDiffEditor"] = 49] = "inDiffEditor";
-    EditorOption[EditorOption["letterSpacing"] = 50] = "letterSpacing";
-    EditorOption[EditorOption["lightbulb"] = 51] = "lightbulb";
-    EditorOption[EditorOption["lineDecorationsWidth"] = 52] = "lineDecorationsWidth";
-    EditorOption[EditorOption["lineHeight"] = 53] = "lineHeight";
-    EditorOption[EditorOption["lineNumbers"] = 54] = "lineNumbers";
-    EditorOption[EditorOption["lineNumbersMinChars"] = 55] = "lineNumbersMinChars";
-    EditorOption[EditorOption["linkedEditing"] = 56] = "linkedEditing";
-    EditorOption[EditorOption["links"] = 57] = "links";
-    EditorOption[EditorOption["matchBrackets"] = 58] = "matchBrackets";
-    EditorOption[EditorOption["minimap"] = 59] = "minimap";
-    EditorOption[EditorOption["mouseStyle"] = 60] = "mouseStyle";
-    EditorOption[EditorOption["mouseWheelScrollSensitivity"] = 61] = "mouseWheelScrollSensitivity";
-    EditorOption[EditorOption["mouseWheelZoom"] = 62] = "mouseWheelZoom";
-    EditorOption[EditorOption["multiCursorMergeOverlapping"] = 63] = "multiCursorMergeOverlapping";
-    EditorOption[EditorOption["multiCursorModifier"] = 64] = "multiCursorModifier";
-    EditorOption[EditorOption["multiCursorPaste"] = 65] = "multiCursorPaste";
-    EditorOption[EditorOption["occurrencesHighlight"] = 66] = "occurrencesHighlight";
-    EditorOption[EditorOption["overviewRulerBorder"] = 67] = "overviewRulerBorder";
-    EditorOption[EditorOption["overviewRulerLanes"] = 68] = "overviewRulerLanes";
-    EditorOption[EditorOption["padding"] = 69] = "padding";
-    EditorOption[EditorOption["parameterHints"] = 70] = "parameterHints";
-    EditorOption[EditorOption["peekWidgetDefaultFocus"] = 71] = "peekWidgetDefaultFocus";
-    EditorOption[EditorOption["definitionLinkOpensInPeek"] = 72] = "definitionLinkOpensInPeek";
-    EditorOption[EditorOption["quickSuggestions"] = 73] = "quickSuggestions";
-    EditorOption[EditorOption["quickSuggestionsDelay"] = 74] = "quickSuggestionsDelay";
-    EditorOption[EditorOption["readOnly"] = 75] = "readOnly";
-    EditorOption[EditorOption["renameOnType"] = 76] = "renameOnType";
-    EditorOption[EditorOption["renderControlCharacters"] = 77] = "renderControlCharacters";
-    EditorOption[EditorOption["renderIndentGuides"] = 78] = "renderIndentGuides";
-    EditorOption[EditorOption["renderFinalNewline"] = 79] = "renderFinalNewline";
-    EditorOption[EditorOption["renderLineHighlight"] = 80] = "renderLineHighlight";
-    EditorOption[EditorOption["renderLineHighlightOnlyWhenFocus"] = 81] = "renderLineHighlightOnlyWhenFocus";
-    EditorOption[EditorOption["renderValidationDecorations"] = 82] = "renderValidationDecorations";
-    EditorOption[EditorOption["renderWhitespace"] = 83] = "renderWhitespace";
-    EditorOption[EditorOption["revealHorizontalRightPadding"] = 84] = "revealHorizontalRightPadding";
-    EditorOption[EditorOption["roundedSelection"] = 85] = "roundedSelection";
-    EditorOption[EditorOption["rulers"] = 86] = "rulers";
-    EditorOption[EditorOption["scrollbar"] = 87] = "scrollbar";
-    EditorOption[EditorOption["scrollBeyondLastColumn"] = 88] = "scrollBeyondLastColumn";
-    EditorOption[EditorOption["scrollBeyondLastLine"] = 89] = "scrollBeyondLastLine";
-    EditorOption[EditorOption["scrollPredominantAxis"] = 90] = "scrollPredominantAxis";
-    EditorOption[EditorOption["selectionClipboard"] = 91] = "selectionClipboard";
-    EditorOption[EditorOption["selectionHighlight"] = 92] = "selectionHighlight";
-    EditorOption[EditorOption["selectOnLineNumbers"] = 93] = "selectOnLineNumbers";
-    EditorOption[EditorOption["showFoldingControls"] = 94] = "showFoldingControls";
-    EditorOption[EditorOption["showUnused"] = 95] = "showUnused";
-    EditorOption[EditorOption["snippetSuggestions"] = 96] = "snippetSuggestions";
-    EditorOption[EditorOption["smartSelect"] = 97] = "smartSelect";
-    EditorOption[EditorOption["smoothScrolling"] = 98] = "smoothScrolling";
-    EditorOption[EditorOption["stickyTabStops"] = 99] = "stickyTabStops";
-    EditorOption[EditorOption["stopRenderingLineAfter"] = 100] = "stopRenderingLineAfter";
-    EditorOption[EditorOption["suggest"] = 101] = "suggest";
-    EditorOption[EditorOption["suggestFontSize"] = 102] = "suggestFontSize";
-    EditorOption[EditorOption["suggestLineHeight"] = 103] = "suggestLineHeight";
-    EditorOption[EditorOption["suggestOnTriggerCharacters"] = 104] = "suggestOnTriggerCharacters";
-    EditorOption[EditorOption["suggestSelection"] = 105] = "suggestSelection";
-    EditorOption[EditorOption["tabCompletion"] = 106] = "tabCompletion";
-    EditorOption[EditorOption["tabIndex"] = 107] = "tabIndex";
-    EditorOption[EditorOption["unusualLineTerminators"] = 108] = "unusualLineTerminators";
-    EditorOption[EditorOption["useTabStops"] = 109] = "useTabStops";
-    EditorOption[EditorOption["wordSeparators"] = 110] = "wordSeparators";
-    EditorOption[EditorOption["wordWrap"] = 111] = "wordWrap";
-    EditorOption[EditorOption["wordWrapBreakAfterCharacters"] = 112] = "wordWrapBreakAfterCharacters";
-    EditorOption[EditorOption["wordWrapBreakBeforeCharacters"] = 113] = "wordWrapBreakBeforeCharacters";
-    EditorOption[EditorOption["wordWrapColumn"] = 114] = "wordWrapColumn";
-    EditorOption[EditorOption["wordWrapOverride1"] = 115] = "wordWrapOverride1";
-    EditorOption[EditorOption["wordWrapOverride2"] = 116] = "wordWrapOverride2";
-    EditorOption[EditorOption["wrappingIndent"] = 117] = "wrappingIndent";
-    EditorOption[EditorOption["wrappingStrategy"] = 118] = "wrappingStrategy";
-    EditorOption[EditorOption["showDeprecated"] = 119] = "showDeprecated";
-    EditorOption[EditorOption["inlineHints"] = 120] = "inlineHints";
-    EditorOption[EditorOption["editorClassName"] = 121] = "editorClassName";
-    EditorOption[EditorOption["pixelRatio"] = 122] = "pixelRatio";
-    EditorOption[EditorOption["tabFocusMode"] = 123] = "tabFocusMode";
-    EditorOption[EditorOption["layoutInfo"] = 124] = "layoutInfo";
-    EditorOption[EditorOption["wrappingInfo"] = 125] = "wrappingInfo";
+    EditorOption[EditorOption["autoClosingDelete"] = 6] = "autoClosingDelete";
+    EditorOption[EditorOption["autoClosingOvertype"] = 7] = "autoClosingOvertype";
+    EditorOption[EditorOption["autoClosingQuotes"] = 8] = "autoClosingQuotes";
+    EditorOption[EditorOption["autoIndent"] = 9] = "autoIndent";
+    EditorOption[EditorOption["automaticLayout"] = 10] = "automaticLayout";
+    EditorOption[EditorOption["autoSurround"] = 11] = "autoSurround";
+    EditorOption[EditorOption["codeLens"] = 12] = "codeLens";
+    EditorOption[EditorOption["codeLensFontFamily"] = 13] = "codeLensFontFamily";
+    EditorOption[EditorOption["codeLensFontSize"] = 14] = "codeLensFontSize";
+    EditorOption[EditorOption["colorDecorators"] = 15] = "colorDecorators";
+    EditorOption[EditorOption["columnSelection"] = 16] = "columnSelection";
+    EditorOption[EditorOption["comments"] = 17] = "comments";
+    EditorOption[EditorOption["contextmenu"] = 18] = "contextmenu";
+    EditorOption[EditorOption["copyWithSyntaxHighlighting"] = 19] = "copyWithSyntaxHighlighting";
+    EditorOption[EditorOption["cursorBlinking"] = 20] = "cursorBlinking";
+    EditorOption[EditorOption["cursorSmoothCaretAnimation"] = 21] = "cursorSmoothCaretAnimation";
+    EditorOption[EditorOption["cursorStyle"] = 22] = "cursorStyle";
+    EditorOption[EditorOption["cursorSurroundingLines"] = 23] = "cursorSurroundingLines";
+    EditorOption[EditorOption["cursorSurroundingLinesStyle"] = 24] = "cursorSurroundingLinesStyle";
+    EditorOption[EditorOption["cursorWidth"] = 25] = "cursorWidth";
+    EditorOption[EditorOption["disableLayerHinting"] = 26] = "disableLayerHinting";
+    EditorOption[EditorOption["disableMonospaceOptimizations"] = 27] = "disableMonospaceOptimizations";
+    EditorOption[EditorOption["domReadOnly"] = 28] = "domReadOnly";
+    EditorOption[EditorOption["dragAndDrop"] = 29] = "dragAndDrop";
+    EditorOption[EditorOption["emptySelectionClipboard"] = 30] = "emptySelectionClipboard";
+    EditorOption[EditorOption["extraEditorClassName"] = 31] = "extraEditorClassName";
+    EditorOption[EditorOption["fastScrollSensitivity"] = 32] = "fastScrollSensitivity";
+    EditorOption[EditorOption["find"] = 33] = "find";
+    EditorOption[EditorOption["fixedOverflowWidgets"] = 34] = "fixedOverflowWidgets";
+    EditorOption[EditorOption["folding"] = 35] = "folding";
+    EditorOption[EditorOption["foldingStrategy"] = 36] = "foldingStrategy";
+    EditorOption[EditorOption["foldingHighlight"] = 37] = "foldingHighlight";
+    EditorOption[EditorOption["foldingImportsByDefault"] = 38] = "foldingImportsByDefault";
+    EditorOption[EditorOption["unfoldOnClickAfterEndOfLine"] = 39] = "unfoldOnClickAfterEndOfLine";
+    EditorOption[EditorOption["fontFamily"] = 40] = "fontFamily";
+    EditorOption[EditorOption["fontInfo"] = 41] = "fontInfo";
+    EditorOption[EditorOption["fontLigatures"] = 42] = "fontLigatures";
+    EditorOption[EditorOption["fontSize"] = 43] = "fontSize";
+    EditorOption[EditorOption["fontWeight"] = 44] = "fontWeight";
+    EditorOption[EditorOption["formatOnPaste"] = 45] = "formatOnPaste";
+    EditorOption[EditorOption["formatOnType"] = 46] = "formatOnType";
+    EditorOption[EditorOption["glyphMargin"] = 47] = "glyphMargin";
+    EditorOption[EditorOption["gotoLocation"] = 48] = "gotoLocation";
+    EditorOption[EditorOption["hideCursorInOverviewRuler"] = 49] = "hideCursorInOverviewRuler";
+    EditorOption[EditorOption["highlightActiveIndentGuide"] = 50] = "highlightActiveIndentGuide";
+    EditorOption[EditorOption["hover"] = 51] = "hover";
+    EditorOption[EditorOption["inDiffEditor"] = 52] = "inDiffEditor";
+    EditorOption[EditorOption["inlineSuggest"] = 53] = "inlineSuggest";
+    EditorOption[EditorOption["letterSpacing"] = 54] = "letterSpacing";
+    EditorOption[EditorOption["lightbulb"] = 55] = "lightbulb";
+    EditorOption[EditorOption["lineDecorationsWidth"] = 56] = "lineDecorationsWidth";
+    EditorOption[EditorOption["lineHeight"] = 57] = "lineHeight";
+    EditorOption[EditorOption["lineNumbers"] = 58] = "lineNumbers";
+    EditorOption[EditorOption["lineNumbersMinChars"] = 59] = "lineNumbersMinChars";
+    EditorOption[EditorOption["linkedEditing"] = 60] = "linkedEditing";
+    EditorOption[EditorOption["links"] = 61] = "links";
+    EditorOption[EditorOption["matchBrackets"] = 62] = "matchBrackets";
+    EditorOption[EditorOption["minimap"] = 63] = "minimap";
+    EditorOption[EditorOption["mouseStyle"] = 64] = "mouseStyle";
+    EditorOption[EditorOption["mouseWheelScrollSensitivity"] = 65] = "mouseWheelScrollSensitivity";
+    EditorOption[EditorOption["mouseWheelZoom"] = 66] = "mouseWheelZoom";
+    EditorOption[EditorOption["multiCursorMergeOverlapping"] = 67] = "multiCursorMergeOverlapping";
+    EditorOption[EditorOption["multiCursorModifier"] = 68] = "multiCursorModifier";
+    EditorOption[EditorOption["multiCursorPaste"] = 69] = "multiCursorPaste";
+    EditorOption[EditorOption["occurrencesHighlight"] = 70] = "occurrencesHighlight";
+    EditorOption[EditorOption["overviewRulerBorder"] = 71] = "overviewRulerBorder";
+    EditorOption[EditorOption["overviewRulerLanes"] = 72] = "overviewRulerLanes";
+    EditorOption[EditorOption["padding"] = 73] = "padding";
+    EditorOption[EditorOption["parameterHints"] = 74] = "parameterHints";
+    EditorOption[EditorOption["peekWidgetDefaultFocus"] = 75] = "peekWidgetDefaultFocus";
+    EditorOption[EditorOption["definitionLinkOpensInPeek"] = 76] = "definitionLinkOpensInPeek";
+    EditorOption[EditorOption["quickSuggestions"] = 77] = "quickSuggestions";
+    EditorOption[EditorOption["quickSuggestionsDelay"] = 78] = "quickSuggestionsDelay";
+    EditorOption[EditorOption["readOnly"] = 79] = "readOnly";
+    EditorOption[EditorOption["renameOnType"] = 80] = "renameOnType";
+    EditorOption[EditorOption["renderControlCharacters"] = 81] = "renderControlCharacters";
+    EditorOption[EditorOption["renderIndentGuides"] = 82] = "renderIndentGuides";
+    EditorOption[EditorOption["renderFinalNewline"] = 83] = "renderFinalNewline";
+    EditorOption[EditorOption["renderLineHighlight"] = 84] = "renderLineHighlight";
+    EditorOption[EditorOption["renderLineHighlightOnlyWhenFocus"] = 85] = "renderLineHighlightOnlyWhenFocus";
+    EditorOption[EditorOption["renderValidationDecorations"] = 86] = "renderValidationDecorations";
+    EditorOption[EditorOption["renderWhitespace"] = 87] = "renderWhitespace";
+    EditorOption[EditorOption["revealHorizontalRightPadding"] = 88] = "revealHorizontalRightPadding";
+    EditorOption[EditorOption["roundedSelection"] = 89] = "roundedSelection";
+    EditorOption[EditorOption["rulers"] = 90] = "rulers";
+    EditorOption[EditorOption["scrollbar"] = 91] = "scrollbar";
+    EditorOption[EditorOption["scrollBeyondLastColumn"] = 92] = "scrollBeyondLastColumn";
+    EditorOption[EditorOption["scrollBeyondLastLine"] = 93] = "scrollBeyondLastLine";
+    EditorOption[EditorOption["scrollPredominantAxis"] = 94] = "scrollPredominantAxis";
+    EditorOption[EditorOption["selectionClipboard"] = 95] = "selectionClipboard";
+    EditorOption[EditorOption["selectionHighlight"] = 96] = "selectionHighlight";
+    EditorOption[EditorOption["selectOnLineNumbers"] = 97] = "selectOnLineNumbers";
+    EditorOption[EditorOption["showFoldingControls"] = 98] = "showFoldingControls";
+    EditorOption[EditorOption["showUnused"] = 99] = "showUnused";
+    EditorOption[EditorOption["snippetSuggestions"] = 100] = "snippetSuggestions";
+    EditorOption[EditorOption["smartSelect"] = 101] = "smartSelect";
+    EditorOption[EditorOption["smoothScrolling"] = 102] = "smoothScrolling";
+    EditorOption[EditorOption["stickyTabStops"] = 103] = "stickyTabStops";
+    EditorOption[EditorOption["stopRenderingLineAfter"] = 104] = "stopRenderingLineAfter";
+    EditorOption[EditorOption["suggest"] = 105] = "suggest";
+    EditorOption[EditorOption["suggestFontSize"] = 106] = "suggestFontSize";
+    EditorOption[EditorOption["suggestLineHeight"] = 107] = "suggestLineHeight";
+    EditorOption[EditorOption["suggestOnTriggerCharacters"] = 108] = "suggestOnTriggerCharacters";
+    EditorOption[EditorOption["suggestSelection"] = 109] = "suggestSelection";
+    EditorOption[EditorOption["tabCompletion"] = 110] = "tabCompletion";
+    EditorOption[EditorOption["tabIndex"] = 111] = "tabIndex";
+    EditorOption[EditorOption["unusualLineTerminators"] = 112] = "unusualLineTerminators";
+    EditorOption[EditorOption["useShadowDOM"] = 113] = "useShadowDOM";
+    EditorOption[EditorOption["useTabStops"] = 114] = "useTabStops";
+    EditorOption[EditorOption["wordSeparators"] = 115] = "wordSeparators";
+    EditorOption[EditorOption["wordWrap"] = 116] = "wordWrap";
+    EditorOption[EditorOption["wordWrapBreakAfterCharacters"] = 117] = "wordWrapBreakAfterCharacters";
+    EditorOption[EditorOption["wordWrapBreakBeforeCharacters"] = 118] = "wordWrapBreakBeforeCharacters";
+    EditorOption[EditorOption["wordWrapColumn"] = 119] = "wordWrapColumn";
+    EditorOption[EditorOption["wordWrapOverride1"] = 120] = "wordWrapOverride1";
+    EditorOption[EditorOption["wordWrapOverride2"] = 121] = "wordWrapOverride2";
+    EditorOption[EditorOption["wrappingIndent"] = 122] = "wrappingIndent";
+    EditorOption[EditorOption["wrappingStrategy"] = 123] = "wrappingStrategy";
+    EditorOption[EditorOption["showDeprecated"] = 124] = "showDeprecated";
+    EditorOption[EditorOption["inlayHints"] = 125] = "inlayHints";
+    EditorOption[EditorOption["editorClassName"] = 126] = "editorClassName";
+    EditorOption[EditorOption["pixelRatio"] = 127] = "pixelRatio";
+    EditorOption[EditorOption["tabFocusMode"] = 128] = "tabFocusMode";
+    EditorOption[EditorOption["layoutInfo"] = 129] = "layoutInfo";
+    EditorOption[EditorOption["wrappingInfo"] = 130] = "wrappingInfo";
 })(EditorOption || (EditorOption = {}));
 /**
  * End of line character preference.
@@ -9527,12 +9405,28 @@ var IndentAction;
      */
     IndentAction[IndentAction["Outdent"] = 3] = "Outdent";
 })(IndentAction || (IndentAction = {}));
-var InlineHintKind;
-(function (InlineHintKind) {
-    InlineHintKind[InlineHintKind["Other"] = 0] = "Other";
-    InlineHintKind[InlineHintKind["Type"] = 1] = "Type";
-    InlineHintKind[InlineHintKind["Parameter"] = 2] = "Parameter";
-})(InlineHintKind || (InlineHintKind = {}));
+var InlayHintKind;
+(function (InlayHintKind) {
+    InlayHintKind[InlayHintKind["Other"] = 0] = "Other";
+    InlayHintKind[InlayHintKind["Type"] = 1] = "Type";
+    InlayHintKind[InlayHintKind["Parameter"] = 2] = "Parameter";
+})(InlayHintKind || (InlayHintKind = {}));
+/**
+ * How an {@link InlineCompletionsProvider inline completion provider} was triggered.
+ */
+var InlineCompletionTriggerKind;
+(function (InlineCompletionTriggerKind) {
+    /**
+     * Completion was triggered automatically while editing.
+     * It is sufficient to return a single completion item in this case.
+     */
+    InlineCompletionTriggerKind[InlineCompletionTriggerKind["Automatic"] = 0] = "Automatic";
+    /**
+     * Completion was triggered explicitly by a user gesture.
+     * Return multiple completion items to enable cycling through them.
+     */
+    InlineCompletionTriggerKind[InlineCompletionTriggerKind["Explicit"] = 1] = "Explicit";
+})(InlineCompletionTriggerKind || (InlineCompletionTriggerKind = {}));
 /**
  * Virtual Key Codes, the value does not hold any inherent meaning.
  * Inspired somewhat from https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx
@@ -9540,6 +9434,7 @@ var InlineHintKind;
  */
 var KeyCode;
 (function (KeyCode) {
+    KeyCode[KeyCode["DependsOnKbLayout"] = -1] = "DependsOnKbLayout";
     /**
      * Placed first to cover the 0 value of the enum.
      */
@@ -10021,6 +9916,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class PrefixSumIndexOfResult {
     constructor(index, remainder) {
+        this._prefixSumIndexOfResultBrand = undefined;
         this.index = index;
         this.remainder = remainder;
     }
@@ -10065,24 +9961,24 @@ class PrefixSumComputer {
         }
         return true;
     }
-    removeValues(startIndex, cnt) {
+    removeValues(startIndex, count) {
         startIndex = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(startIndex);
-        cnt = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(cnt);
+        count = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(count);
         const oldValues = this.values;
         const oldPrefixSum = this.prefixSum;
         if (startIndex >= oldValues.length) {
             return false;
         }
-        let maxCnt = oldValues.length - startIndex;
-        if (cnt >= maxCnt) {
-            cnt = maxCnt;
+        let maxCount = oldValues.length - startIndex;
+        if (count >= maxCount) {
+            count = maxCount;
         }
-        if (cnt === 0) {
+        if (count === 0) {
             return false;
         }
-        this.values = new Uint32Array(oldValues.length - cnt);
+        this.values = new Uint32Array(oldValues.length - count);
         this.values.set(oldValues.subarray(0, startIndex), 0);
-        this.values.set(oldValues.subarray(startIndex + cnt), startIndex);
+        this.values.set(oldValues.subarray(startIndex + count), startIndex);
         this.prefixSum = new Uint32Array(this.values.length);
         if (startIndex - 1 < this.prefixSumValidIndex[0]) {
             this.prefixSumValidIndex[0] = startIndex - 1;
@@ -10092,20 +9988,20 @@ class PrefixSumComputer {
         }
         return true;
     }
-    getTotalValue() {
+    getTotalSum() {
         if (this.values.length === 0) {
             return 0;
         }
-        return this._getAccumulatedValue(this.values.length - 1);
+        return this._getPrefixSum(this.values.length - 1);
     }
-    getAccumulatedValue(index) {
+    getPrefixSum(index) {
         if (index < 0) {
             return 0;
         }
         index = (0,_base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__.toUint32)(index);
-        return this._getAccumulatedValue(index);
+        return this._getPrefixSum(index);
     }
-    _getAccumulatedValue(index) {
+    _getPrefixSum(index) {
         if (index <= this.prefixSumValidIndex[0]) {
             return this.prefixSum[index];
         }
@@ -10123,10 +10019,10 @@ class PrefixSumComputer {
         this.prefixSumValidIndex[0] = Math.max(this.prefixSumValidIndex[0], index);
         return this.prefixSum[index];
     }
-    getIndexOf(accumulatedValue) {
-        accumulatedValue = Math.floor(accumulatedValue); //@perf
+    getIndexOf(sum) {
+        sum = Math.floor(sum); //@perf
         // Compute all sums (to get a fully valid prefixSum)
-        this.getTotalValue();
+        this.getTotalSum();
         let low = 0;
         let high = this.values.length - 1;
         let mid = 0;
@@ -10136,17 +10032,17 @@ class PrefixSumComputer {
             mid = low + ((high - low) / 2) | 0;
             midStop = this.prefixSum[mid];
             midStart = midStop - this.values[mid];
-            if (accumulatedValue < midStart) {
+            if (sum < midStart) {
                 high = mid - 1;
             }
-            else if (accumulatedValue >= midStop) {
+            else if (sum >= midStop) {
                 low = mid + 1;
             }
             else {
                 break;
             }
         }
-        return new PrefixSumIndexOfResult(mid, accumulatedValue - midStart);
+        return new PrefixSumIndexOfResult(mid, sum - midStart);
     }
 }
 
@@ -10205,7 +10101,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "css_beautify": () => (/* binding */ css_beautify)
 /* harmony export */ });
 // copied from js-beautify/js/lib/beautify-css.js
-// version: 1.13.4
+// version: 1.14.0
 /* AUTO-GENERATED. DO NOT MODIFY. */
 /*
 
@@ -10270,100 +10166,15 @@ __webpack_require__.r(__webpack_exports__);
 // http://www.w3.org/TR/CSS21/syndata.html#tokenization
 // http://www.w3.org/TR/css3-syntax/
 
-var legacy_beautify_css =
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __nested_webpack_require_2800__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_2800__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__nested_webpack_require_2800__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__nested_webpack_require_2800__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__nested_webpack_require_2800__.d = function(exports, name, getter) {
-/******/ 		if(!__nested_webpack_require_2800__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__nested_webpack_require_2800__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__nested_webpack_require_2800__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __nested_webpack_require_2800__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__nested_webpack_require_2800__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __nested_webpack_require_2800__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__nested_webpack_require_2800__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__nested_webpack_require_2800__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__nested_webpack_require_2800__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__nested_webpack_require_2800__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __nested_webpack_require_2800__(__nested_webpack_require_2800__.s = 15);
-/******/ })
-/************************************************************************/
-/******/ ([
+var legacy_beautify_css;
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
 /* 0 */,
 /* 1 */,
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
   The MIT License (MIT)
@@ -10790,9 +10601,8 @@ module.exports.Output = Output;
 /* 4 */,
 /* 5 */,
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -10991,9 +10801,8 @@ module.exports.mergeOpts = _mergeOpts;
 /***/ }),
 /* 7 */,
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -11194,9 +11003,8 @@ module.exports.InputScanner = InputScanner;
 /* 11 */,
 /* 12 */,
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -11264,9 +11072,8 @@ module.exports.Directives = Directives;
 /***/ }),
 /* 14 */,
 /* 15 */
-/***/ (function(module, exports, __nested_webpack_require_33799__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_30151__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -11297,8 +11104,8 @@ module.exports.Directives = Directives;
 
 
 
-var Beautifier = __nested_webpack_require_33799__(16).Beautifier,
-  Options = __nested_webpack_require_33799__(17).Options;
+var Beautifier = __nested_webpack_require_30151__(16).Beautifier,
+  Options = __nested_webpack_require_30151__(17).Options;
 
 function css_beautify(source_text, options) {
   var beautifier = new Beautifier(source_text, options);
@@ -11313,9 +11120,8 @@ module.exports.defaultOptions = function() {
 
 /***/ }),
 /* 16 */
-/***/ (function(module, exports, __nested_webpack_require_35420__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_31775__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -11346,10 +11152,10 @@ module.exports.defaultOptions = function() {
 
 
 
-var Options = __nested_webpack_require_35420__(17).Options;
-var Output = __nested_webpack_require_35420__(2).Output;
-var InputScanner = __nested_webpack_require_35420__(8).InputScanner;
-var Directives = __nested_webpack_require_35420__(13).Directives;
+var Options = __nested_webpack_require_31775__(17).Options;
+var Output = __nested_webpack_require_31775__(2).Output;
+var InputScanner = __nested_webpack_require_31775__(8).InputScanner;
+var Directives = __nested_webpack_require_31775__(13).Directives;
 
 var directives_core = new Directives(/\/\*/, /\*\//);
 
@@ -11751,7 +11557,7 @@ Beautifier.prototype.beautify = function() {
     } else if (this._ch === ',') {
       this.print_string(this._ch);
       this.eatWhitespace(true);
-      if (this._options.selector_separator_newline && !insidePropertyValue && parenLevel === 0 && !insideAtImport) {
+      if (this._options.selector_separator_newline && !insidePropertyValue && parenLevel === 0 && !insideAtImport && !insideAtExtend) {
         this._output.add_new_line();
       } else {
         this._output.space_before_token = true;
@@ -11800,9 +11606,8 @@ module.exports.Beautifier = Beautifier;
 
 /***/ }),
 /* 17 */
-/***/ (function(module, exports, __nested_webpack_require_51059__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_47436__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -11833,7 +11638,7 @@ module.exports.Beautifier = Beautifier;
 
 
 
-var BaseOptions = __nested_webpack_require_51059__(6).Options;
+var BaseOptions = __nested_webpack_require_47436__(6).Options;
 
 function Options(options) {
   BaseOptions.call(this, options, 'css');
@@ -11862,7 +11667,42 @@ module.exports.Options = Options;
 
 
 /***/ })
-/******/ ]);
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nested_webpack_require_49914__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_49914__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nested_webpack_require_49914__(15);
+/******/ 	legacy_beautify_css = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
 
 var css_beautify = legacy_beautify_css;
 
@@ -11881,7 +11721,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _beautify_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./beautify.js */ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/beautify/beautify.js");
 /* harmony import */ var _beautify_css_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./beautify-css.js */ "./node_modules/monaco-editor/esm/vs/language/html/_deps/vscode-html-languageservice/beautify/beautify-css.js");
 // copied from js-beautify/js/lib/beautify-html.js
-// version: 1.13.4
+// version: 1.14.0
 /* AUTO-GENERATED. DO NOT MODIFY. */
 /*
 
@@ -11959,100 +11799,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var legacy_beautify_html =
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __nested_webpack_require_3670__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_3670__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__nested_webpack_require_3670__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__nested_webpack_require_3670__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__nested_webpack_require_3670__.d = function(exports, name, getter) {
-/******/ 		if(!__nested_webpack_require_3670__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__nested_webpack_require_3670__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__nested_webpack_require_3670__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __nested_webpack_require_3670__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__nested_webpack_require_3670__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __nested_webpack_require_3670__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__nested_webpack_require_3670__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__nested_webpack_require_3670__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__nested_webpack_require_3670__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__nested_webpack_require_3670__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __nested_webpack_require_3670__(__nested_webpack_require_3670__.s = 18);
-/******/ })
-/************************************************************************/
-/******/ ([
+var legacy_beautify_html;
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
 /* 0 */,
 /* 1 */,
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
   The MIT License (MIT)
@@ -12476,9 +12231,8 @@ module.exports.Output = Output;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -12539,9 +12293,8 @@ module.exports.Token = Token;
 /* 4 */,
 /* 5 */,
 /* 6 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -12740,9 +12493,8 @@ module.exports.mergeOpts = _mergeOpts;
 /***/ }),
 /* 7 */,
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -12939,9 +12691,8 @@ module.exports.InputScanner = InputScanner;
 
 /***/ }),
 /* 9 */
-/***/ (function(module, exports, __nested_webpack_require_34057__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_30409__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -12972,10 +12723,10 @@ module.exports.InputScanner = InputScanner;
 
 
 
-var InputScanner = __nested_webpack_require_34057__(8).InputScanner;
-var Token = __nested_webpack_require_34057__(3).Token;
-var TokenStream = __nested_webpack_require_34057__(10).TokenStream;
-var WhitespacePattern = __nested_webpack_require_34057__(11).WhitespacePattern;
+var InputScanner = __nested_webpack_require_30409__(8).InputScanner;
+var Token = __nested_webpack_require_30409__(3).Token;
+var TokenStream = __nested_webpack_require_30409__(10).TokenStream;
+var WhitespacePattern = __nested_webpack_require_30409__(11).WhitespacePattern;
 
 var TOKEN = {
   START: 'TK_START',
@@ -13086,9 +12837,8 @@ module.exports.TOKEN = TOKEN;
 
 /***/ }),
 /* 10 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -13171,9 +12921,8 @@ module.exports.TokenStream = TokenStream;
 
 /***/ }),
 /* 11 */
-/***/ (function(module, exports, __nested_webpack_require_40510__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_36821__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -13204,7 +12953,7 @@ module.exports.TokenStream = TokenStream;
 
 
 
-var Pattern = __nested_webpack_require_40510__(12).Pattern;
+var Pattern = __nested_webpack_require_36821__(12).Pattern;
 
 function WhitespacePattern(input_scanner, parent) {
   Pattern.call(this, input_scanner, parent);
@@ -13283,9 +13032,8 @@ module.exports.WhitespacePattern = WhitespacePattern;
 
 /***/ }),
 /* 12 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -13384,9 +13132,8 @@ module.exports.Pattern = Pattern;
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -13453,9 +13200,8 @@ module.exports.Directives = Directives;
 
 /***/ }),
 /* 14 */
-/***/ (function(module, exports, __nested_webpack_require_49580__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_45806__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -13486,7 +13232,7 @@ module.exports.Directives = Directives;
 
 
 
-var Pattern = __nested_webpack_require_49580__(12).Pattern;
+var Pattern = __nested_webpack_require_45806__(12).Pattern;
 
 
 var template_names = {
@@ -13515,7 +13261,7 @@ function TemplatablePattern(input_scanner, parent) {
     handlebars_comment: pattern.starting_with(/{{!--/).until_after(/--}}/),
     handlebars_unescaped: pattern.starting_with(/{{{/).until_after(/}}}/),
     handlebars: pattern.starting_with(/{{/).until_after(/}}/),
-    php: pattern.starting_with(/<\?(?:[=]|php)/).until_after(/\?>/),
+    php: pattern.starting_with(/<\?(?:[= ]|php)/).until_after(/\?>/),
     erb: pattern.starting_with(/<%[^%]/).until_after(/[^%]%>/),
     // django coflicts with handlebars a bit.
     django: pattern.starting_with(/{%/).until_after(/%}/),
@@ -13674,9 +13420,8 @@ module.exports.TemplatablePattern = TemplatablePattern;
 /* 16 */,
 /* 17 */,
 /* 18 */
-/***/ (function(module, exports, __nested_webpack_require_57120__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_53350__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -13707,8 +13452,8 @@ module.exports.TemplatablePattern = TemplatablePattern;
 
 
 
-var Beautifier = __nested_webpack_require_57120__(19).Beautifier,
-  Options = __nested_webpack_require_57120__(20).Options;
+var Beautifier = __nested_webpack_require_53350__(19).Beautifier,
+  Options = __nested_webpack_require_53350__(20).Options;
 
 function style_html(html_source, options, js_beautify, css_beautify) {
   var beautifier = new Beautifier(html_source, options, js_beautify, css_beautify);
@@ -13723,9 +13468,8 @@ module.exports.defaultOptions = function() {
 
 /***/ }),
 /* 19 */
-/***/ (function(module, exports, __nested_webpack_require_58791__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_55024__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -13756,10 +13500,10 @@ module.exports.defaultOptions = function() {
 
 
 
-var Options = __nested_webpack_require_58791__(20).Options;
-var Output = __nested_webpack_require_58791__(2).Output;
-var Tokenizer = __nested_webpack_require_58791__(21).Tokenizer;
-var TOKEN = __nested_webpack_require_58791__(21).TOKEN;
+var Options = __nested_webpack_require_55024__(20).Options;
+var Output = __nested_webpack_require_55024__(2).Output;
+var Tokenizer = __nested_webpack_require_55024__(21).Tokenizer;
+var TOKEN = __nested_webpack_require_55024__(21).TOKEN;
 
 var lineBreak = /\r\n|[\r\n]/;
 var allLineBreaks = /\r\n|[\r\n]/g;
@@ -14595,9 +14339,8 @@ module.exports.Beautifier = Beautifier;
 
 /***/ }),
 /* 20 */
-/***/ (function(module, exports, __nested_webpack_require_94130__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_90366__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -14628,7 +14371,7 @@ module.exports.Beautifier = Beautifier;
 
 
 
-var BaseOptions = __nested_webpack_require_94130__(6).Options;
+var BaseOptions = __nested_webpack_require_90366__(6).Options;
 
 function Options(options) {
   BaseOptions.call(this, options, 'html');
@@ -14693,9 +14436,8 @@ module.exports.Options = Options;
 
 /***/ }),
 /* 21 */
-/***/ (function(module, exports, __nested_webpack_require_98324__) {
+/***/ (function(module, __unused_webpack_exports, __nested_webpack_require_94563__) {
 
-"use strict";
 /*jshint node:true */
 /*
 
@@ -14726,11 +14468,11 @@ module.exports.Options = Options;
 
 
 
-var BaseTokenizer = __nested_webpack_require_98324__(9).Tokenizer;
-var BASETOKEN = __nested_webpack_require_98324__(9).TOKEN;
-var Directives = __nested_webpack_require_98324__(13).Directives;
-var TemplatablePattern = __nested_webpack_require_98324__(14).TemplatablePattern;
-var Pattern = __nested_webpack_require_98324__(12).Pattern;
+var BaseTokenizer = __nested_webpack_require_94563__(9).Tokenizer;
+var BASETOKEN = __nested_webpack_require_94563__(9).TOKEN;
+var Directives = __nested_webpack_require_94563__(13).Directives;
+var TemplatablePattern = __nested_webpack_require_94563__(14).TemplatablePattern;
+var Pattern = __nested_webpack_require_94563__(12).Pattern;
 
 var TOKEN = {
   TAG_OPEN: 'TK_TAG_OPEN',
@@ -15031,7 +14773,42 @@ module.exports.TOKEN = TOKEN;
 
 
 /***/ })
-/******/ ]);
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nested_webpack_require_106447__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __nested_webpack_require_106447__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nested_webpack_require_106447__(18);
+/******/ 	legacy_beautify_html = __webpack_exports__;
+/******/ 	
+/******/ })()
+;
 
 function html_beautify(html_source, options) {
     return legacy_beautify_html(html_source, options, _beautify_js__WEBPACK_IMPORTED_MODULE_0__.js_beautify, _beautify_css_js__WEBPACK_IMPORTED_MODULE_1__.css_beautify);
@@ -15072,15 +14849,7 @@ function js_beautify(js_source_text, options) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "AnnotatedTextEdit": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.AnnotatedTextEdit),
-/* harmony export */   "ChangeAnnotation": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.ChangeAnnotation),
-/* harmony export */   "ChangeAnnotationIdentifier": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.ChangeAnnotationIdentifier),
 /* harmony export */   "ClientCapabilities": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.ClientCapabilities),
-/* harmony export */   "CodeAction": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.CodeAction),
-/* harmony export */   "CodeActionContext": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.CodeActionContext),
-/* harmony export */   "CodeActionKind": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.CodeActionKind),
-/* harmony export */   "CodeDescription": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.CodeDescription),
-/* harmony export */   "CodeLens": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.CodeLens),
 /* harmony export */   "Color": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.Color),
 /* harmony export */   "ColorInformation": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.ColorInformation),
 /* harmony export */   "ColorPresentation": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.ColorPresentation),
@@ -15089,17 +14858,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "CompletionItemKind": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.CompletionItemKind),
 /* harmony export */   "CompletionItemTag": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.CompletionItemTag),
 /* harmony export */   "CompletionList": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.CompletionList),
-/* harmony export */   "CreateFile": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.CreateFile),
-/* harmony export */   "DeleteFile": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.DeleteFile),
 /* harmony export */   "Diagnostic": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.Diagnostic),
-/* harmony export */   "DiagnosticRelatedInformation": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.DiagnosticRelatedInformation),
-/* harmony export */   "DiagnosticSeverity": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.DiagnosticSeverity),
-/* harmony export */   "DiagnosticTag": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.DiagnosticTag),
 /* harmony export */   "DocumentHighlight": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.DocumentHighlight),
 /* harmony export */   "DocumentHighlightKind": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.DocumentHighlightKind),
 /* harmony export */   "DocumentLink": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.DocumentLink),
-/* harmony export */   "DocumentSymbol": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.DocumentSymbol),
-/* harmony export */   "EOL": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.EOL),
 /* harmony export */   "FileType": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.FileType),
 /* harmony export */   "FoldingRange": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.FoldingRange),
 /* harmony export */   "FoldingRangeKind": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.FoldingRangeKind),
@@ -15109,32 +14871,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "InsertTextFormat": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.InsertTextFormat),
 /* harmony export */   "InsertTextMode": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.InsertTextMode),
 /* harmony export */   "Location": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.Location),
-/* harmony export */   "LocationLink": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.LocationLink),
 /* harmony export */   "MarkedString": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.MarkedString),
 /* harmony export */   "MarkupContent": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.MarkupContent),
 /* harmony export */   "MarkupKind": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.MarkupKind),
-/* harmony export */   "OptionalVersionedTextDocumentIdentifier": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.OptionalVersionedTextDocumentIdentifier),
-/* harmony export */   "ParameterInformation": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.ParameterInformation),
 /* harmony export */   "Position": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.Position),
 /* harmony export */   "Range": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.Range),
-/* harmony export */   "RenameFile": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.RenameFile),
 /* harmony export */   "ScannerState": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.ScannerState),
 /* harmony export */   "SelectionRange": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.SelectionRange),
-/* harmony export */   "SignatureInformation": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.SignatureInformation),
 /* harmony export */   "SymbolInformation": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.SymbolInformation),
 /* harmony export */   "SymbolKind": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.SymbolKind),
-/* harmony export */   "SymbolTag": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.SymbolTag),
 /* harmony export */   "TextDocument": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.TextDocument),
-/* harmony export */   "TextDocumentEdit": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.TextDocumentEdit),
-/* harmony export */   "TextDocumentIdentifier": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.TextDocumentIdentifier),
-/* harmony export */   "TextDocumentItem": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.TextDocumentItem),
 /* harmony export */   "TextEdit": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.TextEdit),
 /* harmony export */   "TokenType": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.TokenType),
-/* harmony export */   "VersionedTextDocumentIdentifier": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.VersionedTextDocumentIdentifier),
-/* harmony export */   "WorkspaceChange": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.WorkspaceChange),
 /* harmony export */   "WorkspaceEdit": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.WorkspaceEdit),
-/* harmony export */   "integer": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.integer),
-/* harmony export */   "uinteger": () => (/* reexport safe */ _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_16__.uinteger),
 /* harmony export */   "getLanguageService": () => (/* binding */ getLanguageService),
 /* harmony export */   "newHTMLDataProvider": () => (/* binding */ newHTMLDataProvider),
 /* harmony export */   "getDefaultHTMLDataProvider": () => (/* binding */ getDefaultHTMLDataProvider)
@@ -15223,64 +14972,36 @@ function getDefaultHTMLDataProvider() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "TextDocument": () => (/* reexport safe */ _vscode_languageserver_textdocument_lib_esm_main_js__WEBPACK_IMPORTED_MODULE_1__.TextDocument),
-/* harmony export */   "AnnotatedTextEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.AnnotatedTextEdit),
-/* harmony export */   "ChangeAnnotation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ChangeAnnotation),
-/* harmony export */   "ChangeAnnotationIdentifier": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ChangeAnnotationIdentifier),
-/* harmony export */   "CodeAction": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CodeAction),
-/* harmony export */   "CodeActionContext": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CodeActionContext),
-/* harmony export */   "CodeActionKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CodeActionKind),
-/* harmony export */   "CodeDescription": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CodeDescription),
-/* harmony export */   "CodeLens": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CodeLens),
-/* harmony export */   "Color": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Color),
-/* harmony export */   "ColorInformation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ColorInformation),
-/* harmony export */   "ColorPresentation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ColorPresentation),
-/* harmony export */   "Command": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Command),
-/* harmony export */   "CompletionItem": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItem),
-/* harmony export */   "CompletionItemKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItemKind),
-/* harmony export */   "CompletionItemTag": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItemTag),
+/* harmony export */   "Position": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Position),
+/* harmony export */   "Range": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Range),
+/* harmony export */   "Location": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Location),
+/* harmony export */   "MarkupContent": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupContent),
+/* harmony export */   "MarkupKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupKind),
+/* harmony export */   "MarkedString": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkedString),
+/* harmony export */   "SelectionRange": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SelectionRange),
+/* harmony export */   "WorkspaceEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.WorkspaceEdit),
 /* harmony export */   "CompletionList": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionList),
-/* harmony export */   "CreateFile": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CreateFile),
-/* harmony export */   "DeleteFile": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DeleteFile),
-/* harmony export */   "Diagnostic": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Diagnostic),
-/* harmony export */   "DiagnosticRelatedInformation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DiagnosticRelatedInformation),
-/* harmony export */   "DiagnosticSeverity": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DiagnosticSeverity),
-/* harmony export */   "DiagnosticTag": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DiagnosticTag),
+/* harmony export */   "CompletionItemKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItemKind),
+/* harmony export */   "CompletionItem": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItem),
+/* harmony export */   "CompletionItemTag": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItemTag),
+/* harmony export */   "InsertTextMode": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.InsertTextMode),
+/* harmony export */   "Command": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Command),
+/* harmony export */   "SymbolInformation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SymbolInformation),
+/* harmony export */   "SymbolKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SymbolKind),
+/* harmony export */   "Hover": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Hover),
+/* harmony export */   "TextEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.TextEdit),
+/* harmony export */   "InsertReplaceEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.InsertReplaceEdit),
+/* harmony export */   "InsertTextFormat": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.InsertTextFormat),
 /* harmony export */   "DocumentHighlight": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DocumentHighlight),
 /* harmony export */   "DocumentHighlightKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DocumentHighlightKind),
 /* harmony export */   "DocumentLink": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DocumentLink),
-/* harmony export */   "DocumentSymbol": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DocumentSymbol),
-/* harmony export */   "EOL": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.EOL),
 /* harmony export */   "FoldingRange": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FoldingRange),
 /* harmony export */   "FoldingRangeKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FoldingRangeKind),
+/* harmony export */   "Diagnostic": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Diagnostic),
 /* harmony export */   "FormattingOptions": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FormattingOptions),
-/* harmony export */   "Hover": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Hover),
-/* harmony export */   "InsertReplaceEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.InsertReplaceEdit),
-/* harmony export */   "InsertTextFormat": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.InsertTextFormat),
-/* harmony export */   "InsertTextMode": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.InsertTextMode),
-/* harmony export */   "Location": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Location),
-/* harmony export */   "LocationLink": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.LocationLink),
-/* harmony export */   "MarkedString": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkedString),
-/* harmony export */   "MarkupContent": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupContent),
-/* harmony export */   "MarkupKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupKind),
-/* harmony export */   "OptionalVersionedTextDocumentIdentifier": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.OptionalVersionedTextDocumentIdentifier),
-/* harmony export */   "ParameterInformation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ParameterInformation),
-/* harmony export */   "Position": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Position),
-/* harmony export */   "Range": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Range),
-/* harmony export */   "RenameFile": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.RenameFile),
-/* harmony export */   "SelectionRange": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SelectionRange),
-/* harmony export */   "SignatureInformation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SignatureInformation),
-/* harmony export */   "SymbolInformation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SymbolInformation),
-/* harmony export */   "SymbolKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SymbolKind),
-/* harmony export */   "SymbolTag": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SymbolTag),
-/* harmony export */   "TextDocumentEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.TextDocumentEdit),
-/* harmony export */   "TextDocumentIdentifier": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.TextDocumentIdentifier),
-/* harmony export */   "TextDocumentItem": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.TextDocumentItem),
-/* harmony export */   "TextEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.TextEdit),
-/* harmony export */   "VersionedTextDocumentIdentifier": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.VersionedTextDocumentIdentifier),
-/* harmony export */   "WorkspaceChange": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.WorkspaceChange),
-/* harmony export */   "WorkspaceEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.WorkspaceEdit),
-/* harmony export */   "integer": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.integer),
-/* harmony export */   "uinteger": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.uinteger),
+/* harmony export */   "Color": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Color),
+/* harmony export */   "ColorInformation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ColorInformation),
+/* harmony export */   "ColorPresentation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ColorPresentation),
 /* harmony export */   "TokenType": () => (/* binding */ TokenType),
 /* harmony export */   "ScannerState": () => (/* binding */ ScannerState),
 /* harmony export */   "ClientCapabilities": () => (/* binding */ ClientCapabilities),
@@ -15497,10 +15218,9 @@ var HTMLDataProvider = /** @class */ (function () {
             });
         };
         var tagEntry = this._tagMap[tag.toLowerCase()];
-        if (!tagEntry) {
-            return [];
+        if (tagEntry) {
+            processAttributes(tagEntry.attributes);
         }
-        processAttributes(tagEntry.attributes);
         processAttributes(this._globalAttributes);
         return values;
     };
@@ -19535,6 +19255,14 @@ var htmlData = {
             }
         },
         {
+            "name": "onmouseenter",
+            "description": "A pointing device is moved onto the element that has the listener attached."
+        },
+        {
+            "name": "onmouseleave",
+            "description": "A pointing device is moved off the element that has the listener attached."
+        },
+        {
             "name": "onmouseup",
             "description": {
                 "kind": "markdown",
@@ -19564,6 +19292,46 @@ var htmlData = {
                 "kind": "markdown",
                 "value": "Playback is ready to start after having been paused or delayed due to lack of data."
             }
+        },
+        {
+            "name": "onpointercancel",
+            "description": "The pointer is unlikely to produce any more events."
+        },
+        {
+            "name": "onpointerdown",
+            "description": "The pointer enters the active buttons state."
+        },
+        {
+            "name": "onpointerenter",
+            "description": "Pointing device is moved inside the hit-testing boundary."
+        },
+        {
+            "name": "onpointerleave",
+            "description": "Pointing device is moved out of the hit-testing boundary."
+        },
+        {
+            "name": "onpointerlockchange",
+            "description": "The pointer was locked or released."
+        },
+        {
+            "name": "onpointerlockerror",
+            "description": "It was impossible to lock the pointer for technical reasons or because the permission was denied."
+        },
+        {
+            "name": "onpointermove",
+            "description": "The pointer changed coordinates."
+        },
+        {
+            "name": "onpointerout",
+            "description": "The pointing device moved out of hit-testing boundary or leaves detectable hover range."
+        },
+        {
+            "name": "onpointerover",
+            "description": "The pointing device is moved into the hit-testing boundary."
+        },
+        {
+            "name": "onpointerup",
+            "description": "The pointer leaves the active buttons state."
         },
         {
             "name": "onprogress",
@@ -24136,7 +23904,9 @@ var _LFD = '\f'.charCodeAt(0);
 var _WSP = ' '.charCodeAt(0);
 var _TAB = '\t'.charCodeAt(0);
 var htmlScriptContents = {
-    'text/x-handlebars-template': true
+    'text/x-handlebars-template': true,
+    // Fix for https://github.com/microsoft/vscode/issues/77977
+    'text/html': true,
 };
 function createScanner(input, initialOffset, initialState, emitPseudoCloseTags) {
     if (initialOffset === void 0) { initialOffset = 0; }
@@ -24646,15 +24416,25 @@ var HTMLCompletion = /** @class */ (function () {
             collectCloseTagSuggestions(tagStart, true, tagEnd);
             return result;
         }
+        function getExistingAttributes() {
+            var existingAttributes = Object.create(null);
+            node.attributeNames.forEach(function (attribute) {
+                existingAttributes[attribute] = true;
+            });
+            return existingAttributes;
+        }
         function collectAttributeNameSuggestions(nameStart, nameEnd) {
             if (nameEnd === void 0) { nameEnd = offset; }
             var replaceEnd = offset;
             while (replaceEnd < nameEnd && text[replaceEnd] !== '<') { // < is a valid attribute name character, but we rather assume the attribute name ends. See #23236.
                 replaceEnd++;
             }
+            var currentAttribute = text.substring(nameStart, nameEnd);
             var range = getReplaceRange(nameStart, replaceEnd);
             var value = isFollowedBy(text, nameEnd, _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.ScannerState.AfterAttributeName, _htmlLanguageTypes_js__WEBPACK_IMPORTED_MODULE_1__.TokenType.DelimiterAssign) ? '' : '="$1"';
-            var seenAttributes = Object.create(null);
+            var seenAttributes = getExistingAttributes();
+            // include current typing attribute
+            seenAttributes[currentAttribute] = false;
             dataProviders.forEach(function (provider) {
                 provider.provideAttributes(currentTag).forEach(function (attr) {
                     if (seenAttributes[attr.name]) {
@@ -24930,7 +24710,7 @@ var HTMLCompletion = /** @class */ (function () {
         }
         else if (char === '/') {
             var node = htmlDocument.findNodeBefore(offset);
-            while (node && node.closed) {
+            while (node && node.closed && !(node.endTagStart && (node.endTagStart > offset))) {
                 node = node.parent;
             }
             if (node && node.tag) {
@@ -29094,16 +28874,16 @@ var HTMLWorker = /** @class */ (function () {
         this._ctx = ctx;
         this._languageSettings = createData.languageSettings;
         this._languageId = createData.languageId;
-        this._languageService = _deps_vscode_html_languageservice_htmlLanguageService_js__WEBPACK_IMPORTED_MODULE_0__.getLanguageService();
+        var data = this._languageSettings.data;
+        var useDefaultDataProvider = data === null || data === void 0 ? void 0 : data.useDefaultDataProvider;
+        var customDataProviders = [];
+        if (data === null || data === void 0 ? void 0 : data.dataProviders) {
+            for (var id in data.dataProviders) {
+                customDataProviders.push(_deps_vscode_html_languageservice_htmlLanguageService_js__WEBPACK_IMPORTED_MODULE_0__.newHTMLDataProvider(id, data.dataProviders[id]));
+            }
+        }
+        this._languageService = _deps_vscode_html_languageservice_htmlLanguageService_js__WEBPACK_IMPORTED_MODULE_0__.getLanguageService({ useDefaultDataProvider: useDefaultDataProvider, customDataProviders: customDataProviders });
     }
-    HTMLWorker.prototype.doValidation = function (uri) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                // not yet suported
-                return [2 /*return*/, Promise.resolve([])];
-            });
-        });
-    };
     HTMLWorker.prototype.doComplete = function (uri, position) {
         return __awaiter(this, void 0, void 0, function () {
             var document, htmlDocument;

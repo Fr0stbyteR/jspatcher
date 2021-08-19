@@ -1,3 +1,4 @@
+"use strict";
 (self["webpackChunkJSPatcher"] = self["webpackChunkJSPatcher"] || []).push([["src_core_image_PatcherImage_ts"],{
 
 /***/ "./src/core/image/PatcherImage.ts":
@@ -6,7 +7,6 @@
   \****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ PatcherImage)

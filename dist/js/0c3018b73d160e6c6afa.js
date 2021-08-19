@@ -1,3 +1,4 @@
+"use strict";
 (self["webpackChunkJSPatcher"] = self["webpackChunkJSPatcher"] || []).push([["node_modules_monaco-editor_esm_vs_basic-languages_html_html_js"],{
 
 /***/ "./node_modules/monaco-editor/esm/vs/basic-languages/html/html.js":
@@ -6,7 +7,6 @@
   \************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "conf": () => (/* binding */ conf),

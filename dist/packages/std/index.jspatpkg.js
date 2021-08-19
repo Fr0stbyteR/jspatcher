@@ -161,23 +161,30 @@ class call extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
 
   subscribe() {
     super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = this.initialInlets;
-      this.outlets = this.initialOutlets;
-    });
-    this.on("updateArgs", args => {
+
+    const handleArgs = args => {
       this._.inputs = args.slice(1);
       const argsCount = Math.max(args.length - 1, ~~+this.getProp("args"));
       this.inlets = Math.max(1, this.initialInlets + argsCount);
       this.outlets = this.initialOutlets + argsCount;
-    });
-    this.on("updateProps", props => {
+    };
+
+    const handleProps = props => {
       if (props.args && typeof props.args === "number" && props.args >= 0) {
         const argsCount = Math.max(this.box.args.length - 1, ~~props.args);
         this.inlets = Math.max(1, this.initialInlets + argsCount);
         this.outlets = this.initialOutlets + argsCount;
       }
+    };
+
+    this.on("postInit", () => {
+      if (this.args.length) handleArgs(this.args);
+      if (this.props) handleProps(this.props);
+      if (this.inlets < this.initialInlets) this.inlets = this.initialInlets;
+      if (this.outlets < this.initialOutlets) this.outlets = this.initialOutlets;
     });
+    this.on("updateArgs", handleArgs);
+    this.on("updateProps", handleProps);
     this.on("inlet", _ref => {
       let {
         data,
@@ -303,7 +310,7 @@ class delay extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      time: 0,
+      time: +this.args[0],
       ref: new Set()
     });
   }
@@ -483,7 +490,7 @@ class ForIn extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      buffer: null
+      buffer: this.args[0]
     });
   }
 
@@ -569,9 +576,9 @@ class For extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      start: 0,
-      end: 0,
-      step: 1
+      start: +this.args[0] || 0,
+      end: +this.args[1] || 0,
+      step: +this.args[2] || 1
     });
   }
 
@@ -683,7 +690,7 @@ class gate extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      pass: true
+      pass: this.args[0] === "undefined" || this.args[0] === "" || !!this.args[0]
     });
   }
 
@@ -907,7 +914,7 @@ class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     _this = this;
 
     _defineProperty(this, "_", {
-      argsCount: 0,
+      argsCount: typeof this.args[0] === "number" && this.args[0] >= 0 ? ~~this.args[0] : 0,
       result: undefined
     });
 
@@ -932,13 +939,9 @@ class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super.subscribe();
     this.on("preInit", () => {
       this.inlets = 2;
-      this.outlets = 3;
+      this.outlets = 3 + this._.argsCount;
     });
-    this.on("updateArgs", () => {
-      const {
-        args
-      } = this.box;
-
+    this.on("updateArgs", args => {
       if (typeof args[0] === "number" && args[0] >= 0) {
         this._.argsCount = ~~args[0];
         this.outlets = 2 + this._.argsCount;
@@ -952,7 +955,9 @@ class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
 
       if (inlet === 0) {
         if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(0, this.lambda);
-      } else if (inlet === 1) this._.result = data;
+      } else if (inlet === 1) {
+        this._.result = data;
+      }
     });
   }
 
@@ -1071,7 +1076,7 @@ class obj extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.inlets = args.length + 1;
     });
     this.on("postInit", () => {
-      this.inlets = this.box.args.length + 1;
+      this.inlets = this.args.length + 1;
       this.outlets = 1;
     });
     this.on("inlet", _ref => {
@@ -1141,7 +1146,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 class print extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
   get title() {
-    return "".concat(this.args[0]);
+    return "".concat(this.args[0] || "Print");
   }
 
   subscribe() {
@@ -1317,8 +1322,8 @@ class set extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     super(...arguments);
 
     _defineProperty(this, "_", {
-      key: undefined,
-      value: undefined
+      key: typeof this.args[0] === "string" || typeof this.args[0] === "number" ? this.args[0] : undefined,
+      value: this.args[1]
     });
   }
 
@@ -1586,11 +1591,7 @@ class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     };
 
-    this.on("preInit", () => {
-      this.inlets = 3;
-      this.outlets = 1;
-    });
-    this.on("updateArgs", async args => {
+    const handleArgs = async args => {
       var _args$;
 
       const key = (_args$ = args[0]) === null || _args$ === void 0 ? void 0 : _args$.toString();
@@ -1608,7 +1609,13 @@ class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
           (_this$_$sharedItem3 = this._.sharedItem) === null || _this$_$sharedItem3 === void 0 ? void 0 : _this$_$sharedItem3.save(this.state.value, this);
         }
       }
+    };
+
+    this.on("preInit", () => {
+      this.inlets = 3;
+      this.outlets = 1;
     });
+    this.on("updateArgs", handleArgs);
     this.on("updateState", _ref => {
       var _this$_$sharedItem4;
 
@@ -1621,7 +1628,9 @@ class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       (_this$_$sharedItem4 = this._.sharedItem) === null || _this$_$sharedItem4 === void 0 ? void 0 : _this$_$sharedItem4.save(this.state.value, this);
       this.outlet(0, this.state.value);
     });
-    this.on("postInit", reload);
+    this.on("postInit", () => {
+      return handleArgs(this.args);
+    });
     this.on("inlet", _ref2 => {
       let {
         data,
@@ -3861,7 +3870,7 @@ module.exports = $gOPD;
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-std","version":"1.0.0","description":"The standard package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-std","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@types/react":"^17.0.18","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","jspatcher":"file:../../jspatcher","react":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-std","version":"1.0.2","description":"The standard package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-std","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"0.0.2","@types/react":"^17.0.18","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","react":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
 
 /***/ })
 
