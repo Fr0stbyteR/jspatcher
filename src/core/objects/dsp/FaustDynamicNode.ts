@@ -1,18 +1,27 @@
-import { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
+import type { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
 import DefaultObject from "../base/DefaultObject";
-import { DefaultUIState } from "../base/DefaultUI";
+import type { DefaultUIState } from "../base/DefaultUI";
 
 export interface DefaultFaustDynamicNodeState {
     merger: ChannelMergerNode;
     splitter: ChannelSplitterNode;
-    node: (FaustAudioWorkletNode | FaustScriptProcessorNode) & { dspCode?: string }
+    node: (FaustAudioWorkletNode | FaustScriptProcessorNode) & { dspCode?: string };
 }
 
-export default abstract class FaustDynamicNode<D extends {} = {}, S extends Partial<DefaultFaustDynamicNodeState> & Record<string, any> = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P extends Partial<DefaultUIState> & Record<string, any> = {}, U extends Partial<DefaultUIState> & Record<string, any> = {}, E extends {} = {}> extends DefaultObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
+export default abstract class FaustDynamicNode<
+    D extends {} = {},
+    S extends Partial<DefaultFaustDynamicNodeState> & Record<string, any> = {},
+    I extends any[] = any[],
+    O extends any[] = any[],
+    A extends any[] = any[],
+    P extends Partial<DefaultUIState> & Record<string, any> = {},
+    U extends Partial<DefaultUIState> & Record<string, any> = {},
+    E extends {} = {}
+> extends DefaultObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
     async getFaustNode(code: string, voices: number) {
         const { audioCtx } = this.patcher;
-        const { faust, supportAudioWorklet } = this.patcher.env;
-        return faust.getNode(code, { audioCtx, useWorklet: supportAudioWorklet, voices, args: { "-I": ["libraries/", "project/"] } });
+        const { faust } = this.env;
+        return faust.getNode(code, { audioCtx, useWorklet: true, voices, args: { "-I": ["libraries/", "project/"] } });
     }
     async compile(code: string, voices: number) {
         let splitter: ChannelSplitterNode;

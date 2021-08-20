@@ -1,10 +1,10 @@
 import * as Color from "color-js";
-import { CanvasUI } from "../base/DOMUI";
+import CanvasUI from "../base/CanvasUI";
 import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
-import { TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
-import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 import { BaseDSP } from "./Base";
-import { Bang, isBang } from "../base/index.jspatpkg";
+import Bang, { isBang } from "../base/Bang";
+import type { IInletsMeta, IPropsMeta } from "../base/AbstractObject";
+import type { TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
 
 export interface OscilloscopeUIState {
     continuous: boolean;
@@ -234,7 +234,7 @@ export interface Props extends Omit<OscilloscopeUIState, "$cursor" | "zoom" | "z
 }
 export class Oscilloscope extends BaseDSP<{}, State, [Bang], [], [], Props, OscilloscopeUIState> {
     static description = "Oscilloscope";
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
+    static inlets: IInletsMeta = [{
         isHot: true,
         type: "signal",
         description: "Signal"

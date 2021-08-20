@@ -1,8 +1,8 @@
 import { DefaultDSP } from "./Base";
 import { SpectralAnalysis, TWindowFunction } from "../../worklets/SpectralAnalyserWorklet.types";
 import SpectralAnalyserNode from "../../worklets/SpectralAnalyser";
-import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
-import { Bang, isBang } from "../base/index.jspatpkg";
+import Bang, { isBang } from "../base/Bang";
+import type { IInletsMeta, IOutletsMeta, IPropsMeta } from "../base/AbstractObject";
 
 export interface Props extends Record<keyof SpectralAnalysis, boolean> {
     speedLim: number;
@@ -19,12 +19,12 @@ export interface State {
 type Outlet0 = Partial<SpectralAnalysis>;
 export class SpectralAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [], Props> {
     static description = "Spectral feature extractor";
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
+    static inlets: IInletsMeta = [{
         isHot: true,
         type: "signal",
         description: "Signal, bang to extract features"
     }];
-    static outlets: IJSPatcherObjectMeta["outlets"] = [{
+    static outlets: IOutletsMeta = [{
         type: "object",
         description: "Features chosen as object"
     }];

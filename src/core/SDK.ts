@@ -19,6 +19,9 @@ import Bang, { isBang } from "./objects/base/Bang";
 import TransmitterNode from "./worklets/Transmitter";
 import TemporalAnalyserNode from "./worklets/TemporalAnalyser";
 import SpectralAnalyserNode from "./worklets/SpectralAnalyser";
+import * as MathUtils from "../utils/math";
+import * as BufferUtils from "../utils/buffer";
+import * as Utils from "../utils/utils";
 
 export interface IJSPatcherSDK {
     readonly React?: typeof React;
@@ -43,6 +46,9 @@ export interface IJSPatcherSDK {
     readonly TransmitterNode?: typeof TransmitterNode;
     readonly TemporalAnalyserNode?: typeof TemporalAnalyserNode;
     readonly SpectralAnalyserNode?: typeof SpectralAnalyserNode;
+    readonly MathUtils: typeof MathUtils;
+    readonly BufferUtils: typeof BufferUtils;
+    readonly Utils: typeof Utils;
 }
 
 export default class JSPatcherSDK implements IJSPatcherSDK {
@@ -68,4 +74,7 @@ export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly TransmitterNode = TransmitterNode;
     readonly TemporalAnalyserNode = TemporalAnalyserNode;
     readonly SpectralAnalyserNode = SpectralAnalyserNode;
+    readonly MathUtils = MathUtils;
+    readonly BufferUtils = BufferUtils;
+    readonly Utils = Utils;
 }

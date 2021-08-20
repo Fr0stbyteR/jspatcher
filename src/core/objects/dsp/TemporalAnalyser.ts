@@ -1,8 +1,8 @@
 import { DefaultDSP } from "./Base";
 import TemporalAnalyserNode from "../../worklets/TemporalAnalyser";
 import { TemporalAnalysis } from "../../worklets/TemporalAnalyserWorklet.types";
-import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
-import { Bang, isBang } from "../base/index.jspatpkg";
+import Bang, { isBang } from "../base/Bang";
+import type { IInletsMeta, IOutletsMeta, IPropsMeta } from "../base/AbstractObject";
 
 export interface Props extends Record<keyof TemporalAnalysis, boolean> {
     speedLim: number;
@@ -16,12 +16,12 @@ export interface State {
 type Outlet0 = Partial<TemporalAnalysis>;
 export class TemporalAnalyser extends DefaultDSP<{}, State, [Bang], [Outlet0], [], Props> {
     static description = "Temporal feature extractor";
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
+    static inlets: IInletsMeta = [{
         isHot: true,
         type: "signal",
         description: "Signal, bang to extract features"
     }];
-    static outlets: IJSPatcherObjectMeta["outlets"] = [{
+    static outlets: IOutletsMeta = [{
         type: "object",
         description: "Features chosen as object"
     }];
