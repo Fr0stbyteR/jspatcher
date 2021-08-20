@@ -24,12 +24,12 @@ export default class StaticGetter extends Getter<true> {
     };
     execute() {
         try {
-            this.state.result = this.imported;
+            this._.result = this.imported;
             return true;
         } catch (e) {
             this.error(e);
             return false;
         }
     }
-    callback = () => this.outlet(0, this.state.result);
+    callback = () => this.outlet(0, this._.result);
 }

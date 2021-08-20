@@ -7,8 +7,8 @@ import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 
 type TAnyFunction = (...args: any[]) => any;
 type TWrapper = typeof StaticMethod | typeof Method;
-type S = { Wrapper: TWrapper };
-export default class Func extends BaseObject<{}, S, [Bang], [TAnyFunction], any[], {}, { loading: boolean }> {
+interface IS { Wrapper: TWrapper }
+export default class Func extends BaseObject<{}, {}, [Bang], [TAnyFunction], any[], {}, { loading: boolean }> {
     static description = "Get the function itself";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
@@ -25,26 +25,28 @@ export default class Func extends BaseObject<{}, S, [Bang], [TAnyFunction], any[
         varLength: false,
         description: "Function name"
     }];
-    state: S = { Wrapper: null };
+    _: IS = { Wrapper: null };
     subscribe() {
         super.subscribe();
         this.on("postInit", () => {
             this.inlets = 1;
             this.outlets = 1;
+            handleUpdateArgs(this.args);
         });
-        this.on("updateArgs", (args) => {
+        const handleUpdateArgs = (args: any[]) => {
             if (typeof args[0] !== "undefined") {
                 const Wrapper = this.patcher.activeLib[args[0]];
                 if (!Wrapper) this.error(`Function ${args[0]} not found.`);
                 else if (Wrapper.prototype instanceof StaticMethod || Wrapper.prototype instanceof Method) {
-                    this.state.Wrapper = Wrapper as TWrapper;
+                    this._.Wrapper = Wrapper as TWrapper;
                 } else {
                     this.error("Given identifier function is not a function");
                 }
             } else {
                 this.error("A function identifier is needed.");
             }
-        });
+        };
+        this.on("updateArgs", handleUpdateArgs);
         this.on("inlet", ({ data, inlet }) => {
             if (inlet === 0) {
                 if (isBang(data)) this.output();
@@ -59,11 +61,11 @@ export default class Func extends BaseObject<{}, S, [Bang], [TAnyFunction], any[
         this.updateUI({ loading });
     }
     get name() {
-        const c = this.state.Wrapper;
+        const c = this._.Wrapper;
         return c.path[c.path.length - 1];
     }
     get imported(): TAnyFunction {
-        const c = this.state.Wrapper || this.patcher.activeLib.Object as TWrapper;
+        const c = this._.Wrapper || this.patcher.activeLib.Object as TWrapper;
         let r: TAnyFunction;
         try {
             r = c.path.reduce((acc, cur) => acc[cur], c.root);

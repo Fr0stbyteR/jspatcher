@@ -33,13 +33,6 @@ export interface IObservee<T = any> {
 
 export type PrefixKeys<I, P extends string> = { [K in keyof I & string as `${P}${Capitalize<K>}`]: I[K] };
 
-export interface EnvOptions {
-    language: "en" | "zh-CN";
-    audioUnit: TAudioUnit;
-    audioUnitOptions: AudioUnitOptions;
-    audioDisplayOptions: AudioDisplayOptions;
-}
-
 export type PatcherMode = "max" | "gen" | "faust" | "js" | "jsaw";
 
 export type PatcherFileExtension = "jspat" | "maxpat" | "gendsp" | "dsppat";

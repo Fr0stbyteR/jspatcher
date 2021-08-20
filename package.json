@@ -27,7 +27,7 @@
     "@ffmpeg/ffmpeg": "^0.10.1",
     "@grame/libmusicxml": "^3.19.1",
     "@jspatcher/package-op": "^1.0.2",
-    "@jspatcher/package-std": "^1.0.3",
+    "@jspatcher/package-std": "^1.0.4",
     "@jspatcher/package-webaudio": "^1.0.0",
     "@shren/guidolib": "^1.7.3",
     "@types/emscripten": "^1.39.5",

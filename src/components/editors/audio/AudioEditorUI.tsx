@@ -1,6 +1,5 @@
 import * as React from "react";
-import Env, { EnvEventMap } from "../../../core/Env";
-import { EnvOptions } from "../../../core/types";
+import Env, { EnvEventMap, EnvOptions } from "../../../core/Env";
 import AudioEditor, { AudioEditorEventMap, AudioEditorState } from "../../../core/audio/AudioEditor";
 import AudioEditorMapUI from "./AudioEditorMapUI";
 import AudioEditorMainUI from "./AudioEditorMainUI";

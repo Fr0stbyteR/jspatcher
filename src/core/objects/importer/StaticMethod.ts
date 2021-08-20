@@ -26,21 +26,21 @@ export default class StaticMethod extends Method<true> {
     initialOutlets = 1;
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
-            if (!isBang(data)) this.state.inputs[inlet] = data;
+            if (!isBang(data)) this._.inputs[inlet] = data;
             if (this.execute()) this.output();
         } else {
-            this.state.inputs[inlet] = data;
+            this._.inputs[inlet] = data;
         }
     };
     execute() {
         const fn = this.imported;
         try {
-            this.state.result = fn(...(this.getProp("spreadArgs") ? this.state.inputs.reduce<any[]>((acc, cur) => [...acc, ...cur], []) : this.state.inputs));
+            this._.result = fn(...(this.getProp("spreadArgs") ? this._.inputs.reduce<any[]>((acc, cur) => [...acc, ...cur], []) : this._.inputs));
             return true;
         } catch (e) {
             this.error(e);
             return false;
         }
     }
-    callback = () => this.outletAll([this.state.result, ...this.state.inputs]);
+    callback = () => this.outletAll([this._.result, ...this._.inputs]);
 }

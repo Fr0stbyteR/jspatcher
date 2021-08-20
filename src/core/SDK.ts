@@ -3,7 +3,12 @@ import BaseObject from "./objects/base/BaseObject";
 import BaseUI from "./objects/base/BaseUI";
 import DefaultObject from "./objects/base/DefaultObject";
 import DefaultUI from "./objects/base/DefaultUI";
+import CanvasUI from "./objects/base/CanvasUI";
+import DefaultPopupUI from "./objects/base/DefaultPopupUI";
+import CodePopupUI from "./objects/base/CodePopupUI";
+import DOMUI from "./objects/base/DOMUI";
 import PatcherAudio from "./audio/PatcherAudio";
+import OperableAudioBuffer from "./audio/OperableAudioBuffer";
 import Patcher from "./patcher/Patcher";
 import Box from "./patcher/Box";
 import Line from "./patcher/Line";
@@ -11,10 +16,14 @@ import generateRemoteObject from "./objects/base/generateRemoteObject";
 import generateRemotedObject from "./objects/base/generateRemotedObject";
 import generateDefaultObject from "./objects/base/generateDefaultObject";
 import Bang, { isBang } from "./objects/base/Bang";
+import TransmitterNode from "./worklets/Transmitter";
+import TemporalAnalyserNode from "./worklets/TemporalAnalyser";
+import SpectralAnalyserNode from "./worklets/SpectralAnalyser";
 
 export interface IJSPatcherSDK {
     readonly React?: typeof React;
     readonly PatcherAudio?: typeof PatcherAudio;
+    readonly OperableAudioBuffer?: typeof OperableAudioBuffer;
     readonly Patcher: typeof Patcher;
     readonly Box: typeof Box;
     readonly Line: typeof Line;
@@ -22,16 +31,24 @@ export interface IJSPatcherSDK {
     readonly DefaultObject?: typeof DefaultObject;
     readonly BaseUI?: typeof BaseUI;
     readonly DefaultUI?: typeof DefaultUI;
+    readonly CanvasUI?: typeof CanvasUI;
+    readonly DefaultPopupUI?: typeof DefaultPopupUI;
+    readonly CodePopupUI?: typeof CodePopupUI;
+    readonly DOMUI?: typeof DOMUI;
     readonly generateDefaultObject?: typeof generateDefaultObject;
     readonly generateRemoteObject?: typeof generateRemoteObject;
     readonly generateRemotedObject: typeof generateRemotedObject;
     readonly Bang: typeof Bang;
     readonly isBang: typeof isBang;
+    readonly TransmitterNode?: typeof TransmitterNode;
+    readonly TemporalAnalyserNode?: typeof TemporalAnalyserNode;
+    readonly SpectralAnalyserNode?: typeof SpectralAnalyserNode;
 }
 
 export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly React = React;
     readonly PatcherAudio = PatcherAudio;
+    readonly OperableAudioBuffer = OperableAudioBuffer;
     readonly Patcher = Patcher;
     readonly Box = Box;
     readonly Line = Line;
@@ -39,9 +56,16 @@ export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly DefaultObject = DefaultObject;
     readonly BaseUI = BaseUI;
     readonly DefaultUI = DefaultUI;
+    readonly CanvasUI = CanvasUI;
+    readonly DefaultPopupUI = DefaultPopupUI;
+    readonly CodePopupUI = CodePopupUI;
+    readonly DOMUI = DOMUI;
     readonly generateDefaultObject = generateDefaultObject;
     readonly generateRemoteObject = generateRemoteObject;
     readonly generateRemotedObject = generateRemotedObject;
     readonly Bang = Bang;
     readonly isBang = isBang;
+    readonly TransmitterNode = TransmitterNode;
+    readonly TemporalAnalyserNode = TemporalAnalyserNode;
+    readonly SpectralAnalyserNode = SpectralAnalyserNode;
 }

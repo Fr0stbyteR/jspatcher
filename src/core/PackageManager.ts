@@ -5,15 +5,24 @@ import type { TFlatPackage, TPackage } from "./types";
 import type Patcher from "./patcher/Patcher";
 
 export interface PackageManagerEventMap {
-    "libChanged": never;
     "pathDuplicated": string;
+}
+export interface PackageInfo {
+    id: string;
+    url: string;
+    enabled: boolean;
+    isBuiltIn: boolean;
 }
 
 export interface IPackageManager extends TypedEventEmitter<PackageManagerEventMap> {
     pkg: TPackage;
     lib: TFlatPackage;
+    readonly packagesInfo: PackageInfo[];
+    init(): Promise<void>;
     importFromURL(url: string, id: string): Promise<void>;
-    remove(id: string): void;
+    searchInPkg(query: string, limit: number, staticMethodOnly: boolean, pkg: TPackage, path?: string[]): { path: string[]; object?: typeof IJSPatcherObject | TPackage }[];
+    searchInLib(query: string, limit: number, staticMethodOnly: boolean, lib: TFlatPackage): { key: string; object: typeof IJSPatcherObject }[];
+    getFromPath(pathIn: (string | symbol)[], pkg: TPackage): TPackage | typeof IJSPatcherObject;
 }
 
 export default class PackageManager extends TypedEventEmitter<PackageManagerEventMap> implements IPackageManager {
@@ -26,21 +35,66 @@ export default class PackageManager extends TypedEventEmitter<PackageManagerEven
     get mode() {
         return this.patcher.props.mode;
     }
+    get patcherDependencies() {
+        return this.patcher.props.dependencies;
+    }
+    get patcherDependenciesNames() {
+        return this.patcher.props.dependencies.map(t => t[0]);
+    }
+    get packagesInfo() {
+        return Object.keys(this.global[this.mode]).map(id => ({
+            id,
+            isBuiltIn: this.global.builtInPackagesNames.indexOf(id) !== -1,
+            url: this.global.importedPackages.find(p => p.name === id)?.baseUrl,
+            enabled: id in this.pkg
+        } as PackageInfo));
+    }
     constructor(patcher: Patcher) {
         super();
         this.patcher = patcher;
-        this.init();
     }
-    init() {
-        this.pkg = { ...this.global[this.mode] };
+    async init() {
+        await this.loadPatcherDependencies();
+        this.pkg = {};
+        for (const pkgName of Object.keys(this.global[this.mode])) {
+            if (this.global.builtInPackagesNames.indexOf(pkgName) !== -1) {
+                const pkg = this.global[this.mode][pkgName];
+                if (pkg) this.pkg[pkgName] = pkg;
+            }
+        }
+        for (const pkgName of this.patcherDependenciesNames) {
+            const pkg = this.global[this.mode][pkgName];
+            if (pkg) this.pkg[pkgName] = pkg;
+        }
         this.lib = this.packageRegister(this.pkg);
+        this.emitLibChanged();
     }
-    remove(id: string) {}
+    async loadPatcherDependencies() {
+        try {
+            await this.patcher.env.taskMgr.newTask(this, `${this.patcher.file?.name || ""} Loading dependencies`, async (onUpdate: (newMsg: string) => any) => {
+                for (let i = 0; i < this.patcherDependencies.length; i++) {
+                    const [name, url] = this.patcherDependencies[i];
+                    onUpdate(`${name} from ${url}`);
+                    if (this.global[this.mode][name]) return;
+                    try {
+                        await this.global.importFromURL?.(url, name);
+                    } catch (e) {
+                        throw new Error(`Loading dependency: ${name} from ${url} failed`);
+                    }
+                }
+            });
+        } catch (error) {
+            this.patcher.error((error as Error).message);
+        }
+    }
     async importFromURL(url: string, id: string) {
         if (!this.global.importFromURL) throw new Error("Cannot import from this context");
         await this.global.importFromURL(url, id);
         this.init();
-        this.emit("libChanged");
+        this.emitLibChanged();
+    }
+    emitLibChanged() {
+        this.patcher.emit("libChanged", { pkg: this.pkg, lib: this.lib });
     }
     packageRegister(pkg: TPackage, libOut: TFlatPackage = {}, rootifyDepth = Infinity, pathIn?: string[]) {
         const path = pathIn ? pathIn.slice() : [];

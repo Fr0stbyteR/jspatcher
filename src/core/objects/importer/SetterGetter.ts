@@ -3,11 +3,15 @@ import Bang, { isBang } from "../base/Bang";
 import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 import type { ImportedObjectType } from "../../types";
 
-type S<Static extends boolean> = { instance: Static extends true ? undefined : any; input: any; result: any };
+interface IS<Static extends boolean> {
+    instance: Static extends true ? undefined : any;
+    input: any;
+    result: any;
+}
 type I<Static extends boolean> = Static extends true ? [any] : [any | Bang, any];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
 
-export default class SetterGetter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [any], { sync: boolean }, { loading: boolean }> {
+export default class SetterGetter<Static extends boolean = false> extends ImportedObject<any, {}, I<Static>, O<Static>, [any], { sync: boolean }, { loading: boolean }> {
     static importedObjectType: ImportedObjectType = "SetterGetter";
     static description = "Auto-imported setter / getter";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
@@ -41,14 +45,14 @@ export default class SetterGetter<Static extends boolean = false> extends Import
     };
     initialInlets = 2;
     initialOutlets = 2;
-    state: S<Static> = { instance: undefined, input: null, result: null };
+    _: IS<Static> = { instance: undefined, input: null, result: null };
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
-            if (!isBang(data)) this.state.instance = data;
-            if (typeof this.state.instance === "undefined") return;
-            if (typeof this.state.input !== "undefined") {
+            if (!isBang(data)) this._.instance = data;
+            if (typeof this._.instance === "undefined") return;
+            if (typeof this._.input !== "undefined") {
                 try {
-                    this.state.instance[this.name] = this.state.input;
+                    this._.instance[this.name] = this._.input;
                 } catch (e) {
                     this.error(e);
                     return;
@@ -56,7 +60,7 @@ export default class SetterGetter<Static extends boolean = false> extends Import
             }
             if (this.execute()) this.output();
         } else if (inlet === 1) {
-            this.state.input = data;
+            this._.input = data;
         }
     };
     subscribe() {
@@ -64,28 +68,30 @@ export default class SetterGetter<Static extends boolean = false> extends Import
         this.on("preInit", () => {
             this.inlets = this.initialInlets;
             this.outlets = this.initialOutlets;
+            handleUpdateArgs(this.args);
         });
-        this.on("updateArgs", (args) => {
-            if (args.length) this.state.input = args[0];
-        });
+        const handleUpdateArgs = (args: [any?]) => {
+            if (args.length) this._.input = args[0];
+        };
+        this.on("updateArgs", handleUpdateArgs);
         this.on("inlet", this.handleInlet);
     }
     execute() {
         try {
-            this.state.result = this.state.instance[this.name];
+            this._.result = this._.instance[this.name];
             return true;
         } catch (e) {
             this.error(e);
             return false;
         }
     }
-    callback = () => this.outletAll([this.state.result, this.state.instance] as O<Static>);
+    callback = () => this.outletAll([this._.result, this._.instance] as O<Static>);
     output() {
-        if (this.state.result instanceof Promise && !this.getProp("sync")) {
+        if (this._.result instanceof Promise && !this.getProp("sync")) {
             this.loading = true;
-            this.state.result.then((r) => {
+            this._.result.then((r) => {
                 this.loading = false;
-                this.state.result = r;
+                this._.result = r;
                 this.callback();
             }, (r) => {
                 this.loading = false;

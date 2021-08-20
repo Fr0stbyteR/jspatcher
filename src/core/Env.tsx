@@ -1,12 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Faust, FaustAudioWorkletNode } from "faust2webaudio";
-import { detectOS, detectBrowserCore } from "../utils/utils";
-import { faustLangRegister } from "../misc/monaco-faust/register";
+import type { Faust, FaustAudioWorkletNode } from "faust2webaudio";
 import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitter";
-import { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
-import { EnvOptions, TErrorLevel, TPackage, TPatcherLog } from "./types";
-import { getFaustLibObjects } from "./objects/Faust";
 import DefaultImporter from "./objects/importer/DefaultImporter";
 import GlobalPackageManager from "./GlobalPackageManager";
 import PersistentProjectItemManager, { IPersistentProjectItemManager } from "./file/PersistentProjectItemManager";
@@ -15,18 +10,25 @@ import FileMgrWorker from "./workers/FileMgrWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
 import FFmpegWorker from "./workers/FFmpegWorker";
-import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import TaskManager from "./TaskMgr";
 import Project from "./Project";
-import { IFileEditor } from "./file/FileEditor";
 import UI from "../components/UI";
-import PatcherAudio from "./audio/PatcherAudio";
 import EditorContainer from "./EditorContainer";
 import AudioWorkletRegister from "./worklets/AudioWorkletRegister";
-import GuidoWorker from "./workers/GuidoWorker";
-import type { IFileInstance } from "./file/FileInstance";
 import JSPatcherSDK, { IJSPatcherSDK } from "./SDK";
 import WorkletEnvNode from "./worklets/WorkletEnv";
+import { getFaustLibObjects } from "./objects/Faust";
+import { faustLangRegister } from "../misc/monaco-faust/register";
+import { detectOS, detectBrowserCore } from "../utils/utils";
+import type PatcherAudio from "./audio/PatcherAudio";
+import type { IFileEditor } from "./file/FileEditor";
+import type { IFileInstance } from "./file/FileInstance";
+import type { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
+import type { AudioDisplayOptions, AudioUnitOptions, TAudioUnit, TErrorLevel, TPackage, TPatcherLog } from "./types";
+/*
+import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
+import GuidoWorker from "./workers/GuidoWorker";
+*/
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
@@ -41,6 +43,13 @@ export interface EnvEventMap {
     "instances": IFileInstance[];
     "newLog": TPatcherLog;
     "options": { options: EnvOptions; oldOptions: EnvOptions };
+}
+
+export interface EnvOptions {
+    language: "en" | "zh-CN";
+    audioUnit: TAudioUnit;
+    audioUnitOptions: AudioUnitOptions;
+    audioDisplayOptions: AudioDisplayOptions;
 }
 
 export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
@@ -76,8 +85,10 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     readonly waveformWorker = new WaveformWorker();
     readonly wavEncoderWorker = new WavEncoderWorker();
     readonly ffmpegWorker = new FFmpegWorker();
+    /*
     readonly libMusicXMLWorker = new LibMusicXMLWorker();
     readonly guidoWorker = new GuidoWorker();
+    */
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();
     readonly browser = detectBrowserCore();
@@ -200,7 +211,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 this.FaustAudioWorkletNode = FaustAudioWorkletNode;
             });
             await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {
-                const faust = new Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
+                const faust = new this.Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
                 await faust.ready;
                 this.faustAdditionalObjects = DefaultImporter.import("faust", { FaustNode: this.FaustAudioWorkletNode }, true);
                 this.faust = faust;
@@ -221,12 +232,14 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 this.faustDocs = providers.docs;
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
             });
+            /*
             await this.taskMgr.newTask(this, "Loading LibMuscXML...", async () => {
                 await this.libMusicXMLWorker.init();
             });
             await this.taskMgr.newTask(this, "Loading Guido...", async () => {
                 await this.guidoWorker.init();
             });
+            */
             await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);
                 await this.pkgMgr.init();
@@ -254,11 +267,11 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             });
             await this.taskMgr.newTask(this, "Fetching packages...", async (onUpdate) => {
                 onUpdate("std");
-                await this.pkgMgr.importFromURL("./packages/std/index.js");
+                await this.pkgMgr.importFromURL("./packages/std/index.js", undefined, true);
                 onUpdate("op");
-                await this.pkgMgr.importFromURL("./packages/op/index.js");
+                await this.pkgMgr.importFromURL("./packages/op/index.js", undefined, true);
                 onUpdate("webaudio");
-                await this.pkgMgr.importFromURL("./packages/webaudio/index.js");
+                await this.pkgMgr.importFromURL("./packages/webaudio/index.js", undefined, true);
                 // await this.pkgMgr.importFromURL("../../@jspatcher/package-webaudio/dist/index.js");
             });
             await this.taskMgr.newTask(this, "Creating Project", async () => {

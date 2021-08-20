@@ -3,10 +3,13 @@ import Bang, { isBang } from "../base/Bang";
 import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 import type { ImportedObjectType } from "../../types";
 
-type S<Static extends boolean> = { instance: Static extends true ? undefined : any; result: any };
+interface IS<Static extends boolean> {
+    instance: Static extends true ? undefined : any;
+    result: any;
+}
 type I<Static extends boolean> = Static extends true ? [Bang] : [any | Bang];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
-export default class Getter<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, [], { sync: boolean }, { loading: boolean }> {
+export default class Getter<Static extends boolean = false> extends ImportedObject<any, {}, I<Static>, O<Static>, [], { sync: boolean }, { loading: boolean }> {
     static importedObjectType: ImportedObjectType = "Getter";
     static description = "Auto-imported getter";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
@@ -28,14 +31,14 @@ export default class Getter<Static extends boolean = false> extends ImportedObje
             description: "If true and in case the result is a Promise, instead of waiting for result, will output the Promise object"
         }
     };
-    state: S<Static> = { instance: undefined, result: null };
+    _: IS<Static> = { instance: undefined, result: null };
     handlePreInit = () => {
         this.inlets = 1;
         this.outlets = 2;
     };
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
-            if (!isBang(data)) this.state.instance = data;
+            if (!isBang(data)) this._.instance = data;
             if (this.execute()) this.output();
         }
     };
@@ -46,20 +49,20 @@ export default class Getter<Static extends boolean = false> extends ImportedObje
     }
     execute() {
         try {
-            this.state.result = this.state.instance[this.name];
+            this._.result = this._.instance[this.name];
             return true;
         } catch (e) {
             this.error(e);
             return false;
         }
     }
-    callback = () => this.outletAll([this.state.result, this.state.instance] as O<Static>);
+    callback = () => this.outletAll([this._.result, this._.instance] as O<Static>);
     output() {
-        if (this.state.result instanceof Promise && !this.getProp("sync")) {
+        if (this._.result instanceof Promise && !this.getProp("sync")) {
             this.loading = true;
-            this.state.result.then((r) => {
+            this._.result.then((r) => {
                 this.loading = false;
-                this.state.result = r;
+                this._.result = r;
                 this.callback();
             }, (r) => {
                 this.loading = false;

@@ -157,7 +157,7 @@ class ObjectsItems extends React.PureComponent<{ editor: PatcherEditor; pkg: TPa
     }
 }
 
-export default class Objects extends React.PureComponent<{ env: Env; editor: PatcherEditor }, { editor: PatcherEditor; pkg: TPackage; search: string }> {
+export default class Objects extends React.PureComponent<{ env: Env }, { editor: PatcherEditor; pkg: TPackage; search: string }> {
     state = { editor: this.props.env.activeEditor instanceof PatcherEditor ? this.props.env.activeEditor : null, pkg: this.props.env.activeEditor instanceof PatcherEditor ? this.props.env.activeEditor.instance.activePkg : null, search: "" };
     timer: number = undefined;
     handlePkgChanged = ({ pkg }: { pkg: TPackage }) => this.setState({ pkg: {} }, () => this.setState({ pkg }));
@@ -171,6 +171,7 @@ export default class Objects extends React.PureComponent<{ env: Env; editor: Pat
         }
     };
     componentDidMount() {
+        this.state.editor?.instance.on("libChanged", this.handlePkgChanged);
         this.props.env.on("activeEditor", this.handleEnvActiveEditor);
     }
     componentWillUnmount() {
@@ -202,7 +203,7 @@ export default class Objects extends React.PureComponent<{ env: Env; editor: Pat
         return (
             <>
                 <Segment inverted size="mini">
-                    <ObjectsItems {...this.props} pkg={this.state.pkg} path={[]} search={this.state.search} />
+                    <ObjectsItems {...this.props} editor={this.state.editor} pkg={this.state.pkg} path={[]} search={this.state.search} />
                 </Segment>
                 <Menu icon inverted size="mini">
                     <Input inverted size="mini" fluid icon={this.state.search ? { name: "close", link: true, onClick: this.handleClickClose } : "search"} placeholder="Search..." onKeyDown={this.handleKeyDown} onChange={this.handleChange} />

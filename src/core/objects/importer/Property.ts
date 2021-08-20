@@ -3,12 +3,12 @@ import Bang, { isBang } from "../base/Bang";
 import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 import type { ImportedObjectType } from "../../types";
 
-type S<Static extends boolean> = { instance: Static extends true ? undefined : any };
+interface IS<Static extends boolean> { instance: Static extends true ? undefined : any }
 type I<Static extends boolean> = Static extends true ? [Bang, any] : [any | Bang, any];
 type O<Static extends boolean> = Static extends true ? [any] : [any, any];
 type A<Static extends boolean> = Static extends true ? [any] : [];
 
-export default class Property<Static extends boolean = false> extends ImportedObject<any, S<Static>, I<Static>, O<Static>, A<Static>, {}, {}> {
+export default class Property<Static extends boolean = false> extends ImportedObject<any, {}, I<Static>, O<Static>, A<Static>, {}, {}> {
     static importedObjectType: ImportedObjectType = "Property";
     static description = "Auto-imported property";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
@@ -28,24 +28,24 @@ export default class Property<Static extends boolean = false> extends ImportedOb
         type: "anything",
         description: "Instance bypass"
     }];
-    state: S<Static> = { instance: undefined };
+    _: IS<Static> = { instance: undefined };
     handlePreInit = () => {
         this.inlets = 2;
         this.outlets = 2;
     };
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
-            if (!isBang(data)) this.state.instance = data;
+            if (!isBang(data)) this._.instance = data;
             let result;
             try {
-                result = this.state.instance[this.name];
+                result = this._.instance[this.name];
             } catch (e) {
                 this.error(e);
             }
-            this.outletAll([result, this.state.instance] as O<Static>);
+            this.outletAll([result, this._.instance] as O<Static>);
         } else if (inlet === 1) {
             try {
-                this.state.instance[this.name] = data;
+                this._.instance[this.name] = data;
             } catch (e) {
                 this.error(e);
             }

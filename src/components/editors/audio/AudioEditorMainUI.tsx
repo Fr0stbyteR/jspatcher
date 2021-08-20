@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Button, Icon } from "semantic-ui-react";
 import * as Color from "color-js";
-import Env from "../../../core/Env";
+import Env, { EnvOptions } from "../../../core/Env";
 import AudioEditor, { AudioEditorState } from "../../../core/audio/AudioEditor";
 import GainInputUI from "./GainInput";
 import AudioEditorVerticalRulerUI from "./AudioEditorVerticalRulerUI";
 import AudioEditorHorizontalRulerUI from "./AudioEditorHorizontalRulerUI";
 import AudioEditorMainControlsUI from "./AudioEditorMainControlsUI";
-import { EnvOptions, TAudioUnit } from "../../../core/types";
+import { TAudioUnit } from "../../../core/types";
 import { normExp, dbtoa } from "../../../utils/math";
 import { convertSampleToUnit } from "../../../utils/utils";
 import "./AudioEditorMainUI.scss";

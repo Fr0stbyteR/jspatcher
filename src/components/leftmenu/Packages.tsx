@@ -1,12 +1,24 @@
 import * as React from "react";
-import { Menu, Input, Table, Button } from "semantic-ui-react";
+import { Menu, Input, Table, Checkbox, CheckboxProps, Button } from "semantic-ui-react";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
+import type Env from "../../core/Env";
+import type { EnvEventMap } from "../../core/Env";
+import type { PackageInfo } from "../../core/PackageManager";
 
-export default class Packages extends React.PureComponent<{ editor: PatcherEditor }, { imports: [string, string][]; adding: boolean }> {
-    state = { imports: this.props.editor.instance.state.pkgMgr.imported.slice(), adding: false };
+export default class Packages extends React.PureComponent<{ env: Env }, { editor: PatcherEditor; packages: PackageInfo[]; adding: boolean }> {
+    state = { editor: this.props.env.activeEditor instanceof PatcherEditor ? this.props.env.activeEditor : null, packages: this.props.env.activeEditor instanceof PatcherEditor ? this.props.env.activeEditor.instance.state.pkgMgr.packagesInfo : [], adding: false };
     refTable = React.createRef<HTMLTableElement>();
+    handleEnvActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
+        this.state.editor?.instance.off("libChanged", this.handleLibChanged);
+        if (editor instanceof PatcherEditor) {
+            editor.instance.on("libChanged", this.handleLibChanged);
+            this.setState({ editor, packages: editor.instance.state.pkgMgr.packagesInfo });
+        } else {
+            this.setState({ editor: null, packages: [] });
+        }
+    };
     handleLibChanged = () => {
-        this.setState({ imports: this.props.editor.instance.state.pkgMgr.imported.slice() });
+        this.setState({ packages: this.state.editor.instance.state.pkgMgr.packagesInfo });
     };
     handleAdd = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const tdID = e.currentTarget.parentElement.nextSibling as HTMLTableRowElement;
@@ -15,21 +27,17 @@ export default class Packages extends React.PureComponent<{ editor: PatcherEdito
         const url = tdURL.getElementsByTagName("input")[0].value.trim();
         if (id && url) {
             this.setState({ adding: true });
-            try {
-                await this.props.editor.instance.addPackage(id, url);
-            } catch (e) {
-                this.setState({ adding: false });
-                this.props.editor.instance.error(`Loading dependency: ${id} from ${url} failed`);
-            }
+            await this.state.editor.instance.addPackage(id, url);
             this.setState({ adding: false });
         }
     };
-    handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleCheck = (e: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
         const tdID = e.currentTarget.parentElement.nextSibling as HTMLTableRowElement;
         const tdURL = tdID.nextSibling as HTMLTableRowElement;
-        // const id = tdID.innerText;
+        const id = tdID.innerText;
         const url = tdURL.innerText;
-        this.props.editor.instance.removePackage(url);
+        if (data.checked) this.state.editor.instance.addPackage(id, url);
+        else this.state.editor.instance.removePackage(id);
     };
     handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
@@ -46,20 +54,24 @@ export default class Packages extends React.PureComponent<{ editor: PatcherEdito
         if (!inputURL.value || inputURL.value.startsWith("https://unpkg.com/")) inputURL.value = `https://unpkg.com/${e.currentTarget.value}`;
     };
     componentDidMount() {
-        this.props.editor.on("ready", this.handleLibChanged);
-        this.props.editor.instance.on("libChanged", this.handleLibChanged);
-        this.props.editor.instance.on("propsChanged", this.handleLibChanged);
+        this.props.env.on("activeEditor", this.handleEnvActiveEditor);
+        this.state.editor?.on("ready", this.handleLibChanged);
+        this.state.editor?.instance.on("libChanged", this.handleLibChanged);
     }
     componentWillUnmount() {
-        this.props.editor.off("ready", this.handleLibChanged);
-        this.props.editor.instance.off("libChanged", this.handleLibChanged);
-        this.props.editor.instance.off("propsChanged", this.handleLibChanged);
+        this.props.env.off("activeEditor", this.handleEnvActiveEditor);
+        this.state.editor?.off("ready", this.handleLibChanged);
+        this.state.editor?.instance.off("libChanged", this.handleLibChanged);
     }
     render() {
-        const logs = this.state.imports.map(([id, url], i) => (
+        const logs = this.state.packages.map(({ id, url, enabled, isBuiltIn }, i) => (
             <Table.Row key={i}>
-                <Table.Cell style={{ padding: 0 }} width={1}>
-                    <Button icon="minus" size="mini" compact inverted color="red" onClick={this.handleRemove} title="Remove the package" />
+                <Table.Cell style={{ paddingTop: "0px", paddingBottom: "0px" }} width={1}>
+                    {
+                        isBuiltIn
+                            ? undefined
+                            : <Checkbox checked={enabled} size="mini" onClick={this.handleCheck} title={enabled ? "Disable the package" : "Enable the package"} />
+                    }
                 </Table.Cell>
                 <Table.Cell>{id}</Table.Cell>
                 <Table.Cell>{url}</Table.Cell>

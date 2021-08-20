@@ -17,6 +17,7 @@ export interface IExternalPackage {
     "jsdsppkg.main"?: string;
     "jsdsppkg.aw"?: string;
     baseUrl?: string;
+    isBuiltIn?: boolean;
 }
 export type PackageGetter = (env: IJSPatcherEnv) => Promise<TPackage>;
 
@@ -29,6 +30,12 @@ export default class GlobalPackageManager {
     private readonly env: Env;
     readonly externals = new Map<string, Record<string, any>>();
     readonly importedPackages: IExternalPackage[] = [];
+    get builtInPackagesNames() {
+        return [...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "Base", "globalThis"];
+    }
+    get externalPackagesNames() {
+        return this.importedPackages.filter(p => !p.isBuiltIn).map(p => p.name);
+    }
     constructor(envIn: Env) {
         this.env = envIn;
     }
@@ -103,11 +110,11 @@ export default class GlobalPackageManager {
         this.externals.set(url, m);
         return m;
     }
-    async resolveModule(m: any, url: string, id?: string) {
+    async resolveModule(m: any, url: string, id?: string, isBuiltIn = false) {
         if (typeof m === "object" && m !== null) {
             if (m.default?.isJSPatcherPackage) {
                 if (this.importedPackages.find(p => p.name === m.name)) return;
-                const p: IExternalPackage = { ...m.default, baseUrl: new URL(".", new URL(url, location.href)).href };
+                const p: IExternalPackage = { ...m.default, baseUrl: new URL(".", new URL(url, location.href)).href, isBuiltIn };
                 this.importedPackages.push(p);
                 if (p.jspatpkg) {
                     const url = new URL(p.jspatpkg, p.baseUrl).href;
@@ -125,12 +132,23 @@ export default class GlobalPackageManager {
                 }
             } else {
                 const pkg = DefaultImporter.import(id, m);
+                this.importedPackages.push({
+                    isJSPatcherPackage: true,
+                    name: id,
+                    version: null,
+                    description: "Auto-Imported",
+                    keywords: [],
+                    license: null,
+                    thumbnail: null,
+                    isBuiltIn,
+                    baseUrl: url
+                });
                 this.add(pkg, "js", [id]);
             }
         }
     }
-    async importFromURL(url: string, id?: string) {
+    async importFromURL(url: string, id?: string, isBuiltIn = false) {
         const m = await this.getModuleFromURL(url, id);
-        await this.resolveModule(m, url, id);
+        await this.resolveModule(m, url, id, isBuiltIn);
     }
 }

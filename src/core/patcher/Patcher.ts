@@ -124,10 +124,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.boxes = {};
         this.props = {
             mode: "js",
-            dependencies: Patcher.props.dependencies.default,
+            dependencies: Patcher.props.dependencies.default.slice(),
             bgColor: Patcher.props.bgColor.default,
             editingBgColor: Patcher.props.editingBgColor.default,
-            grid: Patcher.props.grid.default,
+            grid: Patcher.props.grid.default.slice() as [number, number],
             openInPresentation: Patcher.props.openInPresentation.default,
             boxIndexCount: 0,
             lineIndexCount: 0
@@ -222,24 +222,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                     this.props.dependencies.push([key, dependencies[key]]);
                 }
             }
-            let depNames = this.props.dependencies.map(t => t[0]);
-            try {
-                await this.env.taskMgr.newTask(this, `${this.file?.name || ""} Loading dependencies`, async (onUpdate: (newMsg: string) => any) => {
-                    for (let i = 0; i < this.props.dependencies.length; i++) {
-                        const [name, url] = this.props.dependencies[i];
-                        onUpdate(`${name} from ${url}`);
-                        try {
-                            await this._state.pkgMgr.importFromURL(url, name);
-                        } catch (e) {
-                            throw new Error(`Loading dependency: ${name} from ${url} failed`);
-                        }
-                        depNames = depNames.splice(i, 1);
-                    }
-                });
-            } catch (error) {
-                this.error((error as Error).message);
-            }
         }
+        await this._state.pkgMgr.init();
         if (patcher.boxes) { // Boxes & data
             for (const id in patcher.boxes) {
                 const $ = this.createBox(patcher.boxes[id]);
@@ -328,10 +312,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.boxes = {};
         this.props = {
             mode: "js",
-            dependencies: Patcher.props.dependencies.default,
+            dependencies: Patcher.props.dependencies.default.slice(),
             bgColor: Patcher.props.bgColor.default,
             editingBgColor: Patcher.props.editingBgColor.default,
-            grid: Patcher.props.grid.default,
+            grid: Patcher.props.grid.default.slice() as [number, number],
             openInPresentation: Patcher.props.openInPresentation.default,
             boxIndexCount: 0,
             lineIndexCount: 0
@@ -344,17 +328,20 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     async addPackage(namespace: string, url: string) {
         const { dependencies } = this.props;
-        await this.state.pkgMgr.importFromURL(url, namespace);
         dependencies.push([namespace, url]);
         this.setProps({ dependencies: dependencies.slice() });
+        await this.state.pkgMgr.init();
+        if (!(namespace in this.activePkg)) {
+            this.setProps({ dependencies: dependencies.filter(([id]) => id !== namespace) });
+        }
     }
-    removePackage(id: string) {
+    async removePackage(id: string) {
         const { dependencies } = this.props;
         const i = dependencies.findIndex(t => t[0] === id);
         if (i === -1) return;
         dependencies.splice(i, 1);
-        this.state.pkgMgr.remove(id);
         this.setProps({ dependencies: dependencies.slice() });
+        await this.state.pkgMgr.init();
     }
     async createBox(boxIn: TBox) {
         if (!boxIn.id || (boxIn.id in this.boxes)) boxIn.id = "box-" + ++this.props.boxIndexCount;

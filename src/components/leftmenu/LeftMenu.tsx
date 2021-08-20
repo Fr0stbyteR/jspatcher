@@ -105,10 +105,10 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                         </div>
                     }
                     <div className="left-pane-objects" hidden={this.state.active !== TPanels.Objects}>
-                        {this.state.active === TPanels.Objects ? <Objects {...this.props} editor={this.state.editor as PatcherEditor} ref={this.refObjects} /> : <></> }
+                        {this.state.active === TPanels.Objects ? <Objects {...this.props} ref={this.refObjects} /> : <></> }
                     </div>
                     <div className="left-pane-packages" hidden={this.state.active !== TPanels.Packages}>
-                        {this.state.active === TPanels.Packages ? <Packages {...this.props} editor={this.state.editor as PatcherEditor} ref={this.refPackages} /> : <></> }
+                        {this.state.active === TPanels.Packages ? <Packages {...this.props} ref={this.refPackages} /> : <></> }
                     </div>
                 </div>
                 <Menu icon vertical inverted size="mini" className="left-menu">
