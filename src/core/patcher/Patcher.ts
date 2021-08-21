@@ -57,9 +57,9 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "ioChanged": IJSPatcherObjectMeta;
     "dataInput": TInletEvent<any[]>;
     "dataOutput": TOutletEvent<any[]>;
-    "audioInput": { input: number; index: number; sample: number };
-    "paramInput": { param: string; index: number; sample: number };
-    "audioOutput": { output: number; index: number; sample: number };
+    "audioInput": { input: number; buffer: Float32Array };
+    "paramInput": { param: string; buffer: Float32Array };
+    "audioOutput": { output: number; buffer: Float32Array };
     "disconnectAudioInlet": number;
     "disconnectAudioOutlet": number;
     "connectAudioInlet": number;
@@ -248,11 +248,11 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.emit("postInited");
         return this;
     }
-    async getPatcherNode() {
+    async getPatcherNode(inputs = 2, outputs = 2) {
         if (this.props.mode === "jsaw" && this.env.thread === "main") {
             const PatcherNode = (await import("../worklets/PatcherNode")).default;
             await PatcherNode.register(this.audioCtx.audioWorklet);
-            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id, fileId: this.file?.id, data: this.file ? undefined : this.toSerializable() });
+            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id, fileId: this.file?.id, data: this.file ? undefined : this.toSerializable(), inputs, outputs });
             await this.state.patcherNode.init();
             return this.state.patcherNode;
         }
@@ -463,14 +463,14 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     fn(data: any, inlet: number) {
         this.emit("dataInput", { data, inlet });
     }
-    inputAudio(input: number, index: number, sample: number) {
-        this.emit("audioInput", { input, index, sample });
+    inputAudio(input: number, buffer: Float32Array) {
+        this.emitSync("audioInput", { input, buffer });
     }
-    inputParam(param: string, index: number, sample: number) {
-        this.emit("paramInput", { param, index, sample });
+    inputParam(param: string, buffer: Float32Array) {
+        this.emitSync("paramInput", { param, buffer });
     }
-    outputAudio(output: number, index: number, sample: number) {
-        this.emit("audioOutput", { output, index, sample });
+    outputAudio(output: number, buffer: Float32Array) {
+        this.emitSync("audioOutput", { output, buffer });
     }
     outlet(outlet: number, data: any) {
         this.emit("dataOutput", { data, outlet });

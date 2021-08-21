@@ -14,6 +14,7 @@ import type { IFileEditor } from "../file/FileEditor";
 import type { IFileInstance } from "../file/FileInstance";
 import type { ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
 import type { TErrorLevel } from "../types";
+import type { IExternalPackage } from "../GlobalPackageManager";
 
 export const processorId = "__JSPatcher_WorkletEnv";
 declare const globalThis: AudioWorkletGlobalScope;
@@ -114,8 +115,8 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         await this.fileMgr.processDiff(diff);
         this.fileMgr.on("changed", this.handleFileMgrChange);
     }
-    async importPackage(url: string, id: string) {
-        await this.pkgMgr.importPackage(url, id);
+    async importPackage(url: string, pkgInfo: IExternalPackage) {
+        await this.pkgMgr.importPackage(url, pkgInfo);
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][]) {
         if (this._disposed) return false;

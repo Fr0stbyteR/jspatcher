@@ -5,7 +5,7 @@ import getGlobalThis from "./objects/globalThis/index.jsdsppkg";
 import type { TPackage, PatcherMode, ObjectDescriptor, TAbstractPackage } from "./types";
 import type { AnyImportedObject } from "./objects/importer/ImportedObject";
 import type WorkletEnvProcessor from "./worklets/WorkletEnv.worklet";
-import type { PackageGetter } from "./GlobalPackageManager";
+import type { IExternalPackage, PackageGetter } from "./GlobalPackageManager";
 
 export default class WorkletGlobalPackageManager {
     js: TPackage;
@@ -15,6 +15,13 @@ export default class WorkletGlobalPackageManager {
     gen: TPackage;
     private readonly env: WorkletEnvProcessor;
     externals = new Map<string, Record<string, any>>();
+    readonly importedPackages: IExternalPackage[] = [];
+    get builtInPackagesNames() {
+        return [...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "Base", "globalThis"];
+    }
+    get externalPackagesNames() {
+        return this.importedPackages.filter(p => !p.isBuiltIn).map(p => p.name);
+    }
     constructor(envIn: WorkletEnvProcessor) {
         this.env = envIn;
     }
@@ -70,8 +77,10 @@ export default class WorkletGlobalPackageManager {
         delete globalThis.module;
         return exported;
     }
-    async importPackage(url: string, id: string) {
+    async importPackage(url: string, pkgInfo: IExternalPackage) {
+        if (this.importedPackages.find(p => p.name === pkgInfo.name)) return;
         const getter: PackageGetter = (await this.fetchModule(url)).default;
-        this.add(await getter(this.env), "jsaw", [id]);
+        this.add(await getter(this.env), "jsaw", [pkgInfo.name]);
+        this.importedPackages.push(pkgInfo);
     }
 }

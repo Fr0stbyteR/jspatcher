@@ -1,6 +1,9 @@
 import generateDefaultObject from "./generateDefaultObject";
 import type BaseObject from "./BaseObject";
-import type { RemoteEventMap } from "./RemoteObject";
+
+export interface RemoteEventMap {
+    "outlet": { outlet: number; data: any };
+}
 
 /** Generate an object that can be used in the main thread to remote an AudioWorklet object. */
 export default <
@@ -26,6 +29,6 @@ export default <
     }
     outlet<$ extends keyof Pick<O, number>>(outlet: $, data: O[$]) {
         if (outlet >= this.outlets) return;
-        this.proxy.objectEmit(this.box.id, "outlet", { outlet, data });
+        this.proxy?.objectEmit(this.box.id, "outlet", { outlet, data });
     }
 };

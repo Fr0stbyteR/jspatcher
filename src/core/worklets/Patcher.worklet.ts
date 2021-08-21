@@ -54,21 +54,19 @@ export default class PatcherProcessor extends AudioWorkletProxyProcessor<IPatche
     process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: Record<PatcherParameters, Float32Array>) {
         if (this._disposed) return false;
         if (!inputs?.[0]?.[0]?.length) return true;
-        const bufferSize = inputs[0][0].length;
         const { parametersBoxes } = this.patcher.inspectAudioIO();
-        const handleOutput = ({ output, index, sample }: PatcherEventMap["audioOutput"]) => {
-            if (outputs[0][output]) outputs[0][output][index] = sample;
+        const handleOutput = ({ output, buffer }: PatcherEventMap["audioOutput"]) => {
+            if (outputs[output]?.[0]) outputs[output][0].set(buffer);
         };
         this.patcher.on("audioOutput", handleOutput);
-        for (let i = 0; i < bufferSize; i++) {
-            for (let j = 0; j < inputs[0].length; j++) {
-                this.patcher.inputAudio(j, i, inputs[0][j][i]);
-            }
-            for (const key in parameters) {
-                const param = parametersBoxes[+key][0];
-                const sample = parameters[param].length > i ? parameters[param][i] : parameters[param][0];
-                this.patcher.inputParam(param, i, sample);
-            }
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i]?.[0]) this.patcher.inputAudio(i, inputs[i][0]);
+        }
+        for (const key in parameters) {
+            const boxInfo = parametersBoxes[+key];
+            if (!boxInfo) continue;
+            const param = boxInfo[0];
+            this.patcher.inputParam(param, parameters[param]);
         }
         this.patcher.off("audioOutput", handleOutput);
         return true;

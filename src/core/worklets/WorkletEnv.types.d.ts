@@ -1,12 +1,13 @@
 import type { IPersistentProjectItemManager, ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
 import type { Task, TaskError } from "../TaskMgr";
 import type { PrefixKeys, TErrorLevel, TAbstractPackage } from "../types";
+import type { IExternalPackage } from "../GlobalPackageManager";
 
 export interface IWorkletEnvProcessor {
     thread: "AudioWorklet";
     init(): Promise<void>;
     workletFileMgrDiff(diff: ProjectItemManagerDataForDiff): void;
-    importPackage(url: string, id: string): Promise<void>;
+    importPackage(url: string, pkgInfo: IExternalPackage): Promise<void>;
 }
 export interface IWorkletEnvNode extends PrefixKeys<Pick<IPersistentProjectItemManager, "readFile" | "readDir" | "getFileDetails" | "exists" | "putFile" | "writeFile" | "getPathIdMap">, "fileMgr"> {
     envNewLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any): void;

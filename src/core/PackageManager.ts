@@ -56,7 +56,7 @@ export default class PackageManager extends TypedEventEmitter<PackageManagerEven
     async init() {
         await this.loadPatcherDependencies();
         this.pkg = {};
-        for (const pkgName of Object.keys(this.global[this.mode])) {
+        for (const pkgName of Object.keys(this.global[this.mode]).sort((a, b) => (b === "globalThis" ? -1 : 1))) {
             if (this.global.builtInPackagesNames.indexOf(pkgName) !== -1) {
                 const pkg = this.global[this.mode][pkgName];
                 if (pkg) this.pkg[pkgName] = pkg;

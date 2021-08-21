@@ -5,7 +5,7 @@ interface P {
     description: string;
 }
 
-export default class AudioOut extends BaseObject<{}, {}, [], [number, number], [number, number], P> {
+export default class AudioOut extends BaseObject<{}, {}, [Float32Array], [], [number], P> {
     static isPatcherOutlet = "audio" as const;
     static description = "Patcher outlet (audio)";
     static args: IArgsMeta = [{
@@ -24,18 +24,21 @@ export default class AudioOut extends BaseObject<{}, {}, [], [number, number], [
     static inlets: IInletsMeta = [{
         isHot: true,
         type: "anything",
-        description: ""
+        description: "Float32Array buffer"
     }];
     protected get index() {
         return Math.max(1, ~~this.box.args[0] || 1);
     }
-    protected _ = { index: this.index, sampleIndex: 0 };
-    protected emitPatcherChangeIO = () => this.patcher.changeIO();
+    protected _ = { index: this.index };
+    protected emitPatcherChangeIO = () => {
+        this.patcher.inspectAudioIO();
+        this.patcher.changeIO();
+    };
     subscribe() {
         super.subscribe();
         this.on("metaUpdated", this.emitPatcherChangeIO);
         this.on("preInit", () => {
-            this.inlets = 2;
+            this.inlets = 1;
             this.outlets = 0;
         });
         this.on("postInit", this.emitPatcherChangeIO);
@@ -53,8 +56,7 @@ export default class AudioOut extends BaseObject<{}, {}, [], [number, number], [
             this.emitPatcherChangeIO();
         });
         this.on("inlet", ({ data, inlet }) => {
-            if (inlet === 1) this._.sampleIndex = +~~data;
-            else if (inlet === 0) this.patcher.outputAudio(this.index - 1, this._.sampleIndex, +data);
+            if (inlet === 0) this.patcher.outputAudio(this.index - 1, data);
         });
         this.on("destroy", this.emitPatcherChangeIO);
     }

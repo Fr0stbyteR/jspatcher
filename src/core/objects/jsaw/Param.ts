@@ -6,7 +6,7 @@ interface P {
     description: string;
 }
 
-export default class Param extends BaseObject<{}, {}, [], [number, number], [string], P> {
+export default class Param extends BaseObject<{}, {}, [], [Float32Array], [string], P> {
     static description = "Patcher outlet (data)";
     static args: IArgsMeta = [{
         type: "string",
@@ -25,8 +25,8 @@ export default class Param extends BaseObject<{}, {}, [], [number, number], [str
         type: "anything",
         description: ""
     }];
-    protected handlePatcherInput = ({ param, index, sample }: PatcherEventMap["paramInput"]) => {
-        if (this.args[0] === param) this.outletAll([sample, index]);
+    protected handlePatcherInput = ({ param, buffer }: PatcherEventMap["paramInput"]) => {
+        if (this.args[0] === param) this.outlet(0, buffer);
     };
     protected emitPatcherChangeIO = () => this.patcher.changeIO();
     subscribe() {

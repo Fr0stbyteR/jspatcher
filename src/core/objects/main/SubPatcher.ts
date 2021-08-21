@@ -6,7 +6,7 @@ import type { PatcherEventMap } from "../../patcher/Patcher";
 import type { RawPatcher, PatcherMode } from "../../types";
 import type { IArgsMeta, IJSPatcherObjectMeta } from "../base/AbstractObject";
 
-export default class SubPatcher extends DefaultObject<Partial<RawPatcher>, {}, any[], any[], [string], {}, SubPatcherUIState> {
+export default class SubPatcher extends DefaultObject<Partial<RawPatcher>, {}, any[], any[], [string, ...number[]], {}, SubPatcherUIState> {
     static package = "SubPatcher";
     static description = "Sub-patcher";
     static args: IArgsMeta = [{

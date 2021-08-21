@@ -29,7 +29,10 @@ export default class AudioOut extends DefaultObject<{}, { index: number }, [any]
         return Math.max(1, ~~this.box.args[0] || 1);
     }
     protected _ = { index: this.index };
-    protected emitPatcherChangeIO = () => this.patcher.changeIO();
+    protected emitPatcherChangeIO = () => {
+        this.patcher.inspectAudioIO();
+        this.patcher.changeIO();
+    };
     subscribe() {
         super.subscribe();
         this.on("metaUpdated", this.emitPatcherChangeIO);
@@ -41,7 +44,6 @@ export default class AudioOut extends DefaultObject<{}, { index: number }, [any]
             this._duringInit = false;
             this.connectAudio();
             this.patcher.connectAudioInlet(this.state.index - 1);
-            this.patcher.inspectAudioIO();
             this.emitPatcherChangeIO();
         });
         this.on("updateArgs", () => {
@@ -60,7 +62,6 @@ export default class AudioOut extends DefaultObject<{}, { index: number }, [any]
                 if (!this._duringInit) {
                     this.connectAudio();
                     this.patcher.connectAudioOutlet(index - 1);
-                    this.patcher.inspectAudioIO();
                     this.emitPatcherChangeIO();
                 }
             }
@@ -72,7 +73,6 @@ export default class AudioOut extends DefaultObject<{}, { index: number }, [any]
             this.emitPatcherChangeIO();
         });
         this.on("destroy", () => {
-            this.patcher.inspectAudioIO();
             this.emitPatcherChangeIO();
         });
     }

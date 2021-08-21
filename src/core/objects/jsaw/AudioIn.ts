@@ -6,7 +6,7 @@ interface P {
     description: string;
 }
 
-export default class AudioIn extends BaseObject<{}, {}, [], [number, number], [number], P> {
+export default class AudioIn extends BaseObject<{}, {}, [], [Float32Array], [number], P> {
     static isPatcherInlet = "audio" as const;
     static description = "Patcher inlet (audio)";
     static args: IArgsMeta = [{
@@ -23,18 +23,15 @@ export default class AudioIn extends BaseObject<{}, {}, [], [number, number], [n
         }
     };
     static outlets: IOutletsMeta = [{
-        type: "number",
-        description: "Sample value"
-    }, {
-        type: "number",
-        description: "Sample index"
+        type: "object",
+        description: "Float32Array buffer"
     }];
     protected get index() {
         return Math.max(1, ~~this.box.args[0] || 1);
     }
     protected _ = { index: this.index };
-    protected handlePatcherInput = ({ input, index, sample }: PatcherEventMap["audioInput"]) => {
-        if (input === this.index - 1) this.outletAll([sample, index]);
+    protected handlePatcherInput = ({ input, buffer }: PatcherEventMap["audioInput"]) => {
+        if (input === this.index - 1) this.outlet(0, buffer);
     };
     protected emitPatcherChangeIO = () => this.patcher.changeIO();
     subscribe() {
@@ -42,7 +39,7 @@ export default class AudioIn extends BaseObject<{}, {}, [], [number, number], [n
         this.on("metaUpdated", this.emitPatcherChangeIO);
         this.on("preInit", () => {
             this.inlets = 0;
-            this.outlets = 2;
+            this.outlets = 1;
         });
         this.on("postInit", this.emitPatcherChangeIO);
         this.on("updateArgs", () => {

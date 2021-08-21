@@ -75,7 +75,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         return "sitemap";
     }
     handleChangeBoxText = (e: PatcherEventMap["changeBoxText"]) => this.emit("changeBoxText", e);
-    handlePassiveDeleteLine = (e: PatcherEventMap["passiveDeleteLine"]) => this.emit("delete", { boxes: {}, lines: { [e.id]: e } });
+    handlePassiveDeleteLine = (e: PatcherEventMap["passiveDeleteLine"]) => this.emit("delete", { boxes: {}, lines: { [e.id]: e.toSerializable() } });
     handleBoxChanged = (e: PatcherEventMap["boxChanged"]) => this.emit("boxChanged", e);
     handleChanged = () => this.instance.emitChanged();
     constructor(instance: Patcher) {

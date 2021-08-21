@@ -100,7 +100,8 @@ const config = {
         { from: './node_modules/@shren/guidolib/libGUIDOEngine.wasm', to: './deps/' },
         { from: './node_modules/@jspatcher/package-std/dist', to: './packages/std/' },
         { from: './node_modules/@jspatcher/package-op/dist', to: './packages/op/' },
-        { from: './node_modules/@jspatcher/package-webaudio/dist', to: './packages/webaudio/' }
+        { from: './node_modules/@jspatcher/package-webaudio/dist', to: './packages/webaudio/' },
+        { from: './node_modules/@jspatcher/package-analysers/dist', to: './packages/analysers/' }
       ],
       
     }),

@@ -115,7 +115,6 @@ export default class GlobalPackageManager {
             if (m.default?.isJSPatcherPackage) {
                 if (this.importedPackages.find(p => p.name === m.name)) return;
                 const p: IExternalPackage = { ...m.default, baseUrl: new URL(".", new URL(url, location.href)).href, isBuiltIn };
-                this.importedPackages.push(p);
                 if (p.jspatpkg) {
                     const url = new URL(p.jspatpkg, p.baseUrl).href;
                     const getter: PackageGetter = (await this.fetchModule(url)).default;
@@ -128,8 +127,9 @@ export default class GlobalPackageManager {
                 }
                 if (p["jsdsppkg.aw"]) {
                     const url = new URL(p["jsdsppkg.aw"], p.baseUrl).href;
-                    await this.env.envNode.importPackage(url, p.name);
+                    await this.env.envNode.importPackage(url, p);
                 }
+                this.importedPackages.push(p);
             } else {
                 const pkg = DefaultImporter.import(id, m);
                 this.importedPackages.push({

@@ -5,7 +5,6 @@ import type Patcher from "../patcher/Patcher";
 import type { PatcherEventMap } from "../patcher/Patcher";
 import type { IPatcherNode, IPatcherProcessor, PatcherOptions, PatcherParameters } from "./PatcherWorklet.types";
 import type { IJSPatcherEnv } from "../Env";
-import type { RawPatcher } from "../types";
 
 const processorId = "__JSPatcher_Patcher";
 
@@ -14,11 +13,10 @@ export default class PatcherNode extends AudioWorkletProxyNode<IPatcherNode, IPa
     static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorId, processorURL);
     static fnNames: (keyof IPatcherProcessor)[] = ["init", "fn", "sync", "objectEmit", "destroy"];
     readonly patcher: Patcher;
-    constructor(context: BaseAudioContext, options: { env: IJSPatcherEnv; instanceId: string; fileId?: string; data?: RawPatcher }) {
+    constructor(context: BaseAudioContext, options: { env: IJSPatcherEnv; inputs: number; outputs: number } & PatcherOptions) {
         super(context, processorId, {
-            numberOfInputs: 1,
-            numberOfOutputs: 1,
-            channelCount: 16,
+            numberOfInputs: options.inputs,
+            numberOfOutputs: options.outputs,
             channelCountMode: "explicit",
             channelInterpretation: "discrete",
             processorOptions: { instanceId: options.instanceId, fileId: options.fileId, data: options.data }

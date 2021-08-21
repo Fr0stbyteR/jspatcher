@@ -4,6 +4,9 @@ import Box from "./patcher/Box";
 import Line from "./patcher/Line";
 import generateRemotedObject from "./objects/base/generateRemotedObject";
 import Bang, { isBang } from "./objects/base/Bang";
+import * as MathUtils from "../utils/math";
+import * as BufferUtils from "../utils/buffer";
+import * as Utils from "../utils/utils";
 import type { IJSPatcherSDK } from "./SDK";
 
 export default class JSPatcherWorkletSDK implements IJSPatcherSDK {
@@ -14,4 +17,7 @@ export default class JSPatcherWorkletSDK implements IJSPatcherSDK {
     readonly generateRemotedObject = generateRemotedObject;
     readonly Bang = Bang;
     readonly isBang = isBang;
+    readonly MathUtils = MathUtils;
+    readonly BufferUtils = BufferUtils;
+    readonly Utils = Utils;
 }
