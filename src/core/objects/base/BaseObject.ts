@@ -19,6 +19,7 @@ export default class BaseObject<
     U extends Partial<BaseUIState> & Record<string, any> = {},
     E extends {} = {}
 > extends AbstractObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
+    static package = "base";
     static props: IPropsMeta = {
         hidden: {
             type: "boolean",

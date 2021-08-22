@@ -369,3 +369,136 @@ export const str2ab = (str: string) => {
     }
     return buf;
 };
+
+export const getFactors = (n: number) => {
+    const factors = [1];
+    let i = 2;
+    while (i < Math.sqrt(n)) {
+        if (n % i === 0) factors.push(i, n / i);
+        i++;
+    }
+    return factors.sort((a, b) => a - b);
+};
+
+export const getRuler = (range: [number, number], unit: TAudioUnit, { sampleRate = 48000, bpm = 60, beatsPerMeasure = 4, division = 16 }) => {
+    const ruler: Record<number, string> = {};
+    const length = range[1] - range[0];
+    let coarse: number;
+    let refined: number;
+    if (unit === "sample") {
+        const steps = [1, 2, 5];
+        let mag = 1;
+        let step = 0;
+        do {
+            const grid = steps[step] * mag;
+            if (step + 1 < steps.length) {
+                step++;
+            } else {
+                step = 0;
+                mag *= 10;
+            }
+            if (!coarse && length / grid <= 10) coarse = grid;
+            if (!refined && length / grid <= 50) refined = grid;
+        } while (!coarse || !refined);
+    } else if (unit === "measure") {
+        const bps = bpm / 60;
+        const samplesPerBeat = sampleRate / bps;
+        const divisionFactors = getFactors(division);
+        const beatsFactors = getFactors(beatsPerMeasure);
+        const measureFactors = [1, 2, 5];
+        let actualUnit: "division" | "beat" | "measure" = "division";
+        let mag = 1;
+        let step = 0;
+        do {
+            const grid = actualUnit === "division"
+                ? samplesPerBeat * divisionFactors[step] / division
+                : actualUnit === "beat"
+                    ? samplesPerBeat * beatsFactors[step]
+                    : samplesPerBeat * measureFactors[step] * mag * beatsPerMeasure;
+            if (actualUnit === "division") {
+                if (step + 1 < divisionFactors.length) {
+                    step++;
+                } else {
+                    actualUnit = "beat";
+                    step = 0;
+                }
+            } else if (actualUnit === "beat") {
+                if (step + 1 < beatsFactors.length) {
+                    step++;
+                } else {
+                    actualUnit = "measure";
+                    step = 0;
+                }
+            } else {
+                if (step + 1 < measureFactors.length) {
+                    step++;
+                } else {
+                    step = 0;
+                    mag *= 10;
+                }
+            }
+            if (!coarse && length / grid <= 10) coarse = grid;
+            if (!refined && length / grid <= 50) refined = grid;
+        } while (!coarse || !refined);
+    } else {
+        const msFactors = [1, 2, 5, 10, 20, 50, 100, 200, 500];
+        const sFactors = getFactors(60);
+        const minFactors = sFactors;
+        const hFactors = [1, 2, 5];
+        let actualUnit: "ms" | "s" | "min" | "h" = "ms";
+        let mag = 1;
+        let step = 0;
+        do {
+            const grid = actualUnit === "ms"
+                ? sampleRate * msFactors[step] / 1000
+                : actualUnit === "s"
+                    ? sampleRate * sFactors[step]
+                    : actualUnit === "min"
+                        ? sampleRate * minFactors[step] * 60
+                        : sampleRate * hFactors[step] * mag * 60;
+            if (actualUnit === "ms") {
+                if (step + 1 < msFactors.length) {
+                    step++;
+                } else {
+                    actualUnit = "s";
+                    step = 0;
+                }
+            } else if (actualUnit === "s") {
+                if (step + 1 < sFactors.length) {
+                    step++;
+                } else {
+                    actualUnit = "min";
+                    step = 0;
+                }
+            } else if (actualUnit === "min") {
+                if (step + 1 < minFactors.length) {
+                    step++;
+                } else {
+                    actualUnit = "h";
+                    step = 0;
+                }
+            } else {
+                if (step + 1 < hFactors.length) {
+                    step++;
+                } else {
+                    step = 0;
+                    mag *= 10;
+                }
+            }
+            if (!coarse && length / grid <= 10) coarse = grid;
+            if (!refined && length / grid <= 50) refined = grid;
+        } while (!coarse || !refined);
+    }
+    let m = ~~(range[0] / refined);
+    if (m * refined < range[0]) m++;
+    while (m * refined < range[1]) {
+        const t = m * refined;
+        if (t && t % coarse < 0.001 || coarse - t % coarse < 0.001) {
+            ruler[t] = unit === "sample" ? t.toString() : convertSampleToUnit(t, unit, { sampleRate, bpm, beatsPerMeasure, division }).str.replace(/\.[0.]+$/, "");
+        } else {
+            ruler[t] = "";
+        }
+        m++;
+    }
+    return { ruler, coarse, refined };
+};

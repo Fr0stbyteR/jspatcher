@@ -8,6 +8,7 @@ import DefaultObject from "./objects/base/DefaultObject";
 import DefaultUI from "./objects/base/DefaultUI";
 import CanvasUI from "./objects/base/CanvasUI";
 import CodeUI from "./objects/base/CodeUI";
+import CommentUI from "./objects/base/CommentUI";
 import DefaultPopupUI from "./objects/base/DefaultPopupUI";
 import CodePopupUI from "./objects/base/CodePopupUI";
 import DOMUI from "./objects/base/DOMUI";
@@ -42,6 +43,7 @@ export interface IJSPatcherSDK {
     readonly DefaultUI?: typeof DefaultUI;
     readonly CanvasUI?: typeof CanvasUI;
     readonly CodeUI?: typeof CodeUI;
+    readonly CommentUI?: typeof CommentUI;
     readonly DefaultPopupUI?: typeof DefaultPopupUI;
     readonly CodePopupUI?: typeof CodePopupUI;
     readonly DOMUI?: typeof DOMUI;
@@ -74,6 +76,7 @@ export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly DefaultUI = DefaultUI;
     readonly CanvasUI = CanvasUI;
     readonly CodeUI = CodeUI;
+    readonly CommentUI = CommentUI;
     readonly DefaultPopupUI = DefaultPopupUI;
     readonly CodePopupUI = CodePopupUI;
     readonly DOMUI = DOMUI;

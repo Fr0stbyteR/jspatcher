@@ -12,7 +12,7 @@ export interface CodeUIState extends BaseUIState {
     editing: boolean;
 }
 
-export default class CodeUI extends BaseUI<BaseObject<any, any, any, any, any, any, any, { "editorLoaded": never; "editorBlur": string; "change": never }>, {}, CodeUIState> {
+export default class CodeUI extends BaseUI<BaseObject<Partial<{ value: string }> & Record<string, any>, any, any, any, any, any, any, Partial<{ "editorLoaded": never; "editorBlur": string; "change": never }> & Record<string, any>>, {}, CodeUIState> {
     static sizing = "both" as const;
     static defaultSize: [number, number] = [400, 225];
     state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };

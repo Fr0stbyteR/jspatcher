@@ -1,7 +1,7 @@
 import DefaultObject from "./base/DefaultObject";
-import comment from "./UI/comment";
+import { comment } from "./base/index.jspatpkg";
 import SubPatcherUI from "./main/SubPatcherUI";
-import { CodeUI } from "./UI/code";
+import CodeUI from "./base/CodeUI";
 import { ImporterDirSelfObject } from "../../utils/symbols";
 import { inspectFaustPatcher, toFaustLambda } from "../patcher/FaustPatcherAnalyser";
 import type Patcher from "../patcher/Patcher";
