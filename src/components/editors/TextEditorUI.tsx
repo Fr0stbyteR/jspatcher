@@ -1,9 +1,9 @@
 import * as React from "react";
-import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { Dimmer, Loader } from "semantic-ui-react";
-import Env from "../../core/Env";
-import { TaskError, Task } from "../../core/TaskMgr";
+import type { monaco } from "react-monaco-editor";
 import TextEditor from "../../core/text/TextEditor";
+import type Env from "../../core/Env";
+import type { TaskError, Task } from "../../core/TaskMgr";
 
 interface P {
     env: Env;
@@ -31,11 +31,11 @@ export default class TextEditorUI extends React.PureComponent<P, S> {
         this.props.env.taskMgr.off("tasks", this.handleTasks);
         this.props.env.taskMgr.off("errors", this.handleErrors);
     };
-    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => {
+    handleCodeEditorMount = (monaco: monaco.editor.IStandaloneCodeEditor) => {
         this.props.editor.bindEditor(monaco);
     };
     handleResize = () => (this.state.editorLoaded ? this.props.editor.editor.layout() : undefined);
-    handleChange = (value: string, event: editor.IModelContentChangedEvent) => {
+    handleChange = (value: string, event: monaco.editor.IModelContentChangedEvent) => {
         this.props.editor.text = value;
     };
     async componentDidMount() {

@@ -20,7 +20,7 @@ export default class TextEditor extends FileEditor<PatcherText, TextEditorEventM
         const editor = new this(text);
         return editor.init();
     }
-    editor: editor.IStandaloneCodeEditor;
+    editor: monaco.editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
     get fileExtension() {
         return "txt";
@@ -56,7 +56,7 @@ export default class TextEditor extends FileEditor<PatcherText, TextEditorEventM
         if (this.file.name.endsWith(".dsp")) return "faust";
         return "none";
     }
-    bindEditor(editor: editor.IStandaloneCodeEditor) {
+    bindEditor(editor: monaco.editor.IStandaloneCodeEditor) {
         this.editor = editor;
         const didChanged = editor.onDidChangeModelContent((e) => {
             const oldText = this.text;

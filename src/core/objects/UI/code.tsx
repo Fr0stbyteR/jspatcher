@@ -1,6 +1,6 @@
 import * as React from "react";
 import MonacoEditor from "react-monaco-editor";
-import { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import type { monaco } from "react-monaco-editor";
 import { Dimmer, Loader } from "semantic-ui-react";
 import UIObject from "./Base";
 import { IJSPatcherObjectMeta } from "../base/AbstractObject";
@@ -8,20 +8,26 @@ import Bang, { isBang } from "../base/Bang";
 import BaseUI, { BaseUIState } from "../base/BaseUI";
 import BaseObject from "../base/BaseObject";
 
-type CodeUIState = { language: string; value: string; editorLoaded: boolean; editing: boolean } & BaseUIState;
+export interface CodeUIState extends BaseUIState {
+    language: string;
+    value: string;
+    editorLoaded: boolean;
+    editing: boolean;
+}
+
 export class CodeUI extends BaseUI<BaseObject<any, any, any, any, any, any, any, { "editorLoaded": never; "editorBlur": string; "change": never }>, {}, CodeUIState> {
     static sizing = "both" as const;
     static defaultSize: [number, number] = [400, 225];
     state: CodeUIState = { ...this.state, editing: false, value: this.box.data.value, language: "javascript", editorLoaded: false };
-    codeEditor: editor.IStandaloneCodeEditor;
+    codeEditor: monaco.editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => {
+    handleCodeEditorMount = (monaco: monaco.editor.IStandaloneCodeEditor) => {
         this.codeEditor = monaco;
         this.object.emit("editorLoaded");
         monaco.onDidBlurEditorText(() => this.object.emit("editorBlur", monaco.getValue()));
     };
     handleResize = () => (this.state.editorLoaded ? this.codeEditor.layout() : undefined);
-    handleChange = (value: string, event: editor.IModelContentChangedEvent) => {
+    handleChange = (value: string, event: monaco.editor.IModelContentChangedEvent) => {
         this.setState({ value });
         this.object.setData({ value });
         this.object.emit("change");

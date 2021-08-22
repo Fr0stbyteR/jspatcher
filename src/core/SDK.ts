@@ -7,6 +7,7 @@ import BaseUI from "./objects/base/BaseUI";
 import DefaultObject from "./objects/base/DefaultObject";
 import DefaultUI from "./objects/base/DefaultUI";
 import CanvasUI from "./objects/base/CanvasUI";
+import CodeUI from "./objects/base/CodeUI";
 import DefaultPopupUI from "./objects/base/DefaultPopupUI";
 import CodePopupUI from "./objects/base/CodePopupUI";
 import DOMUI from "./objects/base/DOMUI";
@@ -40,6 +41,7 @@ export interface IJSPatcherSDK {
     readonly BaseUI?: typeof BaseUI;
     readonly DefaultUI?: typeof DefaultUI;
     readonly CanvasUI?: typeof CanvasUI;
+    readonly CodeUI?: typeof CodeUI;
     readonly DefaultPopupUI?: typeof DefaultPopupUI;
     readonly CodePopupUI?: typeof CodePopupUI;
     readonly DOMUI?: typeof DOMUI;
@@ -54,7 +56,7 @@ export interface IJSPatcherSDK {
     readonly MathUtils: typeof MathUtils;
     readonly BufferUtils: typeof BufferUtils;
     readonly Utils: typeof Utils;
-    getReactMonacoEditor(): Promise<typeof ReactMonacoEditor>;
+    getReactMonacoEditor?(): Promise<typeof ReactMonacoEditor>;
 }
 
 export default class JSPatcherSDK implements IJSPatcherSDK {
@@ -71,6 +73,7 @@ export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly BaseUI = BaseUI;
     readonly DefaultUI = DefaultUI;
     readonly CanvasUI = CanvasUI;
+    readonly CodeUI = CodeUI;
     readonly DefaultPopupUI = DefaultPopupUI;
     readonly CodePopupUI = CodePopupUI;
     readonly DOMUI = DOMUI;

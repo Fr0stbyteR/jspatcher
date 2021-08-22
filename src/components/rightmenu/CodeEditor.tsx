@@ -1,5 +1,5 @@
 import * as React from "react";
-import { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import type { monaco } from "react-monaco-editor";
 import { Loader, Dimmer } from "semantic-ui-react";
 import MonacoEditor from "react-monaco-editor";
 import Patcher from "../../core/patcher/Patcher";
@@ -17,9 +17,9 @@ interface S {
 
 export default class CodeEditor extends React.PureComponent<P, S> {
     state = { value: this.code, editorLoaded: false };
-    codeEditor: editor.IStandaloneCodeEditor;
+    codeEditor: monaco.editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
-    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => {
+    handleCodeEditorMount = (monaco: monaco.editor.IStandaloneCodeEditor) => {
         monaco.updateOptions({ readOnly: true });
         this.codeEditor = monaco;
     };

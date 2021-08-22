@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Icon, StrictModalProps, Modal, Dimmer, Loader, Button } from "semantic-ui-react";
 import type MonacoEditor from "react-monaco-editor";
-import type { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import type { monaco } from "react-monaco-editor";
 import DefaultPopupUI from "./DefaultPopupUI";
 import type DefaultObject from "./DefaultObject";
 import type { DefaultPopupUIProps, DefaultPopupUIState } from "./DefaultPopupUI";
@@ -15,7 +15,7 @@ export default class CodePopupUI<T extends DefaultObject = DefaultObject, P exte
         ...this.state,
         editorLoaded: false
     };
-    codeEditor: editor.IStandaloneCodeEditor;
+    codeEditor: monaco.editor.IStandaloneCodeEditor;
     editorJSX: typeof MonacoEditor;
     editorLanguage = "javascript";
     get code() {
@@ -26,7 +26,7 @@ export default class CodePopupUI<T extends DefaultObject = DefaultObject, P exte
         this.setState({ modalOpen: false });
         this.handleSave(this.codeEditor.getValue());
     };
-    handleCodeEditorMount = (monaco: editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
+    handleCodeEditorMount = (monaco: monaco.editor.IStandaloneCodeEditor) => this.codeEditor = monaco;
     handleResize = () => ((this.state.editorLoaded && this.codeEditor) ? this.codeEditor.layout() : undefined);
     async componentDidMount() {
         super.componentDidMount();
