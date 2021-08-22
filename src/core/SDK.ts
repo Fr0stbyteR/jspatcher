@@ -1,4 +1,7 @@
 import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as SemanticUI from "semantic-ui-react";
+import * as ReactMonacoEditor from "react-monaco-editor";
 import BaseObject from "./objects/base/BaseObject";
 import BaseUI from "./objects/base/BaseUI";
 import DefaultObject from "./objects/base/DefaultObject";
@@ -25,6 +28,8 @@ import * as Utils from "../utils/utils";
 
 export interface IJSPatcherSDK {
     readonly React?: typeof React;
+    readonly ReactDOM?: typeof ReactDOM;
+    readonly SemanticUI?: typeof SemanticUI;
     readonly PatcherAudio?: typeof PatcherAudio;
     readonly OperableAudioBuffer?: typeof OperableAudioBuffer;
     readonly Patcher: typeof Patcher;
@@ -49,10 +54,13 @@ export interface IJSPatcherSDK {
     readonly MathUtils: typeof MathUtils;
     readonly BufferUtils: typeof BufferUtils;
     readonly Utils: typeof Utils;
+    getReactMonacoEditor(): Promise<typeof ReactMonacoEditor>;
 }
 
 export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly React = React;
+    readonly ReactDOM = ReactDOM;
+    readonly SemanticUI = SemanticUI;
     readonly PatcherAudio = PatcherAudio;
     readonly OperableAudioBuffer = OperableAudioBuffer;
     readonly Patcher = Patcher;
@@ -77,4 +85,5 @@ export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly MathUtils = MathUtils;
     readonly BufferUtils = BufferUtils;
     readonly Utils = Utils;
+    getReactMonacoEditor() { return import("react-monaco-editor"); }
 }
