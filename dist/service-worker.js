@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.5.1629528004416"
+    prefix: "0.0.8.1629740512014"
   });
   self.skipWaiting();
   workbox.clientsClaim();
@@ -309,7 +309,7 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "fb6b74d5db14dadd31f8ae9969ce0f66"
+    "revision": "8335b4c500655ed09a8c5929765b4e9e"
   }, {
     "url": "js/0357f57e115b5abb657b.worker.js",
     "revision": null
@@ -326,10 +326,7 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "url": "js/13e028bed85e025adaf6.js",
     "revision": null
   }, {
-    "url": "js/2cf850a9f9d98ec617b7.js",
-    "revision": null
-  }, {
-    "url": "js/2da973d99ed3f3263f1b.worklet.js",
+    "url": "js/318674d62311a313d6cb.worklet.js",
     "revision": null
   }, {
     "url": "js/35ddcd64328b4a626501.js",
@@ -347,10 +344,10 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "url": "js/455af92e7e1dc39fdbc8060f6680ab32.worker.js",
     "revision": "8c96644c873a4fec0ef7a30bea08671e"
   }, {
-    "url": "js/5925dbdaf131c02af594.worker.js",
+    "url": "js/478b311cbe3f0a3763c0.js",
     "revision": null
   }, {
-    "url": "js/59e3ff4e199de367245e.worklet.js",
+    "url": "js/5925dbdaf131c02af594.worker.js",
     "revision": null
   }, {
     "url": "js/5af80e80309bef5f41c2.js",
@@ -365,19 +362,22 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "url": "js/70ff708d07dec14b44c1.js",
     "revision": null
   }, {
-    "url": "js/7ae8201faea4de318b7a.worklet.js",
+    "url": "js/7b7c146764e4b3a77746.js",
     "revision": null
   }, {
-    "url": "js/7b7c146764e4b3a77746.js",
+    "url": "js/7f6b8d415915aa46eea1.worklet.js",
+    "revision": null
+  }, {
+    "url": "js/84dbda608f4a836c8ff3.js",
+    "revision": null
+  }, {
+    "url": "js/8cbeab044108fd756400.worklet.js",
     "revision": null
   }, {
     "url": "js/a7acfcca6fb672f16df9.js",
     "revision": null
   }, {
-    "url": "js/ab802c7cf696d5469eea.worklet.js",
-    "revision": null
-  }, {
-    "url": "js/bdb2bb53c9588aa6e724.js",
+    "url": "js/af13b36e21b5d6d8eeaa.js",
     "revision": null
   }, {
     "url": "js/cee72465ea474f1cd843.worker.js",
@@ -389,17 +389,17 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "url": "js/d7c431b73aee550d8d90.worklet.js",
     "revision": null
   }, {
-    "url": "js/ea41a0a95e25fbd11756.js",
-    "revision": null
-  }, {
-    "url": "js/ecd72d824aeada576456.js",
-    "revision": null
-  }, {
-    "url": "js/edb6f1fd8d2c2eb4c541.js",
+    "url": "js/f1ecedde0147816c03a4.worklet.js",
     "revision": null
   }, {
     "url": "manifest.json",
     "revision": "1cbaa3cdd5ba147975aa27bb8a1914f4"
+  }, {
+    "url": "packages/analysers/index.js",
+    "revision": "3b33b17b9315e2fb66e6862a6433c99f"
+  }, {
+    "url": "packages/analysers/index.jspatpkg.js",
+    "revision": "0a1e9d0e69e79c0764db6f234d41cbe4"
   }, {
     "url": "packages/op/index.js",
     "revision": "a3382b70a1ee9ebbd8fc2e8dccc5f5ee"
@@ -414,16 +414,16 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "revision": "49fd8b56cd59b41b5d7853fe3cc8bb51"
   }, {
     "url": "packages/std/index.js",
-    "revision": "a4a9e7f45558bea980da7f94b1c9666f"
+    "revision": "e077c23fe037becab735f8b519f9af27"
   }, {
     "url": "packages/std/index.jsdsppkg.aw.js",
-    "revision": "3ce3109482bc4864bd53ea424524b71b"
+    "revision": "8a350a2f61612ff992e90f9aed53963b"
   }, {
     "url": "packages/std/index.jsdsppkg.main.js",
-    "revision": "dfb2514ff534a56b9a6b756d86d19fcb"
+    "revision": "87516034b8cd9b00dc943448f7e92d8a"
   }, {
     "url": "packages/std/index.jspatpkg.js",
-    "revision": "bba942514ee33cca390f3a075faffd14"
+    "revision": "3761d7d93abbcfb910476255041b046c"
   }, {
     "url": "packages/webaudio/index.js",
     "revision": "3526c48be6c6d64efe2c6c000bee3db4"
@@ -431,22 +431,22 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "url": "packages/webaudio/index.jspatpkg.js",
     "revision": "21fdd0cf99fae8fae0aa7d4e285fadef"
   }, {
-    "url": "src_core_audio_AudioEditor_ts-src_core_audio_AudioRecorder_ts-src_core_audio_PatcherAudio_ts.js/59e3ff4e199de367245e.worklet.js",
+    "url": "src_core_audio_AudioEditor_ts-src_core_audio_AudioRecorder_ts-src_core_audio_PatcherAudio_ts.js/7f6b8d415915aa46eea1.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_image_ImageEditor_ts.js/59e3ff4e199de367245e.worklet.js",
+    "url": "src_core_image_ImageEditor_ts.js/7f6b8d415915aa46eea1.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_image_PatcherImage_ts.js/59e3ff4e199de367245e.worklet.js",
+    "url": "src_core_image_PatcherImage_ts.js/7f6b8d415915aa46eea1.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_text_PatcherText_ts.js/59e3ff4e199de367245e.worklet.js",
+    "url": "src_core_text_PatcherText_ts.js/7f6b8d415915aa46eea1.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_text_TextEditor_ts.js/59e3ff4e199de367245e.worklet.js",
+    "url": "src_core_text_TextEditor_ts.js/7f6b8d415915aa46eea1.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_worklets_PatcherNode_ts.js/59e3ff4e199de367245e.worklet.js",
+    "url": "src_core_worklets_PatcherNode_ts.js/7f6b8d415915aa46eea1.worklet.js",
     "revision": null
   }], {});
   workbox.cleanupOutdatedCaches();
