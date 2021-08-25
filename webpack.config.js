@@ -107,7 +107,8 @@ const config = {
     }),
     new MonacoWebpackPlugin({
       filename : 'js/[hash].worker.js',
-      languages: ['javascript', 'html', 'json']
+      languages: ['javascript', 'typescript', 'html', 'json'],
+      globalAPI: true
     }),
     new WorkboxWebpackPlugin.GenerateSW({
       cacheId: VERSION,
@@ -123,7 +124,7 @@ const config = {
     ignored: /node_modules/
   }
 };
-process.traceDeprecation = true;
+// process.traceDeprecation = true;
 
 module.exports = (env, argv) => {
   if (argv.mode === 'development') {

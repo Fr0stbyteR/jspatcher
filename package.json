@@ -4,7 +4,7 @@
   "description": "patcher js",
   "scripts": {
     "prebuild": "node ./src/scripts/patchSemanticUICss.js",
-    "build": "npm run prebuild && webpack --mode development",
+    "build": "webpack --mode development",
     "build-watch": "npm run prebuild && webpack --mode development --watch --stats-children",
     "dist": "npm run prebuild && webpack --mode production"
   },
@@ -32,6 +32,7 @@
     "@jspatcher/package-std": "^1.0.6",
     "@jspatcher/package-ui": "^1.0.0",
     "@jspatcher/package-webaudio": "^1.0.0",
+    "@monaco-editor/react": "^4.2.2",
     "@shren/guidolib": "^1.7.3",
     "@types/emscripten": "^1.39.5",
     "@types/jszip": "^3.4.1",
@@ -58,7 +59,7 @@
     "fftw-js": "^0.1.4",
     "jszip": "^3.7.1",
     "lato-font": "^3.0.0",
-    "monaco-editor": "^0.27.0",
+    "monaco-editor": "^0.26.1",
     "monaco-editor-webpack-plugin": "^4.1.2",
     "node-sass": "^6.0.1",
     "path": "^0.12.7",
