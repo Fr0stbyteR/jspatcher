@@ -1597,20 +1597,24 @@ class Emitter {
                 }
                 // check and record this emitter for potential leakage
                 const removeMonitor = (_a = this._leakageMon) === null || _a === void 0 ? void 0 : _a.check(this._listeners.size);
-                const result = (0,_lifecycle_js__WEBPACK_IMPORTED_MODULE_1__.toDisposable)(() => {
-                    if (removeMonitor) {
-                        removeMonitor();
-                    }
-                    if (!this._disposed) {
-                        remove();
-                        if (this._options && this._options.onLastListenerRemove) {
-                            const hasListeners = (this._listeners && !this._listeners.isEmpty());
-                            if (!hasListeners) {
-                                this._options.onLastListenerRemove(this);
+                let result;
+                result = {
+                    dispose: () => {
+                        if (removeMonitor) {
+                            removeMonitor();
+                        }
+                        result.dispose = Emitter._noop;
+                        if (!this._disposed) {
+                            remove();
+                            if (this._options && this._options.onLastListenerRemove) {
+                                const hasListeners = (this._listeners && !this._listeners.isEmpty());
+                                if (!hasListeners) {
+                                    this._options.onLastListenerRemove(this);
+                                }
                             }
                         }
                     }
-                });
+                };
                 if (disposables instanceof _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__.DisposableStore) {
                     disposables.add(result);
                 }
@@ -1668,6 +1672,7 @@ class Emitter {
         }
     }
 }
+Emitter._noop = function () { };
 class PauseableEmitter extends Emitter {
     constructor(options) {
         super(options);
@@ -1804,37 +1809,6 @@ class Relay {
         this.inputEventListener.dispose();
         this.emitter.dispose();
     }
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/monaco-editor/esm/vs/base/common/functional.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/monaco-editor/esm/vs/base/common/functional.js ***!
-  \*********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "once": () => (/* binding */ once)
-/* harmony export */ });
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-function once(fn) {
-    const _this = this;
-    let didCall = false;
-    let result;
-    return function () {
-        if (didCall) {
-            return result;
-        }
-        didCall = true;
-        result = fn.apply(_this, arguments);
-        return result;
-    };
 }
 
 
@@ -2561,8 +2535,7 @@ class ResolvedKeybinding {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "setDisposableTracker": () => (/* binding */ setDisposableTracker),
-/* harmony export */   "markAsSingleton": () => (/* binding */ markAsSingleton),
+/* harmony export */   "trackDisposable": () => (/* binding */ trackDisposable),
 /* harmony export */   "MultiDisposeError": () => (/* binding */ MultiDisposeError),
 /* harmony export */   "isDisposable": () => (/* binding */ isDisposable),
 /* harmony export */   "dispose": () => (/* binding */ dispose),
@@ -2573,13 +2546,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "MutableDisposable": () => (/* binding */ MutableDisposable),
 /* harmony export */   "ImmortalReference": () => (/* binding */ ImmortalReference)
 /* harmony export */ });
-/* harmony import */ var _functional_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./functional.js */ "./node_modules/monaco-editor/esm/vs/base/common/functional.js");
-/* harmony import */ var _iterator_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./iterator.js */ "./node_modules/monaco-editor/esm/vs/base/common/iterator.js");
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
+/* harmony import */ var _iterator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./iterator.js */ "./node_modules/monaco-editor/esm/vs/base/common/iterator.js");
 
 /**
  * Enables logging of potentially leaked disposables.
@@ -2590,12 +2557,9 @@ __webpack_require__.r(__webpack_exports__);
  */
 const TRACK_DISPOSABLES = false;
 let disposableTracker = null;
-function setDisposableTracker(tracker) {
-    disposableTracker = tracker;
-}
 if (TRACK_DISPOSABLES) {
     const __is_disposable_tracked__ = '__is_disposable_tracked__';
-    setDisposableTracker(new class {
+    disposableTracker = new class {
         trackDisposable(x) {
             const stack = new Error('Potentially leaked disposable').stack;
             setTimeout(() => {
@@ -2604,53 +2568,30 @@ if (TRACK_DISPOSABLES) {
                 }
             }, 3000);
         }
-        setParent(child, parent) {
-            if (child && child !== Disposable.None) {
+        markTracked(x) {
+            if (x && x !== Disposable.None) {
                 try {
-                    child[__is_disposable_tracked__] = true;
+                    x[__is_disposable_tracked__] = true;
                 }
                 catch (_a) {
                     // noop
                 }
             }
         }
-        markAsDisposed(disposable) {
-            if (disposable && disposable !== Disposable.None) {
-                try {
-                    disposable[__is_disposable_tracked__] = true;
-                }
-                catch (_a) {
-                    // noop
-                }
-            }
-        }
-        markAsSingleton(disposable) { }
-    });
+    };
 }
-function trackDisposable(x) {
-    disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.trackDisposable(x);
-    return x;
-}
-function markAsDisposed(disposable) {
-    disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.markAsDisposed(disposable);
-}
-function setParentOfDisposable(child, parent) {
-    disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.setParent(child, parent);
-}
-function setParentOfDisposables(children, parent) {
+function markTracked(x) {
     if (!disposableTracker) {
         return;
     }
-    for (const child of children) {
-        disposableTracker.setParent(child, parent);
-    }
+    disposableTracker.markTracked(x);
 }
-/**
- * Indicates that the given object is a singleton which does not need to be disposed.
-*/
-function markAsSingleton(singleton) {
-    disposableTracker === null || disposableTracker === void 0 ? void 0 : disposableTracker.markAsSingleton(singleton);
-    return singleton;
+function trackDisposable(x) {
+    if (!disposableTracker) {
+        return x;
+    }
+    disposableTracker.trackDisposable(x);
+    return x;
 }
 class MultiDisposeError extends Error {
     constructor(errors) {
@@ -2662,10 +2603,11 @@ function isDisposable(thing) {
     return typeof thing.dispose === 'function' && thing.dispose.length === 0;
 }
 function dispose(arg) {
-    if (_iterator_js__WEBPACK_IMPORTED_MODULE_1__.Iterable.is(arg)) {
+    if (_iterator_js__WEBPACK_IMPORTED_MODULE_0__.Iterable.is(arg)) {
         let errors = [];
         for (const d of arg) {
             if (d) {
+                markTracked(d);
                 try {
                     d.dispose();
                 }
@@ -2683,21 +2625,21 @@ function dispose(arg) {
         return Array.isArray(arg) ? [] : arg;
     }
     else if (arg) {
+        markTracked(arg);
         arg.dispose();
         return arg;
     }
 }
 function combinedDisposable(...disposables) {
-    const parent = toDisposable(() => dispose(disposables));
-    setParentOfDisposables(disposables, parent);
-    return parent;
+    disposables.forEach(markTracked);
+    return toDisposable(() => dispose(disposables));
 }
 function toDisposable(fn) {
     const self = trackDisposable({
-        dispose: (0,_functional_js__WEBPACK_IMPORTED_MODULE_0__.once)(() => {
-            markAsDisposed(self);
+        dispose: () => {
+            markTracked(self);
             fn();
-        })
+        }
     });
     return self;
 }
@@ -2705,7 +2647,6 @@ class DisposableStore {
     constructor() {
         this._toDispose = new Set();
         this._isDisposed = false;
-        trackDisposable(this);
     }
     /**
      * Dispose of all registered disposables and mark this object as disposed.
@@ -2716,7 +2657,7 @@ class DisposableStore {
         if (this._isDisposed) {
             return;
         }
-        markAsDisposed(this);
+        markTracked(this);
         this._isDisposed = true;
         this.clear();
     }
@@ -2731,23 +2672,23 @@ class DisposableStore {
             this._toDispose.clear();
         }
     }
-    add(o) {
-        if (!o) {
-            return o;
+    add(t) {
+        if (!t) {
+            return t;
         }
-        if (o === this) {
+        if (t === this) {
             throw new Error('Cannot register a disposable on itself!');
         }
-        setParentOfDisposable(o, this);
+        markTracked(t);
         if (this._isDisposed) {
             if (!DisposableStore.DISABLE_DISPOSED_WARNING) {
                 console.warn(new Error('Trying to add a disposable to a DisposableStore that has already been disposed of. The added object will be leaked!').stack);
             }
         }
         else {
-            this._toDispose.add(o);
+            this._toDispose.add(t);
         }
-        return o;
+        return t;
     }
 }
 DisposableStore.DISABLE_DISPOSED_WARNING = false;
@@ -2755,17 +2696,16 @@ class Disposable {
     constructor() {
         this._store = new DisposableStore();
         trackDisposable(this);
-        setParentOfDisposable(this._store, this);
     }
     dispose() {
-        markAsDisposed(this);
+        markTracked(this);
         this._store.dispose();
     }
-    _register(o) {
-        if (o === this) {
+    _register(t) {
+        if (t === this) {
             throw new Error('Cannot register a disposable on itself!');
         }
-        return this._store.add(o);
+        return this._store.add(t);
     }
 }
 Disposable.None = Object.freeze({ dispose() { } });
@@ -2790,7 +2730,7 @@ class MutableDisposable {
         }
         (_a = this._value) === null || _a === void 0 ? void 0 : _a.dispose();
         if (value) {
-            setParentOfDisposable(value, this);
+            markTracked(value);
         }
         this._value = value;
     }
@@ -2800,21 +2740,9 @@ class MutableDisposable {
     dispose() {
         var _a;
         this._isDisposed = true;
-        markAsDisposed(this);
+        markTracked(this);
         (_a = this._value) === null || _a === void 0 ? void 0 : _a.dispose();
         this._value = undefined;
-    }
-    /**
-     * Clears the value, but does not dispose it.
-     * The old value is returned.
-    */
-    clearAndLeak() {
-        const oldValue = this._value;
-        this._value = undefined;
-        if (oldValue) {
-            setParentOfDisposable(oldValue, null);
-        }
-        return oldValue;
     }
 }
 class ImmortalReference {
@@ -5648,8 +5576,8 @@ function createProxyObject(methodNames, invoke) {
 function withNullAsUndefined(x) {
     return x === null ? undefined : x;
 }
-function assertNever(value, message = 'Unreachable') {
-    throw new Error(message);
+function assertNever(value) {
+    throw new Error('Unreachable');
 }
 
 
@@ -9255,99 +9183,98 @@ var EditorOption;
     EditorOption[EditorOption["folding"] = 35] = "folding";
     EditorOption[EditorOption["foldingStrategy"] = 36] = "foldingStrategy";
     EditorOption[EditorOption["foldingHighlight"] = 37] = "foldingHighlight";
-    EditorOption[EditorOption["foldingImportsByDefault"] = 38] = "foldingImportsByDefault";
-    EditorOption[EditorOption["unfoldOnClickAfterEndOfLine"] = 39] = "unfoldOnClickAfterEndOfLine";
-    EditorOption[EditorOption["fontFamily"] = 40] = "fontFamily";
-    EditorOption[EditorOption["fontInfo"] = 41] = "fontInfo";
-    EditorOption[EditorOption["fontLigatures"] = 42] = "fontLigatures";
-    EditorOption[EditorOption["fontSize"] = 43] = "fontSize";
-    EditorOption[EditorOption["fontWeight"] = 44] = "fontWeight";
-    EditorOption[EditorOption["formatOnPaste"] = 45] = "formatOnPaste";
-    EditorOption[EditorOption["formatOnType"] = 46] = "formatOnType";
-    EditorOption[EditorOption["glyphMargin"] = 47] = "glyphMargin";
-    EditorOption[EditorOption["gotoLocation"] = 48] = "gotoLocation";
-    EditorOption[EditorOption["hideCursorInOverviewRuler"] = 49] = "hideCursorInOverviewRuler";
-    EditorOption[EditorOption["highlightActiveIndentGuide"] = 50] = "highlightActiveIndentGuide";
-    EditorOption[EditorOption["hover"] = 51] = "hover";
-    EditorOption[EditorOption["inDiffEditor"] = 52] = "inDiffEditor";
-    EditorOption[EditorOption["inlineSuggest"] = 53] = "inlineSuggest";
-    EditorOption[EditorOption["letterSpacing"] = 54] = "letterSpacing";
-    EditorOption[EditorOption["lightbulb"] = 55] = "lightbulb";
-    EditorOption[EditorOption["lineDecorationsWidth"] = 56] = "lineDecorationsWidth";
-    EditorOption[EditorOption["lineHeight"] = 57] = "lineHeight";
-    EditorOption[EditorOption["lineNumbers"] = 58] = "lineNumbers";
-    EditorOption[EditorOption["lineNumbersMinChars"] = 59] = "lineNumbersMinChars";
-    EditorOption[EditorOption["linkedEditing"] = 60] = "linkedEditing";
-    EditorOption[EditorOption["links"] = 61] = "links";
-    EditorOption[EditorOption["matchBrackets"] = 62] = "matchBrackets";
-    EditorOption[EditorOption["minimap"] = 63] = "minimap";
-    EditorOption[EditorOption["mouseStyle"] = 64] = "mouseStyle";
-    EditorOption[EditorOption["mouseWheelScrollSensitivity"] = 65] = "mouseWheelScrollSensitivity";
-    EditorOption[EditorOption["mouseWheelZoom"] = 66] = "mouseWheelZoom";
-    EditorOption[EditorOption["multiCursorMergeOverlapping"] = 67] = "multiCursorMergeOverlapping";
-    EditorOption[EditorOption["multiCursorModifier"] = 68] = "multiCursorModifier";
-    EditorOption[EditorOption["multiCursorPaste"] = 69] = "multiCursorPaste";
-    EditorOption[EditorOption["occurrencesHighlight"] = 70] = "occurrencesHighlight";
-    EditorOption[EditorOption["overviewRulerBorder"] = 71] = "overviewRulerBorder";
-    EditorOption[EditorOption["overviewRulerLanes"] = 72] = "overviewRulerLanes";
-    EditorOption[EditorOption["padding"] = 73] = "padding";
-    EditorOption[EditorOption["parameterHints"] = 74] = "parameterHints";
-    EditorOption[EditorOption["peekWidgetDefaultFocus"] = 75] = "peekWidgetDefaultFocus";
-    EditorOption[EditorOption["definitionLinkOpensInPeek"] = 76] = "definitionLinkOpensInPeek";
-    EditorOption[EditorOption["quickSuggestions"] = 77] = "quickSuggestions";
-    EditorOption[EditorOption["quickSuggestionsDelay"] = 78] = "quickSuggestionsDelay";
-    EditorOption[EditorOption["readOnly"] = 79] = "readOnly";
-    EditorOption[EditorOption["renameOnType"] = 80] = "renameOnType";
-    EditorOption[EditorOption["renderControlCharacters"] = 81] = "renderControlCharacters";
-    EditorOption[EditorOption["renderIndentGuides"] = 82] = "renderIndentGuides";
-    EditorOption[EditorOption["renderFinalNewline"] = 83] = "renderFinalNewline";
-    EditorOption[EditorOption["renderLineHighlight"] = 84] = "renderLineHighlight";
-    EditorOption[EditorOption["renderLineHighlightOnlyWhenFocus"] = 85] = "renderLineHighlightOnlyWhenFocus";
-    EditorOption[EditorOption["renderValidationDecorations"] = 86] = "renderValidationDecorations";
-    EditorOption[EditorOption["renderWhitespace"] = 87] = "renderWhitespace";
-    EditorOption[EditorOption["revealHorizontalRightPadding"] = 88] = "revealHorizontalRightPadding";
-    EditorOption[EditorOption["roundedSelection"] = 89] = "roundedSelection";
-    EditorOption[EditorOption["rulers"] = 90] = "rulers";
-    EditorOption[EditorOption["scrollbar"] = 91] = "scrollbar";
-    EditorOption[EditorOption["scrollBeyondLastColumn"] = 92] = "scrollBeyondLastColumn";
-    EditorOption[EditorOption["scrollBeyondLastLine"] = 93] = "scrollBeyondLastLine";
-    EditorOption[EditorOption["scrollPredominantAxis"] = 94] = "scrollPredominantAxis";
-    EditorOption[EditorOption["selectionClipboard"] = 95] = "selectionClipboard";
-    EditorOption[EditorOption["selectionHighlight"] = 96] = "selectionHighlight";
-    EditorOption[EditorOption["selectOnLineNumbers"] = 97] = "selectOnLineNumbers";
-    EditorOption[EditorOption["showFoldingControls"] = 98] = "showFoldingControls";
-    EditorOption[EditorOption["showUnused"] = 99] = "showUnused";
-    EditorOption[EditorOption["snippetSuggestions"] = 100] = "snippetSuggestions";
-    EditorOption[EditorOption["smartSelect"] = 101] = "smartSelect";
-    EditorOption[EditorOption["smoothScrolling"] = 102] = "smoothScrolling";
-    EditorOption[EditorOption["stickyTabStops"] = 103] = "stickyTabStops";
-    EditorOption[EditorOption["stopRenderingLineAfter"] = 104] = "stopRenderingLineAfter";
-    EditorOption[EditorOption["suggest"] = 105] = "suggest";
-    EditorOption[EditorOption["suggestFontSize"] = 106] = "suggestFontSize";
-    EditorOption[EditorOption["suggestLineHeight"] = 107] = "suggestLineHeight";
-    EditorOption[EditorOption["suggestOnTriggerCharacters"] = 108] = "suggestOnTriggerCharacters";
-    EditorOption[EditorOption["suggestSelection"] = 109] = "suggestSelection";
-    EditorOption[EditorOption["tabCompletion"] = 110] = "tabCompletion";
-    EditorOption[EditorOption["tabIndex"] = 111] = "tabIndex";
-    EditorOption[EditorOption["unusualLineTerminators"] = 112] = "unusualLineTerminators";
-    EditorOption[EditorOption["useShadowDOM"] = 113] = "useShadowDOM";
-    EditorOption[EditorOption["useTabStops"] = 114] = "useTabStops";
-    EditorOption[EditorOption["wordSeparators"] = 115] = "wordSeparators";
-    EditorOption[EditorOption["wordWrap"] = 116] = "wordWrap";
-    EditorOption[EditorOption["wordWrapBreakAfterCharacters"] = 117] = "wordWrapBreakAfterCharacters";
-    EditorOption[EditorOption["wordWrapBreakBeforeCharacters"] = 118] = "wordWrapBreakBeforeCharacters";
-    EditorOption[EditorOption["wordWrapColumn"] = 119] = "wordWrapColumn";
-    EditorOption[EditorOption["wordWrapOverride1"] = 120] = "wordWrapOverride1";
-    EditorOption[EditorOption["wordWrapOverride2"] = 121] = "wordWrapOverride2";
-    EditorOption[EditorOption["wrappingIndent"] = 122] = "wrappingIndent";
-    EditorOption[EditorOption["wrappingStrategy"] = 123] = "wrappingStrategy";
-    EditorOption[EditorOption["showDeprecated"] = 124] = "showDeprecated";
-    EditorOption[EditorOption["inlayHints"] = 125] = "inlayHints";
-    EditorOption[EditorOption["editorClassName"] = 126] = "editorClassName";
-    EditorOption[EditorOption["pixelRatio"] = 127] = "pixelRatio";
-    EditorOption[EditorOption["tabFocusMode"] = 128] = "tabFocusMode";
-    EditorOption[EditorOption["layoutInfo"] = 129] = "layoutInfo";
-    EditorOption[EditorOption["wrappingInfo"] = 130] = "wrappingInfo";
+    EditorOption[EditorOption["unfoldOnClickAfterEndOfLine"] = 38] = "unfoldOnClickAfterEndOfLine";
+    EditorOption[EditorOption["fontFamily"] = 39] = "fontFamily";
+    EditorOption[EditorOption["fontInfo"] = 40] = "fontInfo";
+    EditorOption[EditorOption["fontLigatures"] = 41] = "fontLigatures";
+    EditorOption[EditorOption["fontSize"] = 42] = "fontSize";
+    EditorOption[EditorOption["fontWeight"] = 43] = "fontWeight";
+    EditorOption[EditorOption["formatOnPaste"] = 44] = "formatOnPaste";
+    EditorOption[EditorOption["formatOnType"] = 45] = "formatOnType";
+    EditorOption[EditorOption["glyphMargin"] = 46] = "glyphMargin";
+    EditorOption[EditorOption["gotoLocation"] = 47] = "gotoLocation";
+    EditorOption[EditorOption["hideCursorInOverviewRuler"] = 48] = "hideCursorInOverviewRuler";
+    EditorOption[EditorOption["highlightActiveIndentGuide"] = 49] = "highlightActiveIndentGuide";
+    EditorOption[EditorOption["hover"] = 50] = "hover";
+    EditorOption[EditorOption["inDiffEditor"] = 51] = "inDiffEditor";
+    EditorOption[EditorOption["inlineSuggest"] = 52] = "inlineSuggest";
+    EditorOption[EditorOption["letterSpacing"] = 53] = "letterSpacing";
+    EditorOption[EditorOption["lightbulb"] = 54] = "lightbulb";
+    EditorOption[EditorOption["lineDecorationsWidth"] = 55] = "lineDecorationsWidth";
+    EditorOption[EditorOption["lineHeight"] = 56] = "lineHeight";
+    EditorOption[EditorOption["lineNumbers"] = 57] = "lineNumbers";
+    EditorOption[EditorOption["lineNumbersMinChars"] = 58] = "lineNumbersMinChars";
+    EditorOption[EditorOption["linkedEditing"] = 59] = "linkedEditing";
+    EditorOption[EditorOption["links"] = 60] = "links";
+    EditorOption[EditorOption["matchBrackets"] = 61] = "matchBrackets";
+    EditorOption[EditorOption["minimap"] = 62] = "minimap";
+    EditorOption[EditorOption["mouseStyle"] = 63] = "mouseStyle";
+    EditorOption[EditorOption["mouseWheelScrollSensitivity"] = 64] = "mouseWheelScrollSensitivity";
+    EditorOption[EditorOption["mouseWheelZoom"] = 65] = "mouseWheelZoom";
+    EditorOption[EditorOption["multiCursorMergeOverlapping"] = 66] = "multiCursorMergeOverlapping";
+    EditorOption[EditorOption["multiCursorModifier"] = 67] = "multiCursorModifier";
+    EditorOption[EditorOption["multiCursorPaste"] = 68] = "multiCursorPaste";
+    EditorOption[EditorOption["occurrencesHighlight"] = 69] = "occurrencesHighlight";
+    EditorOption[EditorOption["overviewRulerBorder"] = 70] = "overviewRulerBorder";
+    EditorOption[EditorOption["overviewRulerLanes"] = 71] = "overviewRulerLanes";
+    EditorOption[EditorOption["padding"] = 72] = "padding";
+    EditorOption[EditorOption["parameterHints"] = 73] = "parameterHints";
+    EditorOption[EditorOption["peekWidgetDefaultFocus"] = 74] = "peekWidgetDefaultFocus";
+    EditorOption[EditorOption["definitionLinkOpensInPeek"] = 75] = "definitionLinkOpensInPeek";
+    EditorOption[EditorOption["quickSuggestions"] = 76] = "quickSuggestions";
+    EditorOption[EditorOption["quickSuggestionsDelay"] = 77] = "quickSuggestionsDelay";
+    EditorOption[EditorOption["readOnly"] = 78] = "readOnly";
+    EditorOption[EditorOption["renameOnType"] = 79] = "renameOnType";
+    EditorOption[EditorOption["renderControlCharacters"] = 80] = "renderControlCharacters";
+    EditorOption[EditorOption["renderIndentGuides"] = 81] = "renderIndentGuides";
+    EditorOption[EditorOption["renderFinalNewline"] = 82] = "renderFinalNewline";
+    EditorOption[EditorOption["renderLineHighlight"] = 83] = "renderLineHighlight";
+    EditorOption[EditorOption["renderLineHighlightOnlyWhenFocus"] = 84] = "renderLineHighlightOnlyWhenFocus";
+    EditorOption[EditorOption["renderValidationDecorations"] = 85] = "renderValidationDecorations";
+    EditorOption[EditorOption["renderWhitespace"] = 86] = "renderWhitespace";
+    EditorOption[EditorOption["revealHorizontalRightPadding"] = 87] = "revealHorizontalRightPadding";
+    EditorOption[EditorOption["roundedSelection"] = 88] = "roundedSelection";
+    EditorOption[EditorOption["rulers"] = 89] = "rulers";
+    EditorOption[EditorOption["scrollbar"] = 90] = "scrollbar";
+    EditorOption[EditorOption["scrollBeyondLastColumn"] = 91] = "scrollBeyondLastColumn";
+    EditorOption[EditorOption["scrollBeyondLastLine"] = 92] = "scrollBeyondLastLine";
+    EditorOption[EditorOption["scrollPredominantAxis"] = 93] = "scrollPredominantAxis";
+    EditorOption[EditorOption["selectionClipboard"] = 94] = "selectionClipboard";
+    EditorOption[EditorOption["selectionHighlight"] = 95] = "selectionHighlight";
+    EditorOption[EditorOption["selectOnLineNumbers"] = 96] = "selectOnLineNumbers";
+    EditorOption[EditorOption["showFoldingControls"] = 97] = "showFoldingControls";
+    EditorOption[EditorOption["showUnused"] = 98] = "showUnused";
+    EditorOption[EditorOption["snippetSuggestions"] = 99] = "snippetSuggestions";
+    EditorOption[EditorOption["smartSelect"] = 100] = "smartSelect";
+    EditorOption[EditorOption["smoothScrolling"] = 101] = "smoothScrolling";
+    EditorOption[EditorOption["stickyTabStops"] = 102] = "stickyTabStops";
+    EditorOption[EditorOption["stopRenderingLineAfter"] = 103] = "stopRenderingLineAfter";
+    EditorOption[EditorOption["suggest"] = 104] = "suggest";
+    EditorOption[EditorOption["suggestFontSize"] = 105] = "suggestFontSize";
+    EditorOption[EditorOption["suggestLineHeight"] = 106] = "suggestLineHeight";
+    EditorOption[EditorOption["suggestOnTriggerCharacters"] = 107] = "suggestOnTriggerCharacters";
+    EditorOption[EditorOption["suggestSelection"] = 108] = "suggestSelection";
+    EditorOption[EditorOption["tabCompletion"] = 109] = "tabCompletion";
+    EditorOption[EditorOption["tabIndex"] = 110] = "tabIndex";
+    EditorOption[EditorOption["unusualLineTerminators"] = 111] = "unusualLineTerminators";
+    EditorOption[EditorOption["useShadowDOM"] = 112] = "useShadowDOM";
+    EditorOption[EditorOption["useTabStops"] = 113] = "useTabStops";
+    EditorOption[EditorOption["wordSeparators"] = 114] = "wordSeparators";
+    EditorOption[EditorOption["wordWrap"] = 115] = "wordWrap";
+    EditorOption[EditorOption["wordWrapBreakAfterCharacters"] = 116] = "wordWrapBreakAfterCharacters";
+    EditorOption[EditorOption["wordWrapBreakBeforeCharacters"] = 117] = "wordWrapBreakBeforeCharacters";
+    EditorOption[EditorOption["wordWrapColumn"] = 118] = "wordWrapColumn";
+    EditorOption[EditorOption["wordWrapOverride1"] = 119] = "wordWrapOverride1";
+    EditorOption[EditorOption["wordWrapOverride2"] = 120] = "wordWrapOverride2";
+    EditorOption[EditorOption["wrappingIndent"] = 121] = "wrappingIndent";
+    EditorOption[EditorOption["wrappingStrategy"] = 122] = "wrappingStrategy";
+    EditorOption[EditorOption["showDeprecated"] = 123] = "showDeprecated";
+    EditorOption[EditorOption["inlayHints"] = 124] = "inlayHints";
+    EditorOption[EditorOption["editorClassName"] = 125] = "editorClassName";
+    EditorOption[EditorOption["pixelRatio"] = 126] = "pixelRatio";
+    EditorOption[EditorOption["tabFocusMode"] = 127] = "tabFocusMode";
+    EditorOption[EditorOption["layoutInfo"] = 128] = "layoutInfo";
+    EditorOption[EditorOption["wrappingInfo"] = 129] = "wrappingInfo";
 })(EditorOption || (EditorOption = {}));
 /**
  * End of line character preference.
