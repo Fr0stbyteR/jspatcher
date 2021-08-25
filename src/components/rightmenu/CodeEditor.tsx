@@ -1,7 +1,7 @@
 import * as React from "react";
-import type { monaco } from "react-monaco-editor";
 import { Loader, Dimmer } from "semantic-ui-react";
-import MonacoEditor from "react-monaco-editor";
+import type MonacoEditor from "react-monaco-editor";
+import type { monaco } from "react-monaco-editor";
 import Patcher from "../../core/patcher/Patcher";
 import Env from "../../core/Env";
 

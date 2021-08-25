@@ -65,6 +65,7 @@ export default abstract class Importer {
             if (newObj) this.writeInPath(out, [], newObj);
         }
         for (const key in props) {
+            if (key.startsWith("$")) continue;
             if (typeof o === "function" && ["arguments", "caller", "length", "name", "__proto__"].indexOf(key) >= 0) continue;
             if (typeof o === "object" && ["constructor", "__proto__"].indexOf(key) >= 0) continue;
             const prop = props[key];

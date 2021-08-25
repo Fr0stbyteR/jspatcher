@@ -16,5 +16,6 @@ export default async () => ({
     InvalidObject,
     func: Func,
     new: New,
+    comment,
     ...await getIO()
 });

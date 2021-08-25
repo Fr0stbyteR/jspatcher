@@ -227,8 +227,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 this.faust.fs.writeFile("./libraries/gen2faust.lib", gen2FaustLib);
             });
             await this.taskMgr.newTask(this, "Loading Monaco Editor...", async () => {
-                const monacoEditor = await import("monaco-editor/esm/vs/editor/editor.api");
-                const { providers } = await faustLangRegister(monacoEditor, this.faust);
+                const { monaco } = await import("react-monaco-editor");
+                const { providers } = await faustLangRegister(monaco, this.faust);
                 this.faustDocs = providers.docs;
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
             });

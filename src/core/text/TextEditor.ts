@@ -1,6 +1,6 @@
 import type { SemanticICONS } from "semantic-ui-react";
 import type MonacoEditor from "react-monaco-editor";
-import type { editor } from "monaco-editor/esm/vs/editor/editor.api";
+import type { monaco } from "react-monaco-editor";
 import FileEditor from "../file/FileEditor";
 import TempTextFile from "./TempTextFile";
 import type PatcherText from "./PatcherText";

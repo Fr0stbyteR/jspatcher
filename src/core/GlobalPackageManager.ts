@@ -31,7 +31,7 @@ export default class GlobalPackageManager {
     readonly externals = new Map<string, Record<string, any>>();
     readonly importedPackages: IExternalPackage[] = [];
     get builtInPackagesNames() {
-        return [...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "Base", "globalThis"];
+        return [...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "Base", "globalThis", "stdfaust.lib"];
     }
     get externalPackagesNames() {
         return this.importedPackages.filter(p => !p.isBuiltIn).map(p => p.name);
@@ -67,7 +67,7 @@ export default class GlobalPackageManager {
         this.add(this.env.faustAdditionalObjects, "js", ["faust"]);
         this.add(this.env.faustLibObjects, "faust");
         */
-        this.faust = (await import("./objects/Faust")).default;
+        this.faust = { Base: (await import("./objects/Faust")).default, "stdfaust.lib": this.env.faustLibObjects };
         // this.add({ globalThis: globalThis }, "js");
     }
     add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
