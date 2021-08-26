@@ -56,7 +56,7 @@ export interface DOMUIState extends BaseUIState {
 export default class DOMUI<T extends BaseObject = BaseObject, P extends Partial<BaseUIProps> & Record<string, any> = {}, S extends Partial<DOMUIState> & Record<string, any> = {}> extends BaseUI<T, P & BaseUIProps<T>, S & DOMUIState> {
     static sizing: "horizontal" | "vertical" | "both" | "ratio" = "both";
     static defaultSize: [number, number] = [210, 90];
-    state: S & DOMUIState = { ...this.state, shadow: false, containerProps: {}, children: [] };
+    state: S & DOMUIState = { ...this.state, children: [] };
     render() {
         return (
             <BaseUI {...this.props}>

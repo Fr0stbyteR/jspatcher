@@ -15,6 +15,9 @@ export default <
     U extends {} = {},
     E extends Partial<RemotedObjectEventMap> & Record<string, any> = {}
 >(O: typeof BaseObject) => class RemotedObject extends O<D, S, I, O, A, P, U, E & RemotedObjectEventMap> {
+    static get _name() {
+        return O._name;
+    }
     get proxy() {
         return this.patcher.state.patcherProcessor;
     }

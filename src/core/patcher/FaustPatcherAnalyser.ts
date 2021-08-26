@@ -9,7 +9,7 @@ const mapLines = (box: Box, patcher: Patcher, visitedBoxes: Box[], ins: In[], re
     if (box.object.class === "Iterator" && box !== visitedBoxes[0]) return;
     const inletLines = Array.from(box.inletLines);
     if (box.object.class === "Receive") {
-        const { sendID, state: { sendMap } } = box.object as Receive;
+        const { sendID, _: { sendMap } } = box.object as Receive;
         if (sendMap[sendID]) {
             sendMap[sendID].forEach(s => inletLines.push(...s.inletLines));
         }

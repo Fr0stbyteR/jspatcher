@@ -1,6 +1,7 @@
-import comment from "./UI/comment";
-import { LibOp, EmptyObject, InvalidObject, Const, In, Out, Rec, Send, Receive, Param, Expr, LibOpProps, FaustOpState, Gen } from "./Faust";
-import { TPackage, IPropsMeta } from "../types";
+import { comment } from "./base/index.jspatpkg";
+import { LibOp, EmptyObject, InvalidObject, Const, In, Out, Rec, Send, Receive, Param, Expr, LibOpProps, FaustOpInternalState, Gen } from "./Faust";
+import type { TPackage } from "../types";
+import type { IPropsMeta } from "./base/AbstractObject";
 import "./Gen.scss";
 
 export class GenLibOp<P extends Record<string, any> = {}> extends LibOp<P> {
@@ -13,8 +14,8 @@ export class GenLibOp<P extends Record<string, any> = {}> extends LibOp<P> {
     }
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if (e.args || "ins" in e.props || "outs" in e.props) {
-            this.inlets = ~~this.state.inlets - Math.min(~~this.state.inlets, this.constArgsCount);
-            this.outlets = ~~this.state.outlets;
+            this.inlets = ~~this._.inlets - Math.min(~~this._.inlets, this.constArgsCount);
+            this.outlets = ~~this._.outlets;
         }
     };
 }
@@ -37,7 +38,7 @@ export class Cycle extends GenLibOp<CycleProps> {
             description: "Driver"
         }
     };
-    state: FaustOpState = { ...this.state, inlets: 1, outlets: 1, defaultArgs: [440] };
+    _: FaustOpInternalState = { ...this._, inlets: 1, outlets: 1, defaultArgs: [440] };
     get symbol() {
         return [this.getProp("index") === "freq" ? "cycle" : "cycle_phase"];
     }
@@ -57,16 +58,16 @@ export class Interp extends GenLibOp<InterpProps> {
             description: "Interpolation mode"
         }
     };
-    state: FaustOpState = { ...this.state, inlets: 3, outlets: 1, defaultArgs: [440] };
+    _: FaustOpInternalState = { ...this._, inlets: 3, outlets: 1, defaultArgs: [440] };
     get symbol() {
         return [`interp_${this.getProp("mode")}`];
     }
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps & InterpProps }) => {
         if ("mode" in e.props) {
             const { mode } = e.props;
-            this.state.inlets = mode === "linear" || mode === "cosine" ? 3 : mode === "cubic" || mode === "spline" ? 5 : mode === "spline6" ? 6 : 3;
-            this.inlets = ~~this.state.inlets - Math.min(~~this.state.inlets, this.constArgsCount);
-            this.outlets = ~~this.state.outlets;
+            this._.inlets = mode === "linear" || mode === "cosine" ? 3 : mode === "cubic" || mode === "spline" ? 5 : mode === "spline6" ? 6 : 3;
+            this.inlets = ~~this._.inlets - Math.min(~~this._.inlets, this.constArgsCount);
+            this.outlets = ~~this._.outlets;
         }
     };
 }
@@ -291,7 +292,7 @@ for (const category in opMap) {
             get symbol() {
                 return typeof symbol === "string" ? [symbol] : symbol;
             }
-            state: FaustOpState = { ...this.state, inlets, outlets: outlets || 1, defaultArgs: defaultArgs || new Array(inlets).fill(0) };
+            _: FaustOpInternalState = { ...this._, inlets, outlets: outlets || 1, defaultArgs: defaultArgs || new Array(inlets).fill(0) };
             reverseApply = !applyArgsFromStart;
         } as typeof GenLibOp;
         genOps[name] = Op;

@@ -60,9 +60,8 @@ export default class GlobalPackageManager {
         this.jsaw = {
             Base: await (await import("./objects/base/index.jsdsppkg.main")).default()
         };
+        this.gen = { Base: (await import("./objects/Gen")).default };
         /*
-        this.jsaw = await (await import("./objects/JSAW")).default();
-        this.gen = (await import("./objects/Gen")).default;
         this.max = (await import("./objects/Max")).default;
         this.add(this.env.faustAdditionalObjects, "js", ["faust"]);
         this.add(this.env.faustLibObjects, "faust");

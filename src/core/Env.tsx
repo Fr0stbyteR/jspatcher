@@ -266,15 +266,11 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 await this.envNode.init();
             });
             await this.taskMgr.newTask(this, "Fetching packages...", async (onUpdate) => {
-                onUpdate("std");
-                await this.pkgMgr.importFromURL("./packages/std/index.js", undefined, true);
-                onUpdate("op");
-                await this.pkgMgr.importFromURL("./packages/op/index.js", undefined, true);
-                onUpdate("webaudio");
-                await this.pkgMgr.importFromURL("./packages/webaudio/index.js", undefined, true);
-                await this.pkgMgr.importFromURL("./packages/analysers/index.js", undefined, true);
-                await this.pkgMgr.importFromURL("../../@jspatcher/package-ui/dist/index.js", undefined, true);
-                await this.pkgMgr.importFromURL("../../@jspatcher/package-live/dist/index.js", undefined, true);
+                for (const p of ["std", "op", "webaudio", "analysers", "ui", "live", "midi"]) {
+                    onUpdate(p);
+                    await this.pkgMgr.importFromURL(`./packages/${p}/index.js`, undefined, true);
+                }
+                // await this.pkgMgr.importFromURL("../../@jspatcher/package-midi/dist/index.js", undefined, true);
             });
             await this.taskMgr.newTask(this, "Creating Project", async () => {
                 const project = new Project(this);

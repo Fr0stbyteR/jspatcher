@@ -67,6 +67,9 @@ export default <
             isUIState: true
         }
     };
+    static get _name() {
+        return O._name;
+    }
     static UI = DefaultUI;
     get env() {
         return super.env as Env;

@@ -56,7 +56,7 @@ export default abstract class AbstractProjectItem<EventMap extends Partial<Proje
         return this._name;
     }
     parent: IProjectFolder;
-    private _isDirty: boolean;
+    private _isDirty = false;
     get isDirty() {
         return this._isDirty;
     }
@@ -78,6 +78,7 @@ export default abstract class AbstractProjectItem<EventMap extends Partial<Proje
     async removeObserver(observer: string) {
         this._observers.delete(observer);
         await this.emit("observers", this._observers);
+        if (this._observers.size === 0) this.emit("dirty", false);
         await this.fileMgr.emitChanged();
     }
     constructor(fileMgrIn: Manager, parentIn: IProjectFolder, nameIn: string) {
