@@ -6,7 +6,7 @@ import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 import type DefaultUI from "../base/DefaultUI";
 import type { TBPF, TMIDIEvent } from "../../types";
 import type { UnPromisifiedFunction } from "../../workers/Worker";
-import type { IJSPatcherObjectMeta, IInletMeta, IOutletMeta } from "../base/AbstractObject";
+import type { IInletMeta, IOutletMeta, IInletsMeta, IOutletsMeta, IArgsMeta } from "../base/AbstractObject";
 
 class FaustNodeUI extends CodePopupUI<FaustNode> {
     editorLanguage = "faust";
@@ -41,23 +41,23 @@ export default class FaustNode<
     static author = "Fr0stbyteR";
     static version = "1.0.0";
     static description = "Dynamically generate WebAudioNode from Faust";
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
+    static inlets: IInletsMeta = [{
         isHot: true,
         type: "anything",
         description: "A bang to output the node, code string to compile, number to set voices, or a param-bpf map, or a MIDI event"
     }];
-    static outlets: IJSPatcherObjectMeta["outlets"] = [{
+    static outlets: IOutletsMeta = [{
         type: "object",
         description: "FaustNode instance output: AudioWorkletNode | ScriptProcessor"
     }];
-    static args: IJSPatcherObjectMeta["args"] = [{
+    static args: IArgsMeta = [{
         type: "number",
         optional: true,
         default: 0,
         description: "Polyphonic instrument voices count"
     }];
     static UI: typeof DefaultUI = FaustNodeUI;
-    _: FaustNodeInternalState = { merger: undefined, splitter: undefined, node: undefined, voices: 0 };
+    _: FaustNodeInternalState = { merger: undefined, splitter: undefined, node: undefined, voices: ~~Math.max(0, this.args[0]) };
     async getFaustNode(code: string, voices: number) {
         const { audioCtx } = this;
         const faust = await this.env.getFaust();

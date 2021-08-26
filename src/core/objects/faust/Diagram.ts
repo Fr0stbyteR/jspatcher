@@ -1,44 +1,46 @@
-import { Bang, BaseObject, isBang } from "../base/index.jspatpkg";
-import { IJSPatcherObjectMeta } from "../../types";
-import { DOMUI, DOMUIState } from "../base/DOMUI";
-import { DefaultFaustDynamicNodeState } from "../dsp/FaustDynamicNode";
+import BaseObject from "../base/BaseObject";
+import Bang, { isBang } from "../base/Bang";
+import DOMUI, { DOMUIState } from "../base/DOMUI";
+import type Env from "../../Env";
+import type { IInletsMeta, IOutletsMeta } from "../base/AbstractObject";
+import type { FaustNodeInternalState } from "./FaustNode";
 import "./Diagram.scss";
 
-export default class diagram extends BaseObject<{}, { svg: string, container: HTMLDivElement }, [Bang | string | DefaultFaustDynamicNodeState["node"]], [string], [], {}, DOMUIState> {
+export default class diagram extends BaseObject<{}, {}, [Bang | string | FaustNodeInternalState["node"]], [string], [], {}, DOMUIState> {
     static package = "Faust";
     static description = "Get Faust code diagram";
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
+    static inlets: IInletsMeta = [{
         isHot: true,
         type: "string",
         description: "Code or FaustNode to compile, bang to output only"
     }];
-    static outlets: IJSPatcherObjectMeta["outlets"] = [{
+    static outlets: IOutletsMeta = [{
         type: "string",
         description: "SVG code"
     }];
     static UI = class extends DOMUI<diagram> {
-        state: DOMUIState = { ...this.state, children: this.props.object.state.container ? [this.props.object.state.container] : [] };
+        state: DOMUIState = { ...this.state, children: this.props.object._.container ? [this.props.object._.container] : [] };
     };
-    state = { svg: "", container: undefined as HTMLDivElement };
+    _ = { svg: "", container: undefined as HTMLDivElement };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
             this.inlets = 1;
             this.outlets = 1;
         });
-        this.on("inlet", ({ data, inlet }) => {
-            const { faust } = this.patcher.env;
+        this.on("inlet", async ({ data, inlet }) => {
+            const faust = await (this.env as Env).getFaust();
             if (inlet === 0) {
                 if (!isBang(data)) {
                     try {
-                        this.state.svg = faust.getDiagram(typeof data === "string" ? data : data.dspCode, { "-I": ["libraries/", "project/"] });
+                        this._.svg = faust.getDiagram(typeof data === "string" ? data : data.dspCode, { "-I": ["libraries/", "project/"] });
                     } catch (e) {
                         this.error(e);
                         return;
                     }
                 }
-                if (this.state.svg) {
-                    this.outlet(0, this.state.svg);
+                if (this._.svg) {
+                    this.outlet(0, this._.svg);
                     const template = document.createElement("template");
                     const container = document.createElement("div");
                     container.addEventListener("click", (e) => {
@@ -55,8 +57,8 @@ export default class diagram extends BaseObject<{}, { svg: string, container: HT
                         }
                     });
                     template.appendChild(container);
-                    container.innerHTML = this.state.svg;
-                    this.state.container = container;
+                    container.innerHTML = this._.svg;
+                    this._.container = container;
                     this.updateUI({ children: [container] });
                 }
             }

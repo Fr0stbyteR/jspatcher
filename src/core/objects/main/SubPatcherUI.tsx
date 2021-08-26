@@ -60,6 +60,7 @@ export default class SubPatcherUI extends DefaultPopupUI<SubPatcher, {}, SubPatc
     }
     componentWillUnmount() {
         this.state.editor?.off("changed", this.handleChanged);
+        this.state.editor?.destroy();
         super.componentWillUnmount();
     }
     render() {

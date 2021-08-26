@@ -1,17 +1,18 @@
-import { Faust } from "faust2webaudio";
-import { Bang, isBang } from "../base/index.jspatpkg";
-import { IJSPatcherObjectMeta } from "../../types";
+import type { Faust } from "faust2webaudio";
+import Bang, { isBang } from "../base/Bang";
+import type { IInletsMeta, IOutletsMeta } from "../base/AbstractObject";
+
 import DefaultObject from "../base/DefaultObject";
 
 export default class libFaust extends DefaultObject<{}, {}, [Bang], [Faust]> {
     static package = "Faust";
     static description = "Get LibFaust instance";
-    static inlets: IJSPatcherObjectMeta["inlets"] = [{
+    static inlets: IInletsMeta = [{
         isHot: true,
         type: "bang",
         description: "Output LibFaust instance"
     }];
-    static outlets: IJSPatcherObjectMeta["outlets"] = [{
+    static outlets: IOutletsMeta = [{
         type: "object",
         description: "LibFaust instance"
     }];
@@ -22,9 +23,9 @@ export default class libFaust extends DefaultObject<{}, {}, [Bang], [Faust]> {
             this.inlets = 1;
             this.outlets = 1;
         });
-        this.on("inlet", ({ data, inlet }) => {
+        this.on("inlet", async ({ data, inlet }) => {
             if (inlet === 0) {
-                if (isBang(data)) this.outlet(0, this.patcher.env.faust);
+                if (isBang(data)) this.outlet(0, await this.env.getFaust());
             }
         });
     }
