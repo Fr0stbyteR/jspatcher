@@ -91,7 +91,7 @@ export default class FileEditor<Instance extends IFileInstance = IFileInstance, 
         return this._isDestroyed;
     }
     get isDirty() {
-        return this.history.isDirty;
+        return this.history?.isDirty;
     }
     get isLocked() {
         return false;
@@ -120,7 +120,7 @@ export default class FileEditor<Instance extends IFileInstance = IFileInstance, 
         this.instance = instance;
         this.instance?.addObserver(this);
         this.instance.on("destroy", this.handleDestroy);
-        this.history.addEditor(this);
+        this.history?.addEditor(this);
         this.on("dirty", isDirty => this.file?.emit("dirty", isDirty));
         this.on("destroy", () => this.file?.emit("dirty", false));
         const handleReady = () => {
@@ -194,7 +194,7 @@ export default class FileEditor<Instance extends IFileInstance = IFileInstance, 
         }
         this.instance.off("destroy", this.handleDestroy);
         this.instance.removeObserver(this);
-        this.history.removeEditor(this);
+        this.history?.removeEditor(this);
         this._isDestroyed = true;
         await this.emit("destroy");
     }
