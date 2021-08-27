@@ -2,9 +2,7 @@ import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./Ty
 import { AudioWorkletProxyNode } from "./AudioWorkletProxyNode.types";
 
 const Node = class extends AudioWorkletNode {
-    static get fnNames(): string[] {
-        return [];
-    }
+    static fnNames: string[] = [];
     _disposed = false;
     constructor(context: AudioContext, name: string, options?: AudioWorkletNodeOptions) {
         super(context, name, options);

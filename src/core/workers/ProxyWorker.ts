@@ -2,9 +2,7 @@ import { ProxyWorker } from "./ProxyWorker.types";
 import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./Worker";
 
 const Worker = class {
-    static get fnNames(): string[] {
-        return [];
-    }
+    static fnNames: string[] = [];
     _disposed = false;
     constructor() {
         const resolves: Record<number, ((...args: any[]) => any)> = {};

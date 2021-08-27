@@ -5,9 +5,7 @@ declare const globalThis: AudioWorkletGlobalScope;
 const { AudioWorkletProcessor } = globalThis;
 
 const Processor = class extends AudioWorkletProcessor {
-    static get fnNames(): string[] {
-        return [];
-    }
+    static fnNames: string[] = [];
     _disposed = false;
     constructor(options: AudioWorkletNodeOptions) {
         super(options);

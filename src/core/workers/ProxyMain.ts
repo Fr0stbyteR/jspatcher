@@ -2,12 +2,8 @@ import { ProxyMain } from "./ProxyMain.types";
 import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./Worker";
 
 const Main = class {
-    static get Worker(): typeof WebpackWorker {
-        return undefined;
-    }
-    static get fnNames(): string[] {
-        return [];
-    }
+    static Worker: typeof WebpackWorker;
+    static fnNames: string[] = [];
     _disposed = false;
     constructor() {
         const Ctor = (this.constructor as typeof ProxyMain);
