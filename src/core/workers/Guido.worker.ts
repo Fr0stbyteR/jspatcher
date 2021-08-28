@@ -13,6 +13,11 @@ class Guido extends ProxyWorker<IGuidoWorker> implements IGuidoWorker {
 
     private $oMap: ClassHandle[] = [];
 
+    resolves: (() => void)[] = [];
+    rejects: ((reason?: any) => void)[] = [];
+    isBusy = false;
+    isReady = false;
+
     private $2o($: number) {
         return this.$oMap[$];
     }
@@ -23,15 +28,34 @@ class Guido extends ProxyWorker<IGuidoWorker> implements IGuidoWorker {
     }
 
     async init() {
-        const locateFile = (url: string, dir: string) => "../deps/" + url;
-        const Module = (await import("@shren/guidolib") as any).default as typeof GuidoModule;
-        this.module = await new Module({ locateFile });
-        this.fEngine = new this.module.GuidoEngineAdapter();
-        this.fScoreMap = new this.module.GUIDOScoreMap();
-        this.fPianoRoll = new this.module.GUIDOPianoRollAdapter();
-        this.fFactory = new this.module.GUIDOFactoryAdapter();
-        this.fSPR = new this.module.GUIDOReducedProportionalAdapter();
-        this.fEngine.init();
+        if (this.isReady) return Promise.resolve();
+        if (this.isBusy) {
+            return new Promise<void>((resolve, reject) => {
+                this.resolves.push(resolve);
+                this.rejects.push(reject);
+            });
+        }
+        try {
+            this.isBusy = true;
+            const locateFile = (url: string, dir: string) => "../deps/" + url;
+            const Module = (await import("@shren/guidolib") as any).default as typeof GuidoModule;
+            this.module = await new Module({ locateFile });
+            this.fEngine = new this.module.GuidoEngineAdapter();
+            this.fScoreMap = new this.module.GUIDOScoreMap();
+            this.fPianoRoll = new this.module.GUIDOPianoRollAdapter();
+            this.fFactory = new this.module.GUIDOFactoryAdapter();
+            this.fSPR = new this.module.GUIDOReducedProportionalAdapter();
+            this.fEngine.init();
+            this.isReady = true;
+            this.isBusy = false;
+            this.resolves.forEach(r => r());
+        } catch (error) {
+            this.rejects.forEach(r => r(error));
+        } finally {
+            this.resolves = [];
+            this.rejects = [];
+        }
+        return Promise.resolve();
     }
 
     // ------------------------------------------------------------------------

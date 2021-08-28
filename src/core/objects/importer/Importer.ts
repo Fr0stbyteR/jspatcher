@@ -1,11 +1,11 @@
 import { ImporterDirSelfObject } from "../../../utils/symbols";
 import { getPropertyDescriptors } from "../../../utils/utils";
-import { IJSPatcherObject, isJSPatcherObjectConstructor } from "../base/AbstractObject";
+import { IJSPatcherObject, IJSPatcherObjectMeta, isJSPatcherObjectConstructor } from "../base/AbstractObject";
 import type { TPackage } from "../../types";
 
 export default abstract class Importer {
     static $self = ImporterDirSelfObject;
-    static getObject(p: PropertyDescriptor, pkgName: string, root: Record<string, any>, path: string[]): typeof IJSPatcherObject {
+    static getObject(p: PropertyDescriptor, pkgName: string, root: Record<string, any>, path: string[], meta?: Partial<IJSPatcherObjectMeta>): typeof IJSPatcherObject {
         throw new Error("getObject not implemented");
     }
     /*
@@ -36,12 +36,13 @@ export default abstract class Importer {
      * @param {string} pkgName package identifier
      * @param {Record<string, any>} root imported JavaScript object
      * @param {boolean} [all] import non-iterables
+     * @param {Record<string, IJSPatcherObjectMeta>} [metaIn] object meta to inject
      * @param {TPackage} [outIn]
      * @param {string[]} [pathIn]
      * @param {any[]} [stackIn]
      * @param {number} [depthIn]
      */
-    static import(pkgName: string, root: Record<string, any>, all?: boolean, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number) {
+    static import(pkgName: string, root: Record<string, any>, all?: boolean, metaIn: Record<string, IJSPatcherObjectMeta> = {}, outIn?: TPackage, pathIn?: string[], stackIn?: any[], depthIn?: number) {
         const depth = typeof depthIn === "undefined" ? 0 : depthIn;
         const out = outIn || {};
         const path = pathIn || [];
@@ -71,11 +72,11 @@ export default abstract class Importer {
             const prop = props[key];
             const newPath = [...path, key];
             if (!all && !prop.enumerable && key.startsWith("_") && key !== "prototype") continue;
-            const newObj = this.getObject(prop, pkgName, root, newPath);
+            const newObj = this.getObject(prop, pkgName, root, newPath, metaIn[newPath.join(".")]);
             if (newObj) this.writeInPath(out, newPath.map((s, i) => (i !== newPath.length - 1 && s === "prototype" ? "" : s)), newObj);
             const value = prop.value;
             if ((typeof value === "object" || typeof value === "function") && value !== null && (value === Array.prototype || !Array.isArray(value))) {
-                this.import(pkgName, root, all, out, newPath, stack, depth + 1);
+                this.import(pkgName, root, all, metaIn, out, newPath, stack, depth + 1);
             }
         }
         return out;

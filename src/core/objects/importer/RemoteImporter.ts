@@ -15,7 +15,7 @@ import generateRemoteObject from "../base/generateRemoteObject";
 import Importer from "./Importer";
 import { ImporterDirSelfObject } from "../../../utils/symbols";
 import type BaseObject from "../base/BaseObject";
-import type { IJSPatcherObject } from "../base/AbstractObject";
+import type { IJSPatcherObject, IJSPatcherObjectMeta } from "../base/AbstractObject";
 import type { ObjectDescriptor, TAbstractPackage, TPackage } from "../../types";
 
 export class NewUI extends ImportedObjectUI<New> {
@@ -67,8 +67,8 @@ export class StaticMethod extends generateRemoteObject(StaticMethodBase as typeo
     static UI = StaticPropertyUI;
 }
 
-export default class DefaultImporter extends Importer {
-    static getObject(p: PropertyDescriptor, pkgName: string, root: Record<string, any>, path: string[]): typeof IJSPatcherObject {
+export default class RemoteImporter extends Importer {
+    static getObject(p: PropertyDescriptor, pkgName: string, root: Record<string, any>, path: string[], meta?: Partial<IJSPatcherObjectMeta>): typeof IJSPatcherObject {
         const isStatic = path[path.length - 2] !== "prototype";
         let Super: typeof IJSPatcherObject;
         const type = typeof p.value;
@@ -93,12 +93,20 @@ export default class DefaultImporter extends Importer {
             if (isStatic) Super = StaticProperty;
             else Super = Property;
         }
-        return class extends Super {
+        const Ctor = class extends Super {
             static package = pkgName;
             static root = root;
             static path = path;
             static get _name() { return path[path.length - 1] || pkgName; }
         };
+        if (meta) {
+            for (const keyIn in meta) {
+                const key = keyIn as keyof IJSPatcherObjectMeta;
+                if (key === "name") continue;
+                (Ctor as any)[key] = meta[key];
+            }
+        }
+        return Ctor;
     }
     static getObjectFromDescriptor(descriptor: ObjectDescriptor, pkgName: string) {
         const Ctors = {
@@ -113,14 +121,22 @@ export default class DefaultImporter extends Importer {
             Getter,
             Property
         };
-        const { ctor, path, name } = descriptor;
+        const { ctor, path, name, meta } = descriptor;
         const Super = Ctors[ctor] as typeof IJSPatcherObject;
-        return class extends Super {
+        const Ctor = class extends Super {
             static package = pkgName;
             static root = globalThis;
             static path = path;
             static get _name() { return name; }
         };
+        if (meta) {
+            for (const keyIn in meta) {
+                const key = keyIn as keyof IJSPatcherObjectMeta;
+                if (key === "name") continue;
+                (Ctor as any)[key] = meta[key];
+            }
+        }
+        return Ctor;
     }
     static getPackageFromDescriptors(descriptors: TAbstractPackage, pkgName: string) {
         const $self = ImporterDirSelfObject;

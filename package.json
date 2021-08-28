@@ -37,7 +37,6 @@
     "@types/webmidi": "^2.0.6",
     "@typescript-eslint/eslint-plugin": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",
-    "babel-loader": "^8.2.2",
     "browserfs": "^1.4.3",
     "buffer": "^6.0.3",
     "clean-webpack-plugin": "^4.0.0-alpha.0",

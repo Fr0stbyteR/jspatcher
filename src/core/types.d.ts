@@ -1,4 +1,4 @@
-import type { IJSPatcherObject } from "./objects/base/AbstractObject";
+import type { IJSPatcherObject, IJSPatcherObjectMeta } from "./objects/base/AbstractObject";
 import type { TPatcherProps, TPublicPatcherProps } from "./patcher/Patcher";
 import type Patcher from "./patcher/Patcher";
 import type Box from "./patcher/Box";
@@ -151,6 +151,7 @@ export interface ObjectDescriptor {
     ctor: ImportedObjectType;
     path: string[];
     name: string;
+    meta?: Partial<IJSPatcherObjectMeta>;
 }
 export type TAbstractPackage = { [key: string]: ObjectDescriptor | TAbstractPackage };
 export type TPackage = { [key: string]: typeof IJSPatcherObject | TPackage };

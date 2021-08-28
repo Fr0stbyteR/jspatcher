@@ -7,6 +7,8 @@ import Bang, { isBang } from "./objects/base/Bang";
 import * as MathUtils from "../utils/math";
 import * as BufferUtils from "../utils/buffer";
 import * as Utils from "../utils/utils";
+import Importer from "./objects/importer/Importer";
+import RemotedImporter from "./objects/importer/RemotedImporter";
 import type { IJSPatcherSDK } from "./SDK";
 
 export default class JSPatcherWorkletSDK implements IJSPatcherSDK {
@@ -20,4 +22,6 @@ export default class JSPatcherWorkletSDK implements IJSPatcherSDK {
     readonly MathUtils = MathUtils;
     readonly BufferUtils = BufferUtils;
     readonly Utils = Utils;
+    readonly Importer = Importer;
+    readonly RemotedImporter = RemotedImporter;
 }

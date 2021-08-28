@@ -75,7 +75,7 @@ export default class PackageManager extends TypedEventEmitter<PackageManagerEven
                 for (let i = 0; i < this.patcherDependencies.length; i++) {
                     const [name, url] = this.patcherDependencies[i];
                     onUpdate(`${name} from ${url}`);
-                    if (this.global[this.mode][name]) return;
+                    if (this.global[this.mode][name]) continue;
                     try {
                         await this.global.importFromURL?.(url, name);
                     } catch (e) {

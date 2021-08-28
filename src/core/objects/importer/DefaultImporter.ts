@@ -14,7 +14,7 @@ import ImportedObjectUI from "./ImportedObjectUI";
 import generateDefaultObject from "../base/generateDefaultObject";
 import Importer from "./Importer";
 import type BaseObject from "../base/BaseObject";
-import type { IJSPatcherObject } from "../base/AbstractObject";
+import type { IJSPatcherObject, IJSPatcherObjectMeta } from "../base/AbstractObject";
 
 export class NewUI extends ImportedObjectUI<New> {
     prependColor = "rgb(78, 201, 176)";
@@ -66,7 +66,7 @@ export class StaticMethod extends generateDefaultObject(StaticMethodBase as type
 }
 
 export default class DefaultImporter extends Importer {
-    static getObject(p: PropertyDescriptor, pkgName: string, root: Record<string, any>, path: string[]): typeof IJSPatcherObject {
+    static getObject(p: PropertyDescriptor, pkgName: string, root: Record<string, any>, path: string[], meta?: Partial<IJSPatcherObjectMeta>): typeof IJSPatcherObject {
         const isStatic = path[path.length - 2] !== "prototype";
         let Super: typeof IJSPatcherObject;
         const type = typeof p.value;
@@ -91,11 +91,19 @@ export default class DefaultImporter extends Importer {
             if (isStatic) Super = StaticProperty;
             else Super = Property;
         }
-        return class extends Super {
+        const Ctor = class extends Super {
             static package = pkgName;
             static root = root;
             static path = path;
             static get _name() { return path[path.length - 1] || pkgName; }
         };
+        if (meta) {
+            for (const keyIn in meta) {
+                const key = keyIn as keyof IJSPatcherObjectMeta;
+                if (key === "name") continue;
+                (Ctor as any)[key] = meta[key];
+            }
+        }
+        return Ctor;
     }
 }

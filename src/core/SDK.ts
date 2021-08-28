@@ -27,6 +27,10 @@ import SpectralAnalyserNode from "./worklets/SpectralAnalyser";
 import * as MathUtils from "../utils/math";
 import * as BufferUtils from "../utils/buffer";
 import * as Utils from "../utils/utils";
+import Importer from "./objects/importer/Importer";
+import DefaultImporter from "./objects/importer/DefaultImporter";
+import RemoteImporter from "./objects/importer/RemoteImporter";
+import RemotedImporter from "./objects/importer/RemotedImporter";
 
 export interface IJSPatcherSDK {
     readonly React?: typeof React;
@@ -58,6 +62,10 @@ export interface IJSPatcherSDK {
     readonly MathUtils: typeof MathUtils;
     readonly BufferUtils: typeof BufferUtils;
     readonly Utils: typeof Utils;
+    readonly Importer: typeof Importer;
+    readonly DefaultImporter?: typeof DefaultImporter;
+    readonly RemoteImporter?: typeof RemoteImporter;
+    readonly RemotedImporter: typeof RemotedImporter;
     getReactMonacoEditor?(): Promise<typeof ReactMonacoEditor>;
 }
 
@@ -91,5 +99,9 @@ export default class JSPatcherSDK implements IJSPatcherSDK {
     readonly MathUtils = MathUtils;
     readonly BufferUtils = BufferUtils;
     readonly Utils = Utils;
+    readonly Importer = Importer;
+    readonly DefaultImporter = DefaultImporter;
+    readonly RemoteImporter = RemoteImporter;
+    readonly RemotedImporter = RemotedImporter;
     getReactMonacoEditor() { return import("react-monaco-editor"); }
 }

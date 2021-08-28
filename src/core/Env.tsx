@@ -7,6 +7,8 @@ import GlobalPackageManager from "./GlobalPackageManager";
 import PersistentProjectItemManager, { IPersistentProjectItemManager } from "./file/PersistentProjectItemManager";
 import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
 import FileMgrWorker from "./workers/FileMgrWorker";
+import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
+import GuidoWorker from "./workers/GuidoWorker";
 import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
 import FFmpegWorker from "./workers/FFmpegWorker";
@@ -85,10 +87,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     readonly waveformWorker = new WaveformWorker();
     readonly wavEncoderWorker = new WavEncoderWorker();
     readonly ffmpegWorker = new FFmpegWorker();
-    /*
     readonly libMusicXMLWorker = new LibMusicXMLWorker();
     readonly guidoWorker = new GuidoWorker();
-    */
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();
     readonly browser = detectBrowserCore();
@@ -192,6 +192,18 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             return this.ffmpegWorker;
         });
     }
+    async getGuido() {
+        return this.taskMgr.newTask(this, "Loading Guido...", async () => {
+            await this.guidoWorker.init();
+            return this.guidoWorker;
+        });
+    }
+    async getLibMusicXML() {
+        return this.taskMgr.newTask(this, "Loading LibMusicXML...", async () => {
+            await this.libMusicXMLWorker.init();
+            return this.libMusicXMLWorker;
+        });
+    }
     async init() {
         const urlParams = new URLSearchParams(window.location.search);
         const urlParamsOptions = {
@@ -232,14 +244,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 this.faustDocs = providers.docs;
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
             });
-            /*
-            await this.taskMgr.newTask(this, "Loading LibMuscXML...", async () => {
-                await this.libMusicXMLWorker.init();
-            });
-            await this.taskMgr.newTask(this, "Loading Guido...", async () => {
-                await this.guidoWorker.init();
-            });
-            */
             await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);
                 await this.pkgMgr.init();
