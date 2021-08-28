@@ -104,7 +104,7 @@ const config = {
         { from: './node_modules/faust2webaudio/dist/libfaust-wasm.*', to: './deps/[name][ext]' },
         { from: './node_modules/@grame/libmusicxml/libmusicxml.wasm', to: './deps/' },
         { from: './node_modules/@shren/guidolib/libGUIDOEngine.wasm', to: './deps/' },
-        ...["std", "op", "webaudio", "analysers", "ui", "live", "midi"].map(p => ({ from: `./node_modules/@jspatcher/package-${p}/dist`, to: `./packages/${p}/` }))
+        ...["std", "op", "webaudio", "analysers", "ui", "live", "midi", "cac"].map(p => ({ from: `./node_modules/@jspatcher/package-${p}/dist`, to: `./packages/${p}/` }))
       ],
       
     }),

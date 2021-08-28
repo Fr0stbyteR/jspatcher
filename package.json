@@ -20,6 +20,7 @@
     "@ffmpeg/ffmpeg": "^0.10.1",
     "@grame/libmusicxml": "^3.19.1",
     "@jspatcher/package-analysers": "^1.0.0",
+    "@jspatcher/package-cac": "^1.0.0",
     "@jspatcher/package-live": "^1.0.0",
     "@jspatcher/package-midi": "^1.0.0",
     "@jspatcher/package-op": "^1.0.2",
