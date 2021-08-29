@@ -273,6 +273,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 for (const p of ["std", "op", "webaudio", "analysers", "ui", "live", "midi", "cac"]) {
                     onUpdate(p);
                     await this.pkgMgr.importFromURL(`./packages/${p}/index.js`, undefined, true);
+                    // await this.pkgMgr.importFromURL(`../../@jspatcher/package-${p}/dist/index.js`, undefined, true);
                 }
                 // await this.pkgMgr.importFromURL("../../@jspatcher/package-cac/dist/index.js", undefined, true);
             });

@@ -1,2969 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/index.ts":
-/*!**********************!*\
-  !*** ./src/index.ts ***!
-  \**********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "name": () => (/* binding */ name),
-/* harmony export */   "author": () => (/* binding */ author),
-/* harmony export */   "license": () => (/* binding */ license),
-/* harmony export */   "keywords": () => (/* binding */ keywords),
-/* harmony export */   "version": () => (/* binding */ version),
-/* harmony export */   "description": () => (/* binding */ description),
-/* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, '');
-const {
-  author,
-  license,
-  keywords,
-  version,
-  description,
-  jspatcher
-} = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_objectSpread({
-  name,
-  author,
-  license,
-  keywords,
-  version,
-  description
-}, jspatcher));
-
-/***/ }),
-
-/***/ "./src/objects/base.ts":
-/*!*****************************!*\
-  !*** ./src/objects/base.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ UIObject)
-/* harmony export */ });
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class UIObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {}
-
-_defineProperty(UIObject, "package", _index__WEBPACK_IMPORTED_MODULE_0__.name);
-
-_defineProperty(UIObject, "author", _index__WEBPACK_IMPORTED_MODULE_0__.author);
-
-_defineProperty(UIObject, "version", _index__WEBPACK_IMPORTED_MODULE_0__.version);
-
-_defineProperty(UIObject, "description", _index__WEBPACK_IMPORTED_MODULE_0__.description);
-
-/***/ }),
-
-/***/ "./src/objects/bpf.ts":
-/*!****************************!*\
-  !*** ./src/objects/bpf.ts ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ bpf)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-/* harmony import */ var _ui_bpf__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/bpf */ "./src/ui/bpf.tsx");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-class bpf extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 1;
-      if (!this.data.points) this.data.points = [];
-    });
-    let prevRange;
-    let prevDomain;
-    this.on("postInit", () => {
-      prevRange = this.getProp("range");
-      prevDomain = this.getProp("domain");
-    });
-    this.on("updateProps", () => {
-      const range = this.getProp("range");
-
-      if (prevRange && prevRange !== range) {
-        const points = this.data.points.map(p => [p[0], _sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.scaleClip(p[1], prevRange[0], prevRange[1], range[0], range[1]), p[2]]);
-        this.setData({
-          points
-        });
-        this.updateUI(this.data);
-        prevRange = range;
-      }
-
-      const domain = this.getProp("domain");
-
-      if (typeof prevDomain === "number" && prevDomain !== domain) {
-        const points = this.data.points.map(p => [_sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.scaleClip(p[0], 0, prevDomain, 0, domain), p[1], p[2]]);
-        this.setData({
-          points
-        });
-        this.updateUI(this.data);
-        prevDomain = domain;
-      }
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
-        if (inlet === 0) {
-          const {
-            points
-          } = this.data;
-          this.outlet(0, points.map((p, i) => [p[1], p[0] - (i > 0 ? points[i - 1][0] : 0), p[2]]));
-        }
-      } else {
-        let points;
-
-        try {
-          points = _sdk__WEBPACK_IMPORTED_MODULE_1__.Utils.decodeBPF(data, 3);
-        } catch (e) {
-          this.error("Cannot decode inlet BPF");
-        }
-
-        this.setData({
-          points
-        });
-        this.updateUI(this.data);
-      }
-    });
-  }
-
-}
-
-_defineProperty(bpf, "description", "Break-point function editor");
-
-_defineProperty(bpf, "inlets", [{
-  type: "anything",
-  isHot: true,
-  description: "Display & output a bpf, bang to output"
-}, {
-  type: "anything",
-  isHot: true,
-  description: "Display without output"
-}]);
-
-_defineProperty(bpf, "outlets", [{
-  type: "object",
-  description: "BPF triggered"
-}]);
-
-_defineProperty(bpf, "props", {
-  domain: {
-    type: "number",
-    default: 1000,
-    description: "X-axis range, starts from 0",
-    isUIState: true
-  },
-  range: {
-    type: "object",
-    default: [0, 1],
-    description: "Y-axis range, [low, high]",
-    isUIState: true
-  },
-  textColor: {
-    type: "color",
-    default: "rgba(0, 255, 255, 1)",
-    description: "Text color",
-    isUIState: true
-  },
-  fontFamily: {
-    type: "enum",
-    enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
-    default: "Arial",
-    description: "Font family",
-    isUIState: true
-  },
-  fontSize: {
-    type: "number",
-    default: 10,
-    description: "Text font size",
-    isUIState: true
-  },
-  fontFace: {
-    type: "enum",
-    enums: ["regular", "bold", "italic", "bold italic"],
-    default: "regular",
-    description: "Text style",
-    isUIState: true
-  },
-  pointColor: {
-    type: "color",
-    default: "white",
-    description: "Text color",
-    isUIState: true
-  },
-  lineColor: {
-    type: "color",
-    default: "white",
-    description: "Line color",
-    isUIState: true
-  },
-  bgColor: {
-    type: "color",
-    default: "rgba(0, 0, 0, 0.5)",
-    description: "Background color",
-    isUIState: true
-  }
-});
-
-_defineProperty(bpf, "UI", _ui_bpf__WEBPACK_IMPORTED_MODULE_2__.default);
-
-/***/ }),
-
-/***/ "./src/objects/code.ts":
-/*!*****************************!*\
-  !*** ./src/objects/code.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ code)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class code extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 2;
-      if (typeof this.data.value === "undefined") this.setData({
-        value: ""
-      });
-    });
-    this.on("editorLoaded", () => this.updateUI({
-      language: this.box.args[0] || "javascript"
-    }));
-    this.on("change", () => this.outlet(1, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang()));
-    this.on("updateArgs", args => {
-      if (args[0]) this.updateUI({
-        language: args[0]
-      });
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(0, this.data.value);
-      } else if (inlet === 1) {
-        const value = typeof data === "string" ? data : "".concat(data);
-        this.updateUI({
-          value
-        });
-        this.setData({
-          value
-        });
-      }
-    });
-  }
-
-}
-
-_defineProperty(code, "description", "Code Editor");
-
-_defineProperty(code, "inlets", [{
-  isHot: true,
-  type: "bang",
-  description: "Trigger output the code"
-}, {
-  isHot: false,
-  type: "string",
-  description: "Set the code"
-}]);
-
-_defineProperty(code, "outlets", [{
-  type: "string",
-  description: "Code"
-}, {
-  type: "bang",
-  description: "Bang when the code is changed"
-}]);
-
-_defineProperty(code, "args", [{
-  type: "string",
-  optional: true,
-  default: "javascript",
-  description: "language"
-}]);
-
-_defineProperty(code, "UI", _sdk__WEBPACK_IMPORTED_MODULE_1__.CodeUI);
-
-/***/ }),
-
-/***/ "./src/objects/img.ts":
-/*!****************************!*\
-  !*** ./src/objects/img.ts ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ img)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-/* harmony import */ var _ui_img__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/img */ "./src/ui/img.tsx");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-class img extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    var _this$box$args$;
-
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      key: (_this$box$args$ = this.box.args[0]) === null || _this$box$args$ === void 0 ? void 0 : _this$box$args$.toString(),
-      image: undefined,
-      file: undefined,
-      url: ""
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-
-    const handleFilePathChanged = () => {
-      var _this$_$file;
-
-      this._.key = (_this$_$file = this._.file) === null || _this$_$file === void 0 ? void 0 : _this$_$file.projectPath;
-    };
-
-    const subsribeItem = async () => {
-      const {
-        image,
-        file
-      } = this._;
-      if (image) await image.addObserver(this);
-
-      if (file) {
-        file.on("destroyed", reload);
-        file.on("nameChanged", handleFilePathChanged);
-        file.on("pathChanged", handleFilePathChanged);
-      }
-    };
-
-    const unsubscribeItem = async () => {
-      const {
-        image,
-        file
-      } = this._;
-
-      if (file) {
-        file.off("destroyed", reload);
-        file.off("nameChanged", handleFilePathChanged);
-        file.off("pathChanged", handleFilePathChanged);
-      }
-
-      if (image) await image.removeObserver(this);
-    };
-
-    const reload = async () => {
-      await unsubscribeItem();
-      const {
-        key
-      } = this._;
-      let image;
-      let url;
-
-      try {
-        const {
-          item
-        } = await this.getSharedItem(key, "image");
-        image = await item.instantiate({
-          env: this.patcher.env,
-          project: this.patcher.project
-        });
-        this._.image = image;
-        this._.file = item;
-        url = image.objectURL;
-      } catch (_unused) {
-        url = key;
-      } finally {
-        this._.url = url;
-        this.updateUI({
-          url
-        });
-        await subsribeItem();
-      }
-    };
-
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 0;
-    });
-    this.on("postInit", reload);
-    this.on("updateArgs", args => {
-      if (typeof args[0] === "string") {
-        var _args$;
-
-        const oldKey = this._.key;
-        const key = (_args$ = args[0]) === null || _args$ === void 0 ? void 0 : _args$.toString();
-        this._.key = key;
-        if (key !== oldKey) reload();
-      }
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
-          if (typeof data === "string") {
-            this._.key = data;
-            reload();
-          }
-        }
-      }
-    });
-    this.on("destroy", unsubscribeItem);
-  }
-
-}
-
-_defineProperty(img, "description", "Display an image");
-
-_defineProperty(img, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Image file name or url"
-}]);
-
-_defineProperty(img, "args", [{
-  type: "string",
-  optional: true,
-  description: "Image file name or url"
-}]);
-
-_defineProperty(img, "props", {
-  scroll: {
-    type: "boolean",
-    default: false,
-    description: "Allow overflow-scroll",
-    isUIState: true
-  },
-  objectFit: {
-    type: "enum",
-    enums: ["fill", "cover", "contain", "none", "scale-down"],
-    default: "contain",
-    description: "CSS object-fit property",
-    isUIState: true
-  },
-  objectPosition: {
-    type: "string",
-    default: "50% 50%",
-    description: 'CSS object-position property, for example "50% 50%" or "left top"',
-    isUIState: true
-  }
-});
-
-_defineProperty(img, "UI", _ui_img__WEBPACK_IMPORTED_MODULE_2__.default);
-
-/***/ }),
-
-/***/ "./src/objects/keyboard.ts":
-/*!*********************************!*\
-  !*** ./src/objects/keyboard.ts ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ keyboard)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-/* harmony import */ var _ui_keyboard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/keyboard */ "./src/ui/keyboard.tsx");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-class keyboard extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      keys: this.flushed,
-      selected: undefined
-    });
-  }
-
-  get flushed() {
-    const keys = [];
-
-    for (let i = 0; i < 128; i++) {
-      keys[i] = 0;
-    }
-
-    return keys;
-  }
-
-  flush() {
-    const {
-      keys
-    } = this._;
-
-    for (let $key = 0; $key < 128; $key++) {
-      if (keys[$key]) {
-        this.outlet(0, new Uint8Array([9 << 4, $key, 0]));
-        this._.keys[$key] = 0;
-      }
-    }
-
-    this._.selected = undefined;
-  }
-
-  keyTrigger(keyIn, velocityIn, noOutput) {
-    const key = Math.max(0, Math.min(127, ~~+keyIn));
-    const velocity = Math.max(0, Math.min(127, ~~+velocityIn));
-    const mode = this.getProp("mode");
-
-    if (mode === "mono") {
-      const keys = this.flushed;
-      keys[key] = velocity;
-      if (!noOutput) this.outlet(0, new Uint8Array([9 << 4, key, velocity]));
-      this._.keys = keys;
-      this._.selected = key;
-    } else if (mode === "poly") {
-      const {
-        keys
-      } = this._;
-      const v = +!keys[key] * (velocity || 1);
-      keys[key] = v;
-      if (!noOutput) this.outlet(0, new Uint8Array([9 << 4, key, v]));
-      this._.keys = _objectSpread({}, keys);
-      this._.selected = v ? key : undefined;
-    } else {
-      const {
-        keys
-      } = this._;
-      keys[key] = velocity;
-      if (!noOutput) this.outlet(0, new Uint8Array([9 << 4, key, velocity]));
-      this._.keys = _objectSpread({}, keys);
-      this._.selected = velocity ? key : undefined;
-    }
-
-    this.updateUI(this._);
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 1;
-    });
-    let prevMode;
-    this.on("postInit", () => prevMode = this.getProp("mode"));
-    this.on("updateProps", () => {
-      if (prevMode && prevMode !== this.getProp("mode")) {
-        this.flush();
-        this._.keys = _objectSpread({}, this._.keys);
-        this._.selected = undefined;
-        this.updateUI(this._);
-      }
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0 && data === "flush") {
-        this.flush();
-        this._.keys = _objectSpread({}, this._.keys);
-        this._.selected = undefined;
-        this.updateUI(this._);
-      } else if (_sdk__WEBPACK_IMPORTED_MODULE_1__.Utils.isMIDIEvent(data)) {
-        const cmd = data[0] >> 4;
-        const channel = data[0] & 0xf;
-        const data1 = data[1];
-        const data2 = data[2];
-        if (channel === 9) return;
-        if (cmd === 8 || cmd === 9 && data2 === 0) this.keyTrigger(data1, 0, inlet === 1);else if (cmd === 9) this.keyTrigger(data1, data2, inlet === 1);
-      }
-    });
-  }
-
-}
-
-_defineProperty(keyboard, "description", "Keyboard");
-
-_defineProperty(keyboard, "inlets", [{
-  type: "anything",
-  isHot: true,
-  description: 'Display & output same MIDI event, "flush" to flush active notes'
-}, {
-  type: "object",
-  isHot: true,
-  description: "Display without output"
-}]);
-
-_defineProperty(keyboard, "outlets", [{
-  type: "object",
-  description: "MIDI event triggered"
-}]);
-
-_defineProperty(keyboard, "props", {
-  from: {
-    type: "number",
-    default: 24,
-    description: "Lowest MIDI key to display",
-    isUIState: true
-  },
-  to: {
-    type: "number",
-    default: 96,
-    description: "Highest MIDI key to display",
-    isUIState: true
-  },
-  blackKeyColor: {
-    type: "color",
-    default: "black",
-    description: "Display color of black key",
-    isUIState: true
-  },
-  whiteKeyColor: {
-    type: "color",
-    default: "white",
-    description: "Display color of white key",
-    isUIState: true
-  },
-  keyOnColor: {
-    type: "color",
-    default: "grey",
-    description: "Display color of pressed key",
-    isUIState: true
-  },
-  selectedColor: {
-    type: "color",
-    default: "yellow",
-    description: "Display color of selected key",
-    isUIState: true
-  },
-  mode: {
-    type: "enum",
-    enums: ["mono", "poly", "touch"],
-    default: "poly",
-    description: "Triggering mode",
-    isUIState: true
-  }
-});
-
-_defineProperty(keyboard, "UI", _ui_keyboard__WEBPACK_IMPORTED_MODULE_2__.default);
-
-/***/ }),
-
-/***/ "./src/objects/menu.ts":
-/*!*****************************!*\
-  !*** ./src/objects/menu.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ menu)
-/* harmony export */ });
-/* harmony import */ var _ui_menu__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ui/menu */ "./src/ui/menu.tsx");
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class menu extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 1;
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        this.emit("query", data);
-      } else {
-        const options = data;
-        this.updateProps({
-          options
-        });
-      }
-    });
-  }
-
-}
-
-_defineProperty(menu, "description", "Dropdown Menu");
-
-_defineProperty(menu, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "number or display text or array to select item(s)"
-}, {
-  isHot: false,
-  type: "object",
-  description: "Array of DropdownItemProps: { key, icon, text, value, ... }"
-}]);
-
-_defineProperty(menu, "outlets", [{
-  type: "anything",
-  description: "Selected value"
-}]);
-
-_defineProperty(menu, "args", [{
-  type: "anything",
-  varLength: true,
-  optional: true,
-  default: undefined,
-  description: "Initial value(s)"
-}]);
-
-_defineProperty(menu, "props", {
-  clearable: {
-    type: "boolean",
-    default: false,
-    description: "Using the clearable setting will let users remove their selection",
-    isUIState: true
-  },
-  closeOnBlur: {
-    type: "boolean",
-    default: true,
-    description: "Whether or not the menu should close when the dropdown is blurred",
-    isUIState: true
-  },
-  closeOnChange: {
-    type: "boolean",
-    default: undefined,
-    description: "Whether or not the menu should close when a value is selected",
-    isUIState: true
-  },
-  closeOnEscape: {
-    type: "boolean",
-    default: true,
-    description: "Whether or not the dropdown should close when the escape key is pressed",
-    isUIState: true
-  },
-  deburr: {
-    type: "boolean",
-    default: false,
-    description: "Whether or not the dropdown should strip diacritics in options and input search",
-    isUIState: true
-  },
-  defaultOpen: {
-    type: "boolean",
-    default: false,
-    description: "Initial value of open",
-    isUIState: true
-  },
-  defaultValue: {
-    type: "anything",
-    default: undefined,
-    description: "Initial value or value array if multiple",
-    isUIState: true
-  },
-  direction: {
-    type: "enum",
-    enums: ["left", "right"],
-    default: "left",
-    description: "A dropdown menu can open to the left or to the right",
-    isUIState: true
-  },
-  disabled: {
-    type: "boolean",
-    default: false,
-    description: " A disabled dropdown menu or item does not allow user interaction",
-    isUIState: true
-  },
-  error: {
-    type: "boolean",
-    default: false,
-    description: "An errored dropdown can alert a user to a problem",
-    isUIState: true
-  },
-  lazyLoad: {
-    type: "boolean",
-    default: false,
-    description: "A dropdown can defer rendering its options until it is open",
-    isUIState: true
-  },
-  minCharacters: {
-    type: "number",
-    default: 1,
-    description: "The minimum characters for a search to begin showing results",
-    isUIState: true
-  },
-  multiple: {
-    type: "boolean",
-    default: false,
-    description: "A selection dropdown can allow multiple selections",
-    isUIState: true
-  },
-  noResultsMessage: {
-    type: "string",
-    default: "No results found",
-    description: "Message to display when there are no results",
-    isUIState: true
-  },
-  options: {
-    type: "anything",
-    default: [],
-    description: "Array of Dropdown.Item props",
-    isUIState: true
-  },
-  placeholder: {
-    type: "string",
-    default: "",
-    description: "Placeholder text",
-    isUIState: true
-  },
-  scrolling: {
-    type: "boolean",
-    default: false,
-    description: "A dropdown can have its menu scroll",
-    isUIState: true
-  },
-  search: {
-    type: "boolean",
-    default: false,
-    description: "A selection dropdown can allow a user to search through a large list of choices",
-    isUIState: true
-  },
-  selectOnBlur: {
-    type: "boolean",
-    default: true,
-    description: "Whether the highlighted item should be selected on blur",
-    isUIState: true
-  },
-  selectOnNavigation: {
-    type: "boolean",
-    default: true,
-    description: "Whether dropdown should select new option when using keyboard shortcuts.",
-    isUIState: true
-  },
-  simple: {
-    type: "boolean",
-    default: false,
-    description: "A dropdown menu can open to the left or to the right",
-    isUIState: true
-  },
-  tabIndex: {
-    type: "anything",
-    default: undefined,
-    description: "A dropdown can receive focus",
-    isUIState: true
-  },
-  text: {
-    type: "string",
-    default: undefined,
-    description: "The text displayed in the dropdown, usually for the active item",
-    isUIState: true
-  },
-  upward: {
-    type: "boolean",
-    default: false,
-    description: "Controls whether the dropdown will open upward",
-    isUIState: true
-  },
-  wrapSelection: {
-    type: "boolean",
-    default: false,
-    description: "Selection will wrap to end or start on press ArrowUp or ArrowDown",
-    isUIState: true
-  }
-});
-
-_defineProperty(menu, "UI", _ui_menu__WEBPACK_IMPORTED_MODULE_0__.default);
-
-/***/ }),
-
-/***/ "./src/objects/message.ts":
-/*!********************************!*\
-  !*** ./src/objects/message.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ message)
-/* harmony export */ });
-/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! util */ "./node_modules/util/util.js");
-/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(util__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ui/message */ "./src/ui/message.tsx");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-
-class message extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      buffer: new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang(),
-      editing: false
-    });
-
-    _defineProperty(this, "handleUpdateArgs", args => {
-      if (typeof args[0] !== "undefined") {
-        this.setData({
-          text: this.stringify(args[0])
-        });
-        this._.buffer = this.parse(args[0]);
-      } else {
-        this._.buffer = new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang();
-      }
-
-      this.updateUI({
-        text: this.data.text
-      });
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 1;
-    });
-    this.on("postInit", () => {
-      const args = this.box.args;
-      if (typeof this.data.text === "string") this._.buffer = this.parse(this.data.text);else if (typeof args[0] !== "undefined") {
-        if (typeof this.data.text !== "string") {
-          this.setData({
-            text: this.stringify(args[0])
-          });
-          this._.buffer = args[0];
-        }
-      } else {
-        this.setData({
-          text: ""
-        });
-        this._.buffer = new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang();
-      }
-    });
-    this.on("updateArgs", this.handleUpdateArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-      if (inlet === 0) this.outlet(0, this._.buffer);else if (inlet === 1) this.handleUpdateArgs([data]);
-    });
-  }
-
-  parse(o) {
-    if (typeof o === "string") {
-      if (o.length > 0) {
-        try {
-          return JSON.parse(o);
-        } catch (e) {
-          return o;
-        }
-      }
-
-      return new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang();
-    }
-
-    return o;
-  }
-
-  stringify(o) {
-    if (typeof o === "string") return o;
-
-    try {
-      return JSON.stringify(o);
-    } catch (e) {
-      return util__WEBPACK_IMPORTED_MODULE_0__.inspect(o);
-    }
-  }
-
-}
-
-_defineProperty(message, "description", "Message");
-
-_defineProperty(message, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Trigger output the message"
-}, {
-  isHot: false,
-  type: "anything",
-  description: "Set the message"
-}]);
-
-_defineProperty(message, "outlets", [{
-  type: "anything",
-  description: "Message to send"
-}]);
-
-_defineProperty(message, "UI", _ui_message__WEBPACK_IMPORTED_MODULE_3__.default);
-
-/***/ }),
-
-/***/ "./src/objects/view.ts":
-/*!*****************************!*\
-  !*** ./src/objects/view.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ view)
-/* harmony export */ });
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-/* harmony import */ var _ui_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/view */ "./src/ui/view.tsx");
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-class view extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      children: []
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 0;
-    });
-
-    const handleUpdateArgs = args => {
-      if (typeof args[0] === "string") {
-        const template = document.createElement("template");
-        template.innerHTML = args[0];
-        this._.children = Array.from(template.content.children);
-        this.updateUI({
-          children: this._.children
-        });
-      }
-    };
-
-    this.on("postInit", () => handleUpdateArgs(this.args));
-    this.on("updateArgs", handleUpdateArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
-          if (typeof data === "string") {
-            const template = document.createElement("template");
-            template.innerHTML = data;
-            this._.children = Array.from(template.content.children);
-          } else if (data instanceof Element) {
-            this._.children = [data];
-          }
-
-          this.updateUI({
-            children: this._.children
-          });
-        }
-      }
-    });
-  }
-
-}
-
-_defineProperty(view, "description", "View HTML Element");
-
-_defineProperty(view, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "HTML string or HTMLElement object to view"
-}]);
-
-_defineProperty(view, "args", [{
-  type: "string",
-  optional: true,
-  description: "initial innerHTML"
-}]);
-
-_defineProperty(view, "props", {
-  shadow: {
-    type: "boolean",
-    default: true,
-    description: "Whether children should be attached to a Shadow DOM",
-    isUIState: true
-  },
-  containerProps: {
-    type: "object",
-    default: {},
-    description: "Available under non-shadow mode, the props for div container",
-    isUIState: true
-  }
-});
-
-_defineProperty(view, "UI", _ui_view__WEBPACK_IMPORTED_MODULE_1__.default);
-
-/***/ }),
-
-/***/ "./src/objects/waveform.ts":
-/*!*********************************!*\
-  !*** ./src/objects/waveform.ts ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ waveform)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _ui_waveform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/waveform */ "./src/ui/waveform.tsx");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-class waveform extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      audio: undefined
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 0;
-    });
-    this.on("inlet", async _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if (data instanceof _sdk__WEBPACK_IMPORTED_MODULE_2__.PatcherAudio) {
-          this._.audio = data;
-          this.updateUI(this._);
-          this.updateProps({
-            selRange: null,
-            viewRange: [0, data.length],
-            cursor: 0
-          });
-        } else {
-          this.error("Input data is not PatcherAudio instance");
-        }
-      }
-    });
-  }
-
-}
-
-_defineProperty(waveform, "description", "Buffer waveform view");
-
-_defineProperty(waveform, "inlets", [{
-  isHot: false,
-  type: "object",
-  description: "Patcher Audio object (from buffer~)"
-}]);
-
-_defineProperty(waveform, "props", {
-  interleaved: {
-    type: "boolean",
-    default: false,
-    description: "Draw channels seperately",
-    isUIState: true
-  },
-  cursor: {
-    type: "number",
-    default: 0,
-    description: "Display a cursor",
-    isUIState: true
-  },
-  viewRange: {
-    type: "object",
-    default: [0, 1],
-    description: "Display only a part of the buffer",
-    isUIState: true
-  },
-  selRange: {
-    type: "object",
-    default: null,
-    description: "Nullable, display selection of a part of the buffer",
-    isUIState: true
-  },
-  verticalRange: {
-    type: "object",
-    default: [-1, 1],
-    description: "Vertical range",
-    isUIState: true
-  },
-  autoVerticalRange: {
-    type: "boolean",
-    default: true,
-    description: "Auto adjust vertical range if > 1",
-    isUIState: true
-  },
-  showStats: {
-    type: "boolean",
-    default: true,
-    description: "Show stats texts",
-    isUIState: true
-  },
-  bgColor: {
-    type: "color",
-    default: "rgb(40, 40, 40)",
-    description: "Background color",
-    isUIState: true
-  },
-  cursorColor: {
-    type: "color",
-    default: "white",
-    description: "Cursor color",
-    isUIState: true
-  },
-  phosphorColor: {
-    type: "color",
-    default: "hsl(0, 100%, 85%)",
-    description: "Phosphor color",
-    isUIState: true
-  },
-  hueOffset: {
-    type: "number",
-    default: 60,
-    description: "Channel Color Hue offset",
-    isUIState: true
-  },
-  textColor: {
-    type: "color",
-    default: "#DDDD99",
-    description: "Info text color",
-    isUIState: true
-  },
-  gridColor: {
-    type: "color",
-    default: "#404040",
-    description: "Grid color",
-    isUIState: true
-  },
-  seperatorColor: {
-    type: "color",
-    default: "white",
-    description: "Channel seperator color",
-    isUIState: true
-  },
-  audioUnit: {
-    type: "enum",
-    default: "time",
-    enums: ["time", "sample", "measure"],
-    description: "Vertical grid mode",
-    isUIState: true
-  },
-  bpm: {
-    type: "number",
-    default: 60,
-    description: "If audioUnit is measure, a BPM can be used",
-    isUIState: true
-  }
-});
-
-_defineProperty(waveform, "UI", _ui_waveform__WEBPACK_IMPORTED_MODULE_1__.default);
-
-/***/ }),
-
-/***/ "./src/package-info.ts":
-/*!*****************************!*\
-  !*** ./src/package-info.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-var _package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../package.json */ "./package.json");
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/ (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(_package_json__WEBPACK_IMPORTED_MODULE_0__, 2))));
-
-/***/ }),
-
-/***/ "./src/sdk.ts":
-/*!********************!*\
-  !*** ./src/sdk.ts ***!
-  \********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "React": () => (/* binding */ React),
-/* harmony export */   "ReactDOM": () => (/* binding */ ReactDOM),
-/* harmony export */   "SemanticUI": () => (/* binding */ SemanticUI),
-/* harmony export */   "PatcherAudio": () => (/* binding */ PatcherAudio),
-/* harmony export */   "OperableAudioBuffer": () => (/* binding */ OperableAudioBuffer),
-/* harmony export */   "Patcher": () => (/* binding */ Patcher),
-/* harmony export */   "Box": () => (/* binding */ Box),
-/* harmony export */   "Line": () => (/* binding */ Line),
-/* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
-/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
-/* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
-/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
-/* harmony export */   "CanvasUI": () => (/* binding */ CanvasUI),
-/* harmony export */   "CodeUI": () => (/* binding */ CodeUI),
-/* harmony export */   "DefaultPopupUI": () => (/* binding */ DefaultPopupUI),
-/* harmony export */   "CodePopupUI": () => (/* binding */ CodePopupUI),
-/* harmony export */   "DOMUI": () => (/* binding */ DOMUI),
-/* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
-/* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
-/* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
-/* harmony export */   "Bang": () => (/* binding */ Bang),
-/* harmony export */   "isBang": () => (/* binding */ isBang),
-/* harmony export */   "TransmitterNode": () => (/* binding */ TransmitterNode),
-/* harmony export */   "TemporalAnalyserNode": () => (/* binding */ TemporalAnalyserNode),
-/* harmony export */   "SpectralAnalyserNode": () => (/* binding */ SpectralAnalyserNode),
-/* harmony export */   "MathUtils": () => (/* binding */ MathUtils),
-/* harmony export */   "BufferUtils": () => (/* binding */ BufferUtils),
-/* harmony export */   "Utils": () => (/* binding */ Utils),
-/* harmony export */   "getReactMonacoEditor": () => (/* binding */ getReactMonacoEditor)
-/* harmony export */ });
-const sdk = globalThis.jspatcherEnv.sdk;
-const {
-  React,
-  ReactDOM,
-  SemanticUI,
-  PatcherAudio,
-  OperableAudioBuffer,
-  Patcher,
-  Box,
-  Line,
-  BaseObject,
-  DefaultObject,
-  BaseUI,
-  DefaultUI,
-  CanvasUI,
-  CodeUI,
-  DefaultPopupUI,
-  CodePopupUI,
-  DOMUI,
-  generateDefaultObject,
-  generateRemoteObject,
-  generateRemotedObject,
-  Bang,
-  isBang,
-  TransmitterNode,
-  TemporalAnalyserNode,
-  SpectralAnalyserNode,
-  MathUtils,
-  BufferUtils,
-  Utils,
-  getReactMonacoEditor
-} = sdk;
-
-/***/ }),
-
-/***/ "./src/ui/bpf.tsx":
-/*!************************!*\
-  !*** ./src/ui/bpf.tsx ***!
-  \************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ BPFUI)
-/* harmony export */ });
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class BPFUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
-      points: this.object.data.points,
-      ghostPoint: undefined
-    }));
-
-    _defineProperty(this, "dragged", false);
-
-    _defineProperty(this, "mouseDown", false);
-
-    _defineProperty(this, "refG", _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createRef());
-
-    _defineProperty(this, "handleResized", () => {
-      if (this.refG.current) {
-        this.refG.current.style.transformOrigin = "0";
-        requestAnimationFrame(() => this.refG.current.style.transformOrigin = "center");
-      }
-    });
-
-    _defineProperty(this, "handleMouseMove", () => {
-      this.setState({
-        ghostPoint: undefined
-      });
-    });
-
-    _defineProperty(this, "handleDoubleClick", e => {
-      if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
-      this.dragged = false;
-      const {
-        points
-      } = this.state;
-      const svg = e.currentTarget;
-      let {
-        left,
-        top,
-        width,
-        height
-      } = svg.getBoundingClientRect();
-      left += 0.025 * width;
-      top += 0.025 * height;
-      width *= 0.95;
-      height *= 0.95;
-      const normalizedX = (e.clientX - left) / width;
-      const normalizedY = 1 - (e.clientY - top) / height;
-      const [x, y] = this.denormalizePoint(normalizedX, normalizedY);
-      const {
-        index: $point,
-        point
-      } = this.getInsertPoint(x, y);
-      points.splice($point, 0, point);
-      this.setState({
-        points: points.slice()
-      });
-      this.object.setData({
-        points: this.state.points
-      });
-    });
-
-    _defineProperty(this, "handleMouseMoveLine", e => {
-      if (this.mouseDown) return;
-      e.stopPropagation();
-      const line = e.currentTarget;
-
-      if (e.altKey) {
-        line.style.cursor = "ns-resize";
-        return;
-      }
-
-      line.style.cursor = "unset";
-      const {
-        domain
-      } = this.state;
-      const svg = line.parentElement.parentElement;
-      let {
-        left,
-        width
-      } = svg.getBoundingClientRect();
-      left += 0.025 * width;
-      width *= 0.95;
-      const normalizedX = (e.clientX - left) / width;
-      const {
-        point
-      } = this.getInsertPoint(normalizedX * domain);
-      this.setState({
-        ghostPoint: point
-      });
-    });
-
-    _defineProperty(this, "handleMouseDownLine", e => {
-      e.stopPropagation();
-      this.dragged = false;
-      this.mouseDown = true;
-      const line = e.currentTarget;
-      const {
-        points,
-        domain,
-        range
-      } = this.state;
-      const svg = line.parentElement.parentElement;
-      let {
-        left,
-        top,
-        width,
-        height
-      } = svg.getBoundingClientRect();
-      left += 0.025 * width;
-      top += 0.025 * height;
-      width *= 0.95;
-      height *= 0.95;
-
-      if (e.altKey) {
-        const i = +line.getAttribute("values");
-        const prev = points[i];
-        const next = points[i + 1];
-        const {
-          clientY
-        } = e;
-
-        const handleMouseMove = e => {
-          this.dragged = true;
-          let [rangeMin, rangeMax] = range;
-          if (rangeMin > rangeMax) [rangeMin, rangeMax] = [rangeMax, rangeMin];
-          const rangeInterval = rangeMax - rangeMin;
-          if (!rangeInterval) return;
-          const delta = (e.clientY - clientY) / height * rangeInterval;
-          points[i] = prev.slice();
-          points[i][1] = Math.min(rangeMax, Math.max(rangeMin, prev[1] - delta));
-
-          if (next) {
-            points[i + 1] = next.slice();
-            points[i + 1][1] = Math.min(rangeMax, Math.max(rangeMin, next[1] - delta));
-          }
-
-          this.setState({
-            points: points.slice()
-          });
-          this.object.setData({
-            points: this.state.points
-          });
-        };
-
-        const handleMouseUp = () => {
-          this.mouseDown = false;
-          document.removeEventListener("mousemove", handleMouseMove);
-          document.removeEventListener("mouseup", handleMouseUp);
-        };
-
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
-      } else {
-        const normalizedX = (e.clientX - left) / width;
-        const {
-          index: $point,
-          point
-        } = this.getInsertPoint(normalizedX * domain);
-        const limits = [points[$point - 1][0] / domain * width + left, points[$point] ? points[$point][0] / domain * width + left : left + width];
-        points.splice($point, 0, point);
-        this.setState({
-          points: points.slice()
-        });
-        this.object.setData({
-          points: this.state.points
-        });
-
-        const handleMouseMove = e => {
-          this.dragged = true;
-          const clientX = Math.max(limits[0], Math.min(limits[1], e.clientX));
-          const clientY = Math.max(top, Math.min(top + height, e.clientY));
-          const normalized = [(clientX - left) / width, 1 - (clientY - top) / height];
-          const [x, y] = this.denormalizePoint(...normalized);
-          const point = [x, y, 0];
-          points[$point] = point;
-          this.setState({
-            points: points.slice()
-          });
-          this.object.setData({
-            points: this.state.points
-          });
-        };
-
-        const handleMouseUp = () => {
-          this.mouseDown = false;
-          document.removeEventListener("mousemove", handleMouseMove);
-          document.removeEventListener("mouseup", handleMouseUp);
-        };
-
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
-      }
-    });
-
-    _defineProperty(this, "handleMouseDownCircle", e => {
-      e.stopPropagation();
-      this.dragged = false;
-      const {
-        points,
-        domain
-      } = this.state;
-      const circle = e.currentTarget;
-      const svg = circle.parentElement.parentElement;
-      let {
-        left,
-        top,
-        width,
-        height
-      } = svg.getBoundingClientRect();
-      left += 0.05 * width;
-      top += 0.05 * height;
-      width *= 0.9;
-      height *= 0.9;
-      const i = +circle.getAttribute("values");
-      const limits = [points[i - 1] ? points[i - 1][0] / domain * width + left : left, points[i + 1] ? points[i + 1][0] / domain * width + left : left + width];
-      const [x, y] = this.normalizePoint(points[i][0], points[i][1]);
-      const circleX = left + x * width;
-      const circleY = top + (1 - y) * height;
-
-      const handleMouseMove = e => {
-        this.dragged = true;
-        const clientX = Math.max(limits[0], Math.min(limits[1], e.shiftKey || Math.abs(circleX - e.clientX) > 5 ? e.clientX : circleX));
-        const clientY = Math.max(top, Math.min(top + height, e.shiftKey || Math.abs(circleY - e.clientY) > 5 ? e.clientY : circleY));
-        const normalized = [(clientX - left) / width, 1 - (clientY - top) / height];
-        const [x, y] = this.denormalizePoint(...normalized);
-        const point = [x, y, 0];
-        points[i] = point;
-        this.setState({
-          points: points.slice()
-        });
-        this.object.setData({
-          points: this.state.points
-        });
-      };
-
-      const handleMouseUp = () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-        document.removeEventListener("mouseup", handleMouseUp);
-      };
-
-      document.addEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mouseup", handleMouseUp);
-    });
-
-    _defineProperty(this, "handleDoubleClickCircle", e => {
-      e.stopPropagation();
-      if (this.dragged) return;
-      const circle = e.currentTarget;
-      const i = +circle.getAttribute("values");
-      const {
-        points
-      } = this.state;
-      points.splice(i, 1);
-      this.setState({
-        points: points.slice()
-      });
-      this.object.setData({
-        points: this.state.points
-      });
-    });
-  }
-
-  componentDidMount() {
-    super.componentDidMount();
-    this.box.on("rectChanged", this.handleResized);
-    this.box.on("presentationRectChanged", this.handleResized);
-  }
-
-  componentWillUnmount() {
-    super.componentWillUnmount();
-    this.box.off("rectChanged", this.handleResized);
-    this.box.off("presentationRectChanged", this.handleResized);
-  }
-
-  getInsertPoint(x, yIn) {
-    let e = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-    const {
-      points
-    } = this.state;
-    let $point = 0;
-    let prev = points[0];
-    let next;
-
-    while ($point < points.length) {
-      next = points[$point];
-      if (next[0] > x) break;
-      prev = next;
-      $point++;
-    }
-
-    if (prev === next) return {
-      index: $point,
-      point: [x, typeof yIn === "number" ? yIn : prev[1], e]
-    };
-    if (typeof yIn === "number") return {
-      index: $point,
-      point: [x, yIn, e]
-    };
-    const exponent = prev[2] || 0;
-    const normalizedX = (x - prev[0]) / (next[0] - prev[0]);
-    const normalizedY = _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.normExp(normalizedX, exponent);
-    const y = prev[1] + normalizedY * (next[1] - prev[1]);
-    return {
-      index: $point,
-      point: [x, y, e]
-    };
-  }
-
-  get normalizedPoints() {
-    const {
-      domain,
-      range,
-      points
-    } = this.state;
-    let [rangeMin, rangeMax] = range;
-    if (rangeMin > rangeMax) [rangeMin, rangeMax] = [rangeMax, rangeMin];
-    const rangeInterval = rangeMax - rangeMin;
-    return points.map(point => [point[0] / domain, rangeInterval ? (point[1] - rangeMin) / rangeInterval : 0.5]);
-  }
-
-  normalizePoint(x, y) {
-    const {
-      domain,
-      range
-    } = this.state;
-    let [rangeMin, rangeMax] = range;
-    if (rangeMin > rangeMax) [rangeMin, rangeMax] = [rangeMax, rangeMin];
-    const rangeInterval = rangeMax - rangeMin;
-    return [x / domain, rangeInterval ? (y - rangeMin) / rangeInterval : 0.5];
-  }
-
-  denormalizePoint(x, y) {
-    const {
-      domain,
-      range
-    } = this.state;
-    let [rangeMin, rangeMax] = range;
-    if (rangeMin > rangeMax) [rangeMin, rangeMax] = [rangeMax, rangeMin];
-    const rangeInterval = rangeMax - rangeMin;
-    return [x * domain, y * rangeInterval + rangeMin];
-  }
-
-  get font() {
-    const {
-      fontFace,
-      fontSize,
-      fontFamily
-    } = this.state;
-    return "".concat(fontFace === "regular" ? "" : fontFace, " ").concat(fontSize, "px ").concat(fontFamily, ", sans-serif");
-  }
-
-  render() {
-    const {
-      normalizedPoints,
-      font,
-      state
-    } = this;
-    const {
-      domain,
-      points,
-      textColor,
-      ghostPoint,
-      lineColor,
-      pointColor,
-      bgColor
-    } = state;
-    const circles = [];
-    const lines = [];
-    const linesEvents = [];
-    const texts = [];
-    let prevX;
-    let prevY;
-
-    for (let i = 0; i < normalizedPoints.length; i++) {
-      const point = normalizedPoints[i];
-      const x = point[0] * 100 + "%";
-      const y = (1 - point[1]) * 100 + "%";
-      const textAnchor = point[0] < 0.5 ? "start" : "end";
-      const textX = point[0] * 100 + (point[0] < 0.5 ? 2 : -2) + "%";
-      const textY = (1 - point[1]) * 100 + (point[1] < 0.5 ? -1 : 4) + "%";
-      const textStyle = {
-        userSelect: "none",
-        WebkitUserSelect: "none",
-        pointerEvents: "none",
-        font,
-        // stylelint-disable-line font-family-no-missing-generic-family-keyword
-        fill: textColor
-      };
-      circles.push( /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("circle", {
-        key: i,
-        cx: x,
-        cy: y,
-        r: 4,
-        values: "".concat(i),
-        fill: pointColor,
-        onMouseDown: this.handleMouseDownCircle,
-        onDoubleClick: this.handleDoubleClickCircle
-      }));
-      texts.push( /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("text", {
-        textAnchor: textAnchor,
-        key: "".concat(i, "_text"),
-        x: textX,
-        y: textY,
-        style: textStyle
-      }, "".concat(_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.round(points[i][0], 0.01), ", ").concat(_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.round(points[i][1], 0.01))));
-
-      if (prevX && prevY) {
-        lines.push( /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("line", {
-          key: "".concat(i - 1, "_line"),
-          x1: prevX,
-          y1: prevY,
-          x2: x,
-          y2: y,
-          stroke: lineColor,
-          strokeWidth: 2
-        }));
-        linesEvents.push( /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("line", {
-          key: "".concat(i - 1, "_events"),
-          x1: prevX,
-          y1: prevY,
-          x2: x,
-          y2: y,
-          values: "".concat(i - 1),
-          stroke: "transparent",
-          strokeWidth: 10,
-          onMouseDown: this.handleMouseDownLine,
-          onMouseMove: this.handleMouseMoveLine
-        }));
-      }
-
-      prevX = x;
-      prevY = y;
-    }
-
-    let ghostCircle;
-
-    if (ghostPoint) {
-      const point = this.normalizePoint(ghostPoint[0], ghostPoint[1]);
-      const x = point[0] * 100 + "%";
-      const y = (1 - point[1]) * 100 + "%";
-      ghostCircle = /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("circle", {
-        key: "ghostPoint",
-        cx: x,
-        cy: y,
-        r: 4,
-        fill: pointColor,
-        style: {
-          opacity: 0.25,
-          pointerEvents: "none"
-        }
-      });
-    }
-
-    if (points.length && points[points.length - 1][0] !== domain) {
-      const i = points.length - 1;
-      lines.push( /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("line", {
-        key: "".concat(i, "_line"),
-        x1: prevX,
-        y1: prevY,
-        x2: "100%",
-        y2: prevY,
-        stroke: lineColor,
-        strokeWidth: 2
-      }));
-      linesEvents.push( /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("line", {
-        key: "".concat(i, "_events"),
-        x1: prevX,
-        y1: prevY,
-        x2: "100%",
-        y2: prevY,
-        values: "".concat(i),
-        stroke: "transparent",
-        strokeWidth: 10,
-        onMouseDown: this.handleMouseDownLine,
-        onMouseMove: this.handleMouseMoveLine
-      }));
-    }
-
-    return /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, _extends({}, this.props, {
-      containerProps: {
-        style: {
-          height: "100%",
-          width: "100%"
-        }
-      }
-    }), /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("svg", {
-      width: "100%",
-      height: "100%",
-      style: {
-        backgroundColor: bgColor
-      },
-      onMouseMove: this.handleMouseMove,
-      onDoubleClick: this.handleDoubleClick
-    }, /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("g", {
-      ref: this.refG,
-      transform: "scale(0.95, 0.95)",
-      style: {
-        transformOrigin: "center"
-      }
-    }, texts, ghostCircle, lines, linesEvents, circles)));
-  }
-
-}
-
-_defineProperty(BPFUI, "sizing", "both");
-
-_defineProperty(BPFUI, "defaultSize", [450, 300]);
-
-/***/ }),
-
-/***/ "./src/ui/button.tsx":
-/*!***************************!*\
-  !*** ./src/ui/button.tsx ***!
-  \***************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ ButtonUI)
-/* harmony export */ });
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class ButtonUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
-      loading: false,
-      text: this.props.object.data.text
-    }));
-
-    _defineProperty(this, "refSpan", _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createRef());
-
-    _defineProperty(this, "handleChanged", text => {});
-
-    _defineProperty(this, "handleMouseDown", e => this.props.editing ? e.stopPropagation() : null);
-
-    _defineProperty(this, "handleClickSpan", e => this.props.editing ? e.stopPropagation() : null);
-
-    _defineProperty(this, "handleClick", e => {});
-
-    _defineProperty(this, "handleKeyDown", e => {
-      // propagate for parent for focus on boxUI
-      if (!this.props.editing) return;
-
-      if (e.key === "Enter") {
-        e.preventDefault();
-        return;
-      }
-
-      e.stopPropagation();
-      e.nativeEvent.stopImmediatePropagation();
-    });
-
-    _defineProperty(this, "handlePaste", e => {
-      if (!this.props.editing) return;
-      e.preventDefault();
-      document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
-    });
-  }
-
-  componentDidMount() {
-    super.componentDidMount();
-    if (this.props.editing) this.toggleEdit(this.props.editing);
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.editing !== prevProps.editing) this.toggleEdit(this.props.editing);
-  }
-
-  toggleEdit(toggle) {
-    const {
-      editor,
-      box
-    } = this;
-    if (editor.state.locked) return;
-    if (!this.refSpan.current) return;
-    const span = this.refSpan.current;
-
-    if (toggle) {
-      editor.selectOnly(box.id);
-      this.setState({
-        text: span.textContent
-      }, () => {
-        span.focus();
-        _sdk__WEBPACK_IMPORTED_MODULE_0__.Utils.selectElementRange(span);
-      });
-    } else {
-      window.getSelection().removeAllRanges();
-      span.blur();
-      this.setState({
-        text: span.textContent
-      });
-      this.handleChanged(span.textContent);
-    }
-  }
-
-  render() {
-    const classArray = ["box-ui-button", "ui", "button", "compact", "mini"];
-    return /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, _extends({}, this.props, {
-      additionalClassName: classArray.join(" "),
-      containerProps: {
-        onClick: this.handleClick
-      }
-    }), /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
-      className: "box-ui-text-container"
-    }, /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("span", {
-      contentEditable: this.props.editing,
-      className: "editable" + (this.props.editing ? " editing" : ""),
-      ref: this.refSpan,
-      onMouseDown: this.handleMouseDown,
-      onClick: this.handleClickSpan,
-      onPaste: this.handlePaste,
-      onKeyDown: this.handleKeyDown,
-      onBlur: this.props.onEditEnd,
-      suppressContentEditableWarning: true
-    }, this.state.text)));
-  }
-
-}
-
-/***/ }),
-
-/***/ "./src/ui/img.tsx":
-/*!************************!*\
-  !*** ./src/ui/img.tsx ***!
-  \************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ ImgUI)
-/* harmony export */ });
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class ImgUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
-      url: this.object._.url
-    }));
-  }
-
-  render() {
-    const {
-      objectFit,
-      objectPosition,
-      scroll
-    } = this.state;
-    return /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, this.props, /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
-      style: {
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        display: "block",
-        overflow: "auto"
-      }
-    }, /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("img", {
-      src: this.state.url,
-      style: _objectSpread(_objectSpread({
-        position: "absolute"
-      }, scroll ? {} : {
-        width: "100%",
-        height: "100%"
-      }), {}, {
-        objectFit,
-        objectPosition
-      })
-    })));
-  }
-
-}
-
-_defineProperty(ImgUI, "sizing", "both");
-
-_defineProperty(ImgUI, "defaultSize", [210, 90]);
-
-/***/ }),
-
-/***/ "./src/ui/keyboard.tsx":
-/*!*****************************!*\
-  !*** ./src/ui/keyboard.tsx ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ KeyboardUI)
-/* harmony export */ });
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class KeyboardUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
-      keys: this.object._.keys,
-      selected: undefined
-    }));
-
-    _defineProperty(this, "mouseDown", false);
-
-    _defineProperty(this, "touches", []);
-
-    _defineProperty(this, "handleMouseDownKey", e => {
-      const key = +e.currentTarget.getAttribute("values");
-
-      if (this.state.mode === "touch") {
-        if (this.state.keys[key]) return;
-        this.touches[-1] = key;
-      }
-
-      const rect = e.currentTarget.getBoundingClientRect();
-      const y = e.pageY - rect.top;
-      const height = rect.height;
-      const velocity = Math.min(127, ~~(y / height * 128)) || 1;
-      this.object.keyTrigger(key, velocity);
-      this.mouseDown = true;
-
-      const handleMouseUp = () => {
-        this.mouseDown = false;
-
-        if (this.state.mode === "touch" && this.touches[-1]) {
-          this.object.keyTrigger(this.touches[-1], 0);
-          delete this.touches[-1];
-        }
-
-        this.setState({
-          selected: undefined
-        });
-        document.removeEventListener("mouseup", handleMouseUp);
-      };
-
-      document.addEventListener("mouseup", handleMouseUp);
-    });
-
-    _defineProperty(this, "handleMouseEnterKey", e => {
-      if (!this.mouseDown) return;
-      const key = +e.currentTarget.getAttribute("values");
-
-      if (this.state.mode === "touch") {
-        if (this.touches[-1] && this.touches[-1] !== key) {
-          this.object.keyTrigger(this.touches[-1], 0);
-          delete this.touches[-1];
-        }
-
-        if (this.state.keys[key]) return;
-      }
-
-      const rect = e.currentTarget.getBoundingClientRect();
-      const y = e.pageY - rect.top;
-      const height = rect.height;
-      const velocity = Math.min(127, ~~(y / height * 128)) || 1;
-      this.object.keyTrigger(key, velocity);
-      if (this.state.mode === "touch") this.touches[-1] = key;
-    });
-
-    _defineProperty(this, "handleTouchStartKey", (e, keyIn) => {
-      if (this.state.mode !== "touch") return;
-      e.stopPropagation();
-      const key = typeof keyIn === "number" ? keyIn : +e.currentTarget.getAttribute("values");
-      Array.from(e.changedTouches).forEach(touch => {
-        const {
-          identifier: id
-        } = touch;
-        if (this.touches[id]) this.object.keyTrigger(this.touches[id], 0);
-        this.touches[id] = key;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const y = touch.pageY - rect.top;
-        const height = rect.height;
-        const velocity = Math.min(127, ~~(y / height * 128)) || 1;
-        this.object.keyTrigger(key, velocity);
-      });
-    });
-
-    _defineProperty(this, "handleTouchMoveKey", e => {
-      if (this.state.mode !== "touch") return;
-      e.stopPropagation();
-      e.preventDefault();
-      Array.from(e.changedTouches).forEach(touch => {
-        const target = document.elementFromPoint(touch.clientX, touch.clientY);
-        if (target.parentElement !== e.currentTarget.parentElement) return;
-        const key = +target.getAttribute("values");
-        if (typeof key === "undefined") return;
-        if (this.state.keys[key]) return;
-        this.handleTouchStartKey(e, key);
-      });
-    });
-
-    _defineProperty(this, "handleTouchEndKey", e => {
-      if (this.state.mode !== "touch") return;
-      e.stopPropagation();
-      e.preventDefault();
-      Array.from(e.changedTouches).forEach(touch => {
-        const {
-          identifier: id
-        } = touch;
-        if (this.touches[id]) this.object.keyTrigger(this.touches[id], 0);
-        delete this.touches[id];
-      });
-    });
-  }
-
-  isBlack(key) {
-    return KeyboardUI.blacks.indexOf(key % 12) !== -1;
-  }
-
-  get from() {
-    if (this.isBlack(this.state.from)) return this.state.from - 1;
-    return this.state.from;
-  }
-
-  get to() {
-    if (this.isBlack(this.state.to)) return this.state.to + 1;
-    return this.state.to;
-  }
-
-  get whiteCount() {
-    const {
-      to
-    } = this;
-    let {
-      from
-    } = this;
-    if (from >= to) return 0;
-    let count = 0;
-
-    while (from <= to) {
-      if (!this.isBlack(from++)) count++;
-    }
-
-    return count;
-  }
-
-  render() {
-    const {
-      from,
-      to,
-      whiteCount,
-      state
-    } = this;
-    const {
-      blackKeyColor,
-      whiteKeyColor,
-      keyOnColor,
-      selectedColor,
-      selected
-    } = state;
-    const whites = [];
-    const blacks = [];
-    const blackStyle = {
-      fill: blackKeyColor,
-      strokeWidth: 1,
-      stroke: "black"
-    };
-    const whiteStyle = {
-      fill: whiteKeyColor,
-      strokeWidth: 1,
-      stroke: "black"
-    };
-    const keyOnStyle = {
-      fill: keyOnColor,
-      strokeWidth: 1,
-      stroke: "black"
-    };
-    const selectedStyle = {
-      fill: selectedColor,
-      strokeWidth: 1,
-      stroke: "black"
-    };
-    const whiteWidthPercentage = 100 / whiteCount;
-    const blackWidthPercentage = 100 / whiteCount * 2 / 3;
-    const whiteWidth = "".concat(whiteWidthPercentage, "%");
-    const blackWidth = "".concat(blackWidthPercentage, "%");
-    let $white = 0;
-    let key = from;
-
-    while (key <= to) {
-      const $key = key;
-      const keyOn = +!!this.state.keys[$key];
-      const commonProps = {
-        key: $key,
-        values: "".concat(key),
-        onMouseDown: this.handleMouseDownKey,
-        onMouseEnter: this.handleMouseEnterKey,
-        onTouchStart: this.handleTouchStartKey,
-        onTouchMove: this.handleTouchMoveKey,
-        onTouchEnd: this.handleTouchEndKey
-      };
-
-      if (this.isBlack(key)) {
-        const style = key === selected ? selectedStyle : keyOn ? keyOnStyle : blackStyle;
-        const x = "".concat(($white - 1 / 3) * whiteWidthPercentage, "%");
-        blacks.push( /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("rect", _extends({
-          x: x,
-          y: 0,
-          width: blackWidth,
-          height: "70%",
-          style: style
-        }, commonProps)));
-      } else {
-        const style = key === selected ? selectedStyle : keyOn ? keyOnStyle : whiteStyle;
-        const x = "".concat($white * whiteWidthPercentage, "%");
-        whites.push( /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("rect", _extends({
-          x: x,
-          y: 0,
-          width: whiteWidth,
-          height: "100%",
-          style: style
-        }, commonProps)));
-        $white++;
-      }
-
-      key++;
-    }
-
-    return /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, _extends({}, this.props, {
-      containerProps: {
-        style: {
-          height: "100%",
-          width: "100%"
-        }
-      }
-    }), /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("svg", {
-      width: "100%",
-      height: "100%",
-      style: {
-        touchAction: "none"
-      }
-    }, /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("rect", {
-      x: 0,
-      y: 0,
-      width: "100%",
-      height: "100%",
-      style: {
-        fill: "transparent",
-        strokeWidth: 2,
-        stroke: "black"
-      }
-    }), whites, blacks));
-  }
-
-}
-
-_defineProperty(KeyboardUI, "sizing", "both");
-
-_defineProperty(KeyboardUI, "defaultSize", [450, 60]);
-
-_defineProperty(KeyboardUI, "blacks", [1, 3, 6, 8, 10]);
-
-/***/ }),
-
-/***/ "./src/ui/menu.tsx":
-/*!*************************!*\
-  !*** ./src/ui/menu.tsx ***!
-  \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ MenuUI)
-/* harmony export */ });
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-const {
-  Dropdown
-} = _sdk__WEBPACK_IMPORTED_MODULE_0__.SemanticUI;
-class MenuUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread({}, this.state));
-
-    _defineProperty(this, "handleChange", (event, data) => {
-      const {
-        value
-      } = data;
-      this.setState({
-        value
-      });
-      this.object.outlet(0, value);
-    });
-
-    _defineProperty(this, "handleQuery", query => {
-      const {
-        options
-      } = this.state;
-      let value;
-
-      if (typeof query === "number") {
-        if (options[query]) {
-          value = options[query].value;
-        }
-      } else if (typeof query === "string") {
-        const found = options.find(o => o.text === query);
-
-        if (found) {
-          value = found.value;
-        }
-      } else if (_sdk__WEBPACK_IMPORTED_MODULE_0__.Utils.isNumberArray(query)) {
-        value = query.filter(i => !!options[i]).map(i => options[i].value);
-      } else {
-        value = options.filter(o => query.indexOf(o.text) !== -1).map(o => o.value);
-      }
-
-      if (value) {
-        this.setState({
-          value
-        });
-        this.object.outlet(0, value);
-      }
-    });
-  }
-
-  componentDidMount() {
-    super.componentDidMount();
-    this.object.on("query", this.handleQuery);
-  }
-
-  componentWillUnmount() {
-    super.componentWillUnmount();
-    this.object.off("query", this.handleQuery);
-  }
-
-  render() {
-    const {
-      clearable,
-      closeOnBlur,
-      closeOnChange,
-      closeOnEscape,
-      deburr,
-      defaultOpen,
-      defaultValue,
-      direction,
-      disabled,
-      error,
-      lazyLoad,
-      minCharacters,
-      multiple,
-      noResultsMessage,
-      options,
-      placeholder,
-      scrolling,
-      search,
-      selectOnBlur,
-      selectOnNavigation,
-      simple,
-      tabIndex,
-      text,
-      upward,
-      wrapSelection,
-      value
-    } = this.state;
-    const dropdownProps = {
-      clearable,
-      closeOnBlur,
-      closeOnChange,
-      closeOnEscape,
-      deburr,
-      defaultOpen,
-      defaultValue,
-      direction,
-      disabled,
-      error,
-      lazyLoad,
-      minCharacters,
-      multiple,
-      noResultsMessage,
-      options,
-      placeholder,
-      scrolling,
-      search,
-      selectOnBlur,
-      selectOnNavigation,
-      simple,
-      tabIndex,
-      text,
-      upward,
-      wrapSelection,
-      value
-    };
-    return /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, this.props, /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(Dropdown, _extends({}, dropdownProps, {
-      selection: true,
-      fluid: true,
-      onChange: this.handleChange
-    })));
-  }
-
-}
-
-/***/ }),
-
-/***/ "./src/ui/message.tsx":
-/*!****************************!*\
-  !*** ./src/ui/message.tsx ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ MessageUI)
-/* harmony export */ });
-/* harmony import */ var _button__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./button */ "./src/ui/button.tsx");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class MessageUI extends _button__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "handleChanged", text => this.object.handleUpdateArgs([text]));
-
-    _defineProperty(this, "handleClick", e => {
-      if (this.editor.state.locked) this.object.outlet(0, this.object._.buffer);
-    });
-  }
-
-}
-
-_defineProperty(MessageUI, "editableOnUnlock", true);
-
-/***/ }),
-
-/***/ "./src/ui/view.tsx":
-/*!*************************!*\
-  !*** ./src/ui/view.tsx ***!
-  \*************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ ViewUI)
-/* harmony export */ });
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class ViewUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DOMUI {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
-      children: this.object._.children
-    }));
-  }
-
-}
-
-/***/ }),
-
-/***/ "./src/ui/waveform.tsx":
-/*!*****************************!*\
-  !*** ./src/ui/waveform.tsx ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ WaveformUI)
-/* harmony export */ });
-/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! color-js */ "./node_modules/color-js/color.js");
-/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(color_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class WaveformUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.CanvasUI {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
-      audio: this.object._.audio
-    }));
-  }
-
-  async paint() {
-    const {
-      interleaved,
-      cursor,
-      autoVerticalRange,
-      verticalRange,
-      viewRange,
-      showStats,
-      bgColor,
-      cursorColor,
-      phosphorColor,
-      hueOffset,
-      textColor,
-      gridColor,
-      seperatorColor,
-      audioUnit,
-      bpm,
-      audio
-    } = this.state;
-    const {
-      ctx
-    } = this;
-    const [width, height] = this.fullSize();
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, width, height);
-    if (!audio) return;
-    const {
-      audioBuffer,
-      waveform,
-      numberOfChannels,
-      length,
-      sampleRate
-    } = audio;
-    const t = audioBuffer.toArray();
-    if (!t.length || !t[0].length) return; // View Range
-
-    let [$0, $1] = viewRange || [0, length];
-    if ($1 < $0) [$0, $1] = [$1, $0];
-    const pixelsPerSamp = width / ($1 - $0);
-    const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp)); // Vertical Range
-
-    let [yMin, yMax] = autoVerticalRange ? [-1, 1] : verticalRange;
-
-    if (autoVerticalRange) {
-      // Fastest way to get min and max to have: 1. max abs value for y scaling, 2. mean value for zero-crossing
-      let i = numberOfChannels;
-      let s = 0;
-
-      while (i--) {
-        let j = viewRange[1];
-
-        while (j-- > viewRange[0]) {
-          s = t[i][j];
-          if (s < yMin) yMin = s;else if (s > yMax) yMax = s;
-        }
-      }
-
-      const yFactor = Math.max(1, Math.abs(yMin), Math.abs(yMax));
-      [yMin, yMax] = [-yFactor, yFactor];
-    } else {
-      if (yMax < yMin) [yMin, yMax] = [yMax, yMin];
-    }
-
-    const calcY = (v, i) => channelHeight * (+interleaved * i + 1 - (v - yMin) / (yMax - yMin)); // Grids
-
-
-    const {
-      ruler
-    } = _sdk__WEBPACK_IMPORTED_MODULE_1__.Utils.getRuler(viewRange, audioUnit, {
-      bpm,
-      sampleRate
-    });
-    const gridChannels = interleaved ? numberOfChannels : 1;
-    const channelHeight = height / gridChannels; // Vertical
-
-    ctx.strokeStyle = gridColor;
-    ctx.beginPath();
-
-    for (const sampleIn in ruler) {
-      const sample = +sampleIn;
-      const x = (sample - $0 + 0.5) * pixelsPerSamp;
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-    }
-
-    ctx.stroke(); // Horizontal
-
-    ctx.beginPath();
-    const range = [18, 12, 6, 3, 0, -3, -6, -12, -18].filter(v => _sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.dbtoa(v) < Math.max(Math.abs(yMin), Math.abs(yMax)));
-
-    for (let i = 0; i < gridChannels; i++) {
-      let y = calcY(0, i);
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-
-      for (let j = 0; j < range.length; j++) {
-        const a = _sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.dbtoa(range[j]);
-
-        if (a < yMax) {
-          y = calcY(a, i);
-          ctx.moveTo(0, y);
-          ctx.lineTo(width, y);
-        }
-
-        if (a > yMin) {
-          y = calcY(-a, i);
-          ctx.moveTo(0, y);
-          ctx.lineTo(width, y);
-        }
-      }
-    }
-
-    ctx.stroke(); // Seperator
-
-    ctx.beginPath();
-    ctx.setLineDash([4, 2]);
-    ctx.strokeStyle = seperatorColor;
-
-    for (let i = 1; i < gridChannels; i++) {
-      ctx.moveTo(0, i * channelHeight);
-      ctx.lineTo(width, i * channelHeight);
-    }
-
-    ctx.stroke();
-    ctx.setLineDash([]); // Iteration
-
-    ctx.lineWidth = 1;
-    const channelColor = [];
-    const currentWaveform = waveform.findStep(sampsPerPixel);
-
-    for (let i = 0; i < numberOfChannels; i++) {
-      if (interleaved) {
-        ctx.save();
-        const clip = new Path2D();
-        clip.rect(0, i * channelHeight, width, channelHeight);
-        ctx.clip(clip);
-      }
-
-      ctx.beginPath();
-      channelColor[i] = color_js__WEBPACK_IMPORTED_MODULE_0__(phosphorColor).shiftHue(i * hueOffset).toHSL();
-      ctx.strokeStyle = channelColor[i];
-      ctx.fillStyle = channelColor[i];
-
-      if (currentWaveform) {
-        const sampsPerPixel = 1 / pixelsPerSamp;
-        const {
-          idx
-        } = currentWaveform;
-        const {
-          min,
-          max
-        } = currentWaveform[i];
-        let x = 0;
-        let maxInStep;
-        let minInStep;
-
-        for (let j = 0; j < idx.length - 1; j++) {
-          const $ = idx[j];
-          if ($ > $1) break;
-          const $next = j === idx.length - 1 ? length : idx[j + 1];
-          if ($next <= $0) continue;
-
-          if (typeof maxInStep === "undefined") {
-            maxInStep = max[j];
-            minInStep = min[j];
-          } else {
-            if (min[j] < minInStep) minInStep = min[j];
-            if (max[j] > maxInStep) maxInStep = max[j];
-          }
-
-          if ($next >= $0 + sampsPerPixel * (x + 1)) {
-            let y = calcY(maxInStep, i);
-            if (x === 0) ctx.moveTo(x, y);else ctx.lineTo(x, y);
-
-            if (minInStep !== maxInStep) {
-              y = calcY(minInStep, i);
-              ctx.lineTo(x, y);
-            }
-
-            maxInStep = undefined;
-            x++;
-          }
-        }
-      } else {
-        let maxInStep;
-        let minInStep;
-        const prev = t[i][$0 - 1] || 0;
-        const prevX = -0.5 * pixelsPerSamp;
-        const prevY = calcY(prev, i);
-        ctx.moveTo(prevX, prevY);
-
-        for (let j = $0; j < $1; j++) {
-          const samp = t[i][j];
-          const $step = (j - $0) % sampsPerPixel;
-
-          if ($step === 0) {
-            maxInStep = samp;
-            minInStep = samp;
-          } else {
-            if (samp > maxInStep) maxInStep = samp;
-            if (samp < minInStep) minInStep = samp;
-          }
-
-          if ($step === sampsPerPixel - 1) {
-            const x = (j - $step - $0 + 0.5) * pixelsPerSamp;
-            let y = calcY(maxInStep, i);
-            ctx.lineTo(x, y);
-
-            if (minInStep !== maxInStep && pixelsPerSamp < 1) {
-              y = calcY(minInStep, i);
-              ctx.lineTo(x, y);
-            }
-
-            if (pixelsPerSamp > 10) ctx.fillRect(x - 2, y - 2, 4, 4);
-          }
-        }
-
-        const next = t[i][$1] || 0;
-        const nextX = ($1 - $0 + 0.5) * pixelsPerSamp;
-        const nextY = calcY(next, i);
-        ctx.lineTo(nextX, nextY);
-      }
-
-      ctx.stroke();
-      if (interleaved) ctx.restore();
-    } // cursor
-
-
-    if (cursor > $0 && cursor < $1) {
-      ctx.strokeStyle = cursorColor;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      const cursorX = (cursor - $0) / ($1 - $0) * width;
-      ctx.moveTo(cursorX, 0);
-      ctx.lineTo(cursorX, height);
-      ctx.stroke();
-    } // Stats
-
-
-    if (showStats) {
-      ctx.font = "bold 12px Consolas, monospace";
-      ctx.fillStyle = textColor;
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.fillText(yMax.toFixed(2), 2, 2);
-      ctx.textBaseline = "bottom";
-      ctx.fillText(yMax.toFixed(2), 2, height - 2);
-    }
-  }
-
-  componentDidMount() {
-    var _this$state$audio;
-
-    const {
-      bgColor
-    } = this.state;
-    const ctx = this.ctx;
-    if (!ctx) return;
-    const [width, height] = this.fullSize(); // Background
-
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, width, height);
-    (_this$state$audio = this.state.audio) === null || _this$state$audio === void 0 ? void 0 : _this$state$audio.on("changed", this.schedulePaint);
-    super.componentDidMount();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.audio !== this.state.audio) {
-      var _prevState$audio, _this$state$audio2;
-
-      (_prevState$audio = prevState.audio) === null || _prevState$audio === void 0 ? void 0 : _prevState$audio.off("changed", this.schedulePaint);
-      (_this$state$audio2 = this.state.audio) === null || _this$state$audio2 === void 0 ? void 0 : _this$state$audio2.on("changed", this.schedulePaint);
-    }
-
-    super.componentDidUpdate(prevProps, prevState);
-  }
-
-  componentWillUnmount() {
-    var _this$state$audio3;
-
-    (_this$state$audio3 = this.state.audio) === null || _this$state$audio3 === void 0 ? void 0 : _this$state$audio3.off("changed", this.schedulePaint);
-    super.componentWillUnmount();
-  }
-
-}
-
-_defineProperty(WaveformUI, "defaultSize", [120, 60]);
-
-/***/ }),
-
 /***/ "./node_modules/call-bind/callBound.js":
 /*!*********************************************!*\
   !*** ./node_modules/call-bind/callBound.js ***!
@@ -4054,6 +1091,2527 @@ module.exports = function cssWithMappingToString(item) {
 
   return [content].join("\n");
 };
+
+/***/ }),
+
+/***/ "./src/index.ts":
+/*!**********************!*\
+  !*** ./src/index.ts ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "name": () => (/* binding */ name),
+/* harmony export */   "author": () => (/* binding */ author),
+/* harmony export */   "license": () => (/* binding */ license),
+/* harmony export */   "keywords": () => (/* binding */ keywords),
+/* harmony export */   "version": () => (/* binding */ version),
+/* harmony export */   "description": () => (/* binding */ description),
+/* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
+
+
+/***/ }),
+
+/***/ "./src/objects/base.ts":
+/*!*****************************!*\
+  !*** ./src/objects/base.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ UIObject)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class UIObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {
+}
+UIObject.package = _index__WEBPACK_IMPORTED_MODULE_0__.name;
+UIObject.author = _index__WEBPACK_IMPORTED_MODULE_0__.author;
+UIObject.version = _index__WEBPACK_IMPORTED_MODULE_0__.version;
+UIObject.description = _index__WEBPACK_IMPORTED_MODULE_0__.description;
+
+
+/***/ }),
+
+/***/ "./src/objects/bpf.ts":
+/*!****************************!*\
+  !*** ./src/objects/bpf.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ bpf)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _ui_bpf__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/bpf */ "./src/ui/bpf.tsx");
+
+
+
+class bpf extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 1;
+      if (!this.data.points)
+        this.data.points = [];
+    });
+    let prevRange;
+    let prevDomain;
+    this.on("postInit", () => {
+      prevRange = this.getProp("range");
+      prevDomain = this.getProp("domain");
+    });
+    this.on("updateProps", () => {
+      const range = this.getProp("range");
+      if (prevRange && prevRange !== range) {
+        const points = this.data.points.map((p) => [p[0], _sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.scaleClip(p[1], prevRange[0], prevRange[1], range[0], range[1]), p[2]]);
+        this.setData({ points });
+        this.updateUI(this.data);
+        prevRange = range;
+      }
+      const domain = this.getProp("domain");
+      if (typeof prevDomain === "number" && prevDomain !== domain) {
+        const points = this.data.points.map((p) => [_sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.scaleClip(p[0], 0, prevDomain, 0, domain), p[1], p[2]]);
+        this.setData({ points });
+        this.updateUI(this.data);
+        prevDomain = domain;
+      }
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
+        if (inlet === 0) {
+          const { points } = this.data;
+          this.outlet(0, points.map((p, i) => [p[1], p[0] - (i > 0 ? points[i - 1][0] : 0), p[2]]));
+        }
+      } else {
+        let points;
+        try {
+          points = _sdk__WEBPACK_IMPORTED_MODULE_1__.Utils.decodeBPF(data, 3);
+        } catch (e) {
+          this.error("Cannot decode inlet BPF");
+        }
+        this.setData({ points });
+        this.updateUI(this.data);
+      }
+    });
+  }
+}
+bpf.description = "Break-point function editor";
+bpf.inlets = [{
+  type: "anything",
+  isHot: true,
+  description: "Display & output a bpf, bang to output"
+}, {
+  type: "anything",
+  isHot: true,
+  description: "Display without output"
+}];
+bpf.outlets = [{
+  type: "object",
+  description: "BPF triggered"
+}];
+bpf.props = {
+  domain: {
+    type: "number",
+    default: 1e3,
+    description: "X-axis range, starts from 0",
+    isUIState: true
+  },
+  range: {
+    type: "object",
+    default: [0, 1],
+    description: "Y-axis range, [low, high]",
+    isUIState: true
+  },
+  textColor: {
+    type: "color",
+    default: "rgba(0, 255, 255, 1)",
+    description: "Text color",
+    isUIState: true
+  },
+  fontFamily: {
+    type: "enum",
+    enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
+    default: "Arial",
+    description: "Font family",
+    isUIState: true
+  },
+  fontSize: {
+    type: "number",
+    default: 10,
+    description: "Text font size",
+    isUIState: true
+  },
+  fontFace: {
+    type: "enum",
+    enums: ["regular", "bold", "italic", "bold italic"],
+    default: "regular",
+    description: "Text style",
+    isUIState: true
+  },
+  pointColor: {
+    type: "color",
+    default: "white",
+    description: "Text color",
+    isUIState: true
+  },
+  lineColor: {
+    type: "color",
+    default: "white",
+    description: "Line color",
+    isUIState: true
+  },
+  bgColor: {
+    type: "color",
+    default: "rgba(0, 0, 0, 0.5)",
+    description: "Background color",
+    isUIState: true
+  }
+};
+bpf.UI = _ui_bpf__WEBPACK_IMPORTED_MODULE_2__.default;
+
+
+/***/ }),
+
+/***/ "./src/objects/code.ts":
+/*!*****************************!*\
+  !*** ./src/objects/code.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ code)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class code extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 2;
+      if (typeof this.data.value === "undefined")
+        this.setData({ value: "" });
+    });
+    this.on("editorLoaded", () => this.updateUI({ language: this.box.args[0] || "javascript" }));
+    this.on("change", () => this.outlet(1, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang()));
+    this.on("updateArgs", (args) => {
+      if (args[0])
+        this.updateUI({ language: args[0] });
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(0, this.data.value);
+      } else if (inlet === 1) {
+        const value = typeof data === "string" ? data : `${data}`;
+        this.updateUI({ value });
+        this.setData({ value });
+      }
+    });
+  }
+}
+code.description = "Code Editor";
+code.inlets = [{
+  isHot: true,
+  type: "bang",
+  description: "Trigger output the code"
+}, {
+  isHot: false,
+  type: "string",
+  description: "Set the code"
+}];
+code.outlets = [{
+  type: "string",
+  description: "Code"
+}, {
+  type: "bang",
+  description: "Bang when the code is changed"
+}];
+code.args = [{
+  type: "string",
+  optional: true,
+  default: "javascript",
+  description: "language"
+}];
+code.UI = _sdk__WEBPACK_IMPORTED_MODULE_1__.CodeUI;
+
+
+/***/ }),
+
+/***/ "./src/objects/img.ts":
+/*!****************************!*\
+  !*** ./src/objects/img.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ img)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _ui_img__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/img */ "./src/ui/img.tsx");
+var _a;
+
+
+
+class img extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { key: (_a = this.box.args[0]) == null ? void 0 : _a.toString(), image: void 0, file: void 0, url: "" };
+  }
+  subscribe() {
+    super.subscribe();
+    const handleFilePathChanged = () => {
+      var _a2;
+      this._.key = (_a2 = this._.file) == null ? void 0 : _a2.projectPath;
+    };
+    const subsribeItem = async () => {
+      const { image, file } = this._;
+      if (image)
+        await image.addObserver(this);
+      if (file) {
+        file.on("destroyed", reload);
+        file.on("nameChanged", handleFilePathChanged);
+        file.on("pathChanged", handleFilePathChanged);
+      }
+    };
+    const unsubscribeItem = async () => {
+      const { image, file } = this._;
+      if (file) {
+        file.off("destroyed", reload);
+        file.off("nameChanged", handleFilePathChanged);
+        file.off("pathChanged", handleFilePathChanged);
+      }
+      if (image)
+        await image.removeObserver(this);
+    };
+    const reload = async () => {
+      await unsubscribeItem();
+      const { key } = this._;
+      let image;
+      let url;
+      try {
+        const { item } = await this.getSharedItem(key, "image");
+        image = await item.instantiate({ env: this.patcher.env, project: this.patcher.project });
+        this._.image = image;
+        this._.file = item;
+        url = image.objectURL;
+      } catch (e) {
+        url = key;
+      } finally {
+        this._.url = url;
+        this.updateUI({ url });
+        await subsribeItem();
+      }
+    };
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 0;
+    });
+    this.on("postInit", reload);
+    this.on("updateArgs", (args) => {
+      var _a2;
+      if (typeof args[0] === "string") {
+        const oldKey = this._.key;
+        const key = (_a2 = args[0]) == null ? void 0 : _a2.toString();
+        this._.key = key;
+        if (key !== oldKey)
+          reload();
+      }
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
+          if (typeof data === "string") {
+            this._.key = data;
+            reload();
+          }
+        }
+      }
+    });
+    this.on("destroy", unsubscribeItem);
+  }
+}
+img.description = "Display an image";
+img.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Image file name or url"
+}];
+img.args = [{
+  type: "string",
+  optional: true,
+  description: "Image file name or url"
+}];
+img.props = {
+  scroll: {
+    type: "boolean",
+    default: false,
+    description: "Allow overflow-scroll",
+    isUIState: true
+  },
+  objectFit: {
+    type: "enum",
+    enums: ["fill", "cover", "contain", "none", "scale-down"],
+    default: "contain",
+    description: "CSS object-fit property",
+    isUIState: true
+  },
+  objectPosition: {
+    type: "string",
+    default: "50% 50%",
+    description: 'CSS object-position property, for example "50% 50%" or "left top"',
+    isUIState: true
+  }
+};
+img.UI = _ui_img__WEBPACK_IMPORTED_MODULE_2__.default;
+
+
+/***/ }),
+
+/***/ "./src/objects/keyboard.ts":
+/*!*********************************!*\
+  !*** ./src/objects/keyboard.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ keyboard)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _ui_keyboard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/keyboard */ "./src/ui/keyboard.tsx");
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+
+
+
+class keyboard extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { keys: this.flushed, selected: void 0 };
+  }
+  get flushed() {
+    const keys = [];
+    for (let i = 0; i < 128; i++) {
+      keys[i] = 0;
+    }
+    return keys;
+  }
+  flush() {
+    const { keys } = this._;
+    for (let $key = 0; $key < 128; $key++) {
+      if (keys[$key]) {
+        this.outlet(0, new Uint8Array([9 << 4, $key, 0]));
+        this._.keys[$key] = 0;
+      }
+    }
+    this._.selected = void 0;
+  }
+  keyTrigger(keyIn, velocityIn, noOutput) {
+    const key = Math.max(0, Math.min(127, ~~+keyIn));
+    const velocity = Math.max(0, Math.min(127, ~~+velocityIn));
+    const mode = this.getProp("mode");
+    if (mode === "mono") {
+      const keys = this.flushed;
+      keys[key] = velocity;
+      if (!noOutput)
+        this.outlet(0, new Uint8Array([9 << 4, key, velocity]));
+      this._.keys = keys;
+      this._.selected = key;
+    } else if (mode === "poly") {
+      const { keys } = this._;
+      const v = +!keys[key] * (velocity || 1);
+      keys[key] = v;
+      if (!noOutput)
+        this.outlet(0, new Uint8Array([9 << 4, key, v]));
+      this._.keys = __spreadValues({}, keys);
+      this._.selected = v ? key : void 0;
+    } else {
+      const { keys } = this._;
+      keys[key] = velocity;
+      if (!noOutput)
+        this.outlet(0, new Uint8Array([9 << 4, key, velocity]));
+      this._.keys = __spreadValues({}, keys);
+      this._.selected = velocity ? key : void 0;
+    }
+    this.updateUI(this._);
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 1;
+    });
+    let prevMode;
+    this.on("postInit", () => prevMode = this.getProp("mode"));
+    this.on("updateProps", () => {
+      if (prevMode && prevMode !== this.getProp("mode")) {
+        this.flush();
+        this._.keys = __spreadValues({}, this._.keys);
+        this._.selected = void 0;
+        this.updateUI(this._);
+      }
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0 && data === "flush") {
+        this.flush();
+        this._.keys = __spreadValues({}, this._.keys);
+        this._.selected = void 0;
+        this.updateUI(this._);
+      } else if (_sdk__WEBPACK_IMPORTED_MODULE_1__.Utils.isMIDIEvent(data)) {
+        const cmd = data[0] >> 4;
+        const channel = data[0] & 15;
+        const data1 = data[1];
+        const data2 = data[2];
+        if (channel === 9)
+          return;
+        if (cmd === 8 || cmd === 9 && data2 === 0)
+          this.keyTrigger(data1, 0, inlet === 1);
+        else if (cmd === 9)
+          this.keyTrigger(data1, data2, inlet === 1);
+      }
+    });
+  }
+}
+keyboard.description = "Keyboard";
+keyboard.inlets = [{
+  type: "anything",
+  isHot: true,
+  description: 'Display & output same MIDI event, "flush" to flush active notes'
+}, {
+  type: "object",
+  isHot: true,
+  description: "Display without output"
+}];
+keyboard.outlets = [{
+  type: "object",
+  description: "MIDI event triggered"
+}];
+keyboard.props = {
+  from: {
+    type: "number",
+    default: 24,
+    description: "Lowest MIDI key to display",
+    isUIState: true
+  },
+  to: {
+    type: "number",
+    default: 96,
+    description: "Highest MIDI key to display",
+    isUIState: true
+  },
+  blackKeyColor: {
+    type: "color",
+    default: "black",
+    description: "Display color of black key",
+    isUIState: true
+  },
+  whiteKeyColor: {
+    type: "color",
+    default: "white",
+    description: "Display color of white key",
+    isUIState: true
+  },
+  keyOnColor: {
+    type: "color",
+    default: "grey",
+    description: "Display color of pressed key",
+    isUIState: true
+  },
+  selectedColor: {
+    type: "color",
+    default: "yellow",
+    description: "Display color of selected key",
+    isUIState: true
+  },
+  mode: {
+    type: "enum",
+    enums: ["mono", "poly", "touch"],
+    default: "poly",
+    description: "Triggering mode",
+    isUIState: true
+  }
+};
+keyboard.UI = _ui_keyboard__WEBPACK_IMPORTED_MODULE_2__.default;
+
+
+/***/ }),
+
+/***/ "./src/objects/menu.ts":
+/*!*****************************!*\
+  !*** ./src/objects/menu.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ menu)
+/* harmony export */ });
+/* harmony import */ var _ui_menu__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ui/menu */ "./src/ui/menu.tsx");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+
+class menu extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 1;
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        this.emit("query", data);
+      } else {
+        const options = data;
+        this.updateProps({ options });
+      }
+    });
+  }
+}
+menu.description = "Dropdown Menu";
+menu.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "number or display text or array to select item(s)"
+}, {
+  isHot: false,
+  type: "object",
+  description: "Array of DropdownItemProps: { key, icon, text, value, ... }"
+}];
+menu.outlets = [{
+  type: "anything",
+  description: "Selected value"
+}];
+menu.args = [{
+  type: "anything",
+  varLength: true,
+  optional: true,
+  default: void 0,
+  description: "Initial value(s)"
+}];
+menu.props = {
+  clearable: {
+    type: "boolean",
+    default: false,
+    description: "Using the clearable setting will let users remove their selection",
+    isUIState: true
+  },
+  closeOnBlur: {
+    type: "boolean",
+    default: true,
+    description: "Whether or not the menu should close when the dropdown is blurred",
+    isUIState: true
+  },
+  closeOnChange: {
+    type: "boolean",
+    default: void 0,
+    description: "Whether or not the menu should close when a value is selected",
+    isUIState: true
+  },
+  closeOnEscape: {
+    type: "boolean",
+    default: true,
+    description: "Whether or not the dropdown should close when the escape key is pressed",
+    isUIState: true
+  },
+  deburr: {
+    type: "boolean",
+    default: false,
+    description: "Whether or not the dropdown should strip diacritics in options and input search",
+    isUIState: true
+  },
+  defaultOpen: {
+    type: "boolean",
+    default: false,
+    description: "Initial value of open",
+    isUIState: true
+  },
+  defaultValue: {
+    type: "anything",
+    default: void 0,
+    description: "Initial value or value array if multiple",
+    isUIState: true
+  },
+  direction: {
+    type: "enum",
+    enums: ["left", "right"],
+    default: "left",
+    description: "A dropdown menu can open to the left or to the right",
+    isUIState: true
+  },
+  disabled: {
+    type: "boolean",
+    default: false,
+    description: " A disabled dropdown menu or item does not allow user interaction",
+    isUIState: true
+  },
+  error: {
+    type: "boolean",
+    default: false,
+    description: "An errored dropdown can alert a user to a problem",
+    isUIState: true
+  },
+  lazyLoad: {
+    type: "boolean",
+    default: false,
+    description: "A dropdown can defer rendering its options until it is open",
+    isUIState: true
+  },
+  minCharacters: {
+    type: "number",
+    default: 1,
+    description: "The minimum characters for a search to begin showing results",
+    isUIState: true
+  },
+  multiple: {
+    type: "boolean",
+    default: false,
+    description: "A selection dropdown can allow multiple selections",
+    isUIState: true
+  },
+  noResultsMessage: {
+    type: "string",
+    default: "No results found",
+    description: "Message to display when there are no results",
+    isUIState: true
+  },
+  options: {
+    type: "anything",
+    default: [],
+    description: "Array of Dropdown.Item props",
+    isUIState: true
+  },
+  placeholder: {
+    type: "string",
+    default: "",
+    description: "Placeholder text",
+    isUIState: true
+  },
+  scrolling: {
+    type: "boolean",
+    default: false,
+    description: "A dropdown can have its menu scroll",
+    isUIState: true
+  },
+  search: {
+    type: "boolean",
+    default: false,
+    description: "A selection dropdown can allow a user to search through a large list of choices",
+    isUIState: true
+  },
+  selectOnBlur: {
+    type: "boolean",
+    default: true,
+    description: "Whether the highlighted item should be selected on blur",
+    isUIState: true
+  },
+  selectOnNavigation: {
+    type: "boolean",
+    default: true,
+    description: "Whether dropdown should select new option when using keyboard shortcuts.",
+    isUIState: true
+  },
+  simple: {
+    type: "boolean",
+    default: false,
+    description: "A dropdown menu can open to the left or to the right",
+    isUIState: true
+  },
+  tabIndex: {
+    type: "anything",
+    default: void 0,
+    description: "A dropdown can receive focus",
+    isUIState: true
+  },
+  text: {
+    type: "string",
+    default: void 0,
+    description: "The text displayed in the dropdown, usually for the active item",
+    isUIState: true
+  },
+  upward: {
+    type: "boolean",
+    default: false,
+    description: "Controls whether the dropdown will open upward",
+    isUIState: true
+  },
+  wrapSelection: {
+    type: "boolean",
+    default: false,
+    description: "Selection will wrap to end or start on press ArrowUp or ArrowDown",
+    isUIState: true
+  }
+};
+menu.UI = _ui_menu__WEBPACK_IMPORTED_MODULE_0__.default;
+
+
+/***/ }),
+
+/***/ "./src/objects/message.ts":
+/*!********************************!*\
+  !*** ./src/objects/message.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ message)
+/* harmony export */ });
+/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! util */ "./node_modules/util/util.js");
+/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(util__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _ui_message__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../ui/message */ "./src/ui/message.tsx");
+
+
+
+
+class message extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { buffer: new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang(), editing: false };
+    this.handleUpdateArgs = (args) => {
+      if (typeof args[0] !== "undefined") {
+        this.setData({ text: this.stringify(args[0]) });
+        this._.buffer = this.parse(args[0]);
+      } else {
+        this._.buffer = new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang();
+      }
+      this.updateUI({ text: this.data.text });
+    };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 1;
+    });
+    this.on("postInit", () => {
+      const args = this.box.args;
+      if (typeof this.data.text === "string")
+        this._.buffer = this.parse(this.data.text);
+      else if (typeof args[0] !== "undefined") {
+        if (typeof this.data.text !== "string") {
+          this.setData({ text: this.stringify(args[0]) });
+          this._.buffer = args[0];
+        }
+      } else {
+        this.setData({ text: "" });
+        this._.buffer = new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang();
+      }
+    });
+    this.on("updateArgs", this.handleUpdateArgs);
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0)
+        this.outlet(0, this._.buffer);
+      else if (inlet === 1)
+        this.handleUpdateArgs([data]);
+    });
+  }
+  parse(o) {
+    if (typeof o === "string") {
+      if (o.length > 0) {
+        try {
+          return JSON.parse(o);
+        } catch (e) {
+          return o;
+        }
+      }
+      return new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang();
+    }
+    return o;
+  }
+  stringify(o) {
+    if (typeof o === "string")
+      return o;
+    try {
+      return JSON.stringify(o);
+    } catch (e) {
+      return util__WEBPACK_IMPORTED_MODULE_0__.inspect(o);
+    }
+  }
+}
+message.description = "Message";
+message.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Trigger output the message"
+}, {
+  isHot: false,
+  type: "anything",
+  description: "Set the message"
+}];
+message.outlets = [{
+  type: "anything",
+  description: "Message to send"
+}];
+message.UI = _ui_message__WEBPACK_IMPORTED_MODULE_3__.default;
+
+
+/***/ }),
+
+/***/ "./src/objects/view.ts":
+/*!*****************************!*\
+  !*** ./src/objects/view.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ view)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _ui_view__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/view */ "./src/ui/view.tsx");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+
+
+class view extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { children: [] };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 0;
+    });
+    const handleUpdateArgs = (args) => {
+      if (typeof args[0] === "string") {
+        const template = document.createElement("template");
+        template.innerHTML = args[0];
+        this._.children = Array.from(template.content.children);
+        this.updateUI({ children: this._.children });
+      }
+    };
+    this.on("postInit", () => handleUpdateArgs(this.args));
+    this.on("updateArgs", handleUpdateArgs);
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
+          if (typeof data === "string") {
+            const template = document.createElement("template");
+            template.innerHTML = data;
+            this._.children = Array.from(template.content.children);
+          } else if (data instanceof Element) {
+            this._.children = [data];
+          }
+          this.updateUI({ children: this._.children });
+        }
+      }
+    });
+  }
+}
+view.description = "View HTML Element";
+view.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "HTML string or HTMLElement object to view"
+}];
+view.args = [{
+  type: "string",
+  optional: true,
+  description: "initial innerHTML"
+}];
+view.props = {
+  shadow: {
+    type: "boolean",
+    default: true,
+    description: "Whether children should be attached to a Shadow DOM",
+    isUIState: true
+  },
+  containerProps: {
+    type: "object",
+    default: {},
+    description: "Available under non-shadow mode, the props for div container",
+    isUIState: true
+  }
+};
+view.UI = _ui_view__WEBPACK_IMPORTED_MODULE_1__.default;
+
+
+/***/ }),
+
+/***/ "./src/objects/waveform.ts":
+/*!*********************************!*\
+  !*** ./src/objects/waveform.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ waveform)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _ui_waveform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/waveform */ "./src/ui/waveform.tsx");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+
+class waveform extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { audio: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 0;
+    });
+    this.on("inlet", async ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (data instanceof _sdk__WEBPACK_IMPORTED_MODULE_2__.PatcherAudio) {
+          this._.audio = data;
+          this.updateUI(this._);
+          this.updateProps({ selRange: null, viewRange: [0, data.length], cursor: 0 });
+        } else {
+          this.error("Input data is not PatcherAudio instance");
+        }
+      }
+    });
+  }
+}
+waveform.description = "Buffer waveform view";
+waveform.inlets = [{
+  isHot: false,
+  type: "object",
+  description: "Patcher Audio object (from buffer~)"
+}];
+waveform.props = {
+  interleaved: {
+    type: "boolean",
+    default: false,
+    description: "Draw channels seperately",
+    isUIState: true
+  },
+  cursor: {
+    type: "number",
+    default: 0,
+    description: "Display a cursor",
+    isUIState: true
+  },
+  viewRange: {
+    type: "object",
+    default: [0, 1],
+    description: "Display only a part of the buffer",
+    isUIState: true
+  },
+  selRange: {
+    type: "object",
+    default: null,
+    description: "Nullable, display selection of a part of the buffer",
+    isUIState: true
+  },
+  verticalRange: {
+    type: "object",
+    default: [-1, 1],
+    description: "Vertical range",
+    isUIState: true
+  },
+  autoVerticalRange: {
+    type: "boolean",
+    default: true,
+    description: "Auto adjust vertical range if > 1",
+    isUIState: true
+  },
+  showStats: {
+    type: "boolean",
+    default: true,
+    description: "Show stats texts",
+    isUIState: true
+  },
+  bgColor: {
+    type: "color",
+    default: "rgb(40, 40, 40)",
+    description: "Background color",
+    isUIState: true
+  },
+  cursorColor: {
+    type: "color",
+    default: "white",
+    description: "Cursor color",
+    isUIState: true
+  },
+  phosphorColor: {
+    type: "color",
+    default: "hsl(0, 100%, 85%)",
+    description: "Phosphor color",
+    isUIState: true
+  },
+  hueOffset: {
+    type: "number",
+    default: 60,
+    description: "Channel Color Hue offset",
+    isUIState: true
+  },
+  textColor: {
+    type: "color",
+    default: "#DDDD99",
+    description: "Info text color",
+    isUIState: true
+  },
+  gridColor: {
+    type: "color",
+    default: "#404040",
+    description: "Grid color",
+    isUIState: true
+  },
+  seperatorColor: {
+    type: "color",
+    default: "white",
+    description: "Channel seperator color",
+    isUIState: true
+  },
+  audioUnit: {
+    type: "enum",
+    default: "time",
+    enums: ["time", "sample", "measure"],
+    description: "Vertical grid mode",
+    isUIState: true
+  },
+  bpm: {
+    type: "number",
+    default: 60,
+    description: "If audioUnit is measure, a BPM can be used",
+    isUIState: true
+  }
+};
+waveform.UI = _ui_waveform__WEBPACK_IMPORTED_MODULE_1__.default;
+
+
+/***/ }),
+
+/***/ "./src/package-info.ts":
+/*!*****************************!*\
+  !*** ./src/package-info.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+var _package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../package.json */ "./package.json");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/ (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(_package_json__WEBPACK_IMPORTED_MODULE_0__, 2))));
+
+
+/***/ }),
+
+/***/ "./src/sdk.ts":
+/*!********************!*\
+  !*** ./src/sdk.ts ***!
+  \********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "React": () => (/* binding */ React),
+/* harmony export */   "ReactDOM": () => (/* binding */ ReactDOM),
+/* harmony export */   "SemanticUI": () => (/* binding */ SemanticUI),
+/* harmony export */   "PatcherAudio": () => (/* binding */ PatcherAudio),
+/* harmony export */   "OperableAudioBuffer": () => (/* binding */ OperableAudioBuffer),
+/* harmony export */   "Patcher": () => (/* binding */ Patcher),
+/* harmony export */   "Box": () => (/* binding */ Box),
+/* harmony export */   "Line": () => (/* binding */ Line),
+/* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
+/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
+/* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
+/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
+/* harmony export */   "CanvasUI": () => (/* binding */ CanvasUI),
+/* harmony export */   "CodeUI": () => (/* binding */ CodeUI),
+/* harmony export */   "DefaultPopupUI": () => (/* binding */ DefaultPopupUI),
+/* harmony export */   "CodePopupUI": () => (/* binding */ CodePopupUI),
+/* harmony export */   "DOMUI": () => (/* binding */ DOMUI),
+/* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
+/* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
+/* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
+/* harmony export */   "Bang": () => (/* binding */ Bang),
+/* harmony export */   "isBang": () => (/* binding */ isBang),
+/* harmony export */   "TransmitterNode": () => (/* binding */ TransmitterNode),
+/* harmony export */   "TemporalAnalyserNode": () => (/* binding */ TemporalAnalyserNode),
+/* harmony export */   "SpectralAnalyserNode": () => (/* binding */ SpectralAnalyserNode),
+/* harmony export */   "MathUtils": () => (/* binding */ MathUtils),
+/* harmony export */   "BufferUtils": () => (/* binding */ BufferUtils),
+/* harmony export */   "Utils": () => (/* binding */ Utils),
+/* harmony export */   "getReactMonacoEditor": () => (/* binding */ getReactMonacoEditor)
+/* harmony export */ });
+const sdk = globalThis.jspatcherEnv.sdk;
+const {
+  React,
+  ReactDOM,
+  SemanticUI,
+  PatcherAudio,
+  OperableAudioBuffer,
+  Patcher,
+  Box,
+  Line,
+  BaseObject,
+  DefaultObject,
+  BaseUI,
+  DefaultUI,
+  CanvasUI,
+  CodeUI,
+  DefaultPopupUI,
+  CodePopupUI,
+  DOMUI,
+  generateDefaultObject,
+  generateRemoteObject,
+  generateRemotedObject,
+  Bang,
+  isBang,
+  TransmitterNode,
+  TemporalAnalyserNode,
+  SpectralAnalyserNode,
+  MathUtils,
+  BufferUtils,
+  Utils,
+  getReactMonacoEditor
+} = sdk;
+
+
+/***/ }),
+
+/***/ "./src/ui/bpf.tsx":
+/*!************************!*\
+  !*** ./src/ui/bpf.tsx ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ BPFUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+class BPFUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadProps(__spreadValues({}, this.state), { points: this.object.data.points, ghostPoint: void 0 });
+    this.dragged = false;
+    this.mouseDown = false;
+    this.refG = _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createRef();
+    this.handleResized = () => {
+      if (this.refG.current) {
+        this.refG.current.style.transformOrigin = "0";
+        requestAnimationFrame(() => this.refG.current.style.transformOrigin = "center");
+      }
+    };
+    this.handleMouseMove = () => {
+      this.setState({ ghostPoint: void 0 });
+    };
+    this.handleDoubleClick = (e) => {
+      if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey)
+        return;
+      this.dragged = false;
+      const { points } = this.state;
+      const svg = e.currentTarget;
+      let { left, top, width, height } = svg.getBoundingClientRect();
+      left += 0.025 * width;
+      top += 0.025 * height;
+      width *= 0.95;
+      height *= 0.95;
+      const normalizedX = (e.clientX - left) / width;
+      const normalizedY = 1 - (e.clientY - top) / height;
+      const [x, y] = this.denormalizePoint(normalizedX, normalizedY);
+      const { index: $point, point } = this.getInsertPoint(x, y);
+      points.splice($point, 0, point);
+      this.setState({ points: points.slice() });
+      this.object.setData({ points: this.state.points });
+    };
+    this.handleMouseMoveLine = (e) => {
+      if (this.mouseDown)
+        return;
+      e.stopPropagation();
+      const line = e.currentTarget;
+      if (e.altKey) {
+        line.style.cursor = "ns-resize";
+        return;
+      }
+      line.style.cursor = "unset";
+      const { domain } = this.state;
+      const svg = line.parentElement.parentElement;
+      let { left, width } = svg.getBoundingClientRect();
+      left += 0.025 * width;
+      width *= 0.95;
+      const normalizedX = (e.clientX - left) / width;
+      const { point } = this.getInsertPoint(normalizedX * domain);
+      this.setState({ ghostPoint: point });
+    };
+    this.handleMouseDownLine = (e) => {
+      e.stopPropagation();
+      this.dragged = false;
+      this.mouseDown = true;
+      const line = e.currentTarget;
+      const { points, domain, range } = this.state;
+      const svg = line.parentElement.parentElement;
+      let { left, top, width, height } = svg.getBoundingClientRect();
+      left += 0.025 * width;
+      top += 0.025 * height;
+      width *= 0.95;
+      height *= 0.95;
+      if (e.altKey) {
+        const i = +line.getAttribute("values");
+        const prev = points[i];
+        const next = points[i + 1];
+        const { clientY } = e;
+        const handleMouseMove = (e2) => {
+          this.dragged = true;
+          let [rangeMin, rangeMax] = range;
+          if (rangeMin > rangeMax)
+            [rangeMin, rangeMax] = [rangeMax, rangeMin];
+          const rangeInterval = rangeMax - rangeMin;
+          if (!rangeInterval)
+            return;
+          const delta = (e2.clientY - clientY) / height * rangeInterval;
+          points[i] = prev.slice();
+          points[i][1] = Math.min(rangeMax, Math.max(rangeMin, prev[1] - delta));
+          if (next) {
+            points[i + 1] = next.slice();
+            points[i + 1][1] = Math.min(rangeMax, Math.max(rangeMin, next[1] - delta));
+          }
+          this.setState({ points: points.slice() });
+          this.object.setData({ points: this.state.points });
+        };
+        const handleMouseUp = () => {
+          this.mouseDown = false;
+          document.removeEventListener("mousemove", handleMouseMove);
+          document.removeEventListener("mouseup", handleMouseUp);
+        };
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+      } else {
+        const normalizedX = (e.clientX - left) / width;
+        const { index: $point, point } = this.getInsertPoint(normalizedX * domain);
+        const limits = [
+          points[$point - 1][0] / domain * width + left,
+          points[$point] ? points[$point][0] / domain * width + left : left + width
+        ];
+        points.splice($point, 0, point);
+        this.setState({ points: points.slice() });
+        this.object.setData({ points: this.state.points });
+        const handleMouseMove = (e2) => {
+          this.dragged = true;
+          const clientX = Math.max(limits[0], Math.min(limits[1], e2.clientX));
+          const clientY = Math.max(top, Math.min(top + height, e2.clientY));
+          const normalized = [(clientX - left) / width, 1 - (clientY - top) / height];
+          const [x, y] = this.denormalizePoint(...normalized);
+          const point2 = [x, y, 0];
+          points[$point] = point2;
+          this.setState({ points: points.slice() });
+          this.object.setData({ points: this.state.points });
+        };
+        const handleMouseUp = () => {
+          this.mouseDown = false;
+          document.removeEventListener("mousemove", handleMouseMove);
+          document.removeEventListener("mouseup", handleMouseUp);
+        };
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseup", handleMouseUp);
+      }
+    };
+    this.handleMouseDownCircle = (e) => {
+      e.stopPropagation();
+      this.dragged = false;
+      const { points, domain } = this.state;
+      const circle = e.currentTarget;
+      const svg = circle.parentElement.parentElement;
+      let { left, top, width, height } = svg.getBoundingClientRect();
+      left += 0.05 * width;
+      top += 0.05 * height;
+      width *= 0.9;
+      height *= 0.9;
+      const i = +circle.getAttribute("values");
+      const limits = [
+        points[i - 1] ? points[i - 1][0] / domain * width + left : left,
+        points[i + 1] ? points[i + 1][0] / domain * width + left : left + width
+      ];
+      const [x, y] = this.normalizePoint(points[i][0], points[i][1]);
+      const circleX = left + x * width;
+      const circleY = top + (1 - y) * height;
+      const handleMouseMove = (e2) => {
+        this.dragged = true;
+        const clientX = Math.max(limits[0], Math.min(limits[1], e2.shiftKey || Math.abs(circleX - e2.clientX) > 5 ? e2.clientX : circleX));
+        const clientY = Math.max(top, Math.min(top + height, e2.shiftKey || Math.abs(circleY - e2.clientY) > 5 ? e2.clientY : circleY));
+        const normalized = [(clientX - left) / width, 1 - (clientY - top) / height];
+        const [x2, y2] = this.denormalizePoint(...normalized);
+        const point = [x2, y2, 0];
+        points[i] = point;
+        this.setState({ points: points.slice() });
+        this.object.setData({ points: this.state.points });
+      };
+      const handleMouseUp = () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    };
+    this.handleDoubleClickCircle = (e) => {
+      e.stopPropagation();
+      if (this.dragged)
+        return;
+      const circle = e.currentTarget;
+      const i = +circle.getAttribute("values");
+      const { points } = this.state;
+      points.splice(i, 1);
+      this.setState({ points: points.slice() });
+      this.object.setData({ points: this.state.points });
+    };
+  }
+  componentDidMount() {
+    super.componentDidMount();
+    this.box.on("rectChanged", this.handleResized);
+    this.box.on("presentationRectChanged", this.handleResized);
+  }
+  componentWillUnmount() {
+    super.componentWillUnmount();
+    this.box.off("rectChanged", this.handleResized);
+    this.box.off("presentationRectChanged", this.handleResized);
+  }
+  getInsertPoint(x, yIn, e = 0) {
+    const { points } = this.state;
+    let $point = 0;
+    let prev = points[0];
+    let next;
+    while ($point < points.length) {
+      next = points[$point];
+      if (next[0] > x)
+        break;
+      prev = next;
+      $point++;
+    }
+    if (prev === next)
+      return { index: $point, point: [x, typeof yIn === "number" ? yIn : prev[1], e] };
+    if (typeof yIn === "number")
+      return { index: $point, point: [x, yIn, e] };
+    const exponent = prev[2] || 0;
+    const normalizedX = (x - prev[0]) / (next[0] - prev[0]);
+    const normalizedY = _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.normExp(normalizedX, exponent);
+    const y = prev[1] + normalizedY * (next[1] - prev[1]);
+    return { index: $point, point: [x, y, e] };
+  }
+  get normalizedPoints() {
+    const { domain, range, points } = this.state;
+    let [rangeMin, rangeMax] = range;
+    if (rangeMin > rangeMax)
+      [rangeMin, rangeMax] = [rangeMax, rangeMin];
+    const rangeInterval = rangeMax - rangeMin;
+    return points.map((point) => [point[0] / domain, rangeInterval ? (point[1] - rangeMin) / rangeInterval : 0.5]);
+  }
+  normalizePoint(x, y) {
+    const { domain, range } = this.state;
+    let [rangeMin, rangeMax] = range;
+    if (rangeMin > rangeMax)
+      [rangeMin, rangeMax] = [rangeMax, rangeMin];
+    const rangeInterval = rangeMax - rangeMin;
+    return [x / domain, rangeInterval ? (y - rangeMin) / rangeInterval : 0.5];
+  }
+  denormalizePoint(x, y) {
+    const { domain, range } = this.state;
+    let [rangeMin, rangeMax] = range;
+    if (rangeMin > rangeMax)
+      [rangeMin, rangeMax] = [rangeMax, rangeMin];
+    const rangeInterval = rangeMax - rangeMin;
+    return [x * domain, y * rangeInterval + rangeMin];
+  }
+  get font() {
+    const { fontFace, fontSize, fontFamily } = this.state;
+    return `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
+  }
+  render() {
+    const { normalizedPoints, font, state } = this;
+    const { domain, points, textColor, ghostPoint, lineColor, pointColor, bgColor } = state;
+    const circles = [];
+    const lines = [];
+    const linesEvents = [];
+    const texts = [];
+    let prevX;
+    let prevY;
+    for (let i = 0; i < normalizedPoints.length; i++) {
+      const point = normalizedPoints[i];
+      const x = point[0] * 100 + "%";
+      const y = (1 - point[1]) * 100 + "%";
+      const textAnchor = point[0] < 0.5 ? "start" : "end";
+      const textX = point[0] * 100 + (point[0] < 0.5 ? 2 : -2) + "%";
+      const textY = (1 - point[1]) * 100 + (point[1] < 0.5 ? -1 : 4) + "%";
+      const textStyle = {
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        pointerEvents: "none",
+        font,
+        fill: textColor
+      };
+      circles.push(/* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("circle", {
+        key: i,
+        cx: x,
+        cy: y,
+        r: 4,
+        values: `${i}`,
+        fill: pointColor,
+        onMouseDown: this.handleMouseDownCircle,
+        onDoubleClick: this.handleDoubleClickCircle
+      }));
+      texts.push(/* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("text", {
+        textAnchor,
+        key: `${i}_text`,
+        x: textX,
+        y: textY,
+        style: textStyle
+      }, `${_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.round(points[i][0], 0.01)}, ${_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.round(points[i][1], 0.01)}`));
+      if (prevX && prevY) {
+        lines.push(/* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("line", {
+          key: `${i - 1}_line`,
+          x1: prevX,
+          y1: prevY,
+          x2: x,
+          y2: y,
+          stroke: lineColor,
+          strokeWidth: 2
+        }));
+        linesEvents.push(/* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("line", {
+          key: `${i - 1}_events`,
+          x1: prevX,
+          y1: prevY,
+          x2: x,
+          y2: y,
+          values: `${i - 1}`,
+          stroke: "transparent",
+          strokeWidth: 10,
+          onMouseDown: this.handleMouseDownLine,
+          onMouseMove: this.handleMouseMoveLine
+        }));
+      }
+      prevX = x;
+      prevY = y;
+    }
+    let ghostCircle;
+    if (ghostPoint) {
+      const point = this.normalizePoint(ghostPoint[0], ghostPoint[1]);
+      const x = point[0] * 100 + "%";
+      const y = (1 - point[1]) * 100 + "%";
+      ghostCircle = /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("circle", {
+        key: "ghostPoint",
+        cx: x,
+        cy: y,
+        r: 4,
+        fill: pointColor,
+        style: { opacity: 0.25, pointerEvents: "none" }
+      });
+    }
+    if (points.length && points[points.length - 1][0] !== domain) {
+      const i = points.length - 1;
+      lines.push(/* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("line", {
+        key: `${i}_line`,
+        x1: prevX,
+        y1: prevY,
+        x2: "100%",
+        y2: prevY,
+        stroke: lineColor,
+        strokeWidth: 2
+      }));
+      linesEvents.push(/* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("line", {
+        key: `${i}_events`,
+        x1: prevX,
+        y1: prevY,
+        x2: "100%",
+        y2: prevY,
+        values: `${i}`,
+        stroke: "transparent",
+        strokeWidth: 10,
+        onMouseDown: this.handleMouseDownLine,
+        onMouseMove: this.handleMouseMoveLine
+      }));
+    }
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadProps(__spreadValues({}, this.props), {
+      containerProps: { style: { height: "100%", width: "100%" } }
+    }), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("svg", {
+      width: "100%",
+      height: "100%",
+      style: { backgroundColor: bgColor },
+      onMouseMove: this.handleMouseMove,
+      onDoubleClick: this.handleDoubleClick
+    }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("g", {
+      ref: this.refG,
+      transform: "scale(0.95, 0.95)",
+      style: { transformOrigin: "center" }
+    }, texts, ghostCircle, lines, linesEvents, circles)));
+  }
+}
+BPFUI.sizing = "both";
+BPFUI.defaultSize = [450, 300];
+
+
+/***/ }),
+
+/***/ "./src/ui/button.tsx":
+/*!***************************!*\
+  !*** ./src/ui/button.tsx ***!
+  \***************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ButtonUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+class ButtonUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadProps(__spreadValues({}, this.state), { loading: false, text: this.props.object.data.text });
+    this.refSpan = _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createRef();
+    this.handleChanged = (text) => {
+    };
+    this.handleMouseDown = (e) => this.props.editing ? e.stopPropagation() : null;
+    this.handleClickSpan = (e) => this.props.editing ? e.stopPropagation() : null;
+    this.handleClick = (e) => {
+    };
+    this.handleKeyDown = (e) => {
+      if (!this.props.editing)
+        return;
+      if (e.key === "Enter") {
+        e.preventDefault();
+        return;
+      }
+      e.stopPropagation();
+      e.nativeEvent.stopImmediatePropagation();
+    };
+    this.handlePaste = (e) => {
+      if (!this.props.editing)
+        return;
+      e.preventDefault();
+      document.execCommand("insertHTML", false, e.clipboardData.getData("text/plain"));
+    };
+  }
+  componentDidMount() {
+    super.componentDidMount();
+    if (this.props.editing)
+      this.toggleEdit(this.props.editing);
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.editing !== prevProps.editing)
+      this.toggleEdit(this.props.editing);
+  }
+  toggleEdit(toggle) {
+    const { editor, box } = this;
+    if (editor.state.locked)
+      return;
+    if (!this.refSpan.current)
+      return;
+    const span = this.refSpan.current;
+    if (toggle) {
+      editor.selectOnly(box.id);
+      this.setState({ text: span.textContent }, () => {
+        span.focus();
+        _sdk__WEBPACK_IMPORTED_MODULE_0__.Utils.selectElementRange(span);
+      });
+    } else {
+      window.getSelection().removeAllRanges();
+      span.blur();
+      this.setState({ text: span.textContent });
+      this.handleChanged(span.textContent);
+    }
+  }
+  render() {
+    const classArray = ["box-ui-button", "ui", "button", "compact", "mini"];
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadProps(__spreadValues({}, this.props), {
+      additionalClassName: classArray.join(" "),
+      containerProps: { onClick: this.handleClick }
+    }), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
+      className: "box-ui-text-container"
+    }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("span", {
+      contentEditable: this.props.editing,
+      className: "editable" + (this.props.editing ? " editing" : ""),
+      ref: this.refSpan,
+      onMouseDown: this.handleMouseDown,
+      onClick: this.handleClickSpan,
+      onPaste: this.handlePaste,
+      onKeyDown: this.handleKeyDown,
+      onBlur: this.props.onEditEnd,
+      suppressContentEditableWarning: true
+    }, this.state.text)));
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/ui/img.tsx":
+/*!************************!*\
+  !*** ./src/ui/img.tsx ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ImgUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+class ImgUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadProps(__spreadValues({}, this.state), { url: this.object._.url });
+  }
+  render() {
+    const { objectFit, objectPosition, scroll } = this.state;
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
+      style: { position: "absolute", width: "100%", height: "100%", display: "block", overflow: "auto" }
+    }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("img", {
+      src: this.state.url,
+      style: __spreadProps(__spreadValues({ position: "absolute" }, scroll ? {} : { width: "100%", height: "100%" }), { objectFit, objectPosition })
+    })));
+  }
+}
+ImgUI.sizing = "both";
+ImgUI.defaultSize = [210, 90];
+
+
+/***/ }),
+
+/***/ "./src/ui/keyboard.tsx":
+/*!*****************************!*\
+  !*** ./src/ui/keyboard.tsx ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ KeyboardUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+const _KeyboardUI = class extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadProps(__spreadValues({}, this.state), { keys: this.object._.keys, selected: void 0 });
+    this.mouseDown = false;
+    this.touches = [];
+    this.handleMouseDownKey = (e) => {
+      const key = +e.currentTarget.getAttribute("values");
+      if (this.state.mode === "touch") {
+        if (this.state.keys[key])
+          return;
+        this.touches[-1] = key;
+      }
+      const rect = e.currentTarget.getBoundingClientRect();
+      const y = e.pageY - rect.top;
+      const height = rect.height;
+      const velocity = Math.min(127, ~~(y / height * 128)) || 1;
+      this.object.keyTrigger(key, velocity);
+      this.mouseDown = true;
+      const handleMouseUp = () => {
+        this.mouseDown = false;
+        if (this.state.mode === "touch" && this.touches[-1]) {
+          this.object.keyTrigger(this.touches[-1], 0);
+          delete this.touches[-1];
+        }
+        this.setState({ selected: void 0 });
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+      document.addEventListener("mouseup", handleMouseUp);
+    };
+    this.handleMouseEnterKey = (e) => {
+      if (!this.mouseDown)
+        return;
+      const key = +e.currentTarget.getAttribute("values");
+      if (this.state.mode === "touch") {
+        if (this.touches[-1] && this.touches[-1] !== key) {
+          this.object.keyTrigger(this.touches[-1], 0);
+          delete this.touches[-1];
+        }
+        if (this.state.keys[key])
+          return;
+      }
+      const rect = e.currentTarget.getBoundingClientRect();
+      const y = e.pageY - rect.top;
+      const height = rect.height;
+      const velocity = Math.min(127, ~~(y / height * 128)) || 1;
+      this.object.keyTrigger(key, velocity);
+      if (this.state.mode === "touch")
+        this.touches[-1] = key;
+    };
+    this.handleTouchStartKey = (e, keyIn) => {
+      if (this.state.mode !== "touch")
+        return;
+      e.stopPropagation();
+      const key = typeof keyIn === "number" ? keyIn : +e.currentTarget.getAttribute("values");
+      Array.from(e.changedTouches).forEach((touch) => {
+        const { identifier: id } = touch;
+        if (this.touches[id])
+          this.object.keyTrigger(this.touches[id], 0);
+        this.touches[id] = key;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const y = touch.pageY - rect.top;
+        const height = rect.height;
+        const velocity = Math.min(127, ~~(y / height * 128)) || 1;
+        this.object.keyTrigger(key, velocity);
+      });
+    };
+    this.handleTouchMoveKey = (e) => {
+      if (this.state.mode !== "touch")
+        return;
+      e.stopPropagation();
+      e.preventDefault();
+      Array.from(e.changedTouches).forEach((touch) => {
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (target.parentElement !== e.currentTarget.parentElement)
+          return;
+        const key = +target.getAttribute("values");
+        if (typeof key === "undefined")
+          return;
+        if (this.state.keys[key])
+          return;
+        this.handleTouchStartKey(e, key);
+      });
+    };
+    this.handleTouchEndKey = (e) => {
+      if (this.state.mode !== "touch")
+        return;
+      e.stopPropagation();
+      e.preventDefault();
+      Array.from(e.changedTouches).forEach((touch) => {
+        const { identifier: id } = touch;
+        if (this.touches[id])
+          this.object.keyTrigger(this.touches[id], 0);
+        delete this.touches[id];
+      });
+    };
+  }
+  isBlack(key) {
+    return _KeyboardUI.blacks.indexOf(key % 12) !== -1;
+  }
+  get from() {
+    if (this.isBlack(this.state.from))
+      return this.state.from - 1;
+    return this.state.from;
+  }
+  get to() {
+    if (this.isBlack(this.state.to))
+      return this.state.to + 1;
+    return this.state.to;
+  }
+  get whiteCount() {
+    const { to } = this;
+    let { from } = this;
+    if (from >= to)
+      return 0;
+    let count = 0;
+    while (from <= to) {
+      if (!this.isBlack(from++))
+        count++;
+    }
+    return count;
+  }
+  render() {
+    const { from, to, whiteCount, state } = this;
+    const { blackKeyColor, whiteKeyColor, keyOnColor, selectedColor, selected } = state;
+    const whites = [];
+    const blacks = [];
+    const blackStyle = { fill: blackKeyColor, strokeWidth: 1, stroke: "black" };
+    const whiteStyle = { fill: whiteKeyColor, strokeWidth: 1, stroke: "black" };
+    const keyOnStyle = { fill: keyOnColor, strokeWidth: 1, stroke: "black" };
+    const selectedStyle = { fill: selectedColor, strokeWidth: 1, stroke: "black" };
+    const whiteWidthPercentage = 100 / whiteCount;
+    const blackWidthPercentage = 100 / whiteCount * 2 / 3;
+    const whiteWidth = `${whiteWidthPercentage}%`;
+    const blackWidth = `${blackWidthPercentage}%`;
+    let $white = 0;
+    let key = from;
+    while (key <= to) {
+      const $key = key;
+      const keyOn = +!!this.state.keys[$key];
+      const commonProps = {
+        key: $key,
+        values: `${key}`,
+        onMouseDown: this.handleMouseDownKey,
+        onMouseEnter: this.handleMouseEnterKey,
+        onTouchStart: this.handleTouchStartKey,
+        onTouchMove: this.handleTouchMoveKey,
+        onTouchEnd: this.handleTouchEndKey
+      };
+      if (this.isBlack(key)) {
+        const style = key === selected ? selectedStyle : keyOn ? keyOnStyle : blackStyle;
+        const x = `${($white - 1 / 3) * whiteWidthPercentage}%`;
+        blacks.push(/* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("rect", __spreadValues({
+          x,
+          y: 0,
+          width: blackWidth,
+          height: "70%",
+          style
+        }, commonProps)));
+      } else {
+        const style = key === selected ? selectedStyle : keyOn ? keyOnStyle : whiteStyle;
+        const x = `${$white * whiteWidthPercentage}%`;
+        whites.push(/* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("rect", __spreadValues({
+          x,
+          y: 0,
+          width: whiteWidth,
+          height: "100%",
+          style
+        }, commonProps)));
+        $white++;
+      }
+      key++;
+    }
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadProps(__spreadValues({}, this.props), {
+      containerProps: { style: { height: "100%", width: "100%" } }
+    }), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("svg", {
+      width: "100%",
+      height: "100%",
+      style: { touchAction: "none" }
+    }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("rect", {
+      x: 0,
+      y: 0,
+      width: "100%",
+      height: "100%",
+      style: { fill: "transparent", strokeWidth: 2, stroke: "black" }
+    }), whites, blacks));
+  }
+};
+let KeyboardUI = _KeyboardUI;
+KeyboardUI.sizing = "both";
+KeyboardUI.defaultSize = [450, 60];
+KeyboardUI.blacks = [1, 3, 6, 8, 10];
+
+
+
+/***/ }),
+
+/***/ "./src/ui/menu.tsx":
+/*!*************************!*\
+  !*** ./src/ui/menu.tsx ***!
+  \*************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ MenuUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+const { Dropdown } = _sdk__WEBPACK_IMPORTED_MODULE_0__.SemanticUI;
+class MenuUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadValues({}, this.state);
+    this.handleChange = (event, data) => {
+      const { value } = data;
+      this.setState({ value });
+      this.object.outlet(0, value);
+    };
+    this.handleQuery = (query) => {
+      const { options } = this.state;
+      let value;
+      if (typeof query === "number") {
+        if (options[query]) {
+          value = options[query].value;
+        }
+      } else if (typeof query === "string") {
+        const found = options.find((o) => o.text === query);
+        if (found) {
+          value = found.value;
+        }
+      } else if (_sdk__WEBPACK_IMPORTED_MODULE_0__.Utils.isNumberArray(query)) {
+        value = query.filter((i) => !!options[i]).map((i) => options[i].value);
+      } else {
+        value = options.filter((o) => query.indexOf(o.text) !== -1).map((o) => o.value);
+      }
+      if (value) {
+        this.setState({ value });
+        this.object.outlet(0, value);
+      }
+    };
+  }
+  componentDidMount() {
+    super.componentDidMount();
+    this.object.on("query", this.handleQuery);
+  }
+  componentWillUnmount() {
+    super.componentWillUnmount();
+    this.object.off("query", this.handleQuery);
+  }
+  render() {
+    const {
+      clearable,
+      closeOnBlur,
+      closeOnChange,
+      closeOnEscape,
+      deburr,
+      defaultOpen,
+      defaultValue,
+      direction,
+      disabled,
+      error,
+      lazyLoad,
+      minCharacters,
+      multiple,
+      noResultsMessage,
+      options,
+      placeholder,
+      scrolling,
+      search,
+      selectOnBlur,
+      selectOnNavigation,
+      simple,
+      tabIndex,
+      text,
+      upward,
+      wrapSelection,
+      value
+    } = this.state;
+    const dropdownProps = {
+      clearable,
+      closeOnBlur,
+      closeOnChange,
+      closeOnEscape,
+      deburr,
+      defaultOpen,
+      defaultValue,
+      direction,
+      disabled,
+      error,
+      lazyLoad,
+      minCharacters,
+      multiple,
+      noResultsMessage,
+      options,
+      placeholder,
+      scrolling,
+      search,
+      selectOnBlur,
+      selectOnNavigation,
+      simple,
+      tabIndex,
+      text,
+      upward,
+      wrapSelection,
+      value
+    };
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(Dropdown, __spreadProps(__spreadValues({}, dropdownProps), {
+      selection: true,
+      fluid: true,
+      onChange: this.handleChange
+    })));
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/ui/message.tsx":
+/*!****************************!*\
+  !*** ./src/ui/message.tsx ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ MessageUI)
+/* harmony export */ });
+/* harmony import */ var _button__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./button */ "./src/ui/button.tsx");
+
+class MessageUI extends _button__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this.handleChanged = (text) => this.object.handleUpdateArgs([text]);
+    this.handleClick = (e) => {
+      if (this.editor.state.locked)
+        this.object.outlet(0, this.object._.buffer);
+    };
+  }
+}
+MessageUI.editableOnUnlock = true;
+
+
+/***/ }),
+
+/***/ "./src/ui/view.tsx":
+/*!*************************!*\
+  !*** ./src/ui/view.tsx ***!
+  \*************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ViewUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+class ViewUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DOMUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadProps(__spreadValues({}, this.state), { children: this.object._.children });
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/ui/waveform.tsx":
+/*!*****************************!*\
+  !*** ./src/ui/waveform.tsx ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ WaveformUI)
+/* harmony export */ });
+/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! color-js */ "./node_modules/color-js/color.js");
+/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(color_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+
+class WaveformUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.CanvasUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadProps(__spreadValues({}, this.state), { audio: this.object._.audio });
+  }
+  async paint() {
+    const {
+      interleaved,
+      cursor,
+      autoVerticalRange,
+      verticalRange,
+      viewRange,
+      showStats,
+      bgColor,
+      cursorColor,
+      phosphorColor,
+      hueOffset,
+      textColor,
+      gridColor,
+      seperatorColor,
+      audioUnit,
+      bpm,
+      audio
+    } = this.state;
+    const { ctx } = this;
+    const [width, height] = this.fullSize();
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, width, height);
+    if (!audio)
+      return;
+    const { audioBuffer, waveform, numberOfChannels, length, sampleRate } = audio;
+    const t = audioBuffer.toArray();
+    if (!t.length || !t[0].length)
+      return;
+    let [$0, $1] = viewRange || [0, length];
+    if ($1 < $0)
+      [$0, $1] = [$1, $0];
+    const pixelsPerSamp = width / ($1 - $0);
+    const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp));
+    let [yMin, yMax] = autoVerticalRange ? [-1, 1] : verticalRange;
+    if (autoVerticalRange) {
+      let i = numberOfChannels;
+      let s = 0;
+      while (i--) {
+        let j = viewRange[1];
+        while (j-- > viewRange[0]) {
+          s = t[i][j];
+          if (s < yMin)
+            yMin = s;
+          else if (s > yMax)
+            yMax = s;
+        }
+      }
+      const yFactor = Math.max(1, Math.abs(yMin), Math.abs(yMax));
+      [yMin, yMax] = [-yFactor, yFactor];
+    } else {
+      if (yMax < yMin)
+        [yMin, yMax] = [yMax, yMin];
+    }
+    const calcY = (v, i) => channelHeight * (+interleaved * i + 1 - (v - yMin) / (yMax - yMin));
+    const { ruler } = _sdk__WEBPACK_IMPORTED_MODULE_1__.Utils.getRuler(viewRange, audioUnit, { bpm, sampleRate });
+    const gridChannels = interleaved ? numberOfChannels : 1;
+    const channelHeight = height / gridChannels;
+    ctx.strokeStyle = gridColor;
+    ctx.beginPath();
+    for (const sampleIn in ruler) {
+      const sample = +sampleIn;
+      const x = (sample - $0 + 0.5) * pixelsPerSamp;
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    const range = [18, 12, 6, 3, 0, -3, -6, -12, -18].filter((v) => _sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.dbtoa(v) < Math.max(Math.abs(yMin), Math.abs(yMax)));
+    for (let i = 0; i < gridChannels; i++) {
+      let y = calcY(0, i);
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      for (let j = 0; j < range.length; j++) {
+        const a = _sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.dbtoa(range[j]);
+        if (a < yMax) {
+          y = calcY(a, i);
+          ctx.moveTo(0, y);
+          ctx.lineTo(width, y);
+        }
+        if (a > yMin) {
+          y = calcY(-a, i);
+          ctx.moveTo(0, y);
+          ctx.lineTo(width, y);
+        }
+      }
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.setLineDash([4, 2]);
+    ctx.strokeStyle = seperatorColor;
+    for (let i = 1; i < gridChannels; i++) {
+      ctx.moveTo(0, i * channelHeight);
+      ctx.lineTo(width, i * channelHeight);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.lineWidth = 1;
+    const channelColor = [];
+    const currentWaveform = waveform.findStep(sampsPerPixel);
+    for (let i = 0; i < numberOfChannels; i++) {
+      if (interleaved) {
+        ctx.save();
+        const clip = new Path2D();
+        clip.rect(0, i * channelHeight, width, channelHeight);
+        ctx.clip(clip);
+      }
+      ctx.beginPath();
+      channelColor[i] = color_js__WEBPACK_IMPORTED_MODULE_0__(phosphorColor).shiftHue(i * hueOffset).toHSL();
+      ctx.strokeStyle = channelColor[i];
+      ctx.fillStyle = channelColor[i];
+      if (currentWaveform) {
+        const sampsPerPixel2 = 1 / pixelsPerSamp;
+        const { idx } = currentWaveform;
+        const { min, max } = currentWaveform[i];
+        let x = 0;
+        let maxInStep;
+        let minInStep;
+        for (let j = 0; j < idx.length - 1; j++) {
+          const $ = idx[j];
+          if ($ > $1)
+            break;
+          const $next = j === idx.length - 1 ? length : idx[j + 1];
+          if ($next <= $0)
+            continue;
+          if (typeof maxInStep === "undefined") {
+            maxInStep = max[j];
+            minInStep = min[j];
+          } else {
+            if (min[j] < minInStep)
+              minInStep = min[j];
+            if (max[j] > maxInStep)
+              maxInStep = max[j];
+          }
+          if ($next >= $0 + sampsPerPixel2 * (x + 1)) {
+            let y = calcY(maxInStep, i);
+            if (x === 0)
+              ctx.moveTo(x, y);
+            else
+              ctx.lineTo(x, y);
+            if (minInStep !== maxInStep) {
+              y = calcY(minInStep, i);
+              ctx.lineTo(x, y);
+            }
+            maxInStep = void 0;
+            x++;
+          }
+        }
+      } else {
+        let maxInStep;
+        let minInStep;
+        const prev = t[i][$0 - 1] || 0;
+        const prevX = -0.5 * pixelsPerSamp;
+        const prevY = calcY(prev, i);
+        ctx.moveTo(prevX, prevY);
+        for (let j = $0; j < $1; j++) {
+          const samp = t[i][j];
+          const $step = (j - $0) % sampsPerPixel;
+          if ($step === 0) {
+            maxInStep = samp;
+            minInStep = samp;
+          } else {
+            if (samp > maxInStep)
+              maxInStep = samp;
+            if (samp < minInStep)
+              minInStep = samp;
+          }
+          if ($step === sampsPerPixel - 1) {
+            const x = (j - $step - $0 + 0.5) * pixelsPerSamp;
+            let y = calcY(maxInStep, i);
+            ctx.lineTo(x, y);
+            if (minInStep !== maxInStep && pixelsPerSamp < 1) {
+              y = calcY(minInStep, i);
+              ctx.lineTo(x, y);
+            }
+            if (pixelsPerSamp > 10)
+              ctx.fillRect(x - 2, y - 2, 4, 4);
+          }
+        }
+        const next = t[i][$1] || 0;
+        const nextX = ($1 - $0 + 0.5) * pixelsPerSamp;
+        const nextY = calcY(next, i);
+        ctx.lineTo(nextX, nextY);
+      }
+      ctx.stroke();
+      if (interleaved)
+        ctx.restore();
+    }
+    if (cursor > $0 && cursor < $1) {
+      ctx.strokeStyle = cursorColor;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      const cursorX = (cursor - $0) / ($1 - $0) * width;
+      ctx.moveTo(cursorX, 0);
+      ctx.lineTo(cursorX, height);
+      ctx.stroke();
+    }
+    if (showStats) {
+      ctx.font = "bold 12px Consolas, monospace";
+      ctx.fillStyle = textColor;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.fillText(yMax.toFixed(2), 2, 2);
+      ctx.textBaseline = "bottom";
+      ctx.fillText(yMax.toFixed(2), 2, height - 2);
+    }
+  }
+  componentDidMount() {
+    var _a;
+    const { bgColor } = this.state;
+    const ctx = this.ctx;
+    if (!ctx)
+      return;
+    const [width, height] = this.fullSize();
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, width, height);
+    (_a = this.state.audio) == null ? void 0 : _a.on("changed", this.schedulePaint);
+    super.componentDidMount();
+  }
+  componentDidUpdate(prevProps, prevState) {
+    var _a, _b;
+    if (prevState.audio !== this.state.audio) {
+      (_a = prevState.audio) == null ? void 0 : _a.off("changed", this.schedulePaint);
+      (_b = this.state.audio) == null ? void 0 : _b.on("changed", this.schedulePaint);
+    }
+    super.componentDidUpdate(prevProps, prevState);
+  }
+  componentWillUnmount() {
+    var _a;
+    (_a = this.state.audio) == null ? void 0 : _a.off("changed", this.schedulePaint);
+    super.componentWillUnmount();
+  }
+}
+WaveformUI.defaultSize = [120, 60];
+
 
 /***/ }),
 
@@ -6377,7 +5935,7 @@ module.exports = $gOPD;
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-ui","version":"1.0.0","description":"The UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-ui","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"0.0.8","@types/react":"^17.0.18","@types/react-dom":"^17.0.9","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","color-js":"^1.0.5","copy-webpack-plugin":"^9.0.1","css-loader":"^6.2.0","monaco-editor":"^0.27.0","node-sass":"^6.0.1","react":"^17.0.2","react-dom":"^17.0.2","react-monaco-editor":"^0.44.0","sass-loader":"^12.1.0","semantic-ui-react":"^2.0.3","style-loader":"^3.2.1","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-ui","version":"1.0.0","description":"The UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-ui","devDependencies":{"@jspatcher/jspatcher":"0.0.8","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","color-js":"^1.0.5","css-loader":"^6.2.0","esbuild-loader":"^2.15.1","monaco-editor":"^0.27.0","node-sass":"^6.0.1","react":"^17.0.2","react-monaco-editor":"^0.44.0","sass-loader":"^12.1.0","semantic-ui-react":"^2.0.3","style-loader":"^3.2.1","typescript":"^4.4.2","util":"^0.12.4","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
 
 /***/ })
 
@@ -6520,16 +6078,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => ({
-  message: _objects_message__WEBPACK_IMPORTED_MODULE_0__.default,
-  code: _objects_code__WEBPACK_IMPORTED_MODULE_1__.default,
-  menu: _objects_menu__WEBPACK_IMPORTED_MODULE_2__.default,
-  view: _objects_view__WEBPACK_IMPORTED_MODULE_3__.default,
-  keyboard: _objects_keyboard__WEBPACK_IMPORTED_MODULE_4__.default,
-  bpf: _objects_bpf__WEBPACK_IMPORTED_MODULE_5__.default,
-  waveform: _objects_waveform__WEBPACK_IMPORTED_MODULE_6__.default,
-  img: _objects_img__WEBPACK_IMPORTED_MODULE_7__.default
-}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => ({ message: _objects_message__WEBPACK_IMPORTED_MODULE_0__.default, code: _objects_code__WEBPACK_IMPORTED_MODULE_1__.default, menu: _objects_menu__WEBPACK_IMPORTED_MODULE_2__.default, view: _objects_view__WEBPACK_IMPORTED_MODULE_3__.default, keyboard: _objects_keyboard__WEBPACK_IMPORTED_MODULE_4__.default, bpf: _objects_bpf__WEBPACK_IMPORTED_MODULE_5__.default, waveform: _objects_waveform__WEBPACK_IMPORTED_MODULE_6__.default, img: _objects_img__WEBPACK_IMPORTED_MODULE_7__.default }));
+
 })();
 
 var __webpack_export_target__ = exports;

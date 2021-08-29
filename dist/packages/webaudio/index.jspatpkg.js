@@ -20,30 +20,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, '');
-const {
-  author,
-  license,
-  keywords,
-  version,
-  description,
-  jspatcher
-} = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_objectSpread({
-  name,
-  author,
-  license,
-  keywords,
-  version,
-  description
-}, jspatcher));
 
 /***/ }),
 
@@ -59,30 +56,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 ;
 class Analyser extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createAnalyser()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createAnalyser() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -91,36 +74,37 @@ class Analyser extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.node.channelInterpretation = "discrete";
       handleProps(this.box.props);
     });
-
-    const handleProps = props => {
+    const handleProps = (props) => {
       try {
-        if (typeof props.fftSize === "number") this.node.fftSize = props.fftSize;
-        if (typeof props.minDecibels === "number") this.node.minDecibels = props.minDecibels;
-        if (typeof props.maxDecibels === "number") this.node.maxDecibels = props.maxDecibels;
-        if (typeof props.smoothingTimeConstant === "number") this.node.smoothingTimeConstant = props.smoothingTimeConstant;
+        if (typeof props.fftSize === "number")
+          this.node.fftSize = props.fftSize;
+        if (typeof props.minDecibels === "number")
+          this.node.minDecibels = props.minDecibels;
+        if (typeof props.maxDecibels === "number")
+          this.node.maxDecibels = props.maxDecibels;
+        if (typeof props.smoothingTimeConstant === "number")
+          this.node.smoothingTimeConstant = props.smoothingTimeConstant;
       } catch (e) {
         this.error(e.message);
       }
     };
-
     this.on("updateProps", handleProps);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(5, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(5, this.node);
       } else if (inlet === 5) {
         if (typeof data === "object") {
           const props = data;
-
           try {
-            if (typeof props.fftSize === "number") this.node.fftSize = props.fftSize;
-            if (typeof props.minDecibels === "number") this.node.minDecibels = props.minDecibels;
-            if (typeof props.maxDecibels === "number") this.node.maxDecibels = props.maxDecibels;
-            if (typeof props.smoothingTimeConstant === "number") this.node.smoothingTimeConstant = props.smoothingTimeConstant;
+            if (typeof props.fftSize === "number")
+              this.node.fftSize = props.fftSize;
+            if (typeof props.minDecibels === "number")
+              this.node.minDecibels = props.minDecibels;
+            if (typeof props.maxDecibels === "number")
+              this.node.maxDecibels = props.maxDecibels;
+            if (typeof props.smoothingTimeConstant === "number")
+              this.node.smoothingTimeConstant = props.smoothingTimeConstant;
           } catch (e) {
             this.error(e.message);
           }
@@ -148,12 +132,9 @@ class Analyser extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(Analyser, "description", "WebAudio AnalyserNode");
-
-_defineProperty(Analyser, "inlets", [{
+Analyser.description = "WebAudio AnalyserNode";
+Analyser.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output AnalyserNode instance"
@@ -177,9 +158,8 @@ _defineProperty(Analyser, "inlets", [{
   isHot: false,
   type: "object",
   description: "Options: { fftSize, minDecibels, maxDecibels, smoothingTimeConstant }"
-}]);
-
-_defineProperty(Analyser, "outlets", [{
+}];
+Analyser.outlets = [{
   type: "signal",
   description: "Node connection"
 }, {
@@ -197,9 +177,8 @@ _defineProperty(Analyser, "outlets", [{
 }, {
   type: "object",
   description: "Instance: AnalyserNode"
-}]);
-
-_defineProperty(Analyser, "props", {
+}];
+Analyser.props = {
   fftSize: {
     type: "number",
     default: 2048,
@@ -220,7 +199,8 @@ _defineProperty(Analyser, "props", {
     default: 0.8,
     description: "The averaging constant with the last analysis frame"
   }
-});
+};
+
 
 /***/ }),
 
@@ -235,23 +215,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ AnyNode)
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-
-class AnyNode extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+const _AnyNode = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined
-    });
-
-    _defineProperty(this, "handleInlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this._ = { node: void 0 };
+    this.handleInlet = ({ data, inlet }) => {
       if (inlet === 0) {
         try {
           if (data instanceof AudioNode) {
@@ -259,38 +228,24 @@ class AnyNode extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
             this._.node = data;
             const inlets = this.node.numberOfInputs || 1;
             const outlets = this.node.numberOfOutputs;
-            const factoryMeta = AnyNode.meta;
+            const factoryMeta = _AnyNode.meta;
             const inlet0 = factoryMeta.inlets[0];
             const inlet1 = factoryMeta.inlets[1];
             const outlet0 = factoryMeta.inlets[0];
-            this.inletAudioConnections = [{
-              node: this.node,
-              index: 0
-            }];
+            this.inletAudioConnections = [{ node: this.node, index: 0 }];
             factoryMeta.inlets = [inlet0];
-
             for (let i = 1; i < inlets; i++) {
               factoryMeta.inlets[i] = inlet1;
             }
-
             for (let i = 0; i < outlets; i++) {
               factoryMeta.outlets[i] = outlet0;
             }
-
             for (let i = 0; i < this.node.numberOfInputs; i++) {
-              this.inletAudioConnections[i] = {
-                node: this.node,
-                index: i
-              };
+              this.inletAudioConnections[i] = { node: this.node, index: i };
             }
-
             for (let i = 0; i < this.node.numberOfOutputs; i++) {
-              this.outletAudioConnections[i] = {
-                node: this.node,
-                index: i
-              };
+              this.outletAudioConnections[i] = { node: this.node, index: i };
             }
-
             this.setMeta(factoryMeta);
             this.inlets = inlets;
             this.outlets = outlets;
@@ -301,21 +256,17 @@ class AnyNode extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
           return this;
         }
       }
-
       return this;
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("inlet", this.handleInlet);
   }
-
-}
-
-_defineProperty(AnyNode, "description", "WebAudio AudioNode");
-
-_defineProperty(AnyNode, "inlets", [{
+};
+let AnyNode = _AnyNode;
+AnyNode.description = "WebAudio AudioNode";
+AnyNode.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, AudioNode instance to set the node."
@@ -323,12 +274,13 @@ _defineProperty(AnyNode, "inlets", [{
   isHot: false,
   type: "signal",
   description: "Node connection"
-}]);
-
-_defineProperty(AnyNode, "outlets", [{
+}];
+AnyNode.outlets = [{
   type: "signal",
   description: "Node connection"
-}]);
+}];
+
+
 
 /***/ }),
 
@@ -344,54 +296,52 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class AudioIn extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
+const _AudioIn = class extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined,
-      stream: undefined,
-      search: undefined
-    });
-
-    _defineProperty(this, "handleDeviceChange", async () => {
+    this._ = { node: void 0, stream: void 0, search: void 0 };
+    this.handleDeviceChange = async () => {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const enums = devices.filter(d => d.kind === "audioinput").map(d => d.label || d.deviceId);
-      const {
-        meta
-      } = this;
-      meta.args[0] = _objectSpread(_objectSpread({}, AudioIn.args[0]), {}, {
-        type: "enum",
-        enums
-      });
+      const enums = devices.filter((d) => d.kind === "audioinput").map((d) => d.label || d.deviceId);
+      const { meta } = this;
+      meta.args[0] = __spreadProps(__spreadValues({}, _AudioIn.args[0]), { type: "enum", enums });
       this.setMeta(meta);
-    });
-
-    _defineProperty(this, "newSearch", async search => {
+    };
+    this.newSearch = async (search) => {
       this._.search = search;
       let deviceId;
-
       if (search) {
         const devices = await navigator.mediaDevices.enumerateDevices();
-        const device = devices.find(d => d.kind === "audioinput" && (d.deviceId === search || d.label === search));
-        if (device) deviceId = device.deviceId;
+        const device = devices.find((d) => d.kind === "audioinput" && (d.deviceId === search || d.label === search));
+        if (device)
+          deviceId = device.deviceId;
       }
-
-      this._.stream = await navigator.mediaDevices.getUserMedia({
-        audio: this.getConstraints(deviceId)
-      });
-      if (this._.stream) this.resetNode();
-    });
+      this._.stream = await navigator.mediaDevices.getUserMedia({ audio: this.getConstraints(deviceId) });
+      if (this._.stream)
+        this.resetNode();
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -404,31 +354,25 @@ class AudioIn extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       this.handleDeviceChange();
       this.newSearch(search);
     });
-    this.on("updateArgs", args => {
+    this.on("updateArgs", (args) => {
       this.newSearch(args[0]);
     });
     this.on("updateProps", () => {
       this.newSearch(this._.search);
     });
-    this.on("inlet", async _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", async ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           await this.newSearch(data);
         }
-
-        if (this.node) this.outlet(1, this.node);
+        if (this.node)
+          this.outlet(1, this.node);
       }
     });
     this.on("destroy", () => {
       navigator.mediaDevices.removeEventListener("devicechange", this.handleDeviceChange);
     });
   }
-
   getConstraints(deviceId) {
     return {
       deviceId,
@@ -441,47 +385,36 @@ class AudioIn extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       sampleSize: this.getProp("sampleSize")
     };
   }
-
   resetNode() {
     this.disconnectAudio();
-
     if (this._.stream) {
       this.node = this.audioCtx.createMediaStreamSource(this._.stream);
       this.node.channelInterpretation = "discrete";
     }
-
-    this.outletAudioConnections[0] = {
-      node: this.node,
-      index: 0
-    };
+    this.outletAudioConnections[0] = { node: this.node, index: 0 };
     this.connectAudio();
   }
-
-}
-
-_defineProperty(AudioIn, "description", "Get Audio input from device name or ID");
-
-_defineProperty(AudioIn, "inlets", [{
+};
+let AudioIn = _AudioIn;
+AudioIn.description = "Get Audio input from device name or ID";
+AudioIn.inlets = [{
   isHot: true,
   type: "anything",
   description: "string to fetch device name or ID, bang to output Node"
-}]);
-
-_defineProperty(AudioIn, "outlets", [{
+}];
+AudioIn.outlets = [{
   type: "signal",
   description: "Node connection"
 }, {
   type: "object",
   description: "Instance: MediaStreamAudioSourceNode"
-}]);
-
-_defineProperty(AudioIn, "args", [{
+}];
+AudioIn.args = [{
   type: "string",
   optional: false,
   description: "Device name or ID"
-}]);
-
-_defineProperty(AudioIn, "props", {
+}];
+AudioIn.props = {
   autoGainControl: {
     type: "boolean",
     default: false,
@@ -489,7 +422,7 @@ _defineProperty(AudioIn, "props", {
   },
   channelCount: {
     type: "number",
-    default: undefined,
+    default: void 0,
     description: "The number of independent channels of sound"
   },
   echoCancellation: {
@@ -499,7 +432,7 @@ _defineProperty(AudioIn, "props", {
   },
   latency: {
     type: "number",
-    default: undefined,
+    default: void 0,
     description: "The latency or latency range, in seconds"
   },
   noiseSuppression: {
@@ -509,15 +442,17 @@ _defineProperty(AudioIn, "props", {
   },
   sampleRate: {
     type: "number",
-    default: undefined,
+    default: void 0,
     description: "The sample rate in samples per second for the audio data"
   },
   sampleSize: {
     type: "number",
-    default: undefined,
+    default: void 0,
     description: "The linear sample size in bits"
   }
-});
+};
+
+
 
 /***/ }),
 
@@ -534,76 +469,64 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _AudioIn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AudioIn */ "./src/objects/AudioIn.ts");
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
 
 const supportSetSinkId = window.MediaStreamAudioDestinationNode && HTMLMediaElement.prototype.setSinkId;
-class AudioOut extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
+const _AudioOut = class extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", supportSetSinkId ? {
-      node: this.audioCtx.destination,
-      msadn: this.audioCtx.createMediaStreamDestination(),
-      audio: new Audio(),
-      search: undefined
-    } : {
-      node: this.audioCtx.destination
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
-
-    _defineProperty(this, "handleDeviceChange", async () => {
+    this._ = supportSetSinkId ? { node: this.audioCtx.destination, msadn: this.audioCtx.createMediaStreamDestination(), audio: new Audio(), search: void 0 } : { node: this.audioCtx.destination };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }];
+    this.handleDeviceChange = async () => {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const enums = devices.filter(d => d.kind === "audiooutput").map(d => d.label || d.deviceId);
-      const {
-        meta
-      } = this;
-      meta.args[0] = _objectSpread(_objectSpread({}, AudioOut.args[0]), {}, {
-        type: "enum",
-        enums
-      });
+      const enums = devices.filter((d) => d.kind === "audiooutput").map((d) => d.label || d.deviceId);
+      const { meta } = this;
+      meta.args[0] = __spreadProps(__spreadValues({}, _AudioOut.args[0]), { type: "enum", enums });
       this.setMeta(meta);
-    });
-
-    _defineProperty(this, "newSearch", async search => {
-      if (!supportSetSinkId) return;
+    };
+    this.newSearch = async (search) => {
+      if (!supportSetSinkId)
+        return;
       this._.search = search;
-
       if (!search || search === "default") {
         this.resetNode();
         return;
       }
-
-      const {
-        audio
-      } = this._;
+      const { audio } = this._;
       let deviceId = audio.sinkId || "default";
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const device = devices.find(d => d.kind === "audiooutput" && (d.deviceId === search || d.label === search));
-      if (device) deviceId = device.deviceId;
-
+      const device = devices.find((d) => d.kind === "audiooutput" && (d.deviceId === search || d.label === search));
+      if (device)
+        deviceId = device.deviceId;
       if (audio.sinkId !== deviceId) {
-        if (audio.played) audio.pause();
+        if (audio.played)
+          audio.pause();
         audio.setSinkId(deviceId);
         audio.play();
       }
-
       this.resetNode(true);
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -612,17 +535,14 @@ class AudioOut extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     });
     this.on("postInit", () => {
       this.node.channelInterpretation = "discrete";
-
       if (supportSetSinkId) {
         this._.msadn.channelInterpretation = "discrete";
-        const {
-          audio,
-          msadn
-        } = this._;
-        const {
-          stream
-        } = msadn;
-        if ("srcObject" in audio) audio.srcObject = stream;else audio.src = URL.createObjectURL(stream);
+        const { audio, msadn } = this._;
+        const { stream } = msadn;
+        if ("srcObject" in audio)
+          audio.srcObject = stream;
+        else
+          audio.src = URL.createObjectURL(stream);
         const search = this.box.args[0];
         navigator.mediaDevices.addEventListener("devicechange", this.handleDeviceChange);
         this.on("destroy", () => {
@@ -632,28 +552,22 @@ class AudioOut extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
         this.newSearch(search);
       }
     });
-    this.on("updateArgs", args => {
+    this.on("updateArgs", (args) => {
       this.newSearch(args[0]);
     });
     this.on("updateProps", () => {
       this.newSearch(this._.search);
     });
-    this.on("inlet", async _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", async ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           await this.newSearch(data);
         }
-
-        if (this.node) this.outlet(1, this.node);
+        if (this.node)
+          this.outlet(1, this.node);
       }
     });
   }
-
   getConstraints(deviceId) {
     return {
       deviceId,
@@ -666,81 +580,60 @@ class AudioOut extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       sampleSize: this.getProp("sampleSize")
     };
   }
-
   resetNode(msadn) {
     if (msadn) {
       if (this.node !== this._.msadn) {
         this.disconnectAudio();
         this.node = this._.msadn;
-        this.inletAudioConnections[0] = {
-          node: this.node,
-          index: 0
-        };
+        this.inletAudioConnections[0] = { node: this.node, index: 0 };
         this.connectAudio();
       }
     } else {
       if (this.node !== this.audioCtx.destination) {
         this.disconnectAudio();
         this.node = this.audioCtx.destination;
-        this.inletAudioConnections[0] = {
-          node: this.node,
-          index: 0
-        };
+        this.inletAudioConnections[0] = { node: this.node, index: 0 };
         this.connectAudio();
       }
     }
   }
-
-}
-
-_defineProperty(AudioOut, "description", "Get Audio output from device name or ID (if supported)");
-
-_defineProperty(AudioOut, "inlets", [{
+};
+let AudioOut = _AudioOut;
+AudioOut.description = "Get Audio output from device name or ID (if supported)";
+AudioOut.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, string to fetch device name or ID, bang to output Node"
-}]);
-
-_defineProperty(AudioOut, "outlets", [{
+}];
+AudioOut.outlets = [{
   type: "object",
-  description: "Instance: ".concat(supportSetSinkId ? "MediaStreamAudioDestinationNode | " : "", "AudioDestinationNode")
-}]);
-
-_defineProperty(AudioOut, "args", supportSetSinkId ? _AudioIn__WEBPACK_IMPORTED_MODULE_2__.default.args : []);
-
-_defineProperty(AudioOut, "props", supportSetSinkId ? _AudioIn__WEBPACK_IMPORTED_MODULE_2__.default.props : {});
-
-_defineProperty(AudioOut, "UI", supportSetSinkId ? class AudioOutUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultUI {
+  description: `Instance: ${supportSetSinkId ? "MediaStreamAudioDestinationNode | " : ""}AudioDestinationNode`
+}];
+AudioOut.args = supportSetSinkId ? _AudioIn__WEBPACK_IMPORTED_MODULE_2__.default.args : [];
+AudioOut.props = supportSetSinkId ? _AudioIn__WEBPACK_IMPORTED_MODULE_2__.default.props : {};
+AudioOut.UI = supportSetSinkId ? class AudioOutUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultUI {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "refContainer", _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createRef());
+    this.refContainer = _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createRef();
   }
-
   componentDidMount() {
     super.componentDidMount();
     const div = this.refContainer.current;
-    const {
-      audio
-    } = this.object._;
-
+    const { audio } = this.object._;
     if (div && audio) {
       audio.style.display = "none";
       div.appendChild(audio);
     }
   }
-
   render() {
-    const textContainerProps = _objectSpread(_objectSpread({}, this.props.textContainerProps), {}, {
-      ref: this.refContainer
-    });
-
-    return /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultUI, _extends({
-      textContainerProps: textContainerProps
+    const textContainerProps = __spreadProps(__spreadValues({}, this.props.textContainerProps), { ref: this.refContainer });
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultUI, __spreadValues({
+      textContainerProps
     }, this.props));
   }
+} : _sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultUI;
 
-} : _sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultUI);
+
 
 /***/ }),
 
@@ -757,38 +650,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
-
-class Biquad extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+const _Biquad = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createBiquadFilter()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }, {
-      node: this.node.frequency
-    }, {
-      node: this.node.detune
-    }, {
-      node: this.node.Q
-    }, {
-      node: this.node.gain
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createBiquadFilter() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.frequency }, { node: this.node.detune }, { node: this.node.Q }, { node: this.node.gain }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -797,17 +668,16 @@ class Biquad extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.node.channelInterpretation = "discrete";
       handleProps(this.box.props);
     });
-
-    const handleProps = props => {
+    const handleProps = (props) => {
       const paramMap = ["frequency", "detune", "Q", "gain"];
-      paramMap.forEach(key => {
+      paramMap.forEach((key) => {
         try {
-          if (typeof props[key] === "number") this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
+          if (typeof props[key] === "number")
+            this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
         } catch (e) {
           this.error(e.message);
         }
       });
-
       if (typeof props.type === "string") {
         try {
           this.node.type = props.type;
@@ -816,19 +686,15 @@ class Biquad extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
         }
       }
     };
-
     this.on("updateProps", handleProps);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
+    this.on("inlet", ({ data, inlet }) => {
       const paramMap = ["frequency", "detune", "Q", "gain"];
-
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet === 5) {
-        if (Biquad.isBiquadFilterType(data)) this.node.type = data;
+        if (_Biquad.isBiquadFilterType(data))
+          this.node.type = data;
       } else if (inlet > 0 && inlet < 5) {
         try {
           const bpf = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.decodeLine)(data);
@@ -839,12 +705,10 @@ class Biquad extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
-}
-
-_defineProperty(Biquad, "description", "WebAudio BiquadFilterNode");
-
-_defineProperty(Biquad, "inlets", [{
+};
+let Biquad = _Biquad;
+Biquad.description = "WebAudio BiquadFilterNode";
+Biquad.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection (1 channel), bang to output BiquadFilterNode instance"
@@ -869,17 +733,15 @@ _defineProperty(Biquad, "inlets", [{
   type: "enum",
   enums: ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"],
   description: 'type: "lowpass" | "highpass" | "bandpass" | "lowshelf" | "highshelf" | "peaking" | "notch" | "allpass"'
-}]);
-
-_defineProperty(Biquad, "outlets", [{
+}];
+Biquad.outlets = [{
   type: "signal",
   description: "Node connection (1 channel)"
 }, {
   type: "object",
   description: "Instance: BiquadFilterNode"
-}]);
-
-_defineProperty(Biquad, "props", {
+}];
+Biquad.props = {
   frequency: {
     type: "number",
     default: 350,
@@ -906,9 +768,10 @@ _defineProperty(Biquad, "props", {
     default: "lowpass",
     description: 'Initial type: "lowpass" | "highpass" | "bandpass" | "lowshelf" | "highshelf" | "peaking" | "notch" | "allpass"'
   }
-});
+};
+Biquad.isBiquadFilterType = (x) => ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"].indexOf(x) >= 0;
 
-_defineProperty(Biquad, "isBiquadFilterType", x => ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"].indexOf(x) >= 0);
+
 
 /***/ }),
 
@@ -925,40 +788,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class BufferSrc extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createBufferSource(),
-      playing: false
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }, {
-      node: this.node.playbackRate
-    }, {
-      node: this.node.detune
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
-
-    _defineProperty(this, "handleEnded", () => {
+    this._ = { node: this.audioCtx.createBufferSource(), playing: false };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.playbackRate }, { node: this.node.detune }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
+    this.handleEnded = () => {
       this.outlet(1, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
       this.resetNode();
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -967,35 +810,30 @@ class BufferSrc extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.node.addEventListener("ended", this.handleEnded);
       handleProps(this.box.props);
     });
-
-    const handleProps = props => {
+    const handleProps = (props) => {
       const paramMap = ["playbackRate", "detune"];
       const numberParamMap = ["loopStart", "loopEnd"];
       const booleanParamMap = ["loop"];
-
       try {
-        paramMap.forEach(key => {
-          if (typeof props[key] === "number") this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
+        paramMap.forEach((key) => {
+          if (typeof props[key] === "number")
+            this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
         });
-        numberParamMap.forEach(key => {
-          if (typeof props[key] === "number") this.node[key] = props[key];
+        numberParamMap.forEach((key) => {
+          if (typeof props[key] === "number")
+            this.node[key] = props[key];
         });
-        booleanParamMap.forEach(key => {
-          if (typeof props[key] === "boolean") this.node[key] = props[key];
+        booleanParamMap.forEach((key) => {
+          if (typeof props[key] === "boolean")
+            this.node[key] = props[key];
         });
       } catch (e) {
         this.error(e.message);
       }
     };
-
     this.on("updateProps", handleProps);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
+    this.on("inlet", ({ data, inlet }) => {
       const paramMap = ["playbackRate", "detune"];
-
       if (inlet === 0) {
         if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
           this.outlet(2, this.node);
@@ -1012,9 +850,11 @@ class BufferSrc extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
             }
           }
         } else if (data instanceof AudioBuffer) {
-          if (data !== this.node.buffer) this.resetNode(data);
+          if (data !== this.node.buffer)
+            this.resetNode(data);
         } else if (data instanceof _sdk__WEBPACK_IMPORTED_MODULE_1__.PatcherAudio) {
-          if (data.audioBuffer !== this.node.buffer) this.resetNode(data.audioBuffer);
+          if (data.audioBuffer !== this.node.buffer)
+            this.resetNode(data.audioBuffer);
         }
       } else if (inlet >= 1 && inlet <= 2) {
         try {
@@ -1034,7 +874,10 @@ class BufferSrc extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       } else if (inlet > 3) {
         if (typeof data === "number") {
           try {
-            if (inlet === 4) this.node.loopStart = data;else if (inlet === 5) this.node.loopEnd = data;
+            if (inlet === 4)
+              this.node.loopStart = data;
+            else if (inlet === 5)
+              this.node.loopEnd = data;
           } catch (e) {
             this.error(e.message);
           }
@@ -1042,20 +885,16 @@ class BufferSrc extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
     this.on("destroy", () => {
-      if (this._.playing) this.node.stop();
+      if (this._.playing)
+        this.node.stop();
       this.node.removeEventListener("ended", this.handleEnded);
     });
   }
-
   resetNode(bufferIn) {
     this.disconnectAudio();
     this._.playing = false;
     this.node.removeEventListener("ended", this.handleEnded);
-    const {
-      loop,
-      loopStart,
-      loopEnd
-    } = this.node;
+    const { loop, loopStart, loopEnd } = this.node;
     const buffer = bufferIn || this.node.buffer;
     const playbackRate = this.node.playbackRate.value;
     const detune = this.node.detune.value;
@@ -1067,28 +906,15 @@ class BufferSrc extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     this.node.playbackRate.setValueAtTime(playbackRate, this.audioCtx.currentTime);
     this.node.detune.setValueAtTime(detune, this.audioCtx.currentTime);
     this.node.addEventListener("ended", this.handleEnded);
-    this.inletAudioConnections[0] = {
-      node: this.node,
-      index: 0
-    };
-    this.inletAudioConnections[1] = {
-      node: this.node.playbackRate
-    };
-    this.inletAudioConnections[2] = {
-      node: this.node.detune
-    };
-    this.outletAudioConnections[0] = {
-      node: this.node,
-      index: 0
-    };
+    this.inletAudioConnections[0] = { node: this.node, index: 0 };
+    this.inletAudioConnections[1] = { node: this.node.playbackRate };
+    this.inletAudioConnections[2] = { node: this.node.detune };
+    this.outletAudioConnections[0] = { node: this.node, index: 0 };
     this.connectAudio();
   }
-
 }
-
-_defineProperty(BufferSrc, "description", "WebAudio AudioBufferSourceNode");
-
-_defineProperty(BufferSrc, "inlets", [{
+BufferSrc.description = "WebAudio AudioBufferSourceNode";
+BufferSrc.inlets = [{
   isHot: true,
   type: "anything",
   description: "Bang to output AudioBufferSourceNode instance, boolean/number to start/stop, AudioBuffer/PatcherAudio to set buffer"
@@ -1112,17 +938,15 @@ _defineProperty(BufferSrc, "inlets", [{
   isHot: false,
   type: "number",
   description: "loopEnd (seconds)"
-}]);
-
-_defineProperty(BufferSrc, "outlets", [{
+}];
+BufferSrc.outlets = [{
   type: "signal",
   description: "Node connection"
 }, {
   type: "object",
   description: "Instance: AudioBufferSourceNode"
-}]);
-
-_defineProperty(BufferSrc, "props", {
+}];
+BufferSrc.props = {
   detune: {
     type: "number",
     default: 0,
@@ -1148,7 +972,8 @@ _defineProperty(BufferSrc, "props", {
     default: 0,
     description: "An optional playhead position where looping should end if the loop attribute is true. If <=0 or > duration, loop will end at the end of the buffer."
   }
-});
+};
+
 
 /***/ }),
 
@@ -1165,40 +990,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class Compressor extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createDynamicsCompressor()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }, {
-      node: this.node.threshold
-    }, {
-      node: this.node.knee
-    }, {
-      node: this.node.ratio
-    }, null, {
-      node: this.node.attack
-    }, {
-      node: this.node.release
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createDynamicsCompressor() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.threshold }, { node: this.node.knee }, { node: this.node.ratio }, null, { node: this.node.attack }, { node: this.node.release }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1207,28 +1008,23 @@ class Compressor extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.node.channelInterpretation = "discrete";
       handleProps(this.box.props);
     });
-
-    const handleProps = props => {
+    const handleProps = (props) => {
       const paramMap = ["threshold", "knee", "ratio", "attack", "release"];
-      paramMap.forEach(key => {
+      paramMap.forEach((key) => {
         try {
-          if (typeof props[key] === "number") this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
+          if (typeof props[key] === "number")
+            this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
         } catch (e) {
           this.error(e.message);
         }
       });
     };
-
     this.on("updateProps", handleProps);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
+    this.on("inlet", ({ data, inlet }) => {
       const paramMap = ["threshold", "knee", "ratio", "attack", "release"];
-
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet > 0 && inlet < 6) {
         try {
           const bpf = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.decodeLine)(data);
@@ -1239,12 +1035,9 @@ class Compressor extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(Compressor, "description", "WebAudio DynamicsCompressorNode");
-
-_defineProperty(Compressor, "inlets", [{
+Compressor.description = "WebAudio DynamicsCompressorNode";
+Compressor.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection (1 channel), bang to output DynamicsCompressorNode instance"
@@ -1268,17 +1061,15 @@ _defineProperty(Compressor, "inlets", [{
   isHot: false,
   type: "signal",
   description: "release: bpf or node connection"
-}]);
-
-_defineProperty(Compressor, "outlets", [{
+}];
+Compressor.outlets = [{
   type: "signal",
   description: "Node connection (1 channel)"
 }, {
   type: "object",
   description: "Instance: DynamicsCompressorNode"
-}]);
-
-_defineProperty(Compressor, "props", {
+}];
+Compressor.props = {
   threshold: {
     type: "number",
     default: -24,
@@ -1296,7 +1087,7 @@ _defineProperty(Compressor, "props", {
   },
   attack: {
     type: "number",
-    default: 0.003,
+    default: 3e-3,
     description: "Initial attack"
   },
   release: {
@@ -1304,7 +1095,8 @@ _defineProperty(Compressor, "props", {
     default: 0.25,
     description: "Initial release"
   }
-});
+};
+
 
 /***/ }),
 
@@ -1321,29 +1113,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class Constant extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createConstantSource()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [null, {
-      node: this.node.offset
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createConstantSource() };
+    this.inletAudioConnections = [null, { node: this.node.offset }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1353,8 +1132,7 @@ class Constant extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       handleArgs(this.args);
       this.node.start();
     });
-
-    const handleArgs = args => {
+    const handleArgs = (args) => {
       if (typeof args[0] === "number") {
         try {
           this.node.offset.setValueAtTime(args[0], this.audioCtx.currentTime);
@@ -1363,16 +1141,11 @@ class Constant extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
         }
       }
     };
-
     this.on("updateArgs", handleArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet === 1) {
         try {
           const bpf = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.decodeLine)(data);
@@ -1383,12 +1156,9 @@ class Constant extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(Constant, "description", "WebAudio ConstantSourceNode");
-
-_defineProperty(Constant, "inlets", [{
+Constant.description = "WebAudio ConstantSourceNode";
+Constant.inlets = [{
   isHot: true,
   type: "bang",
   description: "Output ConstantSourceNode instance"
@@ -1396,22 +1166,21 @@ _defineProperty(Constant, "inlets", [{
   isHot: false,
   type: "signal",
   description: "offset: bpf or node connection"
-}]);
-
-_defineProperty(Constant, "outlets", [{
+}];
+Constant.outlets = [{
   type: "signal",
   description: "Node connection (1 channel)"
 }, {
   type: "object",
   description: "Instance: ConstantSourceNode"
-}]);
-
-_defineProperty(Constant, "args", [{
+}];
+Constant.args = [{
   type: "number",
   optional: true,
   description: "Initial offset",
   default: 1
-}]);
+}];
+
 
 /***/ }),
 
@@ -1427,29 +1196,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 class Convolver extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createConvolver()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createConvolver() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1458,24 +1213,19 @@ class Convolver extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.node.channelInterpretation = "discrete";
       handleProps(this.box.props);
     });
-
-    const handleProps = props => {
+    const handleProps = (props) => {
       try {
-        if (typeof props.normalize === "boolean") this.node.normalize = props.normalize;
+        if (typeof props.normalize === "boolean")
+          this.node.normalize = props.normalize;
       } catch (e) {
         this.error(e.message);
       }
     };
-
     this.on("updateProps", handleProps);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet === 1) {
         if (data instanceof AudioBuffer) {
           try {
@@ -1503,12 +1253,9 @@ class Convolver extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(Convolver, "description", "WebAudio ConvolverNode");
-
-_defineProperty(Convolver, "inlets", [{
+Convolver.description = "WebAudio ConvolverNode";
+Convolver.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output ConvolverNode instance"
@@ -1520,23 +1267,22 @@ _defineProperty(Convolver, "inlets", [{
   isHot: true,
   type: "boolean",
   description: "normalize: boolean"
-}]);
-
-_defineProperty(Convolver, "outlets", [{
+}];
+Convolver.outlets = [{
   type: "signal",
   description: "Node connection (2-4 channels)"
 }, {
   type: "object",
   description: "Instance: ConvolverNode"
-}]);
-
-_defineProperty(Convolver, "props", {
+}];
+Convolver.props = {
   normalize: {
     type: "boolean",
     default: true,
     description: "Controls whether the impulse response from the buffer will be scaled by an equal-power normalization"
   }
-});
+};
+
 
 /***/ }),
 
@@ -1553,32 +1299,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class Delay extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createDelay()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }, {
-      node: this.node.delayTime
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createDelay() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.delayTime }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1587,8 +1317,7 @@ class Delay extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.node.channelInterpretation = "discrete";
       handleArgs(this.args);
     });
-
-    const handleArgs = args => {
+    const handleArgs = (args) => {
       if (typeof args[0] === "number") {
         try {
           this.node.delayTime.setValueAtTime(args[0], this.audioCtx.currentTime);
@@ -1597,16 +1326,11 @@ class Delay extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
         }
       }
     };
-
     this.on("updateArgs", handleArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet === 1) {
         try {
           const bpf = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.decodeLine)(data);
@@ -1617,12 +1341,9 @@ class Delay extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(Delay, "description", "WebAudio DelayNode");
-
-_defineProperty(Delay, "inlets", [{
+Delay.description = "WebAudio DelayNode";
+Delay.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output DelayNode instance"
@@ -1630,21 +1351,20 @@ _defineProperty(Delay, "inlets", [{
   isHot: false,
   type: "signal",
   description: "delayTime: bpf or node connection"
-}]);
-
-_defineProperty(Delay, "outlets", [{
+}];
+Delay.outlets = [{
   type: "signal",
   description: "Node connection"
 }, {
   type: "object",
   description: "Instance: DelayNode"
-}]);
-
-_defineProperty(Delay, "args", [{
+}];
+Delay.args = [{
   type: "number",
   optional: true,
   description: "Initial delayTime"
-}]);
+}];
+
 
 /***/ }),
 
@@ -1660,24 +1380,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 class Destination extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.destination
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.destination };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1685,32 +1395,25 @@ class Destination extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.outlets = 1;
       this.node.channelInterpretation = "discrete";
     });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(0, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(0, this.node);
       }
     });
   }
-
 }
-
-_defineProperty(Destination, "description", "WebAudio DestinationNode");
-
-_defineProperty(Destination, "inlets", [{
+Destination.description = "WebAudio DestinationNode";
+Destination.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output DestinationNode instance"
-}]);
-
-_defineProperty(Destination, "outlets", [{
+}];
+Destination.outlets = [{
   type: "object",
   description: "Instance: DestinationNode"
-}]);
+}];
+
 
 /***/ }),
 
@@ -1727,32 +1430,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class Gain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createGain()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }, {
-      node: this.node.gain
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createGain() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.gain }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1761,8 +1448,7 @@ class Gain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.node.channelInterpretation = "discrete";
       handleArgs(this.args);
     });
-
-    const handleArgs = args => {
+    const handleArgs = (args) => {
       if (typeof args[0] === "number") {
         try {
           this.node.gain.setValueAtTime(args[0], this.audioCtx.currentTime);
@@ -1771,16 +1457,11 @@ class Gain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
         }
       }
     };
-
     this.on("updateArgs", handleArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet === 1) {
         try {
           const bpf = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.decodeLine)(data);
@@ -1791,12 +1472,9 @@ class Gain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(Gain, "description", "WebAudio GainNode");
-
-_defineProperty(Gain, "inlets", [{
+Gain.description = "WebAudio GainNode";
+Gain.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output GainNode instance"
@@ -1804,22 +1482,21 @@ _defineProperty(Gain, "inlets", [{
   isHot: false,
   type: "signal",
   description: "gain: bpf or node connection"
-}]);
-
-_defineProperty(Gain, "outlets", [{
+}];
+Gain.outlets = [{
   type: "signal",
   description: "Node connection"
 }, {
   type: "object",
   description: "Instance: GainNode"
-}]);
-
-_defineProperty(Gain, "args", [{
+}];
+Gain.args = [{
   type: "number",
   optional: true,
   description: "Initial gain",
   default: 1
-}]);
+}];
+
 
 /***/ }),
 
@@ -1836,22 +1513,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class IIRFilter extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined,
-      feedforward: [],
-      feedback: []
-    });
+    this._ = { node: void 0, feedforward: [], feedback: [] };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1859,52 +1528,40 @@ class IIRFilter extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.outlets = 2;
       handleArgs(this.args);
     });
-
-    const handleArgs = args => {
-      if ((0,_utils__WEBPACK_IMPORTED_MODULE_2__.isNumberArray)(args[0])) this._.feedforward = args[0];
-      if ((0,_utils__WEBPACK_IMPORTED_MODULE_2__.isNumberArray)(args[1])) this._.feedback = args[1];
+    const handleArgs = (args) => {
+      if ((0,_utils__WEBPACK_IMPORTED_MODULE_2__.isNumberArray)(args[0]))
+        this._.feedforward = args[0];
+      if ((0,_utils__WEBPACK_IMPORTED_MODULE_2__.isNumberArray)(args[1]))
+        this._.feedback = args[1];
       this.resetNode();
     };
-
     this.on("updateArgs", handleArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet === 1) {
-        if ((0,_utils__WEBPACK_IMPORTED_MODULE_2__.isNumberArray)(data)) this._.feedforward = data;
+        if ((0,_utils__WEBPACK_IMPORTED_MODULE_2__.isNumberArray)(data))
+          this._.feedforward = data;
         this.resetNode();
       } else if (inlet === 2) {
-        if ((0,_utils__WEBPACK_IMPORTED_MODULE_2__.isNumberArray)(data)) this._.feedback = data;
+        if ((0,_utils__WEBPACK_IMPORTED_MODULE_2__.isNumberArray)(data))
+          this._.feedback = data;
         this.resetNode();
       }
     });
   }
-
   resetNode() {
     this.disconnectAudio();
     this.node = this.audioCtx.createIIRFilter(this._.feedforward, this._.feedback);
     this.node.channelInterpretation = "discrete";
-    this.inletAudioConnections[0] = {
-      node: this.node,
-      index: 0
-    };
-    this.outletAudioConnections[0] = {
-      node: this.node,
-      index: 0
-    };
+    this.inletAudioConnections[0] = { node: this.node, index: 0 };
+    this.outletAudioConnections[0] = { node: this.node, index: 0 };
     this.connectAudio();
   }
-
 }
-
-_defineProperty(IIRFilter, "description", "WebAudio IIRFilterNode");
-
-_defineProperty(IIRFilter, "inlets", [{
+IIRFilter.description = "WebAudio IIRFilterNode";
+IIRFilter.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection (1 channel), bang to output IIRFilterNode instance"
@@ -1916,17 +1573,15 @@ _defineProperty(IIRFilter, "inlets", [{
   isHot: false,
   type: "object",
   description: "feedback, A sequence of coefficients, change will reconstruct the node: number[]"
-}]);
-
-_defineProperty(IIRFilter, "outlets", [{
+}];
+IIRFilter.outlets = [{
   type: "signal",
   description: "Node connection (1 channel)"
 }, {
   type: "object",
   description: "Instance: IIRFilterNode"
-}]);
-
-_defineProperty(IIRFilter, "args", [{
+}];
+IIRFilter.args = [{
   type: "object",
   optional: false,
   default: [],
@@ -1936,7 +1591,8 @@ _defineProperty(IIRFilter, "args", [{
   optional: false,
   default: [],
   description: "feedback, A sequence of coefficients: number[]"
-}]);
+}];
+
 
 /***/ }),
 
@@ -1952,35 +1608,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 class Media extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined,
-      element: undefined
-    });
+    this._ = { node: void 0, element: void 0 };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
       this.inlets = 1;
       this.outlets = 2;
     });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
-          if (this.node) this.outlet(1, this.node);
+          if (this.node)
+            this.outlet(1, this.node);
         } else if (data instanceof HTMLMediaElement) {
           this._.element = data;
           this.resetNode();
@@ -1989,35 +1634,28 @@ class Media extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
   resetNode() {
     this.disconnectAudio();
     this.node = this.audioCtx.createMediaElementSource(this._.element);
     this.node.channelInterpretation = "discrete";
-    this.outletAudioConnections[0] = {
-      node: this.node,
-      index: 0
-    };
+    this.outletAudioConnections[0] = { node: this.node, index: 0 };
     this.connectAudio();
   }
-
 }
-
-_defineProperty(Media, "description", "WebAudio MediaElementAudioSourceNode");
-
-_defineProperty(Media, "inlets", [{
+Media.description = "WebAudio MediaElementAudioSourceNode";
+Media.inlets = [{
   isHot: true,
   type: "object",
   description: "HTMLMediaElement to construct node, bang to output MediaElementAudioSourceNode instance"
-}]);
-
-_defineProperty(Media, "outlets", [{
+}];
+Media.outlets = [{
   type: "signal",
   description: "Node connection"
 }, {
   type: "object",
   description: "Instance: MediaElementAudioSourceNode"
-}]);
+}];
+
 
 /***/ }),
 
@@ -2033,88 +1671,59 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
-
-class Merger extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+const _Merger = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: null
-    });
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: null };
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
       this.outlets = 2;
       handleArgs(this.args);
     });
-
-    const handleArgs = args => {
+    const handleArgs = (args) => {
       const channelCount = (typeof args[0] === "number" && ~~args[0]) > 0 ? ~~args[0] : 6;
       this.resetNode(channelCount);
     };
-
     this.on("updateArgs", handleArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (typeof data === "number") {
           const channelCount = ~~data > 0 ? ~~data : 6;
-          if (this.node && channelCount !== this.node.numberOfInputs) this.resetNode(channelCount);
+          if (this.node && channelCount !== this.node.numberOfInputs)
+            this.resetNode(channelCount);
           this.outlet(1, this.node);
-        } else if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        } else if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       }
     });
   }
-
   resetNode(channelCount) {
     this.disconnectAudio();
     this.node = this.audioCtx.createChannelMerger(channelCount);
     this.node.channelInterpretation = "discrete";
-    const factoryMeta = Merger.meta;
+    const factoryMeta = _Merger.meta;
     const bangInlet = factoryMeta.inlets[0];
     const siganlInlet = factoryMeta.inlets[1];
-    this.inletAudioConnections = [{
-      node: this.node,
-      index: 0
-    }];
-    this.outletAudioConnections = [{
-      node: this.node,
-      index: 0
-    }];
+    this.inletAudioConnections = [{ node: this.node, index: 0 }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
     factoryMeta.inlets = [bangInlet];
-
     for (let i = 1; i < channelCount; i++) {
       factoryMeta.inlets[i] = siganlInlet;
-      this.inletAudioConnections[i] = {
-        node: this.node,
-        index: i
-      };
+      this.inletAudioConnections[i] = { node: this.node, index: i };
     }
-
     this.setMeta(factoryMeta);
     this.inlets = channelCount;
     this.connectAudio();
   }
-
-}
-
-_defineProperty(Merger, "description", "WebAudio ChannelMergerNode");
-
-_defineProperty(Merger, "inlets", [{
+};
+let Merger = _Merger;
+Merger.description = "WebAudio ChannelMergerNode";
+Merger.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output DestinationNode instance, number to change inputs"
@@ -2122,22 +1731,22 @@ _defineProperty(Merger, "inlets", [{
   isHot: false,
   type: "signal",
   description: "Node connection"
-}]);
-
-_defineProperty(Merger, "outlets", [{
+}];
+Merger.outlets = [{
   type: "signal",
   description: "Node connection (n channels)"
 }, {
   type: "object",
   description: "Instance: ChannelMergerNode"
-}]);
-
-_defineProperty(Merger, "args", [{
+}];
+Merger.args = [{
   type: "number",
   optional: true,
   description: "Number of Inputs",
   default: 6
-}]);
+}];
+
+
 
 /***/ }),
 
@@ -2154,31 +1763,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class Oscillator extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createOscillator()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [null, {
-      node: this.node.frequency
-    }, {
-      node: this.node.detune
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createOscillator() };
+    this.inletAudioConnections = [null, { node: this.node.frequency }, { node: this.node.detune }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -2189,8 +1783,7 @@ class Oscillator extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       handleArgs(this.args);
       this.node.start();
     });
-
-    const handleProps = props => {
+    const handleProps = (props) => {
       if (typeof props.detune === "number") {
         try {
           this.node.detune.setValueAtTime(props.detune, this.audioCtx.currentTime);
@@ -2199,10 +1792,8 @@ class Oscillator extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
         }
       }
     };
-
     this.on("updateProps", handleProps);
-
-    const handleArgs = args => {
+    const handleArgs = (args) => {
       if (typeof args[0] === "number") {
         try {
           this.node.frequency.setValueAtTime(args[0], this.audioCtx.currentTime);
@@ -2210,7 +1801,6 @@ class Oscillator extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
           this.error(e.message);
         }
       }
-
       if (typeof args[1] === "string") {
         try {
           this.node.type = args[1];
@@ -2219,16 +1809,11 @@ class Oscillator extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
         }
       }
     };
-
     this.on("updateArgs", handleArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else {
         try {
           if (inlet === 1) {
@@ -2246,12 +1831,9 @@ class Oscillator extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(Oscillator, "description", "WebAudio OscillatorNode");
-
-_defineProperty(Oscillator, "inlets", [{
+Oscillator.description = "WebAudio OscillatorNode";
+Oscillator.inlets = [{
   isHot: true,
   type: "bang",
   description: "Output OscillatorNode instance"
@@ -2268,17 +1850,15 @@ _defineProperty(Oscillator, "inlets", [{
   type: "enum",
   enums: ["sine", "square", "sawtooth", "triangle", "custom"],
   description: 'type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
-}]);
-
-_defineProperty(Oscillator, "outlets", [{
+}];
+Oscillator.outlets = [{
   type: "signal",
   description: "Node connection (1 channel)"
 }, {
   type: "object",
   description: "Instance: OscillatorNode"
-}]);
-
-_defineProperty(Oscillator, "args", [{
+}];
+Oscillator.args = [{
   type: "number",
   optional: true,
   default: 440,
@@ -2289,17 +1869,16 @@ _defineProperty(Oscillator, "args", [{
   optional: true,
   default: "sine",
   description: 'Initial type: "sine" | "square" | "sawtooth" | "triangle" | "custom"'
-}]);
-
-_defineProperty(Oscillator, "props", {
+}];
+Oscillator.props = {
   detune: {
     type: "number",
     default: 0,
     description: "Initial detune"
   }
-});
+};
+Oscillator.isOscillatorType = (x) => x === "sine" || x === "square" || x === "sawtooth" || x === "triangle" || x === "custom";
 
-_defineProperty(Oscillator, "isOscillatorType", x => x === "sine" || x === "square" || x === "sawtooth" || x === "triangle" || x === "custom");
 
 /***/ }),
 
@@ -2316,42 +1895,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class Panner extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createPanner()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }, {
-      node: this.node.orientationX
-    }, {
-      node: this.node.orientationY
-    }, {
-      node: this.node.orientationZ
-    }, null, {
-      node: this.node.positionX
-    }, {
-      node: this.node.positionY
-    }, {
-      node: this.node.positionZ
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createPanner() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.orientationX }, { node: this.node.orientationY }, { node: this.node.orientationZ }, null, { node: this.node.positionX }, { node: this.node.positionY }, { node: this.node.positionZ }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -2360,36 +1913,33 @@ class Panner extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       handleProps(this.props);
       this.node.channelInterpretation = "discrete";
     });
-
-    const handleProps = props => {
+    const handleProps = (props) => {
       const paramMap = ["orientationX", "orientationY", "orientationZ", "positionX", "positionY", "positionZ"];
       const numberParamMap = ["coneInnerAngle", "coneOuterAngle", "coneOuterGain", "maxDistance", "refDistance", "rolloffFactor"];
-
       try {
-        paramMap.forEach(key => {
-          if (typeof props[key] === "number") this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
+        paramMap.forEach((key) => {
+          if (typeof props[key] === "number")
+            this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
         });
-        numberParamMap.forEach(key => {
-          if (typeof props[key] === "number") this.node[key] = props[key];
+        numberParamMap.forEach((key) => {
+          if (typeof props[key] === "number")
+            this.node[key] = props[key];
         });
-        if (typeof props.distanceModel === "string") this.node.distanceModel = props.distanceModel;
-        if (typeof props.panningModel === "string") this.node.panningModel = props.panningModel;
+        if (typeof props.distanceModel === "string")
+          this.node.distanceModel = props.distanceModel;
+        if (typeof props.panningModel === "string")
+          this.node.panningModel = props.panningModel;
       } catch (e) {
         this.error(e.message);
       }
     };
-
     this.on("updateProps", handleProps);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
+    this.on("inlet", ({ data, inlet }) => {
       const paramMap = ["orientationX", "orientationY", "orientationZ", "positionX", "positionY", "positionZ"];
       const numberParamMap = ["coneInnerAngle", "coneOuterAngle", "coneOuterGain", "maxDistance", "refDistance", "rolloffFactor"];
-
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet > 0 && inlet < 7) {
         try {
           const bpf = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.decodeLine)(data);
@@ -2400,16 +1950,19 @@ class Panner extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       } else if (inlet === 7) {
         if (typeof data === "object") {
           const props = data;
-
           try {
-            paramMap.forEach(key => {
-              if (typeof props[key] === "number") this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
+            paramMap.forEach((key) => {
+              if (typeof props[key] === "number")
+                this.node[key].setValueAtTime(props[key], this.audioCtx.currentTime);
             });
-            numberParamMap.forEach(key => {
-              if (typeof props[key] === "number") this.node[key] = props[key];
+            numberParamMap.forEach((key) => {
+              if (typeof props[key] === "number")
+                this.node[key] = props[key];
             });
-            if (typeof props.distanceModel === "string") this.node.distanceModel = props.distanceModel;
-            if (typeof props.panningModel === "string") this.node.panningModel = props.panningModel;
+            if (typeof props.distanceModel === "string")
+              this.node.distanceModel = props.distanceModel;
+            if (typeof props.panningModel === "string")
+              this.node.panningModel = props.panningModel;
           } catch (e) {
             this.error(e.message);
           }
@@ -2417,12 +1970,9 @@ class Panner extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(Panner, "description", "WebAudio PannerNode");
-
-_defineProperty(Panner, "inlets", [{
+Panner.description = "WebAudio PannerNode";
+Panner.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output PannerNode instance"
@@ -2454,17 +2004,15 @@ _defineProperty(Panner, "inlets", [{
   isHot: false,
   type: "object",
   description: "options: coneInnerAngle, coneOuterAngle, coneOuterGain, distanceModel, maxDistance, orientationX, orientationY, orientationZ, panningModel, positionX, positionY, positionZ, refDistance, rolloffFactor"
-}]);
-
-_defineProperty(Panner, "outlets", [{
+}];
+Panner.outlets = [{
   type: "signal",
   description: "Node connection (2 channel)"
 }, {
   type: "object",
   description: "Instance: PannerNode"
-}]);
-
-_defineProperty(Panner, "props", {
+}];
+Panner.props = {
   coneInnerAngle: {
     type: "number",
     default: 360,
@@ -2488,7 +2036,7 @@ _defineProperty(Panner, "props", {
   },
   maxDistance: {
     type: "number",
-    default: 10000,
+    default: 1e4,
     description: "Initial maxDistance"
   },
   orientationX: {
@@ -2537,7 +2085,8 @@ _defineProperty(Panner, "props", {
     default: 1,
     description: "Initial rolloffFactor"
   }
-});
+};
+
 
 /***/ }),
 
@@ -2553,104 +2102,78 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
-
-class Splitter extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+const _Splitter = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: null
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: null };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
       this.inlets = 1;
       handleArgs(this.args);
     });
-
-    const handleArgs = args => {
+    const handleArgs = (args) => {
       const channelCount = (args && typeof args[0] === "number" && ~~args[0]) > 0 ? ~~args[0] : 6;
       this.resetNode(channelCount);
     };
-
     this.on("updateArgs", handleArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (typeof data === "number") {
           const channelCount = ~~data > 0 ? ~~data : 6;
-          if (this.node && channelCount !== this.node.numberOfOutputs) this.resetNode(channelCount);
+          if (this.node && channelCount !== this.node.numberOfOutputs)
+            this.resetNode(channelCount);
           this.outlet(this.outlets - 1, this.node);
-        } else if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(this.outlets - 1, this.node);
+        } else if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(this.outlets - 1, this.node);
       }
     });
   }
-
   resetNode(channelCount) {
     this.disconnectAudio();
     this.node = this.audioCtx.createChannelSplitter(channelCount);
     this.node.channelInterpretation = "discrete";
-    const factoryMeta = Splitter.meta;
+    const factoryMeta = _Splitter.meta;
     const signalOutlet = factoryMeta.outlets[0];
     const nodeOutlet = factoryMeta.outlets[1];
-    this.inletAudioConnections = [{
-      node: this.node,
-      index: 0
-    }];
+    this.inletAudioConnections = [{ node: this.node, index: 0 }];
     this.outletAudioConnections = [];
-
     for (let i = 0; i < channelCount; i++) {
       factoryMeta.outlets[i] = signalOutlet;
-      this.outletAudioConnections[i] = {
-        node: this.node,
-        index: i
-      };
+      this.outletAudioConnections[i] = { node: this.node, index: i };
     }
-
     factoryMeta.outlets[channelCount] = nodeOutlet;
     this.setMeta(factoryMeta);
     this.outlets = channelCount + 1;
     this.connectAudio();
   }
-
-}
-
-_defineProperty(Splitter, "description", "WebAudio ChannelSplitterNode");
-
-_defineProperty(Splitter, "inlets", [{
+};
+let Splitter = _Splitter;
+Splitter.description = "WebAudio ChannelSplitterNode";
+Splitter.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output ChannelSplitterNode instance, number to change outputs"
-}]);
-
-_defineProperty(Splitter, "outlets", [{
+}];
+Splitter.outlets = [{
   type: "signal",
   description: "Node connection (1 channel)"
 }, {
   type: "object",
   description: "Instance: ChannelSplitterNode"
-}]);
-
-_defineProperty(Splitter, "args", [{
+}];
+Splitter.args = [{
   type: "number",
   optional: true,
   description: "Number of Outputs",
   default: 6
-}]);
+}];
+
+
 
 /***/ }),
 
@@ -2667,32 +2190,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils */ "./src/utils.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class StereoPanner extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createStereoPanner()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }, {
-      node: this.node.pan
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createStereoPanner() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }, { node: this.node.pan }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -2701,8 +2208,7 @@ class StereoPanner extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.node.channelInterpretation = "discrete";
       handleArgs(this.args);
     });
-
-    const handleArgs = args => {
+    const handleArgs = (args) => {
       if (typeof args[0] === "number") {
         try {
           this.node.pan.setValueAtTime(args[0], this.audioCtx.currentTime);
@@ -2711,16 +2217,11 @@ class StereoPanner extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
         }
       }
     };
-
     this.on("updateArgs", handleArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet === 1) {
         try {
           const bpf = (0,_utils__WEBPACK_IMPORTED_MODULE_2__.decodeLine)(data);
@@ -2731,12 +2232,9 @@ class StereoPanner extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(StereoPanner, "description", "WebAudio StereoPannerNode");
-
-_defineProperty(StereoPanner, "inlets", [{
+StereoPanner.description = "WebAudio StereoPannerNode";
+StereoPanner.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output StereoPannerNode instance"
@@ -2744,22 +2242,21 @@ _defineProperty(StereoPanner, "inlets", [{
   isHot: false,
   type: "signal",
   description: "pan: bpf or node connection"
-}]);
-
-_defineProperty(StereoPanner, "outlets", [{
+}];
+StereoPanner.outlets = [{
   type: "signal",
   description: "Node connection"
 }, {
   type: "object",
   description: "Instance: StereoPannerNode"
-}]);
-
-_defineProperty(StereoPanner, "args", [{
+}];
+StereoPanner.args = [{
   type: "number",
   optional: true,
   description: "Initial pan",
   default: 0
-}]);
+}];
+
 
 /***/ }),
 
@@ -2775,24 +2272,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 class StreamDest extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createMediaStreamDestination()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createMediaStreamDestination() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -2800,35 +2287,28 @@ class StreamDest extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.outlets = 2;
       this.node.channelInterpretation = "discrete";
     });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outletAll([this.node, this.node.stream]);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outletAll([this.node, this.node.stream]);
       }
     });
   }
-
 }
-
-_defineProperty(StreamDest, "description", "WebAudio MediaStreamAudioDestinationNode");
-
-_defineProperty(StreamDest, "inlets", [{
+StreamDest.description = "WebAudio MediaStreamAudioDestinationNode";
+StreamDest.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output MediaStreamAudioDestinationNode instance with its stream"
-}]);
-
-_defineProperty(StreamDest, "outlets", [{
+}];
+StreamDest.outlets = [{
   type: "object",
   description: "Instance: MediaStreamAudioDestinationNode"
 }, {
   type: "object",
   description: "Stream"
-}]);
+}];
+
 
 /***/ }),
 
@@ -2844,71 +2324,52 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 class StreamSrc extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined,
-      stream: undefined
-    });
+    this._ = { node: void 0, stream: void 0 };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
       this.inlets = 1;
       this.outlets = 2;
     });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
           this._.stream = data;
           this.resetNode();
         }
-
-        if (this.node) this.outlet(1, this.node);
+        if (this.node)
+          this.outlet(1, this.node);
       }
     });
   }
-
   resetNode() {
     this.disconnectAudio();
     this.node = this.audioCtx.createMediaStreamSource(this._.stream);
     this.node.channelInterpretation = "discrete";
-    this.outletAudioConnections[0] = {
-      node: this.node,
-      index: 0
-    };
+    this.outletAudioConnections[0] = { node: this.node, index: 0 };
     this.connectAudio();
   }
-
 }
-
-_defineProperty(StreamSrc, "description", "WebAudio MediaStreamAudioSourceNode");
-
-_defineProperty(StreamSrc, "inlets", [{
+StreamSrc.description = "WebAudio MediaStreamAudioSourceNode";
+StreamSrc.inlets = [{
   isHot: true,
   type: "object",
   description: "MediaStream to construct node, bang to output MediaStreamAudioSourceNode instance"
-}]);
-
-_defineProperty(StreamSrc, "outlets", [{
+}];
+StreamSrc.outlets = [{
   type: "signal",
   description: "Node connection"
 }, {
   type: "object",
   description: "Instance: MediaStreamAudioSourceNode"
-}]);
+}];
+
 
 /***/ }),
 
@@ -2924,29 +2385,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 class WaveShaper extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: this.audioCtx.createWaveShaper()
-    });
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this.node,
-      index: 0
-    }]);
+    this._ = { node: this.audioCtx.createWaveShaper() };
+    this.inletAudioConnections = [{ node: this.node, index: 0 }];
+    this.outletAudioConnections = [{ node: this.node, index: 0 }];
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -2955,45 +2402,43 @@ class WaveShaper extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.node.channelInterpretation = "discrete";
       handleProps(this.box.props);
     });
-
-    const handleProps = props => {
+    const handleProps = (props) => {
       try {
-        if (typeof props.oversample === "string") this.node.oversample = props.oversample;
+        if (typeof props.oversample === "string")
+          this.node.oversample = props.oversample;
       } catch (e) {
         this.error(e.message);
       }
     };
-
     this.on("updateProps", handleProps);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(1, this.node);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(1, this.node);
       } else if (inlet === 1) {
         try {
-          if (data instanceof Float32Array) this.node.curve = data;else this.error("The curve is not a Float32Array.");
+          if (data instanceof Float32Array)
+            this.node.curve = data;
+          else
+            this.error("The curve is not a Float32Array.");
         } catch (e) {
           this.error(e.message);
         }
       } else if (inlet === 2) {
         try {
-          if (typeof data === "string") this.node.oversample = data;else this.error("Incorrect oversample type.");
+          if (typeof data === "string")
+            this.node.oversample = data;
+          else
+            this.error("Incorrect oversample type.");
         } catch (e) {
           this.error(e.message);
         }
       }
     });
   }
-
 }
-
-_defineProperty(WaveShaper, "description", "WebAudio WaveShaperNode");
-
-_defineProperty(WaveShaper, "inlets", [{
+WaveShaper.description = "WebAudio WaveShaperNode";
+WaveShaper.inlets = [{
   isHot: true,
   type: "signal",
   description: "Node connection, bang to output WaveShaperNode instance"
@@ -3006,24 +2451,23 @@ _defineProperty(WaveShaper, "inlets", [{
   type: "enum",
   enums: ["none", "2x", "4x"],
   description: 'oversample: "none" | "2x" | "4x"'
-}]);
-
-_defineProperty(WaveShaper, "outlets", [{
+}];
+WaveShaper.outlets = [{
   type: "signal",
   description: "Node connection"
 }, {
   type: "object",
   description: "Instance: WaveShaperNode"
-}]);
-
-_defineProperty(WaveShaper, "props", {
+}];
+WaveShaper.props = {
   oversample: {
     type: "enum",
     enums: ["none", "2x", "4x"],
     default: "none",
     description: "Initial oversample"
   }
-});
+};
+
 
 /***/ }),
 
@@ -3038,8 +2482,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ audioContext)
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 class audioContext extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultObject {
   subscribe() {
@@ -3048,32 +2490,25 @@ class audioContext extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultObject {
       this.inlets = 1;
       this.outlets = 1;
     });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) this.outlet(0, this.patcher.audioCtx);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data))
+          this.outlet(0, this.patcher.audioCtx);
       }
     });
   }
-
 }
-
-_defineProperty(audioContext, "description", "Get currrent patcher's audio context");
-
-_defineProperty(audioContext, "inlets", [{
+audioContext.description = "Get currrent patcher's audio context";
+audioContext.inlets = [{
   isHot: true,
   type: "bang",
   description: "Output current audio context"
-}]);
-
-_defineProperty(audioContext, "outlets", [{
+}];
+audioContext.outlets = [{
   type: "object",
   description: "Current audio context"
-}]);
+}];
+
 
 /***/ }),
 
@@ -3088,29 +2523,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ audioWorklet)
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 class audioWorklet extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultObject {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "audioWorklet", void 0);
-
-    _defineProperty(this, "handleInlet", async _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.handleInlet = async ({ data, inlet }) => {
       if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) this.outlet(0, this.audioWorklet);
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data))
+          this.outlet(0, this.audioWorklet);
       } else if (inlet === 1) {
         if (typeof data === "string") {
           try {
-            const url = window.URL.createObjectURL(new Blob([data], {
-              type: "text/javascript"
-            }));
+            const url = window.URL.createObjectURL(new Blob([data], { type: "text/javascript" }));
             await this.audioWorklet.addModule(url);
             this.outlet(1, new _sdk__WEBPACK_IMPORTED_MODULE_0__.Bang());
           } catch (e) {
@@ -3118,24 +2542,23 @@ class audioWorklet extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultObject {
           }
         }
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
       this.inlets = 2;
       this.outlets = 2;
-      if (!this.patcher.audioCtx.audioWorklet) this.error("AudioWorklet not found.");else this.audioWorklet = this.patcher.audioCtx.audioWorklet;
+      if (!this.patcher.audioCtx.audioWorklet)
+        this.error("AudioWorklet not found.");
+      else
+        this.audioWorklet = this.patcher.audioCtx.audioWorklet;
     });
     this.on("inlet", this.handleInlet);
   }
-
 }
-
-_defineProperty(audioWorklet, "description", "Get currrent patcher's audio worklet from context");
-
-_defineProperty(audioWorklet, "inlets", [{
+audioWorklet.description = "Get currrent patcher's audio worklet from context";
+audioWorklet.inlets = [{
   isHot: true,
   type: "bang",
   description: "Output current audio worklet"
@@ -3143,15 +2566,15 @@ _defineProperty(audioWorklet, "inlets", [{
   isHot: true,
   type: "string",
   description: "Code to add as module"
-}]);
-
-_defineProperty(audioWorklet, "outlets", [{
+}];
+audioWorklet.outlets = [{
   type: "object",
   description: "Current audio worklet"
 }, {
   type: "bang",
   description: "Output a bang while module is added"
-}]);
+}];
+
 
 /***/ }),
 
@@ -3167,36 +2590,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 class WebAudioObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.DefaultObject {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", void 0);
-  }
-
   set node(nodeIn) {
     this._.node = nodeIn;
   }
-
   get node() {
     return this._.node;
   }
-
 }
+WebAudioObject.package = _index__WEBPACK_IMPORTED_MODULE_0__.name;
+WebAudioObject.icon = "volume up";
+WebAudioObject.author = _index__WEBPACK_IMPORTED_MODULE_0__.author;
+WebAudioObject.version = _index__WEBPACK_IMPORTED_MODULE_0__.version;
+WebAudioObject.description = _index__WEBPACK_IMPORTED_MODULE_0__.description;
 
-_defineProperty(WebAudioObject, "package", _index__WEBPACK_IMPORTED_MODULE_0__.name);
-
-_defineProperty(WebAudioObject, "icon", "volume up");
-
-_defineProperty(WebAudioObject, "author", _index__WEBPACK_IMPORTED_MODULE_0__.author);
-
-_defineProperty(WebAudioObject, "version", _index__WEBPACK_IMPORTED_MODULE_0__.version);
-
-_defineProperty(WebAudioObject, "description", _index__WEBPACK_IMPORTED_MODULE_0__.description);
 
 /***/ }),
 
@@ -3214,6 +2623,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../package.json */ "./package.json");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/ (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(_package_json__WEBPACK_IMPORTED_MODULE_0__, 2))));
+
 
 /***/ }),
 
@@ -3258,6 +2668,7 @@ const {
   isBang
 } = sdk;
 
+
 /***/ }),
 
 /***/ "./src/utils.ts":
@@ -3273,33 +2684,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "decodeCurve": () => (/* binding */ decodeCurve),
 /* harmony export */   "decodeLine": () => (/* binding */ decodeLine)
 /* harmony export */ });
-const isNumberArray = x => Array.isArray(x) && x.every(e => typeof e === "number");
-/**
- * A BPF can be described as a succesion of three number tuples.
- * i.e. `1 1 0.5 2 1 1` curve mode means go to 0 immediately then go to 1 in 1s with a curve of e^0.5, then go to 2 in 1s linear.
- * The function transform the string to number[][], i.e. `[[1, 1, 0.5], [2, 1, 1]]`
- */
-
+const isNumberArray = (x) => Array.isArray(x) && x.every((e) => typeof e === "number");
 const decodeBPF = (sIn, tupleLength) => {
-  if (typeof sIn === "number") return [[sIn]];
-  if (isNumberArray(sIn)) return [sIn];
-  if (Array.isArray(sIn) && sIn.every(a => isNumberArray(a))) return sIn;
-  if (typeof sIn !== "string") throw new Error("Failed to decode curve.");
-  const numbers = sIn.split(" ").filter(s => !!s).map(s => +s);
-  if (numbers.find(v => !isFinite(v))) throw new Error("BPF contains invalid number.");
+  if (typeof sIn === "number")
+    return [[sIn]];
+  if (isNumberArray(sIn))
+    return [sIn];
+  if (Array.isArray(sIn) && sIn.every((a) => isNumberArray(a)))
+    return sIn;
+  if (typeof sIn !== "string")
+    throw new Error("Failed to decode curve.");
+  const numbers = sIn.split(" ").filter((s) => !!s).map((s) => +s);
+  if (numbers.find((v) => !isFinite(v)))
+    throw new Error("BPF contains invalid number.");
   const tuples = [];
-
   for (let i = 0; i < numbers.length; i++) {
     const $tuple = ~~(i / tupleLength);
     const $ = i % tupleLength;
-    if (!tuples[$tuple]) tuples[$tuple] = [];
+    if (!tuples[$tuple])
+      tuples[$tuple] = [];
     tuples[$tuple][$] = numbers[i];
   }
-
   return tuples;
 };
-const decodeCurve = sIn => decodeBPF(sIn, 3);
-const decodeLine = sIn => decodeBPF(sIn, 2);
+const decodeCurve = (sIn) => decodeBPF(sIn, 3);
+const decodeLine = (sIn) => decodeBPF(sIn, 2);
+
 
 /***/ }),
 
@@ -3309,7 +2719,7 @@ const decodeLine = sIn => decodeBPF(sIn, 2);
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-webaudio","version":"1.0.0","description":"The WebAudio package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-webaudio","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"0.0.3","@types/react":"^17.0.18","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","react":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-webaudio","version":"1.0.0","description":"The WebAudio package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-webaudio","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
 
 /***/ })
 
@@ -3484,6 +2894,7 @@ __webpack_require__.r(__webpack_exports__);
   "plugin~": Plugin,
   "bufferSource~": _objects_BufferSource__WEBPACK_IMPORTED_MODULE_23__.default
 }));
+
 })();
 
 var __webpack_export_target__ = exports;

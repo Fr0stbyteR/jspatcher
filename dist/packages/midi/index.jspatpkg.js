@@ -20,30 +20,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, '');
-const {
-  author,
-  license,
-  keywords,
-  version,
-  description,
-  jspatcher
-} = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_objectSpread({
-  name,
-  author,
-  license,
-  keywords,
-  version,
-  description
-}, jspatcher));
 
 /***/ }),
 
@@ -59,19 +56,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
+class MidiObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.DefaultObject {
+}
+MidiObject.package = _index__WEBPACK_IMPORTED_MODULE_0__.name;
+MidiObject.author = _index__WEBPACK_IMPORTED_MODULE_0__.author;
+MidiObject.version = _index__WEBPACK_IMPORTED_MODULE_0__.version;
+MidiObject.description = _index__WEBPACK_IMPORTED_MODULE_0__.description;
 
-class MidiObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.DefaultObject {}
-
-_defineProperty(MidiObject, "package", _index__WEBPACK_IMPORTED_MODULE_0__.name);
-
-_defineProperty(MidiObject, "author", _index__WEBPACK_IMPORTED_MODULE_0__.author);
-
-_defineProperty(MidiObject, "version", _index__WEBPACK_IMPORTED_MODULE_0__.version);
-
-_defineProperty(MidiObject, "description", _index__WEBPACK_IMPORTED_MODULE_0__.description);
 
 /***/ }),
 
@@ -87,54 +80,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Base */ "./src/objects/Base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 class midiDevices extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      midiAccess: undefined
-    });
-
-    _defineProperty(this, "handleDeviceChange", async () => {
-      if (!this.getProp("autoUpdate")) return;
+    this._ = { midiAccess: void 0 };
+    this.handleDeviceChange = async () => {
+      if (!this.getProp("autoUpdate"))
+        return;
       const filters = this.args.slice();
-      if (!filters.length) filters.push("input", "output");
-      const {
-        midiAccess
-      } = this._;
-
+      if (!filters.length)
+        filters.push("input", "output");
+      const { midiAccess } = this._;
       if (!midiAccess) {
         this.error("MIDIAccess not available.");
         return;
       }
-
       const devices = [];
-      if (filters.indexOf("input") !== -1) midiAccess.inputs.forEach(v => devices.push(v));
-      if (filters.indexOf("output") !== -1) midiAccess.outputs.forEach(v => devices.push(v));
+      if (filters.indexOf("input") !== -1)
+        midiAccess.inputs.forEach((v) => devices.push(v));
+      if (filters.indexOf("output") !== -1)
+        midiAccess.outputs.forEach((v) => devices.push(v));
       const options = devices.map((d, key) => {
-        const {
-          type,
-          name,
-          id
-        } = d;
-        return {
-          key,
-          icon: {
-            input: "sign-in",
-            output: "sign-out"
-          }[type],
-          text: name || id,
-          value: id
-        };
+        const { type, name, id } = d;
+        return { key, icon: { input: "sign-in", output: "sign-out" }[type], text: name || id, value: id };
       });
       this.outletAll([devices, options]);
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -143,102 +117,77 @@ class midiDevices extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
     });
     this.on("postInit", async () => {
       try {
-        const midiAccess = await navigator.requestMIDIAccess({
-          sysex: true
-        });
+        const midiAccess = await navigator.requestMIDIAccess({ sysex: true });
         this._.midiAccess = midiAccess;
         midiAccess.addEventListener("statechange", this.handleDeviceChange);
-        if (this.getProp("autoUpdate")) this.handleDeviceChange();
+        if (this.getProp("autoUpdate"))
+          this.handleDeviceChange();
       } catch (e) {
         this.error(e);
       }
     });
-    this.on("inlet", async _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", async ({ data, inlet }) => {
       if (inlet === 0) {
         let filters;
-
         if ((0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           filters = this.args.slice();
-          if (!filters.length) filters.push("input", "output");
+          if (!filters.length)
+            filters.push("input", "output");
         } else {
           filters = data.slice();
         }
-
-        const {
-          midiAccess
-        } = this._;
-
+        const { midiAccess } = this._;
         if (!midiAccess) {
           this.error("MIDIAccess not available.");
           return;
         }
-
         const devices = [];
-        if (filters.indexOf("input") !== -1) midiAccess.inputs.forEach(v => devices.push(v));
-        if (filters.indexOf("output") !== -1) midiAccess.outputs.forEach(v => devices.push(v));
+        if (filters.indexOf("input") !== -1)
+          midiAccess.inputs.forEach((v) => devices.push(v));
+        if (filters.indexOf("output") !== -1)
+          midiAccess.outputs.forEach((v) => devices.push(v));
         const options = devices.map((d, key) => {
-          const {
-            type,
-            name,
-            id
-          } = d;
-          return {
-            key,
-            icon: {
-              input: "sign-in",
-              output: "sign-out"
-            }[type],
-            text: name || id,
-            value: id
-          };
+          const { type, name, id } = d;
+          return { key, icon: { input: "sign-in", output: "sign-out" }[type], text: name || id, value: id };
         });
         this.outletAll([devices, options]);
       }
     });
     this.on("destroy", () => {
-      if (this._.midiAccess) this._.midiAccess.removeEventListener("statechange", this.handleDeviceChange);
+      if (this._.midiAccess)
+        this._.midiAccess.removeEventListener("statechange", this.handleDeviceChange);
     });
   }
-
 }
-
-_defineProperty(midiDevices, "description", "Enumerate MIDI devices");
-
-_defineProperty(midiDevices, "inlets", [{
+midiDevices.description = "Enumerate MIDI devices";
+midiDevices.inlets = [{
   isHot: true,
   type: "object",
   description: "Bang to enumerate, MIDIPortType[] to use a filter"
-}]);
-
-_defineProperty(midiDevices, "outlets", [{
+}];
+midiDevices.outlets = [{
   type: "object",
   description: "Array of MIDIPort"
 }, {
   type: "object",
   description: "Array of DropdownItemProps"
-}]);
-
-_defineProperty(midiDevices, "args", [{
+}];
+midiDevices.args = [{
   type: "enum",
   varLength: true,
   optional: true,
   enums: ["input", "output"],
   default: ["input", "output"],
   description: "Output only kinds of devices"
-}]);
-
-_defineProperty(midiDevices, "props", {
+}];
+midiDevices.props = {
   autoUpdate: {
     type: "boolean",
     default: true,
     description: "Auto output devices when devices change"
   }
-});
+};
+
 
 /***/ }),
 
@@ -253,47 +202,33 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ midiFormat)
 /* harmony export */ });
 /* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Base */ "./src/objects/Base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 class midiFormat extends _Base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      channel: 0
-    });
+    this._ = { channel: 0 };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
       this.inlets = 7;
       this.outlets = 1;
     });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet < 3) {
         try {
           let [data1, data2] = data;
-
           if (typeof data1 !== "number" || typeof data2 !== "number") {
             throw new Error("Input MIDI data is not numbers");
           }
-
           data1 = Math.round(Math.max(0, Math.min(127, data1)));
           data2 = Math.round(Math.max(0, Math.min(127, data2)));
-
           if (inlet === 0) {
-            this.outlet(0, new Uint8Array([0x90 + this._.channel, data1, data2]));
+            this.outlet(0, new Uint8Array([144 + this._.channel, data1, data2]));
           } else if (inlet === 1) {
-            this.outlet(0, new Uint8Array([0xa0 + this._.channel, data1, data2]));
+            this.outlet(0, new Uint8Array([160 + this._.channel, data1, data2]));
           } else if (inlet === 2) {
-            this.outlet(0, new Uint8Array([0xb0 + this._.channel, data1, data2]));
+            this.outlet(0, new Uint8Array([176 + this._.channel, data1, data2]));
           }
         } catch (e) {
           this.error(e);
@@ -303,24 +238,21 @@ class midiFormat extends _Base__WEBPACK_IMPORTED_MODULE_0__.default {
           this.error("Input MIDI data is not number");
           return;
         }
-
         const data1 = Math.round(Math.max(0, Math.min(127, data)));
-
         if (inlet === 3) {
-          this.outlet(0, new Uint8Array([0xc0 + this._.channel, data1]));
+          this.outlet(0, new Uint8Array([192 + this._.channel, data1]));
         } else if (inlet === 4) {
-          this.outlet(0, new Uint8Array([0xd0 + this._.channel, data1]));
+          this.outlet(0, new Uint8Array([208 + this._.channel, data1]));
         } else if (inlet === 5) {
           const hires = this.getProp("hires");
-
           if (hires === "off") {
-            this.outlet(0, new Uint8Array([0xe0 + this._.channel, 0, data1]));
+            this.outlet(0, new Uint8Array([224 + this._.channel, 0, data1]));
           } else if (hires === "float") {
-            const data = ~~((Math.max(-1, Math.min(1, data1)) + 1) * 0.5 * 16383);
-            this.outlet(0, new Uint8Array([0xe0 + this._.channel, data & 0x7f, data >> 7]));
+            const data2 = ~~((Math.max(-1, Math.min(1, data1)) + 1) * 0.5 * 16383);
+            this.outlet(0, new Uint8Array([224 + this._.channel, data2 & 127, data2 >> 7]));
           } else {
-            const data = ~~Math.max(-8192, Math.min(8191, data1)) + 8192;
-            this.outlet(0, new Uint8Array([0xe0 + this._.channel, data & 0x7f, data >> 7]));
+            const data2 = ~~Math.max(-8192, Math.min(8191, data1)) + 8192;
+            this.outlet(0, new Uint8Array([224 + this._.channel, data2 & 127, data2 >> 7]));
           }
         } else if (inlet === 6) {
           this._.channel = Math.min(15, data1 - 1);
@@ -328,17 +260,13 @@ class midiFormat extends _Base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(midiFormat, "description", "Prepare data in the form of a MIDI message");
-
-_defineProperty(midiFormat, "outlets", [{
+midiFormat.description = "Prepare data in the form of a MIDI message";
+midiFormat.outlets = [{
   type: "object",
   description: "Raw MIDI message: Uint8Array"
-}]);
-
-_defineProperty(midiFormat, "inlets", [{
+}];
+midiFormat.inlets = [{
   isHot: true,
   type: "object",
   description: "Note-on and Note-off [pitch, velocity]: Iterable<number>"
@@ -366,16 +294,16 @@ _defineProperty(midiFormat, "inlets", [{
   isHot: false,
   type: "number",
   description: "MIDI Channel"
-}]);
-
-_defineProperty(midiFormat, "props", {
+}];
+midiFormat.props = {
   hires: {
     type: "enum",
     enums: ["off", "float", "14bit"],
     default: "off",
     description: "High-resolution Pitch Bend (Off (0-127), Float (-1 to 1), 14-bit Fixed (-8192 to 8191))"
   }
-});
+};
+
 
 /***/ }),
 
@@ -391,78 +319,68 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Base */ "./src/objects/Base.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class midiIn extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
+const _midiIn = class extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      midiAccess: undefined,
-      search: undefined,
-      port: undefined
-    });
-
-    _defineProperty(this, "handleDeviceChange", async () => {
-      const {
-        midiAccess
-      } = this._;
-
+    this._ = { midiAccess: void 0, search: void 0, port: void 0 };
+    this.handleDeviceChange = async () => {
+      const { midiAccess } = this._;
       if (!midiAccess) {
         this.error("MIDIAccess not available.");
         return;
       }
-
       const devices = [];
-      midiAccess.inputs.forEach(v => devices.push(v));
-      const enums = devices.map(d => d.name || d.id);
-      const {
-        meta
-      } = this;
-      meta.args[0] = _objectSpread(_objectSpread({}, midiIn.args[0]), {}, {
-        type: "enum",
-        enums
-      });
+      midiAccess.inputs.forEach((v) => devices.push(v));
+      const enums = devices.map((d) => d.name || d.id);
+      const { meta } = this;
+      meta.args[0] = __spreadProps(__spreadValues({}, _midiIn.args[0]), { type: "enum", enums });
       this.setMeta(meta);
-    });
-
-    _defineProperty(this, "handleMIDIMessage", e => this.outlet(0, e.data));
-
-    _defineProperty(this, "newSearch", async search => {
+    };
+    this.handleMIDIMessage = (e) => this.outlet(0, e.data);
+    this.newSearch = async (search) => {
       this._.search = search;
-      const {
-        midiAccess
-      } = this._;
-
+      const { midiAccess } = this._;
       if (!midiAccess) {
         this.error("MIDIAccess not available.");
         return;
       }
-
       const devices = [];
-      midiAccess.inputs.forEach(v => devices.push(v));
-
+      midiAccess.inputs.forEach((v) => devices.push(v));
       for (let i = 0; i < devices.length; i++) {
         const port = devices[i];
-
         if (!search || port.id === search || port.name === search) {
           if (port !== this._.port) {
-            if (this._.port) this._.port.removeEventListener("midimessage", this.handleMIDIMessage);
+            if (this._.port)
+              this._.port.removeEventListener("midimessage", this.handleMIDIMessage);
             this._.port = port;
             port.addEventListener("midimessage", this.handleMIDIMessage);
             break;
           }
         }
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -471,11 +389,8 @@ class midiIn extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
     });
     this.on("postInit", async () => {
       const search = this.args[0];
-
       try {
-        const midiAccess = await navigator.requestMIDIAccess({
-          sysex: true
-        });
+        const midiAccess = await navigator.requestMIDIAccess({ sysex: true });
         this._.midiAccess = midiAccess;
         midiAccess.addEventListener("statechange", this.handleDeviceChange);
         this.handleDeviceChange();
@@ -484,55 +399,50 @@ class midiIn extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
         this.error(e);
       }
     });
-    this.on("updateArgs", args => {
+    this.on("updateArgs", (args) => {
       this.newSearch(args[0]);
     });
     this.on("updateProps", () => {
       this.newSearch(this._.search);
     });
-    this.on("inlet", async _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", async ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           await this.newSearch(data);
         }
-
-        if (this._.port) this.outlet(1, this._.port);
+        if (this._.port)
+          this.outlet(1, this._.port);
       }
     });
     this.on("destroy", () => {
-      if (this._.midiAccess) this._.midiAccess.removeEventListener("statechange", this.handleDeviceChange);
-      if (this._.port) this._.port.removeEventListener("midimessage", this.handleMIDIMessage);
+      if (this._.midiAccess)
+        this._.midiAccess.removeEventListener("statechange", this.handleDeviceChange);
+      if (this._.port)
+        this._.port.removeEventListener("midimessage", this.handleMIDIMessage);
     });
   }
-
-}
-
-_defineProperty(midiIn, "description", "Get MIDI input from device name or ID");
-
-_defineProperty(midiIn, "inlets", [{
+};
+let midiIn = _midiIn;
+midiIn.description = "Get MIDI input from device name or ID";
+midiIn.inlets = [{
   isHot: true,
   type: "anything",
   description: "string to fetch device name or ID, bang to output MIDI port instance"
-}]);
-
-_defineProperty(midiIn, "outlets", [{
+}];
+midiIn.outlets = [{
   type: "object",
   description: "MIDI message: Uint8Array"
 }, {
   type: "object",
   description: "Instance: MIDIPort"
-}]);
-
-_defineProperty(midiIn, "args", [{
+}];
+midiIn.args = [{
   type: "string",
   optional: false,
   description: "Device name or ID"
-}]);
+}];
+
+
 
 /***/ }),
 
@@ -548,73 +458,62 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Base */ "./src/objects/Base.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class midiOut extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
+const _midiOut = class extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      midiAccess: undefined,
-      search: undefined,
-      port: undefined,
-      timestamp: 0
-    });
-
-    _defineProperty(this, "handleDeviceChange", async () => {
-      const {
-        midiAccess
-      } = this._;
-
+    this._ = { midiAccess: void 0, search: void 0, port: void 0, timestamp: 0 };
+    this.handleDeviceChange = async () => {
+      const { midiAccess } = this._;
       if (!midiAccess) {
         this.error("MIDIAccess not available.");
         return;
       }
-
       const devices = [];
-      midiAccess.outputs.forEach(v => devices.push(v));
-      const enums = devices.map(d => d.name || d.id);
-      const {
-        meta
-      } = this;
-      meta.args[0] = _objectSpread(_objectSpread({}, midiOut.args[0]), {}, {
-        type: "enum",
-        enums
-      });
+      midiAccess.outputs.forEach((v) => devices.push(v));
+      const enums = devices.map((d) => d.name || d.id);
+      const { meta } = this;
+      meta.args[0] = __spreadProps(__spreadValues({}, _midiOut.args[0]), { type: "enum", enums });
       this.setMeta(meta);
-    });
-
-    _defineProperty(this, "newSearch", async search => {
+    };
+    this.newSearch = async (search) => {
       this._.search = search;
-      const {
-        midiAccess
-      } = this._;
-
+      const { midiAccess } = this._;
       if (!midiAccess) {
         this.error("MIDIAccess not available.");
         return;
       }
-
       const devices = [];
-      midiAccess.outputs.forEach(v => devices.push(v));
-
+      midiAccess.outputs.forEach((v) => devices.push(v));
       for (let i = 0; i < devices.length; i++) {
         const port = devices[i];
-
         if (!search || port.id === search || port.name === search) {
           this._.port = port;
           break;
         }
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -623,11 +522,8 @@ class midiOut extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
     });
     this.on("postInit", async () => {
       const search = this.box.args[0];
-
       try {
-        const midiAccess = await navigator.requestMIDIAccess({
-          sysex: true
-        });
+        const midiAccess = await navigator.requestMIDIAccess({ sysex: true });
         this._.midiAccess = midiAccess;
         midiAccess.addEventListener("statechange", this.handleDeviceChange);
         this.handleDeviceChange();
@@ -636,43 +532,38 @@ class midiOut extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
         this.error(e);
       }
     });
-    this.on("updateArgs", args => {
+    this.on("updateArgs", (args) => {
       this.newSearch(args[0]);
     });
     this.on("updateProps", () => {
       this.newSearch(this._.search);
     });
-    this.on("inlet", async _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", async ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           if (typeof data === "string") {
             await this.newSearch(data);
           } else {
-            if (this._.port) this._.port.send(data);
+            if (this._.port)
+              this._.port.send(data);
             return;
           }
         }
-
-        if (this._.port) this.outlet(0, this._.port);
+        if (this._.port)
+          this.outlet(0, this._.port);
       } else if (inlet === 1) {
         this._.timestamp = +data || 0;
       }
     });
     this.on("destroy", () => {
-      if (this._.midiAccess) this._.midiAccess.removeEventListener("statechange", this.handleDeviceChange);
+      if (this._.midiAccess)
+        this._.midiAccess.removeEventListener("statechange", this.handleDeviceChange);
     });
   }
-
-}
-
-_defineProperty(midiOut, "description", "Get MIDI output from device name or ID");
-
-_defineProperty(midiOut, "inlets", [{
+};
+let midiOut = _midiOut;
+midiOut.description = "Get MIDI output from device name or ID";
+midiOut.inlets = [{
   isHot: true,
   type: "anything",
   description: "Uint8Array or number[] to output MIDI message, string to fetch device name or ID, bang to output MIDI port instance"
@@ -680,18 +571,18 @@ _defineProperty(midiOut, "inlets", [{
   isHot: false,
   type: "number",
   description: "The time at which to begin sending the data to the port. 0 or past means immediate send."
-}]);
-
-_defineProperty(midiOut, "outlets", [{
+}];
+midiOut.outlets = [{
   type: "object",
   description: "Instance: MIDIPort"
-}]);
-
-_defineProperty(midiOut, "args", [{
+}];
+midiOut.args = [{
   type: "string",
   optional: false,
   description: "Device name or ID"
-}]);
+}];
+
+
 
 /***/ }),
 
@@ -706,8 +597,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ midiParse)
 /* harmony export */ });
 /* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Base */ "./src/objects/Base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 class midiParse extends _Base__WEBPACK_IMPORTED_MODULE_0__.default {
   subscribe() {
@@ -716,41 +605,40 @@ class midiParse extends _Base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.inlets = 1;
       this.outlets = 7;
     });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         try {
           const [data0, data1, data2] = data;
           const eventType = data0 >> 4;
-          const channel = data0 & 0x0f + 1;
-
-          if (eventType === 0x08) {
+          const channel = data0 & 15 + 1;
+          if (eventType === 8) {
             this.outlet(0, [data1, 0]);
-          } else if (eventType === 0x09) {
+          } else if (eventType === 9) {
             this.outlet(6, channel);
             this.outlet(0, [data1, data2]);
-          } else if (eventType === 0x0a) {
+          } else if (eventType === 10) {
             this.outlet(6, channel);
             this.outlet(1, [data1, data2]);
-          } else if (eventType === 0x0b) {
+          } else if (eventType === 11) {
             this.outlet(6, channel);
             this.outlet(2, [data1, data2]);
-          } else if (eventType === 0x0c) {
+          } else if (eventType === 12) {
             this.outlet(6, channel);
             this.outlet(3, data1);
-          } else if (eventType === 0x0d) {
+          } else if (eventType === 13) {
             this.outlet(6, channel);
             this.outlet(4, data1);
-          } else if (eventType === 0x0e) {
+          } else if (eventType === 14) {
             this.outlet(6, channel);
             const hires = this.getProp("hires");
-            if (hires === "off") this.outlet(5, data2);else if (hires === "float") this.outlet(5, (data1 + (data2 << 7)) / 16383 * 2 - 1);else this.outlet(5, -8192 + data1 + (data2 << 7));
+            if (hires === "off")
+              this.outlet(5, data2);
+            else if (hires === "float")
+              this.outlet(5, (data1 + (data2 << 7)) / 16383 * 2 - 1);
+            else
+              this.outlet(5, -8192 + data1 + (data2 << 7));
           } else {
-            this.error("Unrecognised MIDI event type: ".concat(eventType));
+            this.error(`Unrecognised MIDI event type: ${eventType}`);
           }
         } catch (e) {
           this.error(e);
@@ -758,18 +646,14 @@ class midiParse extends _Base__WEBPACK_IMPORTED_MODULE_0__.default {
       }
     });
   }
-
 }
-
-_defineProperty(midiParse, "description", "Interpret raw MIDI data");
-
-_defineProperty(midiParse, "inlets", [{
+midiParse.description = "Interpret raw MIDI data";
+midiParse.inlets = [{
   isHot: true,
   type: "anything",
   description: "Raw MIDI message: Iterable<number>"
-}]);
-
-_defineProperty(midiParse, "outlets", [{
+}];
+midiParse.outlets = [{
   type: "object",
   description: "Note-on and Note-off [pitch, velocity]: Uint8Array"
 }, {
@@ -790,16 +674,16 @@ _defineProperty(midiParse, "outlets", [{
 }, {
   type: "number",
   description: "MIDI Channel"
-}]);
-
-_defineProperty(midiParse, "props", {
+}];
+midiParse.props = {
   hires: {
     type: "enum",
     enums: ["off", "float", "14bit"],
     default: "off",
     description: "High-resolution Pitch Bend (Off (0-127), Float (-1 to 1), 14-bit Fixed (-8192 to 8191))"
   }
-});
+};
+
 
 /***/ }),
 
@@ -817,6 +701,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../package.json */ "./package.json");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/ (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(_package_json__WEBPACK_IMPORTED_MODULE_0__, 2))));
+
 
 /***/ }),
 
@@ -891,6 +776,7 @@ const {
   getReactMonacoEditor
 } = sdk;
 
+
 /***/ }),
 
 /***/ "./package.json":
@@ -899,7 +785,7 @@ const {
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-midi","version":"1.0.0","description":"The MIDI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-midi","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"^0.0.8","@types/webmidi":"^2.0.6","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","semantic-ui-react":"^2.0.3","typescript":"^4.3.5","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-midi","version":"1.0.0","description":"The MIDI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-midi","devDependencies":{"@jspatcher/jspatcher":"0.0.9","@types/webmidi":"^2.0.6","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","semantic-ui-react":"^2.0.3","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.7.2"}}');
 
 /***/ })
 
@@ -1022,6 +908,7 @@ __webpack_require__.r(__webpack_exports__);
     midiparse: _objects_midiparse__WEBPACK_IMPORTED_MODULE_4__.default
   };
 });
+
 })();
 
 var __webpack_export_target__ = exports;

@@ -20,30 +20,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, '');
-const {
-  author,
-  license,
-  keywords,
-  version,
-  description,
-  jspatcher
-} = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_objectSpread({
-  name,
-  author,
-  license,
-  keywords,
-  version,
-  description
-}, jspatcher));
 
 /***/ }),
 
@@ -60,8 +57,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _ui_base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/base */ "./src/ui/base.tsx");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -69,26 +64,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 class LiveObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "state", {
-      value: 0
-    });
-
-    _defineProperty(this, "_", {
-      displayValue: "0"
-    });
-
-    _defineProperty(this, "handleUpdateArgs", args => {
+    this.state = { value: 0 };
+    this._ = { displayValue: "0" };
+    this.handleUpdateArgs = (args) => {
       this.validateValue(+args[0] || 0);
-      this.updateUI({
-        value: this.state.value
-      });
-    });
+      this.updateUI({ value: this.state.value });
+    };
   }
-
-  /**
-   * Get a nearest valid number
-   */
   toValidValue(value) {
     const min = this.getProp("min");
     const max = this.getProp("max");
@@ -96,60 +78,40 @@ class LiveObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {
     const v = Math.min(max, Math.max(min, value));
     return min + Math.floor((v - min) / step) * step;
   }
-
   toDisplayValue(value) {
-    const {
-      type,
-      unitStyle,
-      units,
-      enums
-    } = this.props;
+    const { type, unitStyle, units, enums } = this.props;
     return (0,_ui_base__WEBPACK_IMPORTED_MODULE_2__.getDisplayValue)(value, type, unitStyle, units, enums);
   }
-
   validateValue(valueIn) {
     const value = this.toValidValue(valueIn || 0);
-    if (value === this.state.value) return;
-    this.setState({
-      value
-    });
+    if (value === this.state.value)
+      return;
+    this.setState({ value });
     this._.displayValue = this.toDisplayValue(this.state.value);
   }
-
   onChangeFromUI(e) {
     this.emit("changeFromUI", e);
   }
-
   subscribe() {
     super.subscribe();
-    this.on("updateProps", props => {
+    this.on("updateProps", (props) => {
       if (typeof props.max !== "undefined" || typeof props.min !== "undefined" || typeof props.step !== "undefined") {
         const lastValue = this.state.value;
         this.validateValue(this.state.value);
-        if (lastValue !== this.state.value) this.updateUI({
-          value: this.state.value
-        });
+        if (lastValue !== this.state.value)
+          this.updateUI({ value: this.state.value });
       }
     });
-    this.on("updateState", _ref => {
-      let {
-        value
-      } = _ref;
+    this.on("updateState", ({ value }) => {
       this.validateValue(value);
     });
   }
-
 }
-
-_defineProperty(LiveObject, "package", _index__WEBPACK_IMPORTED_MODULE_0__.name);
-
-_defineProperty(LiveObject, "author", _index__WEBPACK_IMPORTED_MODULE_0__.author);
-
-_defineProperty(LiveObject, "version", _index__WEBPACK_IMPORTED_MODULE_0__.version);
-
-_defineProperty(LiveObject, "description", _index__WEBPACK_IMPORTED_MODULE_0__.description);
-
-_defineProperty(LiveObject, "props", {
+LiveObject.package = _index__WEBPACK_IMPORTED_MODULE_0__.name;
+LiveObject.author = _index__WEBPACK_IMPORTED_MODULE_0__.author;
+LiveObject.version = _index__WEBPACK_IMPORTED_MODULE_0__.version;
+LiveObject.description = _index__WEBPACK_IMPORTED_MODULE_0__.description;
+LiveObject.props = {
   min: {
     type: "number",
     default: 0,
@@ -236,9 +198,8 @@ _defineProperty(LiveObject, "props", {
     description: "UI refresh rate",
     isUIState: true
   }
-});
+};
 
-_defineProperty(LiveObject, "UI", void 0);
 
 /***/ }),
 
@@ -255,23 +216,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _ui_button__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/button */ "./src/ui/button.tsx");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class LiveButton extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "handleUpdateArgs", args => {
+    this.handleUpdateArgs = (args) => {
       this.validateValue(+!!args[0]);
-      this.updateUI({
-        value: this.state.value
-      });
-    });
+      this.updateUI({ value: this.state.value });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -280,64 +235,48 @@ class LiveButton extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.handleUpdateArgs(this.args);
     });
     this.on("updateArgs", this.handleUpdateArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         this.validateValue(+!!data);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
         this.outlet(1, this.state.value);
-        if (this.state.value && this.getProp("transition") !== "One->Zero") this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_0__.Bang());
+        if (this.state.value && this.getProp("transition") !== "One->Zero")
+          this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_0__.Bang());
       }
     });
-    this.on("changeFromUI", _ref2 => {
-      let {
-        value
-      } = _ref2;
+    this.on("changeFromUI", ({ value }) => {
       const lastValue = this.state.value;
       this.validateValue(value);
-      this.updateUI({
-        value: this.state.value
-      });
+      this.updateUI({ value: this.state.value });
       this.outlet(1, value);
       const transition = this.getProp("transition");
       const b01 = transition !== "One->Zero";
       const b10 = transition !== "Zero->One";
-      if (b01 && lastValue < this.state.value || b10 && lastValue > this.state.value) this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_0__.Bang());
+      if (b01 && lastValue < this.state.value || b10 && lastValue > this.state.value)
+        this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_0__.Bang());
     });
   }
-
 }
-
-_defineProperty(LiveButton, "description", "Button");
-
-_defineProperty(LiveButton, "inlets", [{
+LiveButton.description = "Button";
+LiveButton.inlets = [{
   isHot: true,
   type: "number",
   description: "Output a bang following transition prop."
-}]);
-
-_defineProperty(LiveButton, "outlets", [{
+}];
+LiveButton.outlets = [{
   type: "bang",
   description: "Bang"
 }, {
   type: "number",
   description: "Current value"
-}]);
-
-_defineProperty(LiveButton, "args", [{
+}];
+LiveButton.args = [{
   type: "number",
   optional: true,
   default: 0,
   description: "Initial value"
-}]);
-
-_defineProperty(LiveButton, "props", {
+}];
+LiveButton.props = {
   shortName: {
     type: "string",
     default: "live.button",
@@ -398,9 +337,9 @@ _defineProperty(LiveButton, "props", {
     default: "Zero->One",
     description: "Specifies when a bang message will be sent to the outlet"
   }
-});
+};
+LiveButton.UI = _ui_button__WEBPACK_IMPORTED_MODULE_1__.default;
 
-_defineProperty(LiveButton, "UI", _ui_button__WEBPACK_IMPORTED_MODULE_1__.default);
 
 /***/ }),
 
@@ -417,25 +356,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _ui_dial__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/dial */ "./src/ui/dial.tsx");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class LiveDial extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "handleUpdateArgs", args => {
+    this.handleUpdateArgs = (args) => {
       if (typeof args[0] === "number") {
         this.validateValue(args[0]);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -444,44 +377,28 @@ class LiveDial extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.handleUpdateArgs(this.args);
     });
     this.on("updateArgs", this.handleUpdateArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           const value = +data;
           this.validateValue(value);
-          this.updateUI({
-            value: this.state.value
-          });
+          this.updateUI({ value: this.state.value });
         }
-
         this.outletAll([this.state.value, this._.displayValue]);
       } else if (inlet === 1) {
         const value = +data;
         this.validateValue(value);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
     });
-    this.on("changeFromUI", _ref2 => {
-      let {
-        value
-      } = _ref2;
+    this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
-
 }
-
-_defineProperty(LiveDial, "description", "Dial knob");
-
-_defineProperty(LiveDial, "inlets", [{
+LiveDial.description = "Dial knob";
+LiveDial.inlets = [{
   isHot: true,
   type: "number",
   description: "Set and output the value"
@@ -489,24 +406,21 @@ _defineProperty(LiveDial, "inlets", [{
   isHot: false,
   type: "number",
   description: "Set without output the value"
-}]);
-
-_defineProperty(LiveDial, "outlets", [{
+}];
+LiveDial.outlets = [{
   type: "number",
   description: "Number value"
 }, {
   type: "string",
   description: "Display value"
-}]);
-
-_defineProperty(LiveDial, "args", [{
+}];
+LiveDial.args = [{
   type: "number",
   optional: true,
   default: 0,
   description: "Initial value"
-}]);
-
-_defineProperty(LiveDial, "props", {
+}];
+LiveDial.props = {
   shortName: {
     type: "string",
     default: "live.dial",
@@ -624,9 +538,9 @@ _defineProperty(LiveDial, "props", {
     description: "Display yriangle",
     isUIState: true
   }
-});
+};
+LiveDial.UI = _ui_dial__WEBPACK_IMPORTED_MODULE_1__.default;
 
-_defineProperty(LiveDial, "UI", _ui_dial__WEBPACK_IMPORTED_MODULE_1__.default);
 
 /***/ }),
 
@@ -643,82 +557,73 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _ui_gain__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/gain */ "./src/ui/gain.tsx");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
 
 class LiveGain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", _objectSpread(_objectSpread({}, this._), {}, {
-      analyserNode: undefined,
+    this._ = __spreadProps(__spreadValues({}, this._), {
+      analyserNode: void 0,
       gainNode: this.audioCtx.createGain(),
       bypassNode: this.audioCtx.createGain(),
       $requestTimer: -1,
       levels: []
-    }));
-
-    _defineProperty(this, "inletAudioConnections", [{
-      node: this._.bypassNode,
-      index: 0
-    }]);
-
-    _defineProperty(this, "outletAudioConnections", [{
-      node: this._.gainNode,
-      index: 0
-    }]);
-
-    _defineProperty(this, "handleUpdateArgs", args => {
+    });
+    this.inletAudioConnections = [{ node: this._.bypassNode, index: 0 }];
+    this.outletAudioConnections = [{ node: this._.gainNode, index: 0 }];
+    this.handleUpdateArgs = (args) => {
       if (typeof args[0] === "number") {
         this.validateValue(args[0]);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
         const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? _sdk__WEBPACK_IMPORTED_MODULE_2__.MathUtils.dbtoa(this.state.value) : this.state.value;
         this.applyBPF(this._.gainNode.gain, [[paramValue, this.getProp("interp")]]);
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
-
     const startRequest = () => {
       let lastResult = [];
-
       const request = async () => {
         if (this._.analyserNode && !this._.analyserNode.destroyed) {
           const absMax = await this._.analyserNode.getAbsMax();
           const mode = this.getProp("mode");
           const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
-          const result = mode === "deciBel" ? absMax.map(v => _sdk__WEBPACK_IMPORTED_MODULE_2__.MathUtils.atodb(v)) : absMax;
-
+          const result = mode === "deciBel" ? absMax.map((v) => _sdk__WEBPACK_IMPORTED_MODULE_2__.MathUtils.atodb(v)) : absMax;
           if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
             this.outlet(3, result);
             this._.levels = result;
-            this.updateUI({
-              levels: result
-            });
+            this.updateUI({ levels: result });
             lastResult = result;
           }
         }
-
         scheduleRequest();
       };
-
       const scheduleRequest = () => {
         this._.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
       };
-
       request();
     };
-
     this.on("preInit", () => {
       this.inlets = 1;
       this.outlets = 4;
@@ -726,42 +631,34 @@ class LiveGain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     this.on("updateArgs", this.handleUpdateArgs);
     let lastMetering;
     let lastMode;
-    this.on("updateProps", async props => {
-      if (props.windowSize && this._.analyserNode) this.applyBPF(this._.analyserNode.parameters.get("windowSize"), [[props.windowSize]]);
-
+    this.on("updateProps", async (props) => {
+      if (props.windowSize && this._.analyserNode)
+        this.applyBPF(this._.analyserNode.parameters.get("windowSize"), [[props.windowSize]]);
       if (props.metering && lastMetering !== props.metering && this._.analyserNode) {
         if (lastMetering) {
-          if (lastMetering === "postFader") this._.gainNode.disconnect(this._.analyserNode);else this._.bypassNode.disconnect(this._.analyserNode);
+          if (lastMetering === "postFader")
+            this._.gainNode.disconnect(this._.analyserNode);
+          else
+            this._.bypassNode.disconnect(this._.analyserNode);
         }
-
         lastMetering = props.metering;
-        if (props.metering === "preFader") this._.bypassNode.connect(this._.analyserNode, 0, 0);else this._.gainNode.connect(this._.analyserNode, 0, 0);
+        if (props.metering === "preFader")
+          this._.bypassNode.connect(this._.analyserNode, 0, 0);
+        else
+          this._.gainNode.connect(this._.analyserNode, 0, 0);
       }
-
       if (props.mode && lastMode && lastMode !== props.mode) {
         lastMode = props.mode;
         let value;
-
         if (props.mode === "linear") {
           value = _sdk__WEBPACK_IMPORTED_MODULE_2__.MathUtils.dbtoa(this.state.value);
-          await this.updateProps({
-            min: 0,
-            max: 1.5,
-            unitStyle: "float"
-          });
+          await this.updateProps({ min: 0, max: 1.5, unitStyle: "float" });
         } else {
           value = _sdk__WEBPACK_IMPORTED_MODULE_2__.MathUtils.atodb(this.state.value);
-          await this.updateProps({
-            min: -70,
-            max: 6,
-            unitStyle: "decibel"
-          });
+          await this.updateProps({ min: -70, max: 6, unitStyle: "decibel" });
         }
-
         this.validateValue(value);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
         const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? _sdk__WEBPACK_IMPORTED_MODULE_2__.MathUtils.dbtoa(this.state.value) : this.state.value;
         this.applyBPF(this._.gainNode.gain, [[paramValue, this.getProp("interp")]]);
       }
@@ -769,38 +666,28 @@ class LiveGain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     this.on("postInit", async () => {
       lastMode = this.getProp("mode");
       this.handleUpdateArgs(this.args);
-
       this._.bypassNode.connect(this._.gainNode);
-
       await _sdk__WEBPACK_IMPORTED_MODULE_2__.TemporalAnalyserNode.register(this.audioCtx.audioWorklet);
       this._.analyserNode = new _sdk__WEBPACK_IMPORTED_MODULE_2__.TemporalAnalyserNode(this.audioCtx);
       this.applyBPF(this._.analyserNode.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
-      if (this.getProp("metering") === "preFader") this._.bypassNode.connect(this._.analyserNode, 0, 0);else this._.gainNode.connect(this._.analyserNode, 0, 0);
+      if (this.getProp("metering") === "preFader")
+        this._.bypassNode.connect(this._.analyserNode, 0, 0);
+      else
+        this._.gainNode.connect(this._.analyserNode, 0, 0);
       startRequest();
     });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data)) {
           this.validateValue(+data);
           const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? _sdk__WEBPACK_IMPORTED_MODULE_2__.MathUtils.dbtoa(this.state.value) : this.state.value;
           this.applyBPF(this._.gainNode.gain, [[paramValue, this.getProp("interp")]]);
-          this.updateUI({
-            value: this.state.value
-          });
+          this.updateUI({ value: this.state.value });
         }
-
         this.outletAll([, this.state.value, this._.displayValue]);
       }
     });
-    this.on("changeFromUI", _ref2 => {
-      let {
-        value
-      } = _ref2;
+    this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
       const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? _sdk__WEBPACK_IMPORTED_MODULE_2__.MathUtils.dbtoa(this.state.value) : this.state.value;
       this.applyBPF(this._.gainNode.gain, [[paramValue, this.getProp("interp")]]);
@@ -808,25 +695,20 @@ class LiveGain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     });
     this.on("destroy", async () => {
       this._.bypassNode.disconnect();
-
       this._.gainNode.disconnect();
-
       window.clearTimeout(this._.$requestTimer);
-      if (this._.analyserNode) await this._.analyserNode.destroy();
+      if (this._.analyserNode)
+        await this._.analyserNode.destroy();
     });
   }
-
 }
-
-_defineProperty(LiveGain, "description", "Gain slider and monitor");
-
-_defineProperty(LiveGain, "inlets", [{
+LiveGain.description = "Gain slider and monitor";
+LiveGain.inlets = [{
   isHot: true,
   type: "signal",
   description: "Signal in, number to set gain"
-}]);
-
-_defineProperty(LiveGain, "outlets", [{
+}];
+LiveGain.outlets = [{
   type: "signal",
   description: "Audio out"
 }, {
@@ -838,16 +720,14 @@ _defineProperty(LiveGain, "outlets", [{
 }, {
   type: "object",
   description: "Amplitude value: number[]"
-}]);
-
-_defineProperty(LiveGain, "args", [{
+}];
+LiveGain.args = [{
   type: "number",
   optional: true,
   default: 0,
   description: "Initial value"
-}]);
-
-_defineProperty(LiveGain, "props", {
+}];
+LiveGain.props = {
   shortName: {
     type: "string",
     default: "live.gain",
@@ -1047,9 +927,9 @@ _defineProperty(LiveGain, "props", {
     default: 0.01,
     description: "Ramp time"
   }
-});
+};
+LiveGain.UI = _ui_gain__WEBPACK_IMPORTED_MODULE_1__.default;
 
-_defineProperty(LiveGain, "UI", _ui_gain__WEBPACK_IMPORTED_MODULE_1__.default);
 
 /***/ }),
 
@@ -1066,104 +946,76 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _ui_meter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/meter */ "./src/ui/meter.tsx");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class LiveMeter extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseObject {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined,
-      $requestTimer: -1,
-      levels: []
-    });
+    this._ = { node: void 0, $requestTimer: -1, levels: [] };
   }
-
   subscribe() {
     super.subscribe();
-
     const startRequest = () => {
       let lastResult = [];
-
       const request = async () => {
         if (this._.node && !this._.node.destroyed) {
           const absMax = await this._.node.getAbsMax();
           const mode = this.getProp("mode");
           const thresh = this.getProp(mode === "deciBel" ? "thresholdDB" : "thresholdLinear");
-          const result = mode === "deciBel" ? absMax.map(v => _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.atodb(v)) : absMax;
-
+          const result = mode === "deciBel" ? absMax.map((v) => _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.atodb(v)) : absMax;
           if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
             this.outlet(0, result);
-            this.setState({
-              levels: result
-            });
-            this.updateUI({
-              levels: result
-            });
+            this.setState({ levels: result });
+            this.updateUI({ levels: result });
             lastResult = result;
           }
         }
-
         scheduleRequest();
       };
-
       const scheduleRequest = () => {
         this._.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
       };
-
       request();
     };
-
     this.on("preInit", () => {
       this.inlets = 1;
       this.outlets = 1;
     });
-    this.on("updateProps", props => {
-      if (props.windowSize && this._.node) this.applyBPF(this._.node.parameters.get("windowSize"), [[props.windowSize]]);
+    this.on("updateProps", (props) => {
+      if (props.windowSize && this._.node)
+        this.applyBPF(this._.node.parameters.get("windowSize"), [[props.windowSize]]);
     });
     this.on("postInit", async () => {
       await _sdk__WEBPACK_IMPORTED_MODULE_0__.TemporalAnalyserNode.register(this.audioCtx.audioWorklet);
       this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_0__.TemporalAnalyserNode(this.audioCtx);
       this.applyBPF(this._.node.parameters.get("windowSize"), [[this.getProp("windowSize")]]);
       this.disconnectAudioInlet();
-      this.inletAudioConnections[0] = {
-        node: this._.node,
-        index: 0
-      };
+      this.inletAudioConnections[0] = { node: this._.node, index: 0 };
       this.connectAudioInlet();
       startRequest();
     });
     this.on("destroy", () => {
       window.clearTimeout(this._.$requestTimer);
-      if (this._.node) this._.node.destroy();
+      if (this._.node)
+        this._.node.destroy();
     });
   }
-
 }
-
-_defineProperty(LiveMeter, "package", _base__WEBPACK_IMPORTED_MODULE_2__.default.package);
-
-_defineProperty(LiveMeter, "author", _base__WEBPACK_IMPORTED_MODULE_2__.default.author);
-
-_defineProperty(LiveMeter, "version", _base__WEBPACK_IMPORTED_MODULE_2__.default.version);
-
-_defineProperty(LiveMeter, "description", "Meter");
-
-_defineProperty(LiveMeter, "inlets", [{
+LiveMeter.package = _base__WEBPACK_IMPORTED_MODULE_2__.default.package;
+LiveMeter.author = _base__WEBPACK_IMPORTED_MODULE_2__.default.author;
+LiveMeter.version = _base__WEBPACK_IMPORTED_MODULE_2__.default.version;
+LiveMeter.description = "Meter";
+LiveMeter.inlets = [{
   isHot: true,
   type: "signal",
   description: "Signal to measure"
-}]);
-
-_defineProperty(LiveMeter, "outlets", [{
+}];
+LiveMeter.outlets = [{
   type: "object",
   description: "Amplitude value: number[]"
-}]);
-
-_defineProperty(LiveMeter, "props", {
+}];
+LiveMeter.props = {
   min: {
     type: "number",
     default: -70,
@@ -1264,9 +1116,9 @@ _defineProperty(LiveMeter, "props", {
     default: 0.01,
     description: "Redraw Threshold in Linear"
   }
-});
+};
+LiveMeter.UI = _ui_meter__WEBPACK_IMPORTED_MODULE_1__.default;
 
-_defineProperty(LiveMeter, "UI", _ui_meter__WEBPACK_IMPORTED_MODULE_1__.default);
 
 /***/ }),
 
@@ -1283,25 +1135,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _ui_numbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/numbox */ "./src/ui/numbox.tsx");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class LiveNumbox extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "handleUpdateArgs", args => {
+    this.handleUpdateArgs = (args) => {
       if (typeof args[0] === "number") {
         this.validateValue(args[0]);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1310,44 +1156,28 @@ class LiveNumbox extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.handleUpdateArgs(this.args);
     });
     this.on("updateArgs", this.handleUpdateArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           const value = +data;
           this.validateValue(value);
-          this.updateUI({
-            value: this.state.value
-          });
+          this.updateUI({ value: this.state.value });
         }
-
         this.outletAll([this.state.value, this._.displayValue]);
       } else if (inlet === 1) {
         const value = +data;
         this.validateValue(value);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
     });
-    this.on("changeFromUI", _ref2 => {
-      let {
-        value
-      } = _ref2;
+    this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
-
 }
-
-_defineProperty(LiveNumbox, "description", "Number box");
-
-_defineProperty(LiveNumbox, "inlets", [{
+LiveNumbox.description = "Number box";
+LiveNumbox.inlets = [{
   isHot: true,
   type: "number",
   description: "Set and output the value"
@@ -1355,24 +1185,21 @@ _defineProperty(LiveNumbox, "inlets", [{
   isHot: false,
   type: "number",
   description: "Set without output the value"
-}]);
-
-_defineProperty(LiveNumbox, "outlets", [{
+}];
+LiveNumbox.outlets = [{
   type: "number",
   description: "Number value"
 }, {
   type: "string",
   description: "Display value"
-}]);
-
-_defineProperty(LiveNumbox, "args", [{
+}];
+LiveNumbox.args = [{
   type: "number",
   optional: true,
   default: 0,
   description: "Initial value"
-}]);
-
-_defineProperty(LiveNumbox, "props", {
+}];
+LiveNumbox.props = {
   bgColor: {
     type: "color",
     default: "rgba(195, 195, 195, 1)",
@@ -1460,9 +1287,9 @@ _defineProperty(LiveNumbox, "props", {
     description: "Slider color",
     isUIState: true
   }
-});
+};
+LiveNumbox.UI = _ui_numbox__WEBPACK_IMPORTED_MODULE_1__.default;
 
-_defineProperty(LiveNumbox, "UI", _ui_numbox__WEBPACK_IMPORTED_MODULE_1__.default);
 
 /***/ }),
 
@@ -1479,25 +1306,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _ui_slider__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/slider */ "./src/ui/slider.tsx");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class LiveSlider extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "handleUpdateArgs", args => {
+    this.handleUpdateArgs = (args) => {
       if (typeof args[0] === "number") {
         this.validateValue(args[0]);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1506,44 +1327,28 @@ class LiveSlider extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.handleUpdateArgs(this.args);
     });
     this.on("updateArgs", this.handleUpdateArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           const value = +data;
           this.validateValue(value);
-          this.updateUI({
-            value: this.state.value
-          });
+          this.updateUI({ value: this.state.value });
         }
-
         this.outletAll([this.state.value, this._.displayValue]);
       } else if (inlet === 1) {
         const value = +data;
         this.validateValue(value);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
     });
-    this.on("changeFromUI", _ref2 => {
-      let {
-        value
-      } = _ref2;
+    this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
-
 }
-
-_defineProperty(LiveSlider, "description", "Slider");
-
-_defineProperty(LiveSlider, "inlets", [{
+LiveSlider.description = "Slider";
+LiveSlider.inlets = [{
   isHot: true,
   type: "number",
   description: "Set and output the value"
@@ -1551,24 +1356,21 @@ _defineProperty(LiveSlider, "inlets", [{
   isHot: false,
   type: "number",
   description: "Set without output the value"
-}]);
-
-_defineProperty(LiveSlider, "outlets", [{
+}];
+LiveSlider.outlets = [{
   type: "number",
   description: "Number value"
 }, {
   type: "string",
   description: "Display value"
-}]);
-
-_defineProperty(LiveSlider, "args", [{
+}];
+LiveSlider.args = [{
   type: "number",
   optional: true,
   default: 0,
   description: "Initial value"
-}]);
-
-_defineProperty(LiveSlider, "props", {
+}];
+LiveSlider.props = {
   shortName: {
     type: "string",
     default: "live.slider",
@@ -1656,9 +1458,9 @@ _defineProperty(LiveSlider, "props", {
     description: "Display number as text",
     isUIState: true
   }
-});
+};
+LiveSlider.UI = _ui_slider__WEBPACK_IMPORTED_MODULE_1__.default;
 
-_defineProperty(LiveSlider, "UI", _ui_slider__WEBPACK_IMPORTED_MODULE_1__.default);
 
 /***/ }),
 
@@ -1675,25 +1477,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _ui_tab__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/tab */ "./src/ui/tab.tsx");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class LiveTab extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "handleUpdateArgs", args => {
+    this.handleUpdateArgs = (args) => {
       if (typeof args[0] === "number") {
         this.validateValue(args[0]);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1702,44 +1498,28 @@ class LiveTab extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.handleUpdateArgs(this.args);
     });
     this.on("updateArgs", this.handleUpdateArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           const value = +data;
           this.validateValue(value);
-          this.updateUI({
-            value: this.state.value
-          });
+          this.updateUI({ value: this.state.value });
         }
-
         this.outletAll([this.state.value, this._.displayValue]);
       } else if (inlet === 1) {
         const value = +data;
         this.validateValue(value);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
     });
-    this.on("changeFromUI", _ref2 => {
-      let {
-        value
-      } = _ref2;
+    this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
-
 }
-
-_defineProperty(LiveTab, "description", "Buttons as tab");
-
-_defineProperty(LiveTab, "inlets", [{
+LiveTab.description = "Buttons as tab";
+LiveTab.inlets = [{
   isHot: true,
   type: "number",
   description: "Set and output the value"
@@ -1747,24 +1527,21 @@ _defineProperty(LiveTab, "inlets", [{
   isHot: false,
   type: "number",
   description: "Set without output the value"
-}]);
-
-_defineProperty(LiveTab, "outlets", [{
+}];
+LiveTab.outlets = [{
   type: "number",
   description: "Number value"
 }, {
   type: "string",
   description: "Display value"
-}]);
-
-_defineProperty(LiveTab, "args", [{
+}];
+LiveTab.args = [{
   type: "number",
   optional: true,
   default: 0,
   description: "Initial value"
-}]);
-
-_defineProperty(LiveTab, "props", {
+}];
+LiveTab.props = {
   bgColor: {
     type: "color",
     default: "rgba(165, 165, 165, 1)",
@@ -1876,9 +1653,9 @@ _defineProperty(LiveTab, "props", {
     description: "Enum values",
     isUIState: true
   }
-});
+};
+LiveTab.UI = _ui_tab__WEBPACK_IMPORTED_MODULE_1__.default;
 
-_defineProperty(LiveTab, "UI", _ui_tab__WEBPACK_IMPORTED_MODULE_1__.default);
 
 /***/ }),
 
@@ -1895,25 +1672,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _ui_text__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/text */ "./src/ui/text.tsx");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class LiveText extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "handleUpdateArgs", args => {
+    this.handleUpdateArgs = (args) => {
       if (typeof args[0] === "number") {
         this.validateValue(args[0]);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1922,44 +1693,28 @@ class LiveText extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.handleUpdateArgs(this.args);
     });
     this.on("updateArgs", this.handleUpdateArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           const value = +data;
           this.validateValue(value);
-          this.updateUI({
-            value: this.state.value
-          });
+          this.updateUI({ value: this.state.value });
         }
-
         this.outletAll([this.state.value, this._.displayValue]);
       } else if (inlet === 1) {
         const value = +data;
         this.validateValue(value);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
     });
-    this.on("changeFromUI", _ref2 => {
-      let {
-        value
-      } = _ref2;
+    this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
-
 }
-
-_defineProperty(LiveText, "description", "Button or toggle with text");
-
-_defineProperty(LiveText, "inlets", [{
+LiveText.description = "Button or toggle with text";
+LiveText.inlets = [{
   isHot: true,
   type: "number",
   description: "Set and output the value"
@@ -1967,24 +1722,21 @@ _defineProperty(LiveText, "inlets", [{
   isHot: false,
   type: "number",
   description: "Set without output the value"
-}]);
-
-_defineProperty(LiveText, "outlets", [{
+}];
+LiveText.outlets = [{
   type: "number",
   description: "Number value"
 }, {
   type: "string",
   description: "Display value"
-}]);
-
-_defineProperty(LiveText, "args", [{
+}];
+LiveText.args = [{
   type: "number",
   optional: true,
   default: 0,
   description: "Initial value"
-}]);
-
-_defineProperty(LiveText, "props", {
+}];
+LiveText.props = {
   bgColor: {
     type: "color",
     default: "rgba(165, 165, 165, 1)",
@@ -2084,9 +1836,9 @@ _defineProperty(LiveText, "props", {
     description: "Text (off)",
     isUIState: true
   }
-});
+};
+LiveText.UI = _ui_text__WEBPACK_IMPORTED_MODULE_1__.default;
 
-_defineProperty(LiveText, "UI", _ui_text__WEBPACK_IMPORTED_MODULE_1__.default);
 
 /***/ }),
 
@@ -2103,25 +1855,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _ui_toggle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/toggle */ "./src/ui/toggle.tsx");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
 class LiveToggle extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "handleUpdateArgs", args => {
+    this.handleUpdateArgs = (args) => {
       if (typeof args[0] === "number") {
         this.validateValue(+!!args[0]);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
-    });
+    };
   }
-
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -2130,44 +1876,28 @@ class LiveToggle extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.handleUpdateArgs(this.args);
     });
     this.on("updateArgs", this.handleUpdateArgs);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           const value = +data;
           this.validateValue(value);
-          this.updateUI({
-            value: this.state.value
-          });
+          this.updateUI({ value: this.state.value });
         }
-
         this.outletAll([this.state.value, this._.displayValue]);
       } else if (inlet === 1) {
         const value = +data;
         this.validateValue(value);
-        this.updateUI({
-          value: this.state.value
-        });
+        this.updateUI({ value: this.state.value });
       }
     });
-    this.on("changeFromUI", _ref2 => {
-      let {
-        value
-      } = _ref2;
+    this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
-
 }
-
-_defineProperty(LiveToggle, "description", "Toggle");
-
-_defineProperty(LiveToggle, "inlets", [{
+LiveToggle.description = "Toggle";
+LiveToggle.inlets = [{
   isHot: true,
   type: "number",
   description: "Set and output the value"
@@ -2175,24 +1905,21 @@ _defineProperty(LiveToggle, "inlets", [{
   isHot: false,
   type: "number",
   description: "Set without output the value"
-}]);
-
-_defineProperty(LiveToggle, "outlets", [{
+}];
+LiveToggle.outlets = [{
   type: "number",
   description: "Number value"
 }, {
   type: "string",
   description: "Display value"
-}]);
-
-_defineProperty(LiveToggle, "args", [{
+}];
+LiveToggle.args = [{
   type: "number",
   optional: true,
   default: 0,
   description: "Initial value"
-}]);
-
-_defineProperty(LiveToggle, "props", {
+}];
+LiveToggle.props = {
   max: {
     type: "number",
     default: 1,
@@ -2235,9 +1962,9 @@ _defineProperty(LiveToggle, "props", {
     description: "Border color (focus)",
     isUIState: true
   }
-});
+};
+LiveToggle.UI = _ui_toggle__WEBPACK_IMPORTED_MODULE_1__.default;
 
-_defineProperty(LiveToggle, "UI", _ui_toggle__WEBPACK_IMPORTED_MODULE_1__.default);
 
 /***/ }),
 
@@ -2255,6 +1982,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../package.json */ "./package.json");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/ (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(_package_json__WEBPACK_IMPORTED_MODULE_0__, 2))));
+
 
 /***/ }),
 
@@ -2329,6 +2057,7 @@ const {
   getReactMonacoEditor
 } = sdk;
 
+
 /***/ }),
 
 /***/ "./src/ui/base.tsx":
@@ -2343,47 +2072,65 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ LiveObjectUI)
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 const getDisplayValue = (value, type, unitstyle, units, enums) => {
-  if (type === "enum") return enums[value];
-  if (unitstyle === "int") return value.toFixed(0);
-  if (unitstyle === "float") return value.toFixed(2);
-  if (unitstyle === "time") return value.toFixed(type === "int" ? 0 : 2) + " ms";
-  if (unitstyle === "hertz") return value.toFixed(type === "int" ? 0 : 2) + " Hz";
-  if (unitstyle === "decibel") return value.toFixed(type === "int" ? 0 : 2) + " dB";
-  if (unitstyle === "%") return value.toFixed(type === "int" ? 0 : 2) + " %";
-  if (unitstyle === "pan") return value === 0 ? "C" : (type === "int" ? Math.abs(value) : Math.abs(value).toFixed(2)) + (value < 0 ? " L" : " R");
-  if (unitstyle === "semitones") return value.toFixed(type === "int" ? 0 : 2) + " st";
-  if (unitstyle === "midi") return _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.toMIDI(value);
-  if (unitstyle === "custom") return value.toFixed(type === "int" ? 0 : 2) + " " + units;
-  if (unitstyle === "native") return value.toFixed(type === "int" ? 0 : 2);
+  if (type === "enum")
+    return enums[value];
+  if (unitstyle === "int")
+    return value.toFixed(0);
+  if (unitstyle === "float")
+    return value.toFixed(2);
+  if (unitstyle === "time")
+    return value.toFixed(type === "int" ? 0 : 2) + " ms";
+  if (unitstyle === "hertz")
+    return value.toFixed(type === "int" ? 0 : 2) + " Hz";
+  if (unitstyle === "decibel")
+    return value.toFixed(type === "int" ? 0 : 2) + " dB";
+  if (unitstyle === "%")
+    return value.toFixed(type === "int" ? 0 : 2) + " %";
+  if (unitstyle === "pan")
+    return value === 0 ? "C" : (type === "int" ? Math.abs(value) : Math.abs(value).toFixed(2)) + (value < 0 ? " L" : " R");
+  if (unitstyle === "semitones")
+    return value.toFixed(type === "int" ? 0 : 2) + " st";
+  if (unitstyle === "midi")
+    return _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.toMIDI(value);
+  if (unitstyle === "custom")
+    return value.toFixed(type === "int" ? 0 : 2) + " " + units;
+  if (unitstyle === "native")
+    return value.toFixed(type === "int" ? 0 : 2);
   return "N/A";
 };
 class LiveObjectUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "className", void 0);
-
-    _defineProperty(this, "$changeTimer", -1);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
+    this.$changeTimer = -1;
+    this.state = __spreadProps(__spreadValues({}, this.state), {
       value: this.object.state.value
-    }));
-
-    _defineProperty(this, "handleKeyDown", e => {});
-
-    _defineProperty(this, "handleKeyUp", e => {});
-
-    _defineProperty(this, "handleTouchStart", e => {
+    });
+    this.handleKeyDown = (e) => {
+    };
+    this.handleKeyUp = (e) => {
+    };
+    this.handleTouchStart = (e) => {
       this.canvas.focus();
       const rect = this.canvas.getBoundingClientRect();
       let prevX = e.touches[0].clientX;
@@ -2391,205 +2138,113 @@ class LiveObjectUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
       const fromX = prevX - rect.left;
       const fromY = prevY - rect.top;
       const prevValue = this.state.value;
-      this.handlePointerDown({
-        x: fromX,
-        y: fromY,
-        originalEvent: e
-      });
-
-      const handleTouchMove = e => {
-        e.preventDefault();
-        const clientX = e.changedTouches[0].clientX;
-        const clientY = e.changedTouches[0].clientY;
+      this.handlePointerDown({ x: fromX, y: fromY, originalEvent: e });
+      const handleTouchMove = (e2) => {
+        e2.preventDefault();
+        const clientX = e2.changedTouches[0].clientX;
+        const clientY = e2.changedTouches[0].clientY;
         const movementX = clientX - prevX;
         const movementY = clientY - prevY;
         prevX = clientX;
         prevY = clientY;
         const x = clientX - rect.left;
         const y = clientY - rect.top;
-        this.handlePointerDrag({
-          prevValue,
-          x,
-          y,
-          fromX,
-          fromY,
-          movementX,
-          movementY,
-          originalEvent: e
-        });
+        this.handlePointerDrag({ prevValue, x, y, fromX, fromY, movementX, movementY, originalEvent: e2 });
       };
-
-      const handleTouchEnd = e => {
-        e.preventDefault();
-        const x = e.changedTouches[0].clientX - rect.left;
-        const y = e.changedTouches[0].clientY - rect.top;
-        this.handlePointerUp({
-          x,
-          y,
-          originalEvent: e
-        });
+      const handleTouchEnd = (e2) => {
+        e2.preventDefault();
+        const x = e2.changedTouches[0].clientX - rect.left;
+        const y = e2.changedTouches[0].clientY - rect.top;
+        this.handlePointerUp({ x, y, originalEvent: e2 });
         document.removeEventListener("touchmove", handleTouchMove);
         document.removeEventListener("touchend", handleTouchEnd);
       };
-
-      document.addEventListener("touchmove", handleTouchMove, {
-        passive: false
-      });
-      document.addEventListener("touchend", handleTouchEnd, {
-        passive: false
-      });
-    });
-
-    _defineProperty(this, "handleWheel", e => {});
-
-    _defineProperty(this, "handleClick", e => {});
-
-    _defineProperty(this, "handleMouseDown", e => {
+      document.addEventListener("touchmove", handleTouchMove, { passive: false });
+      document.addEventListener("touchend", handleTouchEnd, { passive: false });
+    };
+    this.handleWheel = (e) => {
+    };
+    this.handleClick = (e) => {
+    };
+    this.handleMouseDown = (e) => {
       e.preventDefault();
       this.canvas.focus();
       const rect = this.canvas.getBoundingClientRect();
       const fromX = e.clientX - rect.left;
       const fromY = e.clientY - rect.top;
       const prevValue = this.state.value;
-      this.handlePointerDown({
-        x: fromX,
-        y: fromY,
-        originalEvent: e
-      });
-
-      const handleMouseMove = e => {
-        e.preventDefault();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        this.handlePointerDrag({
-          prevValue,
-          x,
-          y,
-          fromX,
-          fromY,
-          movementX: e.movementX,
-          movementY: e.movementY,
-          originalEvent: e
-        });
+      this.handlePointerDown({ x: fromX, y: fromY, originalEvent: e });
+      const handleMouseMove = (e2) => {
+        e2.preventDefault();
+        const x = e2.clientX - rect.left;
+        const y = e2.clientY - rect.top;
+        this.handlePointerDrag({ prevValue, x, y, fromX, fromY, movementX: e2.movementX, movementY: e2.movementY, originalEvent: e2 });
       };
-
-      const handleMouseUp = e => {
-        e.preventDefault();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        this.handlePointerUp({
-          x,
-          y,
-          originalEvent: e
-        });
+      const handleMouseUp = (e2) => {
+        e2.preventDefault();
+        const x = e2.clientX - rect.left;
+        const y = e2.clientY - rect.top;
+        this.handlePointerUp({ x, y, originalEvent: e2 });
         document.removeEventListener("mousemove", handleMouseMove);
         document.removeEventListener("mouseup", handleMouseUp);
       };
-
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
-    });
-
-    _defineProperty(this, "handleMouseOver", e => {});
-
-    _defineProperty(this, "handleMouseOut", e => {});
-
-    _defineProperty(this, "handleContextMenu", e => {});
-
-    _defineProperty(this, "handlePointerDown", e => {});
-
-    _defineProperty(this, "handlePointerDrag", e => {});
-
-    _defineProperty(this, "handlePointerUp", e => {});
-
-    _defineProperty(this, "handleFocusIn", e => this.setState({
-      focus: true
-    }));
-
-    _defineProperty(this, "handleFocusOut", e => this.setState({
-      focus: false
-    }));
-
-    _defineProperty(this, "changeCallback", () => {
-      this.props.object.onChangeFromUI({
-        value: this.state.value,
-        displayValue: this.displayValue
-      });
+    };
+    this.handleMouseOver = (e) => {
+    };
+    this.handleMouseOut = (e) => {
+    };
+    this.handleContextMenu = (e) => {
+    };
+    this.handlePointerDown = (e) => {
+    };
+    this.handlePointerDrag = (e) => {
+    };
+    this.handlePointerUp = (e) => {
+    };
+    this.handleFocusIn = (e) => this.setState({ focus: true });
+    this.handleFocusOut = (e) => this.setState({ focus: false });
+    this.changeCallback = () => {
+      this.props.object.onChangeFromUI({ value: this.state.value, displayValue: this.displayValue });
       this.$changeTimer = -1;
-    });
+    };
   }
-
-  /**
-   * Normalized value between 0 - 1.
-   */
   get distance() {
     return LiveObjectUI.getDistance(this.state);
   }
-
   static getDistance(state) {
-    const {
-      type,
-      max,
-      min,
-      value,
-      exponent,
-      enums
-    } = state;
+    const { type, max, min, value, exponent, enums } = state;
     const normalized = type === "enum" ? Math.max(0, Math.min(enums.length - 1, value)) / (enums.length - 1) : (Math.max(min, Math.min(max, value)) - min) / (max - min);
     return _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.iNormExp(normalized || 0, exponent);
   }
-  /**
-   * Count steps in range min-max with step
-   */
-
-
   get stepsCount() {
-    const {
-      type,
-      max,
-      min,
-      step,
-      enums
-    } = this.state;
-    if (type === "enum") return enums.length - 1;
-    if (type === "float") return Math.min(Number.MAX_SAFE_INTEGER, Math.floor((max - min) / step));
+    const { type, max, min, step, enums } = this.state;
+    if (type === "enum")
+      return enums.length - 1;
+    if (type === "float")
+      return Math.min(Number.MAX_SAFE_INTEGER, Math.floor((max - min) / step));
     return Math.min(Math.floor((max - min) / (Math.round(step) || 1)), max - min);
   }
-
   get displayValue() {
-    const {
-      value,
-      type,
-      unitStyle,
-      units,
-      enums
-    } = this.state;
+    const { value, type, unitStyle, units, enums } = this.state;
     return getDisplayValue(value, type, unitStyle, units, enums);
   }
-
   setValueToOutput(value) {
-    this.setState({
-      value
-    });
+    this.setState({ value });
     this.scheduleChangeHandler();
   }
-
   scheduleChangeHandler() {
-    if (this.$changeTimer === -1) this.$changeTimer = window.setTimeout(this.changeCallback, this.state.speedLim);
+    if (this.$changeTimer === -1)
+      this.$changeTimer = window.setTimeout(this.changeCallback, this.state.speedLim);
   }
-
-  paint() {}
-
+  paint() {
+  }
   render() {
-    return /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, this.props, /*#__PURE__*/_sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("canvas", _extends({
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("canvas", __spreadValues({
       ref: this.refCanvas,
       className: ["live-component", this.className].join(" "),
-      style: {
-        position: "absolute",
-        display: "inline-block",
-        width: "100%",
-        height: "100%"
-      },
+      style: { position: "absolute", display: "inline-block", width: "100%", height: "100%" },
       tabIndex: 1,
       onKeyDown: this.handleKeyDown,
       onKeyUp: this.handleKeyUp,
@@ -2604,8 +2259,8 @@ class LiveObjectUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
       onBlur: this.handleFocusOut
     }, this.props.canvasProps)));
   }
-
 }
+
 
 /***/ }),
 
@@ -2620,44 +2275,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ LiveButtonUI)
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/ui/base.tsx");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 class LiveButtonUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "className", "live-button");
-
-    _defineProperty(this, "inTouch", false);
-
-    _defineProperty(this, "$resetTimer", -1);
-
-    _defineProperty(this, "resetCallback", () => {
+    this.className = "live-button";
+    this.inTouch = false;
+    this.$resetTimer = -1;
+    this.resetCallback = () => {
       this.setValueToOutput(0);
       this.$resetTimer = -1;
-    });
-
-    _defineProperty(this, "handlePointerDown", () => {
+    };
+    this.handlePointerDown = () => {
       this.inTouch = true;
       this.setValueToOutput(1);
-    });
-
-    _defineProperty(this, "handlePointerUp", () => {
+    };
+    this.handlePointerUp = () => {
       this.inTouch = false;
       this.setValueToOutput(0);
-    });
+    };
   }
-
   paint() {
     if (this.$resetTimer !== -1) {
       window.clearTimeout(this.$resetTimer);
       this.resetCallback();
     }
-
     const {
-      // width,
-      // height,
       active,
       focus,
       bgColor,
@@ -2669,7 +2312,8 @@ class LiveButtonUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       value
     } = this.state;
     const ctx = this.ctx;
-    if (!ctx) return;
+    if (!ctx)
+      return;
     const borderWidth = 1;
     const [width, height] = this.fullSize();
     ctx.clearRect(0, 0, width, height);
@@ -2682,12 +2326,12 @@ class LiveButtonUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     ctx.fill();
     ctx.strokeStyle = buttonBorderColor;
     ctx.stroke();
-    if (value && !this.inTouch) this.$resetTimer = window.setTimeout(this.resetCallback, 100);
+    if (value && !this.inTouch)
+      this.$resetTimer = window.setTimeout(this.resetCallback, 100);
   }
-
 }
+LiveButtonUI.defaultSize = [30, 30];
 
-_defineProperty(LiveButtonUI, "defaultSize", [30, 30]);
 
 /***/ }),
 
@@ -2703,97 +2347,91 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/ui/base.tsx");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
 class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
+    this.state = __spreadProps(__spreadValues({}, this.state), {
       inputBuffer: ""
-    }));
-
-    _defineProperty(this, "className", "live-dial");
-
-    _defineProperty(this, "interactionRect", [0, 0, 0, 0]);
-
-    _defineProperty(this, "inTouch", false);
-
-    _defineProperty(this, "handlePointerDown", e => {
-      if (e.x < this.interactionRect[0] || e.x > this.interactionRect[0] + this.interactionRect[2] || e.y < this.interactionRect[1] || e.y > this.interactionRect[1] + this.interactionRect[3]) return;
+    });
+    this.className = "live-dial";
+    this.interactionRect = [0, 0, 0, 0];
+    this.inTouch = false;
+    this.handlePointerDown = (e) => {
+      if (e.x < this.interactionRect[0] || e.x > this.interactionRect[0] + this.interactionRect[2] || e.y < this.interactionRect[1] || e.y > this.interactionRect[1] + this.interactionRect[3])
+        return;
       this.inTouch = true;
-    });
-
-    _defineProperty(this, "handlePointerDrag", e => {
-      if (!this.inTouch) return;
+    };
+    this.handlePointerDrag = (e) => {
+      if (!this.inTouch)
+        return;
       const newValue = this.getValueFromDelta(e);
-      if (newValue !== this.state.value) this.setValueToOutput(newValue);
-    });
-
-    _defineProperty(this, "handlePointerUp", () => {
+      if (newValue !== this.state.value)
+        this.setValueToOutput(newValue);
+    };
+    this.handlePointerUp = () => {
       this.inTouch = false;
-    });
-
-    _defineProperty(this, "handleKeyDown", e => {
+    };
+    this.handleKeyDown = (e) => {
       if (!this.state.inputBuffer) {
         let addStep = 0;
-        if (e.key === "ArrowUp" || e.key === "ArrowRight") addStep = 1;
-        if (e.key === "ArrowDown" || e.key === "ArrowLeft") addStep = -1;
-
+        if (e.key === "ArrowUp" || e.key === "ArrowRight")
+          addStep = 1;
+        if (e.key === "ArrowDown" || e.key === "ArrowLeft")
+          addStep = -1;
         if (addStep !== 0) {
           const newValue = this.object.toValidValue(this.state.value + this.state.step * addStep);
-          if (newValue !== this.state.value) this.setValueToOutput(newValue);
+          if (newValue !== this.state.value)
+            this.setValueToOutput(newValue);
         }
       }
-
       if (e.key.match(/[0-9.-]/)) {
-        this.setState({
-          inputBuffer: this.state.inputBuffer + e.key
-        });
+        this.setState({ inputBuffer: this.state.inputBuffer + e.key });
         return;
       }
-
       if (e.key === "Backspace") {
-        this.setState({
-          inputBuffer: this.state.inputBuffer.slice(0, -1)
-        });
+        this.setState({ inputBuffer: this.state.inputBuffer.slice(0, -1) });
         return;
       }
-
       if (e.key === "Enter") {
         const newValue = this.object.toValidValue(+this.state.inputBuffer);
-        this.setState({
-          inputBuffer: ""
-        });
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        this.setState({ inputBuffer: "" });
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-    });
-
-    _defineProperty(this, "handleFocusOut", () => {
+    };
+    this.handleFocusOut = () => {
       if (this.state.inputBuffer) {
         const newValue = this.object.toValidValue(+this.state.inputBuffer);
-        this.setState({
-          inputBuffer: ""
-        });
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        this.setState({ inputBuffer: "" });
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-
-      this.setState({
-        focus: false
-      });
-    });
+      this.setState({ focus: false });
+    };
   }
-
   paint() {
     const {
-      // width,
-      // height,
       active,
       focus,
       fontFamily,
@@ -2817,7 +2455,8 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       inputBuffer
     } = this.state;
     const ctx = this.ctx;
-    if (!ctx) return;
+    if (!ctx)
+      return;
     const distance = this.distance;
     const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
     const [width, height] = this.fullSize();
@@ -2828,7 +2467,6 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     let end;
     let valPos;
     let dialHeight;
-
     if (appearance === "tiny") {
       dialHeight = 18;
       start = -3 * Math.PI * 0.5;
@@ -2840,24 +2478,24 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       end = 2 * Math.PI + 3 * Math.PI / 8;
       valPos = start + _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.toRad(this.distance * 315);
     }
-
     const dialRadius = dialHeight * 0.5;
     let dialCenterX = width * 0.5;
     let dialCenterY = height * 0.5 + 1;
-
     if (appearance === "panel") {
       dialCenterY += 10;
     } else if (appearance === "vertical") {
-      if (showNumber) dialCenterY -= fontSize - 5;
-      if (showName) dialCenterY += fontSize - 5;
-      if (triangle) dialCenterY += triangleHeight - 1;
+      if (showNumber)
+        dialCenterY -= fontSize - 5;
+      if (showName)
+        dialCenterY += fontSize - 5;
+      if (triangle)
+        dialCenterY += triangleHeight - 1;
     } else if (appearance === "tiny") {
       if (showName) {
         dialCenterY += 6;
         dialCenterX = 10;
       }
     }
-
     this.interactionRect = [0, dialCenterY - dialHeight * 0.5, width, dialHeight];
     const arcStartX = dialCenterX + dialHeight * 0.5 * Math.cos(start);
     const arcStartY = dialCenterY + dialHeight * 0.5 * Math.sin(start);
@@ -2868,7 +2506,6 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     const endCapRadius = 1;
     const lineWidth = 2;
     let panelOffset = 0;
-
     if (appearance === "panel") {
       panelOffset = 5;
       ctx.strokeStyle = focus ? focusBorderColor : borderColor;
@@ -2877,44 +2514,37 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       ctx.fillStyle = panelColor;
       _sdk__WEBPACK_IMPORTED_MODULE_0__.Utils.fillRoundedRect(ctx, 1.2, 1.2, width - 2.4, 30 - 0.4, [5, 5, 0, 0]);
     }
-
     ctx.strokeStyle = active ? activeNeedleColor : needleColor;
     ctx.fillStyle = ctx.strokeStyle;
-    ctx.lineWidth = lineWidth; // draw background arc endcaps
-
+    ctx.lineWidth = lineWidth;
     ctx.beginPath();
     ctx.arc(arcStartX, arcStartY, endCapRadius, 0, 2 * Math.PI);
     ctx.fill();
     ctx.beginPath();
     ctx.arc(arcEndX, arcEndY, endCapRadius, 0, 2 * Math.PI);
-    ctx.fill(); // draw background arc
-
+    ctx.fill();
     ctx.beginPath();
     ctx.arc(dialCenterX, dialCenterY, dialRadius, start, end);
-    ctx.stroke(); // draw value arc, which changes if triangle is enabled
-
+    ctx.stroke();
     ctx.strokeStyle = active ? activeDialColor : dialColor;
     ctx.fillStyle = ctx.strokeStyle;
-
     if (triangle) {
       const midpoint = (start + end) * 0.5;
       ctx.strokeStyle = active ? activeDialColor : dialColor;
       ctx.beginPath();
-      if (distance > 0.5) ctx.arc(dialCenterX, dialCenterY, dialRadius, midpoint, valPos);else ctx.arc(dialCenterX, dialCenterY, dialRadius, valPos, midpoint);
+      if (distance > 0.5)
+        ctx.arc(dialCenterX, dialCenterY, dialRadius, midpoint, valPos);
+      else
+        ctx.arc(dialCenterX, dialCenterY, dialRadius, valPos, midpoint);
       ctx.stroke();
     } else {
-      // draw value arc endcap
       ctx.beginPath();
       ctx.arc(arcStartX, arcStartY, endCapRadius, 0, 2 * Math.PI);
-      ctx.fill(); // draw value arc
-
+      ctx.fill();
       ctx.beginPath();
       ctx.arc(dialCenterX, dialCenterY, dialRadius, start, valPos);
       ctx.stroke();
-    } // draw dial
-    // draw dial round endcaps
-
-
+    }
     ctx.strokeStyle = active ? activeNeedleColor : needleColor;
     ctx.fillStyle = ctx.strokeStyle;
     ctx.beginPath();
@@ -2922,16 +2552,13 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     ctx.fill();
     ctx.beginPath();
     ctx.arc(valuePosX, valuePosY, endCapRadius, 0, 2 * Math.PI);
-    ctx.fill(); // draw dial line
-
+    ctx.fill();
     ctx.beginPath();
     ctx.moveTo(dialCenterX, dialCenterY);
     ctx.lineTo(valuePosX, valuePosY);
-    ctx.stroke(); // add text if it is enabled
-
-    ctx.font = "".concat(fontFace === "regular" ? "" : fontFace, " ").concat(fontSize, "px ").concat(fontFamily, ", sans-serif");
+    ctx.stroke();
+    ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
     ctx.fillStyle = textColor;
-
     if (showName) {
       if (appearance === "tiny") {
         ctx.textAlign = "left";
@@ -2941,10 +2568,8 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
         ctx.fillText(shortName, width * 0.5, panelOffset + fontSize, width);
       }
     }
-
     if (showNumber) {
       const tinyOffset = appearance === "tiny" ? 12 : 0;
-
       if (appearance === "tiny") {
         ctx.textAlign = "left";
         ctx.fillText(displayValue, tinyOffset, height - 2, width);
@@ -2952,13 +2577,15 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
         ctx.textAlign = "center";
         ctx.fillText(displayValue, width * 0.5, height - 2, width);
       }
-    } // draw triangle if it is enabled
-
-
+    }
     if (triangle) {
-      if (!distance) ctx.fillStyle = triColor;else if (!active) ctx.fillStyle = dialColor;else ctx.fillStyle = activeDialColor;
+      if (!distance)
+        ctx.fillStyle = triColor;
+      else if (!active)
+        ctx.fillStyle = dialColor;
+      else
+        ctx.fillStyle = activeDialColor;
       ctx.beginPath();
-
       if (appearance === "tiny") {
         const tipPositionX = dialCenterX + dialHeight * 0.5 * Math.cos(-3 * Math.PI / 4) - 1;
         const tipPositionY = dialCenterY + dialHeight * 0.5 * Math.sin(-3 * Math.PI / 4) - 1;
@@ -2972,45 +2599,31 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
         ctx.lineTo(dialCenterX + triangleHeight, dialCenterY - dialRadius - 1 - triangleHeight);
         ctx.lineTo(dialCenterX, dialCenterY - dialRadius - 1);
       }
-
       ctx.fill();
       ctx.strokeStyle = triBorderColor || "transparent";
       ctx.lineWidth = triangleLineWidth;
       ctx.stroke();
     }
   }
-
   getValueFromDelta(e) {
-    const {
-      type,
-      min,
-      max,
-      enums,
-      exponent
-    } = this.state;
+    const { type, min, max, enums, exponent } = this.state;
     const step = type === "enum" ? 1 : this.state.step || 1;
     const totalPixels = 100;
     const stepsCount = this.stepsCount;
     const stepPixels = totalPixels / stepsCount;
-    const prevPixels = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-      value: e.prevValue,
-      type,
-      min,
-      max,
-      enums,
-      exponent
-    }) * totalPixels;
+    const prevPixels = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ value: e.prevValue, type, min, max, enums, exponent }) * totalPixels;
     const pixels = prevPixels + e.fromY - e.y;
     let steps = Math.round(_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.normExp(pixels / totalPixels, exponent) * totalPixels / stepPixels);
     steps = Math.min(stepsCount, Math.max(0, steps));
-    if (type === "enum") return steps;
-    if (type === "int") return Math.round(steps * step + min);
+    if (type === "enum")
+      return steps;
+    if (type === "int")
+      return Math.round(steps * step + min);
     return steps * step + min;
   }
-
 }
+LiveDialUI.defaultSize = [45, 60];
 
-_defineProperty(LiveDialUI, "defaultSize", [45, 60]);
 
 /***/ }),
 
@@ -3026,111 +2639,103 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/ui/base.tsx");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
 class LiveGainUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
+    this.state = __spreadProps(__spreadValues({}, this.state), {
       levels: this.object._.levels,
       inputBuffer: ""
-    }));
-
-    _defineProperty(this, "className", "live-gain");
-
-    _defineProperty(this, "interactionRect", [0, 0, 0, 0]);
-
-    _defineProperty(this, "inTouch", false);
-
-    _defineProperty(this, "levels", []);
-
-    _defineProperty(this, "maxValues", []);
-
-    _defineProperty(this, "maxTimer", void 0);
-
-    _defineProperty(this, "handlePointerDown", e => {
-      if (e.x < this.interactionRect[0] || e.x > this.interactionRect[0] + this.interactionRect[2] || e.y < this.interactionRect[1] || e.y > this.interactionRect[1] + this.interactionRect[3]) return;
-
+    });
+    this.className = "live-gain";
+    this.interactionRect = [0, 0, 0, 0];
+    this.inTouch = false;
+    this.levels = [];
+    this.maxValues = [];
+    this.handlePointerDown = (e) => {
+      if (e.x < this.interactionRect[0] || e.x > this.interactionRect[0] + this.interactionRect[2] || e.y < this.interactionRect[1] || e.y > this.interactionRect[1] + this.interactionRect[3])
+        return;
       if (!this.state.relative) {
         const newValue = this.getValueFromPos(e);
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-
       this.inTouch = true;
-    });
-
-    _defineProperty(this, "handlePointerDrag", e => {
-      if (!this.inTouch) return;
+    };
+    this.handlePointerDrag = (e) => {
+      if (!this.inTouch)
+        return;
       let newValue;
-      if (this.state.relative) newValue = this.getValueFromDelta(e);else newValue = this.getValueFromPos(e);
-      if (newValue !== this.state.value) this.setValueToOutput(newValue);
-    });
-
-    _defineProperty(this, "handlePointerUp", () => {
+      if (this.state.relative)
+        newValue = this.getValueFromDelta(e);
+      else
+        newValue = this.getValueFromPos(e);
+      if (newValue !== this.state.value)
+        this.setValueToOutput(newValue);
+    };
+    this.handlePointerUp = () => {
       this.inTouch = false;
-    });
-
-    _defineProperty(this, "handleKeyDown", e => {
+    };
+    this.handleKeyDown = (e) => {
       if (!this.state.inputBuffer) {
         let addStep = 0;
-        if (e.key === "ArrowUp" || e.key === "ArrowRight") addStep = 1;
-        if (e.key === "ArrowDown" || e.key === "ArrowLeft") addStep = -1;
-
+        if (e.key === "ArrowUp" || e.key === "ArrowRight")
+          addStep = 1;
+        if (e.key === "ArrowDown" || e.key === "ArrowLeft")
+          addStep = -1;
         if (addStep !== 0) {
           const newValue = this.object.toValidValue(this.state.value + this.state.step * addStep);
-          if (newValue !== this.state.value) this.setValueToOutput(newValue);
+          if (newValue !== this.state.value)
+            this.setValueToOutput(newValue);
         }
       }
-
       if (e.key.match(/[0-9.-]/)) {
-        this.setState({
-          inputBuffer: this.state.inputBuffer + e.key
-        });
+        this.setState({ inputBuffer: this.state.inputBuffer + e.key });
         return;
       }
-
       if (e.key === "Backspace") {
-        this.setState({
-          inputBuffer: this.state.inputBuffer.slice(0, -1)
-        });
+        this.setState({ inputBuffer: this.state.inputBuffer.slice(0, -1) });
         return;
       }
-
       if (e.key === "Enter") {
         const newValue = this.object.toValidValue(+this.state.inputBuffer);
-        this.setState({
-          inputBuffer: ""
-        });
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        this.setState({ inputBuffer: "" });
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-    });
-
-    _defineProperty(this, "handleFocusOut", () => {
+    };
+    this.handleFocusOut = () => {
       if (this.state.inputBuffer) {
         const newValue = this.object.toValidValue(+this.state.inputBuffer);
-        this.setState({
-          inputBuffer: ""
-        });
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        this.setState({ inputBuffer: "" });
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-
-      this.setState({
-        focus: false
-      });
-    });
+      this.setState({ focus: false });
+    };
   }
-
   paint() {
     const {
-      // width,
-      // height,
       fontFamily,
       fontSize,
       fontFace,
@@ -3158,7 +2763,8 @@ class LiveGainUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       inputBuffer
     } = this.state;
     const ctx = this.ctx;
-    if (!ctx) return;
+    if (!ctx)
+      return;
     const lineWidth = 0.5;
     const padding = 8;
     const distance = this.distance;
@@ -3166,33 +2772,33 @@ class LiveGainUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     const [width, height] = this.fullSize();
     ctx.clearRect(0, 0, width, height);
     this.levels = levels.slice();
-    if (this.levels.length === 0) this.levels = [min];
-
+    if (this.levels.length === 0)
+      this.levels = [min];
     if (this.levels.find((v, i) => typeof this.maxValues[i] === "undefined" || v > this.maxValues[i])) {
       this.maxValues = [...this.levels];
-      if (this.maxTimer) window.clearTimeout(this.maxTimer);
+      if (this.maxTimer)
+        window.clearTimeout(this.maxTimer);
       this.maxTimer = window.setTimeout(() => {
         this.maxValues = [...this.levels];
-        this.maxTimer = undefined;
+        this.maxTimer = void 0;
         this.schedulePaint();
-      }, 1000);
+      }, 1e3);
     } else if (this.levels.find((v, i) => v < this.maxValues[i]) && typeof this.maxTimer === "undefined") {
       this.maxTimer = window.setTimeout(() => {
         this.maxValues = [...this.levels];
-        this.maxTimer = undefined;
+        this.maxTimer = void 0;
         this.schedulePaint();
-      }, 1000);
+      }, 1e3);
     }
-
     const channels = this.levels.length;
     const clipValue = +(mode === "linear");
     const meterThick = 8;
     const metersThick = (meterThick + 1) * channels - 1;
-    ctx.font = "".concat(fontFace === "regular" ? "" : fontFace, " ").concat(fontSize, "px ").concat(fontFamily, ", sans-serif");
+    ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
     ctx.textAlign = "center";
     ctx.fillStyle = textColor;
-    if (showName) ctx.fillText(shortName, width * 0.5, fontSize, width);
-
+    if (showName)
+      ctx.fillText(shortName, width * 0.5, fontSize, width);
     if (showNumber) {
       if (orientation === "horizontal") {
         ctx.textAlign = "left";
@@ -3201,12 +2807,15 @@ class LiveGainUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
         ctx.fillText(displayValue, width * 0.5, height - 2, width);
       }
     }
-
-    this.interactionRect = [0, fontSize + padding, width, height - 2 * (fontSize + padding)];
+    this.interactionRect = [
+      0,
+      fontSize + padding,
+      width,
+      height - 2 * (fontSize + padding)
+    ];
     ctx.save();
     let $width;
     const $height = meterThick;
-
     if (orientation === "horizontal") {
       $width = width;
       ctx.translate(0, (height - metersThick) * 0.5);
@@ -3215,50 +2824,30 @@ class LiveGainUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       ctx.translate((width - metersThick) * 0.5, height - fontSize - padding);
       ctx.rotate(-Math.PI * 0.5);
     }
-
     ctx.fillStyle = bgColor;
-
     if (min >= clipValue || clipValue >= max) {
       const fgColor = min >= clipValue ? active ? overloadColor : inactiveWarmColor : active ? coldColor : inactiveColdColor;
       let $top = 0;
-      this.levels.forEach(v => {
-        if (v < max) ctx.fillRect(0, $top, $width, $height);
+      this.levels.forEach((v) => {
+        if (v < max)
+          ctx.fillRect(0, $top, $width, $height);
         $top += $height + 1;
       });
       $top = 0;
       ctx.fillStyle = fgColor;
       this.levels.forEach((v, i) => {
-        const distance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-          type: "float",
-          value: v,
-          min,
-          max,
-          exponent
-        });
-        if (distance > 0) ctx.fillRect(0, $top, distance * $width, $height);
+        const distance2 = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: v, min, max, exponent });
+        if (distance2 > 0)
+          ctx.fillRect(0, $top, distance2 * $width, $height);
         const histMax = this.maxValues[i];
-
         if (typeof histMax === "number" && histMax > v) {
-          const histDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-            type: "float",
-            value: histMax,
-            min,
-            max,
-            exponent
-          });
+          const histDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: histMax, min, max, exponent });
           ctx.fillRect(Math.min($width - 1, histDistance * $width), $top, 1, $height);
         }
-
         $top += $height + 1;
       });
     } else {
-      const clipDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-        type: "float",
-        value: clipValue,
-        min,
-        max,
-        exponent
-      });
+      const clipDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: clipValue, min, max, exponent });
       const clip = $width - clipDistance * $width;
       const hotStop = $width - clip;
       const warmStop = hotStop - 1;
@@ -3268,43 +2857,38 @@ class LiveGainUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       gradient.addColorStop(hotStop / $width, active ? hotColor : inactiveWarmColor);
       gradient.addColorStop(1, active ? overloadColor : inactiveWarmColor);
       let $top = 0;
-      this.levels.forEach(v => {
-        if (v < clipValue) ctx.fillRect(0, $top, warmStop, $height);
-        if (v < max) ctx.fillRect(hotStop, $top, clip, $height);
+      this.levels.forEach((v) => {
+        if (v < clipValue)
+          ctx.fillRect(0, $top, warmStop, $height);
+        if (v < max)
+          ctx.fillRect(hotStop, $top, clip, $height);
         $top += $height + 1;
       });
       $top = 0;
       ctx.fillStyle = gradient;
       this.levels.forEach((v, i) => {
-        const distance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-          type: "float",
-          value: v,
-          min,
-          max,
-          exponent
-        });
-        if (distance > 0) ctx.fillRect(0, $top, Math.min(warmStop, distance * $width), $height);
-        if (distance > clipDistance) ctx.fillRect(hotStop, $top, Math.min(clip, (distance - clipDistance) * $width), $height);
+        const distance2 = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: v, min, max, exponent });
+        if (distance2 > 0)
+          ctx.fillRect(0, $top, Math.min(warmStop, distance2 * $width), $height);
+        if (distance2 > clipDistance)
+          ctx.fillRect(hotStop, $top, Math.min(clip, (distance2 - clipDistance) * $width), $height);
         const histMax = this.maxValues[i];
-
         if (typeof histMax === "number" && histMax > v) {
-          const histDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-            type: "float",
-            value: histMax,
-            min,
-            max,
-            exponent
-          });
-          if (histDistance <= clipDistance) ctx.fillRect(histDistance * $width, $top, 1, $height);else ctx.fillRect(Math.min($width - 1, histDistance * $width), $top, 1, $height);
+          const histDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: histMax, min, max, exponent });
+          if (histDistance <= clipDistance)
+            ctx.fillRect(histDistance * $width, $top, 1, $height);
+          else
+            ctx.fillRect(Math.min($width - 1, histDistance * $width), $top, 1, $height);
         }
-
         $top += $height + 1;
       });
     }
-
     ctx.lineWidth = 1;
     ctx.strokeStyle = triBorderColor;
-    const triOrigin = [$width * distance, metersThick + lineWidth];
+    const triOrigin = [
+      $width * distance,
+      metersThick + lineWidth
+    ];
     ctx.beginPath();
     ctx.moveTo(triOrigin[0], triOrigin[1]);
     ctx.lineTo(triOrigin[0] - 4, triOrigin[1] + 8);
@@ -3315,14 +2899,8 @@ class LiveGainUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     ctx.fill();
     ctx.restore();
   }
-
   getValueFromPos(e) {
-    const {
-      orientation,
-      type,
-      min,
-      exponent
-    } = this.state;
+    const { orientation, type, min, exponent } = this.state;
     const step = type === "enum" ? 1 : this.state.step || 1;
     const totalPixels = orientation === "vertical" ? this.interactionRect[3] : this.interactionRect[2];
     const stepsCount = this.stepsCount;
@@ -3330,43 +2908,31 @@ class LiveGainUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     const pixels = orientation === "vertical" ? this.interactionRect[3] - (e.y - this.interactionRect[1]) : e.x - this.interactionRect[0];
     let steps = Math.round(_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.normExp(pixels / totalPixels, exponent) * totalPixels / stepPixels);
     steps = Math.min(stepsCount, Math.max(0, steps));
-    if (type === "enum") return steps;
-    if (type === "int") return Math.round(steps * step + min);
+    if (type === "enum")
+      return steps;
+    if (type === "int")
+      return Math.round(steps * step + min);
     return steps * step + min;
   }
-
   getValueFromDelta(e) {
-    const {
-      type,
-      min,
-      max,
-      enums,
-      exponent,
-      orientation
-    } = this.state;
+    const { type, min, max, enums, exponent, orientation } = this.state;
     const step = type === "enum" ? 1 : this.state.step || 1;
     const totalPixels = orientation === "horizontal" ? this.interactionRect[2] : this.interactionRect[3];
     const stepsCount = this.stepsCount;
     const stepPixels = totalPixels / stepsCount;
-    const prevPixels = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-      value: e.prevValue,
-      type,
-      min,
-      max,
-      enums,
-      exponent
-    }) * totalPixels;
+    const prevPixels = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ value: e.prevValue, type, min, max, enums, exponent }) * totalPixels;
     const pixels = prevPixels + (orientation === "horizontal" ? e.x - e.fromX : e.fromY - e.y);
     let steps = Math.round(_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.normExp(pixels / totalPixels, exponent) * totalPixels / stepPixels);
     steps = Math.min(stepsCount, Math.max(0, steps));
-    if (type === "enum") return steps;
-    if (type === "int") return Math.round(steps * step + min);
+    if (type === "enum")
+      return steps;
+    if (type === "int")
+      return Math.round(steps * step + min);
     return steps * step + min;
   }
-
 }
+LiveGainUI.defaultSize = [120, 45];
 
-_defineProperty(LiveGainUI, "defaultSize", [120, 45]);
 
 /***/ }),
 
@@ -3382,33 +2948,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/ui/base.tsx");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
 class LiveMeterUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
+    this.state = __spreadProps(__spreadValues({}, this.state), {
       levels: this.object.state.levels
-    }));
-
-    _defineProperty(this, "levels", []);
-
-    _defineProperty(this, "maxValues", []);
-
-    _defineProperty(this, "maxTimer", void 0);
+    });
+    this.levels = [];
+    this.maxValues = [];
   }
-
   paint() {
     const {
-      // width,
-      // height,
       active,
       mode,
       levels,
@@ -3424,82 +2995,62 @@ class LiveMeterUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
       inactiveWarmColor
     } = this.state;
     const ctx = this.ctx;
-    if (!ctx) return;
+    if (!ctx)
+      return;
     let [width, height] = this.fullSize();
     ctx.clearRect(0, 0, width, height);
     this.levels = levels.slice();
-    if (this.levels.length === 0) this.levels = [min];
-
+    if (this.levels.length === 0)
+      this.levels = [min];
     if (this.levels.find((v, i) => typeof this.maxValues[i] === "undefined" || v > this.maxValues[i])) {
       this.maxValues = [...this.levels];
-      if (this.maxTimer) window.clearTimeout(this.maxTimer);
+      if (this.maxTimer)
+        window.clearTimeout(this.maxTimer);
       this.maxTimer = window.setTimeout(() => {
         this.maxValues = [...this.levels];
-        this.maxTimer = undefined;
+        this.maxTimer = void 0;
         this.schedulePaint();
-      }, 1000);
+      }, 1e3);
     } else if (this.levels.find((v, i) => v < this.maxValues[i]) && typeof this.maxTimer === "undefined") {
       this.maxTimer = window.setTimeout(() => {
         this.maxValues = [...this.levels];
-        this.maxTimer = undefined;
+        this.maxTimer = void 0;
         this.schedulePaint();
-      }, 1000);
+      }, 1e3);
     }
-
     const channels = this.levels.length;
     const clipValue = +(mode === "linear");
-
     if (orientation === "vertical") {
       ctx.save();
       ctx.translate(0, height);
       ctx.rotate(-Math.PI * 0.5);
       [height, width] = [width, height];
     }
-
     const $height = (height - channels - 1) / this.levels.length;
     ctx.fillStyle = bgColor;
-
     if (min >= clipValue || clipValue >= max) {
       const fgColor = min >= clipValue ? active ? overloadColor : inactiveWarmColor : active ? coldColor : inactiveColdColor;
       let $top = 0;
-      this.levels.forEach(v => {
-        if (v < max) ctx.fillRect(0, $top, width, $height);
+      this.levels.forEach((v) => {
+        if (v < max)
+          ctx.fillRect(0, $top, width, $height);
         $top += $height + 1;
       });
       $top = 0;
       ctx.fillStyle = fgColor;
       this.levels.forEach((v, i) => {
-        const distance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-          type: "float",
-          value: v,
-          min,
-          max,
-          exponent: 0
-        });
-        if (distance > 0) ctx.fillRect(0, $top, distance * width, $height);
+        const distance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: v, min, max, exponent: 0 });
+        if (distance > 0)
+          ctx.fillRect(0, $top, distance * width, $height);
         const histMax = this.maxValues[i];
-
         if (typeof histMax === "number" && histMax > v) {
-          const histDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-            type: "float",
-            value: histMax,
-            min,
-            max,
-            exponent: 0
-          });
+          const histDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: histMax, min, max, exponent: 0 });
           ctx.fillRect(Math.min(width - 1, histDistance * width), $top, 1, $height);
         }
-
         $top += $height + 1;
       });
     } else {
-      const clipDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-        type: "float",
-        value: clipValue,
-        min,
-        max,
-        exponent: 0
-      });
+      const clipDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: clipValue, min, max, exponent: 0 });
       const clip = width - clipDistance * width;
       const hotStop = width - clip;
       const warmStop = hotStop - 1;
@@ -3509,44 +3060,37 @@ class LiveMeterUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
       gradient.addColorStop(hotStop / width, active ? hotColor : inactiveWarmColor);
       gradient.addColorStop(1, active ? overloadColor : inactiveWarmColor);
       let $top = 0;
-      this.levels.forEach(v => {
-        if (v < clipValue) ctx.fillRect(0, $top, warmStop, $height);
-        if (v < max) ctx.fillRect(hotStop, $top, clip, $height);
+      this.levels.forEach((v) => {
+        if (v < clipValue)
+          ctx.fillRect(0, $top, warmStop, $height);
+        if (v < max)
+          ctx.fillRect(hotStop, $top, clip, $height);
         $top += $height + 1;
       });
       $top = 0;
       ctx.fillStyle = gradient;
       this.levels.forEach((v, i) => {
-        const distance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-          type: "float",
-          value: v,
-          min,
-          max,
-          exponent: 0
-        });
-        if (distance > 0) ctx.fillRect(0, $top, Math.min(warmStop, distance * width), $height);
-        if (distance > clipDistance) ctx.fillRect(hotStop, $top, Math.min(clip, (distance - clipDistance) * width), $height);
+        const distance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: v, min, max, exponent: 0 });
+        if (distance > 0)
+          ctx.fillRect(0, $top, Math.min(warmStop, distance * width), $height);
+        if (distance > clipDistance)
+          ctx.fillRect(hotStop, $top, Math.min(clip, (distance - clipDistance) * width), $height);
         const histMax = this.maxValues[i];
-
         if (typeof histMax === "number" && histMax > v) {
-          const histDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-            type: "float",
-            value: histMax,
-            min,
-            max,
-            exponent: 0
-          });
-          if (histDistance <= clipDistance) ctx.fillRect(histDistance * width, $top, 1, $height);else ctx.fillRect(Math.min(width - 1, histDistance * width), $top, 1, $height);
+          const histDistance = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ type: "float", value: histMax, min, max, exponent: 0 });
+          if (histDistance <= clipDistance)
+            ctx.fillRect(histDistance * width, $top, 1, $height);
+          else
+            ctx.fillRect(Math.min(width - 1, histDistance * width), $top, 1, $height);
         }
-
         $top += $height + 1;
       });
     }
-
-    if (orientation === "vertical") ctx.restore();
+    if (orientation === "vertical")
+      ctx.restore();
   }
-
 }
+
 
 /***/ }),
 
@@ -3562,83 +3106,79 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/ui/base.tsx");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
 class LiveNumboxUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
+    this.state = __spreadProps(__spreadValues({}, this.state), {
       inputBuffer: ""
-    }));
-
-    _defineProperty(this, "className", "live-numbox");
-
-    _defineProperty(this, "handlePointerDrag", e => {
-      const newValue = this.getValueFromDelta(e);
-      if (newValue !== this.state.value) this.setValueToOutput(newValue);
     });
-
-    _defineProperty(this, "handleKeyDown", e => {
+    this.className = "live-numbox";
+    this.handlePointerDrag = (e) => {
+      const newValue = this.getValueFromDelta(e);
+      if (newValue !== this.state.value)
+        this.setValueToOutput(newValue);
+    };
+    this.handleKeyDown = (e) => {
       if (!this.state.inputBuffer) {
         let addStep = 0;
-        if (e.key === "ArrowUp" || e.key === "ArrowRight") addStep = 1;
-        if (e.key === "ArrowDown" || e.key === "ArrowLeft") addStep = -1;
-
+        if (e.key === "ArrowUp" || e.key === "ArrowRight")
+          addStep = 1;
+        if (e.key === "ArrowDown" || e.key === "ArrowLeft")
+          addStep = -1;
         if (addStep !== 0) {
           const newValue = this.object.toValidValue(this.state.value + this.state.step * addStep);
-          if (newValue !== this.state.value) this.setValueToOutput(newValue);
+          if (newValue !== this.state.value)
+            this.setValueToOutput(newValue);
         }
       }
-
       if (e.key.match(/[0-9.-]/)) {
-        this.setState({
-          inputBuffer: this.state.inputBuffer + e.key
-        });
+        this.setState({ inputBuffer: this.state.inputBuffer + e.key });
         return;
       }
-
       if (e.key === "Backspace") {
-        this.setState({
-          inputBuffer: this.state.inputBuffer.slice(0, -1)
-        });
+        this.setState({ inputBuffer: this.state.inputBuffer.slice(0, -1) });
         return;
       }
-
       if (e.key === "Enter") {
         const newValue = this.object.toValidValue(+this.state.inputBuffer);
-        this.setState({
-          inputBuffer: ""
-        });
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        this.setState({ inputBuffer: "" });
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-    });
-
-    _defineProperty(this, "handleFocusOut", () => {
+    };
+    this.handleFocusOut = () => {
       if (this.state.inputBuffer) {
         const newValue = this.object.toValidValue(+this.state.inputBuffer);
-        this.setState({
-          inputBuffer: ""
-        });
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        this.setState({ inputBuffer: "" });
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-
-      this.setState({
-        focus: false
-      });
-    });
+      this.setState({ focus: false });
+    };
   }
-
   paint() {
     const {
-      // width,
-      // height,
       active,
       focus,
       fontFamily,
@@ -3658,26 +3198,22 @@ class LiveNumboxUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       inputBuffer
     } = this.state;
     const ctx = this.ctx;
-    if (!ctx) return;
+    if (!ctx)
+      return;
     const distance = this.distance;
     const displayValue = inputBuffer ? inputBuffer + "_" : this.displayValue;
     const [width, height] = this.fullSize();
-    ctx.clearRect(0, 0, width, height); // draw background
-
+    ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = active ? activeBgColor : bgColor;
     ctx.rect(0, 0, width, height);
     ctx.fill();
-
     if (appearance === "slider" && active && distance) {
       ctx.fillStyle = activeSliderColor;
       ctx.fillRect(0, 0, distance * width, height);
-    } // draw border (eventually we might need to redefine the shape)
-
-
+    }
     ctx.lineWidth = 1;
     ctx.strokeStyle = focus ? focusBorderColor : borderColor;
     ctx.stroke();
-
     if (appearance === "triangle") {
       const triangleHeight = 8;
       ctx.fillStyle = active ? distance ? activeTriColor2 : activeTriColor : distance ? triColor2 : triColor;
@@ -3687,45 +3223,31 @@ class LiveNumboxUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       ctx.lineTo(width - 1, height - 1);
       ctx.closePath();
       ctx.fill();
-    } // display the text
-
-
-    ctx.font = "".concat(fontFace === "regular" ? "" : fontFace, " ").concat(fontSize, "px ").concat(fontFamily, ", sans-serif");
+    }
+    ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
     ctx.fillStyle = textColor;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(displayValue, width * 0.5, height * 0.5, width);
   }
-
   getValueFromDelta(e) {
-    const {
-      type,
-      min,
-      max,
-      enums,
-      exponent
-    } = this.state;
+    const { type, min, max, enums, exponent } = this.state;
     const step = type === "enum" ? 1 : this.state.step || 1;
     const totalPixels = 100;
     const stepsCount = this.stepsCount;
     const stepPixels = totalPixels / stepsCount;
-    const prevPixels = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-      value: e.prevValue,
-      type,
-      min,
-      max,
-      enums,
-      exponent
-    }) * totalPixels;
+    const prevPixels = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ value: e.prevValue, type, min, max, enums, exponent }) * totalPixels;
     const pixels = prevPixels + e.fromY - e.y;
     let steps = Math.round(_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.normExp(pixels / totalPixels, exponent) * totalPixels / stepPixels);
     steps = Math.min(stepsCount, Math.max(0, steps));
-    if (type === "enum") return steps;
-    if (type === "int") return Math.round(steps * step + min);
+    if (type === "enum")
+      return steps;
+    if (type === "int")
+      return Math.round(steps * step + min);
     return steps * step + min;
   }
-
 }
+
 
 /***/ }),
 
@@ -3741,104 +3263,100 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/ui/base.tsx");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
 class LiveSliderUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "state", _objectSpread(_objectSpread({}, this.state), {}, {
+    this.state = __spreadProps(__spreadValues({}, this.state), {
       inputBuffer: ""
-    }));
-
-    _defineProperty(this, "className", "live-slider");
-
-    _defineProperty(this, "interactionRect", [0, 0, 0, 0]);
-
-    _defineProperty(this, "inTouch", false);
-
-    _defineProperty(this, "handlePointerDown", e => {
-      if (e.x < this.interactionRect[0] || e.x > this.interactionRect[0] + this.interactionRect[2] || e.y < this.interactionRect[1] || e.y > this.interactionRect[1] + this.interactionRect[3]) return;
-
+    });
+    this.className = "live-slider";
+    this.interactionRect = [0, 0, 0, 0];
+    this.inTouch = false;
+    this.handlePointerDown = (e) => {
+      if (e.x < this.interactionRect[0] || e.x > this.interactionRect[0] + this.interactionRect[2] || e.y < this.interactionRect[1] || e.y > this.interactionRect[1] + this.interactionRect[3])
+        return;
       if (!this.state.relative) {
         const newValue = this.getValueFromPos(e);
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-
       this.inTouch = true;
-    });
-
-    _defineProperty(this, "handlePointerDrag", e => {
-      if (!this.inTouch) return;
+    };
+    this.handlePointerDrag = (e) => {
+      if (!this.inTouch)
+        return;
       let newValue;
-      if (this.state.relative) newValue = this.getValueFromDelta(e);else newValue = this.getValueFromPos(e);
-      if (newValue !== this.state.value) this.setValueToOutput(newValue);
-    });
-
-    _defineProperty(this, "handlePointerUp", () => {
+      if (this.state.relative)
+        newValue = this.getValueFromDelta(e);
+      else
+        newValue = this.getValueFromPos(e);
+      if (newValue !== this.state.value)
+        this.setValueToOutput(newValue);
+    };
+    this.handlePointerUp = () => {
       this.inTouch = false;
-    });
-
-    _defineProperty(this, "handleKeyDown", e => {
+    };
+    this.handleKeyDown = (e) => {
       if (!this.state.inputBuffer) {
         let addStep = 0;
-        if (e.key === "ArrowUp" || e.key === "ArrowRight") addStep = 1;
-        if (e.key === "ArrowDown" || e.key === "ArrowLeft") addStep = -1;
-
+        if (e.key === "ArrowUp" || e.key === "ArrowRight")
+          addStep = 1;
+        if (e.key === "ArrowDown" || e.key === "ArrowLeft")
+          addStep = -1;
         if (addStep !== 0) {
           const newValue = this.object.toValidValue(this.state.value + this.state.step * addStep);
-          if (newValue !== this.state.value) this.setValueToOutput(newValue);
+          if (newValue !== this.state.value)
+            this.setValueToOutput(newValue);
         }
       }
-
       if (e.key.match(/[0-9.-]/)) {
-        this.setState({
-          inputBuffer: this.state.inputBuffer + e.key
-        });
+        this.setState({ inputBuffer: this.state.inputBuffer + e.key });
         return;
       }
-
       if (e.key === "Backspace") {
-        this.setState({
-          inputBuffer: this.state.inputBuffer.slice(0, -1)
-        });
+        this.setState({ inputBuffer: this.state.inputBuffer.slice(0, -1) });
         return;
       }
-
       if (e.key === "Enter") {
         const newValue = this.object.toValidValue(+this.state.inputBuffer);
-        this.setState({
-          inputBuffer: ""
-        });
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        this.setState({ inputBuffer: "" });
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-    });
-
-    _defineProperty(this, "handleFocusOut", () => {
+    };
+    this.handleFocusOut = () => {
       if (this.state.inputBuffer) {
         const newValue = this.object.toValidValue(+this.state.inputBuffer);
-        this.setState({
-          inputBuffer: ""
-        });
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        this.setState({ inputBuffer: "" });
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-
-      this.setState({
-        focus: false
-      });
-    });
+      this.setState({ focus: false });
+    };
   }
-
   paint() {
     const {
-      // width,
-      // height,
       fontFamily,
       fontSize,
       fontFace,
@@ -3854,7 +3372,8 @@ class LiveSliderUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       inputBuffer
     } = this.state;
     const ctx = this.ctx;
-    if (!ctx) return;
+    if (!ctx)
+      return;
     const lineWidth = 0.5;
     const padding = 8;
     const distance = this.distance;
@@ -3863,17 +3382,24 @@ class LiveSliderUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     ctx.clearRect(0, 0, width, height);
     ctx.lineWidth = lineWidth;
     ctx.strokeStyle = sliderColor;
-
     if (orientation === "vertical") {
       ctx.beginPath();
       ctx.moveTo(width * 0.5, fontSize + padding);
       ctx.lineTo(width * 0.5, height - (fontSize + padding));
       ctx.stroke();
       const interactionWidth = width * 0.5;
-      this.interactionRect = [width * 0.5 - interactionWidth * 0.5, fontSize + padding, interactionWidth, height - 2 * (fontSize + padding)];
+      this.interactionRect = [
+        width * 0.5 - interactionWidth * 0.5,
+        fontSize + padding,
+        interactionWidth,
+        height - 2 * (fontSize + padding)
+      ];
       ctx.lineWidth = 1;
       ctx.strokeStyle = triBorderColor;
-      const triOrigin = [width * 0.5 + lineWidth * 0.5 + 0.5, this.interactionRect[1] - 4 + this.interactionRect[3] * (1 - distance)];
+      const triOrigin = [
+        width * 0.5 + lineWidth * 0.5 + 0.5,
+        this.interactionRect[1] - 4 + this.interactionRect[3] * (1 - distance)
+      ];
       ctx.beginPath();
       ctx.moveTo(triOrigin[0], triOrigin[1] + 4);
       ctx.lineTo(triOrigin[0] + 8, triOrigin[1]);
@@ -3882,21 +3408,31 @@ class LiveSliderUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       ctx.stroke();
       ctx.fillStyle = this.inTouch ? triOnColor : triColor;
       ctx.fill();
-      ctx.font = "".concat(fontFace === "regular" ? "" : fontFace, " ").concat(fontSize, "px ").concat(fontFamily, ", sans-serif");
+      ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
       ctx.textAlign = "center";
       ctx.fillStyle = textColor;
-      if (showName) ctx.fillText(shortName, width * 0.5, fontSize, width);
-      if (showNumber) ctx.fillText(displayValue, width * 0.5, height - 2, width);
+      if (showName)
+        ctx.fillText(shortName, width * 0.5, fontSize, width);
+      if (showNumber)
+        ctx.fillText(displayValue, width * 0.5, height - 2, width);
     } else {
       ctx.beginPath();
       ctx.moveTo(padding, height * 0.5);
       ctx.lineTo(width - padding, height * 0.5);
       ctx.stroke();
       const interactionWidth = height * 0.5;
-      this.interactionRect = [padding, height * 0.5 - interactionWidth * 0.5, width - 2 * padding, interactionWidth];
+      this.interactionRect = [
+        padding,
+        height * 0.5 - interactionWidth * 0.5,
+        width - 2 * padding,
+        interactionWidth
+      ];
       ctx.lineWidth = 1;
       ctx.strokeStyle = triBorderColor;
-      const triOrigin = [this.interactionRect[0] + this.interactionRect[2] * distance - 4, height * 0.5 + lineWidth * 0.5 + 2];
+      const triOrigin = [
+        this.interactionRect[0] + this.interactionRect[2] * distance - 4,
+        height * 0.5 + lineWidth * 0.5 + 2
+      ];
       ctx.beginPath();
       ctx.moveTo(triOrigin[0], triOrigin[1] + 8);
       ctx.lineTo(triOrigin[0] + 4, triOrigin[1]);
@@ -3905,22 +3441,18 @@ class LiveSliderUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       ctx.stroke();
       ctx.fillStyle = this.inTouch ? triOnColor : triColor;
       ctx.fill();
-      ctx.font = "".concat(fontFace === "regular" ? "" : fontFace, " ").concat(fontSize, "px ").concat(fontFamily, ", sans-serif");
+      ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
       ctx.textAlign = "center";
       ctx.fillStyle = textColor;
-      if (showName) ctx.fillText(shortName, width * 0.5, fontSize, width);
+      if (showName)
+        ctx.fillText(shortName, width * 0.5, fontSize, width);
       ctx.textAlign = "left";
-      if (showNumber) ctx.fillText(displayValue, 4, height - 2, width);
+      if (showNumber)
+        ctx.fillText(displayValue, 4, height - 2, width);
     }
   }
-
   getValueFromPos(e) {
-    const {
-      orientation,
-      type,
-      min,
-      exponent
-    } = this.state;
+    const { orientation, type, min, exponent } = this.state;
     const step = type === "enum" ? 1 : this.state.step || 1;
     const totalPixels = orientation === "vertical" ? this.interactionRect[3] : this.interactionRect[2];
     const stepsCount = this.stepsCount;
@@ -3928,43 +3460,31 @@ class LiveSliderUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     const pixels = orientation === "vertical" ? this.interactionRect[3] - (e.y - this.interactionRect[1]) : e.x - this.interactionRect[0];
     let steps = Math.round(_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.normExp(pixels / totalPixels, exponent) * totalPixels / stepPixels);
     steps = Math.min(stepsCount, Math.max(0, steps));
-    if (type === "enum") return steps;
-    if (type === "int") return Math.round(steps * step + min);
+    if (type === "enum")
+      return steps;
+    if (type === "int")
+      return Math.round(steps * step + min);
     return steps * step + min;
   }
-
   getValueFromDelta(e) {
-    const {
-      type,
-      min,
-      max,
-      enums,
-      exponent,
-      orientation
-    } = this.state;
+    const { type, min, max, enums, exponent, orientation } = this.state;
     const step = type === "enum" ? 1 : this.state.step || 1;
     const totalPixels = orientation === "horizontal" ? this.interactionRect[2] : this.interactionRect[3];
     const stepsCount = this.stepsCount;
     const stepPixels = totalPixels / stepsCount;
-    const prevPixels = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({
-      value: e.prevValue,
-      type,
-      min,
-      max,
-      enums,
-      exponent
-    }) * totalPixels;
+    const prevPixels = _base__WEBPACK_IMPORTED_MODULE_1__.default.getDistance({ value: e.prevValue, type, min, max, enums, exponent }) * totalPixels;
     const pixels = prevPixels + (orientation === "horizontal" ? e.x - e.fromX : e.fromY - e.y);
     let steps = Math.round(_sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.normExp(pixels / totalPixels, exponent) * totalPixels / stepPixels);
     steps = Math.min(stepsCount, Math.max(0, steps));
-    if (type === "enum") return steps;
-    if (type === "int") return Math.round(steps * step + min);
+    if (type === "enum")
+      return steps;
+    if (type === "int")
+      return Math.round(steps * step + min);
     return steps * step + min;
   }
-
 }
+LiveSliderUI.defaultSize = [120, 45];
 
-_defineProperty(LiveSliderUI, "defaultSize", [120, 45]);
 
 /***/ }),
 
@@ -3979,52 +3499,41 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ LiveTabUI)
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/ui/base.tsx");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 class LiveTabUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "className", "live-tab");
-
-    _defineProperty(this, "tabRects", []);
-
-    _defineProperty(this, "inTouch", false);
-
-    _defineProperty(this, "handlePointerDown", e => {
+    this.className = "live-tab";
+    this.tabRects = [];
+    this.inTouch = false;
+    this.handlePointerDown = (e) => {
       this.inTouch = true;
-
       for (let i = 0; i < this.tabRects.length; i++) {
         const rect = this.tabRects[i];
-
         if (e.x >= rect[0] && e.x <= rect[2] + rect[0] && e.y >= rect[1] && e.y <= rect[3] + rect[1]) {
           this.setValueToOutput(i);
           return;
         }
       }
-    });
-
-    _defineProperty(this, "handlePointerDrag", e => {
+    };
+    this.handlePointerDrag = (e) => {
       this.handlePointerDown(e);
-    });
-
-    _defineProperty(this, "handleKeyDown", e => {
+    };
+    this.handleKeyDown = (e) => {
       let addStep = 0;
-      if (e.key === "ArrowUp" || e.key === "ArrowRight") addStep = 1;
-      if (e.key === "ArrowDown" || e.key === "ArrowLeft") addStep = -1;
-
+      if (e.key === "ArrowUp" || e.key === "ArrowRight")
+        addStep = 1;
+      if (e.key === "ArrowDown" || e.key === "ArrowLeft")
+        addStep = -1;
       if (addStep !== 0) {
         const newValue = this.object.toValidValue(this.state.value + this.state.step * addStep);
-        if (newValue !== this.state.value) this.setValueToOutput(newValue);
+        if (newValue !== this.state.value)
+          this.setValueToOutput(newValue);
       }
-    });
+    };
   }
-
   getTabRects(width, height) {
     const {
-      // width,
-      // height,
       multiline,
       mode,
       enums,
@@ -4041,58 +3550,56 @@ class LiveTabUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     let rectWidth = 0;
     const spacingX = spacingXIn * 0.5;
     const spacingY = spacingYIn * 0.5;
-
     if (multiline && height >= 2 * minHeight) {
       lines = Math.max(1, Math.min(count, Math.floor(height / minHeight)));
-      countPerLine = Math.ceil(count / lines); // if there's not enough height, increase the number of tabs per row
-
+      countPerLine = Math.ceil(count / lines);
       while (lines * countPerLine < count) {
         countPerLine++;
-        if (lines > 1) lines--;
-      } // if there's extra height, reduce the number of rows
-
-
+        if (lines > 1)
+          lines--;
+      }
       while (lines * countPerLine > count && (lines - 1) * countPerLine >= count) {
         lines--;
       }
-
       step = height / lines;
     }
-
     if (mode === "equal") {
       interval = width / countPerLine;
       rectWidth = interval - spacingX;
-
       for (let i = 0; i < count; i++) {
-        this.tabRects[i] = [i % countPerLine * interval + spacingX * 0.5, Math.floor(i / countPerLine) * step + spacingY * 0.5, rectWidth, height / lines - spacingY];
+        this.tabRects[i] = [
+          i % countPerLine * interval + spacingX * 0.5,
+          Math.floor(i / countPerLine) * step + spacingY * 0.5,
+          rectWidth,
+          height / lines - spacingY
+        ];
       }
     } else {
       const textWidths = [];
-
       for (let i = 0; i < lines; i++) {
         let total = 0;
         let space = width;
-
         for (let j = i * countPerLine; j < Math.min((i + 1) * countPerLine, count); j++) {
           const textDimensions = this.ctx.measureText(enums[j]);
           textWidths[j] = textDimensions.width;
           total += textWidths[j];
           space -= 2 * margin + spacingX;
         }
-
         let used = 0;
-
         for (let j = i * countPerLine; j < Math.min((i + 1) * countPerLine, count); j++) {
           const rectSpace = textWidths[j] / total;
-          this.tabRects[j] = [used + spacingX * 0.5, i * step + spacingY * 0.5, space * rectSpace + 2 * margin, height / lines - spacingY];
+          this.tabRects[j] = [
+            used + spacingX * 0.5,
+            i * step + spacingY * 0.5,
+            space * rectSpace + 2 * margin,
+            height / lines - spacingY
+          ];
           used += this.tabRects[j][2] + spacingX;
         }
       }
     }
-
     return this.tabRects;
   }
-
   paint() {
     const {
       active,
@@ -4114,14 +3621,14 @@ class LiveTabUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       value
     } = this.state;
     const ctx = this.ctx;
-    if (!ctx) return;
+    if (!ctx)
+      return;
     const [width, height] = this.fullSize();
     const tabRects = this.getTabRects(width, height);
     const borderWidth = 0.5;
     ctx.clearRect(0, 0, width, height);
     ctx.lineWidth = borderWidth;
     const buttonBorderColor = focus ? focusBorderColor : borderColor;
-
     for (let i = 0; i < enums.length; i++) {
       const buttonBgColor = active ? value === i ? activeBgOnColor : activeBgColor : value === i ? bgOnColor : bgColor;
       ctx.fillStyle = buttonBgColor;
@@ -4130,17 +3637,16 @@ class LiveTabUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       ctx.fill();
       ctx.strokeStyle = buttonBorderColor;
       ctx.stroke();
-      ctx.font = "".concat(fontFace === "regular" ? "" : fontFace, " ").concat(fontSize, "px ").concat(fontFamily, ", sans-serif");
+      ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillStyle = active ? value === i ? activeTextOnColor : activeTextColor : value === i ? textOnColor : textColor;
       ctx.fillText(enums[i], tabRects[i][0] + tabRects[i][2] * 0.5, tabRects[i][1] + tabRects[i][3] * 0.5);
     }
   }
-
 }
+LiveTabUI.defaultSize = [120, 15];
 
-_defineProperty(LiveTabUI, "defaultSize", [120, 15]);
 
 /***/ }),
 
@@ -4156,40 +3662,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/ui/base.tsx");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 class LiveTextUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "className", "live-text");
-
-    _defineProperty(this, "inTouch", false);
-
-    _defineProperty(this, "handlePointerDown", e => {
-      const {
-        value,
-        mode
-      } = this.state;
+    this.className = "live-text";
+    this.inTouch = false;
+    this.handlePointerDown = (e) => {
+      const { value, mode } = this.state;
       this.inTouch = true;
       this.setValueToOutput(mode === "button" ? 1 : 1 - +!!value);
-    });
-
-    _defineProperty(this, "handlePointerUp", () => {
-      const {
-        mode
-      } = this.state;
+    };
+    this.handlePointerUp = () => {
+      const { mode } = this.state;
       this.inTouch = false;
-      if (mode === "button") this.setValueToOutput(0);
-    });
+      if (mode === "button")
+        this.setValueToOutput(0);
+    };
   }
-
   paint() {
     const {
-      // width,
-      // height,
       active,
       focus,
       fontFamily,
@@ -4211,7 +3704,8 @@ class LiveTextUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       value
     } = this.state;
     const ctx = this.ctx;
-    if (!ctx) return;
+    if (!ctx)
+      return;
     const borderWidth = 0.5;
     const [width, height] = this.fullSize();
     ctx.clearRect(0, 0, width, height);
@@ -4219,7 +3713,6 @@ class LiveTextUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     const buttonBgColor = active ? value ? activeBgOnColor : activeBgColor : value ? bgOnColor : bgColor;
     const buttonBorderColor = focus ? focusBorderColor : borderColor;
     ctx.fillStyle = buttonBgColor;
-
     if (mode === "button") {
       _sdk__WEBPACK_IMPORTED_MODULE_0__.Utils.fillRoundedRect(ctx, 0.5, 0.5, width - 1, height - 1, height * 0.5 - 1);
     } else {
@@ -4227,18 +3720,17 @@ class LiveTextUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       ctx.rect(0.5, 0.5, width - 1, height - 1);
       ctx.fill();
     }
-
     ctx.lineWidth = 0.5;
     ctx.strokeStyle = buttonBorderColor;
     ctx.stroke();
-    ctx.font = "".concat(fontFace === "regular" ? "" : fontFace, " ").concat(fontSize, "px ").concat(fontFamily, ", sans-serif");
+    ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = active ? value ? activeTextOnColor : activeTextColor : value ? textOnColor : textColor;
     ctx.fillText(value && mode === "toggle" ? textOn : text, width * 0.5, height * 0.5);
   }
-
 }
+
 
 /***/ }),
 
@@ -4253,24 +3745,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ LiveToggleUI)
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/ui/base.tsx");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 class LiveToggleUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
-
-    _defineProperty(this, "className", "live-toggle");
-
-    _defineProperty(this, "handlePointerDown", () => {
+    this.className = "live-toggle";
+    this.handlePointerDown = () => {
       this.setValueToOutput(1 - +!!this.state.value);
-    });
+    };
   }
-
   paint() {
     const {
-      // width,
-      // height,
       active,
       focus,
       bgColor,
@@ -4282,7 +3767,8 @@ class LiveToggleUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       value
     } = this.state;
     const ctx = this.ctx;
-    if (!ctx) return;
+    if (!ctx)
+      return;
     const borderWidth = 1;
     const [width, height] = this.fullSize();
     ctx.clearRect(0, 0, width, height);
@@ -4296,10 +3782,9 @@ class LiveToggleUI extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     ctx.strokeStyle = buttonBorderColor;
     ctx.stroke();
   }
-
 }
+LiveToggleUI.defaultSize = [30, 30];
 
-_defineProperty(LiveToggleUI, "defaultSize", [30, 30]);
 
 /***/ }),
 
@@ -4309,7 +3794,7 @@ _defineProperty(LiveToggleUI, "defaultSize", [30, 30]);
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-live","version":"1.0.0","description":"The Live UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-live","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"0.0.8","@types/react":"^17.0.18","@types/react-dom":"^17.0.9","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","react":"^17.0.2","react-dom":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"},"dependencies":{}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-live","version":"1.0.0","description":"The Live UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-live","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.7.2"}}');
 
 /***/ })
 
@@ -4438,6 +3923,7 @@ __webpack_require__.r(__webpack_exports__);
   "meter~": _objects_meter__WEBPACK_IMPORTED_MODULE_7__.default,
   "gain~": _objects_gain__WEBPACK_IMPORTED_MODULE_8__.default
 }));
+
 })();
 
 var __webpack_export_target__ = exports;

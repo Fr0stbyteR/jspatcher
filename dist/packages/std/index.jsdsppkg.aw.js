@@ -1,1784 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/index.ts":
-/*!**********************!*\
-  !*** ./src/index.ts ***!
-  \**********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "name": () => (/* binding */ name),
-/* harmony export */   "author": () => (/* binding */ author),
-/* harmony export */   "license": () => (/* binding */ license),
-/* harmony export */   "keywords": () => (/* binding */ keywords),
-/* harmony export */   "version": () => (/* binding */ version),
-/* harmony export */   "description": () => (/* binding */ description),
-/* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, '');
-const {
-  author,
-  license,
-  keywords,
-  version,
-  description,
-  jspatcher
-} = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_objectSpread({
-  name,
-  author,
-  license,
-  keywords,
-  version,
-  description
-}, jspatcher));
-
-/***/ }),
-
-/***/ "./src/objects/_.ts":
-/*!**************************!*\
-  !*** ./src/objects/_.ts ***!
-  \**************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ _)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class _ extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "state", {
-      value: undefined
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-
-    const handleArgs = args => this.setState({
-      value: args[0]
-    });
-
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 1;
-    });
-    this.on("updateArgs", handleArgs);
-    this.on("updateState", _ref => {
-      let {
-        value
-      } = _ref;
-      this.setState({
-        value
-      });
-      this.outlet(0, this.state.value);
-    });
-    this.on("postInit", () => {
-      handleArgs(this.args);
-    });
-    this.on("inlet", _ref2 => {
-      let {
-        data,
-        inlet
-      } = _ref2;
-
-      if (inlet === 0) {
-        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
-          this.setState({
-            value: data
-          });
-        }
-
-        this.outlet(0, this.state.value);
-      } else if (inlet === 1) {
-        this.setState({
-          value: data
-        });
-      }
-    });
-  }
-
-}
-
-_defineProperty(_, "description", "Store anything");
-
-_defineProperty(_, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Bang to output stored value, anything to set the value then output it."
-}, {
-  isHot: false,
-  type: "anything",
-  description: "Anything to set the value."
-}]);
-
-_defineProperty(_, "outlets", [{
-  type: "anything",
-  description: "Value"
-}]);
-
-_defineProperty(_, "args", [{
-  type: "anything",
-  optional: true,
-  description: "Initial value"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/bang.ts":
-/*!*****************************!*\
-  !*** ./src/objects/bang.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ bang)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class bang extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 1;
-    });
-    this.on("inlet", _ref => {
-      let {
-        inlet
-      } = _ref;
-      if (inlet === 0) this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
-    });
-  }
-
-}
-
-_defineProperty(bang, "description", "Transform to bang");
-
-_defineProperty(bang, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Anything to transform to a bang"
-}]);
-
-_defineProperty(bang, "outlets", [{
-  type: "bang",
-  description: "Bang when inlet"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/base.ts":
-/*!*****************************!*\
-  !*** ./src/objects/base.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ StdObject)
-/* harmony export */ });
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class StdObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {}
-
-_defineProperty(StdObject, "package", _index__WEBPACK_IMPORTED_MODULE_0__.name);
-
-_defineProperty(StdObject, "author", _index__WEBPACK_IMPORTED_MODULE_0__.author);
-
-_defineProperty(StdObject, "version", _index__WEBPACK_IMPORTED_MODULE_0__.version);
-
-_defineProperty(StdObject, "description", _index__WEBPACK_IMPORTED_MODULE_0__.description);
-
-/***/ }),
-
-/***/ "./src/objects/call.ts":
-/*!*****************************!*\
-  !*** ./src/objects/call.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ call)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class call extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      instance: undefined,
-      inputs: [],
-      result: null
-    });
-
-    _defineProperty(this, "initialInlets", 1);
-
-    _defineProperty(this, "initialOutlets", 2);
-
-    _defineProperty(this, "callback", () => this.outletAll([this._.result, this._.instance, ...this._.inputs]));
-  }
-
-  subscribe() {
-    super.subscribe();
-
-    const handleArgs = args => {
-      this._.inputs = args.slice(1);
-      const argsCount = Math.max(args.length - 1, ~~+this.getProp("args"));
-      this.inlets = Math.max(1, this.initialInlets + argsCount);
-      this.outlets = this.initialOutlets + argsCount;
-    };
-
-    const handleProps = props => {
-      if (props.args && typeof props.args === "number" && props.args >= 0) {
-        const argsCount = Math.max(this.box.args.length - 1, ~~props.args);
-        this.inlets = Math.max(1, this.initialInlets + argsCount);
-        this.outlets = this.initialOutlets + argsCount;
-      }
-    };
-
-    this.on("postInit", () => {
-      if (this.args.length) handleArgs(this.args);
-      if (this.props) handleProps(this.props);
-      if (this.inlets < this.initialInlets) this.inlets = this.initialInlets;
-      if (this.outlets < this.initialOutlets) this.outlets = this.initialOutlets;
-    });
-    this.on("updateArgs", handleArgs);
-    this.on("updateProps", handleProps);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this._.instance = data;
-        if (this.execute()) this.output();
-      } else {
-        this._.inputs[inlet - 1] = data;
-      }
-    });
-  }
-
-  execute() {
-    const m = this.box.args[0];
-
-    try {
-      this._.result = this._.instance[m](...this._.inputs);
-      return true;
-    } catch (e) {
-      this.error(e);
-      return false;
-    }
-  }
-
-  output() {
-    if (this._.result instanceof Promise && !this.getProp("sync")) {
-      this.loading = true;
-
-      this._.result.then(r => {
-        this.loading = false;
-        this._.result = r;
-        this.callback();
-      }, r => {
-        this.loading = false;
-        this.error(r);
-      });
-
-      return this;
-    }
-
-    return this.callback();
-  }
-
-  set loading(loading) {
-    this.updateUI({
-      loading
-    });
-  }
-
-}
-
-_defineProperty(call, "description", "Call a method of current object");
-
-_defineProperty(call, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Instance to read"
-}, {
-  isHot: false,
-  type: "anything",
-  varLength: true,
-  description: "Method argument"
-}]);
-
-_defineProperty(call, "outlets", [{
-  type: "anything",
-  description: "Method return value"
-}, {
-  type: "anything",
-  description: "Instance bypass"
-}, {
-  type: "anything",
-  varLength: true,
-  description: "Argument after method called"
-}]);
-
-_defineProperty(call, "args", [{
-  type: "string",
-  optional: false,
-  description: "Method name"
-}, {
-  type: "anything",
-  optional: true,
-  varLength: true,
-  description: "Set arguments while loaded"
-}]);
-
-_defineProperty(call, "props", {
-  args: {
-    type: "number",
-    default: 0,
-    description: "arguments count for method"
-  },
-  sync: {
-    type: "boolean",
-    default: false,
-    description: "If true and in case the result is a Promise, instead of waiting for result, will output the Promise object"
-  }
-});
-
-/***/ }),
-
-/***/ "./src/objects/dget.ts":
-/*!*****************************!*\
-  !*** ./src/objects/dget.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ dget)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class dget extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      keys: []
-    });
-
-    _defineProperty(this, "resetIO", () => {
-      const {
-        args
-      } = this.box;
-      this._.keys = args.slice();
-      this.inlets = 1 + args.length;
-      this.outlets = args.length;
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("postInit", this.resetIO);
-    this.on("updateArgs", this.resetIO);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        let v = data;
-
-        for (let i = 0; i < this._.keys.length; i++) {
-          const key = this._.keys[i];
-
-          if (typeof key === "string" || typeof key === "number") {
-            try {
-              v = v[key];
-            } catch (e) {
-              this.error(e.message);
-              return;
-            }
-          }
-        }
-
-        this.outlet(0, v);
-      } else {
-        if (typeof data === "string" || typeof data === "number") this._.keys[inlet - 1] = data;else this.error("Key should be a number or a string");
-      }
-    });
-  }
-
-}
-
-_defineProperty(dget, "description", "Get a deep property of incoming object");
-
-_defineProperty(dget, "inlets", [{
-  isHot: true,
-  type: "object",
-  description: "Object to get a property"
-}, {
-  isHot: false,
-  type: "string",
-  varLength: true,
-  description: "Key / name of the property (recursive)"
-}]);
-
-_defineProperty(dget, "outlets", [{
-  type: "anything",
-  varLength: true,
-  description: "Value got"
-}]);
-
-_defineProperty(dget, "args", [{
-  type: "anything",
-  optional: false,
-  varLength: true,
-  description: "Initial key of the property (recursive)"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/for-in.ts":
-/*!*******************************!*\
-  !*** ./src/objects/for-in.ts ***!
-  \*******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ ForIn)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class ForIn extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      buffer: this.args[0]
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 3;
-    });
-    this.on("updateArgs", args => this._.buffer = args[0]);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this._.buffer = data;
-
-        for (const key in this._.buffer) {
-          this.outletAll([, key, this._.buffer[key]]);
-        }
-
-        this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
-      } else if (inlet === 1) {
-        this._.buffer = data;
-      }
-    });
-  }
-
-}
-
-_defineProperty(ForIn, "description", "Object key-value iterator");
-
-_defineProperty(ForIn, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Iterate input, bang to redo"
-}, {
-  isHot: false,
-  type: "object",
-  description: "Set the iteration object"
-}]);
-
-_defineProperty(ForIn, "outlets", [{
-  type: "bang",
-  description: "Bang when finished"
-}, {
-  type: "anything",
-  description: "Key"
-}, {
-  type: "anything",
-  description: "Value"
-}]);
-
-_defineProperty(ForIn, "args", [{
-  type: "object",
-  optional: true,
-  description: "Initial object to iterate"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/for.ts":
-/*!****************************!*\
-  !*** ./src/objects/for.ts ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ For)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class For extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      start: +this.args[0] || 0,
-      end: +this.args[1] || 0,
-      step: +this.args[2] || 1
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 4;
-      this.outlets = 2;
-    });
-    this.on("updateArgs", args => {
-      this._.start = +args[0] || 0;
-      this._.end = +args[1] || 0;
-      this._.step = +args[2] || 1;
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
-          const {
-            start,
-            end,
-            step
-          } = this._;
-          const times = (end - start) / step;
-
-          if (!isFinite(times) || times < 0) {
-            this.error("Infinite loop from ".concat(start, " to ").concat(end, " with step ").concat(step, "."));
-            return;
-          }
-
-          for (let i = start; i < end; i += step) {
-            this.outlet(1, i);
-          }
-
-          this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
-        }
-      } else if (inlet === 1) this._.start = +data;else if (inlet === 2) this._.end = +data;else if (inlet === 3) this._.step = +data;
-    });
-  }
-
-}
-
-_defineProperty(For, "description", "Number iterator");
-
-_defineProperty(For, "inlets", [{
-  isHot: true,
-  type: "bang",
-  description: "Do iterations"
-}, {
-  isHot: false,
-  type: "number",
-  description: "Set the starting point"
-}, {
-  isHot: false,
-  type: "number",
-  description: "Set the end point (excluded)"
-}, {
-  isHot: false,
-  type: "number",
-  description: "Set the step"
-}]);
-
-_defineProperty(For, "outlets", [{
-  type: "bang",
-  description: "Bang when finished"
-}, {
-  type: "number",
-  description: "Output all iterations one by one"
-}]);
-
-_defineProperty(For, "args", [{
-  type: "number",
-  optional: false,
-  description: "The starting point"
-}, {
-  type: "number",
-  optional: false,
-  description: "The end point (excluded)"
-}, {
-  type: "number",
-  optional: true,
-  default: 1,
-  description: "The step"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/gate.ts":
-/*!*****************************!*\
-  !*** ./src/objects/gate.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ gate)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class gate extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      pass: this.args[0] === "undefined" || this.args[0] === "" || !!this.args[0]
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 1;
-    });
-    this.on("updateArgs", args => {
-      this._.pass = args[0] === "undefined" || args[0] === "" || !!args[0];
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if (this._.pass) this.outlet(0, data);
-      } else if (inlet === 1) {
-        this._.pass = !!data;
-      }
-    });
-  }
-
-}
-
-_defineProperty(gate, "description", "Bypass or block incoming data");
-
-_defineProperty(gate, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Anything to bypass"
-}, {
-  isHot: false,
-  type: "anything",
-  description: "Test, falsable to block"
-}]);
-
-_defineProperty(gate, "outlets", [{
-  type: "anything",
-  description: "Anything bypass"
-}]);
-
-_defineProperty(gate, "args", [{
-  type: "anything",
-  optional: true,
-  default: true,
-  description: "default state"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/get.ts":
-/*!****************************!*\
-  !*** ./src/objects/get.ts ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ get)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class get extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      keys: []
-    });
-
-    _defineProperty(this, "resetIO", () => {
-      const {
-        args
-      } = this.box;
-      this._.keys = args.slice();
-      this.inlets = 1 + args.length;
-      this.outlets = args.length;
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("postInit", this.resetIO);
-    this.on("updateArgs", this.resetIO);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        for (let i = this._.keys.length - 1; i >= 0; i--) {
-          const key = this._.keys[i];
-
-          if (typeof key === "string" || typeof key === "number") {
-            try {
-              this.outlet(i, data[key]);
-            } catch (e) {
-              this.error(e.message);
-            }
-          }
-        }
-      } else {
-        if (typeof data === "string" || typeof data === "number") this._.keys[inlet - 1] = data;else this.error("Key should be a number or a string");
-      }
-    });
-  }
-
-}
-
-_defineProperty(get, "description", "Get properties of incoming object");
-
-_defineProperty(get, "inlets", [{
-  isHot: true,
-  type: "object",
-  description: "Object to get a property"
-}, {
-  isHot: false,
-  type: "string",
-  varLength: true,
-  description: "Key / name of the property"
-}]);
-
-_defineProperty(get, "outlets", [{
-  type: "anything",
-  varLength: true,
-  description: "Value got"
-}]);
-
-_defineProperty(get, "args", [{
-  type: "anything",
-  optional: false,
-  varLength: true,
-  description: "Initial key of the property"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/if.ts":
-/*!***************************!*\
-  !*** ./src/objects/if.ts ***!
-  \***************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ If)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class If extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 2;
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-      if (inlet === 0) this.outlet(+!data, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
-    });
-  }
-
-}
-
-_defineProperty(If, "description", "Output a bang on true / false");
-
-_defineProperty(If, "inlets", [{
-  isHot: true,
-  type: "boolean",
-  description: "True for a bang to left outlet, false for right"
-}]);
-
-_defineProperty(If, "outlets", [{
-  type: "bang",
-  description: "True?"
-}, {
-  type: "bang",
-  description: "False?"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/lambda.ts":
-/*!*******************************!*\
-  !*** ./src/objects/lambda.ts ***!
-  \*******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ lambda)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    var _this;
-
-    super(...arguments);
-    _this = this;
-
-    _defineProperty(this, "_", {
-      argsCount: typeof this.args[0] === "number" && this.args[0] >= 0 ? ~~this.args[0] : 0,
-      result: undefined
-    });
-
-    _defineProperty(this, "lambda", function () {
-      _this._.result = undefined;
-
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      if (_this._.argsCount === 0) {
-        _this.outletAll([, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang(), args]);
-      } else {
-        _this.outletAll([, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang(), ...args]);
-      }
-
-      return _this._.result; // After outlet, result will be received.
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 2;
-      this.outlets = 2 + this._.argsCount;
-    });
-    this.on("updateArgs", args => {
-      if (typeof args[0] === "number" && args[0] >= 0) {
-        this._.argsCount = ~~args[0];
-        this.outlets = 2 + this._.argsCount;
-      }
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) this.outlet(0, this.lambda);
-      } else if (inlet === 1) {
-        this._.result = data;
-      }
-    });
-  }
-
-}
-
-_defineProperty(lambda, "description", "Generate anonymous function, output args when called");
-
-_defineProperty(lambda, "inlets", [{
-  isHot: true,
-  type: "bang",
-  description: "Output anonymous function"
-}, {
-  isHot: false,
-  type: "anything",
-  description: "Result of the anonymous function"
-}]);
-
-_defineProperty(lambda, "outlets", [{
-  type: "function",
-  description: "Anonymous function"
-}, {
-  type: "bang",
-  description: "bang while lambda is called"
-}, {
-  type: "anything",
-  varLength: true,
-  description: "If args=0, outlet args as array, else argument of current index"
-}]);
-
-_defineProperty(lambda, "args", [{
-  type: "number",
-  optional: true,
-  default: 0,
-  description: "Arguments count"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/loadbang.ts":
-/*!*********************************!*\
-  !*** ./src/objects/loadbang.ts ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ loadbang)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class loadbang extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 1;
-      this.patcher.on("postInited", () => this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang()));
-    });
-    this.on("inlet", _ref => {
-      let {
-        inlet
-      } = _ref;
-      if (inlet === 0) this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
-    });
-  }
-
-}
-
-_defineProperty(loadbang, "description", "Bang when patcher is loaded");
-
-_defineProperty(loadbang, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Anything to transform to a bang"
-}]);
-
-_defineProperty(loadbang, "outlets", [{
-  type: "bang",
-  description: "Bang when inlet"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/obj.ts":
-/*!****************************!*\
-  !*** ./src/objects/obj.ts ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ obj)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class obj extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      obj: {}
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("updateArgs", args => {
-      this.inlets = args.length + 1;
-    });
-    this.on("postInit", () => {
-      this.inlets = this.args.length + 1;
-      this.outlets = 1;
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        this.outlet(0, this._.obj);
-        this._.obj = {};
-      } else {
-        const propKey = this.box.args[inlet - 1];
-        this._.obj[propKey] = data;
-      }
-    });
-  }
-
-}
-
-_defineProperty(obj, "description", "Construct an object with various properties");
-
-_defineProperty(obj, "inlets", [{
-  isHot: true,
-  type: "object",
-  description: "Bang to output current object and initialize a new one"
-}, {
-  isHot: false,
-  type: "anything",
-  varLength: true,
-  description: "Value to set to the property"
-}]);
-
-_defineProperty(obj, "outlets", [{
-  type: "object",
-  description: "Created object"
-}]);
-
-_defineProperty(obj, "args", [{
-  type: "anything",
-  optional: true,
-  varLength: true,
-  description: "Key / name of the property"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/print.ts":
-/*!******************************!*\
-  !*** ./src/objects/print.ts ***!
-  \******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ print)
-/* harmony export */ });
-/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! util */ "./node_modules/util/util.js");
-/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(util__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-class print extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
-  get title() {
-    return "".concat(this.args[0] || "Print");
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 0;
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data)) {
-          this.patcher.newLog("none", this.title, "Bang", this.box);
-        } else {
-          this.patcher.newLog("none", this.title, typeof data === "string" ? data : util__WEBPACK_IMPORTED_MODULE_0__.inspect(data), this.box);
-        }
-      }
-    });
-  }
-
-}
-
-_defineProperty(print, "description", "Print to console");
-
-_defineProperty(print, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Anything to stringify"
-}]);
-
-_defineProperty(print, "args", [{
-  type: "string",
-  optional: true,
-  default: "Print",
-  description: "Title"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/sel.ts":
-/*!****************************!*\
-  !*** ./src/objects/sel.ts ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ sel)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class sel extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      array: []
-    });
-
-    _defineProperty(this, "resetIO", () => {
-      const {
-        args
-      } = this.box;
-      const testsCount = args.length;
-      const [inletMeta0, inletMeta1] = sel.meta.inlets;
-      const [outletMeta0, outletMeta1] = sel.meta.inlets;
-      const {
-        meta
-      } = this;
-      meta.inlets = [inletMeta0];
-      meta.outlets = [];
-
-      for (let i = 0; i < testsCount; i++) {
-        meta.outlets[i] = _objectSpread({}, outletMeta0);
-        meta.outlets[i].description += " index ".concat(i);
-        meta.inlets[i + 1] = _objectSpread({}, inletMeta1);
-        meta.inlets[i + 1].description += " index ".concat(i);
-      }
-
-      meta.outlets[testsCount] = outletMeta1;
-      this.setMeta(meta);
-      this._.array = args.slice();
-      this.inlets = 1 + testsCount;
-      this.outlets = testsCount + 1;
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("postInit", this.resetIO);
-    this.on("updateArgs", this.resetIO);
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        const foundIndex = this._.array.indexOf(data);
-
-        if (foundIndex === -1) this.outlet(this.outlets - 1, data);else this.outlet(foundIndex, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
-      } else {
-        this._.array[inlet - 1] = data;
-      }
-    });
-  }
-
-}
-
-_defineProperty(sel, "description", "Output a bang on a matched inlet");
-
-_defineProperty(sel, "inlets", [{
-  isHot: true,
-  type: "anything",
-  varLength: false,
-  description: "Test for match"
-}, {
-  isHot: false,
-  type: "anything",
-  varLength: true,
-  description: "Set value for match"
-}]);
-
-_defineProperty(sel, "outlets", [{
-  type: "bang",
-  varLength: false,
-  description: "Bang if match"
-}, {
-  type: "anything",
-  varLength: false,
-  description: "Bypass if not matched"
-}]);
-
-_defineProperty(sel, "args", [{
-  type: "anything",
-  optional: false,
-  varLength: true,
-  description: "Initial value for match"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/set.ts":
-/*!****************************!*\
-  !*** ./src/objects/set.ts ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ set)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class set extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      key: typeof this.args[0] === "string" || typeof this.args[0] === "number" ? this.args[0] : undefined,
-      value: this.args[1]
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 3;
-      this.outlets = 1;
-    });
-    this.on("updateArgs", args => {
-      if (typeof args[0] === "string" || typeof args[0] === "number") this._.key = args[0];
-      if (typeof args[1] !== "undefined") this._.value = args[1];
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if (typeof this._.key === "string" || typeof this._.key === "number") {
-          try {
-            data[this._.key] = this._.value;
-            this.outlet(0, data);
-          } catch (e) {
-            this.error(e.message);
-          }
-        } else {
-          this.error("Key not defined");
-        }
-      } else if (inlet === 1) {
-        if (typeof data === "string" || typeof data === "number") this._.key = data;else this.error("Key should be a number or a string");
-      } else if (inlet === 2) {
-        this._.value = data;
-      }
-    });
-  }
-
-}
-
-_defineProperty(set, "description", "Set a property of incoming object");
-
-_defineProperty(set, "inlets", [{
-  isHot: true,
-  type: "object",
-  description: "Object to set a property"
-}, {
-  isHot: false,
-  type: "string",
-  description: "Key / name of the property"
-}, {
-  isHot: false,
-  type: "anything",
-  description: "Value to set to the property"
-}]);
-
-_defineProperty(set, "outlets", [{
-  type: "anything",
-  description: "Object bypass"
-}]);
-
-_defineProperty(set, "args", [{
-  type: "anything",
-  optional: false,
-  description: "Initial key of the property"
-}, {
-  type: "anything",
-  optional: true,
-  default: undefined,
-  description: "Initial value of the property"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/thispatcher.ts":
-/*!************************************!*\
-  !*** ./src/objects/thispatcher.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ thispatcher)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class thispatcher extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 1;
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        this.outlet(0, this.patcher);
-      }
-    });
-  }
-
-}
-
-_defineProperty(thispatcher, "description", "Current patcher instance");
-
-_defineProperty(thispatcher, "inlets", [{
-  isHot: true,
-  type: "bang",
-  description: "Bang to output patcher instance"
-}]);
-
-_defineProperty(thispatcher, "outlets", [{
-  type: "object",
-  description: "Patcher instance"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/unloadbang.ts":
-/*!***********************************!*\
-  !*** ./src/objects/unloadbang.ts ***!
-  \***********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ unloadbang)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class unloadbang extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 1;
-      this.patcher.on("unload", () => this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang()));
-    });
-    this.on("inlet", _ref => {
-      let {
-        inlet
-      } = _ref;
-      if (inlet === 0) this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
-    });
-  }
-
-}
-
-_defineProperty(unloadbang, "description", "Bang when patcher will be unloaded");
-
-_defineProperty(unloadbang, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Anything to transform to a bang"
-}]);
-
-_defineProperty(unloadbang, "outlets", [{
-  type: "bang",
-  description: "Bang when inlet"
-}]);
-
-/***/ }),
-
-/***/ "./src/objects/v.ts":
-/*!**************************!*\
-  !*** ./src/objects/v.ts ***!
-  \**************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ v)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    var _this$box$args$;
-
-    super(...arguments);
-
-    _defineProperty(this, "state", {
-      value: this.args[1]
-    });
-
-    _defineProperty(this, "_", {
-      key: (_this$box$args$ = this.box.args[0]) === null || _this$box$args$ === void 0 ? void 0 : _this$box$args$.toString(),
-      sharedItem: null
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-
-    const handleFilePathChanged = () => {
-      var _this$_$sharedItem;
-
-      this._.key = (_this$_$sharedItem = this._.sharedItem) === null || _this$_$sharedItem === void 0 ? void 0 : _this$_$sharedItem.projectPath;
-    };
-
-    const handleSaved = e => {
-      var _this$_$sharedItem2;
-
-      if (e === this) return;
-      this.setState({
-        value: (_this$_$sharedItem2 = this._.sharedItem) === null || _this$_$sharedItem2 === void 0 ? void 0 : _this$_$sharedItem2.data
-      });
-    };
-
-    const subscribeItem = async () => {
-      const file = this._.sharedItem;
-      if (!file) return;
-      await file.addObserver(this.id);
-      file.on("destroyed", reload);
-      file.on("nameChanged", handleFilePathChanged);
-      file.on("pathChanged", handleFilePathChanged);
-      file.on("saved", handleSaved);
-    };
-
-    const unsubscribeItem = async () => {
-      const file = this._.sharedItem;
-      if (!file) return;
-      file.off("destroyed", reload);
-      file.off("nameChanged", handleFilePathChanged);
-      file.off("pathChanged", handleFilePathChanged);
-      file.off("saved", handleSaved);
-      await file.removeObserver(this.id);
-    };
-
-    const reload = async () => {
-      await unsubscribeItem();
-      const {
-        key
-      } = this._;
-
-      try {
-        const {
-          item
-        } = await this.getSharedItem(key, "unknown", () => this.state.value);
-        this._.sharedItem = item;
-        this.setState({
-          value: item.data
-        });
-      } catch (error) {
-        this.error(error);
-      } finally {
-        await subscribeItem();
-      }
-    };
-
-    const handleArgs = async args => {
-      var _args$;
-
-      const key = (_args$ = args[0]) === null || _args$ === void 0 ? void 0 : _args$.toString();
-
-      if (key !== this._.key) {
-        this._.key = key;
-        await reload();
-      } else {
-        if (typeof args[1] !== "undefined") {
-          var _this$_$sharedItem3;
-
-          this.setState({
-            value: args[1]
-          });
-          (_this$_$sharedItem3 = this._.sharedItem) === null || _this$_$sharedItem3 === void 0 ? void 0 : _this$_$sharedItem3.save(this.state.value, this);
-        }
-      }
-    };
-
-    this.on("preInit", () => {
-      this.inlets = 3;
-      this.outlets = 1;
-    });
-    this.on("updateArgs", handleArgs);
-    this.on("updateState", _ref => {
-      var _this$_$sharedItem4;
-
-      let {
-        value
-      } = _ref;
-      this.setState({
-        value
-      });
-      (_this$_$sharedItem4 = this._.sharedItem) === null || _this$_$sharedItem4 === void 0 ? void 0 : _this$_$sharedItem4.save(this.state.value, this);
-      this.outlet(0, this.state.value);
-    });
-    this.on("postInit", reload);
-    this.on("inlet", _ref2 => {
-      let {
-        data,
-        inlet
-      } = _ref2;
-
-      if (inlet === 0) {
-        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
-          var _this$_$sharedItem5;
-
-          this.setState({
-            value: data
-          });
-          (_this$_$sharedItem5 = this._.sharedItem) === null || _this$_$sharedItem5 === void 0 ? void 0 : _this$_$sharedItem5.save(this.state.value, this);
-        }
-
-        this.outlet(0, this.state.value);
-      } else if (inlet === 1) {
-        var _this$_$sharedItem6;
-
-        this.setState({
-          value: data
-        });
-        (_this$_$sharedItem6 = this._.sharedItem) === null || _this$_$sharedItem6 === void 0 ? void 0 : _this$_$sharedItem6.save(this.state.value, this);
-      } else if (inlet === 2) {
-        if (typeof data === "string" || typeof data === "number") {
-          const key = data.toString() || "";
-
-          if (key !== this._.key) {
-            this._.key = key;
-            reload();
-          }
-        }
-      }
-    });
-    this.on("destroy", unsubscribeItem);
-  }
-
-}
-
-_defineProperty(v, "description", "Store anything as named sharable variable");
-
-_defineProperty(v, "inlets", [{
-  isHot: true,
-  type: "anything",
-  description: "Bang to output stored value, anything to set the value then output it."
-}, {
-  isHot: false,
-  type: "anything",
-  description: "Anything to set the value."
-}, {
-  isHot: false,
-  type: "anything",
-  description: "Set variable name."
-}]);
-
-_defineProperty(v, "outlets", [{
-  type: "anything",
-  description: "Value"
-}]);
-
-_defineProperty(v, "args", [{
-  type: "anything",
-  optional: true,
-  description: "Variable name"
-}, {
-  type: "anything",
-  optional: true,
-  description: "Initial value"
-}]);
-
-/***/ }),
-
-/***/ "./src/package-info.ts":
-/*!*****************************!*\
-  !*** ./src/package-info.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-var _package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../package.json */ "./package.json");
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/ (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(_package_json__WEBPACK_IMPORTED_MODULE_0__, 2))));
-
-/***/ }),
-
-/***/ "./src/sdk.ts":
-/*!********************!*\
-  !*** ./src/sdk.ts ***!
-  \********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "React": () => (/* binding */ React),
-/* harmony export */   "Patcher": () => (/* binding */ Patcher),
-/* harmony export */   "Box": () => (/* binding */ Box),
-/* harmony export */   "Line": () => (/* binding */ Line),
-/* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
-/* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
-/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
-/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
-/* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
-/* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
-/* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
-/* harmony export */   "Bang": () => (/* binding */ Bang),
-/* harmony export */   "isBang": () => (/* binding */ isBang)
-/* harmony export */ });
-const sdk = globalThis.jspatcherEnv.sdk;
-const {
-  React,
-  Patcher,
-  Box,
-  Line,
-  BaseObject,
-  BaseUI,
-  DefaultObject,
-  DefaultUI,
-  generateRemotedObject,
-  generateDefaultObject,
-  generateRemoteObject,
-  Bang,
-  isBang
-} = sdk;
-
-/***/ }),
-
 /***/ "./node_modules/call-bind/callBound.js":
 /*!*********************************************!*\
   !*** ./node_modules/call-bind/callBound.js ***!
@@ -1859,6 +81,1477 @@ if ($defineProperty) {
 } else {
 	module.exports.apply = applyBind;
 }
+
+
+/***/ }),
+
+/***/ "./src/index.ts":
+/*!**********************!*\
+  !*** ./src/index.ts ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "name": () => (/* binding */ name),
+/* harmony export */   "author": () => (/* binding */ author),
+/* harmony export */   "license": () => (/* binding */ license),
+/* harmony export */   "keywords": () => (/* binding */ keywords),
+/* harmony export */   "version": () => (/* binding */ version),
+/* harmony export */   "description": () => (/* binding */ description),
+/* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
+
+
+/***/ }),
+
+/***/ "./src/objects/_.ts":
+/*!**************************!*\
+  !*** ./src/objects/_.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class _ extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this.state = { value: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    const handleArgs = (args) => this.setState({ value: args[0] });
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 1;
+    });
+    this.on("updateArgs", handleArgs);
+    this.on("updateState", ({ value }) => {
+      this.setState({ value });
+      this.outlet(0, this.state.value);
+    });
+    this.on("postInit", () => {
+      handleArgs(this.args);
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
+          this.setState({ value: data });
+        }
+        this.outlet(0, this.state.value);
+      } else if (inlet === 1) {
+        this.setState({ value: data });
+      }
+    });
+  }
+}
+_.description = "Store anything";
+_.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Bang to output stored value, anything to set the value then output it."
+}, {
+  isHot: false,
+  type: "anything",
+  description: "Anything to set the value."
+}];
+_.outlets = [{
+  type: "anything",
+  description: "Value"
+}];
+_.args = [{
+  type: "anything",
+  optional: true,
+  description: "Initial value"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/bang.ts":
+/*!*****************************!*\
+  !*** ./src/objects/bang.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ bang)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class bang extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+    });
+    this.on("inlet", ({ inlet }) => {
+      if (inlet === 0)
+        this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+    });
+  }
+}
+bang.description = "Transform to bang";
+bang.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Anything to transform to a bang"
+}];
+bang.outlets = [{
+  type: "bang",
+  description: "Bang when inlet"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/base.ts":
+/*!*****************************!*\
+  !*** ./src/objects/base.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ StdObject)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class StdObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {
+}
+StdObject.package = _index__WEBPACK_IMPORTED_MODULE_0__.name;
+StdObject.author = _index__WEBPACK_IMPORTED_MODULE_0__.author;
+StdObject.version = _index__WEBPACK_IMPORTED_MODULE_0__.version;
+StdObject.description = _index__WEBPACK_IMPORTED_MODULE_0__.description;
+
+
+/***/ }),
+
+/***/ "./src/objects/call.ts":
+/*!*****************************!*\
+  !*** ./src/objects/call.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ call)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class call extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { instance: void 0, inputs: [], result: null };
+    this.initialInlets = 1;
+    this.initialOutlets = 2;
+    this.callback = () => this.outletAll([this._.result, this._.instance, ...this._.inputs]);
+  }
+  subscribe() {
+    super.subscribe();
+    const handleArgs = (args) => {
+      this._.inputs = args.slice(1);
+      const argsCount = Math.max(args.length - 1, ~~+this.getProp("args"));
+      this.inlets = Math.max(1, this.initialInlets + argsCount);
+      this.outlets = this.initialOutlets + argsCount;
+    };
+    const handleProps = (props) => {
+      if (props.args && typeof props.args === "number" && props.args >= 0) {
+        const argsCount = Math.max(this.box.args.length - 1, ~~props.args);
+        this.inlets = Math.max(1, this.initialInlets + argsCount);
+        this.outlets = this.initialOutlets + argsCount;
+      }
+    };
+    this.on("postInit", () => {
+      if (this.args.length)
+        handleArgs(this.args);
+      if (this.props)
+        handleProps(this.props);
+      if (this.inlets < this.initialInlets)
+        this.inlets = this.initialInlets;
+      if (this.outlets < this.initialOutlets)
+        this.outlets = this.initialOutlets;
+    });
+    this.on("updateArgs", handleArgs);
+    this.on("updateProps", handleProps);
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this._.instance = data;
+        if (this.execute())
+          this.output();
+      } else {
+        this._.inputs[inlet - 1] = data;
+      }
+    });
+  }
+  execute() {
+    const m = this.box.args[0];
+    try {
+      this._.result = this._.instance[m](...this._.inputs);
+      return true;
+    } catch (e) {
+      this.error(e);
+      return false;
+    }
+  }
+  output() {
+    if (this._.result instanceof Promise && !this.getProp("sync")) {
+      this.loading = true;
+      this._.result.then((r) => {
+        this.loading = false;
+        this._.result = r;
+        this.callback();
+      }, (r) => {
+        this.loading = false;
+        this.error(r);
+      });
+      return this;
+    }
+    return this.callback();
+  }
+  set loading(loading) {
+    this.updateUI({ loading });
+  }
+}
+call.description = "Call a method of current object";
+call.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Instance to read"
+}, {
+  isHot: false,
+  type: "anything",
+  varLength: true,
+  description: "Method argument"
+}];
+call.outlets = [{
+  type: "anything",
+  description: "Method return value"
+}, {
+  type: "anything",
+  description: "Instance bypass"
+}, {
+  type: "anything",
+  varLength: true,
+  description: "Argument after method called"
+}];
+call.args = [{
+  type: "string",
+  optional: false,
+  description: "Method name"
+}, {
+  type: "anything",
+  optional: true,
+  varLength: true,
+  description: "Set arguments while loaded"
+}];
+call.props = {
+  args: {
+    type: "number",
+    default: 0,
+    description: "arguments count for method"
+  },
+  sync: {
+    type: "boolean",
+    default: false,
+    description: "If true and in case the result is a Promise, instead of waiting for result, will output the Promise object"
+  }
+};
+
+
+/***/ }),
+
+/***/ "./src/objects/dget.ts":
+/*!*****************************!*\
+  !*** ./src/objects/dget.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ dget)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+class dget extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { keys: [] };
+    this.resetIO = () => {
+      const { args } = this.box;
+      this._.keys = args.slice();
+      this.inlets = 1 + args.length;
+      this.outlets = args.length;
+    };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("postInit", this.resetIO);
+    this.on("updateArgs", this.resetIO);
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        let v = data;
+        for (let i = 0; i < this._.keys.length; i++) {
+          const key = this._.keys[i];
+          if (typeof key === "string" || typeof key === "number") {
+            try {
+              v = v[key];
+            } catch (e) {
+              this.error(e.message);
+              return;
+            }
+          }
+        }
+        this.outlet(0, v);
+      } else {
+        if (typeof data === "string" || typeof data === "number")
+          this._.keys[inlet - 1] = data;
+        else
+          this.error("Key should be a number or a string");
+      }
+    });
+  }
+}
+dget.description = "Get a deep property of incoming object";
+dget.inlets = [{
+  isHot: true,
+  type: "object",
+  description: "Object to get a property"
+}, {
+  isHot: false,
+  type: "string",
+  varLength: true,
+  description: "Key / name of the property (recursive)"
+}];
+dget.outlets = [{
+  type: "anything",
+  varLength: true,
+  description: "Value got"
+}];
+dget.args = [{
+  type: "anything",
+  optional: false,
+  varLength: true,
+  description: "Initial key of the property (recursive)"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/for-in.ts":
+/*!*******************************!*\
+  !*** ./src/objects/for-in.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ForIn)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class ForIn extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { buffer: this.args[0] };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 3;
+    });
+    this.on("updateArgs", (args) => this._.buffer = args[0]);
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this._.buffer = data;
+        for (const key in this._.buffer) {
+          this.outletAll([, key, this._.buffer[key]]);
+        }
+        this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+      } else if (inlet === 1) {
+        this._.buffer = data;
+      }
+    });
+  }
+}
+ForIn.description = "Object key-value iterator";
+ForIn.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Iterate input, bang to redo"
+}, {
+  isHot: false,
+  type: "object",
+  description: "Set the iteration object"
+}];
+ForIn.outlets = [{
+  type: "bang",
+  description: "Bang when finished"
+}, {
+  type: "anything",
+  description: "Key"
+}, {
+  type: "anything",
+  description: "Value"
+}];
+ForIn.args = [{
+  type: "object",
+  optional: true,
+  description: "Initial object to iterate"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/for.ts":
+/*!****************************!*\
+  !*** ./src/objects/for.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ For)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class For extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { start: +this.args[0] || 0, end: +this.args[1] || 0, step: +this.args[2] || 1 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 4;
+      this.outlets = 2;
+    });
+    this.on("updateArgs", (args) => {
+      this._.start = +args[0] || 0;
+      this._.end = +args[1] || 0;
+      this._.step = +args[2] || 1;
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
+          const { start, end, step } = this._;
+          const times = (end - start) / step;
+          if (!isFinite(times) || times < 0) {
+            this.error(`Infinite loop from ${start} to ${end} with step ${step}.`);
+            return;
+          }
+          for (let i = start; i < end; i += step) {
+            this.outlet(1, i);
+          }
+          this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+        }
+      } else if (inlet === 1)
+        this._.start = +data;
+      else if (inlet === 2)
+        this._.end = +data;
+      else if (inlet === 3)
+        this._.step = +data;
+    });
+  }
+}
+For.description = "Number iterator";
+For.inlets = [{
+  isHot: true,
+  type: "bang",
+  description: "Do iterations"
+}, {
+  isHot: false,
+  type: "number",
+  description: "Set the starting point"
+}, {
+  isHot: false,
+  type: "number",
+  description: "Set the end point (excluded)"
+}, {
+  isHot: false,
+  type: "number",
+  description: "Set the step"
+}];
+For.outlets = [{
+  type: "bang",
+  description: "Bang when finished"
+}, {
+  type: "number",
+  description: "Output all iterations one by one"
+}];
+For.args = [{
+  type: "number",
+  optional: false,
+  description: "The starting point"
+}, {
+  type: "number",
+  optional: false,
+  description: "The end point (excluded)"
+}, {
+  type: "number",
+  optional: true,
+  default: 1,
+  description: "The step"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/gate.ts":
+/*!*****************************!*\
+  !*** ./src/objects/gate.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ gate)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+class gate extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { pass: this.args[0] === "undefined" || this.args[0] === "" || !!this.args[0] };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 1;
+    });
+    this.on("updateArgs", (args) => {
+      this._.pass = args[0] === "undefined" || args[0] === "" || !!args[0];
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (this._.pass)
+          this.outlet(0, data);
+      } else if (inlet === 1) {
+        this._.pass = !!data;
+      }
+    });
+  }
+}
+gate.description = "Bypass or block incoming data";
+gate.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Anything to bypass"
+}, {
+  isHot: false,
+  type: "anything",
+  description: "Test, falsable to block"
+}];
+gate.outlets = [{
+  type: "anything",
+  description: "Anything bypass"
+}];
+gate.args = [{
+  type: "anything",
+  optional: true,
+  default: true,
+  description: "default state"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/get.ts":
+/*!****************************!*\
+  !*** ./src/objects/get.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ get)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+class get extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { keys: [] };
+    this.resetIO = () => {
+      const { args } = this.box;
+      this._.keys = args.slice();
+      this.inlets = 1 + args.length;
+      this.outlets = args.length;
+    };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("postInit", this.resetIO);
+    this.on("updateArgs", this.resetIO);
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        for (let i = this._.keys.length - 1; i >= 0; i--) {
+          const key = this._.keys[i];
+          if (typeof key === "string" || typeof key === "number") {
+            try {
+              this.outlet(i, data[key]);
+            } catch (e) {
+              this.error(e.message);
+            }
+          }
+        }
+      } else {
+        if (typeof data === "string" || typeof data === "number")
+          this._.keys[inlet - 1] = data;
+        else
+          this.error("Key should be a number or a string");
+      }
+    });
+  }
+}
+get.description = "Get properties of incoming object";
+get.inlets = [{
+  isHot: true,
+  type: "object",
+  description: "Object to get a property"
+}, {
+  isHot: false,
+  type: "string",
+  varLength: true,
+  description: "Key / name of the property"
+}];
+get.outlets = [{
+  type: "anything",
+  varLength: true,
+  description: "Value got"
+}];
+get.args = [{
+  type: "anything",
+  optional: false,
+  varLength: true,
+  description: "Initial key of the property"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/if.ts":
+/*!***************************!*\
+  !*** ./src/objects/if.ts ***!
+  \***************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ If)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class If extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 2;
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0)
+        this.outlet(+!data, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+    });
+  }
+}
+If.description = "Output a bang on true / false";
+If.inlets = [{
+  isHot: true,
+  type: "boolean",
+  description: "True for a bang to left outlet, false for right"
+}];
+If.outlets = [{
+  type: "bang",
+  description: "True?"
+}, {
+  type: "bang",
+  description: "False?"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/lambda.ts":
+/*!*******************************!*\
+  !*** ./src/objects/lambda.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ lambda)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { argsCount: typeof this.args[0] === "number" && this.args[0] >= 0 ? ~~this.args[0] : 0, result: void 0 };
+    this.lambda = (...args) => {
+      this._.result = void 0;
+      if (this._.argsCount === 0) {
+        this.outletAll([, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang(), args]);
+      } else {
+        this.outletAll([, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang(), ...args]);
+      }
+      return this._.result;
+    };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 2 + this._.argsCount;
+    });
+    this.on("updateArgs", (args) => {
+      if (typeof args[0] === "number" && args[0] >= 0) {
+        this._.argsCount = ~~args[0];
+        this.outlets = 2 + this._.argsCount;
+      }
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data))
+          this.outlet(0, this.lambda);
+      } else if (inlet === 1) {
+        this._.result = data;
+      }
+    });
+  }
+}
+lambda.description = "Generate anonymous function, output args when called";
+lambda.inlets = [{
+  isHot: true,
+  type: "bang",
+  description: "Output anonymous function"
+}, {
+  isHot: false,
+  type: "anything",
+  description: "Result of the anonymous function"
+}];
+lambda.outlets = [{
+  type: "function",
+  description: "Anonymous function"
+}, {
+  type: "bang",
+  description: "bang while lambda is called"
+}, {
+  type: "anything",
+  varLength: true,
+  description: "If args=0, outlet args as array, else argument of current index"
+}];
+lambda.args = [{
+  type: "number",
+  optional: true,
+  default: 0,
+  description: "Arguments count"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/loadbang.ts":
+/*!*********************************!*\
+  !*** ./src/objects/loadbang.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ loadbang)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class loadbang extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+      this.patcher.on("postInited", () => this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang()));
+    });
+    this.on("inlet", ({ inlet }) => {
+      if (inlet === 0)
+        this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+    });
+  }
+}
+loadbang.description = "Bang when patcher is loaded";
+loadbang.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Anything to transform to a bang"
+}];
+loadbang.outlets = [{
+  type: "bang",
+  description: "Bang when inlet"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/obj.ts":
+/*!****************************!*\
+  !*** ./src/objects/obj.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ obj)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+class obj extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { obj: {} };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("updateArgs", (args) => {
+      this.inlets = args.length + 1;
+    });
+    this.on("postInit", () => {
+      this.inlets = this.args.length + 1;
+      this.outlets = 1;
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        this.outlet(0, this._.obj);
+        this._.obj = {};
+      } else {
+        const propKey = this.box.args[inlet - 1];
+        this._.obj[propKey] = data;
+      }
+    });
+  }
+}
+obj.description = "Construct an object with various properties";
+obj.inlets = [{
+  isHot: true,
+  type: "object",
+  description: "Bang to output current object and initialize a new one"
+}, {
+  isHot: false,
+  type: "anything",
+  varLength: true,
+  description: "Value to set to the property"
+}];
+obj.outlets = [{
+  type: "object",
+  description: "Created object"
+}];
+obj.args = [{
+  type: "anything",
+  optional: true,
+  varLength: true,
+  description: "Key / name of the property"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/print.ts":
+/*!******************************!*\
+  !*** ./src/objects/print.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ print)
+/* harmony export */ });
+/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! util */ "./node_modules/util/util.js");
+/* harmony import */ var util__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(util__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+
+class print extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
+  get title() {
+    return `${this.args[0] || "Print"}`;
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 0;
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data)) {
+          this.patcher.newLog("none", this.title, "Bang", this.box);
+        } else {
+          this.patcher.newLog("none", this.title, typeof data === "string" ? data : util__WEBPACK_IMPORTED_MODULE_0__.inspect(data), this.box);
+        }
+      }
+    });
+  }
+}
+print.description = "Print to console";
+print.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Anything to stringify"
+}];
+print.args = [{
+  type: "string",
+  optional: true,
+  default: "Print",
+  description: "Title"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/sel.ts":
+/*!****************************!*\
+  !*** ./src/objects/sel.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ sel)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+
+
+const _sel = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { array: [] };
+    this.resetIO = () => {
+      const { args } = this.box;
+      const testsCount = args.length;
+      const [inletMeta0, inletMeta1] = _sel.meta.inlets;
+      const [outletMeta0, outletMeta1] = _sel.meta.inlets;
+      const { meta } = this;
+      meta.inlets = [inletMeta0];
+      meta.outlets = [];
+      for (let i = 0; i < testsCount; i++) {
+        meta.outlets[i] = __spreadValues({}, outletMeta0);
+        meta.outlets[i].description += ` index ${i}`;
+        meta.inlets[i + 1] = __spreadValues({}, inletMeta1);
+        meta.inlets[i + 1].description += ` index ${i}`;
+      }
+      meta.outlets[testsCount] = outletMeta1;
+      this.setMeta(meta);
+      this._.array = args.slice();
+      this.inlets = 1 + testsCount;
+      this.outlets = testsCount + 1;
+    };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("postInit", this.resetIO);
+    this.on("updateArgs", this.resetIO);
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        const foundIndex = this._.array.indexOf(data);
+        if (foundIndex === -1)
+          this.outlet(this.outlets - 1, data);
+        else
+          this.outlet(foundIndex, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+      } else {
+        this._.array[inlet - 1] = data;
+      }
+    });
+  }
+};
+let sel = _sel;
+sel.description = "Output a bang on a matched inlet";
+sel.inlets = [{
+  isHot: true,
+  type: "anything",
+  varLength: false,
+  description: "Test for match"
+}, {
+  isHot: false,
+  type: "anything",
+  varLength: true,
+  description: "Set value for match"
+}];
+sel.outlets = [{
+  type: "bang",
+  varLength: false,
+  description: "Bang if match"
+}, {
+  type: "anything",
+  varLength: false,
+  description: "Bypass if not matched"
+}];
+sel.args = [{
+  type: "anything",
+  optional: false,
+  varLength: true,
+  description: "Initial value for match"
+}];
+
+
+
+/***/ }),
+
+/***/ "./src/objects/set.ts":
+/*!****************************!*\
+  !*** ./src/objects/set.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ set)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+class set extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { key: typeof this.args[0] === "string" || typeof this.args[0] === "number" ? this.args[0] : void 0, value: this.args[1] };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 3;
+      this.outlets = 1;
+    });
+    this.on("updateArgs", (args) => {
+      if (typeof args[0] === "string" || typeof args[0] === "number")
+        this._.key = args[0];
+      if (typeof args[1] !== "undefined")
+        this._.value = args[1];
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (typeof this._.key === "string" || typeof this._.key === "number") {
+          try {
+            data[this._.key] = this._.value;
+            this.outlet(0, data);
+          } catch (e) {
+            this.error(e.message);
+          }
+        } else {
+          this.error("Key not defined");
+        }
+      } else if (inlet === 1) {
+        if (typeof data === "string" || typeof data === "number")
+          this._.key = data;
+        else
+          this.error("Key should be a number or a string");
+      } else if (inlet === 2) {
+        this._.value = data;
+      }
+    });
+  }
+}
+set.description = "Set a property of incoming object";
+set.inlets = [{
+  isHot: true,
+  type: "object",
+  description: "Object to set a property"
+}, {
+  isHot: false,
+  type: "string",
+  description: "Key / name of the property"
+}, {
+  isHot: false,
+  type: "anything",
+  description: "Value to set to the property"
+}];
+set.outlets = [{
+  type: "anything",
+  description: "Object bypass"
+}];
+set.args = [{
+  type: "anything",
+  optional: false,
+  description: "Initial key of the property"
+}, {
+  type: "anything",
+  optional: true,
+  default: void 0,
+  description: "Initial value of the property"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/thispatcher.ts":
+/*!************************************!*\
+  !*** ./src/objects/thispatcher.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ thispatcher)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+class thispatcher extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        this.outlet(0, this.patcher);
+      }
+    });
+  }
+}
+thispatcher.description = "Current patcher instance";
+thispatcher.inlets = [{
+  isHot: true,
+  type: "bang",
+  description: "Bang to output patcher instance"
+}];
+thispatcher.outlets = [{
+  type: "object",
+  description: "Patcher instance"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/unloadbang.ts":
+/*!***********************************!*\
+  !*** ./src/objects/unloadbang.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ unloadbang)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class unloadbang extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+      this.patcher.on("unload", () => this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang()));
+    });
+    this.on("inlet", ({ inlet }) => {
+      if (inlet === 0)
+        this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+    });
+  }
+}
+unloadbang.description = "Bang when patcher will be unloaded";
+unloadbang.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Anything to transform to a bang"
+}];
+unloadbang.outlets = [{
+  type: "bang",
+  description: "Bang when inlet"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/v.ts":
+/*!**************************!*\
+  !*** ./src/objects/v.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ v)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var _a;
+
+
+class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this.state = { value: this.args[1] };
+    this._ = { key: (_a = this.box.args[0]) == null ? void 0 : _a.toString(), sharedItem: null };
+  }
+  subscribe() {
+    super.subscribe();
+    const handleFilePathChanged = () => {
+      var _a2;
+      this._.key = (_a2 = this._.sharedItem) == null ? void 0 : _a2.projectPath;
+    };
+    const handleSaved = (e) => {
+      var _a2;
+      if (e === this)
+        return;
+      this.setState({ value: (_a2 = this._.sharedItem) == null ? void 0 : _a2.data });
+    };
+    const subscribeItem = async () => {
+      const file = this._.sharedItem;
+      if (!file)
+        return;
+      await file.addObserver(this.id);
+      file.on("destroyed", reload);
+      file.on("nameChanged", handleFilePathChanged);
+      file.on("pathChanged", handleFilePathChanged);
+      file.on("saved", handleSaved);
+    };
+    const unsubscribeItem = async () => {
+      const file = this._.sharedItem;
+      if (!file)
+        return;
+      file.off("destroyed", reload);
+      file.off("nameChanged", handleFilePathChanged);
+      file.off("pathChanged", handleFilePathChanged);
+      file.off("saved", handleSaved);
+      await file.removeObserver(this.id);
+    };
+    const reload = async () => {
+      await unsubscribeItem();
+      const { key } = this._;
+      try {
+        const { item } = await this.getSharedItem(key, "unknown", () => this.state.value);
+        this._.sharedItem = item;
+        this.setState({ value: item.data });
+      } catch (error) {
+        this.error(error);
+      } finally {
+        await subscribeItem();
+      }
+    };
+    const handleArgs = async (args) => {
+      var _a2, _b;
+      const key = (_a2 = args[0]) == null ? void 0 : _a2.toString();
+      if (key !== this._.key) {
+        this._.key = key;
+        await reload();
+      } else {
+        if (typeof args[1] !== "undefined") {
+          this.setState({ value: args[1] });
+          (_b = this._.sharedItem) == null ? void 0 : _b.save(this.state.value, this);
+        }
+      }
+    };
+    this.on("preInit", () => {
+      this.inlets = 3;
+      this.outlets = 1;
+    });
+    this.on("updateArgs", handleArgs);
+    this.on("updateState", ({ value }) => {
+      var _a2;
+      this.setState({ value });
+      (_a2 = this._.sharedItem) == null ? void 0 : _a2.save(this.state.value, this);
+      this.outlet(0, this.state.value);
+    });
+    this.on("postInit", reload);
+    this.on("inlet", ({ data, inlet }) => {
+      var _a2, _b;
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
+          this.setState({ value: data });
+          (_a2 = this._.sharedItem) == null ? void 0 : _a2.save(this.state.value, this);
+        }
+        this.outlet(0, this.state.value);
+      } else if (inlet === 1) {
+        this.setState({ value: data });
+        (_b = this._.sharedItem) == null ? void 0 : _b.save(this.state.value, this);
+      } else if (inlet === 2) {
+        if (typeof data === "string" || typeof data === "number") {
+          const key = data.toString() || "";
+          if (key !== this._.key) {
+            this._.key = key;
+            reload();
+          }
+        }
+      }
+    });
+    this.on("destroy", unsubscribeItem);
+  }
+}
+v.description = "Store anything as named sharable variable";
+v.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Bang to output stored value, anything to set the value then output it."
+}, {
+  isHot: false,
+  type: "anything",
+  description: "Anything to set the value."
+}, {
+  isHot: false,
+  type: "anything",
+  description: "Set variable name."
+}];
+v.outlets = [{
+  type: "anything",
+  description: "Value"
+}];
+v.args = [{
+  type: "anything",
+  optional: true,
+  description: "Variable name"
+}, {
+  type: "anything",
+  optional: true,
+  description: "Initial value"
+}];
+
+
+/***/ }),
+
+/***/ "./src/package-info.ts":
+/*!*****************************!*\
+  !*** ./src/package-info.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+var _package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../package.json */ "./package.json");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/ (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(_package_json__WEBPACK_IMPORTED_MODULE_0__, 2))));
+
+
+/***/ }),
+
+/***/ "./src/sdk.ts":
+/*!********************!*\
+  !*** ./src/sdk.ts ***!
+  \********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "React": () => (/* binding */ React),
+/* harmony export */   "Patcher": () => (/* binding */ Patcher),
+/* harmony export */   "Box": () => (/* binding */ Box),
+/* harmony export */   "Line": () => (/* binding */ Line),
+/* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
+/* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
+/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
+/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
+/* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
+/* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
+/* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
+/* harmony export */   "Bang": () => (/* binding */ Bang),
+/* harmony export */   "isBang": () => (/* binding */ isBang)
+/* harmony export */ });
+const sdk = globalThis.jspatcherEnv.sdk;
+const {
+  React,
+  Patcher,
+  Box,
+  Line,
+  BaseObject,
+  BaseUI,
+  DefaultObject,
+  DefaultUI,
+  generateRemotedObject,
+  generateDefaultObject,
+  generateRemoteObject,
+  Bang,
+  isBang
+} = sdk;
 
 
 /***/ }),
@@ -3845,7 +3538,7 @@ module.exports = $gOPD;
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-std","version":"1.0.6","description":"The standard package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-std","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"^0.0.2","@types/react":"^17.0.18","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","react":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.50.0","webpack-cli":"^4.7.2"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-std","version":"1.0.7","description":"The standard package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-std","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","util":"^0.12.4","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
 
 /***/ })
 
@@ -3993,7 +3686,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // import delay from "./objects/delay";
 
 
 
@@ -4028,10 +3720,10 @@ __webpack_require__.r(__webpack_exports__);
     bang: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default),
     loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_9__.default),
     unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_17__.default),
-    // delay: generateRemotedObject(delay as typeof BaseObject),
     thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_18__.generateRemotedObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_14__.default)
   };
 });
+
 })();
 
 var __webpack_export_target__ = exports;

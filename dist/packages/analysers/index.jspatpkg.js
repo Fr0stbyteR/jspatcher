@@ -1,1660 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/index.ts":
-/*!**********************!*\
-  !*** ./src/index.ts ***!
-  \**********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "name": () => (/* binding */ name),
-/* harmony export */   "author": () => (/* binding */ author),
-/* harmony export */   "license": () => (/* binding */ license),
-/* harmony export */   "keywords": () => (/* binding */ keywords),
-/* harmony export */   "version": () => (/* binding */ version),
-/* harmony export */   "description": () => (/* binding */ description),
-/* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, '');
-const {
-  author,
-  license,
-  keywords,
-  version,
-  description,
-  jspatcher
-} = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_objectSpread({
-  name,
-  author,
-  license,
-  keywords,
-  version,
-  description
-}, jspatcher));
-
-/***/ }),
-
-/***/ "./src/objects/base.ts":
-/*!*****************************!*\
-  !*** ./src/objects/base.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ BaseAnalyserObject)
-/* harmony export */ });
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class BaseAnalyserObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {}
-
-_defineProperty(BaseAnalyserObject, "package", _index__WEBPACK_IMPORTED_MODULE_0__.name);
-
-_defineProperty(BaseAnalyserObject, "author", _index__WEBPACK_IMPORTED_MODULE_0__.author);
-
-_defineProperty(BaseAnalyserObject, "version", _index__WEBPACK_IMPORTED_MODULE_0__.version);
-
-_defineProperty(BaseAnalyserObject, "description", _index__WEBPACK_IMPORTED_MODULE_0__.description);
-
-/***/ }),
-
-/***/ "./src/objects/default.ts":
-/*!********************************!*\
-  !*** ./src/objects/default.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ DefaultAnalyserObject)
-/* harmony export */ });
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class DefaultAnalyserObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.DefaultObject {}
-
-_defineProperty(DefaultAnalyserObject, "package", _index__WEBPACK_IMPORTED_MODULE_0__.name);
-
-_defineProperty(DefaultAnalyserObject, "author", _index__WEBPACK_IMPORTED_MODULE_0__.author);
-
-_defineProperty(DefaultAnalyserObject, "version", _index__WEBPACK_IMPORTED_MODULE_0__.version);
-
-_defineProperty(DefaultAnalyserObject, "description", _index__WEBPACK_IMPORTED_MODULE_0__.description);
-
-/***/ }),
-
-/***/ "./src/objects/oscilloscope.ts":
-/*!*************************************!*\
-  !*** ./src/objects/oscilloscope.ts ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Oscilloscope)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _ui_oscilloscope__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/oscilloscope */ "./src/ui/oscilloscope.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-class Oscilloscope extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 0;
-    });
-    this.on("updateProps", props => {
-      if (this._.node) {
-        const {
-          parameters
-        } = this._.node;
-        if (props.windowFunction) this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
-        if (props.fftSize) this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
-        if (props.fftOverlap) this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
-        if (props.windowSize) this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
-      }
-    });
-    this.on("postInit", async () => {
-      await _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
-      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode(this.audioCtx);
-      const {
-        parameters
-      } = this._.node;
-      this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
-      this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
-      this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
-      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
-      this.disconnectAudioInlet();
-      this.inletAudioConnections[0] = {
-        node: this._.node,
-        index: 0
-      };
-      this.connectAudioInlet();
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data)) this.updateUI({
-          paint: {}
-        });
-      }
-    });
-    this.on("destroy", () => {
-      if (this._.node) this._.node.destroy();
-    });
-  }
-
-}
-
-_defineProperty(Oscilloscope, "description", "Oscilloscope");
-
-_defineProperty(Oscilloscope, "inlets", [{
-  isHot: true,
-  type: "signal",
-  description: "Signal"
-}]);
-
-_defineProperty(Oscilloscope, "props", {
-  windowSize: {
-    type: "number",
-    default: 1024,
-    description: "Signal window size"
-  },
-  fftSize: {
-    type: "number",
-    default: 1024,
-    description: "FFT Size for analysis"
-  },
-  fftOverlap: {
-    type: "number",
-    default: 2,
-    description: "FFT overlap count (integer)"
-  },
-  windowFunction: {
-    type: "enum",
-    enums: ["blackman", "hamming", "hann", "triangular"],
-    default: "blackman",
-    description: "Window Function aoolied for FFT analysis window"
-  },
-  continuous: {
-    type: "boolean",
-    default: true,
-    description: "Continuous drawing",
-    isUIState: true
-  },
-  frameRate: {
-    type: "number",
-    default: 60,
-    description: "UI refresh rate",
-    isUIState: true
-  },
-  interleaved: {
-    type: "boolean",
-    default: false,
-    description: "Draw channels seperately",
-    isUIState: true
-  },
-  stablize: {
-    type: "boolean",
-    default: true,
-    description: "Stablize",
-    isUIState: true
-  },
-  range: {
-    type: "number",
-    default: 1,
-    description: "Vertical range",
-    isUIState: true
-  },
-  autoRange: {
-    type: "boolean",
-    default: true,
-    description: "Auto adjust range if > 1",
-    isUIState: true
-  },
-  showStats: {
-    type: "boolean",
-    default: true,
-    description: "Show stats texts",
-    isUIState: true
-  },
-  bgColor: {
-    type: "color",
-    default: "rgb(40, 40, 40)",
-    description: "Background color",
-    isUIState: true
-  },
-  phosphorColor: {
-    type: "color",
-    default: "hsl(0, 100%, 85%)",
-    description: "Phosphor color",
-    isUIState: true
-  },
-  hueOffset: {
-    type: "number",
-    default: 60,
-    description: "Channel Color Hue offset",
-    isUIState: true
-  },
-  textColor: {
-    type: "color",
-    default: "#DDDD99",
-    description: "Info text color",
-    isUIState: true
-  },
-  gridColor: {
-    type: "color",
-    default: "#404040",
-    description: "Grid color",
-    isUIState: true
-  },
-  seperatorColor: {
-    type: "color",
-    default: "white",
-    description: "Channel seperator color",
-    isUIState: true
-  }
-});
-
-_defineProperty(Oscilloscope, "UI", _ui_oscilloscope__WEBPACK_IMPORTED_MODULE_1__.default);
-
-/***/ }),
-
-/***/ "./src/objects/spectral-analyser.ts":
-/*!******************************************!*\
-  !*** ./src/objects/spectral-analyser.ts ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ SpectralAnalyser)
-/* harmony export */ });
-/* harmony import */ var _default__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./default */ "./src/objects/default.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class SpectralAnalyser extends _default__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined,
-      $requestTimer: -1
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-
-    const startRequest = () => {
-      const request = async () => {
-        if (this._.node && !this._.node.destroyed) {
-          const extractorKeys = ["buffer", "lastAmplitudes", "allAmplitudes", "amplitude", "estimatedFreq", "centroid", "flatness", "flux", "kurtosis", "skewness", "rolloff", "slope", "spread"];
-          const gets = [];
-          extractorKeys.forEach(key => {
-            if (this.getProp(key)) gets.push(key);
-          });
-          const got = await this._.node.gets(...gets);
-          this.outlet(0, got);
-        }
-
-        if (this.getProp("continuous")) scheduleRequest();
-      };
-
-      const scheduleRequest = () => {
-        this._.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
-      };
-
-      request();
-    };
-
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 1;
-    });
-    this.on("updateProps", props => {
-      if (this._.node) {
-        const {
-          parameters
-        } = this._.node;
-        if (props.continuous) startRequest();
-        if (props.windowFunction) this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
-        if (props.fftSize) this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
-        if (props.fftOverlap) this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
-        if (props.windowSize) this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
-      }
-    });
-    this.on("postInit", async () => {
-      await _sdk__WEBPACK_IMPORTED_MODULE_1__.SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
-      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_1__.SpectralAnalyserNode(this.audioCtx);
-      const {
-        parameters
-      } = this._.node;
-      this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
-      this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
-      this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
-      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
-      this.disconnectAudioInlet();
-      this.inletAudioConnections[0] = {
-        node: this._.node,
-        index: 0
-      };
-      this.connectAudioInlet();
-      if (this.getProp("continuous")) startRequest();
-      this.on("inlet", e => {
-        if (e.inlet === 0) {
-          if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(e.data)) startRequest();
-        }
-      });
-    });
-    this.on("destroy", () => {
-      window.clearTimeout(this._.$requestTimer);
-      if (this._.node) this._.node.destroy();
-    });
-  }
-
-}
-
-_defineProperty(SpectralAnalyser, "description", "Spectral feature extractor");
-
-_defineProperty(SpectralAnalyser, "inlets", [{
-  isHot: true,
-  type: "signal",
-  description: "Signal, bang to extract features"
-}]);
-
-_defineProperty(SpectralAnalyser, "outlets", [{
-  type: "object",
-  description: "Features chosen as object"
-}]);
-
-_defineProperty(SpectralAnalyser, "props", {
-  speedLim: {
-    type: "number",
-    default: 16,
-    description: "If continuous, value output speed limit in ms"
-  },
-  windowSize: {
-    type: "number",
-    default: 1024,
-    description: "Buffer window size"
-  },
-  fftSize: {
-    type: "number",
-    default: 1024,
-    description: "FFT Size for analysis"
-  },
-  fftOverlap: {
-    type: "number",
-    default: 2,
-    description: "FFT overlap count (integer)"
-  },
-  windowFunction: {
-    type: "enum",
-    enums: ["blackman", "hamming", "hann", "triangular"],
-    default: "blackman",
-    description: "Window Function aoolied for FFT analysis window"
-  },
-  continuous: {
-    type: "boolean",
-    default: false,
-    description: "Whether output is continuous"
-  },
-  buffer: {
-    type: "boolean",
-    default: false,
-    description: "Getting the signal buffer"
-  },
-  lastAmplitudes: {
-    type: "boolean",
-    default: false,
-    description: "Getting the last amplitudes frame"
-  },
-  allAmplitudes: {
-    type: "boolean",
-    default: false,
-    description: "Getting all the amplitudes frame"
-  },
-  amplitude: {
-    type: "boolean",
-    default: false,
-    description: "Getting the sum of the last amplitude frame"
-  },
-  estimatedFreq: {
-    type: "boolean",
-    default: false,
-    description: "Getting the estimated frequency"
-  },
-  centroid: {
-    type: "boolean",
-    default: false,
-    description: "Getting the spectral centroid"
-  },
-  flatness: {
-    type: "boolean",
-    default: false,
-    description: "Getting the spectral flatness"
-  },
-  flux: {
-    type: "boolean",
-    default: false,
-    description: "Getting the spectral flux"
-  },
-  kurtosis: {
-    type: "boolean",
-    default: false,
-    description: "Getting the spectral kurtosis"
-  },
-  skewness: {
-    type: "boolean",
-    default: false,
-    description: "Getting the spectral skewness"
-  },
-  rolloff: {
-    type: "boolean",
-    default: false,
-    description: "Getting the spectral rolloff"
-  },
-  slope: {
-    type: "boolean",
-    default: false,
-    description: "Getting the spectral slope"
-  },
-  spread: {
-    type: "boolean",
-    default: false,
-    description: "Getting the spectral spread"
-  }
-});
-
-/***/ }),
-
-/***/ "./src/objects/spectrogram.ts":
-/*!************************************!*\
-  !*** ./src/objects/spectrogram.ts ***!
-  \************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Spectrogram)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _ui_spectrogram__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/spectrogram */ "./src/ui/spectrogram.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-class Spectrogram extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 0;
-    });
-    this.on("updateProps", props => {
-      if (this._.node) {
-        const {
-          parameters
-        } = this._.node;
-        if (props.windowFunction) this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
-        if (props.fftSize) this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
-        if (props.fftOverlap) this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
-        if (props.windowSize) this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
-      }
-    });
-    this.on("postInit", async () => {
-      await _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
-      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode(this.audioCtx);
-      const {
-        parameters
-      } = this._.node;
-      this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
-      this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
-      this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
-      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
-      this.disconnectAudioInlet();
-      this.inletAudioConnections[0] = {
-        node: this._.node,
-        index: 0
-      };
-      this.connectAudioInlet();
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data)) this.updateUI({
-          paint: {}
-        });
-      }
-    });
-    this.on("destroy", () => {
-      if (this._.node) this._.node.destroy();
-    });
-  }
-
-}
-
-_defineProperty(Spectrogram, "description", "Spectroscope");
-
-_defineProperty(Spectrogram, "inlets", [{
-  isHot: true,
-  type: "signal",
-  description: "Signal"
-}]);
-
-_defineProperty(Spectrogram, "props", {
-  windowSize: {
-    type: "number",
-    default: 65536,
-    description: "Signal window size"
-  },
-  fftSize: {
-    type: "number",
-    default: 1024,
-    description: "FFT Size for analysis"
-  },
-  fftOverlap: {
-    type: "number",
-    default: 2,
-    description: "FFT overlap count (integer)"
-  },
-  windowFunction: {
-    type: "enum",
-    enums: ["blackman", "hamming", "hann", "triangular"],
-    default: "blackman",
-    description: "Window Function aoolied for FFT analysis window"
-  },
-  continuous: {
-    type: "boolean",
-    default: true,
-    description: "Continuous drawing",
-    isUIState: true
-  },
-  frameRate: {
-    type: "number",
-    default: 60,
-    description: "UI refresh rate",
-    isUIState: true
-  },
-  bgColor: {
-    type: "color",
-    default: "rgb(40, 40, 40)",
-    description: "Background color",
-    isUIState: true
-  },
-  gridColor: {
-    type: "color",
-    default: "#404040",
-    description: "Grid color",
-    isUIState: true
-  },
-  seperatorColor: {
-    type: "color",
-    default: "white",
-    description: "Channel seperator color",
-    isUIState: true
-  }
-});
-
-_defineProperty(Spectrogram, "UI", _ui_spectrogram__WEBPACK_IMPORTED_MODULE_1__.default);
-
-/***/ }),
-
-/***/ "./src/objects/spectroscope.ts":
-/*!*************************************!*\
-  !*** ./src/objects/spectroscope.ts ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Spectroscope)
-/* harmony export */ });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
-/* harmony import */ var _ui_spectroscope__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/spectroscope */ "./src/ui/spectroscope.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-class Spectroscope extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 0;
-    });
-    this.on("updateProps", props => {
-      if (this._.node) {
-        const {
-          parameters
-        } = this._.node;
-        if (props.windowFunction) this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
-        if (props.fftSize) this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
-        if (props.fftOverlap) this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
-        if (props.windowSize) this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
-      }
-    });
-    this.on("postInit", async () => {
-      await _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
-      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode(this.audioCtx);
-      const {
-        parameters
-      } = this._.node;
-      this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
-      this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
-      this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
-      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
-      this.disconnectAudioInlet();
-      this.inletAudioConnections[0] = {
-        node: this._.node,
-        index: 0
-      };
-      this.connectAudioInlet();
-    });
-    this.on("inlet", _ref => {
-      let {
-        data,
-        inlet
-      } = _ref;
-
-      if (inlet === 0) {
-        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data)) this.updateUI({
-          paint: {}
-        });
-      }
-    });
-    this.on("destroy", () => {
-      if (this._.node) this._.node.destroy();
-    });
-  }
-
-}
-
-_defineProperty(Spectroscope, "description", "Spectroscope");
-
-_defineProperty(Spectroscope, "inlets", [{
-  isHot: true,
-  type: "signal",
-  description: "Signal"
-}]);
-
-_defineProperty(Spectroscope, "props", {
-  windowSize: {
-    type: "number",
-    default: 1024,
-    description: "Signal window size"
-  },
-  fftSize: {
-    type: "number",
-    default: 1024,
-    description: "FFT Size for analysis"
-  },
-  fftOverlap: {
-    type: "number",
-    default: 2,
-    description: "FFT overlap count (integer)"
-  },
-  windowFunction: {
-    type: "enum",
-    enums: ["blackman", "hamming", "hann", "triangular"],
-    default: "blackman",
-    description: "Window Function aoolied for FFT analysis window"
-  },
-  continuous: {
-    type: "boolean",
-    default: true,
-    description: "Continuous drawing",
-    isUIState: true
-  },
-  frameRate: {
-    type: "number",
-    default: 60,
-    description: "UI refresh rate",
-    isUIState: true
-  },
-  bgColor: {
-    type: "color",
-    default: "rgb(40, 40, 40)",
-    description: "Background color",
-    isUIState: true
-  },
-  fgColor: {
-    type: "color",
-    default: "hsl(0, 100%, 85%)",
-    description: "Foreground color",
-    isUIState: true
-  },
-  hueOffset: {
-    type: "number",
-    default: 60,
-    description: "Channel Color Hue offset",
-    isUIState: true
-  },
-  gridColor: {
-    type: "color",
-    default: "#404040",
-    description: "Grid color",
-    isUIState: true
-  },
-  seperatorColor: {
-    type: "color",
-    default: "white",
-    description: "Channel seperator color",
-    isUIState: true
-  }
-});
-
-_defineProperty(Spectroscope, "UI", _ui_spectroscope__WEBPACK_IMPORTED_MODULE_1__.default);
-
-/***/ }),
-
-/***/ "./src/objects/temporal-analyser.ts":
-/*!******************************************!*\
-  !*** ./src/objects/temporal-analyser.ts ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ TemporalAnalyser)
-/* harmony export */ });
-/* harmony import */ var _default__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./default */ "./src/objects/default.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class TemporalAnalyser extends _default__WEBPACK_IMPORTED_MODULE_0__.default {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "_", {
-      node: undefined,
-      $requestTimer: -1
-    });
-  }
-
-  subscribe() {
-    super.subscribe();
-
-    const startRequest = () => {
-      const request = async () => {
-        if (this._.node && !this._.node.destroyed) {
-          const extractorKeys = ["buffer", "rms", "zcr", "absMax"];
-          const gets = [];
-          extractorKeys.forEach(key => {
-            if (this.getProp(key)) gets.push(key);
-          });
-          const got = await this._.node.gets(...gets);
-          this.outlet(0, got);
-        }
-
-        if (this.getProp("continuous")) scheduleRequest();
-      };
-
-      const scheduleRequest = () => {
-        this._.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
-      };
-
-      request();
-    };
-
-    this.on("preInit", () => {
-      this.inlets = 1;
-      this.outlets = 1;
-    });
-    this.on("updateProps", props => {
-      if (this._.node) {
-        const {
-          parameters
-        } = this._.node;
-        if (props.continuous) startRequest();
-        if (props.windowSize) this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
-      }
-    });
-    this.on("postInit", async () => {
-      await _sdk__WEBPACK_IMPORTED_MODULE_1__.TemporalAnalyserNode.register(this.audioCtx.audioWorklet);
-      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_1__.TemporalAnalyserNode(this.audioCtx);
-      const {
-        parameters
-      } = this._.node;
-      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
-      this.disconnectAudioInlet();
-      this.inletAudioConnections[0] = {
-        node: this._.node,
-        index: 0
-      };
-      this.connectAudioInlet();
-      if (this.getProp("continuous")) startRequest();
-      this.on("inlet", e => {
-        if (e.inlet === 0) {
-          if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(e.data)) startRequest();
-        }
-      });
-    });
-    this.on("destroy", () => {
-      window.clearTimeout(this._.$requestTimer);
-      if (this._.node) this._.node.destroy();
-    });
-  }
-
-}
-
-_defineProperty(TemporalAnalyser, "description", "Temporal feature extractor");
-
-_defineProperty(TemporalAnalyser, "inlets", [{
-  isHot: true,
-  type: "signal",
-  description: "Signal, bang to extract features"
-}]);
-
-_defineProperty(TemporalAnalyser, "outlets", [{
-  type: "object",
-  description: "Features chosen as object"
-}]);
-
-_defineProperty(TemporalAnalyser, "props", {
-  speedLim: {
-    type: "number",
-    default: 16,
-    description: "If continuous, value output speed limit in ms"
-  },
-  windowSize: {
-    type: "number",
-    default: 1024,
-    description: "Buffer window size"
-  },
-  continuous: {
-    type: "boolean",
-    default: false,
-    description: "Whether output is continuous"
-  },
-  buffer: {
-    type: "boolean",
-    default: false,
-    description: "Getting the signal buffer"
-  },
-  absMax: {
-    type: "boolean",
-    default: false,
-    description: "Getting the absolute Maximum"
-  },
-  rms: {
-    type: "boolean",
-    default: false,
-    description: "Getting the Root Mean Square"
-  },
-  zcr: {
-    type: "boolean",
-    default: false,
-    description: "Getting the zero crossing count"
-  }
-});
-
-/***/ }),
-
-/***/ "./src/package-info.ts":
-/*!*****************************!*\
-  !*** ./src/package-info.ts ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-var _package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../package.json */ "./package.json");
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/ (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(_package_json__WEBPACK_IMPORTED_MODULE_0__, 2))));
-
-/***/ }),
-
-/***/ "./src/sdk.ts":
-/*!********************!*\
-  !*** ./src/sdk.ts ***!
-  \********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "React": () => (/* binding */ React),
-/* harmony export */   "PatcherAudio": () => (/* binding */ PatcherAudio),
-/* harmony export */   "OperableAudioBuffer": () => (/* binding */ OperableAudioBuffer),
-/* harmony export */   "Patcher": () => (/* binding */ Patcher),
-/* harmony export */   "Box": () => (/* binding */ Box),
-/* harmony export */   "Line": () => (/* binding */ Line),
-/* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
-/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
-/* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
-/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
-/* harmony export */   "CanvasUI": () => (/* binding */ CanvasUI),
-/* harmony export */   "DefaultPopupUI": () => (/* binding */ DefaultPopupUI),
-/* harmony export */   "CodePopupUI": () => (/* binding */ CodePopupUI),
-/* harmony export */   "DOMUI": () => (/* binding */ DOMUI),
-/* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
-/* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
-/* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
-/* harmony export */   "Bang": () => (/* binding */ Bang),
-/* harmony export */   "isBang": () => (/* binding */ isBang),
-/* harmony export */   "TransmitterNode": () => (/* binding */ TransmitterNode),
-/* harmony export */   "TemporalAnalyserNode": () => (/* binding */ TemporalAnalyserNode),
-/* harmony export */   "SpectralAnalyserNode": () => (/* binding */ SpectralAnalyserNode),
-/* harmony export */   "MathUtils": () => (/* binding */ MathUtils),
-/* harmony export */   "BufferUtils": () => (/* binding */ BufferUtils),
-/* harmony export */   "Utils": () => (/* binding */ Utils)
-/* harmony export */ });
-const sdk = globalThis.jspatcherEnv.sdk;
-const {
-  React,
-  PatcherAudio,
-  OperableAudioBuffer,
-  Patcher,
-  Box,
-  Line,
-  BaseObject,
-  DefaultObject,
-  BaseUI,
-  DefaultUI,
-  CanvasUI,
-  DefaultPopupUI,
-  CodePopupUI,
-  DOMUI,
-  generateDefaultObject,
-  generateRemoteObject,
-  generateRemotedObject,
-  Bang,
-  isBang,
-  TransmitterNode,
-  TemporalAnalyserNode,
-  SpectralAnalyserNode,
-  MathUtils,
-  BufferUtils,
-  Utils
-} = sdk;
-
-/***/ }),
-
-/***/ "./src/ui/oscilloscope.ts":
-/*!********************************!*\
-  !*** ./src/ui/oscilloscope.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ OscilloscopeUI)
-/* harmony export */ });
-/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! color-js */ "./node_modules/color-js/color.js");
-/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(color_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class OscilloscopeUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.CanvasUI {
-  componentDidMount() {
-    const {
-      bgColor
-    } = this.state;
-    const ctx = this.ctx;
-    if (!ctx) return;
-    const [width, height] = this.fullSize(); // Background
-
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, width, height);
-    super.componentDidMount();
-  }
-
-  async paint() {
-    if (this.state.continuous) this.schedulePaint();
-    if (!this.object._.node) return;
-    if (this.object._.node.destroyed) return;
-    const {
-      // width,
-      // height,
-      // zoom,
-      // zoomOffset,
-      stablize,
-      interleaved,
-      // $cursor,
-      range,
-      autoRange,
-      showStats,
-      bgColor,
-      phosphorColor,
-      hueOffset,
-      textColor,
-      gridColor,
-      seperatorColor
-    } = this.state;
-    const ctx = this.ctx;
-    if (!ctx) return;
-    const left = 0;
-    const bottom = 0;
-    const {
-      estimatedFreq,
-      buffer
-    } = await this.object._.node.gets("estimatedFreq", "buffer");
-    const l = this.object.getProp("windowSize");
-    const {
-      sampleRate
-    } = this.object.audioCtx; // Background
-
-    const [width, height] = this.fullSize();
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, width, height);
-    if (!buffer) return;
-    const {
-      $read: $ui32,
-      data: t
-    } = buffer;
-    if (!t || !t.length || !t[0].length) return;
-    const $ = Atomics.load($ui32, 0);
-    const channels = t.length;
-    const dl = t[0].length; // Vertical Range
-
-    let yMin = -range;
-    let yMax = range;
-    let yFactor = range;
-
-    if (autoRange) {
-      // Fastest way to get min and max to have: 1. max abs value for y scaling, 2. mean value for zero-crossing
-      let i = channels;
-      let s = 0;
-
-      while (i--) {
-        let j = l;
-
-        while (j--) {
-          s = t[i][($ + j) % dl];
-          if (s < yMin) yMin = s;else if (s > yMax) yMax = s;
-        }
-      }
-
-      yFactor = Math.max(1, Math.abs(yMin), Math.abs(yMax))
-      /* * vzoom*/
-      ;
-    }
-
-    const calcY = (v, i) => channelHeight * (+interleaved * i + 1 - (v - yMin) / (yMax - yMin)); // Grids
-
-
-    ctx.strokeStyle = gridColor;
-    let vStep = 0.25;
-
-    while (yFactor / 2 / vStep > 2) vStep *= 2; // Minimum horizontal grids in channel one side = 2
-
-
-    ctx.beginPath();
-    ctx.setLineDash([]);
-    const gridChannels = interleaved ? channels : 1;
-    const channelHeight = (height - bottom) / gridChannels;
-
-    for (let i = 0; i < gridChannels; i++) {
-      let y = calcY(0, i);
-      ctx.moveTo(left, y);
-      ctx.lineTo(width, y); // 0-line
-
-      for (let j = vStep; j < yFactor; j += vStep) {
-        y = calcY(j, i);
-        ctx.moveTo(left, y);
-        ctx.lineTo(width, y); // below 0
-
-        y = calcY(-j, i);
-        ctx.moveTo(left, y);
-        ctx.lineTo(width, y); // above 0
-      }
-    }
-
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.setLineDash([4, 2]);
-    ctx.strokeStyle = seperatorColor;
-
-    for (let i = 1; i < gridChannels; i++) {
-      ctx.moveTo(left, i * channelHeight);
-      ctx.lineTo(width, i * channelHeight);
-    }
-
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.lineWidth = 2;
-    const channelColor = [];
-    let $zerox = 0; // First Zero-crossing of first channel
-
-    const period = sampleRate / estimatedFreq[0];
-    const times = Math.floor(l / period) - 1;
-
-    for (let i = 0; i < channels; i++) {
-      // Horizontal Range
-      let $0 = 0; // Draw start
-
-      let $1 = l; // Draw End
-
-      let drawL = l; // Length to draw
-
-      if (stablize) {
-        // Stablization
-        if (i === 0) {
-          const thresh = (yMin + yMax) * 0.5 + 0.001; // the zero-crossing with "offset"
-
-          while ($zerox < l && t[i][($ + $zerox++) % dl] > thresh); // Find first raise
-
-
-          if ($zerox >= l - 1) {
-            // Found nothing, no stablization
-            $zerox = 0;
-          } else {
-            while ($zerox < l && t[i][($ + $zerox++) % dl] < thresh); // Find first drop
-
-
-            $zerox--;
-
-            if ($zerox >= l - 1 || $zerox < 0) {
-              $zerox = 0;
-            }
-          }
-        }
-
-        drawL = times > 0 && isFinite(period) ? ~~Math.min(period * times, l - $zerox) : l - $zerox; // length to draw
-      }
-
-      $0 = Math.round($zerox
-      /* + drawL * zoomOffset*/
-      );
-      $1 = Math.round($zerox + drawL
-      /* / zoom + drawL * zoomOffset*/
-      );
-      const pixelsPerSamp = (width - left) / ($1 - 1 - $0);
-      const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp));
-
-      if (interleaved) {
-        ctx.save();
-        const clip = new Path2D();
-        clip.rect(0, i * channelHeight, width, channelHeight);
-        ctx.clip(clip);
-      }
-
-      ctx.beginPath();
-      channelColor[i] = color_js__WEBPACK_IMPORTED_MODULE_0__(phosphorColor).shiftHue(i * hueOffset).toHSL();
-      ctx.strokeStyle = channelColor[i];
-      let maxInStep;
-      let minInStep;
-
-      for (let j = $0; j < $1; j++) {
-        const $j = (j + $) % dl;
-        const samp = t[i][$j];
-        const $step = (j - $0) % sampsPerPixel;
-
-        if ($step === 0) {
-          maxInStep = samp;
-          minInStep = samp;
-        }
-
-        if ($step !== sampsPerPixel - 1) {
-          if ($step !== 0) {
-            if (samp > maxInStep) maxInStep = samp;
-            if (samp < minInStep) minInStep = samp;
-          }
-
-          continue;
-        }
-
-        const x = (j - $step - $0) * pixelsPerSamp;
-        let y = calcY(maxInStep, i);
-        if (j === $0) ctx.moveTo(x, y);else ctx.lineTo(x, y);
-
-        if (minInStep !== maxInStep) {
-          y = calcY(minInStep, i);
-          ctx.lineTo(x, y);
-        }
-      }
-
-      ctx.stroke();
-      if (interleaved) ctx.restore();
-    } // Stats
-
-
-    if (showStats) {
-      ctx.font = "bold 12px Consolas, monospace";
-      ctx.fillStyle = textColor;
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.fillText(yFactor.toFixed(2), 2, 2);
-      ctx.textBaseline = "bottom";
-      ctx.fillText((-yFactor).toFixed(2), 2, height - 2);
-      ctx.textAlign = "right";
-      const freqStatY = height - 2 - (estimatedFreq.length - 1) * 14;
-
-      for (let i = 0; i < estimatedFreq.length; i++) {
-        const freq = estimatedFreq[i];
-        ctx.fillStyle = channelColor[i];
-        const y = interleaved ? channelHeight * (i + 1) - 2 : freqStatY + 14 * i;
-        ctx.fillText(freq.toFixed(2) + "Hz", width - 2, y);
-      }
-    }
-  }
-
-}
-
-_defineProperty(OscilloscopeUI, "defaultSize", [120, 60]);
-
-/***/ }),
-
-/***/ "./src/ui/spectrogram.ts":
-/*!*******************************!*\
-  !*** ./src/ui/spectrogram.ts ***!
-  \*******************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ SpectrogramUI)
-/* harmony export */ });
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-class SpectrogramUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "$lastFrame", -1);
-
-    _defineProperty(this, "dataFrames", 1);
-
-    _defineProperty(this, "offscreenCtx", document.createElement("canvas").getContext("2d"));
-
-    _defineProperty(this, "offscreenVRes", 1024);
-  }
-
-  componentDidMount() {
-    const {
-      bgColor
-    } = this.state;
-    const {
-      ctx,
-      offscreenCtx,
-      dataFrames
-    } = this;
-    if (!ctx) return;
-    const [width, height] = this.fullSize();
-    offscreenCtx.canvas.width = dataFrames;
-    offscreenCtx.canvas.height = this.offscreenVRes; // Background
-
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, width, height);
-    super.componentDidMount();
-  }
-
-  async paint() {
-    if (this.state.continuous) this.schedulePaint();
-    if (!this.object._.node) return;
-    if (this.object._.node.destroyed) return;
-    const {
-      // width,
-      // height,
-      // zoom,
-      // zoomOffset,
-      // $cursor,
-      bgColor,
-      gridColor,
-      seperatorColor
-    } = this.state;
-    const {
-      ctx,
-      offscreenCtx,
-      offscreenVRes
-    } = this;
-    if (!ctx || !offscreenCtx) return;
-    const left = 0;
-    const bottom = 0;
-    const allAmplitudes = await this.object._.node.getAllAmplitudes(); // Background
-
-    const [width, height] = this.fullSize();
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, width, height);
-    if (!allAmplitudes) return;
-    const {
-      data: f,
-      $totalFrames,
-      fftBins: bins,
-      frames,
-      dataFrames,
-      $writeFrame: $writeFrameUi32
-    } = allAmplitudes;
-    if (!f || !f.length || !f[0].length) return;
-    const l = f[0].length;
-    const channels = f.length; // Draw to offscreen canvas
-
-    const $lastFrame = Atomics.load($totalFrames, 0) - 1;
-    const $writeFrame = Atomics.load($writeFrameUi32, 0);
-    let $frame0 = $writeFrame;
-    let $frame1 = $frame0 + dataFrames;
-
-    if (this.dataFrames !== dataFrames) {
-      offscreenCtx.canvas.width = dataFrames;
-      this.dataFrames = dataFrames;
-    } else if ($lastFrame >= this.$lastFrame) {
-      $frame0 = Math.max($frame0, $frame1 - ($lastFrame - this.$lastFrame));
-    }
-
-    this.$lastFrame = $lastFrame;
-    const osChannelHeight = offscreenVRes / channels;
-    const step = Math.max(1, Math.round(bins / osChannelHeight));
-    const vGrid = osChannelHeight / bins;
-
-    for (let i = 0; i < f.length; i++) {
-      for (let j = $frame0; j < $frame1; j++) {
-        let maxInStep;
-        offscreenCtx.fillStyle = "black";
-        offscreenCtx.fillRect(j % dataFrames, i * osChannelHeight, 1, osChannelHeight);
-
-        for (let k = 0; k < bins; k++) {
-          const samp = _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.atodb(f[i][(k + j * bins) % l]);
-          const $step = k % step;
-          if ($step === 0) maxInStep = samp;
-
-          if ($step !== step - 1) {
-            if ($step !== 0 && samp > maxInStep) maxInStep = samp;
-            continue;
-          }
-
-          const normalized = Math.min(1, Math.max(0, (maxInStep + 10) / 100 + 1));
-          if (normalized === 0) continue;
-          const hue = (normalized * 180 + 240) % 360;
-          const lum = normalized * 50;
-          offscreenCtx.fillStyle = "hsl(".concat(hue, ", 100%, ").concat(lum, "%)");
-          offscreenCtx.fillRect(j % dataFrames, (bins - k - 1) * vGrid + i * osChannelHeight, 1, Math.max(1, vGrid));
-        }
-      }
-    } // Grids
-
-
-    ctx.strokeStyle = gridColor;
-    const vStep = 0.25;
-    const hStep = 0.25;
-    ctx.beginPath();
-    ctx.setLineDash([]);
-    const gridChannels = channels;
-    const channelHeight = (height - bottom) / gridChannels;
-
-    for (let i = 0; i < gridChannels; i++) {
-      for (let j = vStep; j < 1; j += vStep) {
-        // Horizontal lines
-        const y = (i + j) * channelHeight;
-        ctx.moveTo(left, y);
-        ctx.lineTo(width, y);
-      }
-    }
-
-    for (let i = hStep; i < 1; i += hStep) {
-      const x = left + (width - left) * i;
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, bottom);
-    }
-
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.setLineDash([4, 2]);
-    ctx.strokeStyle = seperatorColor;
-
-    for (let i = 1; i < gridChannels; i++) {
-      ctx.moveTo(left, i * channelHeight);
-      ctx.lineTo(width, i * channelHeight);
-    }
-
-    ctx.stroke();
-    ctx.setLineDash([]); // Horizontal Range
-
-    ctx.save();
-    ctx.globalCompositeOperation = "lighter";
-    ctx.imageSmoothingEnabled = false;
-    $frame0 = ($frame1 - frames) % dataFrames;
-    $frame1 = $frame0 + frames;
-
-    if ($frame1 <= dataFrames) {
-      ctx.drawImage(offscreenCtx.canvas, $frame0, 0, frames, offscreenVRes, left, 0, width - left, height - bottom);
-    } else {
-      const sSplit = dataFrames - $frame0;
-      const dSplit = sSplit / frames * (width - left);
-      ctx.drawImage(offscreenCtx.canvas, $frame0, 0, sSplit, offscreenVRes, left, 0, dSplit, height - bottom);
-      ctx.drawImage(offscreenCtx.canvas, 0, 0, $frame1 - dataFrames - 0.01, offscreenVRes, dSplit + left, 0, width - left - dSplit, height - bottom);
-    }
-
-    ctx.restore();
-  }
-
-}
-
-_defineProperty(SpectrogramUI, "defaultSize", [120, 60]);
-
-/***/ }),
-
-/***/ "./src/ui/spectroscope.ts":
-/*!********************************!*\
-  !*** ./src/ui/spectroscope.ts ***!
-  \********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ SpectroscopeUI)
-/* harmony export */ });
-/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! color-js */ "./node_modules/color-js/color.js");
-/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(color_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-class SpectroscopeUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.CanvasUI {
-  componentDidMount() {
-    const {
-      bgColor
-    } = this.state;
-    const ctx = this.ctx;
-    if (!ctx) return;
-    const [width, height] = this.fullSize(); // Background
-
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, width, height);
-    super.componentDidMount();
-  }
-
-  async paint() {
-    if (this.state.continuous) this.schedulePaint();
-    if (!this.object._.node) return;
-    if (this.object._.node.destroyed) return;
-    const {
-      // width,
-      // height,
-      // zoom,
-      // zoomOffset,
-      // $cursor,
-      bgColor,
-      fgColor,
-      hueOffset,
-      gridColor,
-      seperatorColor
-    } = this.state;
-    const ctx = this.ctx;
-    if (!ctx) return;
-    const left = 0;
-    const bottom = 0;
-    const lastAmplitudes = await this.object._.node.getLastAmplitudes(); // Background
-
-    const [width, height] = this.fullSize();
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, width, height);
-    if (!lastAmplitudes) return;
-    const {
-      data: f
-    } = lastAmplitudes;
-    if (!f || !f.length || !f[0].length) return;
-    const l = f[0].length;
-    const channels = f.length; // Grids
-
-    ctx.strokeStyle = gridColor;
-    const vStep = 0.25;
-    const hStep = 0.25;
-    ctx.beginPath();
-    ctx.setLineDash([]);
-    const gridChannels = channels;
-    const channelHeight = (height - bottom) / gridChannels;
-
-    for (let i = 0; i < gridChannels; i++) {
-      for (let j = vStep; j < 1; j += vStep) {
-        // Horizontal lines
-        const y = (i + j) * channelHeight;
-        ctx.moveTo(left, y);
-        ctx.lineTo(width, y);
-      }
-    }
-
-    for (let i = hStep; i < 1; i += hStep) {
-      const x = left + (width - left) * i;
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, bottom);
-    }
-
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.setLineDash([4, 2]);
-    ctx.strokeStyle = seperatorColor;
-
-    for (let i = 1; i < gridChannels; i++) {
-      ctx.moveTo(left, i * channelHeight);
-      ctx.lineTo(width, i * channelHeight);
-    }
-
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.lineWidth = 2;
-    const channelColor = []; // Horizontal Range
-
-    const $0 = 0; // Draw start
-
-    const $1 = l; // Draw End
-
-    const gridX = (width - left) / ($1 - $0);
-    const step = Math.max(1, Math.round(1 / gridX));
-
-    for (let i = 0; i < f.length; i++) {
-      ctx.beginPath();
-      channelColor[i] = color_js__WEBPACK_IMPORTED_MODULE_0__(fgColor).shiftHue(i * hueOffset).toHSL();
-      ctx.fillStyle = channelColor[i];
-      let maxInStep;
-
-      for (let j = $0; j < $1; j++) {
-        const samp = _sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.atodb(f[i][j]);
-        const $step = (j - $0) % step;
-        if ($step === 0) maxInStep = samp;
-
-        if ($step !== step - 1) {
-          if ($step !== 0 && samp > maxInStep) maxInStep = samp;
-          continue;
-        }
-
-        const x = (j - $0) * gridX + left;
-        const y = channelHeight * (i + 1 - Math.min(1, Math.max(0, maxInStep / 100 + 1)));
-        if (j === $0) ctx.moveTo(x, y);else ctx.lineTo(x, y);
-      }
-
-      ctx.lineTo(width, channelHeight * (i + 1));
-      ctx.lineTo(left, channelHeight * (i + 1));
-      ctx.closePath();
-      ctx.fill();
-    }
-  }
-
-}
-
-_defineProperty(SpectroscopeUI, "defaultSize", [120, 60]);
-
-/***/ }),
-
 /***/ "./node_modules/color-js/color.js":
 /*!****************************************!*\
   !*** ./node_modules/color-js/color.js ***!
@@ -2515,6 +861,1474 @@ if (true) {
 
 /***/ }),
 
+/***/ "./src/index.ts":
+/*!**********************!*\
+  !*** ./src/index.ts ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "name": () => (/* binding */ name),
+/* harmony export */   "author": () => (/* binding */ author),
+/* harmony export */   "license": () => (/* binding */ license),
+/* harmony export */   "keywords": () => (/* binding */ keywords),
+/* harmony export */   "version": () => (/* binding */ version),
+/* harmony export */   "description": () => (/* binding */ description),
+/* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
+
+
+/***/ }),
+
+/***/ "./src/objects/base.ts":
+/*!*****************************!*\
+  !*** ./src/objects/base.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ BaseAnalyserObject)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class BaseAnalyserObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {
+}
+BaseAnalyserObject.package = _index__WEBPACK_IMPORTED_MODULE_0__.name;
+BaseAnalyserObject.author = _index__WEBPACK_IMPORTED_MODULE_0__.author;
+BaseAnalyserObject.version = _index__WEBPACK_IMPORTED_MODULE_0__.version;
+BaseAnalyserObject.description = _index__WEBPACK_IMPORTED_MODULE_0__.description;
+
+
+/***/ }),
+
+/***/ "./src/objects/default.ts":
+/*!********************************!*\
+  !*** ./src/objects/default.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ DefaultAnalyserObject)
+/* harmony export */ });
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./src/index.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class DefaultAnalyserObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.DefaultObject {
+}
+DefaultAnalyserObject.package = _index__WEBPACK_IMPORTED_MODULE_0__.name;
+DefaultAnalyserObject.author = _index__WEBPACK_IMPORTED_MODULE_0__.author;
+DefaultAnalyserObject.version = _index__WEBPACK_IMPORTED_MODULE_0__.version;
+DefaultAnalyserObject.description = _index__WEBPACK_IMPORTED_MODULE_0__.description;
+
+
+/***/ }),
+
+/***/ "./src/objects/oscilloscope.ts":
+/*!*************************************!*\
+  !*** ./src/objects/oscilloscope.ts ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Oscilloscope)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _ui_oscilloscope__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/oscilloscope */ "./src/ui/oscilloscope.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+
+class Oscilloscope extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { node: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 0;
+    });
+    this.on("updateProps", (props) => {
+      if (this._.node) {
+        const { parameters } = this._.node;
+        if (props.windowFunction)
+          this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
+        if (props.fftSize)
+          this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
+        if (props.fftOverlap)
+          this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
+        if (props.windowSize)
+          this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
+      }
+    });
+    this.on("postInit", async () => {
+      await _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
+      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode(this.audioCtx);
+      const { parameters } = this._.node;
+      this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
+      this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
+      this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
+      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
+      this.disconnectAudioInlet();
+      this.inletAudioConnections[0] = { node: this._.node, index: 0 };
+      this.connectAudioInlet();
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data))
+          this.updateUI({ paint: {} });
+      }
+    });
+    this.on("destroy", () => {
+      if (this._.node)
+        this._.node.destroy();
+    });
+  }
+}
+Oscilloscope.description = "Oscilloscope";
+Oscilloscope.inlets = [{
+  isHot: true,
+  type: "signal",
+  description: "Signal"
+}];
+Oscilloscope.props = {
+  windowSize: {
+    type: "number",
+    default: 1024,
+    description: "Signal window size"
+  },
+  fftSize: {
+    type: "number",
+    default: 1024,
+    description: "FFT Size for analysis"
+  },
+  fftOverlap: {
+    type: "number",
+    default: 2,
+    description: "FFT overlap count (integer)"
+  },
+  windowFunction: {
+    type: "enum",
+    enums: ["blackman", "hamming", "hann", "triangular"],
+    default: "blackman",
+    description: "Window Function aoolied for FFT analysis window"
+  },
+  continuous: {
+    type: "boolean",
+    default: true,
+    description: "Continuous drawing",
+    isUIState: true
+  },
+  frameRate: {
+    type: "number",
+    default: 60,
+    description: "UI refresh rate",
+    isUIState: true
+  },
+  interleaved: {
+    type: "boolean",
+    default: false,
+    description: "Draw channels seperately",
+    isUIState: true
+  },
+  stablize: {
+    type: "boolean",
+    default: true,
+    description: "Stablize",
+    isUIState: true
+  },
+  range: {
+    type: "number",
+    default: 1,
+    description: "Vertical range",
+    isUIState: true
+  },
+  autoRange: {
+    type: "boolean",
+    default: true,
+    description: "Auto adjust range if > 1",
+    isUIState: true
+  },
+  showStats: {
+    type: "boolean",
+    default: true,
+    description: "Show stats texts",
+    isUIState: true
+  },
+  bgColor: {
+    type: "color",
+    default: "rgb(40, 40, 40)",
+    description: "Background color",
+    isUIState: true
+  },
+  phosphorColor: {
+    type: "color",
+    default: "hsl(0, 100%, 85%)",
+    description: "Phosphor color",
+    isUIState: true
+  },
+  hueOffset: {
+    type: "number",
+    default: 60,
+    description: "Channel Color Hue offset",
+    isUIState: true
+  },
+  textColor: {
+    type: "color",
+    default: "#DDDD99",
+    description: "Info text color",
+    isUIState: true
+  },
+  gridColor: {
+    type: "color",
+    default: "#404040",
+    description: "Grid color",
+    isUIState: true
+  },
+  seperatorColor: {
+    type: "color",
+    default: "white",
+    description: "Channel seperator color",
+    isUIState: true
+  }
+};
+Oscilloscope.UI = _ui_oscilloscope__WEBPACK_IMPORTED_MODULE_1__.default;
+
+
+/***/ }),
+
+/***/ "./src/objects/spectral-analyser.ts":
+/*!******************************************!*\
+  !*** ./src/objects/spectral-analyser.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ SpectralAnalyser)
+/* harmony export */ });
+/* harmony import */ var _default__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./default */ "./src/objects/default.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class SpectralAnalyser extends _default__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { node: void 0, $requestTimer: -1 };
+  }
+  subscribe() {
+    super.subscribe();
+    const startRequest = () => {
+      const request = async () => {
+        if (this._.node && !this._.node.destroyed) {
+          const extractorKeys = [
+            "buffer",
+            "lastAmplitudes",
+            "allAmplitudes",
+            "amplitude",
+            "estimatedFreq",
+            "centroid",
+            "flatness",
+            "flux",
+            "kurtosis",
+            "skewness",
+            "rolloff",
+            "slope",
+            "spread"
+          ];
+          const gets = [];
+          extractorKeys.forEach((key) => {
+            if (this.getProp(key))
+              gets.push(key);
+          });
+          const got = await this._.node.gets(...gets);
+          this.outlet(0, got);
+        }
+        if (this.getProp("continuous"))
+          scheduleRequest();
+      };
+      const scheduleRequest = () => {
+        this._.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
+      };
+      request();
+    };
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+    });
+    this.on("updateProps", (props) => {
+      if (this._.node) {
+        const { parameters } = this._.node;
+        if (props.continuous)
+          startRequest();
+        if (props.windowFunction)
+          this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
+        if (props.fftSize)
+          this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
+        if (props.fftOverlap)
+          this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
+        if (props.windowSize)
+          this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
+      }
+    });
+    this.on("postInit", async () => {
+      await _sdk__WEBPACK_IMPORTED_MODULE_1__.SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
+      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_1__.SpectralAnalyserNode(this.audioCtx);
+      const { parameters } = this._.node;
+      this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
+      this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
+      this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
+      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
+      this.disconnectAudioInlet();
+      this.inletAudioConnections[0] = { node: this._.node, index: 0 };
+      this.connectAudioInlet();
+      if (this.getProp("continuous"))
+        startRequest();
+      this.on("inlet", (e) => {
+        if (e.inlet === 0) {
+          if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(e.data))
+            startRequest();
+        }
+      });
+    });
+    this.on("destroy", () => {
+      window.clearTimeout(this._.$requestTimer);
+      if (this._.node)
+        this._.node.destroy();
+    });
+  }
+}
+SpectralAnalyser.description = "Spectral feature extractor";
+SpectralAnalyser.inlets = [{
+  isHot: true,
+  type: "signal",
+  description: "Signal, bang to extract features"
+}];
+SpectralAnalyser.outlets = [{
+  type: "object",
+  description: "Features chosen as object"
+}];
+SpectralAnalyser.props = {
+  speedLim: {
+    type: "number",
+    default: 16,
+    description: "If continuous, value output speed limit in ms"
+  },
+  windowSize: {
+    type: "number",
+    default: 1024,
+    description: "Buffer window size"
+  },
+  fftSize: {
+    type: "number",
+    default: 1024,
+    description: "FFT Size for analysis"
+  },
+  fftOverlap: {
+    type: "number",
+    default: 2,
+    description: "FFT overlap count (integer)"
+  },
+  windowFunction: {
+    type: "enum",
+    enums: ["blackman", "hamming", "hann", "triangular"],
+    default: "blackman",
+    description: "Window Function aoolied for FFT analysis window"
+  },
+  continuous: {
+    type: "boolean",
+    default: false,
+    description: "Whether output is continuous"
+  },
+  buffer: {
+    type: "boolean",
+    default: false,
+    description: "Getting the signal buffer"
+  },
+  lastAmplitudes: {
+    type: "boolean",
+    default: false,
+    description: "Getting the last amplitudes frame"
+  },
+  allAmplitudes: {
+    type: "boolean",
+    default: false,
+    description: "Getting all the amplitudes frame"
+  },
+  amplitude: {
+    type: "boolean",
+    default: false,
+    description: "Getting the sum of the last amplitude frame"
+  },
+  estimatedFreq: {
+    type: "boolean",
+    default: false,
+    description: "Getting the estimated frequency"
+  },
+  centroid: {
+    type: "boolean",
+    default: false,
+    description: "Getting the spectral centroid"
+  },
+  flatness: {
+    type: "boolean",
+    default: false,
+    description: "Getting the spectral flatness"
+  },
+  flux: {
+    type: "boolean",
+    default: false,
+    description: "Getting the spectral flux"
+  },
+  kurtosis: {
+    type: "boolean",
+    default: false,
+    description: "Getting the spectral kurtosis"
+  },
+  skewness: {
+    type: "boolean",
+    default: false,
+    description: "Getting the spectral skewness"
+  },
+  rolloff: {
+    type: "boolean",
+    default: false,
+    description: "Getting the spectral rolloff"
+  },
+  slope: {
+    type: "boolean",
+    default: false,
+    description: "Getting the spectral slope"
+  },
+  spread: {
+    type: "boolean",
+    default: false,
+    description: "Getting the spectral spread"
+  }
+};
+
+
+/***/ }),
+
+/***/ "./src/objects/spectrogram.ts":
+/*!************************************!*\
+  !*** ./src/objects/spectrogram.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Spectrogram)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _ui_spectrogram__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/spectrogram */ "./src/ui/spectrogram.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+
+class Spectrogram extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { node: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 0;
+    });
+    this.on("updateProps", (props) => {
+      if (this._.node) {
+        const { parameters } = this._.node;
+        if (props.windowFunction)
+          this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
+        if (props.fftSize)
+          this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
+        if (props.fftOverlap)
+          this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
+        if (props.windowSize)
+          this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
+      }
+    });
+    this.on("postInit", async () => {
+      await _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
+      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode(this.audioCtx);
+      const { parameters } = this._.node;
+      this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
+      this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
+      this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
+      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
+      this.disconnectAudioInlet();
+      this.inletAudioConnections[0] = { node: this._.node, index: 0 };
+      this.connectAudioInlet();
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data))
+          this.updateUI({ paint: {} });
+      }
+    });
+    this.on("destroy", () => {
+      if (this._.node)
+        this._.node.destroy();
+    });
+  }
+}
+Spectrogram.description = "Spectroscope";
+Spectrogram.inlets = [{
+  isHot: true,
+  type: "signal",
+  description: "Signal"
+}];
+Spectrogram.props = {
+  windowSize: {
+    type: "number",
+    default: 65536,
+    description: "Signal window size"
+  },
+  fftSize: {
+    type: "number",
+    default: 1024,
+    description: "FFT Size for analysis"
+  },
+  fftOverlap: {
+    type: "number",
+    default: 2,
+    description: "FFT overlap count (integer)"
+  },
+  windowFunction: {
+    type: "enum",
+    enums: ["blackman", "hamming", "hann", "triangular"],
+    default: "blackman",
+    description: "Window Function aoolied for FFT analysis window"
+  },
+  continuous: {
+    type: "boolean",
+    default: true,
+    description: "Continuous drawing",
+    isUIState: true
+  },
+  frameRate: {
+    type: "number",
+    default: 60,
+    description: "UI refresh rate",
+    isUIState: true
+  },
+  bgColor: {
+    type: "color",
+    default: "rgb(40, 40, 40)",
+    description: "Background color",
+    isUIState: true
+  },
+  gridColor: {
+    type: "color",
+    default: "#404040",
+    description: "Grid color",
+    isUIState: true
+  },
+  seperatorColor: {
+    type: "color",
+    default: "white",
+    description: "Channel seperator color",
+    isUIState: true
+  }
+};
+Spectrogram.UI = _ui_spectrogram__WEBPACK_IMPORTED_MODULE_1__.default;
+
+
+/***/ }),
+
+/***/ "./src/objects/spectroscope.ts":
+/*!*************************************!*\
+  !*** ./src/objects/spectroscope.ts ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Spectroscope)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _ui_spectroscope__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/spectroscope */ "./src/ui/spectroscope.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+
+class Spectroscope extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { node: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 0;
+    });
+    this.on("updateProps", (props) => {
+      if (this._.node) {
+        const { parameters } = this._.node;
+        if (props.windowFunction)
+          this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(props.windowFunction)]]);
+        if (props.fftSize)
+          this.applyBPF(parameters.get("fftSize"), [[props.fftSize]]);
+        if (props.fftOverlap)
+          this.applyBPF(parameters.get("fftOverlap"), [[props.fftOverlap]]);
+        if (props.windowSize)
+          this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
+      }
+    });
+    this.on("postInit", async () => {
+      await _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode.register(this.audioCtx.audioWorklet);
+      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_2__.SpectralAnalyserNode(this.audioCtx);
+      const { parameters } = this._.node;
+      this.applyBPF(parameters.get("windowFunction"), [[["blackman", "hamming", "hann", "triangular"].indexOf(this.getProp("windowFunction"))]]);
+      this.applyBPF(parameters.get("fftSize"), [[this.getProp("fftSize")]]);
+      this.applyBPF(parameters.get("fftOverlap"), [[this.getProp("fftOverlap")]]);
+      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
+      this.disconnectAudioInlet();
+      this.inletAudioConnections[0] = { node: this._.node, index: 0 };
+      this.connectAudioInlet();
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data))
+          this.updateUI({ paint: {} });
+      }
+    });
+    this.on("destroy", () => {
+      if (this._.node)
+        this._.node.destroy();
+    });
+  }
+}
+Spectroscope.description = "Spectroscope";
+Spectroscope.inlets = [{
+  isHot: true,
+  type: "signal",
+  description: "Signal"
+}];
+Spectroscope.props = {
+  windowSize: {
+    type: "number",
+    default: 1024,
+    description: "Signal window size"
+  },
+  fftSize: {
+    type: "number",
+    default: 1024,
+    description: "FFT Size for analysis"
+  },
+  fftOverlap: {
+    type: "number",
+    default: 2,
+    description: "FFT overlap count (integer)"
+  },
+  windowFunction: {
+    type: "enum",
+    enums: ["blackman", "hamming", "hann", "triangular"],
+    default: "blackman",
+    description: "Window Function aoolied for FFT analysis window"
+  },
+  continuous: {
+    type: "boolean",
+    default: true,
+    description: "Continuous drawing",
+    isUIState: true
+  },
+  frameRate: {
+    type: "number",
+    default: 60,
+    description: "UI refresh rate",
+    isUIState: true
+  },
+  bgColor: {
+    type: "color",
+    default: "rgb(40, 40, 40)",
+    description: "Background color",
+    isUIState: true
+  },
+  fgColor: {
+    type: "color",
+    default: "hsl(0, 100%, 85%)",
+    description: "Foreground color",
+    isUIState: true
+  },
+  hueOffset: {
+    type: "number",
+    default: 60,
+    description: "Channel Color Hue offset",
+    isUIState: true
+  },
+  gridColor: {
+    type: "color",
+    default: "#404040",
+    description: "Grid color",
+    isUIState: true
+  },
+  seperatorColor: {
+    type: "color",
+    default: "white",
+    description: "Channel seperator color",
+    isUIState: true
+  }
+};
+Spectroscope.UI = _ui_spectroscope__WEBPACK_IMPORTED_MODULE_1__.default;
+
+
+/***/ }),
+
+/***/ "./src/objects/temporal-analyser.ts":
+/*!******************************************!*\
+  !*** ./src/objects/temporal-analyser.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ TemporalAnalyser)
+/* harmony export */ });
+/* harmony import */ var _default__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./default */ "./src/objects/default.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class TemporalAnalyser extends _default__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { node: void 0, $requestTimer: -1 };
+  }
+  subscribe() {
+    super.subscribe();
+    const startRequest = () => {
+      const request = async () => {
+        if (this._.node && !this._.node.destroyed) {
+          const extractorKeys = [
+            "buffer",
+            "rms",
+            "zcr",
+            "absMax"
+          ];
+          const gets = [];
+          extractorKeys.forEach((key) => {
+            if (this.getProp(key))
+              gets.push(key);
+          });
+          const got = await this._.node.gets(...gets);
+          this.outlet(0, got);
+        }
+        if (this.getProp("continuous"))
+          scheduleRequest();
+      };
+      const scheduleRequest = () => {
+        this._.$requestTimer = window.setTimeout(request, this.getProp("speedLim"));
+      };
+      request();
+    };
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+    });
+    this.on("updateProps", (props) => {
+      if (this._.node) {
+        const { parameters } = this._.node;
+        if (props.continuous)
+          startRequest();
+        if (props.windowSize)
+          this.applyBPF(parameters.get("windowSize"), [[props.windowSize]]);
+      }
+    });
+    this.on("postInit", async () => {
+      await _sdk__WEBPACK_IMPORTED_MODULE_1__.TemporalAnalyserNode.register(this.audioCtx.audioWorklet);
+      this._.node = new _sdk__WEBPACK_IMPORTED_MODULE_1__.TemporalAnalyserNode(this.audioCtx);
+      const { parameters } = this._.node;
+      this.applyBPF(parameters.get("windowSize"), [[this.getProp("windowSize")]]);
+      this.disconnectAudioInlet();
+      this.inletAudioConnections[0] = { node: this._.node, index: 0 };
+      this.connectAudioInlet();
+      if (this.getProp("continuous"))
+        startRequest();
+      this.on("inlet", (e) => {
+        if (e.inlet === 0) {
+          if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(e.data))
+            startRequest();
+        }
+      });
+    });
+    this.on("destroy", () => {
+      window.clearTimeout(this._.$requestTimer);
+      if (this._.node)
+        this._.node.destroy();
+    });
+  }
+}
+TemporalAnalyser.description = "Temporal feature extractor";
+TemporalAnalyser.inlets = [{
+  isHot: true,
+  type: "signal",
+  description: "Signal, bang to extract features"
+}];
+TemporalAnalyser.outlets = [{
+  type: "object",
+  description: "Features chosen as object"
+}];
+TemporalAnalyser.props = {
+  speedLim: {
+    type: "number",
+    default: 16,
+    description: "If continuous, value output speed limit in ms"
+  },
+  windowSize: {
+    type: "number",
+    default: 1024,
+    description: "Buffer window size"
+  },
+  continuous: {
+    type: "boolean",
+    default: false,
+    description: "Whether output is continuous"
+  },
+  buffer: {
+    type: "boolean",
+    default: false,
+    description: "Getting the signal buffer"
+  },
+  absMax: {
+    type: "boolean",
+    default: false,
+    description: "Getting the absolute Maximum"
+  },
+  rms: {
+    type: "boolean",
+    default: false,
+    description: "Getting the Root Mean Square"
+  },
+  zcr: {
+    type: "boolean",
+    default: false,
+    description: "Getting the zero crossing count"
+  }
+};
+
+
+/***/ }),
+
+/***/ "./src/package-info.ts":
+/*!*****************************!*\
+  !*** ./src/package-info.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+var _package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../package.json */ "./package.json");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/ (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (_package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(_package_json__WEBPACK_IMPORTED_MODULE_0__, 2))));
+
+
+/***/ }),
+
+/***/ "./src/sdk.ts":
+/*!********************!*\
+  !*** ./src/sdk.ts ***!
+  \********************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "React": () => (/* binding */ React),
+/* harmony export */   "PatcherAudio": () => (/* binding */ PatcherAudio),
+/* harmony export */   "OperableAudioBuffer": () => (/* binding */ OperableAudioBuffer),
+/* harmony export */   "Patcher": () => (/* binding */ Patcher),
+/* harmony export */   "Box": () => (/* binding */ Box),
+/* harmony export */   "Line": () => (/* binding */ Line),
+/* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
+/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
+/* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
+/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
+/* harmony export */   "CanvasUI": () => (/* binding */ CanvasUI),
+/* harmony export */   "DefaultPopupUI": () => (/* binding */ DefaultPopupUI),
+/* harmony export */   "CodePopupUI": () => (/* binding */ CodePopupUI),
+/* harmony export */   "DOMUI": () => (/* binding */ DOMUI),
+/* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
+/* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
+/* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
+/* harmony export */   "Bang": () => (/* binding */ Bang),
+/* harmony export */   "isBang": () => (/* binding */ isBang),
+/* harmony export */   "TransmitterNode": () => (/* binding */ TransmitterNode),
+/* harmony export */   "TemporalAnalyserNode": () => (/* binding */ TemporalAnalyserNode),
+/* harmony export */   "SpectralAnalyserNode": () => (/* binding */ SpectralAnalyserNode),
+/* harmony export */   "MathUtils": () => (/* binding */ MathUtils),
+/* harmony export */   "BufferUtils": () => (/* binding */ BufferUtils),
+/* harmony export */   "Utils": () => (/* binding */ Utils)
+/* harmony export */ });
+const sdk = globalThis.jspatcherEnv.sdk;
+const {
+  React,
+  PatcherAudio,
+  OperableAudioBuffer,
+  Patcher,
+  Box,
+  Line,
+  BaseObject,
+  DefaultObject,
+  BaseUI,
+  DefaultUI,
+  CanvasUI,
+  DefaultPopupUI,
+  CodePopupUI,
+  DOMUI,
+  generateDefaultObject,
+  generateRemoteObject,
+  generateRemotedObject,
+  Bang,
+  isBang,
+  TransmitterNode,
+  TemporalAnalyserNode,
+  SpectralAnalyserNode,
+  MathUtils,
+  BufferUtils,
+  Utils
+} = sdk;
+
+
+/***/ }),
+
+/***/ "./src/ui/oscilloscope.ts":
+/*!********************************!*\
+  !*** ./src/ui/oscilloscope.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ OscilloscopeUI)
+/* harmony export */ });
+/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! color-js */ "./node_modules/color-js/color.js");
+/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(color_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class OscilloscopeUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.CanvasUI {
+  componentDidMount() {
+    const { bgColor } = this.state;
+    const ctx = this.ctx;
+    if (!ctx)
+      return;
+    const [width, height] = this.fullSize();
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, width, height);
+    super.componentDidMount();
+  }
+  async paint() {
+    if (this.state.continuous)
+      this.schedulePaint();
+    if (!this.object._.node)
+      return;
+    if (this.object._.node.destroyed)
+      return;
+    const {
+      stablize,
+      interleaved,
+      range,
+      autoRange,
+      showStats,
+      bgColor,
+      phosphorColor,
+      hueOffset,
+      textColor,
+      gridColor,
+      seperatorColor
+    } = this.state;
+    const ctx = this.ctx;
+    if (!ctx)
+      return;
+    const left = 0;
+    const bottom = 0;
+    const { estimatedFreq, buffer } = await this.object._.node.gets("estimatedFreq", "buffer");
+    const l = this.object.getProp("windowSize");
+    const { sampleRate } = this.object.audioCtx;
+    const [width, height] = this.fullSize();
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, width, height);
+    if (!buffer)
+      return;
+    const { $read: $ui32, data: t } = buffer;
+    if (!t || !t.length || !t[0].length)
+      return;
+    const $ = Atomics.load($ui32, 0);
+    const channels = t.length;
+    const dl = t[0].length;
+    let yMin = -range;
+    let yMax = range;
+    let yFactor = range;
+    if (autoRange) {
+      let i = channels;
+      let s = 0;
+      while (i--) {
+        let j = l;
+        while (j--) {
+          s = t[i][($ + j) % dl];
+          if (s < yMin)
+            yMin = s;
+          else if (s > yMax)
+            yMax = s;
+        }
+      }
+      yFactor = Math.max(1, Math.abs(yMin), Math.abs(yMax));
+    }
+    const calcY = (v, i) => channelHeight * (+interleaved * i + 1 - (v - yMin) / (yMax - yMin));
+    ctx.strokeStyle = gridColor;
+    let vStep = 0.25;
+    while (yFactor / 2 / vStep > 2)
+      vStep *= 2;
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    const gridChannels = interleaved ? channels : 1;
+    const channelHeight = (height - bottom) / gridChannels;
+    for (let i = 0; i < gridChannels; i++) {
+      let y = calcY(0, i);
+      ctx.moveTo(left, y);
+      ctx.lineTo(width, y);
+      for (let j = vStep; j < yFactor; j += vStep) {
+        y = calcY(j, i);
+        ctx.moveTo(left, y);
+        ctx.lineTo(width, y);
+        y = calcY(-j, i);
+        ctx.moveTo(left, y);
+        ctx.lineTo(width, y);
+      }
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.setLineDash([4, 2]);
+    ctx.strokeStyle = seperatorColor;
+    for (let i = 1; i < gridChannels; i++) {
+      ctx.moveTo(left, i * channelHeight);
+      ctx.lineTo(width, i * channelHeight);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.lineWidth = 2;
+    const channelColor = [];
+    let $zerox = 0;
+    const period = sampleRate / estimatedFreq[0];
+    const times = Math.floor(l / period) - 1;
+    for (let i = 0; i < channels; i++) {
+      let $0 = 0;
+      let $1 = l;
+      let drawL = l;
+      if (stablize) {
+        if (i === 0) {
+          const thresh = (yMin + yMax) * 0.5 + 1e-3;
+          while ($zerox < l && t[i][($ + $zerox++) % dl] > thresh)
+            ;
+          if ($zerox >= l - 1) {
+            $zerox = 0;
+          } else {
+            while ($zerox < l && t[i][($ + $zerox++) % dl] < thresh)
+              ;
+            $zerox--;
+            if ($zerox >= l - 1 || $zerox < 0) {
+              $zerox = 0;
+            }
+          }
+        }
+        drawL = times > 0 && isFinite(period) ? ~~Math.min(period * times, l - $zerox) : l - $zerox;
+      }
+      $0 = Math.round($zerox);
+      $1 = Math.round($zerox + drawL);
+      const pixelsPerSamp = (width - left) / ($1 - 1 - $0);
+      const sampsPerPixel = Math.max(1, Math.round(1 / pixelsPerSamp));
+      if (interleaved) {
+        ctx.save();
+        const clip = new Path2D();
+        clip.rect(0, i * channelHeight, width, channelHeight);
+        ctx.clip(clip);
+      }
+      ctx.beginPath();
+      channelColor[i] = color_js__WEBPACK_IMPORTED_MODULE_0__(phosphorColor).shiftHue(i * hueOffset).toHSL();
+      ctx.strokeStyle = channelColor[i];
+      let maxInStep;
+      let minInStep;
+      for (let j = $0; j < $1; j++) {
+        const $j = (j + $) % dl;
+        const samp = t[i][$j];
+        const $step = (j - $0) % sampsPerPixel;
+        if ($step === 0) {
+          maxInStep = samp;
+          minInStep = samp;
+        }
+        if ($step !== sampsPerPixel - 1) {
+          if ($step !== 0) {
+            if (samp > maxInStep)
+              maxInStep = samp;
+            if (samp < minInStep)
+              minInStep = samp;
+          }
+          continue;
+        }
+        const x = (j - $step - $0) * pixelsPerSamp;
+        let y = calcY(maxInStep, i);
+        if (j === $0)
+          ctx.moveTo(x, y);
+        else
+          ctx.lineTo(x, y);
+        if (minInStep !== maxInStep) {
+          y = calcY(minInStep, i);
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.stroke();
+      if (interleaved)
+        ctx.restore();
+    }
+    if (showStats) {
+      ctx.font = "bold 12px Consolas, monospace";
+      ctx.fillStyle = textColor;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.fillText(yFactor.toFixed(2), 2, 2);
+      ctx.textBaseline = "bottom";
+      ctx.fillText((-yFactor).toFixed(2), 2, height - 2);
+      ctx.textAlign = "right";
+      const freqStatY = height - 2 - (estimatedFreq.length - 1) * 14;
+      for (let i = 0; i < estimatedFreq.length; i++) {
+        const freq = estimatedFreq[i];
+        ctx.fillStyle = channelColor[i];
+        const y = interleaved ? channelHeight * (i + 1) - 2 : freqStatY + 14 * i;
+        ctx.fillText(freq.toFixed(2) + "Hz", width - 2, y);
+      }
+    }
+  }
+}
+OscilloscopeUI.defaultSize = [120, 60];
+
+
+/***/ }),
+
+/***/ "./src/ui/spectrogram.ts":
+/*!*******************************!*\
+  !*** ./src/ui/spectrogram.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ SpectrogramUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+class SpectrogramUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
+  constructor() {
+    super(...arguments);
+    this.$lastFrame = -1;
+    this.dataFrames = 1;
+    this.offscreenCtx = document.createElement("canvas").getContext("2d");
+    this.offscreenVRes = 1024;
+  }
+  componentDidMount() {
+    const { bgColor } = this.state;
+    const { ctx, offscreenCtx, dataFrames } = this;
+    if (!ctx)
+      return;
+    const [width, height] = this.fullSize();
+    offscreenCtx.canvas.width = dataFrames;
+    offscreenCtx.canvas.height = this.offscreenVRes;
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, width, height);
+    super.componentDidMount();
+  }
+  async paint() {
+    if (this.state.continuous)
+      this.schedulePaint();
+    if (!this.object._.node)
+      return;
+    if (this.object._.node.destroyed)
+      return;
+    const {
+      bgColor,
+      gridColor,
+      seperatorColor
+    } = this.state;
+    const { ctx, offscreenCtx, offscreenVRes } = this;
+    if (!ctx || !offscreenCtx)
+      return;
+    const left = 0;
+    const bottom = 0;
+    const allAmplitudes = await this.object._.node.getAllAmplitudes();
+    const [width, height] = this.fullSize();
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, width, height);
+    if (!allAmplitudes)
+      return;
+    const { data: f, $totalFrames, fftBins: bins, frames, dataFrames, $writeFrame: $writeFrameUi32 } = allAmplitudes;
+    if (!f || !f.length || !f[0].length)
+      return;
+    const l = f[0].length;
+    const channels = f.length;
+    const $lastFrame = Atomics.load($totalFrames, 0) - 1;
+    const $writeFrame = Atomics.load($writeFrameUi32, 0);
+    let $frame0 = $writeFrame;
+    let $frame1 = $frame0 + dataFrames;
+    if (this.dataFrames !== dataFrames) {
+      offscreenCtx.canvas.width = dataFrames;
+      this.dataFrames = dataFrames;
+    } else if ($lastFrame >= this.$lastFrame) {
+      $frame0 = Math.max($frame0, $frame1 - ($lastFrame - this.$lastFrame));
+    }
+    this.$lastFrame = $lastFrame;
+    const osChannelHeight = offscreenVRes / channels;
+    const step = Math.max(1, Math.round(bins / osChannelHeight));
+    const vGrid = osChannelHeight / bins;
+    for (let i = 0; i < f.length; i++) {
+      for (let j = $frame0; j < $frame1; j++) {
+        let maxInStep;
+        offscreenCtx.fillStyle = "black";
+        offscreenCtx.fillRect(j % dataFrames, i * osChannelHeight, 1, osChannelHeight);
+        for (let k = 0; k < bins; k++) {
+          const samp = _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.atodb(f[i][(k + j * bins) % l]);
+          const $step = k % step;
+          if ($step === 0)
+            maxInStep = samp;
+          if ($step !== step - 1) {
+            if ($step !== 0 && samp > maxInStep)
+              maxInStep = samp;
+            continue;
+          }
+          const normalized = Math.min(1, Math.max(0, (maxInStep + 10) / 100 + 1));
+          if (normalized === 0)
+            continue;
+          const hue = (normalized * 180 + 240) % 360;
+          const lum = normalized * 50;
+          offscreenCtx.fillStyle = `hsl(${hue}, 100%, ${lum}%)`;
+          offscreenCtx.fillRect(j % dataFrames, (bins - k - 1) * vGrid + i * osChannelHeight, 1, Math.max(1, vGrid));
+        }
+      }
+    }
+    ctx.strokeStyle = gridColor;
+    const vStep = 0.25;
+    const hStep = 0.25;
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    const gridChannels = channels;
+    const channelHeight = (height - bottom) / gridChannels;
+    for (let i = 0; i < gridChannels; i++) {
+      for (let j = vStep; j < 1; j += vStep) {
+        const y = (i + j) * channelHeight;
+        ctx.moveTo(left, y);
+        ctx.lineTo(width, y);
+      }
+    }
+    for (let i = hStep; i < 1; i += hStep) {
+      const x = left + (width - left) * i;
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, bottom);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.setLineDash([4, 2]);
+    ctx.strokeStyle = seperatorColor;
+    for (let i = 1; i < gridChannels; i++) {
+      ctx.moveTo(left, i * channelHeight);
+      ctx.lineTo(width, i * channelHeight);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.imageSmoothingEnabled = false;
+    $frame0 = ($frame1 - frames) % dataFrames;
+    $frame1 = $frame0 + frames;
+    if ($frame1 <= dataFrames) {
+      ctx.drawImage(offscreenCtx.canvas, $frame0, 0, frames, offscreenVRes, left, 0, width - left, height - bottom);
+    } else {
+      const sSplit = dataFrames - $frame0;
+      const dSplit = sSplit / frames * (width - left);
+      ctx.drawImage(offscreenCtx.canvas, $frame0, 0, sSplit, offscreenVRes, left, 0, dSplit, height - bottom);
+      ctx.drawImage(offscreenCtx.canvas, 0, 0, $frame1 - dataFrames - 0.01, offscreenVRes, dSplit + left, 0, width - left - dSplit, height - bottom);
+    }
+    ctx.restore();
+  }
+}
+SpectrogramUI.defaultSize = [120, 60];
+
+
+/***/ }),
+
+/***/ "./src/ui/spectroscope.ts":
+/*!********************************!*\
+  !*** ./src/ui/spectroscope.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ SpectroscopeUI)
+/* harmony export */ });
+/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! color-js */ "./node_modules/color-js/color.js");
+/* harmony import */ var color_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(color_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class SpectroscopeUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.CanvasUI {
+  componentDidMount() {
+    const { bgColor } = this.state;
+    const ctx = this.ctx;
+    if (!ctx)
+      return;
+    const [width, height] = this.fullSize();
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, width, height);
+    super.componentDidMount();
+  }
+  async paint() {
+    if (this.state.continuous)
+      this.schedulePaint();
+    if (!this.object._.node)
+      return;
+    if (this.object._.node.destroyed)
+      return;
+    const {
+      bgColor,
+      fgColor,
+      hueOffset,
+      gridColor,
+      seperatorColor
+    } = this.state;
+    const ctx = this.ctx;
+    if (!ctx)
+      return;
+    const left = 0;
+    const bottom = 0;
+    const lastAmplitudes = await this.object._.node.getLastAmplitudes();
+    const [width, height] = this.fullSize();
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, width, height);
+    if (!lastAmplitudes)
+      return;
+    const { data: f } = lastAmplitudes;
+    if (!f || !f.length || !f[0].length)
+      return;
+    const l = f[0].length;
+    const channels = f.length;
+    ctx.strokeStyle = gridColor;
+    const vStep = 0.25;
+    const hStep = 0.25;
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    const gridChannels = channels;
+    const channelHeight = (height - bottom) / gridChannels;
+    for (let i = 0; i < gridChannels; i++) {
+      for (let j = vStep; j < 1; j += vStep) {
+        const y = (i + j) * channelHeight;
+        ctx.moveTo(left, y);
+        ctx.lineTo(width, y);
+      }
+    }
+    for (let i = hStep; i < 1; i += hStep) {
+      const x = left + (width - left) * i;
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, bottom);
+    }
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.setLineDash([4, 2]);
+    ctx.strokeStyle = seperatorColor;
+    for (let i = 1; i < gridChannels; i++) {
+      ctx.moveTo(left, i * channelHeight);
+      ctx.lineTo(width, i * channelHeight);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.lineWidth = 2;
+    const channelColor = [];
+    const $0 = 0;
+    const $1 = l;
+    const gridX = (width - left) / ($1 - $0);
+    const step = Math.max(1, Math.round(1 / gridX));
+    for (let i = 0; i < f.length; i++) {
+      ctx.beginPath();
+      channelColor[i] = color_js__WEBPACK_IMPORTED_MODULE_0__(fgColor).shiftHue(i * hueOffset).toHSL();
+      ctx.fillStyle = channelColor[i];
+      let maxInStep;
+      for (let j = $0; j < $1; j++) {
+        const samp = _sdk__WEBPACK_IMPORTED_MODULE_1__.MathUtils.atodb(f[i][j]);
+        const $step = (j - $0) % step;
+        if ($step === 0)
+          maxInStep = samp;
+        if ($step !== step - 1) {
+          if ($step !== 0 && samp > maxInStep)
+            maxInStep = samp;
+          continue;
+        }
+        const x = (j - $0) * gridX + left;
+        const y = channelHeight * (i + 1 - Math.min(1, Math.max(0, maxInStep / 100 + 1)));
+        if (j === $0)
+          ctx.moveTo(x, y);
+        else
+          ctx.lineTo(x, y);
+      }
+      ctx.lineTo(width, channelHeight * (i + 1));
+      ctx.lineTo(left, channelHeight * (i + 1));
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+}
+SpectroscopeUI.defaultSize = [120, 60];
+
+
+/***/ }),
+
 /***/ "./package.json":
 /*!**********************!*\
   !*** ./package.json ***!
@@ -2522,7 +2336,7 @@ if (true) {
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-analysers","version":"1.0.0","description":"The analysers package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-analysers","devDependencies":{"@babel/core":"^7.15.0","@babel/plugin-proposal-class-properties":"^7.14.5","@babel/preset-env":"^7.15.0","@babel/preset-react":"^7.14.5","@babel/preset-typescript":"^7.15.0","@jspatcher/jspatcher":"^0.0.5","@types/react":"^17.0.19","babel-loader":"^8.2.2","clean-webpack-plugin":"^4.0.0-alpha.0","color-js":"^1.0.5","copy-webpack-plugin":"^9.0.1","react":"^17.0.2","typescript":"^4.3.5","util":"^0.12.4","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-analysers","version":"1.0.0","description":"The analysers package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-analysers","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","color-js":"^1.0.5","copy-webpack-plugin":"^9.0.1","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.8.0"},"dependencies":{}}');
 
 /***/ })
 
@@ -2654,6 +2468,7 @@ __webpack_require__.r(__webpack_exports__);
     "spectrogram~": _objects_spectrogram__WEBPACK_IMPORTED_MODULE_2__.default
   };
 });
+
 })();
 
 var __webpack_export_target__ = exports;

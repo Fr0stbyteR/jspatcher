@@ -96,7 +96,7 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.9.1630174656874"
+    prefix: "0.0.9.1630256694861"
   });
   self.skipWaiting();
   workbox.clientsClaim();
@@ -312,7 +312,7 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "ba31f3aa6f499661e965297d0ff8c4f9"
+    "revision": "219eca594ceaddc0b6a955f35054d2af"
   }, {
     "url": "js/0c3018b73d160e6c6afa.js",
     "revision": null
@@ -383,13 +383,13 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "url": "js/94dfd33fd323cd617f82.js",
     "revision": null
   }, {
+    "url": "js/995e581fcc7ffde55cf1.js",
+    "revision": null
+  }, {
     "url": "js/9aa8ad5c7a4cb099d0fb.worker.js",
     "revision": null
   }, {
     "url": "js/a7acfcca6fb672f16df9.js",
-    "revision": null
-  }, {
-    "url": "js/aad1c1b0fa67b06e3b4e.js",
     "revision": null
   }, {
     "url": "js/b48e24c12d2496127b6583b54fc55dfe.worker.js",
@@ -426,10 +426,10 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "revision": "1cbaa3cdd5ba147975aa27bb8a1914f4"
   }, {
     "url": "packages/analysers/index.js",
-    "revision": "3b33b17b9315e2fb66e6862a6433c99f"
+    "revision": "1ebf2dc29ad8a002cfb2dd3dad1a9df8"
   }, {
     "url": "packages/analysers/index.jspatpkg.js",
-    "revision": "0a1e9d0e69e79c0764db6f234d41cbe4"
+    "revision": "a07d822052f82b81bf48230fbb81e078"
   }, {
     "url": "packages/cac/index.js",
     "revision": "e88a675c39dcec8f3465f0fb8e9640e5"
@@ -438,52 +438,52 @@ define("./service-worker.js",['./workbox-3d645aa3'], function (workbox) { 'use s
     "revision": "a01480a2708378e29b60534fa0b53dad"
   }, {
     "url": "packages/live/index.js",
-    "revision": "a4e5db5c5bde111c3fae941e0826b0a0"
+    "revision": "2cf494c91433e6bdda61a76510959c3d"
   }, {
     "url": "packages/live/index.jspatpkg.js",
-    "revision": "15a6913bf3dcb28669595df073f6c48c"
+    "revision": "f68cc52ba42096c1215e08c07e33fa0c"
   }, {
     "url": "packages/midi/index.js",
-    "revision": "bfdf9536ddd998c1195585816dd4185e"
+    "revision": "e49a54449a6b2a6ebf375118034ca0b6"
   }, {
     "url": "packages/midi/index.jspatpkg.js",
-    "revision": "45138a02326339ddcb7d76f4275cde36"
+    "revision": "02abab3f8503592a36186eee087249d8"
   }, {
     "url": "packages/op/index.js",
-    "revision": "a3382b70a1ee9ebbd8fc2e8dccc5f5ee"
+    "revision": "385868ec3b4d903189ab3c5eeb200f1e"
   }, {
     "url": "packages/op/index.jsdsppkg.aw.js",
-    "revision": "9573c666bfe9b394a39f4fbfcd0599c0"
+    "revision": "add22de3402c21435d2b1f212b82b5bb"
   }, {
     "url": "packages/op/index.jsdsppkg.main.js",
-    "revision": "5a383cb0cd0ea53bd6db4ad5874ac71c"
+    "revision": "5684d7fc400c83f61017820053d60917"
   }, {
     "url": "packages/op/index.jspatpkg.js",
-    "revision": "49fd8b56cd59b41b5d7853fe3cc8bb51"
+    "revision": "dd9d631adc09107343116355dbee81eb"
   }, {
     "url": "packages/std/index.js",
-    "revision": "604101df00bb9173abbf0635b57dc3d0"
+    "revision": "67cd0af9bddb4be9d875c10d3917d095"
   }, {
     "url": "packages/std/index.jsdsppkg.aw.js",
-    "revision": "6c1f972ad338cb466200bd716ab7e84d"
+    "revision": "1476ab97da1d68c9259730f78e0c1631"
   }, {
     "url": "packages/std/index.jsdsppkg.main.js",
-    "revision": "61026ddd973544079fd735935caef15f"
+    "revision": "1ca78e3bb9aff5167579961c70b70253"
   }, {
     "url": "packages/std/index.jspatpkg.js",
-    "revision": "a229a2ac805102b992efe7802979604a"
+    "revision": "27c3e620b7b274291f5b9c96c15af525"
   }, {
     "url": "packages/ui/index.js",
-    "revision": "14709303082013eace71dd781cf845ca"
+    "revision": "71ca82f19c110e79e10963b28c3deda2"
   }, {
     "url": "packages/ui/index.jspatpkg.js",
-    "revision": "f89e3ab0c333e2e555b4cfce03633149"
+    "revision": "6f8b31c4ae2190688b82f178c997417c"
   }, {
     "url": "packages/webaudio/index.js",
-    "revision": "3526c48be6c6d64efe2c6c000bee3db4"
+    "revision": "ff5c856e234c2a254c6a5534fbc8e2c4"
   }, {
     "url": "packages/webaudio/index.jspatpkg.js",
-    "revision": "21fdd0cf99fae8fae0aa7d4e285fadef"
+    "revision": "c558a6534055b02799dc0fbccc80a79b"
   }, {
     "url": "src_core_audio_AudioEditor_ts-src_core_audio_AudioRecorder_ts-src_core_audio_PatcherAudio_ts.js/62defa7295cb9d854022.worklet.js",
     "revision": null
