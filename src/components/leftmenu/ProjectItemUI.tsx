@@ -79,7 +79,7 @@ export default class ProjectItemUI extends React.PureComponent<P, S> {
         const range = document.createRange();
         const selection = window.getSelection();
         range.setStart(span.childNodes[0], 0);
-        range.setEnd(span.childNodes[0], $beforeExt || oldName.length);
+        range.setEnd(span.childNodes[0], $beforeExt === -1 ? oldName.length : $beforeExt);
         selection.removeAllRanges();
         selection.addRange(range);
         container.focus();

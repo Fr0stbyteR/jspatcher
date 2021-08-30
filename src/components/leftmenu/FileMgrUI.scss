@@ -29,36 +29,57 @@ div.file-manager-container {
             text-align: center;
         }
 
-        & > span.file-manager-header-title {
+        & > span.file-manager-header-name-container {
+            display: flex;
+            overflow: hidden;
             flex: 1 1 auto;
             height: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 14px;
-            text-transform: uppercase;
-            font-weight: bold;
+            align-items: center;
+            padding: 0 5px;
+
+            & > span.file-manager-header-name {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 14px;
+                font-weight: bold;
+            }
         }
 
-        & > span.file-manager-header-icon {
+        & > span.file-manager-header-actions {
             display: none;
             flex: 0 0 auto;
-            height: 100%;
-            width: 22px;
-            text-align: center;
+            height: 22px;
 
-            &:hover {
-                background-color: rgba(255, 255, 255, 0.1);
+            & > span {
+                height: 100%;
+                width: 22px;
+                display: inline-block;
+                text-align: center;
+    
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                }
             }
         }
 
         &:hover {
             background-color: rgba(255, 255, 255, 0.1);
 
-            & > span.file-manager-header-icon {
+            & > span.file-manager-header-actions {
                 display: inline-block;
             }
         }
+
+        &.renaming {
+            cursor: unset;
+
+            & > span.file-manager-header-name-container {
+                background-color: rgba(0, 0, 0, 0.5);
+                border: 1px #0197fb solid;
+            }
+        }
+
     }
 
     & div.file-manager-item {

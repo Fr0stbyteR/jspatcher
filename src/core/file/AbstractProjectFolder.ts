@@ -47,13 +47,14 @@ export default abstract class AbstractProjectFolder<Manager extends IProjectItem
     }
     uniqueName(nameIn: string) {
         if (!this.existItem(nameIn)) return nameIn;
+        const splitted = nameIn.split(".");
+        const name0 = splitted[0];
         let i = 0;
-        let name;
         do {
             i++;
-            name = `nameIn_${i}`;
-        } while (this.existItem(nameIn));
-        return name;
+            splitted[0] = `${name0}_${i}`;
+        } while (this.existItem(splitted.join(".")));
+        return splitted.join(".");
     }
     abstract addFile(nameIn: string, dataIn?: any): Promise<IProjectFileOrFolder>;
     abstract addFolder(nameIn: string): Promise<IProjectFolder>;

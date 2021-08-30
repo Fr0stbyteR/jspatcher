@@ -28,11 +28,10 @@ export default class PersistentProjectFolder extends AbstractProjectFolder<IPers
         if (this.existItem(nameIn)) throw new Error(`${nameIn} already exists.`);
         const tempItem = new PersistentProjectFile(this.fileMgr, this, nameIn, dataIn);
         await this.fileMgr.putFile(tempItem);
-        const fileDetail = await this.fileMgr.getFileDetails(this.path, nameIn);
-        const item = this.createProjectItem(nameIn, fileDetail.isFolder, dataIn);
+        const item = this.createProjectItem(nameIn, false, dataIn);
         this.items.add(item);
+        await item.init();
         await this.emitTreeChanged();
-        item.init();
         return item;
     }
     async addFolder(name: string) {

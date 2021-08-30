@@ -185,6 +185,12 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
         return map;
     }
     async processDiff(diff: ProjectItemManagerDataForDiff) {
+        for (const id in this.allItems) {
+            if (!(id in diff)) {
+                const current = this.getProjectItemFromId(id);
+                if (current) await current.destroy();
+            }
+        }
         for (const id in diff) {
             const process = async (id: string): Promise<void> => {
                 const $item = diff[id];
@@ -194,7 +200,13 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
                 if (!parent) await process($parentId);
                 parent = this.getProjectItemFromId($parentId) as PersistentProjectFolder;
                 const current = this.getProjectItemFromId(id) as PersistentProjectFile | PersistentProjectFolder;
-                if (!current) {
+                if (current) {
+                    if (current.isFolder === false && $item.isFolder === false) {
+                        if (current.lastModifiedId !== $item.lastModifiedId) await current.save(sab2ab($item.data), this);
+                        if (current.name !== $item.name) await current.rename($item.name);
+                        if (current.parent?.id !== $item.parent) await current.move(parent);
+                    }
+                } else {
                     if (parent.isFolder === true) {
                         this.cachedPathIdMap[$item.path] = id;
                         if ($item.isFolder === true) {
@@ -203,12 +215,6 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
                             const newFile = await parent.addFile($item.name, sab2ab($item.data)) as PersistentProjectFile;
                             newFile.lastModifiedId = $item.lastModifiedId;
                         }
-                    }
-                } else {
-                    if (current.isFolder === false && $item.isFolder === false) {
-                        if (current.lastModifiedId !== $item.lastModifiedId) await current.save(sab2ab($item.data), this);
-                        if (current.name !== $item.name) await current.rename($item.name);
-                        if (current.parent?.id !== $item.parent) await current.move(parent);
                     }
                 }
             };

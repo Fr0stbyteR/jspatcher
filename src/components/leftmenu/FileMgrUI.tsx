@@ -33,6 +33,7 @@ interface S {
     newFolderModalOpen: boolean;
     fileDropping: boolean;
     moving: IProjectFileOrFolder;
+    renaming: boolean;
 }
 
 export default class FileManagerUI extends React.PureComponent<P, S> {
@@ -46,7 +47,8 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         newFolderModalOpen: false,
         items: this.props.env.fileMgr.projectRoot?.getOrderedItems().filter(i => i.name !== this.props.env.currentProject.projectFilename) || [],
         fileDropping: false,
-        moving: undefined
+        moving: undefined,
+        renaming: false
     };
     get strings() {
         return I18n[this.props.lang].FileManagerUI;
@@ -55,6 +57,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
     handleProjectChanged = ({ project, oldProject }: EnvEventMap["projectChanged"]) => {
         oldProject.off("propsChanged", this.handleProjectPropsChanged);
         project.on("propsChanged", this.handleProjectPropsChanged);
+        this.setState({ projectName: project.props.name });
     };
     handleEnvInstances = (instances: EnvEventMap["instances"]) => this.setState({ instances });
     handleTreeChanged = () => this.setState({ items: this.props.env.fileMgr.projectRoot?.getOrderedItems().filter(i => i.name !== this.props.env.currentProject.projectFilename) || [] });
@@ -113,6 +116,58 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         handleMouseMove(e.nativeEvent);
         document.addEventListener("mouseup", handleMouseUp);
         document.addEventListener("mousemove", handleMouseMove);
+    };
+    handleClickRename = (e: React.MouseEvent<HTMLSpanElement>) => {
+        e.stopPropagation();
+        const { projectName: oldName } = this.state;
+        const container = e.currentTarget.parentElement.parentElement.getElementsByClassName("file-manager-header-name-container")[0] as HTMLSpanElement;
+        const span = container.firstChild as HTMLSpanElement;
+        const $beforeExt = oldName.lastIndexOf(".");
+        this.setState({ renaming: true });
+        container.contentEditable = "true";
+        const range = document.createRange();
+        const selection = window.getSelection();
+        range.setStart(span.childNodes[0], 0);
+        range.setEnd(span.childNodes[0], $beforeExt === -1 ? oldName.length : $beforeExt);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        container.focus();
+        const handleMouseDown = (e: MouseEvent) => {
+            e.stopPropagation();
+        };
+        const handleBlur = async (e?: FocusEvent) => {
+            if (e) e.stopPropagation();
+            container.removeEventListener("mousedown", handleMouseDown);
+            container.removeEventListener("blur", handleBlur);
+            container.removeEventListener("keydown", handleKeyDown);
+            const newName = span.innerText;
+            try {
+                this.props.env.currentProject?.setProps({ name: newName });
+            } catch (e) {
+                span.innerText = oldName;
+            } finally {
+                container.contentEditable = "false";
+                this.setState({ renaming: false });
+            }
+        };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                handleBlur();
+            }
+            if (e.key === "Escape") {
+                span.innerText = oldName;
+                container.contentEditable = "false";
+                this.setState({ renaming: false });
+                container.removeEventListener("mousedown", handleMouseDown);
+                container.removeEventListener("blur", handleBlur);
+                container.removeEventListener("keydown", handleKeyDown);
+                container.blur();
+            }
+        };
+        container.addEventListener("mousedown", handleMouseDown);
+        container.addEventListener("blur", handleBlur);
+        container.addEventListener("keydown", handleKeyDown);
     };
 
     componentDidMount() {
@@ -221,33 +276,38 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
     render() {
         const classNameArray = ["left-pane-component", "file-manager-container"];
         const headerClassNameArray = ["left-pane-component-header", "file-manager-header", "folder"];
-        if (this.state.fileDropping) classNameArray.push("filedropping");
-        if (this.state.selected.indexOf(this.props.env.fileMgr.projectRoot) !== -1) headerClassNameArray.push("selected");
+        const { items, collapsed, fileDropping, projectName, selected, moving, renaming, deleteModalOpen, deleteAllModalOpen, newFolderModalOpen } = this.state;
+        if (fileDropping) classNameArray.push("filedropping");
+        if (selected.indexOf(this.props.env.fileMgr.projectRoot) !== -1) headerClassNameArray.push("selected");
+        if (renaming) headerClassNameArray.push("renaming");
         return (
             <div className={classNameArray.join(" ")} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop} onMouseMove={this.handleMouseMove}>
                 <div className={headerClassNameArray.join(" ")} onClick={this.handleClickHeader} tabIndex={0} data-id={this.props.env.fileMgr.projectRoot.path}>
-                    <span className="file-manager-header-collapse" onClick={this.handleClickCollapse}><Icon name={this.state.collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
-                    <span className="file-manager-header-title">{this.state.projectName}</span>
+                    <span className="file-manager-header-collapse" onClick={this.handleClickCollapse}><Icon name={collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
+                    <span className="file-manager-header-name-container" {...(renaming ? { tabIndex: 0 } : {})} contentEditable={renaming} suppressContentEditableWarning>
+                        <span className="file-manager-header-name">{projectName}</span>
+                    </span>
                     {this.props.noActions
                         ? undefined
-                        : <>
+                        : <span className="file-manager-header-actions" hidden={renaming}>
+                            <span className="file-manager-header-icon" title={this.strings.rename} onClick={this.handleClickRename}><Icon name="pencil alternate" inverted size="small" /></span>
                             <span className="file-manager-header-icon" title={this.strings.newFile} onClick={this.handleClickNewFolder}><Icon name="folder outline" inverted size="small" /></span>
                             <span className="file-manager-header-icon" title={this.strings.deleteAll} onClick={this.handleClickDeleteAll}><Icon name="trash" inverted size="small" /></span>
-                        </>
+                        </span>
                     }
                 </div>
                 {this.props.noActions
                     ? undefined
                     : <>
-                        <DeleteModal lang={this.props.lang} open={this.state.deleteModalOpen} onClose={this.handleDeleteModalClose} onConfirm={this.handleDeleteModalConfirm} fileNames={this.state.selected.map(item => item.name)} />
-                        <DeleteAllModal lang={this.props.lang} open={this.state.deleteAllModalOpen} onClose={this.handleDeleteAllModalClose} onConfirm={this.handleDeleteAll} />
-                        <NewFolderModal lang={this.props.lang} open={this.state.newFolderModalOpen} onClose={this.handleNewFolderModalClose} onConfirm={this.handleNewFolderModalConfirm} folder={this.props.env.fileMgr.projectRoot} />
+                        <DeleteModal lang={this.props.lang} open={deleteModalOpen} onClose={this.handleDeleteModalClose} onConfirm={this.handleDeleteModalConfirm} fileNames={selected.map(item => item.name)} />
+                        <DeleteAllModal lang={this.props.lang} open={deleteAllModalOpen} onClose={this.handleDeleteAllModalClose} onConfirm={this.handleDeleteAll} />
+                        <NewFolderModal lang={this.props.lang} open={newFolderModalOpen} onClose={this.handleNewFolderModalClose} onConfirm={this.handleNewFolderModalConfirm} folder={this.props.env.fileMgr.projectRoot} />
                     </>
                 }
-                {this.state.collapsed
+                {collapsed
                     ? undefined
                     : <div className="file-manager-item-tree">
-                        {this.state.items.map(item => <ProjectItemUI {...this.props} key={item.path} item={item} selected={this.state.selected} onDelete={this.handleDeleteItem} onClick={this.handleClickItem} onDoubleClick={this.handleDoubleClickItem} moving={this.state.moving} onMoveTo={this.handleMoveTo} onMoving={this.handleMoving} />)}
+                        {items.map(item => <ProjectItemUI {...this.props} key={item.path} item={item} selected={selected} onDelete={this.handleDeleteItem} onClick={this.handleClickItem} onDoubleClick={this.handleDoubleClickItem} moving={moving} onMoveTo={this.handleMoveTo} onMoving={this.handleMoving} />)}
                     </div>}
             </div>
         );

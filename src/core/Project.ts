@@ -61,7 +61,19 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
             changed = true;
             (this.props as any)[key] = props[key];
         }
-        if (changed) this.emit("propsChanged", props);
+        if (changed) {
+            this.emit("propsChanged", props);
+            this.saveProps();
+        }
+    }
+    async saveProps() {
+        const data = str2ab(JSON.stringify(this.props));
+        try {
+            const item = this.env.fileMgr.getProjectItemFromPath(`./${this.projectFilename}`) as PersistentProjectFile;
+            await item.save(data, this);
+        } catch (error) {
+            await this.env.fileMgr.projectRoot.addFile(this.projectFilename, data);
+        }
     }
     async save() {
         await this.emit("save");
@@ -73,8 +85,12 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
     async init() {
         try {
             const item = this.env.fileMgr.getProjectItemFromPath(`./${this.projectFilename}`) as PersistentProjectFile;
-            const json = JSON.parse(ab2str(item.data)) as ProjectProps;
-            this.setProps(json);
+            const props = JSON.parse(ab2str(item.data)) as ProjectProps;
+            for (const keyIn in props) {
+                const key = keyIn as keyof ProjectProps;
+                if (this.props[key] === props[key]) continue;
+                (this.props as any)[key] = props[key];
+            }
         } catch (error) {
             const data = str2ab(JSON.stringify(this.props));
             await this.env.fileMgr.projectRoot.addFile(this.projectFilename, data);

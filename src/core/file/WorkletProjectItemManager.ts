@@ -39,6 +39,12 @@ export default class WorkletProjectItemManager extends AbstractProjectItemManage
     }
     async processDiff(diff: ProjectItemManagerDataForDiff) {
         this.disabled = true;
+        for (const id in this.allItems) {
+            if (!(id in diff)) {
+                const current = this.getProjectItemFromId(id);
+                if (current) await current.destroy();
+            }
+        }
         for (const id in diff) {
             const process = async (id: string): Promise<void> => {
                 const $item = diff[id];
@@ -48,7 +54,13 @@ export default class WorkletProjectItemManager extends AbstractProjectItemManage
                 if (!parent) await process($parentId);
                 parent = this.getProjectItemFromId($parentId) as PersistentProjectFolder;
                 const current = this.getProjectItemFromId(id) as PersistentProjectFile | PersistentProjectFolder;
-                if (!current) {
+                if (current) {
+                    if (current.isFolder === false && $item.isFolder === false) {
+                        if (current.lastModifiedId !== $item.lastModifiedId) await current.save($item.data, this);
+                        if (current.name !== $item.name) await current.rename($item.name);
+                        if (current.parent?.id !== $item.parent) await current.move(parent);
+                    }
+                } else {
                     if (parent.isFolder === true) {
                         this.cachedPathIdMap[$item.path] = id;
                         if ($item.isFolder === true) {
@@ -57,12 +69,6 @@ export default class WorkletProjectItemManager extends AbstractProjectItemManage
                             const newFile = await parent.addFile($item.name, $item.data) as PersistentProjectFile;
                             newFile.lastModifiedId = $item.lastModifiedId;
                         }
-                    }
-                } else {
-                    if (current.isFolder === false && $item.isFolder === false) {
-                        if (current.lastModifiedId !== $item.lastModifiedId) await current.save($item.data, this);
-                        if (current.name !== $item.name) await current.rename($item.name);
-                        if (current.parent?.id !== $item.parent) await current.move(parent);
                     }
                 }
             };

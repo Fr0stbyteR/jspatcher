@@ -31,7 +31,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
     constructor(fileMgrIn: IPersistentProjectItemManager, parentIn: IProjectFolder, nameIn: string, dataIn?: ArrayBuffer) {
         super(fileMgrIn, parentIn, nameIn);
         this.lastModifiedId = this.id;
-        this._data = dataIn;
+        if (dataIn) this.data = dataIn;
     }
     async init() {
         this.id = this.fileMgr.generateItemId(this);
