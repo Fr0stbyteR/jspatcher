@@ -64,7 +64,7 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "disconnectAudioOutlet": number;
     "connectAudioInlet": number;
     "connectAudioOutlet": number;
-    "propsChanged": Partial<TPublicPatcherProps>;
+    "propsChanged": { props: Partial<TPublicPatcherProps>; oldProps: Partial<TPublicPatcherProps> };
     "libChanged": { pkg: TPackage; lib: TFlatPackage };
 }
 
@@ -574,15 +574,17 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     setProps(props: Partial<TPublicPatcherProps>) {
         let changed = false;
+        const oldProps: Partial<TPublicPatcherProps> = {};
         for (const keyIn in props) {
             const key = keyIn as keyof TPublicPatcherProps;
             if (this.props[key] === props[key]) continue;
             changed = true;
+            (oldProps as any)[key] = this.props[key];
             (this.props as any)[key] = props[key];
             this.emit(key, props[key]);
         }
         if (changed) {
-            this.emit("propsChanged", props);
+            this.emit("propsChanged", { props, oldProps });
             this.emitChanged();
         }
     }

@@ -58,21 +58,39 @@ class InspectorStringItem extends React.PureComponent<{ itemKey: number | string
             : <span className="inspector-value string" onClick={this.handleClickInput}>{this.props.value}</span>;
     }
 }
-class InspectorColorItem extends React.PureComponent<{ itemKey: number | string; value: string; onChange: (value: string, key: number | string) => any }, { showColorPicker: boolean }> {
-    state = { showColorPicker: false };
+interface InspectorColorProps {
+    itemKey: number | string;
+    value: string;
+    onChange: (value: string, key: number | string) => any;
+}
+interface InspectorColorState {
+    showColorPicker: boolean;
+    color: string;
+}
+class InspectorColorItem extends React.PureComponent<InspectorColorProps, InspectorColorState> {
+    state = { showColorPicker: false, color: this.props.value };
     handleClickColorSpan = () => this.setState({ showColorPicker: true });
     handleClickCover = (e: React.MouseEvent) => {
         this.setState({ showColorPicker: false });
         e.stopPropagation();
     };
     handleChangeColor = (e: ColorResult) => {
-        const color = e.rgb;
-        this.props.onChange(`rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`, this.props.itemKey);
+        const colorResult = e.rgb;
+        const color = `rgba(${colorResult.r}, ${colorResult.g}, ${colorResult.b}, ${colorResult.a})`;
+        this.setState({ color });
+    };
+    handleChangeCompleteColor = (e: ColorResult) => {
+        this.props.onChange(this.state.color, this.props.itemKey);
     };
     handleKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>) => {
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
     };
+    componentDidUpdate(prevProps: Readonly<InspectorColorProps>) {
+        if (prevProps.value !== this.props.value) {
+            this.setState({ color: this.props.value });
+        }
+    }
     render() {
         return (
             <>
@@ -81,7 +99,7 @@ class InspectorColorItem extends React.PureComponent<{ itemKey: number | string;
                         this.state.showColorPicker
                             ? <>
                                 <div className="color-picker-fullscreen-cover" onClick={this.handleClickCover} />
-                                <ChromePicker color={this.props.value} disableAlpha={false} onChange={this.handleChangeColor} />
+                                <ChromePicker color={this.state.color} disableAlpha={false} onChange={this.handleChangeColor} onChangeComplete={this.handleChangeCompleteColor} />
                             </>
                             : <></>
                     }

@@ -9,7 +9,7 @@ import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type TempPatcherFile from "./TempPatcherFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
-import type { PatcherEventMap } from "./Patcher";
+import type { PatcherEventMap, TPublicPatcherProps } from "./Patcher";
 
 export interface PatcherEditorEventMap extends PatcherEditorState {
     "create": RawPatcher;
@@ -25,9 +25,10 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "tempLine": { findSrc: boolean; from: [string, number] };
     "inspector": never;
     "dockUI": string;
+    "propsChanged": { props: Partial<TPublicPatcherProps>; oldProps: Partial<TPublicPatcherProps> };
 }
 
-export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized" | "boxChanged"> {}
+export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized" | "boxChanged" | "propsChanged"> {}
 
 export interface PatcherEditorState {
     locked: boolean;
@@ -77,6 +78,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     handleChangeBoxText = (e: PatcherEventMap["changeBoxText"]) => this.emit("changeBoxText", e);
     handlePassiveDeleteLine = (e: PatcherEventMap["passiveDeleteLine"]) => this.emit("delete", { boxes: {}, lines: { [e.id]: e.toSerializable() } });
     handleBoxChanged = (e: PatcherEventMap["boxChanged"]) => this.emit("boxChanged", e);
+    handlePropsChanged = (e: PatcherEventMap["propsChanged"]) => this.emit("propsChanged", e);
     handleChanged = () => this.instance.emitChanged();
     constructor(instance: Patcher) {
         super(instance);
@@ -103,6 +105,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.instance.on("changeBoxText", this.handleChangeBoxText);
         this.instance.on("passiveDeleteLine", this.handlePassiveDeleteLine);
         this.instance.on("boxChanged", this.handleBoxChanged);
+        this.instance.on("propsChanged", this.handlePropsChanged);
         const { openInPresentation } = this.props;
         this.setState({
             locked: true,

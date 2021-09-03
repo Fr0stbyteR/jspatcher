@@ -5,7 +5,7 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
     get eventListening(): (keyof PatcherHistoryEventMap)[] {
         return [
             "create", "delete", "changeBoxText", "boxChanged",
-            "changeLineSrc", "changeLineDest", "moved", "resized"
+            "changeLineSrc", "changeLineDest", "moved", "resized", "propsChanged"
         ];
     }
     async undoOf(editor: PatcherEditor, eventName: keyof PatcherHistoryEventMap, eventData?: any) {
@@ -43,6 +43,9 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const d = { x: -1 * delta.x, y: -1 * delta.y };
             editor.resize(selected, d, t, presentation);
             editor.resizeEnd(d, t);
+        } else if (eventName === "propsChanged") {
+            const e: PatcherHistoryEventMap[typeof eventName] = eventData;
+            editor.instance.setProps(e.oldProps);
         }
     }
     async redoOf(editor: PatcherEditor, eventName: keyof PatcherHistoryEventMap, eventData?: any) {
@@ -78,6 +81,9 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const { selected, delta, type: t, presentation } = e;
             editor.resize(selected, delta, t, presentation);
             editor.resizeEnd(delta, t);
+        } else if (eventName === "propsChanged") {
+            const e: PatcherHistoryEventMap[typeof eventName] = eventData;
+            editor.instance.setProps(e.props);
         }
     }
 }
