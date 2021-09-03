@@ -1,6 +1,6 @@
 import DefaultUI, { DefaultUIState } from "./DefaultUI";
 import BaseObject, { BaseObjectProps } from "./BaseObject";
-import type { IJSPatcherObjectMeta } from "./AbstractObject";
+import type { IPropsMeta } from "./AbstractObject";
 import type Env from "../../Env";
 
 export interface DefaultObjectUIProps {
@@ -24,7 +24,7 @@ export default class DefaultObject<
     U extends Partial<DefaultUIState> & Record<string, any> = {},
     E extends {} = {}
 > extends BaseObject<D, S, I, O, A, P & DefaultObjectProps, U & DefaultUIState, E> {
-    static props: IJSPatcherObjectMeta["props"] = {
+    static props: IPropsMeta = {
         bgColor: {
             type: "color",
             default: "rgb(51, 51, 51)",
