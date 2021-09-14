@@ -283,6 +283,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 await project.init();
             });
         });
+        this.audioCtx.destination.channelCount = this.audioCtx.destination.maxChannelCount;
         this.loaded = true;
         await this.emit("ready");
         const { file } = urlParamsOptions;
