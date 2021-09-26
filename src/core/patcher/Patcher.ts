@@ -31,6 +31,7 @@ export interface TPatcherProps {
     version?: string;
     description?: string;
     openInPresentation: boolean;
+    objectInit: boolean;
 }
 export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid" | "openInPresentation">;
 
@@ -110,7 +111,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     _inletAudioConnections: TPatcherAudioConnection[] = [];
     _outletAudioConnections: TPatcherAudioConnection[] = [];
     _history = new PatcherHistory();
-    constructor(options: { env: IJSPatcherEnv; project?: IProject; file?: PersistentProjectFile | TempPatcherFile; instanceId?: string }) {
+    constructor(options: { env: IJSPatcherEnv; project?: IProject; file?: PersistentProjectFile | TempPatcherFile; instanceId?: string; objectInit?: boolean }) {
         super(options);
         this._state = {
             name: "patcher",
@@ -130,7 +131,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             grid: Patcher.props.grid.default.slice() as [number, number],
             openInPresentation: Patcher.props.openInPresentation.default,
             boxIndexCount: 0,
-            lineIndexCount: 0
+            lineIndexCount: 0,
+            objectInit: typeof options.objectInit === "boolean" ? options.objectInit : true
         };
     }
     get state() {
@@ -318,7 +320,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             grid: Patcher.props.grid.default.slice() as [number, number],
             openInPresentation: Patcher.props.openInPresentation.default,
             boxIndexCount: 0,
-            lineIndexCount: 0
+            lineIndexCount: 0,
+            objectInit: true
         };
         this._state.selected = [];
     }

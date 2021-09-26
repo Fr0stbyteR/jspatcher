@@ -1,7 +1,7 @@
 import { ProxyMain } from "./ProxyMain.types";
 import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./Worker";
 
-const Main = class {
+const Main = class ProxyMain {
     static Worker: typeof WebpackWorker;
     static fnNames: string[] = [];
     _disposed = false;

@@ -9,6 +9,7 @@ import type TempAudioFile from "./audio/TempAudioFile";
 import type TempTextFile from "./text/TempTextFile";
 import type TempData from "./file/TempData";
 import type PersistentProjectFile from "./file/PersistentProjectFile";
+import type { ProjectProps } from "./Project";
 
 declare global {
     interface Window {
@@ -22,6 +23,9 @@ declare global {
     interface HTMLMediaElement extends HTMLElement {
         sinkId: string;
         setSinkId?(sinkId: string): Promise<undefined>;
+    }
+    interface Crypto {
+        randomUUID?(): string;
     }
 }
 
@@ -67,16 +71,9 @@ export interface RawProjectItem<T extends ProjectItemType = any> {
 }
 export type RawProjectItems = RawProjectItem[];
 
-export interface ProjectProps {
-    name: string;
-    author: string;
-    version: string;
-}
-
 export interface RawProject {
     props: ProjectProps;
     files: RawProjectItems;
-    data: TSharedData;
 }
 
 export interface RawPatcher {

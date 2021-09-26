@@ -1,7 +1,7 @@
 import { ProxyWorker } from "./ProxyWorker.types";
 import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./Worker";
 
-const Worker = class {
+const Worker = class ProxyWorker {
     static fnNames: string[] = [];
     _disposed = false;
     constructor() {

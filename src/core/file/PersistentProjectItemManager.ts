@@ -3,9 +3,9 @@ import AbstractProjectItemManager, { IProjectItemManager } from "./AbstractProje
 import PersistentProjectFolder from "./PersistentProjectFolder";
 import { sab2ab } from "../../utils/utils";
 import type FileMgrWorker from "../workers/FileMgrWorker";
+import type PersistentProjectFile from "./PersistentProjectFile";
 import type { IProjectFolder } from "./AbstractProjectFolder";
 import type { IJSPatcherEnv } from "../Env";
-import type PersistentProjectFile from "./PersistentProjectFile";
 import type { IProjectItem } from "./AbstractProjectItem";
 
 export type ProjectItemManagerDataForDiff = Record<string, { isFolder: true; parent: string; name: string; path: string } | { isFolder: false; data: SharedArrayBuffer; lastModifiedId: string; parent: string; name: string; path: string }>;
@@ -287,5 +287,8 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
             toZip(jsZip, this.projectRoot);
             return jsZip.generateAsync({ type: "arraybuffer" }, state => onUpdate(`${state.percent}% - ${state.currentFile}`));
         });
+    }
+    serialize() {
+        return this.projectRoot.getTree();
     }
 }

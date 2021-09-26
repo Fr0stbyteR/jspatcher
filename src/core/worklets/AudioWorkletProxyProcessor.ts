@@ -4,7 +4,7 @@ import { AudioWorkletProxyProcessor } from "./AudioWorkletProxyProcessor.types";
 declare const globalThis: AudioWorkletGlobalScope;
 const { AudioWorkletProcessor } = globalThis;
 
-const Processor = class extends AudioWorkletProcessor {
+const Processor = class AudioWorkletProxyProcessor extends AudioWorkletProcessor {
     static fnNames: string[] = [];
     _disposed = false;
     constructor(options: AudioWorkletNodeOptions) {

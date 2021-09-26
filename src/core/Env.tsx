@@ -13,12 +13,13 @@ import WaveformWorker from "./workers/WaveformWorker";
 import WavEncoderWorker from "./workers/WavEncoderWorker";
 import FFmpegWorker from "./workers/FFmpegWorker";
 import TaskManager from "./TaskMgr";
-import Project from "./Project";
+import Project, { ProjectProps } from "./Project";
 import UI from "../components/UI";
 import EditorContainer from "./EditorContainer";
 import AudioWorkletRegister from "./worklets/AudioWorkletRegister";
 import JSPatcherSDK, { IJSPatcherSDK } from "./SDK";
 import WorkletEnvNode from "./worklets/WorkletEnv";
+import LiveShare from "./LiveShare";
 import { getFaustLibObjects } from "./objects/Faust";
 import { faustLangRegister } from "../misc/monaco-faust/register";
 import { detectOS, detectBrowserCore } from "../utils/utils";
@@ -66,6 +67,7 @@ export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
     readonly fileMgr: IPersistentProjectItemManager;
     readonly tempMgr: TemporaryProjectItemManager;
     readonly currentProject: Project;
+    readonly username: string;
     activeInstance: IFileInstance;
     activeEditor: IFileEditor;
     instances: Set<IFileInstance>;
@@ -100,6 +102,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     readonly log: TPatcherLog[] = [];
     readonly AudioWorkletRegister = AudioWorkletRegister;
     readonly sdk = new JSPatcherSDK();
+    readonly liveShare = new LiveShare(this);
     envNode: WorkletEnvNode;
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
@@ -110,6 +113,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     pkgMgr: GlobalPackageManager;
     audioClipboard: PatcherAudio;
     loaded = false;
+    get username() {
+        return this.liveShare.username;
+    }
     private _activeInstance: IFileInstance;
     get activeInstance(): IFileInstance {
         return this._activeInstance;
@@ -324,13 +330,13 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     generateId(objectIn: object) {
         return this.thread + objectIn.constructor.name + Atomics.add(this.generatedId, 0, 1);
     }
-    openInstance(i: IFileInstance) {
+    openInstance(i: IFileInstance, background = false) {
         this.emit("openInstance", i);
-        i.setActive();
+        if (!background) i.setActive();
     }
-    openEditor(e: IFileEditor) {
+    openEditor(e: IFileEditor, background = false) {
         this.emit("openEditor", e);
-        e.setActive();
+        if (!background) e.setActive();
     }
     registerInstance(i: IFileInstance, id?: string) {
         this.instances.add(i);
@@ -348,10 +354,10 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         }
         return null;
     }
-    async newProject() {
+    async newProject(props?: ProjectProps) {
         const oldProject = this.currentProject;
         await oldProject?.unload();
-        const project = new Project(this);
+        const project = new Project(this, props);
         this.currentProject = project;
         await project.load(true);
         this.emit("projectChanged", { project, oldProject });

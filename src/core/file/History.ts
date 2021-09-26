@@ -1,8 +1,16 @@
+import TypedEventEmitter from "../../utils/TypedEventEmitter";
+import { getTimestamp } from "../../utils/utils";
 import FileEditor, { FileEditorEventMap } from "./FileEditor";
 
-interface IHistoryEvent<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> {
+export interface HistoryEventMap {
+    "change": IHistoryEvent<any>;
+}
+
+export interface IHistoryEvent<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> {
     timestamp: number;
     editorId: string;
+    fileId: string;
+    username: string;
     eventName: keyof EventMap & string;
     eventData?: EventMap[keyof EventMap & string];
 }
@@ -17,7 +25,7 @@ export interface IHistoryData<EventMap extends Record<string, any> & Partial<Fil
 }
 
 /** The class records some events and allows to perform undo/redo with a specific editor. */
-export default abstract class History<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}, Editor extends FileEditor<any, EventMap> = FileEditor<any, EventMap>> implements IHistoryData<EventMap> {
+export default abstract class History<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}, Editor extends FileEditor<any, EventMap> = FileEditor<any, EventMap>> extends TypedEventEmitter<HistoryEventMap> implements IHistoryData<EventMap> {
     /** Editors to sync and to listen */
     editors: Set<Editor> = new Set();
     saveTime = 0;
@@ -29,10 +37,10 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         return [];
     }
     get now() {
-        if (globalThis.performance) {
-            return performance.now() + (performance.timeOrigin || performance.timing.navigationStart);
-        }
-        return Date.now();
+        return getTimestamp();
+    }
+    get username() {
+        return (this.editors.values().next().value as Editor).env.username;
     }
     addEditor(editor: Editor) {
         this.editors.add(editor);
@@ -51,10 +59,12 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         await Promise.all(Array.from(this.editors).filter($editor => $editor !== editor).map($editor => $editor.emit(eventName, eventData)));
         this.capture = true;
         this.eventQueue.splice(this.$);
-        this.$ = this.eventQueue.push({ eventName, eventData, timestamp: this.now, editorId: editor.editorId });
-        this.emitChanged();
+        const event = { eventName, eventData, timestamp: this.now, editorId: editor.editorId, fileId: editor.file?.id, username: this.username };
+        this.$ = this.eventQueue.push(event);
+        this.emitChanged(event);
     };
-    emitChanged() {
+    emitChanged(event?: IHistoryEvent<EventMap>) {
+        if (event) this.emit("change", event);
         this.editors.forEach(editor => editor.emit("changed"));
         this.emitDirty();
     }
@@ -132,5 +142,19 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         }
         this.eventQueue = data.eventQueue;
         await this.setIndex(data.$);
+    }
+    async mergeEvents(...events: IHistoryEvent<EventMap>[]) {
+        if (!events.length) return [];
+        const now = this.eventQueue[this.$]?.timestamp || this.now;
+        const sortedEvents = events.sort((a, b) => a.timestamp - b.timestamp);
+        const since = sortedEvents[0].timestamp;
+        await this.undoUntil(since);
+        const mergedEvents = [...this.eventQueue, ...events].sort((a, b) => a.timestamp - b.timestamp);
+        this.eventQueue = mergedEvents;
+        await this.redoUntil(now);
+        return events.map(({ timestamp }) => {
+            const event = this.eventQueue.find(e => e.timestamp === timestamp);
+            return event;
+        });
     }
 }

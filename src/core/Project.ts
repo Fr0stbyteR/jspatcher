@@ -49,9 +49,10 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
     get audioCtx() {
         return (this.env as Env).audioCtx;
     }
-    constructor(envIn: IJSPatcherEnv) {
+    constructor(envIn: IJSPatcherEnv, props?: Partial<ProjectProps>) {
         super();
         this.env = envIn;
+        if (props) this.setProps(props);
     }
     setProps(props: Partial<ProjectProps>) {
         let changed = false;

@@ -2,6 +2,23 @@
 import type { TPatcherProps } from "../core/patcher/Patcher";
 import type { TMIDIEvent, TBPF, TRect, TPresentationRect, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit } from "../core/types";
 
+export const uuid = () => {
+    return globalThis?.crypto?.randomUUID
+        ? crypto.randomUUID()
+        : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+            const r = Math.random() * 16 | 0;
+            const v = c === "x" ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+};
+
+export const getTimestamp = () => {
+    if (globalThis.performance) {
+        return performance.now() + (performance.timeOrigin || performance.timing.navigationStart);
+    }
+    return Date.now();
+};
+
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
 export const isTRect = (x: any): x is TRect => {

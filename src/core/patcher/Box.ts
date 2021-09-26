@@ -73,19 +73,21 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         this._Object = Constructor;
         if (!this.size.every(v => v > 0)) this.size = this.defaultSize;
         if (!isTPresentationRect(this.presentationRect) || (this.presentationSize.every(v => typeof v === "number") && !this.presentationSize.every(v => v > 0))) this.presentationSize = this.defaultSize;
-        this._object = new Constructor(this, this._patcher) as T;
-        await this._object.init();
+        if (this.objectInit) {
+            this._object = new Constructor(this, this._patcher) as T;
+            await this._object.init();
+        }
         return this;
     }
     async postInit() {
-        await this._object.postInit();
+        await this._object?.postInit();
         return this;
     }
     /**
      * Main function when receive data from a inlet (base 0)
      */
     fn(inlet: number, data: any) {
-        this._object.fn(inlet, data);
+        this._object?.fn(inlet, data);
         return this;
     }
     get UI() {
@@ -95,13 +97,16 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         return this.UI?.defaultSize || [90, 20];
     }
     get meta() {
-        return this._object.meta;
+        return this._object?.meta;
     }
     get outletLines() {
         return this._outletLines;
     }
     get inletLines() {
         return this._inletLines;
+    }
+    get objectInit() {
+        return this._patcher.props.objectInit;
     }
     get object() {
         return this._object;
@@ -232,7 +237,7 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         if (!force && textIn === this.text) return this;
         const { defaultSize: oldDefaultSize } = this;
         this.allLines.forEach(line => line.disable());
-        await this._object.destroy();
+        await this._object?.destroy();
         this.text = textIn;
         this.args = [] as Args<T>;
         await this.init();
@@ -243,7 +248,7 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
             this.presentationSize = defaultSize;
         }
         this.emit("textChanged", this);
-        this._object.setMeta(this._object.meta);
+        this._object?.setMeta(this._object.meta);
         await this.postInit();
         return this;
     }
@@ -387,13 +392,13 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         this._patcher.boxChanged(this.id, e);
     }
     async changeObject({ args, props, state }: { args?: Args<T>; props?: Props<T>; state?: State<T> }, options?: { undoable?: boolean }) {
-        if (args) await this._object.updateArgs(args, options);
-        if (props) await this._object.updateProps(props, options);
-        if (state) await this._object.updateState(state, options);
+        if (args) await this._object?.updateArgs(args, options);
+        if (props) await this._object?.updateProps(props, options);
+        if (state) await this._object?.updateState(state, options);
     }
     async destroy() {
         this.allLines.forEach(line => this._patcher.deleteLine(line.id));
-        await this._object.destroy();
+        await this._object?.destroy();
         delete this._patcher.boxes[this.id];
         return this;
     }

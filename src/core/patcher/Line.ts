@@ -14,8 +14,8 @@ export interface LineEventMap {
 
 export default class Line extends TypedEventEmitter<LineEventMap> {
     static isConnectableByAudio(from: IJSPatcherObject, outlet: number, to: IJSPatcherObject, inlet: number) {
-        const fromConnection = from.outletAudioConnections[outlet];
-        const toConnection = to.inletAudioConnections[inlet];
+        const fromConnection = from?.outletAudioConnections[outlet];
+        const toConnection = to?.inletAudioConnections[inlet];
         if (!fromConnection) return false;
         if (!toConnection) return false;
         if (!fromConnection.node) return false;
