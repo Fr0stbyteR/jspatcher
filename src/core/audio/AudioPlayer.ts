@@ -1,4 +1,4 @@
-import { WebAudioModule } from "wamsdk/src/api";
+import { WebAudioModule } from "@webaudiomodules/api";
 import TemporalAnalyserNode from "../worklets/TemporalAnalyser";
 import { dbtoa } from "../../utils/math";
 import AudioEditor from "./AudioEditor";

@@ -31,9 +31,10 @@ const Client = class ProxyClient extends TypedEventEmitter<any> {
                     throw new Error(`WebSocket closed: ${e.code} - ${e.reason}`);
                 }
             };
-            const handleMessage = async (e: TypedMessageEvent<ArrayBuffer>) => {
-                this._handleLog?.({ msg: `Received: \t${(e.data as ArrayBuffer).byteLength} bytes` });
-                const { id, call, args, value, error } = BSON.deserialize(e.data, { promoteBuffers: true }) as WebSocketResponse & WebSocketRequest;
+            const handleMessage = async (e: TypedMessageEvent<Blob>) => {
+                const data = await e.data.arrayBuffer();
+                this._handleLog?.({ msg: `Received: \t${data.byteLength} bytes` });
+                const { id, call, args, value, error } = BSON.deserialize(data, { promoteBuffers: true }) as WebSocketResponse & WebSocketRequest;
                 if (call) {
                     const r: WebSocketResponse = { id };
                     try {
@@ -42,7 +43,7 @@ const Client = class ProxyClient extends TypedEventEmitter<any> {
                         r.error = e;
                     }
                     const data = BSON.serialize(r);
-                    this._handleLog?.({ msg: `Send: \t${data.byteLength} bytes` });
+                    this._handleLog?.({ msg: `Send: \t${call}\t${data.byteLength} bytes` });
                     socket.send(data);
                 } else {
                     if (error) {
@@ -65,7 +66,7 @@ const Client = class ProxyClient extends TypedEventEmitter<any> {
                         resolve(arg);
                     };
                     rejects[id] = reject;
-                    const data = BSON.serialize([{ id, call, args }]);
+                    const data = BSON.serialize({ id, call, args });
                     this._handleLog?.({ msg: `Send: \t${data.byteLength} bytes` });
                     socket.send(data);
                     const $timeout = setTimeout(() => {

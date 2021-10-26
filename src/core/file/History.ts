@@ -47,6 +47,11 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         editor.onAny(this.handleEditorEvent);
         editor.on("saved", this.handleSaved);
         editor.once("destroy", () => this.removeEditor(editor));
+        editor.once("ready", async () => {
+            const { $ } = this;
+            this.$ = 0;
+            await this.redoUntil(this.eventQueue[$ - 1].timestamp);
+        });
     }
     removeEditor(editor: Editor) {
         editor.offAny(this.handleEditorEvent);
@@ -90,37 +95,35 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         this.emitDirty();
     };
     abstract undoOf(editor: Editor, eventName: keyof EventMap, eventData?: any): Promise<void>;
-    async undo() {
-        if (!this.editors.size) return;
+    async undo(...editors: Editor[]) {
         if (!this.isUndoable) return;
         this.capture = false;
         const { eventName, eventData } = this.eventQueue[this.$ - 1];
-        await Promise.all(Array.from(this.editors).map(editor => this.undoOf(editor, eventName, eventData)));
+        await Promise.all((editors.length ? editors : Array.from(this.editors)).map(editor => this.undoOf(editor, eventName, eventData)));
         this.$--;
         this.capture = true;
         this.emitChanged();
     }
     abstract redoOf(editor: Editor, eventName: keyof EventMap, eventData?: any): Promise<void>;
-    async redo() {
-        if (!this.editors.size) return;
+    async redo(...editors: Editor[]) {
         if (!this.isRedoable) return;
         this.capture = false;
         const { eventName, eventData } = this.eventQueue[this.$];
-        await Promise.all(Array.from(this.editors).map(editor => this.redoOf(editor, eventName, eventData)));
+        await Promise.all((editors.length ? editors : Array.from(this.editors)).map(editor => this.redoOf(editor, eventName, eventData)));
         this.$++;
         this.capture = true;
         this.emitChanged();
     }
     /** event at timestamp exclusive */
-    async undoUntil(timestamp: number) {
+    async undoUntil(timestamp: number, ...editors: Editor[]) {
         while (this.isUndoable && this.eventQueue[this.$ - 1].timestamp >= timestamp) {
-            await this.undo();
+            await this.undo(...editors);
         }
     }
     /** event at timestamp inclusive */
-    async redoUntil(timestamp: number) {
+    async redoUntil(timestamp: number, ...editors: Editor[]) {
         while (this.isRedoable && this.eventQueue[this.$].timestamp <= timestamp) {
-            await this.redo();
+            await this.redo(...editors);
         }
     }
     async setIndex($: number) {
@@ -145,7 +148,7 @@ export default abstract class History<EventMap extends Record<string, any> & Par
     }
     async mergeEvents(...events: IHistoryEvent<EventMap>[]) {
         if (!events.length) return [];
-        const now = this.eventQueue[this.$]?.timestamp || this.now;
+        const now = this.eventQueue[this.$]?.timestamp || Infinity;
         const sortedEvents = events.sort((a, b) => a.timestamp - b.timestamp);
         const since = sortedEvents[0].timestamp;
         await this.undoUntil(since);

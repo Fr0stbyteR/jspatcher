@@ -1,4 +1,4 @@
-import History from "../file/History";
+import History, { IHistoryEvent } from "../file/History";
 import PatcherEditor, { PatcherHistoryEventMap } from "./PatcherEditor";
 
 export default class PatcherHistory extends History<PatcherHistoryEventMap, PatcherEditor> {
@@ -25,7 +25,7 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const { selected, delta, presentation } = e;
             const d = { x: -1 * delta.x, y: -1 * delta.y };
             editor.move(selected, d, presentation);
-            editor.moveEnd(d);
+            editor.moveEnd(selected, d);
         } else if (eventName === "changeLineSrc") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { lineId, oldSrc } = e;
@@ -42,7 +42,7 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const { selected, delta, type: t, presentation } = e;
             const d = { x: -1 * delta.x, y: -1 * delta.y };
             editor.resize(selected, d, t, presentation);
-            editor.resizeEnd(d, t);
+            editor.resizeEnd(selected, d, t);
         } else if (eventName === "propsChanged") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             editor.instance.setProps(e.oldProps);
@@ -64,7 +64,7 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { selected, delta, presentation } = e;
             editor.move(selected, delta, presentation);
-            editor.moveEnd(delta);
+            editor.moveEnd(selected, delta);
         } else if (eventName === "changeLineSrc") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { lineId, src } = e;
@@ -80,10 +80,16 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { selected, delta, type: t, presentation } = e;
             editor.resize(selected, delta, t, presentation);
-            editor.resizeEnd(delta, t);
+            editor.resizeEnd(selected, delta, t);
         } else if (eventName === "propsChanged") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             editor.instance.setProps(e.props);
         }
+    }
+    async mergeEvents(...events: IHistoryEvent<PatcherHistoryEventMap>[]) {
+        this.editors.forEach(e => e.state.selectAfterEdit = false);
+        const merged = await super.mergeEvents(...events);
+        this.editors.forEach(e => e.state.selectAfterEdit = true);
+        return merged;
     }
 }

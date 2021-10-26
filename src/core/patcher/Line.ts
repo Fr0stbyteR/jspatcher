@@ -1,4 +1,4 @@
-import type { WamNode } from "wamsdk";
+import type { WamNode } from "@webaudiomodules/api";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import type Patcher from "./Patcher";
 import type { TLine, TLineType } from "../types";

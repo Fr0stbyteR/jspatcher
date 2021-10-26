@@ -77,6 +77,7 @@ export default class WorkletProjectItemManager extends AbstractProjectItemManage
         this.disabled = false;
     }
     generateItemId(item: IProjectItem) {
+        if (!item.path) return "root";
         const id = this.cachedPathIdMap[item.path];
         if (!id) return this.env.generateId(item);
         delete this.cachedPathIdMap[item.path];

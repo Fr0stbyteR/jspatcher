@@ -1,4 +1,4 @@
-import type { WebAudioModule } from "wamsdk/src/api";
+import type { WebAudioModule } from "@webaudiomodules/api";
 import { dbtoa, isIdentityMatrix, normExp } from "../../utils/math";
 import AudioEditor from "./AudioEditor";
 import FileInstance from "../file/FileInstance";

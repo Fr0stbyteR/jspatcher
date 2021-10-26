@@ -76,7 +76,7 @@ export default class GlobalPackageManager {
         while (path.length) {
             const key = path.shift();
             if (!pkg[key]) pkg[key] = {};
-            else if (isJSPatcherObjectConstructor(pkg[key])) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
+            else if (isJSPatcherObjectConstructor(pkg[key])) pkg[key] = { [ImporterDirSelfObject]: pkg[key] } as any;
             pkg = pkg[key] as TPackage;
         }
         Object.assign(pkg, pkgIn);

@@ -1,5 +1,5 @@
 import type { SemanticICONS } from "semantic-ui-react";
-import type { WebAudioModule } from "wamsdk/src/api";
+import type { WebAudioModule } from "@webaudiomodules/api";
 import { dbtoa } from "../../utils/math";
 import AudioPlayer from "./AudioPlayer";
 import AudioRecorder from "./AudioRecorder";

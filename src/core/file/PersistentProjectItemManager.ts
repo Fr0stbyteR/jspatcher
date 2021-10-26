@@ -8,7 +8,9 @@ import type { IProjectFolder } from "./AbstractProjectFolder";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProjectItem } from "./AbstractProjectItem";
 
-export type ProjectItemManagerDataForDiff = Record<string, { isFolder: true; parent: string; name: string; path: string } | { isFolder: false; data: SharedArrayBuffer; lastModifiedId: string; parent: string; name: string; path: string }>;
+export type ProjectItemManagerDataForDiff = Record<string, { isFolder: true; parent: string; name: string; path: string } | { isFolder: false; data: SharedArrayBuffer | ArrayBuffer; lastModifiedId: string; parent: string; name: string; path: string }>;
+
+export type ProjectItemManagerDataForBson = Record<string, { isFolder: true; parent: string; name: string; path: string } | { isFolder: false; data: Uint8Array; lastModifiedId: string; parent: string; name: string; path: string }>;
 
 export interface IPersistentProjectItemManager extends IProjectItemManager {
     readonly projectRoot: IProjectFolder;
@@ -127,6 +129,7 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
         }
     }
     async remove(path: string, isFolder = false) {
+        if (!path) return true;
         const exist = await this.worker.exists(path);
         if (exist) {
             if (isFolder) {
@@ -184,6 +187,31 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
         }
         return map;
     }
+    getDataForBson() {
+        const map: ProjectItemManagerDataForBson = {};
+        const { allItems } = this;
+        for (const id in allItems) {
+            const item = allItems[id] as PersistentProjectFile | PersistentProjectFolder;
+            if (id === "root") continue;
+            if (item.path === "/project/.jspatproj") continue;
+            if (item.isFolder === true) map[id] = { isFolder: item.isFolder, parent: item.parent?.id, name: item.name, path: item.path };
+            else map[id] = { isFolder: item.isFolder, data: new Uint8Array(item.sab), lastModifiedId: item.lastModifiedId, parent: item.parent?.id, name: item.name, path: item.path };
+        }
+        return map;
+    }
+    async processBson(bson: ProjectItemManagerDataForBson) {
+        const diff: ProjectItemManagerDataForDiff = {};
+        for (const key in bson) {
+            const item = bson[key];
+            if (item.isFolder === false) {
+                const buffer = item.data.buffer.slice(item.data.byteOffset, item.data.byteOffset + item.data.length);
+                diff[key] = { ...item, data: buffer };
+            } else {
+                diff[key] = item;
+            }
+        }
+        return this.processDiff(diff);
+    }
     async processDiff(diff: ProjectItemManagerDataForDiff) {
         for (const id in this.allItems) {
             if (!(id in diff)) {
@@ -222,6 +250,7 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
         }
     }
     generateItemId(item: IProjectItem) {
+        if (!item.path) return "root";
         if (item.path in this.cachedPathIdMap) {
             const id = this.cachedPathIdMap[item.path];
             delete this.cachedPathIdMap[item.path];

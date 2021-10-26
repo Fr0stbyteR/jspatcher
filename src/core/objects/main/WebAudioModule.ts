@@ -1,4 +1,4 @@
-import type { WebAudioModule, WamNode } from "wamsdk/src/api";
+import type { WebAudioModule, WamNode } from "@webaudiomodules/api";
 import Bang, { isBang } from "../base/Bang";
 import BaseObject from "../base/BaseObject";
 import DOMUI, { DOMUIState } from "../base/DOMUI";

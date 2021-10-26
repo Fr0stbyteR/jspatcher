@@ -93,6 +93,10 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
                 (this.props as any)[key] = props[key];
             }
         } catch (error) {
+            if (error instanceof SyntaxError) {
+                const item = this.env.fileMgr.getProjectItemFromPath(`./${this.projectFilename}`) as PersistentProjectFile;
+                await item.destroy();
+            }
             const data = str2ab(JSON.stringify(this.props));
             await this.env.fileMgr.projectRoot.addFile(this.projectFilename, data);
         }

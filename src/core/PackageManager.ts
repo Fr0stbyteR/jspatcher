@@ -107,6 +107,10 @@ export default class PackageManager extends TypedEventEmitter<PackageManagerEven
                 else libOut[full] = el as typeof IJSPatcherObject;
                 const p = path.slice();
                 while (p.length && path.length - p.length < rootifyDepth) {
+                    if (!p[0]) {
+                        p.shift();
+                        continue;
+                    }
                     const k = p.join(".");
                     if (!(k in libOut)) libOut[k] = el as typeof IJSPatcherObject;
                     p.shift();
@@ -124,6 +128,10 @@ export default class PackageManager extends TypedEventEmitter<PackageManagerEven
                 else libOut[full] = el;
                 const p = [...path, key];
                 while (p.length && path.length + 1 - p.length < rootifyDepth) {
+                    if (!p[0]) {
+                        p.shift();
+                        continue;
+                    }
                     const k = p.join(".");
                     if (!(k in libOut)) libOut[k] = el;
                     p.shift();

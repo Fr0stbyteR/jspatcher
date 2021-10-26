@@ -1,10 +1,10 @@
 import ProxyClient from "./websocket/ProxyClient";
 import type { IHistoryEvent } from "./file/History";
-import type { ProjectItemManagerDataForDiff } from "./file/PersistentProjectItemManager";
+import type { ProjectItemManagerDataForBson } from "./file/PersistentProjectItemManager";
 import type { ProjectProps } from "./Project";
 
 export interface LiveShareProject {
-    items: ProjectItemManagerDataForDiff;
+    items: ProjectItemManagerDataForBson;
     props: ProjectProps;
 }
 
@@ -26,11 +26,11 @@ export interface ILiveShareClient {
 
 export interface ILiveShareServer {
     login(username: string, password: string, timestamp: number): string;
-    hostRoom(clientId: string, timestamp: number, permission: "read" | "write", project: LiveShareProject): { roomId: string };
-    joinRoom(clientId: string, timestamp: number, roomId: string): { roomInfo: RoomInfo; project: LiveShareProject };
-    closeRoom(clientId: string, roomId: string): void;
-    logout(clientId: string): void;
-    requestChanges(clientId: string, roomId: string, ...events: ChangeEvent[]): Promise<ChangeEvent[]>;
+    hostRoom(timestamp: number, permission: "read" | "write", project: LiveShareProject): { roomInfo: RoomInfo };
+    joinRoom(timestamp: number, roomId: string): { roomInfo: RoomInfo; project: LiveShareProject; history: ChangeEvent[] };
+    closeRoom(roomId: string): void;
+    logout(): void;
+    requestChanges(roomId: string, ...events: ChangeEvent[]): Promise<ChangeEvent[]>;
 }
 
 export interface LiveShareClientEventMap {
@@ -40,6 +40,7 @@ export interface LiveShareClientEventMap {
 }
 
 export default class LiveShareClient extends ProxyClient<ILiveShareClient, ILiveShareServer, LiveShareClientEventMap> {
+    static fnNames: (keyof ILiveShareServer)[] = ["closeRoom", "hostRoom", "joinRoom", "login", "logout", "requestChanges"];
     ping(timestamp: number, roomInfo?: RoomInfo) {
         this.emit("roomStateChanged", roomInfo);
         return timestamp;

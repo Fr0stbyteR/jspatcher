@@ -128,7 +128,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 e.stopPropagation();
                 e.preventDefault();
                 this.dragging = false;
-                if (this.dragged) this.props.editor.moveEnd({ ...this.translate });
+                if (this.dragged) this.props.editor.moveEnd(this.props.editor.state.selected, { ...this.translate });
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
                 this.refDiv.current.removeEventListener("keydown", handleKey);
@@ -333,7 +333,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
             this.dragging = false;
             totalOffset.x -= dragOffset.x;
             totalOffset.y -= dragOffset.y;
-            if (this.dragged) this.props.editor.resizeEnd(totalOffset, type);
+            if (this.dragged) this.props.editor.resizeEnd(this.props.editor.state.selected, totalOffset, type);
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
             this.refDiv.current.removeEventListener("keydown", handleKey);

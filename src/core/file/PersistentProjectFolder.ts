@@ -71,7 +71,7 @@ export default class PersistentProjectFolder extends AbstractProjectFolder<IPers
     }
     async destroy() {
         await this._fileMgr.remove(this.path, this.isFolder);
-        this.parent.items.delete(this as any);
+        this.parent?.items.delete(this as any);
         await this.emitTreeChanged();
         await this.emit("destroyed");
     }

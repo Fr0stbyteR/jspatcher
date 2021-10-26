@@ -4,7 +4,11 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+/** @type {string} */
 const VERSION = require("./src/scripts/version");
+const internalPackagesPath = "./src/scripts/internal-packages.json";
+/** @type {string[]} */
+const INTERNAL_PACKAGES = require(internalPackagesPath);
 
 /** @type {import('webpack').Configuration} */
 const config = {
@@ -104,7 +108,8 @@ const config = {
         { from: './node_modules/faust2webaudio/dist/libfaust-wasm.*', to: './deps/[name][ext]' },
         { from: './node_modules/@grame/libmusicxml/libmusicxml.wasm', to: './deps/' },
         { from: './node_modules/@shren/guidolib/libGUIDOEngine.wasm', to: './deps/' },
-        ...["std", "op", "webaudio", "analysers", "ui", "live", "midi", "cac"].map(p => ({ from: `./node_modules/@jspatcher/package-${p}/dist`, to: `./packages/${p}/` }))
+        { from: internalPackagesPath, to: './packages/[name][ext]' },
+        ...INTERNAL_PACKAGES.map(p => ({ from: `./node_modules/@jspatcher/package-${p}/dist`, to: `./packages/${p}/` }))
       ],
       
     }),

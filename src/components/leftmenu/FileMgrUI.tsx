@@ -253,6 +253,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
     };
     handleDeleteAll = async () => {
         await this.props.env.newProject();
+        this.setState({ deleteAllModalOpen: false });
     };
     handleDeleteAllModalClose = () => {
         this.setState({ deleteAllModalOpen: false });
@@ -282,7 +283,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
         if (renaming) headerClassNameArray.push("renaming");
         return (
             <div className={classNameArray.join(" ")} onDragEnter={this.handleDragEnter} onDragOver={this.handleDragOver} onDragLeave={this.handleDragLeave} onDrop={this.handleDrop} onMouseMove={this.handleMouseMove}>
-                <div className={headerClassNameArray.join(" ")} onClick={this.handleClickHeader} tabIndex={0} data-id={this.props.env.fileMgr.projectRoot.path}>
+                <div className={headerClassNameArray.join(" ")} onClick={this.handleClickHeader} tabIndex={0} data-id={this.props.env.fileMgr.projectRoot?.path}>
                     <span className="file-manager-header-collapse" onClick={this.handleClickCollapse}><Icon name={collapsed ? "caret right" : "caret down"} inverted size="small" /></span>
                     <span className="file-manager-header-name-container" {...(renaming ? { tabIndex: 0 } : {})} contentEditable={renaming} suppressContentEditableWarning>
                         <span className="file-manager-header-name">{projectName}</span>

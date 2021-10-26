@@ -35,6 +35,7 @@ export interface PatcherEditorState {
     presentation: boolean;
     showGrid: boolean;
     snapToGrid: boolean;
+    selectAfterEdit: boolean;
     selected: string[];
 }
 
@@ -49,6 +50,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         presentation: false,
         showGrid: true,
         snapToGrid: true,
+        selectAfterEdit: true,
         selected: []
     };
     get isLocked() {
@@ -88,6 +90,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             presentation: !!openInPresentation,
             showGrid: true,
             snapToGrid: true,
+            selectAfterEdit: true,
             selected: []
         });
     }
@@ -112,6 +115,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             presentation: !!openInPresentation,
             showGrid: true,
             snapToGrid: true,
+            selectAfterEdit: true,
             selected: []
         });
         this._isReady = true;
@@ -284,8 +288,10 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             }
             this.instance.state.preventEmitChanged = false;
             if (Object.keys(pasted.boxes).length) {
-                this.deselectAll();
-                this.select(...Object.keys(pasted.boxes));
+                if (this.state.selectAfterEdit) {
+                    this.deselectAll();
+                    this.select(...Object.keys(pasted.boxes));
+                }
                 this.emit("create", pasted);
                 this.instance.emitGraphChanged();
                 await Promise.all($postInit);
@@ -323,8 +329,10 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         this.instance.state.preventEmitChanged = false;
         if (Object.keys(pasted.boxes).length) {
-            this.deselectAll();
-            this.select(...Object.keys(pasted.boxes));
+            if (this.state.selectAfterEdit) {
+                this.deselectAll();
+                this.select(...Object.keys(pasted.boxes));
+            }
             this.emit("create", pasted);
             this.instance.emitGraphChanged();
         }
@@ -352,8 +360,10 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             created.lines[line.id] = line.toSerializable();
             line.enable();
         }
-        this.deselectAll();
-        this.select(...Object.keys(objects.boxes));
+        if (this.state.selectAfterEdit) {
+            this.deselectAll();
+            this.select(...Object.keys(objects.boxes));
+        }
         this.emit("create", created);
         this.instance.emitGraphChanged();
     }
@@ -470,8 +480,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.move(selected, delta, presentation);
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
-    moveEnd(delta: { x: number; y: number }) {
-        const { presentation, selected } = this.state;
+    moveEnd(selected: string[], delta: { x: number; y: number }) {
+        const { presentation } = this.state;
         const rectKey = presentation ? "presentationRect" : "rect";
         let ids = selected.filter(id => id.startsWith("box") && this.boxes[id]);
         if (presentation) ids = ids.filter(id => isRectMovable(this.boxes[id][rectKey]));
@@ -480,7 +490,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.emit("moved", { delta, selected: ids, presentation: this.state.presentation });
     }
     move(selected: string[], delta: { x: number; y: number }, presentation: boolean) {
-        this.select(...selected);
+        if (this.state.selectAfterEdit) this.select(...selected);
         const rectKey = presentation ? "presentationRect" : "rect";
         let ids = selected.filter(id => id.startsWith("box") && this.boxes[id]);
         if (presentation) ids = ids.filter(id => isRectMovable(this.boxes[id][rectKey]));
@@ -534,12 +544,12 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.resize(selected, delta, type, presentation);
         return { x: dragOffset.x - delta.x, y: dragOffset.y - delta.y };
     }
-    resizeEnd(delta: { x: number; y: number }, type: TResizeHandlerType) {
-        const { selected, presentation } = this.state;
+    resizeEnd(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType) {
+        const { presentation } = this.state;
         this.emit("resized", { delta, type, selected, presentation });
     }
     resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType, presentation: boolean) {
-        this.select(...selected);
+        if (this.state.selectAfterEdit) this.select(...selected);
         const rectKey = presentation ? "presentationRect" : "rect";
         let ids = selected.filter(id => id.startsWith("box") && this.boxes[id]);
         if (presentation) ids = ids.filter(id => isRectResizable(this.boxes[id][rectKey]));
