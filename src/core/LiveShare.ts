@@ -3,8 +3,8 @@ import LiveShareClient, { ChangeEvent, LiveShareProject, RoomInfo } from "./Live
 import Patcher from "./patcher/Patcher";
 import type Env from "./Env";
 import type { IFileInstance } from "./file/FileInstance";
-import { WebSocketLog } from "./websocket/ProxyClient.types";
-import PatcherHistory from "./patcher/PatcherHistory";
+import type { WebSocketLog } from "./websocket/ProxyClient.types";
+import type PatcherHistory from "./patcher/PatcherHistory";
 
 export default class LiveShare {
     roomInfo: RoomInfo;
@@ -18,7 +18,7 @@ export default class LiveShare {
         return !!this.clientId;
     }
     get isOwner() {
-        return this.roomInfo.userIsOwner;
+        return !!this.roomInfo?.userIsOwner;
     }
     constructor(env: Env) {
         this.env = env;
@@ -66,6 +66,7 @@ export default class LiveShare {
                 if (instances.indexOf(i) === -1) this.instances.add(i);
                 if (i instanceof Patcher) {
                     i.once("ready", async () => {
+                        if (!this.roomInfo) return;
                         if (!this.isOwner) {
                             const historyEvents = this.history.filter(ce => ce.fileId === i.file?.id);
                             await i.history.mergeEvents(...historyEvents);

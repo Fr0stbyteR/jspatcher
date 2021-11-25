@@ -369,6 +369,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         if (oldText === text) return this.boxes[boxId];
         await this.boxes[boxId].changeText(text);
         this.emit("changeBoxText", { oldText, text, boxId });
+        this.emitGraphChanged();
         return this.boxes[boxId];
     }
     async deleteBox(boxId: string) {

@@ -50,7 +50,7 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         editor.once("ready", async () => {
             const { $ } = this;
             this.$ = 0;
-            await this.redoUntil(this.eventQueue[$ - 1].timestamp);
+            if ($) await this.redoUntil(this.eventQueue[$ - 1].timestamp);
         });
     }
     removeEditor(editor: Editor) {

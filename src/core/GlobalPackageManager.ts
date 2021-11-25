@@ -117,12 +117,14 @@ export default class GlobalPackageManager {
                 const p: IExternalPackage = { ...m.default, baseUrl: new URL(".", new URL(url, location.href)).href, isBuiltIn };
                 if (p.jspatpkg) {
                     const url = new URL(p.jspatpkg, p.baseUrl).href;
-                    const getter: PackageGetter = (await this.fetchModule(url)).default;
+                    const fetched = await this.fetchModule(url);
+                    const getter: PackageGetter = typeof fetched === "function" ? fetched : fetched.default;
                     this.add(await getter(this.env), "js", [p.name]);
                 }
                 if (p["jsdsppkg.main"]) {
                     const url = new URL(p["jsdsppkg.main"], p.baseUrl).href;
-                    const getter: PackageGetter = (await this.fetchModule(url)).default;
+                    const fetched = await this.fetchModule(url);
+                    const getter: PackageGetter = typeof fetched === "function" ? fetched : fetched.default;
                     this.add(await getter(this.env), "jsaw", [p.name]);
                 }
                 if (p["jsdsppkg.aw"]) {
