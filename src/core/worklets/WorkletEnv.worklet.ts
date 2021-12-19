@@ -15,6 +15,7 @@ import type { IFileInstance } from "../file/FileInstance";
 import type { ProjectItemManagerDataForDiff } from "../file/PersistentProjectItemManager";
 import type { TErrorLevel } from "../types";
 import type { IExternalPackage } from "../GlobalPackageManager";
+import type GlobalTransportProcessor from "./GlobalTransportProcessor.worklet";
 
 export const processorId = "__JSPatcher_WorkletEnv";
 declare const globalThis: AudioWorkletGlobalScope;
@@ -35,6 +36,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     readonly sdk = new JSPatcherWorkletSDK();
     readonly username = "";
     currentProject: Project;
+    globalTransport: GlobalTransportProcessor;
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
         super(options);
         globalThis.jspatcherEnv = this;

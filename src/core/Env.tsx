@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import type { Faust, FaustAudioWorkletNode } from "faust2webaudio";
+import { VERSION as wamApiVersion } from "@webaudiomodules/api";
+import { addFunctionModule, initializeWamEnv } from "@webaudiomodules/sdk";
 import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitter";
 import DefaultImporter from "./objects/importer/DefaultImporter";
 import GlobalPackageManager from "./GlobalPackageManager";
@@ -28,6 +30,7 @@ import type { IFileEditor } from "./file/FileEditor";
 import type { IFileInstance } from "./file/FileInstance";
 import type { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
 import type { AudioDisplayOptions, AudioUnitOptions, TAudioUnit, TErrorLevel, TPackage, TPatcherLog } from "./types";
+import GlobalTransportNode from "./worklets/GlobalTransportNode";
 /*
 import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import GuidoWorker from "./workers/GuidoWorker";
@@ -104,6 +107,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     readonly sdk = new JSPatcherSDK();
     readonly liveShare = new LiveShare(this);
     envNode: WorkletEnvNode;
+    globalTransportNode: GlobalTransportNode;
     Faust: typeof Faust;
     FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
     faust: Faust;
@@ -274,6 +278,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 await WorkletEnvNode.register(audioWorklet);
                 this.envNode = new WorkletEnvNode(this.audioCtx, this);
                 await this.envNode.init();
+                await GlobalTransportNode.register(audioWorklet);
+                this.globalTransportNode = new GlobalTransportNode(this.audioCtx);
+            });
+            await this.taskMgr.newTask(this, "Initializing WamEnv...", async () => {
+                const { audioWorklet } = this.audioCtx;
+                await addFunctionModule(audioWorklet, initializeWamEnv, wamApiVersion);
             });
             await this.taskMgr.newTask(this, "Fetching packages...", async (onUpdate) => {
                 const packagesRes = await fetch("./packages/internal-packages.json");
