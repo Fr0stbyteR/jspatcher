@@ -174,12 +174,12 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                             minInStep *= fadeFactor;
                             maxInStep *= fadeFactor;
                             if (i === 0) fadeInPath.push([x, fadeFactor]);
-                        } else if (typeof fadeOutFrom === "number" && $ > fadeOutFrom) {
+                        } else if (typeof fadeOutFrom === "number" && $ >= fadeOutFrom) {
                             fadeFactor = normExp((length - $) / (length - fadeOutFrom), fadeOutExp);
                             minInStep *= fadeFactor;
                             maxInStep *= fadeFactor;
                             if (i === 0) fadeOutPath.push([x, fadeFactor]);
-                        } else if (typeof fade === "number" && selRange && $ > selRange[0] && $ < selRange[1]) {
+                        } else if (typeof fade === "number" && selRange && $ >= selRange[0] && $ < selRange[1]) {
                             fadeFactor = dbtoa(fade);
                             minInStep *= fadeFactor;
                             maxInStep *= fadeFactor;
@@ -221,12 +221,12 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                             minInStep *= fadeFactor;
                             maxInStep *= fadeFactor;
                             if (i === 0) fadeInPath.push([x, fadeFactor]);
-                        } else if (typeof fadeOutFrom === "number" && j > fadeOutFrom) {
+                        } else if (typeof fadeOutFrom === "number" && j >= fadeOutFrom) {
                             fadeFactor = normExp((length - j) / (length - fadeOutFrom), fadeOutExp);
                             minInStep *= fadeFactor;
                             maxInStep *= fadeFactor;
                             if (i === 0) fadeOutPath.push([x, fadeFactor]);
-                        } else if (typeof fade === "number" && selRange && j > selRange[0] && j < selRange[1]) {
+                        } else if (typeof fade === "number" && selRange && j >= selRange[0] && j < selRange[1]) {
                             fadeFactor = dbtoa(fade);
                             minInStep *= fadeFactor;
                             maxInStep *= fadeFactor;
@@ -474,8 +474,10 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
             e.preventDefault();
             if (this.refDivSelRange.current && (e.movementX || e.movementY)) {
                 const x = e.clientX;
-                const l = this.props.editor.length;
-                const fadeInTo = Math.max(0, Math.min(l, (x - offsetX - rect.left) / rect.width * l));
+                const { viewRange } = this.props;
+                const [viewStart, viewEnd] = viewRange;
+                const viewLength = viewEnd - viewStart;
+                const fadeInTo = Math.max(0, Math.min(viewLength, Math.round((x - offsetX - rect.left) / rect.width * viewLength)));
                 const fadeInExp = (e.clientY - originY) / 20;
                 this.setState({ fadeInTo, fadeInExp });
             }
@@ -503,8 +505,10 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
             e.preventDefault();
             if (this.refDivSelRange.current && (e.movementX || e.movementY)) {
                 const x = e.clientX;
-                const l = this.props.editor.length;
-                const fadeOutFrom = Math.max(0, Math.min(l, (x + offsetX - rect.left) / rect.width * l));
+                const { viewRange } = this.props;
+                const [viewStart, viewEnd] = viewRange;
+                const viewLength = viewEnd - viewStart;
+                const fadeOutFrom = viewStart + Math.max(0, Math.min(viewLength, Math.round((x + offsetX - rect.left) / rect.width * viewLength)));
                 const fadeOutExp = (e.clientY - originY) / 20;
                 this.setState({ fadeOutFrom, fadeOutExp });
             }

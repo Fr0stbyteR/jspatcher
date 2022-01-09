@@ -3,7 +3,7 @@ import { round } from "../../../utils/math";
 import "./GainInput.scss";
 
 interface P {
-    unit: "dB" | "linear"
+    unit: "dB" | "linear";
     gain: number;
     onAdjust?: (gain: number) => any;
     onChange?: (gain: number) => any;
