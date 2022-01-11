@@ -1,0 +1,18 @@
+.modal.modal-add-plugin {
+    & .message {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: row;
+        font-size: 12px;
+    
+        & > span {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+
+            &.error {
+                color: rgb(255, 128, 128);
+            }
+        }
+    }
+}

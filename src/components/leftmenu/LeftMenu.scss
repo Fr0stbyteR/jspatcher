@@ -127,6 +127,9 @@
         & > div.left-pane-filemanager {
             background-color: #333;
         }
+        & > div.left-pane-plugins {
+            background-color: #333;
+        }
     }
     &[hidden], & [hidden] {
         display: none !important;

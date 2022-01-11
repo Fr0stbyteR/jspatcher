@@ -23,14 +23,14 @@ export default class BufferUI extends DefaultPopupUI<Buffer, {}, BufferUIState> 
     };
     static dockable = true;
     async loadEditor() {
-        const key = this.props.inDock ? "editor" : "dockEditor";
+        const key = this.props.inDock ? "dockEditor" : "editor";
         const editor = new AudioEditor(this.object._.audio);
         await editor.init();
         editor.on("changed", this.handleChanged);
         this.setState({ timestamp: performance.now(), [key as "editor"]: editor }, () => editor.setActive());
     }
     unloadEditor() {
-        const key = this.props.inDock ? "editor" : "dockEditor";
+        const key = this.props.inDock ? "dockEditor" : "editor";
         const editor = this.state[key];
         if (!editor) return;
         editor.off("changed", this.handleChanged);
@@ -38,7 +38,7 @@ export default class BufferUI extends DefaultPopupUI<Buffer, {}, BufferUIState> 
         this.setState({ timestamp: performance.now(), [key as "editor"]: undefined }, () => this.props.editor.setActive());
     }
     handleChanged = () => {
-        const editor = this.props.inDock ? this.state.editor : this.state.dockEditor;
+        const editor = this.props.inDock ? this.state.dockEditor : this.state.editor;
         if (editor.isTemporary) editor.save();
     };
     handleDoubleClick = async () => {
@@ -58,7 +58,7 @@ export default class BufferUI extends DefaultPopupUI<Buffer, {}, BufferUIState> 
         if (this.props.inDock) this.loadEditor();
     }
     componentDidUpdate(prevProps: Readonly<DefaultPopupUIProps>, prevState: Readonly<BufferUIState & DefaultPopupUIState>) {
-        const key = this.props.inDock ? "editor" : "dockEditor";
+        const key = this.props.inDock ? "dockEditor" : "editor";
         const editor = this.state[key];
         if (prevState.audio !== this.state.audio) {
             if (editor) {
@@ -87,7 +87,7 @@ export default class BufferUI extends DefaultPopupUI<Buffer, {}, BufferUIState> 
         super.componentWillUnmount();
     }
     render() {
-        const editor = this.props.inDock ? this.state.editor : this.state.dockEditor;
+        const editor = this.props.inDock ? this.state.dockEditor : this.state.editor;
         const content = <div className="editor-container" style={{ height: "100%", width: "100%", display: "flex", position: "relative" }}>
             {
                 editor

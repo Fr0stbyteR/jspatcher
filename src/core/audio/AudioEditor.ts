@@ -42,7 +42,7 @@ export interface AudioEditorEventMap {
     "ready": never;
 }
 
-export interface AudioHistoryEventMap extends Pick<AudioEditorEventMap, "faded" | "fadedIn" | "fadedOut" | "cutEnd" | "pasted" | "deleted" | "silenced" | "insertedSilence" | "reversed" | "inversed" | "resampled" | "remixed" | "recorded"> {}
+export interface AudioHistoryEventMap extends Pick<AudioEditorEventMap, "faded" | "fadedIn" | "fadedOut" | "cutEnd" | "pasted" | "deleted" | "silenced" | "insertedSilence" | "reversed" | "inversed" | "resampled" | "remixed" | "recorded" | "pluginsApplied"> {}
 
 export interface AudioEditorState {
     playing: TAudioPlayingState;
@@ -117,6 +117,9 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
     get waveform() {
         return this.instance.waveform;
     }
+    get wamGroupId() {
+        return (this.env as Env).wamGroupId;
+    }
 
     handleSetAudio = () => {
         const { cursor, selRange, viewRange } = this.state;
@@ -172,9 +175,18 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
     onUiResized() {
         this.emit("uiResized");
     }
+    get pluginsState() {
+        const { plugins, pluginsEnabled, pluginsShowing, preFxGain, postFxGain } = this.state;
+        return {
+            plugins: plugins.slice(),
+            pluginsEnabled: plugins.map(p => pluginsEnabled.has(p)),
+            pluginsShowing: plugins.map(p => pluginsShowing.has(p)),
+            preFxGain,
+            postFxGain
+        };
+    }
     emitPluginsChanged() {
-        const { plugins, pluginsEnabled, pluginsShowing } = this.state;
-        this.emit("pluginsChanged", { plugins: plugins.slice(), pluginsEnabled: plugins.map(p => pluginsEnabled.has(p)), pluginsShowing: plugins.map(p => pluginsShowing.has(p)) });
+        this.emit("pluginsChanged", this.pluginsState);
     }
     emitUIResized() {
         this.emit("uiResized");
@@ -326,7 +338,7 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
     async silence() {
         const { selRange } = this.state;
         if (!selRange) return;
-        const silenced = await this.instance.silence(selRange);
+        const silenced = await this.instance.silence(...selRange);
         if (silenced) this.emit("silenced", silenced);
     }
     async insertSilence(length: number) {
@@ -445,7 +457,7 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
         this.emit("recording", false);
     }
     async addPlugin(url: string, index: number) {
-        this.env.taskMgr.newTask(this, "Adding Plugin...", () => this.player.addPlugin(url, index));
+        return this.env.taskMgr.newTask(this, "Adding Plugin...", () => this.player.addPlugin(url, index));
     }
     removePlugin(index: number) {
         this.player.removePlugin(index);

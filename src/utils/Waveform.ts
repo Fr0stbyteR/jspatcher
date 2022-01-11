@@ -1,6 +1,7 @@
-import PatcherAudio from "../core/audio/PatcherAudio";
-import { WaveformData, WaveformStepData } from "../core/types";
-import WaveformWorker from "../core/workers/WaveformWorker";
+import type PatcherAudio from "../core/audio/PatcherAudio";
+import type Env from "../core/Env";
+import type WaveformWorker from "../core/workers/WaveformWorker";
+import type { WaveformData, WaveformStepData } from "../core/types";
 
 export default class Waveform implements WaveformData {
     static stepsFactor = 16;
@@ -24,7 +25,7 @@ export default class Waveform implements WaveformData {
     }
 
     constructor(patcherAudioIn: PatcherAudio, waveformDataIn?: WaveformData) {
-        this.worker = patcherAudioIn.env.waveformWorker;
+        this.worker = (patcherAudioIn.env as Env).waveformWorker;
         this.patcherAudio = patcherAudioIn;
         if (!waveformDataIn) return;
         Object.keys(waveformDataIn).filter(v => +v).map(v => +v).forEach((stepLength) => {

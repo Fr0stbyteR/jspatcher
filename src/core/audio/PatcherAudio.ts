@@ -162,8 +162,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
         this.waveform.patcherAudio = this;
         this.emit("setAudio");
     }
-    async silence(range: [number, number]) {
-        const [selStart, selEnd] = range;
+    async silence(selStart = 0, selEnd = this.length) {
         const length = selEnd - selStart;
         const audio = await PatcherAudio.fromSilence({ env: this.env, project: this.project, file: this.file }, this.numberOfChannels, length, this.sampleRate);
         const oldAudio = await this.pasteToRange(audio, selStart, selEnd);
@@ -304,7 +303,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
             this.setSelRange([cursor, cursor + that.length]);
         }
     }
-    async fade(gain: number, from: number, to: number, enabledChannels: boolean[]) {
+    async fade(gain: number, from = 0, to = this.length, enabledChannels: boolean[] = new Array(this.numberOfChannels).fill(true)) {
         const oldAudio = await this.pick(from, to, true);
         const factor = dbtoa(gain);
         for (let c = 0; c < this.numberOfChannels; c++) {
@@ -318,7 +317,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
         const audio = await this.pick(from, to, true);
         return { gain, range: [from, to] as [number, number], audio, oldAudio };
     }
-    async fadeIn(lengthIn: number, exponent: number, enabledChannels: boolean[]) {
+    async fadeIn(lengthIn: number, exponent = 0, enabledChannels: boolean[] = new Array(this.numberOfChannels).fill(true)) {
         const length = Math.max(0, Math.min(this.length, ~~lengthIn));
         if (!length) return null;
         const oldAudio = await this.pick(0, length, true);
@@ -333,7 +332,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
         const audio = await this.pick(0, length, true);
         return { length, exponent, audio, oldAudio };
     }
-    async fadeOut(lengthIn: number, exponent: number, enabledChannels: boolean[]) {
+    async fadeOut(lengthIn: number, exponent = 0, enabledChannels: boolean[] = new Array(this.numberOfChannels).fill(true)) {
         const l = this.length;
         const length = Math.max(0, Math.min(l, ~~lengthIn));
         if (!length) return null;

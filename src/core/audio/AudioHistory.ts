@@ -3,7 +3,7 @@ import AudioEditor, { AudioHistoryEventMap } from "./AudioEditor";
 
 export default class AudioHistory extends History<AudioHistoryEventMap, AudioEditor> {
     get eventListening(): (keyof AudioHistoryEventMap)[] {
-        return ["faded", "fadedIn", "fadedOut", "cutEnd", "pasted", "deleted", "silenced", "insertedSilence", "reversed", "inversed", "resampled", "remixed", "recorded"];
+        return ["faded", "fadedIn", "fadedOut", "cutEnd", "pasted", "deleted", "silenced", "insertedSilence", "reversed", "inversed", "resampled", "remixed", "recorded", "pluginsApplied"];
     }
     async undoOf(editor: AudioEditor, eventName: keyof AudioHistoryEventMap, eventData?: any) {
         if (eventName === "faded") {
@@ -66,6 +66,14 @@ export default class AudioHistory extends History<AudioHistoryEventMap, AudioEdi
                 await editor.instance.pasteToRange(oldAudio, range[0], range[0] + audio.length);
             } else {
                 await editor.instance.removeFromRange(cursor, cursor + audio.length);
+            }
+        } else if (eventName === "pluginsApplied") {
+            const e: AudioHistoryEventMap[typeof eventName] = eventData;
+            const { range, audio, oldAudio } = e;
+            if (range) {
+                await editor.instance.pasteToRange(oldAudio, range[0], range[0] + audio.length);
+            } else {
+                editor.instance.setAudio(oldAudio);
             }
         }
     }
@@ -130,6 +138,14 @@ export default class AudioHistory extends History<AudioHistoryEventMap, AudioEdi
                 await editor.instance.pasteToRange(audio, range[0], range[0] + oldAudio.length);
             } else {
                 await editor.instance.insertToCursor(audio, cursor);
+            }
+        } else if (eventName === "pluginsApplied") {
+            const e: AudioHistoryEventMap[typeof eventName] = eventData;
+            const { range, audio, oldAudio } = e;
+            if (range) {
+                await editor.instance.pasteToRange(audio, range[0], range[0] + oldAudio.length);
+            } else {
+                editor.instance.setAudio(audio);
             }
         }
     }

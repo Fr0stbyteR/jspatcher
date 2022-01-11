@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import type { Faust, FaustAudioWorkletNode } from "faust2webaudio";
 import { VERSION as wamApiVersion } from "@webaudiomodules/api";
-import { addFunctionModule, initializeWamEnv } from "@webaudiomodules/sdk";
+import { addFunctionModule, initializeWamEnv, initializeWamGroup } from "@webaudiomodules/sdk";
 import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitter";
 import DefaultImporter from "./objects/importer/DefaultImporter";
 import GlobalPackageManager from "./GlobalPackageManager";
@@ -106,6 +106,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     readonly AudioWorkletRegister = AudioWorkletRegister;
     readonly sdk = new JSPatcherSDK();
     readonly liveShare = new LiveShare(this);
+    readonly wamGroupId = this.generateId(this);
+    readonly wamGroupKey = this.generateId(this);
     envNode: WorkletEnvNode;
     globalTransportNode: GlobalTransportNode;
     Faust: typeof Faust;
@@ -284,6 +286,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             await this.taskMgr.newTask(this, "Initializing WamEnv...", async () => {
                 const { audioWorklet } = this.audioCtx;
                 await addFunctionModule(audioWorklet, initializeWamEnv, wamApiVersion);
+                await addFunctionModule(audioWorklet, initializeWamGroup, this.wamGroupId, this.wamGroupKey);
             });
             await this.taskMgr.newTask(this, "Fetching packages...", async (onUpdate) => {
                 const packagesRes = await fetch("./packages/internal-packages.json");
@@ -337,7 +340,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         patcher.on("changed", () => localStorage.setItem("__JSPatcher_Patcher", patcher.toStringEnv(null)));
         if (!this._noUI && this.divRoot) ReactDOM.render(urlparamsOptions.runtime ? <PatcherUI patcher={patcher} runtime /> : <UI patcher={patcher} />, this.divRoot);
         */
-        return this;
     }
     generateId(objectIn: object) {
         return this.thread + objectIn.constructor.name + Atomics.add(this.generatedId, 0, 1);

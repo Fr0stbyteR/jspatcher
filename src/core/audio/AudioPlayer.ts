@@ -256,7 +256,7 @@ export default class AudioPlayer {
     async addPlugin(url: string, indexIn: number) {
         const { plugins, pluginsEnabled } = this.editor.state;
         const { default: Plugin }: { default: typeof WebAudioModule } = await import(/* webpackIgnore: true */url);
-        const plugin = await Plugin.createInstance(this.audioCtx);
+        const plugin = await Plugin.createInstance(this.editor.wamGroupId, this.audioCtx);
         const { audioNode } = plugin;
         const usingPlugins = this.playing || this.monitoring;
         let preNode: AudioNode;

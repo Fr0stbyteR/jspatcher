@@ -8,12 +8,15 @@ import Env, { EnvEventMap } from "../../core/Env";
 import { IFileEditor } from "../../core/file/FileEditor";
 import FileManagerUI from "./FileMgrUI";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
+import AudioEditor from "../../core/audio/AudioEditor";
+import PluginManagerUI from "./PluginMgrUI";
 
 enum TPanels {
     None = "None",
     FileMgr = "Files",
     Objects = "Objects",
-    Packages = "Packages"
+    Packages = "Packages",
+    Plugins = "Plugins"
 }
 
 class ConfigMenu extends React.PureComponent {
@@ -49,6 +52,7 @@ export default class LeftMenu extends React.PureComponent<P, S> {
     refFileMgr = React.createRef<FileManagerUI>();
     refObjects = React.createRef<Objects>();
     refPackages = React.createRef<Packages>();
+    refPlugins = React.createRef<PluginManagerUI>();
     handleItemClick = (e: React.MouseEvent<HTMLAnchorElement>, data: MenuItemProps) => {
         if (this.state.active === data.name) {
             this.setState({ active: TPanels.None });
@@ -83,9 +87,9 @@ export default class LeftMenu extends React.PureComponent<P, S> {
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
     };
-    handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
-        const active = this.state.active === TPanels.None || editor instanceof PatcherEditor ? this.state.active : this.state.active === TPanels.FileMgr ? this.state.active : TPanels.None;
-        this.setState({ editor, active });
+    handleActiveEditor = ({ editor, oldEditor }: EnvEventMap["activeEditor"]) => {
+        if (editor?.constructor.name === oldEditor?.constructor.name || this.state.active === TPanels.FileMgr) this.setState({ editor });
+        else this.setState({ editor, active: TPanels.None });
     };
     componentDidMount() {
         this.props.env.on("activeEditor", this.handleActiveEditor);
@@ -110,6 +114,9 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                     <div className="left-pane-packages" hidden={this.state.active !== TPanels.Packages}>
                         {this.state.active === TPanels.Packages ? <Packages {...this.props} ref={this.refPackages} /> : <></> }
                     </div>
+                    <div className="left-pane-plugins" hidden={this.state.active !== TPanels.Plugins}>
+                        {this.state.active === TPanels.Plugins ? <PluginManagerUI {...this.props} ref={this.refPlugins} /> : <></> }
+                    </div>
                 </div>
                 <Menu icon vertical inverted size="mini" className="left-menu">
                     {this.props.noFileMgr
@@ -125,6 +132,14 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                             </Menu.Item>
                             <Menu.Item name={TPanels.Packages} active={this.state.active === TPanels.Packages} onClick={this.handleItemClick} title={TPanels.Packages}>
                                 <Icon name="box" color={this.state.active === TPanels.Packages ? "teal" : "grey"} inverted />
+                            </Menu.Item>
+                        </>
+                        : undefined
+                    }
+                    {this.state.editor instanceof AudioEditor
+                        ? <>
+                            <Menu.Item name={TPanels.Plugins} active={this.state.active === TPanels.Plugins} onClick={this.handleItemClick} title={TPanels.Plugins}>
+                                <Icon name="plug" color={this.state.active === TPanels.Plugins ? "teal" : "grey"} inverted />
                             </Menu.Item>
                         </>
                         : undefined
