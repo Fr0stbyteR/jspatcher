@@ -26,7 +26,7 @@ __webpack_require__.r(__webpack_exports__);
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-cac","version":"1.0.0","description":"The Computer-Aided Coposition package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-cac","devDependencies":{"@jspatcher/jspatcher":"0.0.9","@shren/guidolib":"^1.7.3","@shren/sol":"0.0.1","@types/react":"^17.0.19","@types/react-dom":"^17.0.9","clean-webpack-plugin":"^4.0.0-alpha.0","copy-webpack-plugin":"^9.0.1","esbuild-loader":"^2.15.1","react":"^17.0.2","react-dom":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.7.2"},"dependencies":{}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-cac","version":"1.0.0","description":"The Computer-Aided Coposition package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-cac","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@shren/guidolib":"^1.7.3","@shren/sol":"file:../../sol","@types/react":"^17.0.32","@types/react-dom":"^17.0.10","clean-webpack-plugin":"^4.0.0","copy-webpack-plugin":"^9.0.1","esbuild":"^0.14.1","esbuild-loader":"^2.16.0","react":"^17.0.2","react-dom":"^17.0.2","typescript":"^4.4.4","webpack":"^5.59.1","webpack-cli":"^4.9.1"}}');
 
 /***/ })
 
@@ -151,8 +151,8 @@ var __spreadValues = (a, b) => {
   return a;
 };
 
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
-const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"].name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
 
 })();

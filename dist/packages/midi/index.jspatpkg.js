@@ -1,5 +1,4 @@
 /******/ (() => { // webpackBootstrap
-/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
 /***/ "./src/index.ts":
@@ -8,6 +7,7 @@
   \**********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "name": () => (/* binding */ name),
@@ -37,8 +37,8 @@ var __spreadValues = (a, b) => {
   return a;
 };
 
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
-const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"].name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
 
 
@@ -50,6 +50,7 @@ const { author, license, keywords, version, description, jspatcher } = _package_
   \*****************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ MidiObject)
@@ -74,6 +75,7 @@ MidiObject.description = _index__WEBPACK_IMPORTED_MODULE_0__.description;
   \********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ midiDevices)
@@ -82,7 +84,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Base */ "./src/objects/Base.ts");
 
 
-class midiDevices extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
+class midiDevices extends _Base__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor() {
     super(...arguments);
     this._ = { midiAccess: void 0 };
@@ -197,13 +199,14 @@ midiDevices.props = {
   \***********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ midiFormat)
 /* harmony export */ });
 /* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Base */ "./src/objects/Base.ts");
 
-class midiFormat extends _Base__WEBPACK_IMPORTED_MODULE_0__.default {
+class midiFormat extends _Base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { channel: 0 };
@@ -313,6 +316,7 @@ midiFormat.props = {
   \*******************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ midiIn)
@@ -340,7 +344,7 @@ var __spreadValues = (a, b) => {
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
-const _midiIn = class extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
+const _midiIn = class extends _Base__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor() {
     super(...arguments);
     this._ = { midiAccess: void 0, search: void 0, port: void 0 };
@@ -452,6 +456,7 @@ midiIn.args = [{
   \********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ midiOut)
@@ -479,7 +484,7 @@ var __spreadValues = (a, b) => {
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
-const _midiOut = class extends _Base__WEBPACK_IMPORTED_MODULE_1__.default {
+const _midiOut = class extends _Base__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor() {
     super(...arguments);
     this._ = { midiAccess: void 0, search: void 0, port: void 0, timestamp: 0 };
@@ -586,19 +591,20 @@ midiOut.args = [{
 
 /***/ }),
 
-/***/ "./src/objects/midiparse.ts":
+/***/ "./src/objects/midiParse.ts":
 /*!**********************************!*\
-  !*** ./src/objects/midiparse.ts ***!
+  !*** ./src/objects/midiParse.ts ***!
   \**********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ midiParse)
 /* harmony export */ });
 /* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Base */ "./src/objects/Base.ts");
 
-class midiParse extends _Base__WEBPACK_IMPORTED_MODULE_0__.default {
+class midiParse extends _Base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -687,12 +693,89 @@ midiParse.props = {
 
 /***/ }),
 
+/***/ "./src/objects/midiSequencer.ts":
+/*!**************************************!*\
+  !*** ./src/objects/midiSequencer.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ midiSequencer)
+/* harmony export */ });
+/* harmony import */ var _worklets_MidiSequencerNode__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../worklets/MidiSequencerNode */ "./src/worklets/MidiSequencerNode.ts");
+/* harmony import */ var _Base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Base */ "./src/objects/Base.ts");
+
+
+class midiSequencer extends _Base__WEBPACK_IMPORTED_MODULE_1__["default"] {
+  constructor() {
+    super(...arguments);
+    this._ = { node: null };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+    });
+    this.on("postInit", async () => {
+      await _worklets_MidiSequencerNode__WEBPACK_IMPORTED_MODULE_0__["default"].register(this.audioCtx);
+      const node = new _worklets_MidiSequencerNode__WEBPACK_IMPORTED_MODULE_0__["default"](this.audioCtx);
+      node.onMidi = (bytes) => this.outlet(0, bytes);
+      this._.node = node;
+    });
+    this.on("updateProps", () => {
+      this._.node.parameters.get("loop").value = +!!this.getProp("loop");
+    });
+    this.on("inlet", async ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (typeof data === "number" || typeof data === "boolean") {
+          this._.node.parameters.get("playing").value = +!!data;
+        } else if (data instanceof ArrayBuffer) {
+          this._.node.loadFile(data);
+        } else if (data instanceof Uint8Array) {
+          this._.node.loadFile(data.buffer);
+        } else if (typeof data === "object") {
+          if (typeof data.goto === "number")
+            this._.node.goto(data.goto);
+        }
+      }
+    });
+    this.on("destroy", () => {
+      this._.node.destroy();
+    });
+  }
+}
+midiSequencer.description = "MIDI File Player";
+midiSequencer.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "ArrayBuffer as MIDI File, { goto: number } to jump, boolean/number to switch play/stop"
+}];
+midiSequencer.outlets = [{
+  type: "object",
+  description: "realtime MIDI event"
+}];
+midiSequencer.args = [];
+midiSequencer.props = {
+  loop: {
+    type: "boolean",
+    description: "Loop",
+    default: false
+  }
+};
+
+
+/***/ }),
+
 /***/ "./src/package-info.ts":
 /*!*****************************!*\
   !*** ./src/package-info.ts ***!
   \*****************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 var _package_json__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
@@ -711,6 +794,7 @@ __webpack_require__.r(__webpack_exports__);
   \********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "React": () => (/* binding */ React),
@@ -779,13 +863,430 @@ const {
 
 /***/ }),
 
+/***/ "./src/worklets/MidiParser.ts":
+/*!************************************!*\
+  !*** ./src/worklets/MidiParser.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+class Parser {
+  constructor(data) {
+    this.buffer = new DataView(data);
+    this.bufferLen = this.buffer.byteLength;
+    this.pos = 0;
+  }
+  eof() {
+    return this.pos >= this.bufferLen;
+  }
+  readUInt8() {
+    const result = this.buffer.getUint8(this.pos);
+    this.pos += 1;
+    return result;
+  }
+  readInt8() {
+    const result = this.buffer.getInt8(this.pos);
+    this.pos += 1;
+    return result;
+  }
+  readUInt16() {
+    const result = this.buffer.getUint16(this.pos);
+    this.pos += 2;
+    return result;
+  }
+  readInt16() {
+    const result = this.buffer.getInt16(this.pos);
+    this.pos += 2;
+    return result;
+  }
+  readUInt24() {
+    const b0 = this.readUInt8();
+    const b1 = this.readUInt8();
+    const b2 = this.readUInt8();
+    return (b0 << 16) + (b1 << 8) + b2;
+  }
+  readInt24() {
+    const u = this.readUInt24();
+    if (u & 8388608)
+      return u - 16777216;
+    else
+      return u;
+  }
+  readUInt32() {
+    const result = this.buffer.getUint32(this.pos);
+    this.pos += 4;
+    return result;
+  }
+  readInt32() {
+    const result = this.buffer.getInt32(this.pos);
+    this.pos += 4;
+    return result;
+  }
+  readBytes(len) {
+    const bytes = this.buffer.buffer.slice(this.pos, this.pos + len);
+    this.pos += len;
+    return bytes;
+  }
+  readString(len) {
+    const bytes = this.readBytes(len);
+    return String.fromCharCode.apply(null, new Uint8Array(bytes));
+  }
+  readVarInt() {
+    let result = 0;
+    while (!this.eof()) {
+      const b = this.readUInt8();
+      if (b & 128) {
+        result += b & 127;
+        result <<= 7;
+      } else {
+        return result + b;
+      }
+    }
+    return result;
+  }
+  readChunk() {
+    const id = this.readString(4);
+    const length = this.readUInt32();
+    const data = this.readBytes(length);
+    return { id, length, data };
+  }
+}
+const parseMidi = (data) => {
+  const p = new Parser(data);
+  const headerChunk = p.readChunk();
+  if (headerChunk.id != "MThd")
+    throw new Error(`Bad MIDI file.  Expected "MHdr", got: "${headerChunk.id}"`);
+  const header = parseHeader(headerChunk.data);
+  const tracks = [];
+  let duration = 0;
+  for (let i = 0; !p.eof() && i < header.numTracks; i++) {
+    const trackChunk = p.readChunk();
+    if (trackChunk.id != "MTrk")
+      throw new Error(`Bad MIDI file.  Expected "MTrk", got: "${trackChunk.id}"`);
+    const track = parseTrack(trackChunk.data, header.ticksPerBeat);
+    tracks.push(track);
+    const lastEvent = track[track.length - 1];
+    if ("time" in lastEvent && lastEvent.time > duration)
+      duration = lastEvent.time;
+  }
+  return { header, tracks, duration };
+};
+const parseHeader = (data) => {
+  const p = new Parser(data);
+  const format = p.readUInt16();
+  const numTracks = p.readUInt16();
+  const timeDivision = p.readUInt16();
+  if (timeDivision & 32768) {
+    const framesPerSecond = 256 - (timeDivision >> 8);
+    const ticksPerFrame = timeDivision & 255;
+    return { format, numTracks, timeDivision, framesPerSecond, ticksPerFrame };
+  } else {
+    const ticksPerBeat = timeDivision;
+    return { format, numTracks, timeDivision, ticksPerBeat };
+  }
+};
+const parseTrack = (data, ppq = 480) => {
+  const p = new Parser(data);
+  let lastEventTypeByte = null;
+  let ticks = 0;
+  let bpm = 120;
+  let tempoTicks = 0;
+  let tempoTime = 0;
+  const readEvent = () => {
+    const deltaTicks = p.readVarInt();
+    ticks += deltaTicks;
+    const elapsedBeats = (ticks - tempoTicks) / ppq;
+    const time = tempoTime + 60 / bpm * elapsedBeats;
+    let eventTypeByte = p.readUInt8();
+    const event = { ticks, deltaTicks, time };
+    if ((eventTypeByte & 240) === 240) {
+      if (eventTypeByte === 255) {
+        event.meta = true;
+        const metatypeByte = p.readUInt8();
+        const length = p.readVarInt();
+        if (metatypeByte === 0) {
+          event.type = "sequenceNumber";
+          if (length !== 2)
+            throw `Expected length for sequenceNumber event is 2, got ${length}`;
+          event.number = p.readUInt16();
+        } else if (metatypeByte === 1) {
+          event.type = "text";
+          event.text = p.readString(length);
+        } else if (metatypeByte === 2) {
+          event.type = "copyrightNotice";
+          event.text = p.readString(length);
+        } else if (metatypeByte === 3) {
+          event.type = "trackName";
+          event.text = p.readString(length);
+        } else if (metatypeByte === 4) {
+          event.type = "instrumentName";
+          event.text = p.readString(length);
+        } else if (metatypeByte === 5) {
+          event.type = "lyrics";
+          event.text = p.readString(length);
+        } else if (metatypeByte === 6) {
+          event.type = "marker";
+          event.text = p.readString(length);
+        } else if (metatypeByte === 7) {
+          event.type = "cuePoint";
+          event.text = p.readString(length);
+        } else if (metatypeByte === 32) {
+          event.type = "channelPrefix";
+          if (length != 1)
+            throw new Error(`Expected length for channelPrefix event is 1, got ${length}`);
+          event.channel = p.readUInt8();
+        } else if (metatypeByte === 33) {
+          event.type = "portPrefix";
+          if (length != 1)
+            throw new Error(`Expected length for portPrefix event is 1, got ${length}`);
+          event.port = p.readUInt8();
+        } else if (metatypeByte === 47) {
+          event.type = "endOfTrack";
+          if (length != 0)
+            throw new Error(`Expected length for endOfTrack event is 0, got ${length}`);
+        } else if (metatypeByte === 81) {
+          event.type = "setTempo";
+          if (length != 3)
+            throw new Error(`Expected length for setTempo event is 3, got ${length}`);
+          const microsecondsPerBeat = p.readUInt24();
+          event.microsecondsPerBeat = microsecondsPerBeat;
+          bpm = 6e7 / event.microsecondsPerBeat;
+          tempoTicks = ticks;
+          tempoTime = time;
+        } else if (metatypeByte === 84) {
+          event.type = "smpteOffset";
+          if (length != 5)
+            throw new Error(`Expected length for smpteOffset event is 5, got ${length}`);
+          const hourByte = p.readUInt8();
+          const FRAME_RATES = { 0: 24, 32: 25, 64: 29, 96: 30 };
+          event.frameRate = FRAME_RATES[hourByte & 96];
+          event.hour = hourByte & 31;
+          event.min = p.readUInt8();
+          event.sec = p.readUInt8();
+          event.frame = p.readUInt8();
+          event.subFrame = p.readUInt8();
+        } else if (metatypeByte === 88) {
+          event.type = "timeSignature";
+          if (length != 4)
+            throw new Error(`Expected length for timeSignature event is 4, got ${length}`);
+          event.numerator = p.readUInt8();
+          event.denominator = 1 << p.readUInt8();
+          event.metronome = p.readUInt8();
+          event.thirtyseconds = p.readUInt8();
+        } else if (metatypeByte === 89) {
+          event.type = "keySignature";
+          if (length != 2)
+            throw new Error(`Expected length for keySignature event is 2, got ${length}`);
+          event.key = p.readInt8();
+          event.scale = p.readUInt8();
+        } else if (metatypeByte === 127) {
+          event.type = "sequencerSpecific";
+          event.data = p.readBytes(length);
+        } else {
+          event.type = "unknownMeta";
+          event.data = p.readBytes(length);
+          event.metatypeByte = metatypeByte;
+        }
+      } else if (eventTypeByte == 240) {
+        event.type = "sysEx";
+        const length = p.readVarInt();
+        const data2 = p.readBytes(length);
+        event.bytes = new Uint8Array([eventTypeByte, ...new Uint8Array(data2)]);
+      } else if (eventTypeByte == 247) {
+        event.type = "endSysEx";
+        const length = p.readVarInt();
+        const data2 = p.readBytes(length);
+        event.bytes = new Uint8Array([eventTypeByte, ...new Uint8Array(data2)]);
+      } else {
+        throw new Error(`Unrecognised MIDI event type byte: ${eventTypeByte}`);
+      }
+    } else {
+      let param1;
+      if ((eventTypeByte & 128) === 0) {
+        if (lastEventTypeByte === null)
+          throw new Error("Running status byte encountered before status byte");
+        param1 = eventTypeByte;
+        eventTypeByte = lastEventTypeByte;
+        event.running = true;
+      } else {
+        param1 = p.readUInt8();
+        lastEventTypeByte = eventTypeByte;
+      }
+      const eventType = eventTypeByte >> 4;
+      event.channel = eventTypeByte & 15;
+      if (eventType === 8) {
+        event.type = "noteOff";
+        event.noteNumber = param1;
+        const param2 = p.readUInt8();
+        event.velocity = param2;
+        event.bytes = new Uint8Array([eventTypeByte, param1, param2]);
+      } else if (eventType === 9) {
+        const velocity = p.readUInt8();
+        event.type = velocity === 0 ? "noteOff" : "noteOn";
+        event.noteNumber = param1;
+        event.velocity = velocity;
+        if (velocity === 0)
+          event.byte9 = true;
+        event.bytes = new Uint8Array([eventTypeByte, param1, velocity]);
+      } else if (eventType === 10) {
+        event.type = "noteAftertouch";
+        event.noteNumber = param1;
+        const param2 = p.readUInt8();
+        event.amount = param2;
+        event.bytes = new Uint8Array([eventTypeByte, param1, param2]);
+      } else if (eventType === 11) {
+        event.type = "controller";
+        event.controllerType = param1;
+        const param2 = p.readUInt8();
+        event.value = param2;
+        event.bytes = new Uint8Array([eventTypeByte, param1, param2]);
+      } else if (eventType === 12) {
+        event.type = "programChange";
+        event.programNumber = param1;
+        event.bytes = new Uint8Array([eventTypeByte, param1]);
+      } else if (eventType === 13) {
+        event.type = "channelAftertouch";
+        event.amount = param1;
+        event.bytes = new Uint8Array([eventTypeByte, param1]);
+      } else if (eventType === 14) {
+        event.type = "pitchBend";
+        const param2 = p.readUInt8();
+        event.value = param1 + (param2 << 7) - 8192;
+        event.bytes = new Uint8Array([eventTypeByte, param1, param2]);
+      } else {
+        throw new Error(`Unrecognised MIDI event type: ${eventType}`);
+      }
+    }
+    return event;
+  };
+  const events = [];
+  while (!p.eof()) {
+    const event = readEvent();
+    events.push(event);
+  }
+  return events;
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (parseMidi);
+
+
+/***/ }),
+
+/***/ "./src/worklets/MidiSequencerNode.ts":
+/*!*******************************************!*\
+  !*** ./src/worklets/MidiSequencerNode.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "processorId": () => (/* binding */ processorId),
+/* harmony export */   "AudioWorkletNode": () => (/* binding */ AudioWorkletNode),
+/* harmony export */   "default": () => (/* binding */ MidiSequencerNode)
+/* harmony export */ });
+/* harmony import */ var _MidiSequencerProcessor_worklet_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MidiSequencerProcessor.worklet.ts */ "./src/worklets/MidiSequencerProcessor.worklet.ts");
+/* harmony import */ var _MidiSequencerProcessor_worklet_ts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_MidiSequencerProcessor_worklet_ts__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _MidiParser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MidiParser */ "./src/worklets/MidiParser.ts");
+
+
+const processorId = "__JSPatcher_package-midi_MidiSequencer";
+const AudioWorkletNode = globalThis.AudioWorkletNode;
+class MidiSequencerNode extends AudioWorkletNode {
+  static register(context) {
+    return context.audioWorklet.addModule((_MidiSequencerProcessor_worklet_ts__WEBPACK_IMPORTED_MODULE_0___default()));
+  }
+  constructor(context) {
+    super(context, processorId, { numberOfInputs: 0, numberOfOutputs: 1 });
+    this.timeOffset = 0;
+    this.totalDuration = 0;
+    this.handleMessage = (e) => {
+      if (e.data.type === "midiMessage") {
+        this.onMidi(e.data.data.bytes, e.data.data.time);
+      } else if (e.data.type === "timeOffset") {
+        this.timeOffset = e.data.data;
+      }
+    };
+    this.port.onmessage = this.handleMessage;
+  }
+  loadFile(file) {
+    const data = (0,_MidiParser__WEBPACK_IMPORTED_MODULE_1__["default"])(file);
+    this.totalDuration = data.duration;
+    this.port.postMessage({ type: "midiJson", data });
+  }
+  goto(time) {
+    this.port.postMessage({ type: "goto", data: time });
+  }
+  sendFlush() {
+    this.onMidi(new Uint8Array([176, 121, 0]), this.context.currentTime);
+    this.onMidi(new Uint8Array([176, 123, 0]), this.context.currentTime);
+  }
+  destroy() {
+    this.sendFlush();
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/worklets/MidiSequencerProcessor.worklet.ts":
+/*!********************************************************!*\
+  !*** ./src/worklets/MidiSequencerProcessor.worklet.ts ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__(/*! !!./node_modules/worklet-loader/dist/worklets/InlineWorklet.js */ "./node_modules/worklet-loader/dist/worklets/InlineWorklet.js")("/******/ (() => { // webpackBootstrap\n/******/ \t\"use strict\";\n/******/ \t// The require scope\n/******/ \tvar __webpack_require__ = {};\n/******/ \t\n/************************************************************************/\n/******/ \t/* webpack/runtime/define property getters */\n/******/ \t(() => {\n/******/ \t\t// define getter functions for harmony exports\n/******/ \t\t__webpack_require__.d = (exports, definition) => {\n/******/ \t\t\tfor(var key in definition) {\n/******/ \t\t\t\tif(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {\n/******/ \t\t\t\t\tObject.defineProperty(exports, key, { enumerable: true, get: definition[key] });\n/******/ \t\t\t\t}\n/******/ \t\t\t}\n/******/ \t\t};\n/******/ \t})();\n/******/ \t\n/******/ \t/* webpack/runtime/hasOwnProperty shorthand */\n/******/ \t(() => {\n/******/ \t\t__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))\n/******/ \t})();\n/******/ \t\n/******/ \t/* webpack/runtime/make namespace object */\n/******/ \t(() => {\n/******/ \t\t// define __esModule on exports\n/******/ \t\t__webpack_require__.r = (exports) => {\n/******/ \t\t\tif(typeof Symbol !== 'undefined' && Symbol.toStringTag) {\n/******/ \t\t\t\tObject.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });\n/******/ \t\t\t}\n/******/ \t\t\tObject.defineProperty(exports, '__esModule', { value: true });\n/******/ \t\t};\n/******/ \t})();\n/******/ \t\n/************************************************************************/\nvar __webpack_exports__ = {};\n/*!*****************************************************************************************************************************!*\\\n  !*** ./node_modules/esbuild-loader/dist/index.js??ruleSet[1].rules[1].use!./src/worklets/MidiSequencerProcessor.worklet.ts ***!\n  \\*****************************************************************************************************************************/\n__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"processorId\": () => (/* binding */ processorId)\n/* harmony export */ });\nconst processorId = \"__JSPatcher_package-midi_MidiSequencer\";\nconst audioWorkletGlobalScope = globalThis;\nconst { registerProcessor, sampleRate } = audioWorkletGlobalScope;\nconst AudioWorkletProcessor = audioWorkletGlobalScope.AudioWorkletProcessor;\nclass MidiSequencerProcessor extends AudioWorkletProcessor {\n  constructor(options) {\n    super(options);\n    this.playing = false;\n    this.loop = false;\n    this.data = null;\n    this.orderedEvents = [];\n    this.$event = 0;\n    this.timeOffset = 0;\n    this.totalDuration = 0;\n    this.handleMessage = (e) => {\n      if (e.data.type === \"midiJson\") {\n        this.setData(e.data.data);\n      } else if (e.data.type === \"goto\") {\n        this.goto(e.data.data);\n      }\n    };\n    this.port.onmessage = this.handleMessage;\n  }\n  static get parameterDescriptors() {\n    return [{\n      name: \"playing\",\n      minValue: 0,\n      maxValue: 1,\n      defaultValue: 0\n    }, {\n      name: \"loop\",\n      minValue: 0,\n      maxValue: 1,\n      defaultValue: 0\n    }];\n  }\n  setData(data) {\n    this.sendFlush();\n    this.data = data;\n    this.orderedEvents = [];\n    this.$event = 0;\n    this.timeOffset = 0;\n    this.totalDuration = data.duration;\n    data.tracks.forEach((track) => {\n      track.forEach((event) => {\n        if (event.bytes) {\n          this.orderedEvents.push({ time: event.time, data: event.bytes });\n        }\n      });\n    });\n    this.orderedEvents.sort((a, b) => a.time - b.time);\n  }\n  goto(time) {\n    this.sendFlush();\n    let $ = 0;\n    this.timeOffset = Math.min(time, this.totalDuration);\n    for (let i = 0; i < this.orderedEvents.length; i++) {\n      const event = this.orderedEvents[i];\n      if (event.time < this.timeOffset)\n        $ = i;\n      else\n        break;\n    }\n    this.$event = $;\n  }\n  onMidi(data, time) {\n    this.port.postMessage({ type: \"midiMessage\", data: { bytes: data, time } });\n  }\n  sendFlush() {\n    const { currentTime } = audioWorkletGlobalScope;\n    this.onMidi(new Uint8Array([176, 121, 0]), currentTime);\n    this.onMidi(new Uint8Array([176, 123, 0]), currentTime);\n  }\n  advance(offset, playing, loop, fromTime) {\n    if (!playing)\n      return;\n    if (this.timeOffset >= this.totalDuration) {\n      if (loop) {\n        this.timeOffset = 0;\n        this.$event = 0;\n      } else\n        return;\n    }\n    if (!this.orderedEvents.length)\n      return;\n    let advanced = 0;\n    while (advanced < offset) {\n      let $ = this.$event + 1;\n      let nextEventDeltaTime = 0;\n      let nextEvent = null;\n      const timeOffset = this.timeOffset + advanced;\n      if ($ >= this.orderedEvents.length) {\n        nextEventDeltaTime += this.totalDuration - timeOffset;\n        if (loop) {\n          $ = 0;\n          nextEvent = this.orderedEvents[$];\n          const { time } = nextEvent;\n          this.timeOffset -= this.totalDuration;\n          nextEventDeltaTime += time;\n        }\n      } else {\n        nextEvent = this.orderedEvents[$];\n        const { time } = nextEvent;\n        nextEventDeltaTime += time - timeOffset;\n      }\n      if (advanced + nextEventDeltaTime < offset) {\n        if (nextEvent) {\n          const { data } = nextEvent;\n          this.onMidi(data, fromTime + advanced);\n        } else\n          break;\n        this.$event = $;\n      }\n      advanced += nextEventDeltaTime;\n    }\n    this.timeOffset += offset;\n    if (loop) {\n      this.timeOffset %= this.totalDuration;\n    } else if (this.timeOffset > this.totalDuration) {\n      this.timeOffset = this.totalDuration;\n    }\n  }\n  updateTime() {\n    this.port.postMessage({ type: \"timeOffset\", data: this.timeOffset });\n  }\n  process(inputs, outputs, parameters) {\n    const bufferSize = outputs[0][0].length;\n    const advanceTime = 1 / sampleRate;\n    const { currentTime } = audioWorkletGlobalScope;\n    for (let i = 0; i < bufferSize; i++) {\n      const fromTime = currentTime * advanceTime * i;\n      const playing = !!(i < parameters.playing.length ? parameters.playing[i] : parameters.playing[0]);\n      if (playing !== this.playing && !playing)\n        this.onMidi(new Uint8Array([176, 123, 0]), fromTime);\n      this.playing = playing;\n      const loop = !!(i < parameters.loop.length ? parameters.loop[i] : parameters.loop[0]);\n      this.loop = loop;\n      this.advance(advanceTime, this.playing, this.loop, fromTime);\n    }\n    this.updateTime();\n    return true;\n  }\n}\ntry {\n  registerProcessor(processorId, MidiSequencerProcessor);\n} catch (error) {\n  console.warn(error);\n}\n\n/******/ })()\n;\n//# sourceMappingURL=b5efd4a3573ae345caa3.worklet.js.map");
+
+/***/ }),
+
+/***/ "./node_modules/worklet-loader/dist/worklets/InlineWorklet.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/worklet-loader/dist/worklets/InlineWorklet.js ***!
+  \********************************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+// http://stackoverflow.com/questions/10343913/how-to-create-a-web-worker-from-a-string
+var URL = window.URL || window.webkitURL;
+
+module.exports = function (content) {
+  try {
+    var blob;
+
+    try {
+      // BlobBuilder = Deprecated, but widely implemented
+      var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
+      blob = new BlobBuilder();
+      blob.append(content);
+      blob = blob.getBlob('application/javascript; charset=utf-8');
+    } catch (e) {
+      // The proposed API
+      blob = new Blob([content], {
+        type: 'application/javascript; charset=utf-8'
+      });
+    }
+
+    return URL.createObjectURL(blob);
+  } catch (e) {
+    return 'data:application/javascript,' + encodeURIComponent(content);
+  }
+};
+
+/***/ }),
+
 /***/ "./package.json":
 /*!**********************!*\
   !*** ./package.json ***!
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-midi","version":"1.0.0","description":"The MIDI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-midi","devDependencies":{"@jspatcher/jspatcher":"0.0.9","@types/webmidi":"^2.0.6","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","semantic-ui-react":"^2.0.3","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.7.2"}}');
+"use strict";
+module.exports = JSON.parse('{"name":"@jspatcher/package-midi","version":"1.0.1","description":"The MIDI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-midi","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/webmidi":"^2.0.6","clean-webpack-plugin":"^4.0.0","esbuild-loader":"^2.18.0","semantic-ui-react":"^2.0.4","typescript":"^4.5.4","webpack":"^5.65.0","webpack-cli":"^4.9.1","worklet-loader":"^2.0.0"}}');
 
 /***/ })
 
@@ -816,6 +1317,18 @@ module.exports = JSON.parse('{"name":"@jspatcher/package-midi","version":"1.0.0"
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/create fake namespace object */
 /******/ 	(() => {
 /******/ 		var getProto = Object.getPrototypeOf ? (obj) => (Object.getPrototypeOf(obj)) : (obj) => (obj.__proto__);
@@ -876,8 +1389,9 @@ module.exports = JSON.parse('{"name":"@jspatcher/package-midi","version":"1.0.0"
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
+"use strict";
 /*!*******************************!*\
   !*** ./src/index.jspatpkg.ts ***!
   \*******************************/
@@ -889,7 +1403,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_midiFormat__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./objects/midiFormat */ "./src/objects/midiFormat.ts");
 /* harmony import */ var _objects_midiIn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./objects/midiIn */ "./src/objects/midiIn.ts");
 /* harmony import */ var _objects_midiOut__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./objects/midiOut */ "./src/objects/midiOut.ts");
-/* harmony import */ var _objects_midiparse__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./objects/midiparse */ "./src/objects/midiparse.ts");
+/* harmony import */ var _objects_midiParse__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./objects/midiParse */ "./src/objects/midiParse.ts");
+/* harmony import */ var _objects_midiSequencer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./objects/midiSequencer */ "./src/objects/midiSequencer.ts");
+
 
 
 
@@ -897,15 +1413,17 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => {
   return {
-    midiDevices: _objects_devices__WEBPACK_IMPORTED_MODULE_0__.default,
-    midiIn: _objects_midiIn__WEBPACK_IMPORTED_MODULE_2__.default,
-    midiin: _objects_midiIn__WEBPACK_IMPORTED_MODULE_2__.default,
-    midiOut: _objects_midiOut__WEBPACK_IMPORTED_MODULE_3__.default,
-    midiout: _objects_midiOut__WEBPACK_IMPORTED_MODULE_3__.default,
-    midiFormat: _objects_midiFormat__WEBPACK_IMPORTED_MODULE_1__.default,
-    midiformat: _objects_midiFormat__WEBPACK_IMPORTED_MODULE_1__.default,
-    midiParse: _objects_midiparse__WEBPACK_IMPORTED_MODULE_4__.default,
-    midiparse: _objects_midiparse__WEBPACK_IMPORTED_MODULE_4__.default
+    midiDevices: _objects_devices__WEBPACK_IMPORTED_MODULE_0__["default"],
+    midiIn: _objects_midiIn__WEBPACK_IMPORTED_MODULE_2__["default"],
+    midiin: _objects_midiIn__WEBPACK_IMPORTED_MODULE_2__["default"],
+    midiOut: _objects_midiOut__WEBPACK_IMPORTED_MODULE_3__["default"],
+    midiout: _objects_midiOut__WEBPACK_IMPORTED_MODULE_3__["default"],
+    midiFormat: _objects_midiFormat__WEBPACK_IMPORTED_MODULE_1__["default"],
+    midiformat: _objects_midiFormat__WEBPACK_IMPORTED_MODULE_1__["default"],
+    midiParse: _objects_midiParse__WEBPACK_IMPORTED_MODULE_4__["default"],
+    midiparse: _objects_midiParse__WEBPACK_IMPORTED_MODULE_4__["default"],
+    midiSequencer: _objects_midiSequencer__WEBPACK_IMPORTED_MODULE_5__["default"],
+    midisequencer: _objects_midiSequencer__WEBPACK_IMPORTED_MODULE_5__["default"]
   };
 });
 

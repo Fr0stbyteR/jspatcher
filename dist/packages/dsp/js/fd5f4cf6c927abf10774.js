@@ -1,0 +1,13 @@
+(self["webpackChunk_jspatcher_package_dsp"] = self["webpackChunk_jspatcher_package_dsp"] || []).push([["dsps_pink_dspMeta_json"],{
+
+/***/ "./dsps/pink/dspMeta.json":
+/*!********************************!*\
+  !*** ./dsps/pink/dspMeta.json ***!
+  \********************************/
+/***/ ((module) => {
+
+module.exports = "{\n    \"name\": \"pink\",\n    \"filename\": \"pink\",\n    \"version\": \"2.32.6\",\n    \"compile_options\": \"-lang wasm-i -es 1 -single -ftz 0\",\n    \"library_list\": [\n        \"/usr/share/faust/stdfaust.lib\",\n        \"/usr/share/faust/noises.lib\",\n        \"/usr/share/faust/filters.lib\",\n        \"/usr/share/faust/maths.lib\"\n    ],\n    \"include_pathnames\": [\n        \"/share/faust\",\n        \"/usr/local/share/faust\",\n        \"/usr/share/faust\",\n        \".\"\n    ],\n    \"size\": 28,\n    \"inputs\": 0,\n    \"outputs\": 1,\n    \"meta\": [\n        {\n            \"compile_options\": \"-lang wasm-i -es 1 -single -ftz 0\"\n        },\n        {\n            \"filename\": \"pink\"\n        },\n        {\n            \"filters.lib/fir:author\": \"Julius O. Smith III\"\n        },\n        {\n            \"filters.lib/fir:copyright\": \"Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>\"\n        },\n        {\n            \"filters.lib/fir:license\": \"MIT-style STK-4.3 license\"\n        },\n        {\n            \"filters.lib/iir:author\": \"Julius O. Smith III\"\n        },\n        {\n            \"filters.lib/iir:copyright\": \"Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>\"\n        },\n        {\n            \"filters.lib/iir:license\": \"MIT-style STK-4.3 license\"\n        },\n        {\n            \"filters.lib/lowpass0_highpass1\": \"Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>\"\n        },\n        {\n            \"filters.lib/name\": \"Faust Filters Library\"\n        },\n        {\n            \"filters.lib/version\": \"0.3\"\n        },\n        {\n            \"maths.lib/author\": \"GRAME\"\n        },\n        {\n            \"maths.lib/copyright\": \"GRAME\"\n        },\n        {\n            \"maths.lib/license\": \"LGPL with exception\"\n        },\n        {\n            \"maths.lib/name\": \"Faust Math Library\"\n        },\n        {\n            \"maths.lib/version\": \"2.3\"\n        },\n        {\n            \"name\": \"pink\"\n        },\n        {\n            \"noises.lib/name\": \"Faust Noise Generator Library\"\n        },\n        {\n            \"noises.lib/version\": \"0.0\"\n        }\n    ],\n    \"ui\": [\n        {\n            \"type\": \"vgroup\",\n            \"label\": \"pink\",\n            \"items\": []\n        }\n    ]\n}";
+
+/***/ })
+
+}])

@@ -26,7 +26,7 @@ __webpack_require__.r(__webpack_exports__);
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-midi","version":"1.0.0","description":"The MIDI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-midi","devDependencies":{"@jspatcher/jspatcher":"0.0.9","@types/webmidi":"^2.0.6","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","semantic-ui-react":"^2.0.3","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.7.2"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-midi","version":"1.0.1","description":"The MIDI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-midi","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/webmidi":"^2.0.6","clean-webpack-plugin":"^4.0.0","esbuild-loader":"^2.18.0","semantic-ui-react":"^2.0.4","typescript":"^4.5.4","webpack":"^5.65.0","webpack-cli":"^4.9.1","worklet-loader":"^2.0.0"}}');
 
 /***/ })
 
@@ -151,8 +151,8 @@ var __spreadValues = (a, b) => {
   return a;
 };
 
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
-const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"].name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
 
 })();
