@@ -1,4 +1,5 @@
-import type { WebAudioModule } from "@webaudiomodules/api";
+import { WebAudioModule, VERSION as wamApiVersion } from "@webaudiomodules/api";
+import { addFunctionModule, initializeWamEnv, initializeWamGroup } from "@webaudiomodules/sdk";
 import { dbtoa, isIdentityMatrix, normExp } from "../../utils/math";
 import AudioEditor from "./AudioEditor";
 import FileInstance from "../file/FileInstance";
@@ -69,6 +70,12 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
     }
     get sampleRate() {
         return this.audioBuffer.sampleRate;
+    }
+    get wamGroupId() {
+        return (this.env as Env).wamGroupId;
+    }
+    get wamGroupKey() {
+        return (this.env as Env).wamGroupKey;
     }
     async init(data?: ArrayBuffer) {
         const { audioCtx } = this;
@@ -381,6 +388,9 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
             }
             if (!applyPlugins && !needResample) return PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.project, file: this.file }, mixBuffer);
             const offlineAudioCtx = new OfflineAudioContext(numberOfChannels, length, sampleRate);
+            const { audioWorklet } = offlineAudioCtx;
+            await addFunctionModule(audioWorklet, initializeWamEnv, wamApiVersion);
+            await addFunctionModule(audioWorklet, initializeWamGroup, this.wamGroupId, this.wamGroupKey);
             const source = offlineAudioCtx.createBufferSource();
             source.buffer = mixBuffer;
             if (applyPlugins) {
@@ -398,7 +408,7 @@ export default class PatcherAudio extends FileInstance<PatcherAudioEventMap, Per
                         onUpdate(plugin.name);
                         try {
                             const Plugin = Object.getPrototypeOf(plugin).constructor as typeof WebAudioModule;
-                            const p = await Plugin.createInstance(offlineAudioCtx);
+                            const p = await Plugin.createInstance(this.wamGroupId, offlineAudioCtx);
                             await p.audioNode.setParameterValues(await plugin.audioNode.getParameterValues());
                             lastNode.connect(p.audioNode);
                             lastNode = p.audioNode;

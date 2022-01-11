@@ -117,9 +117,6 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
     get waveform() {
         return this.instance.waveform;
     }
-    get wamGroupId() {
-        return (this.env as Env).wamGroupId;
-    }
 
     handleSetAudio = () => {
         const { cursor, selRange, viewRange } = this.state;
