@@ -1493,7 +1493,7 @@ class img extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
     };
     this.on("preInit", () => {
       this.inlets = 1;
-      this.outlets = 0;
+      this.outlets = 1;
     });
     this.on("postInit", reload);
     this.on("updateArgs", (args) => {
@@ -1506,11 +1506,14 @@ class img extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
           reload();
       }
     });
-    this.on("inlet", ({ data, inlet }) => {
+    this.on("inlet", async ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
           if (typeof data === "string") {
             this._.key = data;
+            reload();
+          } else if (typeof data === "object" && data instanceof HTMLImageElement) {
+            this._.key = data.src;
             reload();
           }
         }
@@ -1524,6 +1527,10 @@ img.inlets = [{
   isHot: true,
   type: "anything",
   description: "Image file name or url"
+}];
+img.outlets = [{
+  type: "object",
+  description: "HTMLImageElement"
 }];
 img.args = [{
   type: "string",
@@ -2871,6 +2878,172 @@ text.args = [{
 }];
 text.props = {};
 text.UI = _ui_text__WEBPACK_IMPORTED_MODULE_2__["default"];
+
+
+/***/ }),
+
+/***/ "./src/objects/video.ts":
+/*!******************************!*\
+  !*** ./src/objects/video.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ video)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _ui_video__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ui/video */ "./src/ui/video.tsx");
+var _a;
+
+
+
+class video extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor() {
+    super(...arguments);
+    this._ = { key: (_a = this.box.args[0]) == null ? void 0 : _a.toString(), video: void 0, file: void 0, url: "" };
+  }
+  subscribe() {
+    super.subscribe();
+    const handleFilePathChanged = () => {
+      var _a2;
+      this._.key = (_a2 = this._.file) == null ? void 0 : _a2.projectPath;
+    };
+    const subsribeItem = async () => {
+      const { video: video2, file } = this._;
+      if (video2)
+        await video2.addObserver(this);
+      if (file) {
+        file.on("destroyed", reload);
+        file.on("nameChanged", handleFilePathChanged);
+        file.on("pathChanged", handleFilePathChanged);
+      }
+    };
+    const unsubscribeItem = async () => {
+      const { video: video2, file } = this._;
+      if (file) {
+        file.off("destroyed", reload);
+        file.off("nameChanged", handleFilePathChanged);
+        file.off("pathChanged", handleFilePathChanged);
+      }
+      if (video2)
+        await video2.removeObserver(this);
+    };
+    const reload = async () => {
+      await unsubscribeItem();
+      const { key } = this._;
+      let video2;
+      let url;
+      try {
+        const { item } = await this.getSharedItem(key, "video");
+        video2 = await item.instantiate({ env: this.patcher.env, project: this.patcher.project });
+        this._.video = video2;
+        this._.file = item;
+        url = video2.objectURL;
+      } catch (e) {
+        url = key;
+      } finally {
+        this._.url = url;
+        this.updateUI({ url });
+        await subsribeItem();
+      }
+    };
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 2;
+    });
+    this.on("postInit", reload);
+    this.on("updateArgs", (args) => {
+      var _a2;
+      if (typeof args[0] === "string") {
+        const oldKey = this._.key;
+        const key = (_a2 = args[0]) == null ? void 0 : _a2.toString();
+        this._.key = key;
+        if (key !== oldKey)
+          reload();
+      }
+    });
+    this.on("inlet", async ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
+          if (typeof data === "number" || typeof data === "boolean") {
+            this.updateUI({ playing: !!data });
+          } else if (typeof data === "string") {
+            this._.key = data;
+            reload();
+          } else if (typeof data === "object") {
+            if (data instanceof HTMLVideoElement) {
+              this._.key = data.src;
+              reload();
+            } else if (typeof data.goto === "number") {
+              this.updateUI({ currentTime: data.goto, timestamp: performance.now() });
+            }
+          }
+        }
+      }
+    });
+    this.on("destroy", unsubscribeItem);
+  }
+}
+video.description = "Display a video";
+video.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Image file name or url, { goto: number } to jump, boolean/number to switch play/stop"
+}];
+video.outlets = [{
+  type: "object",
+  description: "HTMLVideoElement"
+}, {
+  type: "number",
+  description: "currentTime"
+}];
+video.args = [{
+  type: "string",
+  optional: true,
+  description: "Image file name or url"
+}];
+video.props = {
+  autoPlay: {
+    type: "boolean",
+    default: false,
+    description: "Indicates whether playback should automatically begin as soon as enough media is available to do so without interruption.",
+    isUIState: true
+  },
+  controls: {
+    type: "boolean",
+    default: true,
+    description: "Indicates whether user interface items for controlling the resource should be displayed.",
+    isUIState: true
+  },
+  muted: {
+    type: "boolean",
+    default: false,
+    description: "Determines whether audio is muted.",
+    isUIState: true
+  },
+  playbackRate: {
+    type: "number",
+    default: 1,
+    description: "Sets the rate at which the media is being played back.",
+    isUIState: true
+  },
+  volume: {
+    type: "number",
+    default: 1,
+    description: "Indicates the audio volume, from 0.0 (silent) to 1.0 (loudest).",
+    isUIState: true
+  },
+  loop: {
+    type: "boolean",
+    default: true,
+    description: "Indicates whether the media element should start over when it reaches the end.",
+    isUIState: true
+  }
+};
+video.UI = _ui_video__WEBPACK_IMPORTED_MODULE_2__["default"];
 
 
 /***/ }),
@@ -5528,6 +5701,103 @@ class TextUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DefaultPopupUI {
   }
 }
 TextUI.dockable = true;
+
+
+/***/ }),
+
+/***/ "./src/ui/video.tsx":
+/*!**************************!*\
+  !*** ./src/ui/video.tsx ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ VideoUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+class VideoUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadProps(__spreadValues({}, this.state), {
+      url: this.object._.url,
+      currentTime: 0,
+      timestamp: performance.now()
+    });
+    this.lastTimeUpdate = this.state.timestamp;
+    this.videoRef = _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createRef();
+    this.handleTimeUpdate = (e) => {
+      this.object.outlet(1, e.currentTarget.currentTime);
+    };
+  }
+  componentDidMount() {
+    super.componentDidMount();
+    const video = this.videoRef.current;
+    if (video) {
+      const { playbackRate, volume, currentTime, playing } = this.state;
+      video.playbackRate = playbackRate;
+      video.volume = volume;
+      video.currentTime = currentTime;
+      if (playing)
+        video.play();
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    const video = this.videoRef.current;
+    if (video) {
+      const { playbackRate, volume, playing, currentTime, timestamp } = this.state;
+      if (prevState.playbackRate !== playbackRate) {
+        video.playbackRate = playbackRate;
+      } else if (prevState.volume !== volume) {
+        video.volume = volume;
+      }
+      if (prevState.playing !== playing) {
+        if (playing)
+          video.play();
+        else
+          video.pause();
+      } else if (this.lastTimeUpdate !== timestamp) {
+        video.currentTime = currentTime;
+        this.lastTimeUpdate = timestamp;
+      }
+    }
+  }
+  render() {
+    const { autoPlay, controls, muted, loop } = this.state;
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
+      style: { position: "absolute", width: "100%", height: "100%", display: "block", overflow: "auto" }
+    }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("video", __spreadProps(__spreadValues({
+      src: this.state.url,
+      style: { position: "absolute", width: "100%", height: "100%" }
+    }, { autoPlay, controls, muted, loop }), {
+      ref: this.videoRef,
+      onTimeUpdate: this.handleTimeUpdate
+    }))));
+  }
+}
+VideoUI.sizing = "both";
+VideoUI.defaultSize = [210, 90];
 
 
 /***/ }),
@@ -8393,7 +8663,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_slider__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./objects/slider */ "./src/objects/slider.ts");
 /* harmony import */ var _objects_multislider__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./objects/multislider */ "./src/objects/multislider.ts");
 /* harmony import */ var _objects_text__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./objects/text */ "./src/objects/text.ts");
-/* harmony import */ var _ui_ui_scss__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./ui/ui.scss */ "./src/ui/ui.scss");
+/* harmony import */ var _objects_video__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./objects/video */ "./src/objects/video.ts");
+/* harmony import */ var _ui_ui_scss__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./ui/ui.scss */ "./src/ui/ui.scss");
+
 
 
 
@@ -8419,7 +8691,8 @@ __webpack_require__.r(__webpack_exports__);
   number: _objects_number__WEBPACK_IMPORTED_MODULE_7__["default"],
   slider: _objects_slider__WEBPACK_IMPORTED_MODULE_9__["default"],
   multislider: _objects_multislider__WEBPACK_IMPORTED_MODULE_10__["default"],
-  ptext: _objects_text__WEBPACK_IMPORTED_MODULE_11__["default"]
+  ptext: _objects_text__WEBPACK_IMPORTED_MODULE_11__["default"],
+  video: _objects_video__WEBPACK_IMPORTED_MODULE_12__["default"]
 }));
 
 })();

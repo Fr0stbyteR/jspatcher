@@ -14,7 +14,7 @@ export default class ImageEditor extends FileEditor<PatcherImage, ImageEditorEve
         const editor = new this(image);
         return editor.init();
     }
-    readonly _history: History;
+    readonly _history: History<Partial<ImageEditorEventMap>, this>;
     get fileExtension() {
         return "png";
     }

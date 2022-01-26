@@ -117,7 +117,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
             audio: (await import("../audio/PatcherAudio")).default,
             image: (await import("../image/PatcherImage")).default,
             text: (await import("../text/PatcherText")).default,
-            video: undefined,
+            video: (await import("../video/PatcherVideo")).default,
             unknown: (await import("../text/PatcherText")).default
         }[type];
         if (Constructor) return Constructor.fromProjectItem({ file: this as any, env, project, instanceId }) as Promise<IFileInstance>;
@@ -130,7 +130,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
             audio: (await import("../audio/AudioEditor")).default,
             image: (await import("../image/ImageEditor")).default,
             text: (await import("../text/TextEditor")).default,
-            video: undefined,
+            video: (await import("../video/VideoEditor")).default,
             unknown: (await import("../text/TextEditor")).default
         }[type];
         if (Constructor) return Constructor.fromProjectItem({ file: this as any, env, project, instanceId }) as Promise<IFileEditor>;

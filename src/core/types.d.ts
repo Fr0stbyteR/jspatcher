@@ -53,7 +53,7 @@ export type FileExtension = PatcherFileExtension | AudioFileExtension | TextFile
 
 export type TempItemType = "patcher" | "audio" | "text" | "unknown";
 
-export type SharedItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile | PersistentProjectFile : T extends "audio" ? TempAudioFile | PersistentProjectFile : T extends "text" ? TempTextFile | PersistentProjectFile : T extends "image" ? PersistentProjectFile : TempData;
+export type SharedItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile | PersistentProjectFile : T extends "audio" ? TempAudioFile | PersistentProjectFile : T extends "text" ? TempTextFile | PersistentProjectFile : T extends "image" ? PersistentProjectFile : T extends "video" ? PersistentProjectFile : TempData;
 
 export type TempItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile : T extends "audio" ? TempAudioFile : T extends "text" ? TempTextFile : TempData;
 

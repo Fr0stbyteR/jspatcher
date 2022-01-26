@@ -3,6 +3,7 @@ import Bang, { isBang } from "../base/Bang";
 import BaseObject from "../base/BaseObject";
 import DOMUI, { DOMUIState } from "../base/DOMUI";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
+import type Env from "../../Env";
 import type { TMIDIEvent, TBPF } from "../../types";
 import type { IInletMeta, IOutletMeta, IInletsMeta, IOutletsMeta, IArgsMeta } from "../base/AbstractObject";
 
@@ -49,7 +50,7 @@ export default class Plugin extends BaseObject<{}, {}, I, O, [string], {}, DOMUI
         let node: AudioNode;
         let element: HTMLElement;
         try {
-            plugin = await WAPCtor.createInstance(this.audioCtx);
+            plugin = await WAPCtor.createInstance((this.env as Env).wamGroupId, this.audioCtx);
             node = plugin.audioNode;
             element = await plugin.createGui() as HTMLElement;
         } catch (e) {
@@ -90,8 +91,8 @@ export default class Plugin extends BaseObject<{}, {}, I, O, [string], {}, DOMUI
         for (let i = inlets || 1; i < (inlets || 1) + params.length; i++) {
             const path = params[i - (inlets || 1)];
             const param = paramInfo[path];
-            const { defaultValue, minValue, maxValue } = param;
-            factoryMeta.inlets[i] = { ...audioParamInletMeta, description: `${path}${audioParamInletMeta.description}: ${defaultValue} (${minValue} - ${maxValue})` };
+            const { defaultValue, minValue, maxValue, label } = param;
+            factoryMeta.inlets[i] = { ...audioParamInletMeta, description: `${label || path}${audioParamInletMeta.description}: ${defaultValue} (${minValue} - ${maxValue})` };
         }
         this.setMeta(factoryMeta);
         this.inlets = (inlets || 1) + params.length;

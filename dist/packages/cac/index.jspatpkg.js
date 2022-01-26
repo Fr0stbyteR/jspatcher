@@ -2183,10 +2183,10 @@ const {
         get enumChord() {
           return _EnumChord__WEBPACK_IMPORTED_MODULE_4__["default"].byChord(this);
         }
-        get imaginaryBase() {
+        get phantomBase() {
           return this.base.clone().div(this.ratio[0]);
         }
-        get imaginaryTop() {
+        get phantomTop() {
           return this.base.clone().mul(this.reciprocal[0]);
         }
         add(p1) {
@@ -2933,9 +2933,7 @@ const {
         }
         fromString(nameIn) {
           const { degree, onset, octave } = _Interval.fromString(nameIn);
-          this.degree = degree;
-          this.onset = onset;
-          this.octave = octave;
+          this.become(degree, onset, octave);
           return this;
         }
         static fromOffset(offsetIn) {
@@ -4496,6 +4494,9 @@ const {
       __webpack_require__2.r(__webpack_exports__2);
       __webpack_require__2.d(__webpack_exports__2, {
         "isSequence": () => isSequence,
+        "isSequenceArray": () => isSequenceArray,
+        "isSequenceInstanceArrayLike": () => isSequenceInstanceArrayLike,
+        "isSequenceInstanceIterable": () => isSequenceInstanceIterable,
         "Sequence": () => Sequence,
         "default": () => __WEBPACK_DEFAULT_EXPORT__
       });
@@ -4503,20 +4504,35 @@ const {
       var _tonejs_midi__WEBPACK_IMPORTED_MODULE_0___default = /* @__PURE__ */ __webpack_require__2.n(_tonejs_midi__WEBPACK_IMPORTED_MODULE_0__);
       var _Duration__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2("./src/Duration.ts");
       var _TimeCode__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2("./src/TimeCode.ts");
-      var _TrackChord__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2("./src/track/TrackChord.ts");
-      const isSequence = _TrackChord__WEBPACK_IMPORTED_MODULE_3__.isTrackChordArray;
+      var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2("./src/utils.ts");
+      var _TrackChord__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__2("./src/track/TrackChord.ts");
+      const isSequence = (x) => {
+        return (0, _utils__WEBPACK_IMPORTED_MODULE_3__.isObjectInstanceArray)(x, _TrackChord__WEBPACK_IMPORTED_MODULE_4__["default"]);
+      };
+      const isSequenceArray = (x) => {
+        return (0, _utils__WEBPACK_IMPORTED_MODULE_3__.isObjectArray)(x, isSequence);
+      };
+      const isSequenceInstanceArrayLike = (x) => {
+        return (0, _utils__WEBPACK_IMPORTED_MODULE_3__.isObjectInstanceArrayLike)(x, Sequence);
+      };
+      const isSequenceInstanceIterable = (x) => {
+        return (0, _utils__WEBPACK_IMPORTED_MODULE_3__.isObjectInstanceIterable)(x, Sequence);
+      };
       const _Sequence = class extends Array {
         static from(arrayLike, mapfn, thisArg) {
-          if (!((0, _TrackChord__WEBPACK_IMPORTED_MODULE_3__.isTrackChordInstanceArrayLike)(arrayLike) || (0, _TrackChord__WEBPACK_IMPORTED_MODULE_3__.isTrackChordInstanceIterable)(arrayLike)))
+          if (!((0, _TrackChord__WEBPACK_IMPORTED_MODULE_4__.isTrackChordInstanceArrayLike)(arrayLike) || (0, _TrackChord__WEBPACK_IMPORTED_MODULE_4__.isTrackChordInstanceIterable)(arrayLike)))
             throw new TypeError("Items from are not TrackChords");
-          if (mapfn)
-            return super.from(arrayLike, mapfn, thisArg);
-          return super.from(arrayLike);
+          const o = mapfn ? super.from(arrayLike, mapfn, thisArg) : super.from(arrayLike);
+          return Object.setPrototypeOf(o, _Sequence.prototype);
         }
         static of(...items) {
-          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_3__.isTrackChordArray)(items))
+          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_4__.isTrackChordArray)(items))
             throw new TypeError("Items of are not TrackChords");
-          return super.of(...items);
+          const o = super.of(...items);
+          return Object.setPrototypeOf(o, _Sequence.prototype);
+        }
+        static fromArray(arrayIn) {
+          return arrayIn.map((e) => new _Sequence(...e));
         }
         static fromArrays(chordsIn, durationsIn, velocitiesIn, articulationsIn) {
           const seq = new _Sequence();
@@ -4527,10 +4543,10 @@ const {
             const dIn = durationsIn == null ? void 0 : durationsIn[i2];
             const vIn = velocitiesIn == null ? void 0 : velocitiesIn[i2];
             const aIn = articulationsIn == null ? void 0 : articulationsIn[i2];
-            if ((0, _TrackChord__WEBPACK_IMPORTED_MODULE_3__.isTrackChord)(cIn))
-              tc = new _TrackChord__WEBPACK_IMPORTED_MODULE_3__["default"](cIn);
+            if ((0, _TrackChord__WEBPACK_IMPORTED_MODULE_4__.isTrackChord)(cIn))
+              tc = new _TrackChord__WEBPACK_IMPORTED_MODULE_4__["default"](cIn);
             else
-              tc = new _TrackChord__WEBPACK_IMPORTED_MODULE_3__["default"](cIn, dIn, o.clone(), aIn);
+              tc = new _TrackChord__WEBPACK_IMPORTED_MODULE_4__["default"](cIn, dIn, o.clone(), aIn);
             tc.setVelocities(vIn);
             o.add(tc.duration);
             seq[i2] = tc;
@@ -4543,29 +4559,29 @@ const {
           } else {
             super(arrayIn.length + 1);
             const trackChords = [p1, ...arrayIn];
-            if (isSequence(trackChords))
-              super(..._TrackChord__WEBPACK_IMPORTED_MODULE_3__["default"].fromArray(trackChords));
+            if ((0, _TrackChord__WEBPACK_IMPORTED_MODULE_4__.isTrackChordArray)(trackChords))
+              super(..._TrackChord__WEBPACK_IMPORTED_MODULE_4__["default"].fromArray(trackChords));
           }
         }
         push(...itemsIn) {
-          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_3__.isTrackChordArray)(itemsIn))
+          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_4__.isTrackChordArray)(itemsIn))
             throw new TypeError("Items to push are not TrackChords");
-          return super.push(..._TrackChord__WEBPACK_IMPORTED_MODULE_3__["default"].fromArray(itemsIn));
+          return super.push(..._TrackChord__WEBPACK_IMPORTED_MODULE_4__["default"].fromArray(itemsIn));
         }
         concat(...itemsIn) {
-          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_3__.isTrackChordArray)(itemsIn))
+          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_4__.isTrackChordArray)(itemsIn))
             throw new TypeError("Items to concat are not TrackChords");
-          return super.concat(..._TrackChord__WEBPACK_IMPORTED_MODULE_3__["default"].fromArray(itemsIn));
+          return super.concat(..._TrackChord__WEBPACK_IMPORTED_MODULE_4__["default"].fromArray(itemsIn));
         }
         unshift(...itemsIn) {
-          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_3__.isTrackChordArray)(itemsIn))
+          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_4__.isTrackChordArray)(itemsIn))
             throw new TypeError("Items to unshift are not TrackChords");
-          return super.unshift(..._TrackChord__WEBPACK_IMPORTED_MODULE_3__["default"].fromArray(itemsIn));
+          return super.unshift(..._TrackChord__WEBPACK_IMPORTED_MODULE_4__["default"].fromArray(itemsIn));
         }
         fill(value, start, end) {
-          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_3__.isTrackChord)(value))
+          if (!(0, _TrackChord__WEBPACK_IMPORTED_MODULE_4__.isTrackChord)(value))
             throw new TypeError("Item to fill is not a TrackChord");
-          return super.fill(new _TrackChord__WEBPACK_IMPORTED_MODULE_3__["default"](value), start, end);
+          return super.fill(new _TrackChord__WEBPACK_IMPORTED_MODULE_4__["default"](value), start, end);
         }
         toMidi({ bpm, beats, beatDuration } = new _TimeCode__WEBPACK_IMPORTED_MODULE_2__["default"](4, 4, 60)) {
           const midi = new _tonejs_midi__WEBPACK_IMPORTED_MODULE_0__.Midi();
@@ -4607,7 +4623,115 @@ const {
       };
       let Sequence = _Sequence;
       Sequence.isSequence = isSequence;
+      Sequence.isSequenceArray = isSequenceArray;
+      Sequence.isSequenceInstanceArrayLike = isSequenceInstanceArrayLike;
+      Sequence.isSequenceInstanceIterable = isSequenceInstanceIterable;
       const __WEBPACK_DEFAULT_EXPORT__ = Sequence;
+    },
+    "./src/track/Sequences.ts": (__unused_webpack_module, __webpack_exports__2, __webpack_require__2) => {
+      "use strict";
+      __webpack_require__2.r(__webpack_exports__2);
+      __webpack_require__2.d(__webpack_exports__2, {
+        "isSequences": () => isSequences,
+        "Sequences": () => Sequences,
+        "default": () => __WEBPACK_DEFAULT_EXPORT__
+      });
+      var _tonejs_midi__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2("./node_modules/@tonejs/midi/dist/Midi.js");
+      var _tonejs_midi__WEBPACK_IMPORTED_MODULE_0___default = /* @__PURE__ */ __webpack_require__2.n(_tonejs_midi__WEBPACK_IMPORTED_MODULE_0__);
+      var _TimeCode__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2("./src/TimeCode.ts");
+      var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2("./src/utils.ts");
+      var _Sequence__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2("./src/track/Sequence.ts");
+      const isSequences = (x) => {
+        return (0, _utils__WEBPACK_IMPORTED_MODULE_2__.isObjectInstanceArray)(x, _Sequence__WEBPACK_IMPORTED_MODULE_3__["default"]);
+      };
+      const _Sequences = class extends Array {
+        static from(arrayLike, mapfn, thisArg) {
+          if (!((0, _Sequence__WEBPACK_IMPORTED_MODULE_3__.isSequenceInstanceArrayLike)(arrayLike) || (0, _Sequence__WEBPACK_IMPORTED_MODULE_3__.isSequenceInstanceIterable)(arrayLike)))
+            throw new TypeError("Items from are not Sequences");
+          const o = mapfn ? super.from(arrayLike, mapfn, thisArg) : super.from(arrayLike);
+          return Object.setPrototypeOf(o, _Sequences.prototype);
+        }
+        static of(...items) {
+          if (!(0, _Sequence__WEBPACK_IMPORTED_MODULE_3__.isSequenceArray)(items))
+            throw new TypeError("Items of are not Sequences");
+          const o = super.of(...items);
+          return Object.setPrototypeOf(o, _Sequences.prototype);
+        }
+        constructor(p1, ...arrayIn) {
+          if (typeof p1 === "number" || typeof p1 === "undefined") {
+            super(p1);
+          } else {
+            super(arrayIn.length + 1);
+            const sequences = [p1, ...arrayIn];
+            if ((0, _Sequence__WEBPACK_IMPORTED_MODULE_3__.isSequenceArray)(sequences))
+              super(..._Sequence__WEBPACK_IMPORTED_MODULE_3__["default"].fromArray(sequences));
+          }
+        }
+        push(...itemsIn) {
+          if (!(0, _Sequence__WEBPACK_IMPORTED_MODULE_3__.isSequenceArray)(itemsIn))
+            throw new TypeError("Items to push are not Sequences");
+          return super.push(..._Sequence__WEBPACK_IMPORTED_MODULE_3__["default"].fromArray(itemsIn));
+        }
+        concat(...itemsIn) {
+          if (!(0, _Sequence__WEBPACK_IMPORTED_MODULE_3__.isSequenceArray)(itemsIn))
+            throw new TypeError("Items to concat are not Sequences");
+          return super.concat(..._Sequence__WEBPACK_IMPORTED_MODULE_3__["default"].fromArray(itemsIn));
+        }
+        unshift(...itemsIn) {
+          if (!(0, _Sequence__WEBPACK_IMPORTED_MODULE_3__.isSequenceArray)(itemsIn))
+            throw new TypeError("Items to unshift are not Sequences");
+          return super.unshift(..._Sequence__WEBPACK_IMPORTED_MODULE_3__["default"].fromArray(itemsIn));
+        }
+        fill(value, start, end) {
+          if (!(0, _Sequence__WEBPACK_IMPORTED_MODULE_3__.isSequence)(value))
+            throw new TypeError("Item to fill is not a Sequence");
+          return super.fill(new _Sequence__WEBPACK_IMPORTED_MODULE_3__["default"](...value), start, end);
+        }
+        toMidi({ bpm, beats, beatDuration } = new _TimeCode__WEBPACK_IMPORTED_MODULE_1__["default"](4, 4, 60)) {
+          const midi = new _tonejs_midi__WEBPACK_IMPORTED_MODULE_0__.Midi();
+          midi.header.setTempo(bpm);
+          midi.header.timeSignatures.push({ ticks: 0, measures: 0, timeSignature: [beats, beatDuration] });
+          midi.header.update();
+          this.forEach((sequence) => {
+            const track = midi.addTrack();
+            sequence.forEach((trackChord) => {
+              const ticks = trackChord.offset.getTicks(bpm);
+              const durationTicks = trackChord.duration.getTicks(bpm);
+              trackChord.trackNotes.forEach((trackNote) => {
+                track.addNote({
+                  midi: ~~trackNote.pitch.offset,
+                  ticks,
+                  durationTicks
+                });
+              });
+            });
+          });
+          return midi.toArray();
+        }
+        async toGuidoAR(factory) {
+          factory.openMusic();
+          for (const sequence of this) {
+            factory.openVoice();
+            for (const trackChord of sequence) {
+              factory.openChord();
+              if (!trackChord.trackNotes.length) {
+                factory.openEvent("_");
+                factory.closeEvent();
+              } else {
+                for (const trackNote of trackChord) {
+                  trackNote.pitch.openGuidoEvent(factory, trackChord.duration);
+                }
+              }
+              factory.closeChord();
+            }
+            factory.closeVoice();
+          }
+          return factory.closeMusic();
+        }
+      };
+      let Sequences = _Sequences;
+      Sequences.isSequences = isSequences;
+      const __WEBPACK_DEFAULT_EXPORT__ = Sequences;
     },
     "./src/track/TrackChord.ts": (__unused_webpack_module, __webpack_exports__2, __webpack_require__2) => {
       "use strict";
@@ -6291,7 +6415,7 @@ const {
     }
   };
   var __webpack_module_cache__ = {};
-  function __nested_webpack_require_225226__(moduleId) {
+  function __nested_webpack_require_231754__(moduleId) {
     var cachedModule = __webpack_module_cache__[moduleId];
     if (cachedModule !== void 0) {
       return cachedModule.exports;
@@ -6301,39 +6425,39 @@ const {
       loaded: false,
       exports: {}
     };
-    __webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_225226__);
+    __webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_231754__);
     module.loaded = true;
     return module.exports;
   }
   (() => {
-    __nested_webpack_require_225226__.amdD = function() {
+    __nested_webpack_require_231754__.amdD = function() {
       throw new Error("define cannot be used indirect");
     };
   })();
   (() => {
-    __nested_webpack_require_225226__.amdO = {};
+    __nested_webpack_require_231754__.amdO = {};
   })();
   (() => {
-    __nested_webpack_require_225226__.n = (module) => {
+    __nested_webpack_require_231754__.n = (module) => {
       var getter = module && module.__esModule ? () => module["default"] : () => module;
-      __nested_webpack_require_225226__.d(getter, { a: getter });
+      __nested_webpack_require_231754__.d(getter, { a: getter });
       return getter;
     };
   })();
   (() => {
-    __nested_webpack_require_225226__.d = (exports2, definition) => {
+    __nested_webpack_require_231754__.d = (exports2, definition) => {
       for (var key in definition) {
-        if (__nested_webpack_require_225226__.o(definition, key) && !__nested_webpack_require_225226__.o(exports2, key)) {
+        if (__nested_webpack_require_231754__.o(definition, key) && !__nested_webpack_require_231754__.o(exports2, key)) {
           Object.defineProperty(exports2, key, { enumerable: true, get: definition[key] });
         }
       }
     };
   })();
   (() => {
-    __nested_webpack_require_225226__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+    __nested_webpack_require_231754__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
   })();
   (() => {
-    __nested_webpack_require_225226__.r = (exports2) => {
+    __nested_webpack_require_231754__.r = (exports2) => {
       if (typeof Symbol !== "undefined" && Symbol.toStringTag) {
         Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
       }
@@ -6341,7 +6465,7 @@ const {
     };
   })();
   (() => {
-    __nested_webpack_require_225226__.nmd = (module) => {
+    __nested_webpack_require_231754__.nmd = (module) => {
       module.paths = [];
       if (!module.children)
         module.children = [];
@@ -6354,8 +6478,8 @@ const {
     /*!**********************!*\
       !*** ./src/index.ts ***!
       \**********************/
-    __nested_webpack_require_225226__.r(__webpack_exports__);
-    __nested_webpack_require_225226__.d(__webpack_exports__, {
+    __nested_webpack_require_231754__.r(__webpack_exports__);
+    __nested_webpack_require_231754__.d(__webpack_exports__, {
       "Articulation": () => _Articulation__WEBPACK_IMPORTED_MODULE_0__["default"],
       "Chord": () => _Chord__WEBPACK_IMPORTED_MODULE_1__["default"],
       "Color": () => _Color__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -6371,36 +6495,38 @@ const {
       "Tonality": () => _Tonality__WEBPACK_IMPORTED_MODULE_12__["default"],
       "Velocity": () => _Velocity__WEBPACK_IMPORTED_MODULE_13__["default"],
       "Random": () => _genre_Random__WEBPACK_IMPORTED_MODULE_14__["default"],
-      "TrackNote": () => _track_TrackNote__WEBPACK_IMPORTED_MODULE_21__["default"],
-      "TrackChord": () => _track_TrackChord__WEBPACK_IMPORTED_MODULE_20__["default"],
+      "TrackNote": () => _track_TrackNote__WEBPACK_IMPORTED_MODULE_22__["default"],
+      "TrackChord": () => _track_TrackChord__WEBPACK_IMPORTED_MODULE_21__["default"],
       "Sequence": () => _track_Sequence__WEBPACK_IMPORTED_MODULE_18__["default"],
+      "Sequences": () => _track_Sequences__WEBPACK_IMPORTED_MODULE_19__["default"],
       "Segment": () => _track_Segment__WEBPACK_IMPORTED_MODULE_17__["default"],
-      "Roll": () => _track_Roll__WEBPACK_IMPORTED_MODULE_19__["default"],
+      "Roll": () => _track_Roll__WEBPACK_IMPORTED_MODULE_20__["default"],
       "Utils": () => _utils__WEBPACK_IMPORTED_MODULE_15__["default"],
       "Series": () => _series__WEBPACK_IMPORTED_MODULE_16__["default"]
     });
-    var _Articulation__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_225226__("./src/Articulation.ts");
-    var _Chord__WEBPACK_IMPORTED_MODULE_1__ = __nested_webpack_require_225226__("./src/Chord.ts");
-    var _Color__WEBPACK_IMPORTED_MODULE_2__ = __nested_webpack_require_225226__("./src/Color.ts");
-    var _Duration__WEBPACK_IMPORTED_MODULE_3__ = __nested_webpack_require_225226__("./src/Duration.ts");
-    var _Frequency__WEBPACK_IMPORTED_MODULE_4__ = __nested_webpack_require_225226__("./src/Frequency.ts");
-    var _Interval__WEBPACK_IMPORTED_MODULE_5__ = __nested_webpack_require_225226__("./src/Interval.ts");
-    var _Note__WEBPACK_IMPORTED_MODULE_6__ = __nested_webpack_require_225226__("./src/Note.ts");
-    var _Param__WEBPACK_IMPORTED_MODULE_7__ = __nested_webpack_require_225226__("./src/Param.ts");
-    var _Pitch__WEBPACK_IMPORTED_MODULE_8__ = __nested_webpack_require_225226__("./src/Pitch.ts");
-    var _Scale__WEBPACK_IMPORTED_MODULE_9__ = __nested_webpack_require_225226__("./src/Scale.ts");
-    var _TimeCode__WEBPACK_IMPORTED_MODULE_10__ = __nested_webpack_require_225226__("./src/TimeCode.ts");
-    var _TonalChord__WEBPACK_IMPORTED_MODULE_11__ = __nested_webpack_require_225226__("./src/TonalChord.ts");
-    var _Tonality__WEBPACK_IMPORTED_MODULE_12__ = __nested_webpack_require_225226__("./src/Tonality.ts");
-    var _Velocity__WEBPACK_IMPORTED_MODULE_13__ = __nested_webpack_require_225226__("./src/Velocity.ts");
-    var _genre_Random__WEBPACK_IMPORTED_MODULE_14__ = __nested_webpack_require_225226__("./src/genre/Random.ts");
-    var _utils__WEBPACK_IMPORTED_MODULE_15__ = __nested_webpack_require_225226__("./src/utils.ts");
-    var _series__WEBPACK_IMPORTED_MODULE_16__ = __nested_webpack_require_225226__("./src/series.ts");
-    var _track_Segment__WEBPACK_IMPORTED_MODULE_17__ = __nested_webpack_require_225226__("./src/track/Segment.ts");
-    var _track_Sequence__WEBPACK_IMPORTED_MODULE_18__ = __nested_webpack_require_225226__("./src/track/Sequence.ts");
-    var _track_Roll__WEBPACK_IMPORTED_MODULE_19__ = __nested_webpack_require_225226__("./src/track/Roll.ts");
-    var _track_TrackChord__WEBPACK_IMPORTED_MODULE_20__ = __nested_webpack_require_225226__("./src/track/TrackChord.ts");
-    var _track_TrackNote__WEBPACK_IMPORTED_MODULE_21__ = __nested_webpack_require_225226__("./src/track/TrackNote.ts");
+    var _Articulation__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_231754__("./src/Articulation.ts");
+    var _Chord__WEBPACK_IMPORTED_MODULE_1__ = __nested_webpack_require_231754__("./src/Chord.ts");
+    var _Color__WEBPACK_IMPORTED_MODULE_2__ = __nested_webpack_require_231754__("./src/Color.ts");
+    var _Duration__WEBPACK_IMPORTED_MODULE_3__ = __nested_webpack_require_231754__("./src/Duration.ts");
+    var _Frequency__WEBPACK_IMPORTED_MODULE_4__ = __nested_webpack_require_231754__("./src/Frequency.ts");
+    var _Interval__WEBPACK_IMPORTED_MODULE_5__ = __nested_webpack_require_231754__("./src/Interval.ts");
+    var _Note__WEBPACK_IMPORTED_MODULE_6__ = __nested_webpack_require_231754__("./src/Note.ts");
+    var _Param__WEBPACK_IMPORTED_MODULE_7__ = __nested_webpack_require_231754__("./src/Param.ts");
+    var _Pitch__WEBPACK_IMPORTED_MODULE_8__ = __nested_webpack_require_231754__("./src/Pitch.ts");
+    var _Scale__WEBPACK_IMPORTED_MODULE_9__ = __nested_webpack_require_231754__("./src/Scale.ts");
+    var _TimeCode__WEBPACK_IMPORTED_MODULE_10__ = __nested_webpack_require_231754__("./src/TimeCode.ts");
+    var _TonalChord__WEBPACK_IMPORTED_MODULE_11__ = __nested_webpack_require_231754__("./src/TonalChord.ts");
+    var _Tonality__WEBPACK_IMPORTED_MODULE_12__ = __nested_webpack_require_231754__("./src/Tonality.ts");
+    var _Velocity__WEBPACK_IMPORTED_MODULE_13__ = __nested_webpack_require_231754__("./src/Velocity.ts");
+    var _genre_Random__WEBPACK_IMPORTED_MODULE_14__ = __nested_webpack_require_231754__("./src/genre/Random.ts");
+    var _utils__WEBPACK_IMPORTED_MODULE_15__ = __nested_webpack_require_231754__("./src/utils.ts");
+    var _series__WEBPACK_IMPORTED_MODULE_16__ = __nested_webpack_require_231754__("./src/series.ts");
+    var _track_Segment__WEBPACK_IMPORTED_MODULE_17__ = __nested_webpack_require_231754__("./src/track/Segment.ts");
+    var _track_Sequence__WEBPACK_IMPORTED_MODULE_18__ = __nested_webpack_require_231754__("./src/track/Sequence.ts");
+    var _track_Sequences__WEBPACK_IMPORTED_MODULE_19__ = __nested_webpack_require_231754__("./src/track/Sequences.ts");
+    var _track_Roll__WEBPACK_IMPORTED_MODULE_20__ = __nested_webpack_require_231754__("./src/track/Roll.ts");
+    var _track_TrackChord__WEBPACK_IMPORTED_MODULE_21__ = __nested_webpack_require_231754__("./src/track/TrackChord.ts");
+    var _track_TrackNote__WEBPACK_IMPORTED_MODULE_22__ = __nested_webpack_require_231754__("./src/track/TrackNote.ts");
   })();
   var __webpack_export_target__ = exports;
   for (var i in __webpack_exports__)

@@ -26,8 +26,8 @@ export default class PatcherImage extends FileInstance<PatcherImageEventMap, Per
         return (await fetch(this.objectURL)).arrayBuffer();
     }
     clone() {
-        const patcherText = new PatcherImage({ env: this.env, project: this.project, file: this.file });
-        patcherText.objectURL = this.objectURL;
-        return patcherText;
+        const patcherImage = new PatcherImage({ env: this.env, project: this.project, file: this.file });
+        patcherImage.objectURL = this.objectURL;
+        return patcherImage;
     }
 }

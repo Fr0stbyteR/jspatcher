@@ -44,6 +44,226 @@ const { author, license, keywords, version, description, jspatcher } = _package_
 
 /***/ }),
 
+/***/ "./src/objects/arr-binary.ts":
+/*!***********************************!*\
+  !*** ./src/objects/arr-binary.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Binary)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+
+class Binary extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { arg: this.args[0], result: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 1;
+    });
+    this.on("updateArgs", (args) => {
+      this._.arg = void 0;
+      this._.result = void 0;
+      if (!args || args.length === 0)
+        return;
+      this._.arg = args[0];
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
+          try {
+            this._.result = this.execute(data, this._.arg);
+          } catch (e) {
+            this.error(e);
+            return;
+          }
+        }
+        this.outlet(0, this._.result);
+      } else if (inlet === 1) {
+        this._.arg = data;
+      }
+    });
+  }
+}
+Binary.description = "Binary Operation for Array";
+Binary.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "First array"
+}, {
+  isHot: false,
+  type: "anything",
+  description: "Second element or array"
+}];
+Binary.outlets = [{
+  type: "anything",
+  description: "Result"
+}];
+Binary.args = [{
+  type: "anything",
+  optional: true,
+  default: 0,
+  description: "Initial second element or array"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/arr-ternary.ts":
+/*!************************************!*\
+  !*** ./src/objects/arr-ternary.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Ternary)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+
+class Ternary extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { args: [this.args.length ? this.args[0] : true, this.args.length > 1 ? this.args[1] : false], result: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 3;
+      this.outlets = 1;
+    });
+    this.on("updateArgs", (args) => {
+      this._.args = [args.length ? args[0] : true, args.length > 1 ? args[1] : false];
+      this._.result = void 0;
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
+          try {
+            if (Array.isArray(data)) {
+              const result = [];
+              const trueArray = this._.args[0];
+              const falseArray = this._.args[1];
+              const length = Math.min(data.length, Array.isArray(trueArray) ? trueArray.length : data.length, Array.isArray(falseArray) ? falseArray.length : data.length);
+              for (let i = 0; i < length; i++) {
+                result[i] = data[i] ? Array.isArray(trueArray) ? trueArray[i] : trueArray : Array.isArray(falseArray) ? falseArray[i] : falseArray;
+              }
+              this._.result = result;
+            } else {
+              this._.result = data ? this._.args[0] : this._.args[1];
+            }
+          } catch (e) {
+            this.error(e);
+            return;
+          }
+        }
+        this.outlet(0, this._.result);
+      } else if (inlet === 1) {
+        this._.args[0] = data;
+      } else if (inlet === 2) {
+        this._.args[1] = data;
+      }
+    });
+  }
+}
+Ternary.description = "Ternary Operation for array";
+Ternary.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Test array"
+}, {
+  isHot: false,
+  type: "anything",
+  description: "True output array"
+}, {
+  isHot: false,
+  type: "anything",
+  description: "False output array"
+}];
+Ternary.outlets = [{
+  type: "anything",
+  description: "Result"
+}];
+Ternary.args = [{
+  type: "anything",
+  optional: true,
+  default: true,
+  description: "Initial true output"
+}, {
+  type: "anything",
+  optional: true,
+  default: false,
+  description: "Initial false output"
+}];
+
+
+/***/ }),
+
+/***/ "./src/objects/arr-unary.ts":
+/*!**********************************!*\
+  !*** ./src/objects/arr-unary.ts ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ArrUnary)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+
+class ArrUnary extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { result: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+    });
+    this.on("updateArgs", () => this._.result = void 0);
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
+          try {
+            this._.result = this.execute(data);
+          } catch (e) {
+            this.error(e);
+            return;
+          }
+        }
+        this.outlet(0, this._.result);
+      }
+    });
+  }
+}
+ArrUnary.description = "Unary Operation for Array";
+ArrUnary.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Array in"
+}];
+ArrUnary.outlets = [{
+  type: "anything",
+  description: "Result"
+}];
+
+
+/***/ }),
+
 /***/ "./src/objects/base.ts":
 /*!*****************************!*\
   !*** ./src/objects/base.ts ***!
@@ -445,7 +665,7 @@ const {
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-op","version":"1.0.2","description":"The operators package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-op","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-op","version":"1.0.3","description":"The operators package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-op","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
 
 /***/ })
 
@@ -548,21 +768,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_unary__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./objects/unary */ "./src/objects/unary.ts");
 /* harmony import */ var _objects_binary__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./objects/binary */ "./src/objects/binary.ts");
 /* harmony import */ var _objects_ternary__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./objects/ternary */ "./src/objects/ternary.ts");
-/* harmony import */ var _objects_functions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./objects/functions */ "./src/objects/functions.ts");
-/* harmony import */ var _objects_function_names__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./objects/function-names */ "./src/objects/function-names.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
+/* harmony import */ var _objects_arr_unary__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./objects/arr-unary */ "./src/objects/arr-unary.ts");
+/* harmony import */ var _objects_arr_binary__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./objects/arr-binary */ "./src/objects/arr-binary.ts");
+/* harmony import */ var _objects_arr_ternary__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./objects/arr-ternary */ "./src/objects/arr-ternary.ts");
+/* harmony import */ var _objects_functions__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./objects/functions */ "./src/objects/functions.ts");
+/* harmony import */ var _objects_function_names__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./objects/function-names */ "./src/objects/function-names.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
 
 
 
 
 
 
-const Unary = (0,_sdk__WEBPACK_IMPORTED_MODULE_5__.generateRemotedObject)(_objects_unary__WEBPACK_IMPORTED_MODULE_0__.default);
-const Binary = (0,_sdk__WEBPACK_IMPORTED_MODULE_5__.generateRemotedObject)(_objects_binary__WEBPACK_IMPORTED_MODULE_1__.default);
-const Ternary = (0,_sdk__WEBPACK_IMPORTED_MODULE_5__.generateRemotedObject)(_objects_ternary__WEBPACK_IMPORTED_MODULE_2__.default);
-const Ops = { "?": Ternary };
-for (const key in _objects_functions__WEBPACK_IMPORTED_MODULE_3__.default) {
-  const f = _objects_functions__WEBPACK_IMPORTED_MODULE_3__.default[key];
+
+
+
+const Unary = (0,_sdk__WEBPACK_IMPORTED_MODULE_8__.generateRemotedObject)(_objects_unary__WEBPACK_IMPORTED_MODULE_0__.default);
+const Binary = (0,_sdk__WEBPACK_IMPORTED_MODULE_8__.generateRemotedObject)(_objects_binary__WEBPACK_IMPORTED_MODULE_1__.default);
+const Ternary = (0,_sdk__WEBPACK_IMPORTED_MODULE_8__.generateRemotedObject)(_objects_ternary__WEBPACK_IMPORTED_MODULE_2__.default);
+const ArrUnary = (0,_sdk__WEBPACK_IMPORTED_MODULE_8__.generateRemotedObject)(_objects_arr_unary__WEBPACK_IMPORTED_MODULE_3__.default);
+const ArrBinary = (0,_sdk__WEBPACK_IMPORTED_MODULE_8__.generateRemotedObject)(_objects_arr_binary__WEBPACK_IMPORTED_MODULE_4__.default);
+const ArrTernary = (0,_sdk__WEBPACK_IMPORTED_MODULE_8__.generateRemotedObject)(_objects_arr_ternary__WEBPACK_IMPORTED_MODULE_5__.default);
+const Ops = { "?": Ternary, "[]?": ArrTernary };
+for (const key in _objects_functions__WEBPACK_IMPORTED_MODULE_6__.default) {
+  const f = _objects_functions__WEBPACK_IMPORTED_MODULE_6__.default[key];
   if (f.length === 1) {
     Ops[key] = class extends Unary {
       constructor() {
@@ -570,7 +799,21 @@ for (const key in _objects_functions__WEBPACK_IMPORTED_MODULE_3__.default) {
         this.execute = f;
       }
       static get _name() {
-        return _objects_function_names__WEBPACK_IMPORTED_MODULE_4__.default[key];
+        return _objects_function_names__WEBPACK_IMPORTED_MODULE_7__.default[key];
+      }
+    };
+    Ops[`[]${key}`] = class extends ArrUnary {
+      constructor() {
+        super(...arguments);
+        this.execute = (a) => {
+          if (Array.isArray(a))
+            return a.map(f);
+          else
+            return f(a);
+        };
+      }
+      static get _name() {
+        return _objects_function_names__WEBPACK_IMPORTED_MODULE_7__.default[key];
       }
     };
   } else if (f.length === 2) {
@@ -580,7 +823,31 @@ for (const key in _objects_functions__WEBPACK_IMPORTED_MODULE_3__.default) {
         this.execute = f;
       }
       static get _name() {
-        return _objects_function_names__WEBPACK_IMPORTED_MODULE_4__.default[key];
+        return _objects_function_names__WEBPACK_IMPORTED_MODULE_7__.default[key];
+      }
+    };
+    Ops[`[]${key}`] = class extends ArrBinary {
+      constructor() {
+        super(...arguments);
+        this.execute = (a, b) => {
+          if (Array.isArray(a)) {
+            if (Array.isArray(b)) {
+              const result = [];
+              const length = Math.min(a.length, b.length);
+              for (let i = 0; i < length; i++) {
+                result[i] = f(a[i], b[i]);
+              }
+              return result;
+            } else {
+              return a.map((v) => f(v, b));
+            }
+          } else {
+            return f(a, b);
+          }
+        };
+      }
+      static get _name() {
+        return _objects_function_names__WEBPACK_IMPORTED_MODULE_7__.default[key];
       }
     };
   }

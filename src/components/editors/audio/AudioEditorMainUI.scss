@@ -285,12 +285,15 @@
     
             & > span {
                 align-self: center;
-                z-index: 1;
+
+                &.time-input {
+                    position: absolute;
+                }
             }
     
             & > span.editor-main-player-controls-container {
                 flex: 1 1 auto;
-                position: absolute;
+                position: relative;
                 width: 100%;
                 display: flex;
                 flex-direction: row;
@@ -315,6 +318,7 @@
 
                     & > .menu {
                         display: inline-flex;
+                        margin-top: 0;
                         
                         & > .audio-editor-device-selector {
                             display: inline-flex;
