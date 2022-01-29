@@ -101,12 +101,12 @@ export default abstract class FileInstance<EventMap extends Record<string, any> 
     get history() {
         return this._history;
     }
-    constructor({ env, project, file, instanceId }: { env: IJSPatcherEnv; project?: IProject; file?: File; instanceId?: string }) {
+    constructor({ env, project, file, instanceId, noRegister }: { env: IJSPatcherEnv; project?: IProject; file?: File; instanceId?: string; noRegister?: boolean }) {
         super();
         this._env = env;
         this._project = project;
         this._file = file;
-        this._id = this.env.registerInstance(this, instanceId);
+        if (!noRegister) this._id = this.env.registerInstance(this, instanceId);
         this._file?.addObserver(this._id);
     }
     async init() {

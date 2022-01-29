@@ -354,7 +354,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     }
     registerInstance(i: IFileInstance, id?: string) {
         this.instances.add(i);
-        i.on("destroy", () => {
+        i.once("destroy", () => {
             this.instances.delete(i);
             this.emit("instances", Array.from(this.instances));
         });

@@ -2,8 +2,6 @@ import OperableAudioBuffer from "./OperableAudioBuffer";
 import PatcherAudio from "./PatcherAudio";
 import TransmitterNode from "../worklets/Transmitter";
 import type AudioEditor from "./AudioEditor";
-import type PersistentProjectFile from "../file/PersistentProjectFile";
-import type TempAudioFile from "./TempAudioFile";
 
 export default class AudioRecorder {
     readonly editor: AudioEditor;
@@ -141,7 +139,7 @@ export default class AudioRecorder {
         if (!this.node) return false;
         this.node.connect(this.transmitter);
         if (!this.editor.player.monitoring) this.node.connect(this.editor.player.postAnalyserNode);
-        const { state, env, file, project, length, numberOfChannels, sampleRate } = this.editor;
+        const { state, env, project, length, numberOfChannels, sampleRate } = this.editor;
         const { cursor, selRange } = state;
         if (selRange) {
             const [$start, $end] = selRange;
@@ -156,7 +154,7 @@ export default class AudioRecorder {
             this.$ = cursor;
         }
         const overwrittenBufferLength = this.$end - this.$start;
-        if (overwrittenBufferLength) this.overwrittenAudio = await PatcherAudio.fromSilence({ env, file: file as PersistentProjectFile | TempAudioFile, project }, numberOfChannels, overwrittenBufferLength, sampleRate);
+        if (overwrittenBufferLength) this.overwrittenAudio = await PatcherAudio.fromSilence({ env, project, noRegister: true }, numberOfChannels, overwrittenBufferLength, sampleRate);
         else this.overwrittenAudio = undefined;
         this.recording = true;
         await this.transmitter.reset();

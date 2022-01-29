@@ -143,7 +143,7 @@ export default class Buffer extends DefaultObject<{}, {}, [Bang | File | ArrayBu
                     if (data instanceof PatcherAudio) {
                         this._.audio.setAudio(data);
                     } else if (data instanceof AudioBuffer) {
-                        const audio = await PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.patcher.project }, data);
+                        const audio = await PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.patcher.project, noRegister: true }, data);
                         this._.audio.setAudio(audio);
                     } else {
                         let audioBuffer: AudioBuffer;
@@ -154,7 +154,7 @@ export default class Buffer extends DefaultObject<{}, {}, [Bang | File | ArrayBu
                             this.error("Decode File failed.");
                             return;
                         }
-                        const audio = await PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.patcher.project }, audioBuffer);
+                        const audio = await PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.patcher.project, noRegister: true }, audioBuffer);
                         this._.audio.setAudio(audio);
                     }
                 }
@@ -163,7 +163,7 @@ export default class Buffer extends DefaultObject<{}, {}, [Bang | File | ArrayBu
                 if (data instanceof PatcherAudio) {
                     this._.audio.setAudio(data);
                 } else if (data instanceof AudioBuffer) {
-                    const audio = await PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.patcher.project }, data);
+                    const audio = await PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.patcher.project, noRegister: true }, data);
                     this._.audio.setAudio(audio);
                 } else {
                     let audioBuffer: AudioBuffer;
@@ -174,7 +174,7 @@ export default class Buffer extends DefaultObject<{}, {}, [Bang | File | ArrayBu
                         this.error("Decode File failed.");
                         return;
                     }
-                    const audio = await PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.patcher.project }, audioBuffer);
+                    const audio = await PatcherAudio.fromNativeAudioBuffer({ env: this.env, project: this.patcher.project, noRegister: true }, audioBuffer);
                     this._.audio.setAudio(audio);
                 }
             } else if (inlet === 2) {
