@@ -28,6 +28,8 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
     background: boolean;
     presentation: boolean;
     presentationRect: TPresentationRect;
+    /** A timestamp to order boxes UI on z-axis, default = 0, negative = send to back, positive = bring to front */
+    zIndex: number;
     data: Data<T>;
     args: Args<T>;
     props: Props<T>;
@@ -54,6 +56,7 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         this.presentation = boxIn.presentation || !!maxBoxIn.presentation;
         this.presentationRect = boxIn.presentationRect || maxBoxIn.presentation_rect;
         if (!this.presentationRect) this.presentationRect = this.rect.slice() as TRect;
+        this.zIndex = boxIn.zIndex || 0;
         this.data = boxIn.data || (boxIn as any).prevData?.storage || {};
         this._editing = !!boxIn._editing;
         this._patcher = patcherIn;
@@ -379,6 +382,12 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         if (!inPresentation) return true;
         return isRectResizable(this.presentationRect);
     }
+    setZIndex(zIndex: number) {
+        const oldZIndex = this.zIndex;
+        this.zIndex = zIndex;
+        this.undoable({ oldZIndex, zIndex });
+        this._patcher.emit("zIndexChanged", { boxId: this.id, zIndex });
+    }
     error(text: string) {
         this.emit("error", text);
     }
@@ -388,10 +397,10 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
     highlightPort(isSrc: boolean, i: number, highlight: boolean) {
         this.emit("highlightPort", { isSrc, i, highlight });
     }
-    undoable(e: { oldArgs?: Args<T>; args?: Args<T>; oldProps?: Props<T>; props?: Props<T>; oldState?: State<T>; state?: State<T> }) {
+    undoable(e: { oldArgs?: Args<T>; args?: Args<T>; oldProps?: Props<T>; props?: Props<T>; oldState?: State<T>; state?: State<T>; oldZIndex: number; zIndex?: number }) {
         this._patcher.boxChanged(this.id, e);
     }
-    async changeObject({ args, props, state }: { args?: Args<T>; props?: Props<T>; state?: State<T> }, options?: { undoable?: boolean }) {
+    async changeObject({ args, props, state, zIndex }: { args?: Args<T>; props?: Props<T>; state?: State<T>; zIndex?: number }, options?: { undoable?: boolean }) {
         if (args) await this._object?.updateArgs(args, options);
         if (props) await this._object?.updateProps(props, options);
         if (state) await this._object?.updateState(state, options);

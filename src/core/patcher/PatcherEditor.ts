@@ -15,7 +15,8 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "create": RawPatcher;
     "delete": RawPatcher;
     "changeBoxText": { boxId: string; oldText: string; text: string };
-    "boxChanged": { boxId: string; oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any> };
+    "boxChanged": { boxId: string; oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any>; oldZIndex?: number; zIndex?: number };
+    "zIndexChanged": { boxId: string; zIndex: number };
     "changeLineSrc": { lineId: string; oldSrc: [string, number]; src: [string, number] };
     "changeLineDest": { lineId: string; oldDest: [string, number]; dest: [string, number] };
     "selected": string[];
@@ -81,6 +82,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     handlePassiveDeleteLine = (e: PatcherEventMap["passiveDeleteLine"]) => this.emit("delete", { boxes: {}, lines: { [e.id]: e.toSerializable() } });
     handleBoxChanged = (e: PatcherEventMap["boxChanged"]) => this.emit("boxChanged", e);
     handlePropsChanged = (e: PatcherEventMap["propsChanged"]) => this.emit("propsChanged", e);
+    handleZIndexChanged = (e: PatcherEventMap["zIndexChanged"]) => this.emit("zIndexChanged", e);
     handleChanged = () => this.instance.emitChanged();
     constructor(instance: Patcher) {
         super(instance);
@@ -109,6 +111,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.instance.on("passiveDeleteLine", this.handlePassiveDeleteLine);
         this.instance.on("boxChanged", this.handleBoxChanged);
         this.instance.on("propsChanged", this.handlePropsChanged);
+        this.instance.on("zIndexChanged", this.handleZIndexChanged);
         const { openInPresentation } = this.props;
         this.setState({
             locked: true,
@@ -189,7 +192,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         const e = this.instance.changeLineDest(lineId, destId, destOutlet);
         this.emit("changeLineDest", e);
     }
-    async changeBox(boxId: string, change: { args?: any[]; props?: Record<string, any>; state?: Record<string, any> }) {
+    async changeBox(boxId: string, change: { args?: any[]; props?: Record<string, any>; state?: Record<string, any>; zIndex?: number }) {
+        if (typeof change.zIndex === "number") this.instance.boxes[boxId]?.setZIndex(change.zIndex);
         await this.instance.boxes[boxId]?.changeObject(change);
     }
 
@@ -237,6 +241,22 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         });
         if (!Object.keys(patcher.boxes)) return undefined;
         return JSON.stringify(patcher, undefined, 4);
+    }
+    bringToFront() {
+        this.state.selected
+            .filter(id => id.startsWith("box") && this.boxes[id])
+            .map(id => this.boxes[id])
+            .forEach((box) => {
+                box.setZIndex(performance.now());
+            });
+    }
+    sendToBack() {
+        this.state.selected
+            .filter(id => id.startsWith("box") && this.boxes[id])
+            .map(id => this.boxes[id])
+            .forEach((box) => {
+                box.setZIndex(-performance.now());
+            });
     }
     async pasteToPatcher(clipboard: RawPatcher | TMaxClipboard) {
         const idMap: Record<string, string> = {};

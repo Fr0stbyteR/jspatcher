@@ -51,7 +51,8 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "ready": never;
     "unload": never;
     "changeBoxText": { boxId: string; oldText: string; text: string };
-    "boxChanged": { boxId: string; oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any> };
+    "boxChanged": { boxId: string; oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any>; oldZIndex?: number; zIndex?: number };
+    "zIndexChanged": { boxId: string; zIndex: number };
     "passiveDeleteLine": Line;
     "graphChanged": never;
     "changed": never;

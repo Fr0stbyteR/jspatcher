@@ -18,8 +18,8 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             await editor.instance.changeBoxText(boxId, oldText);
         } else if (eventName === "boxChanged") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
-            const { boxId, oldArgs, oldProps, oldState } = e;
-            await editor.changeBox(boxId, { args: oldArgs, props: oldProps, state: oldState });
+            const { boxId, oldArgs, oldProps, oldState, oldZIndex } = e;
+            await editor.changeBox(boxId, { args: oldArgs, props: oldProps, state: oldState, zIndex: oldZIndex });
         } else if (eventName === "moved") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { selected, delta, presentation } = e;
@@ -58,8 +58,8 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             await editor.instance.changeBoxText(boxId, text);
         } else if (eventName === "boxChanged") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
-            const { boxId, args, props, state } = e;
-            await editor.changeBox(boxId, { args, props, state });
+            const { boxId, args, props, state, zIndex } = e;
+            await editor.changeBox(boxId, { args, props, state, zIndex });
         } else if (eventName === "moved") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             const { selected, delta, presentation } = e;

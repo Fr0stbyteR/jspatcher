@@ -174,6 +174,7 @@ export interface TBox {
     background?: boolean;
     presentation?: boolean;
     presentationRect?: TPresentationRect;
+    zIndex?: number;
     args?: any[];
     props?: Record<string, any>;
     data?: Record<string, any>;

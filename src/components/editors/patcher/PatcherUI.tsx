@@ -357,10 +357,12 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
         timestamp: performance.now()
     };
     boxes: Record<string, JSX.Element> = {};
+    zIndexes: Record<string, number> = {};
     componentDidMount() {
         const { editor } = this.props;
         editor.on("create", this.handleCreate);
         editor.on("delete", this.handleDelete);
+        editor.on("zIndexChanged", this.handleZIndexChanged);
         if (editor.isReady) this.handleReady();
         else editor.on("ready", this.handleReady);
     }
@@ -369,32 +371,43 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
         editor.off("create", this.handleCreate);
         editor.off("delete", this.handleDelete);
         editor.off("ready", this.handleReady);
+        editor.off("zIndexChanged", this.handleZIndexChanged);
     }
     handleCreate = (created: RawPatcher) => {
         Object.keys(created.boxes).forEach((id) => {
             const box = created.boxes[id];
             this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
+            this.zIndexes[box.id] = box.zIndex || 0;
         });
         this.setState({ timestamp: performance.now() });
     };
     handleDelete = (deleted: RawPatcher) => {
-        Object.keys(deleted.boxes).forEach(id => delete this.boxes[id]);
+        Object.keys(deleted.boxes).forEach((id) => {
+            delete this.boxes[id];
+            delete this.zIndexes[id];
+        });
+        this.setState({ timestamp: performance.now() });
+    };
+    handleZIndexChanged = ({ boxId, zIndex }: { boxId: string; zIndex: number }) => {
+        this.zIndexes[boxId] = zIndex;
         this.setState({ timestamp: performance.now() });
     };
     handleReady = () => {
         for (const boxId in this.boxes) {
             delete this.boxes[boxId];
+            delete this.zIndexes[boxId];
         }
         for (const boxId in this.props.editor.boxes) {
             const box = this.props.editor.boxes[boxId];
             this.boxes[boxId] = <BoxUI {...this.props} id={box.id} key={box.id} />;
+            this.zIndexes[box.id] = box.zIndex || 0;
         }
         this.setState({ timestamp: performance.now() });
     };
     render() {
         return (
             <div className="boxes" style={this.state}>
-                {Object.values(this.boxes)}
+                {Object.entries(this.boxes).sort(([a], [b]) => this.zIndexes[a] - this.zIndexes[b]).map(([, jsx]) => jsx)}
             </div>
         );
     }

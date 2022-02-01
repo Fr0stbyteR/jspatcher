@@ -27,10 +27,18 @@ export default class PatcherEditMenu extends React.PureComponent<P> {
     handleClickDock = async () => {
         this.props.editor.dockUI();
     };
+    handleClickBringToFront = () => {
+        this.props.editor.bringToFront();
+    };
+    handleClickSendToBack = () => {
+        this.props.editor.sendToBack();
+    };
     onShortKey(e: KeyboardEvent) {
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         let performed = true;
-        if (ctrlKey && e.key === "d") this.handleClickDuplicate();
+        if (ctrlKey && e.shiftKey && e.key === "f") this.handleClickBringToFront();
+        else if (ctrlKey && e.shiftKey && e.key === "b") this.handleClickSendToBack();
+        else if (ctrlKey && e.key === "d") this.handleClickDuplicate();
         else if (ctrlKey && e.key === "i") this.handleClickInspector();
         else if (ctrlKey && e.key === "Enter") this.handleClickDock();
         else performed = false;
@@ -43,6 +51,8 @@ export default class PatcherEditMenu extends React.PureComponent<P> {
             <>
                 <Dropdown.Item onClick={this.handleClickNewBox} text="New Box" description={"N"} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description={`${ctrlKey} + D`} disabled={locked} />
+                <Dropdown.Item onClick={this.handleClickBringToFront} text="Bring to Front" description={`${ctrlKey} + Shift + F`} disabled={locked} />
+                <Dropdown.Item onClick={this.handleClickSendToBack} text="Send to Back" description={`${ctrlKey} + Shift + B`} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickInspector} text="Inspector" description={`${ctrlKey} + I`} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickDock} text="Dock UI" description={`${ctrlKey} + Enter`} disabled={locked} />
             </>
