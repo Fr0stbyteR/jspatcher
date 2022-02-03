@@ -145,9 +145,9 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
                 }
             }
         }
+        this.disabled = false;
         srcBox.connectedOutlet(this.srcOutlet, destBox.id, this.destInlet, this.id);
         destBox.connectedInlet(this.destInlet, srcBox.id, this.srcOutlet, this.id);
-        this.disabled = false;
         return this;
     }
     destroy() {
