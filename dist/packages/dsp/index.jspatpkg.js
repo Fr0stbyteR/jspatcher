@@ -23,6 +23,10 @@ var map = {
 		"./dsps/add/dspMeta.json",
 		"dsps_add_dspMeta_json"
 	],
+	"./allpass/dspMeta.json": [
+		"./dsps/allpass/dspMeta.json",
+		"dsps_allpass_dspMeta_json"
+	],
 	"./asin/dspMeta.json": [
 		"./dsps/asin/dspMeta.json",
 		"dsps_asin_dspMeta_json"
@@ -46,6 +50,14 @@ var map = {
 	"./atodb/dspMeta.json": [
 		"./dsps/atodb/dspMeta.json",
 		"dsps_atodb_dspMeta_json"
+	],
+	"./bandpass/dspMeta.json": [
+		"./dsps/bandpass/dspMeta.json",
+		"dsps_bandpass_dspMeta_json"
+	],
+	"./biquad/dspMeta.json": [
+		"./dsps/biquad/dspMeta.json",
+		"dsps_biquad_dspMeta_json"
 	],
 	"./bitand/dspMeta.json": [
 		"./dsps/bitand/dspMeta.json",
@@ -75,6 +87,10 @@ var map = {
 		"./dsps/eq/dspMeta.json",
 		"dsps_eq_dspMeta_json"
 	],
+	"./filtercoeff/dspMeta.json": [
+		"./dsps/filtercoeff/dspMeta.json",
+		"dsps_filtercoeff_dspMeta_json"
+	],
 	"./ftom/dspMeta.json": [
 		"./dsps/ftom/dspMeta.json",
 		"dsps_ftom_dspMeta_json"
@@ -87,6 +103,14 @@ var map = {
 		"./dsps/gtr/dspMeta.json",
 		"dsps_gtr_dspMeta_json"
 	],
+	"./highpass/dspMeta.json": [
+		"./dsps/highpass/dspMeta.json",
+		"dsps_highpass_dspMeta_json"
+	],
+	"./highshelf/dspMeta.json": [
+		"./dsps/highshelf/dspMeta.json",
+		"dsps_highshelf_dspMeta_json"
+	],
 	"./leq/dspMeta.json": [
 		"./dsps/leq/dspMeta.json",
 		"dsps_leq_dspMeta_json"
@@ -94,6 +118,14 @@ var map = {
 	"./log/dspMeta.json": [
 		"./dsps/log/dspMeta.json",
 		"dsps_log_dspMeta_json"
+	],
+	"./lowpass/dspMeta.json": [
+		"./dsps/lowpass/dspMeta.json",
+		"dsps_lowpass_dspMeta_json"
+	],
+	"./lowshelf/dspMeta.json": [
+		"./dsps/lowshelf/dspMeta.json",
+		"dsps_lowshelf_dspMeta_json"
 	],
 	"./lss/dspMeta.json": [
 		"./dsps/lss/dspMeta.json",
@@ -127,6 +159,18 @@ var map = {
 		"./dsps/noise/dspMeta.json",
 		"dsps_noise_dspMeta_json"
 	],
+	"./notch/dspMeta.json": [
+		"./dsps/notch/dspMeta.json",
+		"dsps_notch_dspMeta_json"
+	],
+	"./peaknotch/dspMeta.json": [
+		"./dsps/peaknotch/dspMeta.json",
+		"dsps_peaknotch_dspMeta_json"
+	],
+	"./phasor/dspMeta.json": [
+		"./dsps/phasor/dspMeta.json",
+		"dsps_phasor_dspMeta_json"
+	],
 	"./pink/dspMeta.json": [
 		"./dsps/pink/dspMeta.json",
 		"dsps_pink_dspMeta_json"
@@ -135,13 +179,25 @@ var map = {
 		"./dsps/rdiv/dspMeta.json",
 		"dsps_rdiv_dspMeta_json"
 	],
+	"./rect/dspMeta.json": [
+		"./dsps/rect/dspMeta.json",
+		"dsps_rect_dspMeta_json"
+	],
 	"./rsub/dspMeta.json": [
 		"./dsps/rsub/dspMeta.json",
 		"dsps_rsub_dspMeta_json"
 	],
+	"./smooth/dspMeta.json": [
+		"./dsps/smooth/dspMeta.json",
+		"dsps_smooth_dspMeta_json"
+	],
 	"./sub/dspMeta.json": [
 		"./dsps/sub/dspMeta.json",
 		"dsps_sub_dspMeta_json"
+	],
+	"./tri/dspMeta.json": [
+		"./dsps/tri/dspMeta.json",
+		"dsps_tri_dspMeta_json"
 	]
 };
 function webpackAsyncContext(req) {
@@ -187,6 +243,10 @@ var map = {
 		"./dsps/add/dspModule.wasm",
 		"dsps_add_dspModule_wasm"
 	],
+	"./allpass/dspModule.wasm": [
+		"./dsps/allpass/dspModule.wasm",
+		"dsps_allpass_dspModule_wasm"
+	],
 	"./asin/dspModule.wasm": [
 		"./dsps/asin/dspModule.wasm",
 		"dsps_asin_dspModule_wasm"
@@ -210,6 +270,14 @@ var map = {
 	"./atodb/dspModule.wasm": [
 		"./dsps/atodb/dspModule.wasm",
 		"dsps_atodb_dspModule_wasm"
+	],
+	"./bandpass/dspModule.wasm": [
+		"./dsps/bandpass/dspModule.wasm",
+		"dsps_bandpass_dspModule_wasm"
+	],
+	"./biquad/dspModule.wasm": [
+		"./dsps/biquad/dspModule.wasm",
+		"dsps_biquad_dspModule_wasm"
 	],
 	"./bitand/dspModule.wasm": [
 		"./dsps/bitand/dspModule.wasm",
@@ -239,6 +307,10 @@ var map = {
 		"./dsps/eq/dspModule.wasm",
 		"dsps_eq_dspModule_wasm"
 	],
+	"./filtercoeff/dspModule.wasm": [
+		"./dsps/filtercoeff/dspModule.wasm",
+		"dsps_filtercoeff_dspModule_wasm"
+	],
 	"./ftom/dspModule.wasm": [
 		"./dsps/ftom/dspModule.wasm",
 		"dsps_ftom_dspModule_wasm"
@@ -251,6 +323,14 @@ var map = {
 		"./dsps/gtr/dspModule.wasm",
 		"dsps_gtr_dspModule_wasm"
 	],
+	"./highpass/dspModule.wasm": [
+		"./dsps/highpass/dspModule.wasm",
+		"dsps_highpass_dspModule_wasm"
+	],
+	"./highshelf/dspModule.wasm": [
+		"./dsps/highshelf/dspModule.wasm",
+		"dsps_highshelf_dspModule_wasm"
+	],
 	"./leq/dspModule.wasm": [
 		"./dsps/leq/dspModule.wasm",
 		"dsps_leq_dspModule_wasm"
@@ -258,6 +338,14 @@ var map = {
 	"./log/dspModule.wasm": [
 		"./dsps/log/dspModule.wasm",
 		"dsps_log_dspModule_wasm"
+	],
+	"./lowpass/dspModule.wasm": [
+		"./dsps/lowpass/dspModule.wasm",
+		"dsps_lowpass_dspModule_wasm"
+	],
+	"./lowshelf/dspModule.wasm": [
+		"./dsps/lowshelf/dspModule.wasm",
+		"dsps_lowshelf_dspModule_wasm"
 	],
 	"./lss/dspModule.wasm": [
 		"./dsps/lss/dspModule.wasm",
@@ -291,6 +379,18 @@ var map = {
 		"./dsps/noise/dspModule.wasm",
 		"dsps_noise_dspModule_wasm"
 	],
+	"./notch/dspModule.wasm": [
+		"./dsps/notch/dspModule.wasm",
+		"dsps_notch_dspModule_wasm"
+	],
+	"./peaknotch/dspModule.wasm": [
+		"./dsps/peaknotch/dspModule.wasm",
+		"dsps_peaknotch_dspModule_wasm"
+	],
+	"./phasor/dspModule.wasm": [
+		"./dsps/phasor/dspModule.wasm",
+		"dsps_phasor_dspModule_wasm"
+	],
 	"./pink/dspModule.wasm": [
 		"./dsps/pink/dspModule.wasm",
 		"dsps_pink_dspModule_wasm"
@@ -299,13 +399,25 @@ var map = {
 		"./dsps/rdiv/dspModule.wasm",
 		"dsps_rdiv_dspModule_wasm"
 	],
+	"./rect/dspModule.wasm": [
+		"./dsps/rect/dspModule.wasm",
+		"dsps_rect_dspModule_wasm"
+	],
 	"./rsub/dspModule.wasm": [
 		"./dsps/rsub/dspModule.wasm",
 		"dsps_rsub_dspModule_wasm"
 	],
+	"./smooth/dspModule.wasm": [
+		"./dsps/smooth/dspModule.wasm",
+		"dsps_smooth_dspModule_wasm"
+	],
 	"./sub/dspModule.wasm": [
 		"./dsps/sub/dspModule.wasm",
 		"dsps_sub_dspModule_wasm"
+	],
+	"./tri/dspModule.wasm": [
+		"./dsps/tri/dspModule.wasm",
+		"dsps_tri_dspModule_wasm"
 	]
 };
 function webpackAsyncContext(req) {
@@ -3102,65 +3214,96 @@ class FaustDspObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.DefaultObject {
   constructor() {
     super(...arguments);
     this._ = {
-      constant: this.audioCtx.createConstantSource()
+      defaultInputs: [],
+      constants: [],
+      constantsConnected: [],
+      argsOffset: 0
     };
   }
-  get unconnected() {
-    return this.inletLines.map((set) => [...set].find((l) => l.isConnectableByAudio)).findIndex((l) => !l);
+  get audioConnections() {
+    return this.inletLines.map((set) => [...set].find((l) => !l.disabled && l.isConnectableByAudio)).map((l) => !!l);
   }
   checkAndFillUnconnected() {
-    const { unconnected } = this;
-    const { constant, merger, constantConnected } = this._;
-    if (!merger)
+    const { audioConnections } = this;
+    const { constants, constantsConnected } = this._;
+    if (!this.inlets)
       return;
-    if (unconnected !== constantConnected) {
-      if (constantConnected !== -1)
-        constant.disconnect();
-      if (unconnected !== -1)
-        constant.connect(merger, 0, unconnected);
-      this._.constantConnected = unconnected;
+    for (let i = 0; i < this.inlets; i++) {
+      if (audioConnections[i] === constantsConnected[i])
+        continue;
+      const constant = constants[i];
+      if (audioConnections[i]) {
+        constant.offset.value = 0;
+      } else if (!audioConnections[i] && !constantsConnected[i]) {
+        constant.offset.value = this._.defaultInputs[i] || 0;
+      }
+      constantsConnected[i] = audioConnections[i];
     }
   }
   subscribe() {
+    super.subscribe();
     this.on("preInit", () => {
+      var _a, _b;
       const meta = JSON.parse(this._.dspFactory.json);
-      const { inputs, outputs } = meta;
-      this.inlets = inputs;
-      this.outlets = outputs;
-      this.disconnectAudio();
+      const { inputs, outputs, meta: declaredMeta } = meta;
+      const defaultInputsStr = (_a = declaredMeta.find((m) => "defaultInputs" in m)) == null ? void 0 : _a.defaultInputs;
+      if (defaultInputsStr)
+        this._.defaultInputs = JSON.parse(defaultInputsStr);
+      this._.argsOffset = +((_b = declaredMeta.find((m) => "argsOffset" in m)) == null ? void 0 : _b.argsOffset) || 0;
       if (inputs) {
         const merger = this.audioCtx.createChannelMerger(inputs);
         this._.merger = merger;
-        this.inletAudioConnections = new Array(inputs).fill(null).map((v, i) => ({ node: merger, index: i }));
+        for (let i = 0; i < inputs; i++) {
+          const constant = this.audioCtx.createConstantSource();
+          this._.constants[i] = constant;
+          constant.connect(merger, 0, i);
+          this._.constantsConnected[i] = false;
+        }
       }
       const splitter = this.audioCtx.createChannelSplitter(outputs);
       this._.splitter = splitter;
+      this.inlets = inputs;
+      this.outlets = outputs;
+      this.disconnectAudio();
+      this.inletAudioConnections = this._.constants.map((node) => ({ node: node.offset, index: 0 }));
       this.outletAudioConnections = new Array(outputs).fill(null).map((v, i) => ({ node: splitter, index: i }));
       this.connectAudio();
     });
     this.on("postInit", async () => {
-      const { dspFactory, faustDspGenerator, dspId, constant, merger, splitter } = this._;
+      const { dspFactory, faustDspGenerator, dspId, constants, merger, splitter, argsOffset } = this._;
       const node = await faustDspGenerator.createNode(this.audioCtx, dspId, dspFactory);
       this._.node = node;
+      this.checkAndFillUnconnected();
       merger == null ? void 0 : merger.connect(node);
       node.connect(splitter);
-      constant.offset.value = +this.args[0] || 0;
-      constant.start();
-      this.checkAndFillUnconnected();
+      constants.forEach((constant, i) => {
+        var _a;
+        if (!this._.constantsConnected[i])
+          constant.offset.value = +this.args[i - argsOffset] || ((_a = this._.defaultInputs[i]) != null ? _a : 0);
+        constant.start();
+      });
     });
-    this.on("argsUpdated", ({ args }) => {
-      this._.constant.offset.value = +args[0] || 0;
+    this.on("argsUpdated", () => {
+      this._.constants.forEach((constant, i) => {
+        var _a;
+        if (!this._.constantsConnected[i])
+          constant.offset.value = +this.args[i - this._.argsOffset] || ((_a = this._.defaultInputs[i]) != null ? _a : 0);
+      });
     });
     this.on("inlet", ({ inlet, data }) => {
       if (typeof data === "number") {
-        this._.constant.offset.value = data;
+        if (this._.constants[inlet] && !this._.constantsConnected[inlet]) {
+          const constant = this._.constants[inlet];
+          constant.offset.value = constant.offset.value;
+          constant.offset.linearRampToValueAtTime(data, this.audioCtx.currentTime + this.getProp("smoothInput"));
+        }
       }
     });
     this.on("connectedInlet", () => this.checkAndFillUnconnected());
     this.on("disconnectedInlet", () => this.checkAndFillUnconnected());
     this.on("destroy", () => {
-      const { constant, merger, splitter, node } = this._;
-      constant == null ? void 0 : constant.disconnect();
+      const { constants, merger, splitter, node } = this._;
+      constants.forEach((constant) => constant == null ? void 0 : constant.disconnect());
       merger == null ? void 0 : merger.disconnect();
       splitter == null ? void 0 : splitter.disconnect();
       node == null ? void 0 : node.disconnect();
@@ -3186,9 +3329,17 @@ FaustDspObject.outlets = [{
 FaustDspObject.args = [{
   type: "number",
   optional: true,
-  description: "Initial value for the first unconnected inlet",
+  varLength: true,
+  description: "Initial inputs",
   default: 0
 }];
+FaustDspObject.props = {
+  smoothInput: {
+    type: "number",
+    description: "Linear interpolate to input values within a duration in seconds",
+    default: 0.01
+  }
+};
 FaustDspObject.UI = _sdk__WEBPACK_IMPORTED_MODULE_1__.DefaultUI;
 
 
@@ -3443,7 +3594,7 @@ module.exports = "{\n  \"name\": \"@jspatcher/package-dsp\",\n  \"version\": \"1
 /******/ 	// This function allow to reference async chunks
 /******/ 	__webpack_require__.u = (chunkId) => {
 /******/ 		// return url for filenames based on template
-/******/ 		return "js/" + {"dsps_dsps_json":"d41e36cac85c0c8ad1a2","dsps_abs_dspModule_wasm":"0e895ee6791de50053bb","dsps_acos_dspModule_wasm":"e26672c503d40f2111d4","dsps_acosh_dspModule_wasm":"6f0aa6108ac31d9d293e","dsps_add_dspModule_wasm":"0d1387618bad1ae17ae1","dsps_asin_dspModule_wasm":"9353243215bc0de84983","dsps_asinh_dspModule_wasm":"7b13096f6480c9b64a41","dsps_atan_dspModule_wasm":"17811b5924fc4bcfa2d0","dsps_atan2_dspModule_wasm":"f39523de16707d695fab","dsps_atanh_dspModule_wasm":"46eefbd4bf523e0daada","dsps_atodb_dspModule_wasm":"4b669635bed770a4f84d","dsps_bitand_dspModule_wasm":"4ce0f5b5615b165a0a6b","dsps_bitor_dspModule_wasm":"757fa92aaed2a537a27d","dsps_bitxor_dspModule_wasm":"502e84d5f3212e454632","dsps_change_dspModule_wasm":"a3e83b249ba823cce546","dsps_dbtoa_dspModule_wasm":"42f19657f03936408587","dsps_div_dspModule_wasm":"cfe50ad6665653129c85","dsps_eq_dspModule_wasm":"43be7dbe2410d2fff2f0","dsps_ftom_dspModule_wasm":"ceb793c4c0589a21cab7","dsps_geq_dspModule_wasm":"40677f34330c17e708d6","dsps_gtr_dspModule_wasm":"209c0a8f8152f67e5f23","dsps_leq_dspModule_wasm":"d8e31072f31be1422b08","dsps_log_dspModule_wasm":"656a3462f5b4865c39be","dsps_lss_dspModule_wasm":"135a1b64bae9f9568679","dsps_max_dspModule_wasm":"c106ea8e46f7c2f380b6","dsps_min_dspModule_wasm":"3cb2431b0f63dd3d73fe","dsps_mod_dspModule_wasm":"c873f5866950d927e2bb","dsps_mtof_dspModule_wasm":"489240c018cf3f9993da","dsps_mul_dspModule_wasm":"f2260894f0c9e561ad9e","dsps_neq_dspModule_wasm":"537121f702a700f5eade","dsps_noise_dspModule_wasm":"91ac41da19a38f77c84e","dsps_pink_dspModule_wasm":"86e1dda760e4f0723259","dsps_rdiv_dspModule_wasm":"52bd0a1a7acf79006f68","dsps_rsub_dspModule_wasm":"69b5bc21a2aa08fff8ea","dsps_sub_dspModule_wasm":"c9230d79b2d04ae9ef52","dsps_abs_dspMeta_json":"6c3817caecba29c40ba9","dsps_acos_dspMeta_json":"12133c48a2c05a2cce87","dsps_acosh_dspMeta_json":"b3bece826caa86450e9e","dsps_add_dspMeta_json":"6da97aa4361554dd99e7","dsps_asin_dspMeta_json":"8140f9f4a99b46a1bc5c","dsps_asinh_dspMeta_json":"78bed74ab6c90673e1b6","dsps_atan_dspMeta_json":"e31ac747e32e12fbe13a","dsps_atan2_dspMeta_json":"b2f14bc3000a1b641238","dsps_atanh_dspMeta_json":"1500841eee8536170e3f","dsps_atodb_dspMeta_json":"2711f4fa9a20a08f5fd1","dsps_bitand_dspMeta_json":"f8f8e1aaead815d05393","dsps_bitor_dspMeta_json":"0492285e4001b9bb35bf","dsps_bitxor_dspMeta_json":"efca265b74ffa2ad2cba","dsps_change_dspMeta_json":"dc2acf5598e3f9530b88","dsps_dbtoa_dspMeta_json":"facbf9ea77af396e0dd7","dsps_div_dspMeta_json":"66288eba2b16e46319c5","dsps_eq_dspMeta_json":"8bd957eb1e00368cc97e","dsps_ftom_dspMeta_json":"0b9e94d6c6980b077adc","dsps_geq_dspMeta_json":"96e8e77eb6fa3f2a7986","dsps_gtr_dspMeta_json":"2a5f03f3c9b3dec25405","dsps_leq_dspMeta_json":"ee6f70983dc3eec249bd","dsps_log_dspMeta_json":"7991feedbe5d7a307477","dsps_lss_dspMeta_json":"4368b0aac56a6bf5ac90","dsps_max_dspMeta_json":"66fad1b0eaa76674e58e","dsps_min_dspMeta_json":"81f11dcb708ae890f8fc","dsps_mod_dspMeta_json":"c860917339731b4ae8e6","dsps_mtof_dspMeta_json":"7f2e7c95d94bb7756967","dsps_mul_dspMeta_json":"0fe7a788b828c4f3b32c","dsps_neq_dspMeta_json":"5d1f374404b85c1c1866","dsps_noise_dspMeta_json":"93457af337c77b0e0bd3","dsps_pink_dspMeta_json":"fd5f4cf6c927abf10774","dsps_rdiv_dspMeta_json":"28036c01195f9877c25e","dsps_rsub_dspMeta_json":"9b4f8b071da9f777f082","dsps_sub_dspMeta_json":"d10f0d4270bcf7822fa0"}[chunkId] + ".js";
+/******/ 		return "js/" + {"dsps_dsps_json":"12395d07f079ffd81fbe","dsps_abs_dspModule_wasm":"0e895ee6791de50053bb","dsps_acos_dspModule_wasm":"e26672c503d40f2111d4","dsps_acosh_dspModule_wasm":"6f0aa6108ac31d9d293e","dsps_add_dspModule_wasm":"59520c3ffa47a43cb833","dsps_allpass_dspModule_wasm":"eb0fb3b0e585933c48fc","dsps_asin_dspModule_wasm":"9353243215bc0de84983","dsps_asinh_dspModule_wasm":"7b13096f6480c9b64a41","dsps_atan_dspModule_wasm":"17811b5924fc4bcfa2d0","dsps_atan2_dspModule_wasm":"f39523de16707d695fab","dsps_atanh_dspModule_wasm":"46eefbd4bf523e0daada","dsps_atodb_dspModule_wasm":"4b669635bed770a4f84d","dsps_bandpass_dspModule_wasm":"3da35965e7fba7a06bed","dsps_biquad_dspModule_wasm":"e712f4c98963a774b5ae","dsps_bitand_dspModule_wasm":"e24cfbc81b220bb510c0","dsps_bitor_dspModule_wasm":"7ec716da07a4d1ec02ed","dsps_bitxor_dspModule_wasm":"1d3783e006ec0a56cd38","dsps_change_dspModule_wasm":"a3e83b249ba823cce546","dsps_dbtoa_dspModule_wasm":"42f19657f03936408587","dsps_div_dspModule_wasm":"27e6a55f17c85264824b","dsps_eq_dspModule_wasm":"5df9245c238da4a4c65e","dsps_filtercoeff_dspModule_wasm":"205943ce972f1f0cf51f","dsps_ftom_dspModule_wasm":"ceb793c4c0589a21cab7","dsps_geq_dspModule_wasm":"e1579605d823cde93805","dsps_gtr_dspModule_wasm":"e59fbc64dbabf8bece3d","dsps_highpass_dspModule_wasm":"14e2a352382d7ef2bb77","dsps_highshelf_dspModule_wasm":"dcc8d4127b3045caf0e4","dsps_leq_dspModule_wasm":"427619c4c3c9f858f29e","dsps_log_dspModule_wasm":"d01b54837264c52bf1f4","dsps_lowpass_dspModule_wasm":"9b864930ceb49b36521b","dsps_lowshelf_dspModule_wasm":"566e6fac7ded81855f1d","dsps_lss_dspModule_wasm":"9101a9979f4ce4f1f14d","dsps_max_dspModule_wasm":"085829973d16a184e581","dsps_min_dspModule_wasm":"061389aa700fe93222cc","dsps_mod_dspModule_wasm":"9047203c1985fece9fc8","dsps_mtof_dspModule_wasm":"489240c018cf3f9993da","dsps_mul_dspModule_wasm":"ed0a39232ed1fbf0c58e","dsps_neq_dspModule_wasm":"8d999154774832980a82","dsps_noise_dspModule_wasm":"91ac41da19a38f77c84e","dsps_notch_dspModule_wasm":"14caf76091da1bbfa5a1","dsps_peaknotch_dspModule_wasm":"1bd5591107bf5d19f36d","dsps_phasor_dspModule_wasm":"e093628cc3e6ac1f5703","dsps_pink_dspModule_wasm":"86e1dda760e4f0723259","dsps_rdiv_dspModule_wasm":"1e700968a50412e80dbe","dsps_rect_dspModule_wasm":"ad3ead814821427e53ef","dsps_rsub_dspModule_wasm":"1411b5811e456c7b8a85","dsps_smooth_dspModule_wasm":"cafe56cbceb7ad260a00","dsps_sub_dspModule_wasm":"0053b421a7aa4a22ae8d","dsps_tri_dspModule_wasm":"2245f9469690321f7bc4","dsps_abs_dspMeta_json":"6c3817caecba29c40ba9","dsps_acos_dspMeta_json":"12133c48a2c05a2cce87","dsps_acosh_dspMeta_json":"b3bece826caa86450e9e","dsps_add_dspMeta_json":"96dd39bd6be98c8888ce","dsps_allpass_dspMeta_json":"e33d4407bd2b8d3dc448","dsps_asin_dspMeta_json":"8140f9f4a99b46a1bc5c","dsps_asinh_dspMeta_json":"78bed74ab6c90673e1b6","dsps_atan_dspMeta_json":"e31ac747e32e12fbe13a","dsps_atan2_dspMeta_json":"b2f14bc3000a1b641238","dsps_atanh_dspMeta_json":"1500841eee8536170e3f","dsps_atodb_dspMeta_json":"2711f4fa9a20a08f5fd1","dsps_bandpass_dspMeta_json":"4cd9c98d910da452b060","dsps_biquad_dspMeta_json":"1121a5ebe355b33da5de","dsps_bitand_dspMeta_json":"a7d8d8a168ba83e036fb","dsps_bitor_dspMeta_json":"eaf6bfdb89fe3b675a68","dsps_bitxor_dspMeta_json":"0d65eed8efaf26e6b6ee","dsps_change_dspMeta_json":"dc2acf5598e3f9530b88","dsps_dbtoa_dspMeta_json":"facbf9ea77af396e0dd7","dsps_div_dspMeta_json":"201ef8f68aaecd6e06bc","dsps_eq_dspMeta_json":"d4e1e7931eda67d94427","dsps_filtercoeff_dspMeta_json":"1ff62a0a82f47115a0f6","dsps_ftom_dspMeta_json":"0b9e94d6c6980b077adc","dsps_geq_dspMeta_json":"199550099c85f5f73a4b","dsps_gtr_dspMeta_json":"fe67ff275178efcc1dae","dsps_highpass_dspMeta_json":"14ec9ea61df8dae0a795","dsps_highshelf_dspMeta_json":"509308f23fc38caba727","dsps_leq_dspMeta_json":"b0e3cb32371252bb4869","dsps_log_dspMeta_json":"a9424e6939342a36f126","dsps_lowpass_dspMeta_json":"440e7ee501ec5cb3d301","dsps_lowshelf_dspMeta_json":"b7928a3a225815b2798b","dsps_lss_dspMeta_json":"36961c3db5868cbbef4f","dsps_max_dspMeta_json":"76cdfa7d6d90f906f826","dsps_min_dspMeta_json":"0d98b880e53095f4e8b5","dsps_mod_dspMeta_json":"d96a637731e7ee3f8451","dsps_mtof_dspMeta_json":"7f2e7c95d94bb7756967","dsps_mul_dspMeta_json":"7b667828b1f1f68b7fdd","dsps_neq_dspMeta_json":"4f2b05acbcf5c1d203ac","dsps_noise_dspMeta_json":"93457af337c77b0e0bd3","dsps_notch_dspMeta_json":"2592ca62b24a84266184","dsps_peaknotch_dspMeta_json":"381029988d6e61814dd8","dsps_phasor_dspMeta_json":"2754144d946786f4459d","dsps_pink_dspMeta_json":"fd5f4cf6c927abf10774","dsps_rdiv_dspMeta_json":"37e336166cbd304951c1","dsps_rect_dspMeta_json":"0c03c6de7ce275335b56","dsps_rsub_dspMeta_json":"16aa81541405c9176c9f","dsps_smooth_dspMeta_json":"89fc8050207ddcd23e1b","dsps_sub_dspMeta_json":"159f299c6f4fbfe511ce","dsps_tri_dspMeta_json":"8ce43441e8192f99c4a9"}[chunkId] + ".js";
 /******/ 	};
 /******/ })();
 /******/ 
