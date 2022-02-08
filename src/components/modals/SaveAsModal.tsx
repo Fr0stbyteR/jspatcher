@@ -44,6 +44,7 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
     };
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>) {
         if (this.props.fileName !== prevProps.fileName) this.setState({ fileName: this.props.fileName });
+        if (this.props.folder !== prevProps.folder) this.setState({ folder: this.props.folder });
     }
     render() {
         return (

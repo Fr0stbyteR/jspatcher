@@ -9,6 +9,7 @@ import type Env from "../../core/Env";
 import type { EnvEventMap } from "../../core/Env";
 import type { IFileEditor } from "../../core/file/FileEditor";
 import type { IProjectFolder } from "../../core/file/AbstractProjectFolder";
+import DeleteAllModal from "../modals/DeleteAllModal";
 
 interface P {
     env: Env;
@@ -19,8 +20,10 @@ interface S {
     editor: IFileEditor;
     fileURL: string;
     fileName: string;
+    projectRoot: IProjectFolder;
     showSaveAsModal: boolean;
     showNewAudioModal: boolean;
+    showDeleteAllModal: boolean;
 }
 
 export default class FileMenu extends React.PureComponent<P, S> {
@@ -32,8 +35,10 @@ export default class FileMenu extends React.PureComponent<P, S> {
         editor: this.props.env.activeEditor,
         fileURL: "",
         fileName: this.props.env.activeEditor?.file?.name,
+        projectRoot: this.props.env.fileMgr.projectRoot,
         showSaveAsModal: false,
-        showNewAudioModal: false
+        showNewAudioModal: false,
+        showDeleteAllModal: false
     };
     handleClickNewJs = async () => {
         const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
@@ -71,8 +76,8 @@ export default class FileMenu extends React.PureComponent<P, S> {
         const editor = await text.getEditor();
         this.props.env.openEditor(editor);
     };
-    handleClickNewProject = async () => {
-        await this.props.env.newProject();
+    handleClickNewProject = () => {
+        this.setState({ showDeleteAllModal: true });
     };
     handleClickReload = async () => {
         await this.props.env.reload();
@@ -109,6 +114,11 @@ export default class FileMenu extends React.PureComponent<P, S> {
     handleSaveAsModalConfirm = async (folder: IProjectFolder, name: string) => {
         this.setState({ showSaveAsModal: false });
         await this.props.env.activeEditor?.saveAs(folder, name);
+    };
+    handleDeleteAllModalClose = () => this.setState({ showDeleteAllModal: false });
+    handleDeleteAllModalConfirm = async () => {
+        this.setState({ showDeleteAllModal: false });
+        await this.props.env.newProject();
     };
     handleClickExportProject = async () => {
         if (!this.props.env.currentProject) return;
@@ -152,7 +162,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         }
         this.refOpenProject.current.value = "";
     };
-    handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => this.setState({ editor, fileName: editor?.file?.name || `Untitled.${editor?.fileExtension}` });
+    handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => this.setState({ editor, fileName: editor?.file?.name || `Untitled.${editor?.fileExtension}`, projectRoot: this.props.env.fileMgr.projectRoot });
     componentDidMount() {
         this.props.env.on("activeEditor", this.handleActiveEditor);
     }
@@ -195,6 +205,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
                 <input ref={this.refOpenFolder} type="file" hidden={true} onChange={this.onChangeFolder} accept=".zip, application/zip" />
                 <SaveAsModal {...this.props} open={this.state.showSaveAsModal} fileName={this.state.fileName || `Untitled.${this.props.env.activeEditor?.fileExtension}`} folder={this.props.env.activeEditor?.file?.parent || this.props.env.fileMgr.projectRoot} onClose={this.handleSaveAsModalClose} onConfirm={this.handleSaveAsModalConfirm} />
                 <NewAudioModal {...this.props} open={this.state.showNewAudioModal} onClose={this.handleNewAudioModalClose} onConfirm={this.handleNewAudioModalConfirm} />
+                <DeleteAllModal {...this.props} open={this.state.showDeleteAllModal} onClose={this.handleDeleteAllModalClose} onConfirm={this.handleDeleteAllModalConfirm} />
             </>
         );
     }
