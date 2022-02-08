@@ -1627,6 +1627,8 @@ class Media extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
           if (this.node)
             this.outlet(1, this.node);
         } else if (data instanceof HTMLMediaElement) {
+          if (this._.element === data)
+            return;
           this._.element = data;
           this.resetNode();
           this.outlet(1, this.node);
@@ -2609,6 +2611,164 @@ WebAudioObject.description = _index__WEBPACK_IMPORTED_MODULE_0__.description;
 
 /***/ }),
 
+/***/ "./src/objects/htmlAudio.ts":
+/*!**********************************!*\
+  !*** ./src/objects/htmlAudio.ts ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ htmlAudio)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+class htmlAudio extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseObject {
+  constructor() {
+    super(...arguments);
+    this._ = { element: document.createElement("audio") };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+    });
+    this.on("postInit", () => {
+      const e = this._.element;
+      e.style.position = "absolute";
+      e.style.width = "100%";
+      e.style.height = "100%";
+      const { autoplay, controls, loop, muted, preload, preservesPitch, volume, playbackRate, crossOrigin } = this.props;
+      e.autoplay = autoplay;
+      e.controls = controls;
+      e.loop = loop;
+      e.muted = muted;
+      e.preload, preload, e.preservesPitch = preservesPitch;
+      e.volume = volume;
+      e.playbackRate = playbackRate;
+      e.crossOrigin = crossOrigin;
+      e.src = this.args[0] || "";
+      this.updateUI({ children: [e] });
+    });
+    this.on("updateArgs", () => {
+      this._.element.src = this.args[0] || "";
+    });
+    this.on("updateProps", (props) => {
+      for (const key in props) {
+        if (key in this._.element) {
+          const k = key;
+          const v = props[k];
+          if (typeof v !== "undefined" && v !== null)
+            this._.element[k] = v;
+        }
+      }
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
+          if (typeof data === "string") {
+            this._.element.src = data;
+          }
+        }
+        this.outlet(0, this._.element);
+      }
+    });
+  }
+}
+htmlAudio.description = "HTMLAudioElement constructor";
+htmlAudio.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "String to change the source URL and output, bang to output"
+}];
+htmlAudio.outlets = [{
+  type: "object",
+  description: "HTMLAudioElement"
+}];
+htmlAudio.args = [{
+  type: "string",
+  description: "Specifies the URL of the audio file",
+  optional: true
+}];
+htmlAudio.props = {
+  autoplay: {
+    type: "boolean",
+    description: "Specifies that the audio will start playing as soon as it is ready",
+    default: false
+  },
+  controls: {
+    type: "boolean",
+    description: "Specifies that audio controls should be displayed (such as a play/pause button etc)",
+    default: true
+  },
+  loop: {
+    type: "boolean",
+    description: "Specifies that the audio will start over again, every time it is finished",
+    default: false
+  },
+  muted: {
+    type: "boolean",
+    description: "Specifies that the audio output should be muted",
+    default: false
+  },
+  preload: {
+    type: "enum",
+    enums: ["auto", "metadata", "none", ""],
+    description: "Specifies if and how the author thinks the audio should be loaded when the page loads",
+    default: "auto"
+  },
+  preservesPitch: {
+    type: "boolean",
+    description: "Switches the pitch-preserving algorithm on or off",
+    default: false
+  },
+  volume: {
+    type: "number",
+    description: "Sets the volume level",
+    default: 1
+  },
+  playbackRate: {
+    type: "number",
+    description: "Sets the current rate of speed for the media resource to play",
+    default: 1
+  },
+  crossOrigin: {
+    type: "enum",
+    enums: ["anonymous", "use-credentials", ""],
+    description: "CORS settings",
+    default: ""
+  }
+};
+htmlAudio.UI = class extends _sdk__WEBPACK_IMPORTED_MODULE_0__.DOMUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadProps(__spreadValues({}, this.state), { children: [this.object._.element] });
+  }
+};
+
+
+/***/ }),
+
 /***/ "./src/package-info.ts":
 /*!*****************************!*\
   !*** ./src/package-info.ts ***!
@@ -2644,6 +2804,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
 /* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
 /* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
+/* harmony export */   "DOMUI": () => (/* binding */ DOMUI),
 /* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
 /* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
 /* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
@@ -2661,6 +2822,7 @@ const {
   BaseUI,
   DefaultObject,
   DefaultUI,
+  DOMUI,
   generateRemotedObject,
   generateDefaultObject,
   generateRemoteObject,
@@ -2719,7 +2881,7 @@ const decodeLine = (sIn) => decodeBPF(sIn, 2);
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-webaudio","version":"1.0.0","description":"The WebAudio package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-webaudio","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-webaudio","version":"1.0.1","description":"The WebAudio package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-webaudio","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
 
 /***/ })
 
@@ -2843,6 +3005,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_AudioIn__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./objects/AudioIn */ "./src/objects/AudioIn.ts");
 /* harmony import */ var _objects_AudioOut__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./objects/AudioOut */ "./src/objects/AudioOut.tsx");
 /* harmony import */ var _objects_BufferSource__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./objects/BufferSource */ "./src/objects/BufferSource.ts");
+/* harmony import */ var _objects_htmlAudio__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./objects/htmlAudio */ "./src/objects/htmlAudio.ts");
+
 
 
 
@@ -2870,6 +3034,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => ({
   audioContext: _objects_audioContext__WEBPACK_IMPORTED_MODULE_0__.default,
   audioWorklet: _objects_audioWorklet__WEBPACK_IMPORTED_MODULE_1__.default,
+  htmlAudio: _objects_htmlAudio__WEBPACK_IMPORTED_MODULE_24__.default,
   "node~": _objects_AnyNode__WEBPACK_IMPORTED_MODULE_2__.default,
   "constant~": _objects_Constant__WEBPACK_IMPORTED_MODULE_3__.default,
   "oscillator~": _objects_Oscillator__WEBPACK_IMPORTED_MODULE_4__.default,
@@ -2891,7 +3056,6 @@ __webpack_require__.r(__webpack_exports__);
   "waveshaper~": _objects_WaveShaper__WEBPACK_IMPORTED_MODULE_20__.default,
   "audioIn~": _objects_AudioIn__WEBPACK_IMPORTED_MODULE_21__.default,
   "audioOut~": _objects_AudioOut__WEBPACK_IMPORTED_MODULE_22__.default,
-  "plugin~": Plugin,
   "bufferSource~": _objects_BufferSource__WEBPACK_IMPORTED_MODULE_23__.default
 }));
 

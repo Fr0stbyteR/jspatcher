@@ -29,7 +29,7 @@
     "@jspatcher/package-op": "file:../@jspatcher/package-op",
     "@jspatcher/package-std": "file:../@jspatcher/package-std",
     "@jspatcher/package-ui": "file:../@jspatcher/package-ui",
-    "@jspatcher/package-webaudio": "^1.0.1",
+    "@jspatcher/package-webaudio": "file:../@jspatcher/package-webaudio",
     "@monaco-editor/react": "^4.2.2",
     "@shren/faust-ui": "^1.0.4",
     "@shren/guidolib": "^1.7.3",
