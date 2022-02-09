@@ -1556,6 +1556,12 @@ img.props = {
     default: "50% 50%",
     description: 'CSS object-position property, for example "50% 50%" or "left top"',
     isUIState: true
+  },
+  opacity: {
+    type: "number",
+    default: 1,
+    description: "Opacity of the image (0-1)",
+    isUIState: true
   }
 };
 img.UI = _ui_img__WEBPACK_IMPORTED_MODULE_2__["default"];
@@ -2423,6 +2429,10 @@ class NumberBox extends _base__WEBPACK_IMPORTED_MODULE_2__["default"] {
       this.inlets = 1;
       this.outlets = 1;
     });
+    this.on("postInit", () => {
+      this.validateValue(this.state.value);
+      this.updateUI({ value: this.state.value });
+    });
     this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
@@ -2551,6 +2561,80 @@ NumberBox.props = {
   }
 };
 NumberBox.UI = _ui_number__WEBPACK_IMPORTED_MODULE_1__["default"];
+
+
+/***/ }),
+
+/***/ "./src/objects/panel.ts":
+/*!******************************!*\
+  !*** ./src/objects/panel.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ panel)
+/* harmony export */ });
+/* harmony import */ var _ui_panel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../ui/panel */ "./src/ui/panel.tsx");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+
+class panel extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 0;
+    });
+  }
+}
+panel.description = "Panel UI";
+panel.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Can be used to change properties"
+}];
+panel.props = {
+  backgroundColor: {
+    type: "color",
+    description: "Background color",
+    default: "gray",
+    isUIState: true
+  },
+  borderRadius: {
+    type: "string",
+    description: 'Border radius in CSS expression, "4px" or "50%"',
+    default: "0",
+    isUIState: true
+  },
+  borderWidth: {
+    type: "string",
+    description: 'Border width in CSS expression, "4px" or "1vw"',
+    default: "0px",
+    isUIState: true
+  },
+  borderColor: {
+    type: "color",
+    description: "Border color",
+    default: "lightslategray",
+    isUIState: true
+  },
+  borderStyle: {
+    type: "enum",
+    enums: ["dashed", "dotted", "double", "groove", "hidden", "inset", "none", "outset", "ridge", "solid"],
+    description: "Border style in CSS expression",
+    default: "solid",
+    isUIState: true
+  },
+  opacity: {
+    type: "number",
+    description: "CSS opacity (0-1)",
+    default: 1,
+    isUIState: true
+  }
+};
+panel.UI = _ui_panel__WEBPACK_IMPORTED_MODULE_0__["default"];
 
 
 /***/ }),
@@ -3932,12 +4016,12 @@ class ImgUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
     this.state = __spreadProps(__spreadValues({}, this.state), { url: this.object._.url });
   }
   render() {
-    const { objectFit, objectPosition, scroll } = this.state;
+    const { objectFit, objectPosition, scroll, opacity } = this.state;
     return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
       style: { position: "absolute", width: "100%", height: "100%", display: "block", overflow: "auto" }
     }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("img", {
       src: this.state.url,
-      style: __spreadProps(__spreadValues({ position: "absolute" }, scroll ? {} : { width: "100%", height: "100%" }), { objectFit, objectPosition })
+      style: __spreadProps(__spreadValues({ position: "absolute" }, scroll ? {} : { width: "100%", height: "100%" }), { objectFit, objectPosition, opacity })
     })));
   }
 }
@@ -5204,6 +5288,49 @@ NumberBoxUI.TRIANGLE_BASE = 12;
 NumberBoxUI.TRIANGLE_HEIGHT = 6;
 NumberBoxUI.LEFT_TEXT_OFFSET = _NumberBoxUI.TRIANGLE_HEIGHT;
 
+
+
+/***/ }),
+
+/***/ "./src/ui/panel.tsx":
+/*!**************************!*\
+  !*** ./src/ui/panel.tsx ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ PanelUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+
+class PanelUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
+  render() {
+    const { backgroundColor, borderColor, borderRadius, borderStyle, borderWidth, opacity } = this.state;
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
+      style: { position: "absolute", width: "100%", height: "100%", display: "block", overflow: "auto", backgroundColor, borderColor, borderRadius, borderStyle, borderWidth, opacity }
+    }));
+  }
+}
+PanelUI.sizing = "both";
+PanelUI.defaultSize = [210, 210];
 
 
 /***/ }),
@@ -8526,7 +8653,7 @@ module.exports = $gOPD;
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-ui","version":"1.0.1","description":"The UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-ui","devDependencies":{"@jspatcher/jspatcher":"0.0.9","@types/react":"^17.0.30","clean-webpack-plugin":"^4.0.0","color-js":"^1.0.5","css-loader":"^6.4.0","esbuild-loader":"^2.16.0","monaco-editor":"^0.27.0","react":"^17.0.2","react-monaco-editor":"^0.44.0","sass":"^1.45.2","sass-loader":"^12.2.0","semantic-ui-react":"^2.0.4","style-loader":"^3.3.0","typescript":"^4.4.4","util":"^0.12.4","webpack":"^5.58.2","webpack-cli":"^4.9.1"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-ui","version":"1.0.2","description":"The UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-ui","devDependencies":{"@jspatcher/jspatcher":"0.0.9","@types/react":"^17.0.30","clean-webpack-plugin":"^4.0.0","color-js":"^1.0.5","css-loader":"^6.4.0","esbuild-loader":"^2.16.0","monaco-editor":"^0.27.0","react":"^17.0.2","react-monaco-editor":"^0.44.0","sass":"^1.45.2","sass-loader":"^12.2.0","semantic-ui-react":"^2.0.4","style-loader":"^3.3.0","typescript":"^4.4.4","util":"^0.12.4","webpack":"^5.58.2","webpack-cli":"^4.9.1"}}');
 
 /***/ })
 
@@ -8664,7 +8791,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_multislider__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./objects/multislider */ "./src/objects/multislider.ts");
 /* harmony import */ var _objects_text__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./objects/text */ "./src/objects/text.ts");
 /* harmony import */ var _objects_video__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./objects/video */ "./src/objects/video.ts");
-/* harmony import */ var _ui_ui_scss__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./ui/ui.scss */ "./src/ui/ui.scss");
+/* harmony import */ var _objects_panel__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./objects/panel */ "./src/objects/panel.ts");
+/* harmony import */ var _ui_ui_scss__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./ui/ui.scss */ "./src/ui/ui.scss");
+
 
 
 
@@ -8692,7 +8821,8 @@ __webpack_require__.r(__webpack_exports__);
   slider: _objects_slider__WEBPACK_IMPORTED_MODULE_9__["default"],
   multislider: _objects_multislider__WEBPACK_IMPORTED_MODULE_10__["default"],
   ptext: _objects_text__WEBPACK_IMPORTED_MODULE_11__["default"],
-  video: _objects_video__WEBPACK_IMPORTED_MODULE_12__["default"]
+  video: _objects_video__WEBPACK_IMPORTED_MODULE_12__["default"],
+  panel: _objects_panel__WEBPACK_IMPORTED_MODULE_13__["default"]
 }));
 
 })();

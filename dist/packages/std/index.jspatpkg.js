@@ -1019,6 +1019,121 @@ loadbang.outlets = [{
 
 /***/ }),
 
+/***/ "./src/objects/metro.ts":
+/*!******************************!*\
+  !*** ./src/objects/metro.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ metro)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+class metro extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = {
+      time: +this.args[0],
+      active: this.getProp("active"),
+      intervalRef: null,
+      timeoutRef: null,
+      last: performance.now()
+    };
+  }
+  subscribe() {
+    super.subscribe();
+    const activateTimer = (time) => {
+      if (this._.timeoutRef) {
+        window.clearTimeout(this._.timeoutRef);
+        this._.timeoutRef = null;
+      }
+      if (this._.intervalRef) {
+        window.clearInterval(this._.intervalRef);
+        this._.intervalRef = null;
+      }
+      if (time && this._.active) {
+        this._.timeoutRef = window.setTimeout(() => {
+          this._.last = performance.now();
+          this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+          this._.intervalRef = window.setInterval(() => {
+            this._.last = performance.now();
+            this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+          }, this._.time * 1e3);
+        }, Math.max(0, this._.last + this._.time * 1e3 - performance.now()));
+      }
+      this._.time = time;
+    };
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 1;
+    });
+    this.on("postInit", () => {
+      activateTimer(+this.args[0]);
+    });
+    this.on("updateArgs", () => {
+      if (typeof this.args[0] === "number") {
+        activateTimer(Math.max(0, +this.args[0]));
+      }
+    });
+    this.on("updateProps", () => {
+      this._.active = this.getProp("active");
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        this._.active = !!data;
+        activateTimer(this._.time);
+      } else if (inlet === 1) {
+        activateTimer(Math.max(0, +data));
+      }
+    });
+    this.on("destroy", () => {
+      if (this._.timeoutRef) {
+        window.clearTimeout(this._.timeoutRef);
+        this._.timeoutRef = null;
+      }
+      if (this._.intervalRef) {
+        window.clearInterval(this._.intervalRef);
+        this._.intervalRef = null;
+      }
+    });
+  }
+}
+metro.description = "Metronome that outputs regularly Bangs";
+metro.inlets = [{
+  isHot: true,
+  type: "boolean",
+  description: "Start or stop the metronome"
+}, {
+  isHot: false,
+  type: "number",
+  description: "interval in seconds"
+}];
+metro.outlets = [{
+  type: "bang",
+  description: "regular Bangs"
+}];
+metro.args = [{
+  type: "number",
+  optional: true,
+  default: 1,
+  description: "Default interval time in seconds"
+}];
+metro.props = {
+  active: {
+    type: "boolean",
+    default: false,
+    description: "Set active the metronome"
+  }
+};
+
+
+/***/ }),
+
 /***/ "./src/objects/obj.ts":
 /*!****************************!*\
   !*** ./src/objects/obj.ts ***!
@@ -3785,21 +3900,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_bang__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./objects/bang */ "./src/objects/bang.ts");
 /* harmony import */ var _objects_call__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./objects/call */ "./src/objects/call.ts");
 /* harmony import */ var _objects_delay__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./objects/delay */ "./src/objects/delay.ts");
-/* harmony import */ var _objects_dget__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./objects/dget */ "./src/objects/dget.ts");
-/* harmony import */ var _objects_gate__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./objects/gate */ "./src/objects/gate.ts");
-/* harmony import */ var _objects_get__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./objects/get */ "./src/objects/get.ts");
-/* harmony import */ var _objects_lambda__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./objects/lambda */ "./src/objects/lambda.ts");
-/* harmony import */ var _objects_loadbang__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./objects/loadbang */ "./src/objects/loadbang.ts");
-/* harmony import */ var _objects_obj__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./objects/obj */ "./src/objects/obj.ts");
-/* harmony import */ var _objects_print__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./objects/print */ "./src/objects/print.ts");
-/* harmony import */ var _objects_sel__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./objects/sel */ "./src/objects/sel.ts");
-/* harmony import */ var _objects_set__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./objects/set */ "./src/objects/set.ts");
-/* harmony import */ var _objects_thispatcher__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./objects/thispatcher */ "./src/objects/thispatcher.ts");
-/* harmony import */ var _objects_v__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./objects/v */ "./src/objects/v.ts");
-/* harmony import */ var _objects___WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./objects/_ */ "./src/objects/_.ts");
-/* harmony import */ var _objects_unloadbang__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./objects/unloadbang */ "./src/objects/unloadbang.ts");
-/* harmony import */ var _ui_bang__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./ui/bang */ "./src/ui/bang.tsx");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
+/* harmony import */ var _objects_metro__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./objects/metro */ "./src/objects/metro.ts");
+/* harmony import */ var _objects_dget__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./objects/dget */ "./src/objects/dget.ts");
+/* harmony import */ var _objects_gate__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./objects/gate */ "./src/objects/gate.ts");
+/* harmony import */ var _objects_get__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./objects/get */ "./src/objects/get.ts");
+/* harmony import */ var _objects_lambda__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./objects/lambda */ "./src/objects/lambda.ts");
+/* harmony import */ var _objects_loadbang__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./objects/loadbang */ "./src/objects/loadbang.ts");
+/* harmony import */ var _objects_obj__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./objects/obj */ "./src/objects/obj.ts");
+/* harmony import */ var _objects_print__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./objects/print */ "./src/objects/print.ts");
+/* harmony import */ var _objects_sel__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./objects/sel */ "./src/objects/sel.ts");
+/* harmony import */ var _objects_set__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./objects/set */ "./src/objects/set.ts");
+/* harmony import */ var _objects_thispatcher__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./objects/thispatcher */ "./src/objects/thispatcher.ts");
+/* harmony import */ var _objects_v__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./objects/v */ "./src/objects/v.ts");
+/* harmony import */ var _objects___WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./objects/_ */ "./src/objects/_.ts");
+/* harmony import */ var _objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./objects/unloadbang */ "./src/objects/unloadbang.ts");
+/* harmony import */ var _ui_bang__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./ui/bang */ "./src/ui/bang.tsx");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
 
 
 
@@ -3821,30 +3937,32 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class bang extends (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default) {
+
+class bang extends (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default) {
 }
-bang.UI = _ui_bang__WEBPACK_IMPORTED_MODULE_19__.default;
+bang.UI = _ui_bang__WEBPACK_IMPORTED_MODULE_20__.default;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => {
   return {
-    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_print__WEBPACK_IMPORTED_MODULE_12__.default),
-    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__.default),
-    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__.default),
-    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__.default),
-    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_7__.default),
-    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_13__.default),
-    obj: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_11__.default),
-    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_set__WEBPACK_IMPORTED_MODULE_14__.default),
-    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_get__WEBPACK_IMPORTED_MODULE_8__.default),
-    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_6__.default),
-    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__.default),
-    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_v__WEBPACK_IMPORTED_MODULE_16__.default),
-    _: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects___WEBPACK_IMPORTED_MODULE_17__.default),
-    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_9__.default),
+    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_print__WEBPACK_IMPORTED_MODULE_13__.default),
+    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__.default),
+    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__.default),
+    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__.default),
+    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_8__.default),
+    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_14__.default),
+    obj: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_12__.default),
+    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_set__WEBPACK_IMPORTED_MODULE_15__.default),
+    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_get__WEBPACK_IMPORTED_MODULE_9__.default),
+    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_7__.default),
+    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__.default),
+    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_v__WEBPACK_IMPORTED_MODULE_17__.default),
+    _: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects___WEBPACK_IMPORTED_MODULE_18__.default),
+    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_10__.default),
     bang,
-    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_10__.default),
-    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_18__.default),
-    delay: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_delay__WEBPACK_IMPORTED_MODULE_5__.default),
-    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateDefaultObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_15__.default)
+    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_11__.default),
+    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__.default),
+    delay: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_delay__WEBPACK_IMPORTED_MODULE_5__.default),
+    metro: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_metro__WEBPACK_IMPORTED_MODULE_6__.default),
+    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_16__.default)
   };
 });
 

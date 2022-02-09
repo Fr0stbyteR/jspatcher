@@ -10,6 +10,7 @@ export interface CommentProps {
     fontStyle: "normal" | "italic" | "oblique";
     fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
     textAlign: "center" | "left" | "right";
+    textDecoration: "none" | "underline" | "overline" | "line-through";
 }
 
 export default class comment extends BaseObject<{ value: string }, {}, [string], [], [string], CommentProps, CommentUIState> {
@@ -64,6 +65,13 @@ export default class comment extends BaseObject<{ value: string }, {}, [string],
             enums: ["left", "center", "right"],
             default: "left",
             description: "Text style",
+            isUIState: true
+        },
+        textDecoration: {
+            type: "enum",
+            enums: ["none", "underline", "overline", "line-through"],
+            default: "none",
+            description: "Text decoration",
             isUIState: true
         }
     };

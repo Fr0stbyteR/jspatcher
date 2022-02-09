@@ -59,7 +59,8 @@ export default class CommentUI extends BaseUI<comment, {}, { value: string }> {
             lineHeight: `${this.state.fontSize}px`,
             fontWeight: this.state.fontWeight,
             fontStyle: this.state.fontStyle,
-            textAlign: this.state.textAlign
+            textAlign: this.state.textAlign,
+            textDecoration: this.state.textDecoration
         };
         return (
             <BaseUI {...this.props} containerProps={containerProps}>

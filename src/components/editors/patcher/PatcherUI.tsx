@@ -203,7 +203,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
                 y *= patcher.props.grid[1];
             }
             patcher.moveSelectedBox({ x, y });
-        } else if ((e.key === "n" || e.key === "m" || e.key === "b" || e.key === "c" || e.key === "i" || e.key === "f" || e.key === "s") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+        } else if ((e.key === "n" || e.key === "m" || e.key === "b" || e.key === "c" || e.key === "i" || e.key === "f" || e.key === "s" || e.key === "t") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
             e.stopPropagation();
             e.preventDefault();
             const patcherDiv = this.refDiv.current as HTMLDivElement;
@@ -215,16 +215,13 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             let text = "";
             const { presentation } = patcher.state;
             const { mode } = patcher.props;
-            if (mode === "js" && e.key === "f") {
-                text = "live.numbox";
-                this.props.editor.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true, props: { step: 0.01, type: "float", unitStyle: "float" } });
-                return;
-            }
-            if (mode === "js" && e.key === "m") text = "message";
+            if (mode === "js" && e.key === "f") text = 'ui.number @format "Decimal (Floating-Point)"';
+            else if (mode === "js" && e.key === "m") text = "message";
             else if (e.key === "c") text = "comment";
             else if (mode === "js" && e.key === "b") text = "live.button";
-            else if (mode === "js" && e.key === "i") text = "live.numbox";
-            else if (mode === "js" && e.key === "s") text = "live.slider";
+            else if (mode === "js" && e.key === "i") text = "ui.number";
+            else if (mode === "js" && e.key === "s") text = "ui.slider";
+            else if (mode === "js" && e.key === "t") text = "live.toggle";
             this.props.editor.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
         }
     };
