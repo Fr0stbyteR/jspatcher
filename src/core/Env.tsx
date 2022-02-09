@@ -315,8 +315,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             try {
                 const item = this.fileMgr.getProjectItemFromPath(file);
                 if (item.type !== "folder") {
-                    const instance = await item.instantiate({ env: this, project: this.currentProject });
-                    this.openInstance(instance);
+                    const editor = await item.instantiateEditor({ env: this, project: this.currentProject });
+                    this.openEditor(editor);
                 }
             } catch {}
         }
