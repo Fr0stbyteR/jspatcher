@@ -36,7 +36,9 @@ export default class WorkletEnvNode extends AudioWorkletProxyNode<IWorkletEnvNod
         this.env.newLog(errorLevel, title, message, emitter);
     }
     handleFileMgrChange = () => {
+        /* SharedArrayBuffer
         this.workletFileMgrDiff(this.env.fileMgr.getDataForDiff());
+        */
     };
     bindFileMgr() {
         this.env.fileMgr.on("changed", this.handleFileMgrChange);

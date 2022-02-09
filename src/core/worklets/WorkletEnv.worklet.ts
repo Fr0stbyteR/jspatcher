@@ -107,8 +107,10 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.taskMgr.on("taskEnd", handleTaskEnd);
     }
     handleFileMgrChange = () => {
+        /* SharedArrayBuffer
         if (this.fileMgr.disabled) return;
         this.fileMgrDiff(this.fileMgr.getDataForDiff());
+        */
     };
     bindFileMgr() {
         this.fileMgr.on("changed", this.handleFileMgrChange);

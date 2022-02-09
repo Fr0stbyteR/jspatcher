@@ -37,6 +37,7 @@ import GuidoWorker from "./workers/GuidoWorker";
 */
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
+const SharedArrayBuffer = window.SharedArrayBuffer || window.ArrayBuffer;
 
 export interface EnvEventMap {
     "ready": never;
@@ -280,8 +281,10 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 await WorkletEnvNode.register(audioWorklet);
                 this.envNode = new WorkletEnvNode(this.audioCtx, this);
                 await this.envNode.init();
+                /* SharedArrayBuffer
                 await GlobalTransportNode.register(audioWorklet);
                 this.globalTransportNode = new GlobalTransportNode(this.audioCtx);
+                */
             });
             await this.taskMgr.newTask(this, "Initializing WamEnv...", async () => {
                 const { audioWorklet } = this.audioCtx;

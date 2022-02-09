@@ -7,15 +7,18 @@ import type { IProjectFolder } from "./AbstractProjectFolder";
 import type { IPersistentProjectItemManager } from "./PersistentProjectItemManager";
 
 export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuffer, IPersistentProjectItemManager> {
+    /* SharedArrayBuffer
     private _sab: SharedArrayBuffer;
+    */
     get sab() {
-        return this._sab;
+        return this.data;
     }
     get data() {
         return this._data;
     }
     set data(dataIn: ArrayBuffer) {
         this._data = dataIn;
+        /* SharedArrayBuffer
         if (dataIn instanceof SharedArrayBuffer) {
             this._sab = dataIn;
             return;
@@ -26,6 +29,7 @@ export default class PersistentProjectFile extends AbstractProjectFile<ArrayBuff
         for (let i = 0; i < ui8ab.length; i++) {
             ui8sab[i] = ui8ab[i];
         }
+        */
     }
     lastModifiedId: string;
     constructor(fileMgrIn: IPersistentProjectItemManager, parentIn: IProjectFolder, nameIn: string, dataIn?: ArrayBuffer) {
