@@ -1596,7 +1596,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
 /* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
 /* harmony export */   "Bang": () => (/* binding */ Bang),
-/* harmony export */   "isBang": () => (/* binding */ isBang)
+/* harmony export */   "isBang": () => (/* binding */ isBang),
+/* harmony export */   "Utils": () => (/* binding */ Utils)
 /* harmony export */ });
 const sdk = globalThis.jspatcherEnv.sdk;
 const {
@@ -1612,7 +1613,8 @@ const {
   generateDefaultObject,
   generateRemoteObject,
   Bang,
-  isBang
+  isBang,
+  Utils
 } = sdk;
 
 

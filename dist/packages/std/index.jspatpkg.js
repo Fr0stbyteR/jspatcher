@@ -976,6 +976,186 @@ lambda.args = [{
 
 /***/ }),
 
+/***/ "./src/objects/line.ts":
+/*!*****************************!*\
+  !*** ./src/objects/line.ts ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ line)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+
+
+const { decodeLine, getTimestamp } = _sdk__WEBPACK_IMPORTED_MODULE_1__.Utils;
+const toAbsoluteTimeLine = (line2, rampTime) => {
+  var _a;
+  let rT = rampTime;
+  let t = 0;
+  const out = line2.slice();
+  for (let i = 0; i < line2.length; i++) {
+    const delta = Math.max(0, +((_a = line2[i][1]) != null ? _a : rT) || 0);
+    rT = null;
+    t += delta;
+    out[i] = [line2[i][0], t];
+  }
+  return out;
+};
+class line extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = {
+      startedTime: 0,
+      startedValue: 0,
+      pausedTime: 0,
+      paused: false,
+      line: null,
+      ref: null,
+      $: null,
+      value: +this.args[0] || 0,
+      rampTime: null,
+      grain: +Math.max(0, this.args[1]) || 0.1
+    };
+    this.handleTimeout = () => {
+      const { startedTime, startedValue, line: line2, grain } = this._;
+      if (!line2[this._.$])
+        return;
+      const curTime = getTimestamp();
+      const elapsed = (curTime - startedTime) / 1e3;
+      while (elapsed >= line2[this._.$][1]) {
+        this._.$++;
+        if (this._.$ >= line2.length) {
+          const value2 = line2[line2.length - 1][0];
+          this.outletAll([value2, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang()]);
+          this._.value = value2;
+          this.stopCurrentLine();
+          return;
+        }
+      }
+      const { $ } = this._;
+      const [targetValue, targetTime] = line2[$];
+      const prevValue = $ === 0 ? startedValue : line2[$ - 1][0];
+      const prevTime = $ === 0 ? 0 : line2[$ - 1][1];
+      const value = prevValue + (elapsed - prevTime) / (targetTime - prevTime) * (targetValue - prevValue);
+      this.outlet(0, value);
+      this._.value = value;
+      this._.ref = window.setTimeout(this.handleTimeout, grain);
+    };
+  }
+  stopCurrentLine() {
+    if (this._.ref)
+      window.clearTimeout(this._.ref);
+    this._ = {
+      startedTime: 0,
+      startedValue: this._.value,
+      pausedTime: 0,
+      paused: false,
+      line: null,
+      ref: null,
+      $: null,
+      value: this._.value,
+      rampTime: null,
+      grain: this._.grain
+    };
+  }
+  startLine(line2) {
+    this._.line = line2;
+    this._.startedTime = getTimestamp();
+    this._.$ = 0;
+    this.handleTimeout();
+  }
+  pauseLine() {
+    if (this._.ref)
+      window.clearTimeout(this._.ref);
+    this._.paused = true;
+    this._.pausedTime = getTimestamp();
+  }
+  resumeLine() {
+    const { pausedTime } = this._;
+    this._.startedTime += getTimestamp() - pausedTime;
+    this._.paused = true;
+    this._.pausedTime = null;
+    this.handleTimeout();
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 3;
+      this.outlets = 2;
+    });
+    this.on("updateArgs", (args) => {
+      if (typeof args[1] === "number") {
+        this._.grain = +Math.max(0, args[0]) || 0;
+      }
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (data === "stop") {
+          this.stopCurrentLine();
+        } else if (data === "pause") {
+          this.pauseLine();
+        } else if (data === "resume") {
+          this.resumeLine();
+        } else {
+          const line2 = toAbsoluteTimeLine(decodeLine(data), this._.rampTime);
+          this.stopCurrentLine();
+          this.startLine(line2);
+        }
+      } else if (inlet === 1) {
+        if (typeof data === "number")
+          this._.rampTime = +Math.max(0, data) || 0;
+      } else if (inlet === 2) {
+        if (typeof data === "number")
+          this._.grain = +Math.max(0, data) || 0;
+      }
+    });
+    this.on("destroy", () => {
+      if (this._.ref) {
+        window.clearTimeout(this._.ref);
+      }
+    });
+  }
+}
+line.description = "Generate timed ramp";
+line.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "number to set the value, number[] to start ramps (target - ramp time pairs)"
+}, {
+  isHot: false,
+  type: "number",
+  description: "Ramp time in seconds"
+}, {
+  isHot: false,
+  type: "number",
+  description: "Time grain in seconds"
+}];
+line.outlets = [{
+  type: "bang",
+  description: "Ramped values"
+}, {
+  type: "bang",
+  description: "Bang when finished"
+}];
+line.args = [{
+  type: "number",
+  optional: true,
+  default: 0,
+  description: "Initial number"
+}, {
+  type: "number",
+  optional: true,
+  default: 0.1,
+  description: "Default time grain in seconds"
+}];
+
+
+/***/ }),
+
 /***/ "./src/objects/loadbang.ts":
 /*!*********************************!*\
   !*** ./src/objects/loadbang.ts ***!
@@ -1714,7 +1894,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
 /* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
 /* harmony export */   "Bang": () => (/* binding */ Bang),
-/* harmony export */   "isBang": () => (/* binding */ isBang)
+/* harmony export */   "isBang": () => (/* binding */ isBang),
+/* harmony export */   "Utils": () => (/* binding */ Utils)
 /* harmony export */ });
 const sdk = globalThis.jspatcherEnv.sdk;
 const {
@@ -1730,7 +1911,8 @@ const {
   generateDefaultObject,
   generateRemoteObject,
   Bang,
-  isBang
+  isBang,
+  Utils
 } = sdk;
 
 
@@ -3914,8 +4096,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_v__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./objects/v */ "./src/objects/v.ts");
 /* harmony import */ var _objects___WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./objects/_ */ "./src/objects/_.ts");
 /* harmony import */ var _objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./objects/unloadbang */ "./src/objects/unloadbang.ts");
-/* harmony import */ var _ui_bang__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./ui/bang */ "./src/ui/bang.tsx");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
+/* harmony import */ var _objects_line__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./objects/line */ "./src/objects/line.ts");
+/* harmony import */ var _ui_bang__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./ui/bang */ "./src/ui/bang.tsx");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
 
 
 
@@ -3938,31 +4121,33 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class bang extends (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default) {
+
+class bang extends (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default) {
 }
-bang.UI = _ui_bang__WEBPACK_IMPORTED_MODULE_20__.default;
+bang.UI = _ui_bang__WEBPACK_IMPORTED_MODULE_21__.default;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => {
   return {
-    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_print__WEBPACK_IMPORTED_MODULE_13__.default),
-    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__.default),
-    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__.default),
-    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__.default),
-    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_8__.default),
-    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_14__.default),
-    obj: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_12__.default),
-    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_set__WEBPACK_IMPORTED_MODULE_15__.default),
-    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_get__WEBPACK_IMPORTED_MODULE_9__.default),
-    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_7__.default),
-    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__.default),
-    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_v__WEBPACK_IMPORTED_MODULE_17__.default),
-    _: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects___WEBPACK_IMPORTED_MODULE_18__.default),
-    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_10__.default),
+    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_print__WEBPACK_IMPORTED_MODULE_13__.default),
+    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__.default),
+    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__.default),
+    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__.default),
+    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_8__.default),
+    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_14__.default),
+    obj: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_12__.default),
+    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_set__WEBPACK_IMPORTED_MODULE_15__.default),
+    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_get__WEBPACK_IMPORTED_MODULE_9__.default),
+    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_7__.default),
+    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__.default),
+    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_v__WEBPACK_IMPORTED_MODULE_17__.default),
+    _: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects___WEBPACK_IMPORTED_MODULE_18__.default),
+    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_10__.default),
     bang,
-    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_11__.default),
-    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__.default),
-    delay: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_delay__WEBPACK_IMPORTED_MODULE_5__.default),
-    metro: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_metro__WEBPACK_IMPORTED_MODULE_6__.default),
-    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_21__.generateDefaultObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_16__.default)
+    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_11__.default),
+    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__.default),
+    delay: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_delay__WEBPACK_IMPORTED_MODULE_5__.default),
+    metro: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_metro__WEBPACK_IMPORTED_MODULE_6__.default),
+    line: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_line__WEBPACK_IMPORTED_MODULE_20__.default),
+    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_22__.generateDefaultObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_16__.default)
   };
 });
 
