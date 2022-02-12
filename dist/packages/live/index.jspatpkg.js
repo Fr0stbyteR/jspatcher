@@ -966,7 +966,7 @@ class LiveMeter extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseObject {
           const result = mode === "deciBel" ? absMax.map((v) => _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.atodb(v)) : absMax;
           if (!lastResult.every((v, i) => v === result[i] || Math.abs(v - result[i]) < thresh) || lastResult.length !== result.length) {
             this.outlet(0, result);
-            this.setState({ levels: result });
+            this._.levels = result;
             this.updateUI({ levels: result });
             lastResult = result;
           }
@@ -2468,12 +2468,12 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
     let valPos;
     let dialHeight;
     if (appearance === "tiny") {
-      dialHeight = 18;
+      dialHeight = Math.min(width, height) / 3;
       start = -3 * Math.PI * 0.5;
       end = 0;
       valPos = start + _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.toRad(this.distance * 270);
     } else {
-      dialHeight = 25;
+      dialHeight = Math.min(width, height) / 2;
       start = Math.PI - 3 * Math.PI / 8;
       end = 2 * Math.PI + 3 * Math.PI / 8;
       valPos = start + _sdk__WEBPACK_IMPORTED_MODULE_0__.MathUtils.toRad(this.distance * 315);
@@ -2973,7 +2973,7 @@ class LiveMeterUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
   constructor() {
     super(...arguments);
     this.state = __spreadProps(__spreadValues({}, this.state), {
-      levels: this.object.state.levels
+      levels: this.object._.levels
     });
     this.levels = [];
     this.maxValues = [];
@@ -3794,7 +3794,7 @@ LiveToggleUI.defaultSize = [30, 30];
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-live","version":"1.0.0","description":"The Live UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-live","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.7.2"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-live","version":"1.0.1","description":"The Live UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-live","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.7.2"}}');
 
 /***/ })
 

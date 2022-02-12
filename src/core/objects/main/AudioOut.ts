@@ -2,7 +2,8 @@ import type { TAudioNodeInletConnection } from "../../types";
 import type { IArgsMeta, IInletsMeta, IPropsMeta } from "../base/AbstractObject";
 import DefaultObject from "../base/DefaultObject";
 
-export default class AudioOut extends DefaultObject<{}, { index: number }, [any], [], [number], { description: string }> {
+export default class AudioOut extends DefaultObject<{}, {}, [any], [], [number], { description: string }> {
+    static isPatcherOutlet = "audio" as const;
     static package = "SubPatcher";
     static description = "Patcher outlet (audio)";
     static args: IArgsMeta = [{
@@ -43,7 +44,7 @@ export default class AudioOut extends DefaultObject<{}, { index: number }, [any]
         this.on("postInit", () => {
             this._duringInit = false;
             this.connectAudio();
-            this.patcher.connectAudioInlet(this.state.index - 1);
+            this.patcher.connectAudioInlet(this._.index - 1);
             this.emitPatcherChangeIO();
         });
         this.on("updateArgs", () => {

@@ -7,6 +7,7 @@ interface P {
 }
 
 export default class AudioIn extends DefaultObject<{}, {}, [], [any], [number], P> {
+    static isPatcherInlet = "audio" as const;
     static package = "SubPatcher";
     static description = "Patcher inlet (audio)";
     static args: IArgsMeta = [{

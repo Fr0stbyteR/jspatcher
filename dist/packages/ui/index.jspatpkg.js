@@ -2221,6 +2221,11 @@ class multislider extends _base__WEBPACK_IMPORTED_MODULE_2__["default"] {
     this.on("postInit", () => {
       this.setState({ value: new Array(this.getProp("size")).fill(this.getProp("setMinMax")[0]) });
     });
+    this.on("updateState", ({ value }) => {
+      this.validateValue(value);
+      this.updateUI({ value: this.state.value });
+      this.outputValue();
+    });
   }
 }
 multislider.description = "Move a slider to output values";
@@ -2446,6 +2451,11 @@ class NumberBox extends _base__WEBPACK_IMPORTED_MODULE_2__["default"] {
     this.on("propsUpdated", () => {
       this.validateValue(this.state.value);
       this.updateUI({ value: this.state.value });
+    });
+    this.on("updateState", ({ value }) => {
+      this.validateValue(value);
+      this.updateUI({ value: this.state.value });
+      this.outlet(0, this.state.value);
     });
   }
 }
@@ -2719,6 +2729,11 @@ class slider extends _base__WEBPACK_IMPORTED_MODULE_2__["default"] {
     this.on("propsUpdated", () => {
       this.validateValue(this.state.value);
       this.updateUI({ value: this.state.value });
+    });
+    this.on("updateState", ({ value }) => {
+      this.validateValue(value);
+      this.updateUI({ value: this.state.value });
+      this.outputValue();
     });
   }
 }

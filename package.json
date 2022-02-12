@@ -24,7 +24,7 @@
     "@jspatcher/package-analysers": "^1.0.1",
     "@jspatcher/package-cac": "file:../@jspatcher/package-cac",
     "@jspatcher/package-dsp": "file:../@jspatcher/package-dsp",
-    "@jspatcher/package-live": "^1.0.1",
+    "@jspatcher/package-live": "file:../@jspatcher/package-live",
     "@jspatcher/package-midi": "file:../@jspatcher/package-midi",
     "@jspatcher/package-op": "file:../@jspatcher/package-op",
     "@jspatcher/package-std": "file:../@jspatcher/package-std",

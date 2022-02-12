@@ -1222,11 +1222,19 @@ class metro extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       active: this.getProp("active"),
       intervalRef: null,
       timeoutRef: null,
-      last: performance.now()
+      last: 0
     };
   }
   subscribe() {
     super.subscribe();
+    const handleTimeout = () => {
+      this._.last = performance.now();
+      this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+      this._.intervalRef = window.setInterval(() => {
+        this._.last = performance.now();
+        this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
+      }, this._.time * 1e3);
+    };
     const activateTimer = (time) => {
       if (this._.timeoutRef) {
         window.clearTimeout(this._.timeoutRef);
@@ -1237,14 +1245,8 @@ class metro extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
         this._.intervalRef = null;
       }
       if (time && this._.active) {
-        this._.timeoutRef = window.setTimeout(() => {
-          this._.last = performance.now();
-          this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
-          this._.intervalRef = window.setInterval(() => {
-            this._.last = performance.now();
-            this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_1__.Bang());
-          }, this._.time * 1e3);
-        }, Math.max(0, this._.last + this._.time * 1e3 - performance.now()));
+        const timeout = Math.max(0, this._.last + this._.time * 1e3 - performance.now());
+        this._.timeoutRef = window.setTimeout(handleTimeout, timeout);
       }
       this._.time = time;
     };

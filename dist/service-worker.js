@@ -82,7 +82,7 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.9.1644518444118"
+    prefix: "0.0.9.1644681862933"
   });
   self.skipWaiting();
   workbox.clientsClaim();
@@ -298,7 +298,7 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "2412d646e3647ae1760187c25f17850c"
+    "revision": "b362e095f5092209fd4dfa087e219e63"
   }, {
     "url": "js/071091a41ad3a183f5ff.js",
     "revision": null
@@ -880,10 +880,10 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
     "revision": "95e8ad0b02143d69cb4c2fa71d8d14c9"
   }, {
     "url": "packages/live/index.js",
-    "revision": "2cf494c91433e6bdda61a76510959c3d"
+    "revision": "fa6a6a09918e16781ac25b3ea025b4e5"
   }, {
     "url": "packages/live/index.jspatpkg.js",
-    "revision": "f68cc52ba42096c1215e08c07e33fa0c"
+    "revision": "0561ef152ab91736071a10a3ef2bdfb0"
   }, {
     "url": "packages/midi/index.js",
     "revision": "83bdb9f4d9c6ee2bb77d3a226d556c38"
@@ -913,13 +913,13 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
     "revision": "a9e77099e6b1575a9282abc9f6d7176c"
   }, {
     "url": "packages/std/index.jspatpkg.js",
-    "revision": "af635636d2e949d26f04147dd538a882"
+    "revision": "584f5d7d5caa4aed4f05d158908add5f"
   }, {
     "url": "packages/ui/index.js",
     "revision": "01d1aa6004f25aa4cb1257a3f0e94574"
   }, {
     "url": "packages/ui/index.jspatpkg.js",
-    "revision": "5fa35fe6dc0cb50c3d59bca61a48167a"
+    "revision": "3f74b6c1caa2bb471f999a789217009c"
   }, {
     "url": "packages/webaudio/index.js",
     "revision": "d09ab0b6eaf7e9027de37aa17bbc4108"
