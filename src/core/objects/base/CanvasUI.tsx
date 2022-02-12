@@ -57,6 +57,7 @@ export default class CanvasUI<T extends BaseObject = BaseObject, P extends Parti
         super.componentDidMount();
         this.schedulePaint();
         this.editor.on("presentation", this.schedulePaint);
+        window.addEventListener("resize", this.schedulePaint);
     }
     componentDidUpdate(prevProps: Readonly<P & CanvasUIProps<T>>, prevState: Readonly<S & CanvasUIState>, snapshot?: any) { // super.componentDidUpdate is not a function
         this.schedulePaint();
@@ -64,6 +65,7 @@ export default class CanvasUI<T extends BaseObject = BaseObject, P extends Parti
     componentWillUnmount() {
         super.componentWillUnmount();
         this.editor.off("presentation", this.schedulePaint);
+        window.removeEventListener("resize", this.schedulePaint);
         if (this.paintScheduled) cancelAnimationFrame(this.$paintRaf);
     }
     paint() {
