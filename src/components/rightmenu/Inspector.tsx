@@ -219,7 +219,7 @@ export default class Inspector extends React.PureComponent<{ editor: PatcherEdit
     state: InspectorState = { meta: null, args: [], props: {}, rect: null, presentationRect: null, patcherProps: this.props.editor.publicProps };
     boxes: Box[];
     box: Box;
-    handleBoxUpdate = (e: { args?: any[]; props?: Record<string, any> }) => this.setState({ args: e.args || [], props: e.props || {} });
+    handleBoxUpdate = (e: { args?: any[]; props?: Record<string, any> }) => this.setState({ args: e.args ?? this.state.args, props: { ...this.state.props, ...e.props } });
     handleBoxRectChanged = (box: Box) => this.setState({ rect: box.rect.slice() as TRect });
     handleBoxPresentationRectChanged = (box: Box) => this.setState({ presentationRect: box.presentationRect.slice() as TRect });
     unSubscribeBox = (force?: boolean) => {

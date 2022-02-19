@@ -1032,8 +1032,8 @@ module.exports = function (cssWithMappingToString) {
     var alreadyImportedModules = {};
 
     if (dedupe) {
-      for (var _i = 0; _i < this.length; _i++) {
-        var id = this[_i][0];
+      for (var k = 0; k < this.length; k++) {
+        var id = this[k][0];
 
         if (id != null) {
           alreadyImportedModules[id] = true;
@@ -1041,8 +1041,8 @@ module.exports = function (cssWithMappingToString) {
       }
     }
 
-    for (var _i2 = 0; _i2 < modules.length; _i2++) {
-      var item = [].concat(modules[_i2]);
+    for (var _k = 0; _k < modules.length; _k++) {
+      var item = [].concat(modules[_k]);
 
       if (dedupe && alreadyImportedModules[item[0]]) {
         continue;
@@ -3140,6 +3140,12 @@ video.props = {
     default: true,
     description: "Indicates whether the media element should start over when it reaches the end.",
     isUIState: true
+  },
+  opacity: {
+    type: "number",
+    default: 1,
+    description: "Opacity of the video (0-1)",
+    isUIState: true
   }
 };
 video.UI = _ui_video__WEBPACK_IMPORTED_MODULE_2__["default"];
@@ -4674,6 +4680,7 @@ const _MultisliderUI = class extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI 
         value
       } = this.state;
       const [width, height] = this.refCanvasUI.current.fullSize();
+      ctx.clearRect(0, 0, width, height);
       if (setStyle === "Bar") {
         thickness = 2;
       }
@@ -5193,6 +5200,7 @@ const _NumberBoxUI = class extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
       const leftTextOffset = LEFT_TEXT_OFFSET * triScale;
       const valueStr = this.state.inputBuffer || this._formatValue(this.state.value);
       const [width, height] = this.refCanvasUI.current.fullSize();
+      ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, width, height);
       ctx.font = `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`;
@@ -5508,6 +5516,7 @@ class SliderUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.CanvasUI {
       if (!floatOutput)
         size -= 1;
       const distance = value;
+      ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, width, height);
       if (orientation === "Automatic" && width < height || orientation === "Vertical") {
@@ -5926,12 +5935,12 @@ class VideoUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
     }
   }
   render() {
-    const { autoPlay, controls, muted, loop } = this.state;
+    const { autoPlay, controls, muted, loop, opacity } = this.state;
     return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
       style: { position: "absolute", width: "100%", height: "100%", display: "block", overflow: "auto" }
     }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("video", __spreadProps(__spreadValues({
       src: this.state.url,
-      style: { position: "absolute", width: "100%", height: "100%" }
+      style: { position: "absolute", width: "100%", height: "100%", opacity }
     }, { autoPlay, controls, muted, loop }), {
       ref: this.videoRef,
       onTimeUpdate: this.handleTimeUpdate
@@ -7028,6 +7037,7 @@ var callBound = __webpack_require__(/*! call-bind/callBound */ "./node_modules/c
 var $toString = callBound('Object.prototype.toString');
 var hasToStringTag = __webpack_require__(/*! has-tostringtag/shams */ "./node_modules/has-tostringtag/shams.js")();
 
+var g = typeof globalThis === 'undefined' ? __webpack_require__.g : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $indexOf = callBound('Array.prototype.indexOf', true) || function indexOf(array, value) {
@@ -7044,7 +7054,7 @@ var gOPD = __webpack_require__(/*! es-abstract/helpers/getOwnPropertyDescriptor 
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		var arr = new __webpack_require__.g[typedArray]();
+		var arr = new g[typedArray]();
 		if (Symbol.toStringTag in arr) {
 			var proto = getPrototypeOf(arr);
 			var descriptor = gOPD(proto, Symbol.toStringTag);
@@ -8550,6 +8560,7 @@ var callBound = __webpack_require__(/*! call-bind/callBound */ "./node_modules/c
 var $toString = callBound('Object.prototype.toString');
 var hasToStringTag = __webpack_require__(/*! has-tostringtag/shams */ "./node_modules/has-tostringtag/shams.js")();
 
+var g = typeof globalThis === 'undefined' ? __webpack_require__.g : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $slice = callBound('String.prototype.slice');
@@ -8558,8 +8569,8 @@ var gOPD = __webpack_require__(/*! es-abstract/helpers/getOwnPropertyDescriptor 
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		if (typeof __webpack_require__.g[typedArray] === 'function') {
-			var arr = new __webpack_require__.g[typedArray]();
+		if (typeof g[typedArray] === 'function') {
+			var arr = new g[typedArray]();
 			if (Symbol.toStringTag in arr) {
 				var proto = getPrototypeOf(arr);
 				var descriptor = gOPD(proto, Symbol.toStringTag);
@@ -8622,10 +8633,12 @@ var possibleNames = [
 	'Uint8ClampedArray'
 ];
 
+var g = typeof globalThis === 'undefined' ? __webpack_require__.g : globalThis;
+
 module.exports = function availableTypedArrays() {
 	var out = [];
 	for (var i = 0; i < possibleNames.length; i++) {
-		if (typeof __webpack_require__.g[possibleNames[i]] === 'function') {
+		if (typeof g[possibleNames[i]] === 'function') {
 			out[out.length] = possibleNames[i];
 		}
 	}
@@ -8646,7 +8659,7 @@ module.exports = function availableTypedArrays() {
 
 var GetIntrinsic = __webpack_require__(/*! get-intrinsic */ "./node_modules/get-intrinsic/index.js");
 
-var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%');
+var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
 if ($gOPD) {
 	try {
 		$gOPD([], 'length');

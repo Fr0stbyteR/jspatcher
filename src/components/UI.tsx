@@ -96,21 +96,23 @@ export default class UI extends React.PureComponent<P, S> {
     };
     componentDidMount() {
         this.props.env.taskMgr.on("tasks", this.handleTasks);
+        this.props.env.taskMgr.on("errors", this.handleErrors);
         this.props.env.on("ready", this.handleEnvReady);
         window.addEventListener("beforeunload", this.handleBeforeUnload);
     }
     componentWillUnmount() {
-        this.props.env.taskMgr.on("tasks", this.handleTasks);
+        this.props.env.taskMgr.off("tasks", this.handleTasks);
+        this.props.env.taskMgr.off("errors", this.handleErrors);
         this.props.env.off("ready", this.handleEnvReady);
     }
     render() {
         let dimmer: JSX.Element;
-        if (!this.props.env.loaded || this.state.envTasks.length) {
+        if (!this.props.env.loaded || this.state.envTasks.length || this.state.envErrors.length) {
             const { envTasks, envErrors } = this.state;
             dimmer = <Dimmer active>
                 <Loader>
                     {envTasks.map(t => <p key={t.id}>{t.message}</p>)}
-                    {envErrors.map(t => <p style={{ color: "red" }} key={`Error${t.id}`}>Error while: {t.message}: {t.error.message}</p>)}
+                    {envErrors.map(t => <p style={{ color: "rgb(255, 128, 128)" }} key={`Error${t.id}`}>Error while: {t.message}: {t.error.message}</p>)}
                 </Loader>
             </Dimmer>;
         }

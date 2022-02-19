@@ -697,7 +697,7 @@ class Group extends FaustOp<{}, {}, (number | "_")[], { ins: number }> {
     }
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this._.inlets = ~~+this.getProp("ins");
-        if (e.args.length || "ins" in e.props) {
+        if (e.args?.length || "ins" in e.props) {
             this.inlets = this._.inlets - Math.min(this._.inlets, this.constArgsCount);
             this.outlets = this._.outlets;
         }
@@ -1052,28 +1052,31 @@ export class LibOp<P extends Record<string, any> = {}> extends FaustOp<{}, {}, (
     };
     _: FaustOpInternalState = { inlets: undefined, outlets: undefined, defaultArgs: [] };
     handlePostInit = async () => {
+        if ("ins" in this.box.props) this._.inlets = ~~+this.getProp("ins");
+        if ("outs" in this.box.props) this._.outlets = ~~+this.getProp("outs");
         const inletsForced = typeof this._.inlets === "number";
         const outletsForced = typeof this._.outlets === "number";
-        if (inletsForced && outletsForced) return;
-        const { args } = this.box;
-        const inspectCode = `${this.toOnceExpr().join(" ")} process = ${this.symbol[0]}${args.length ? `(${args.map(_ => (_ === "_" ? 0 : _)).join(", ")})` : ""};`;
-        try {
-            const { dspMeta } = await this.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
-            if (!inletsForced) this._.inlets = ~~dspMeta.inputs + args.length;
-            if (!outletsForced) this._.outlets = ~~dspMeta.outputs;
-        } catch (e) {
-            if (!inletsForced) this._.inlets = 0;
-            if (!outletsForced) this._.outlets = 0;
+        if (!inletsForced || !outletsForced) {
+            const { args } = this.box;
+            const inspectCode = `${this.toOnceExpr().join(" ")} process = ${this.symbol[0]}${args.length ? `(${args.map(_ => (_ === "_" ? 0 : _)).join(", ")})` : ""};`;
+            try {
+                const { dspMeta } = await this.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
+                if (!inletsForced) this._.inlets = ~~dspMeta.inputs + args.length;
+                if (!outletsForced) this._.outlets = ~~dspMeta.outputs;
+            } catch (e) {
+                if (!inletsForced) this._.inlets = 0;
+                if (!outletsForced) this._.outlets = 0;
+            }
         }
         this._.defaultArgs = new Array(this._.inlets).fill(0);
-        if (!inletsForced) this.inlets = this._.inlets - Math.min(this._.inlets, this.constArgsCount);
-        if (!outletsForced) this.outlets = this._.outlets;
+        this.inlets = this._.inlets - Math.min(this._.inlets, this.constArgsCount);
+        this.outlets = this._.outlets;
         this.patcher.emit("graphChanged");
     };
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this._.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this._.outlets = ~~+this.getProp("outs");
-        if (e.args.length || "ins" in e.props || "outs" in e.props) {
+        if (e.args?.length || "ins" in e.props || "outs" in e.props) {
             if (typeof this._.inlets === "number") this.inlets = this._.inlets - Math.min(this._.inlets, this.constArgsCount);
             if (typeof this._.outlets === "number") this.outlets = this._.outlets;
         }
@@ -1296,20 +1299,21 @@ class Code extends FaustOp<{ value: string }, {}, [], LibOpProps, { language: st
         const inletsForced = typeof definedInlets === "number";
         const definedOutlets = this.getProp("outs");
         const outletsForced = typeof definedOutlets === "number";
-        if (inletsForced && outletsForced) return;
-        const { value: code } = this.data;
-        if (!code) {
-            this.inlets = 0;
-            this.outlets = 0;
-            return;
-        }
-        try {
-            const { dspMeta } = await this.env.faust.inspect(code, { args: { "-I": "libraries/" } });
-            if (!inletsForced) this._.inlets = ~~dspMeta.inputs;
-            if (!outletsForced) this._.outlets = ~~dspMeta.outputs;
-        } catch (e) {
-            if (!inletsForced) this._.inlets = 0;
-            if (!outletsForced) this._.outlets = 0;
+        if (!inletsForced || !outletsForced) {
+            const { value: code } = this.data;
+            if (code) {
+                try {
+                    const { dspMeta } = await this.env.faust.inspect(code, { args: { "-I": "libraries/" } });
+                    if (!inletsForced) this._.inlets = ~~dspMeta.inputs;
+                    if (!outletsForced) this._.outlets = ~~dspMeta.outputs;
+                } catch (e) {
+                    if (!inletsForced) this._.inlets = 0;
+                    if (!outletsForced) this._.outlets = 0;
+                }
+            } else {
+                this._.inlets = 0;
+                this._.outlets = 0;
+            }
         }
         this._.defaultArgs = new Array(this._.inlets).fill(0);
         if (!inletsForced) this.inlets = this._.inlets - Math.min(this._.inlets, this.constArgsCount);
@@ -1319,7 +1323,7 @@ class Code extends FaustOp<{ value: string }, {}, [], LibOpProps, { language: st
     handleUpdate = (e?: { args?: any[]; props?: LibOpProps }) => {
         if ("ins" in e.props) this._.inlets = ~~+this.getProp("ins");
         if ("outs" in e.props) this._.outlets = ~~+this.getProp("outs");
-        if (e.args.length || "ins" in e.props || "outs" in e.props) {
+        if (e.args?.length || "ins" in e.props || "outs" in e.props) {
             this.inlets = ~~this._.inlets - Math.min(~~this._.inlets, this.constArgsCount);
             this.outlets = ~~this._.outlets;
         }
@@ -1485,7 +1489,7 @@ export const getFaustLibObjects = (docs: TFaustDocs) => {
         while (path.length - 1) {
             const key = path.shift();
             if (!pkg[key]) pkg[key] = {};
-            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof LibOp) pkg[key] = { [ImporterDirSelfObject]: pkg[key] };
+            else if (typeof pkg[key] === "function" && pkg[key].prototype instanceof LibOp) pkg[key] = { [ImporterDirSelfObject as any]: pkg[key] };
             pkg = pkg[key] as TPackage;
         }
         pkg[path[0]] = Op;

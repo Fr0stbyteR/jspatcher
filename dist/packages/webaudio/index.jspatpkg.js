@@ -2688,6 +2688,13 @@ class htmlAudio extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseObject {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
           if (typeof data === "string") {
             this._.element.src = data;
+          } else if (typeof data === "boolean") {
+            if (!!data && this._.element.paused)
+              this._.element.play();
+            else if (!data && !this._.element.paused)
+              this._.element.pause();
+          } else if (typeof data === "number") {
+            this._.element.currentTime = +data;
           }
         }
         this.outlet(0, this._.element);
@@ -2699,7 +2706,7 @@ htmlAudio.description = "HTMLAudioElement constructor";
 htmlAudio.inlets = [{
   isHot: true,
   type: "anything",
-  description: "String to change the source URL and output, bang to output"
+  description: "String to change the source URL and output, number to set time, boolean to pause/start, bang to output"
 }];
 htmlAudio.outlets = [{
   type: "object",

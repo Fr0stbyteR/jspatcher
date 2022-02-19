@@ -82,7 +82,7 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.9.1644686059807"
+    prefix: "0.0.9.1645276633064"
   });
   self.skipWaiting();
   workbox.clientsClaim();
@@ -298,7 +298,7 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "f8e364e6a0b8e41f4fb8dd605657759b"
+    "revision": "ea3609d0fe3306ae17c99059b074f582"
   }, {
     "url": "js/071091a41ad3a183f5ff.js",
     "revision": null
@@ -895,13 +895,13 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
     "revision": "549601486a7aef08ad83b657b6cdc2aa"
   }, {
     "url": "packages/op/index.jsdsppkg.aw.js",
-    "revision": "427306e9943ceefd984a318b00ab00e5"
+    "revision": "676e814d94d1a36a868476b42aaaa89b"
   }, {
     "url": "packages/op/index.jsdsppkg.main.js",
-    "revision": "a20e81e449f208274a9a2522c2c588be"
+    "revision": "132526929691770b0fc22a770ae7fe59"
   }, {
     "url": "packages/op/index.jspatpkg.js",
-    "revision": "66b3372f0bc98fd8e498ae124e969be0"
+    "revision": "0be4e28666566e3d75b08b07298164bc"
   }, {
     "url": "packages/std/index.js",
     "revision": "30a0b4840c53ae78f87ef98780828834"
@@ -919,13 +919,13 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
     "revision": "01d1aa6004f25aa4cb1257a3f0e94574"
   }, {
     "url": "packages/ui/index.jspatpkg.js",
-    "revision": "3f74b6c1caa2bb471f999a789217009c"
+    "revision": "486dc53c4e37f57765def6ea4160ec7b"
   }, {
     "url": "packages/webaudio/index.js",
     "revision": "d09ab0b6eaf7e9027de37aa17bbc4108"
   }, {
     "url": "packages/webaudio/index.jspatpkg.js",
-    "revision": "a635bce30079bf8edbfeb6310d1bde65"
+    "revision": "2fdd10eccba8aabb4fe1bb5f3ae63289"
   }, {
     "url": "src_core_audio_AudioEditor_ts-src_core_audio_AudioRecorder_ts-src_core_audio_PatcherAudio_ts.js/77d8e597c4d4d7cba765.worklet.js",
     "revision": null
