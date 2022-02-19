@@ -457,6 +457,18 @@ LiveDial.props = {
     description: "Dial color (active)",
     isUIState: true
   },
+  fgDialColor: {
+    type: "color",
+    default: "rgba(105, 105, 105, 1)",
+    description: "Forground dial color (inactive)",
+    isUIState: true
+  },
+  activeFgDialColor: {
+    type: "color",
+    default: "rgba(195, 195, 195, 1)",
+    description: "Forground dial color (active)",
+    isUIState: true
+  },
   needleColor: {
     type: "color",
     default: "rgba(105, 105, 105, 1)",
@@ -535,7 +547,7 @@ LiveDial.props = {
   triangle: {
     type: "boolean",
     default: false,
-    description: "Display yriangle",
+    description: "Display triangle",
     isUIState: true
   }
 };
@@ -2448,6 +2460,8 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       needleColor,
       activeDialColor,
       dialColor,
+      activeFgDialColor,
+      fgDialColor,
       textColor,
       triBorderColor,
       triColor,
@@ -2514,7 +2528,7 @@ class LiveDialUI extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
       ctx.fillStyle = panelColor;
       _sdk__WEBPACK_IMPORTED_MODULE_0__.Utils.fillRoundedRect(ctx, 1.2, 1.2, width - 2.4, 30 - 0.4, [5, 5, 0, 0]);
     }
-    ctx.strokeStyle = active ? activeNeedleColor : needleColor;
+    ctx.strokeStyle = active ? activeFgDialColor : fgDialColor;
     ctx.fillStyle = ctx.strokeStyle;
     ctx.lineWidth = lineWidth;
     ctx.beginPath();

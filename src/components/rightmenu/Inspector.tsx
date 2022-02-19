@@ -66,10 +66,11 @@ interface InspectorColorProps {
 interface InspectorColorState {
     showColorPicker: boolean;
     color: string;
+    colorPickerY: number;
 }
 class InspectorColorItem extends React.PureComponent<InspectorColorProps, InspectorColorState> {
-    state = { showColorPicker: false, color: this.props.value };
-    handleClickColorSpan = () => this.setState({ showColorPicker: true });
+    state = { showColorPicker: false, color: this.props.value, colorPickerY: 0 };
+    handleClickColorSpan = (e: React.MouseEvent) => this.setState({ showColorPicker: true, colorPickerY: e.screenY });
     handleClickCover = (e: React.MouseEvent) => {
         this.setState({ showColorPicker: false });
         e.stopPropagation();
@@ -99,7 +100,9 @@ class InspectorColorItem extends React.PureComponent<InspectorColorProps, Inspec
                         this.state.showColorPicker
                             ? <>
                                 <div className="color-picker-fullscreen-cover" onClick={this.handleClickCover} />
-                                <ChromePicker color={this.state.color} disableAlpha={false} onChange={this.handleChangeColor} onChangeComplete={this.handleChangeCompleteColor} />
+                                <div style={{ margin: window.innerHeight - this.state.colorPickerY < 220 ? "-220px -3px" : "5px -3px" }}>
+                                    <ChromePicker color={this.state.color} disableAlpha={false} onChange={this.handleChangeColor} onChangeComplete={this.handleChangeCompleteColor} />
+                                </div>
                             </>
                             : <></>
                     }

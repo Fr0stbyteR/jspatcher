@@ -205,11 +205,14 @@
                         bottom: 0px;
                         left: 0px;
                         z-index: 1;
+                        cursor: auto;
                     }
                     & div.chrome-picker {
                         position: absolute;
-                        left: calc(50% - 60px);
-                        bottom: calc(50% - 100px);
+                        cursor: auto;
+                        // left: calc(50% - 60px);
+                        // bottom: calc(50% - 100px);
+                        // margin: 5px -3px;
                         width: 150px!important;
                         z-index: 2;
                     }
