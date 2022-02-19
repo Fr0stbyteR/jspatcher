@@ -1444,7 +1444,7 @@ var _a;
 class img extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
-    this._ = { key: (_a = this.box.args[0]) == null ? void 0 : _a.toString(), image: void 0, file: void 0, url: "" };
+    this._ = { key: (_a = this.box.args[0]) == null ? void 0 : _a.toString(), image: void 0, file: void 0, url: "", element: void 0 };
   }
   subscribe() {
     super.subscribe();
@@ -1508,14 +1508,14 @@ class img extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
     });
     this.on("inlet", async ({ data, inlet }) => {
       if (inlet === 0) {
-        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
-          if (typeof data === "string") {
-            this._.key = data;
-            reload();
-          } else if (typeof data === "object" && data instanceof HTMLImageElement) {
-            this._.key = data.src;
-            reload();
-          }
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
+          this.outlet(0, this._.element);
+        } else if (typeof data === "string") {
+          this._.key = data;
+          reload();
+        } else if (typeof data === "object" && data instanceof HTMLImageElement) {
+          this._.key = data.src;
+          reload();
         }
       }
     });
@@ -3002,7 +3002,7 @@ var _a;
 class video extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
-    this._ = { key: (_a = this.box.args[0]) == null ? void 0 : _a.toString(), video: void 0, file: void 0, url: "" };
+    this._ = { key: (_a = this.box.args[0]) == null ? void 0 : _a.toString(), video: void 0, file: void 0, url: "", element: void 0 };
   }
   subscribe() {
     super.subscribe();
@@ -3066,19 +3066,19 @@ class video extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
     });
     this.on("inlet", async ({ data, inlet }) => {
       if (inlet === 0) {
-        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
-          if (typeof data === "number" || typeof data === "boolean") {
-            this.updateUI({ playing: !!data });
-          } else if (typeof data === "string") {
-            this._.key = data;
+        if ((0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
+          this.outlet(0, this._.element);
+        } else if (typeof data === "number" || typeof data === "boolean") {
+          this.updateUI({ playing: !!data });
+        } else if (typeof data === "string") {
+          this._.key = data;
+          reload();
+        } else if (typeof data === "object") {
+          if (data instanceof HTMLVideoElement) {
+            this._.key = data.src;
             reload();
-          } else if (typeof data === "object") {
-            if (data instanceof HTMLVideoElement) {
-              this._.key = data.src;
-              reload();
-            } else if (typeof data.goto === "number") {
-              this.updateUI({ currentTime: data.goto, timestamp: performance.now() });
-            }
+          } else if (typeof data.goto === "number") {
+            this.updateUI({ currentTime: data.goto, timestamp: performance.now() });
           }
         }
       }
@@ -4035,12 +4035,29 @@ class ImgUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
   constructor() {
     super(...arguments);
     this.state = __spreadProps(__spreadValues({}, this.state), { url: this.object._.url });
+    this.imgRef = _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createRef();
+    this.handleLoadedMetadata = () => this.object.outlet(0, this.imgRef.current);
+  }
+  componentDidMount() {
+    super.componentDidMount();
+    const image = this.imgRef.current;
+    if (image) {
+      this.object._.element = image;
+      this.object.outlet(0, image);
+      image.addEventListener("loadedmetadata", this.handleLoadedMetadata);
+    }
+  }
+  componentWillUnmount() {
+    var _a;
+    super.componentWillUnmount();
+    (_a = this.imgRef.current) == null ? void 0 : _a.removeEventListener("loadedmetadata", this.handleLoadedMetadata);
   }
   render() {
     const { objectFit, objectPosition, scroll, opacity } = this.state;
     return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
       style: { position: "absolute", width: "100%", height: "100%", display: "block", overflow: "auto" }
     }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("img", {
+      ref: this.imgRef,
       src: this.state.url,
       style: __spreadProps(__spreadValues({ position: "absolute" }, scroll ? {} : { width: "100%", height: "100%" }), { objectFit, objectPosition, opacity })
     })));
@@ -5901,6 +5918,7 @@ class VideoUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
     this.handleTimeUpdate = (e) => {
       this.object.outlet(1, e.currentTarget.currentTime);
     };
+    this.handleLoadedMetadata = () => this.object.outlet(0, this.videoRef.current);
   }
   componentDidMount() {
     super.componentDidMount();
@@ -5912,7 +5930,15 @@ class VideoUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
       video.currentTime = currentTime;
       if (playing)
         video.play();
+      this.object._.element = video;
+      this.object.outlet(0, video);
+      video.addEventListener("loadedmetadata", this.handleLoadedMetadata);
     }
+  }
+  componentWillUnmount() {
+    var _a;
+    super.componentWillUnmount();
+    (_a = this.videoRef.current) == null ? void 0 : _a.removeEventListener("loadedmetadata", this.handleLoadedMetadata);
   }
   componentDidUpdate(prevProps, prevState) {
     const video = this.videoRef.current;
@@ -5939,10 +5965,10 @@ class VideoUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
     return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
       style: { position: "absolute", width: "100%", height: "100%", display: "block", overflow: "auto" }
     }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("video", __spreadProps(__spreadValues({
+      ref: this.videoRef,
       src: this.state.url,
       style: { position: "absolute", width: "100%", height: "100%", opacity }
     }, { autoPlay, controls, muted, loop }), {
-      ref: this.videoRef,
       onTimeUpdate: this.handleTimeUpdate
     }))));
   }
