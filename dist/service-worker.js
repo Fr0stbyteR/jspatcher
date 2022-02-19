@@ -82,7 +82,7 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
   */
 
   workbox.setCacheNameDetails({
-    prefix: "0.0.9.1645284576436"
+    prefix: "0.0.9.1645286210551"
   });
   self.skipWaiting();
   workbox.clientsClaim();
@@ -298,7 +298,7 @@ define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "eb5fb083296ba2851340fe106b1e988e"
+    "revision": "81950792857950fa7f49fbdaedb2d476"
   }, {
     "url": "js/071091a41ad3a183f5ff.js",
     "revision": null
