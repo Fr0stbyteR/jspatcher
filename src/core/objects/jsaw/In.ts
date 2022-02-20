@@ -41,6 +41,7 @@ export default class In extends BaseObject<{}, {}, [], [any], [number], P> {
         if (inlet === this.index - 1) this.outlet(0, data);
     };
     protected emitPatcherChangeIO = () => this.patcher.changeIO();
+    protected thread: "AudioWorklet" | "main" = "AudioWorklet";
     subscribe() {
         super.subscribe();
         this.on("metaUpdated", this.emitPatcherChangeIO);
@@ -63,7 +64,7 @@ export default class In extends BaseObject<{}, {}, [], [any], [number], P> {
             this.setMeta({ outlets: [outlet0] });
             this.emitPatcherChangeIO();
         });
-        if (this.env.thread === "AudioWorklet") this.patcher.on("dataInput", this.handlePatcherInput);
+        if (this.env.thread === this.thread) this.patcher.on("dataInput", this.handlePatcherInput);
         this.on("destroy", () => {
             this.patcher.off("dataInput", this.handlePatcherInput);
             this.patcher.changeIO();
