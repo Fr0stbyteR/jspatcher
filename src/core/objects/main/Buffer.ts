@@ -108,6 +108,7 @@ export default class Buffer extends DefaultObject<{}, {}, [Bang | File | ArrayBu
                 if (newItem) {
                     audio.file = item;
                 } else {
+                    await audio?.destroy();
                     audio = await item.instantiate({ env: this.env, project: this.patcher.project }) as PatcherAudio;
                 }
                 this._.audio = audio;

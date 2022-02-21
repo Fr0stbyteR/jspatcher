@@ -111,6 +111,7 @@ export default class FaustPatcher extends FaustNode<Partial<RawPatcher>, {}, [st
                 patcher.file = item;
                 this.setData(rawPatcher);
             } else {
+                await patcher?.destroy();
                 patcher = await item.instantiate({ env: this.patcher.env, project: this.patcher.project }) as Patcher;
                 this.setData(patcher.toSerializable());
             }

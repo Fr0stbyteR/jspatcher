@@ -110,6 +110,7 @@ export default class SubPatcher extends DefaultObject<Partial<RawPatcher>, {}, a
                 patcher.file = item;
                 this.setData(rawPatcher);
             } else {
+                await patcher?.destroy();
                 patcher = await item.instantiate({ env: this.patcher.env, project: this.patcher.project }) as Patcher;
                 this.setData(patcher.toSerializable());
             }

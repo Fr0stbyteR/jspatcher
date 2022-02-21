@@ -1190,6 +1190,7 @@ export class SubPatcher extends FaustOp<RawPatcher | {}, {}, [string], {}, { pat
                 patcher.file = item;
                 this.setData(rawPatcher);
             } else {
+                await patcher?.destroy();
                 patcher = await item.instantiate({ env: this.env, project: this.patcher.project }) as Patcher;
                 this.setData(patcher.toSerializable());
             }
