@@ -11,7 +11,7 @@ import type { TFaustDocs } from "../../misc/monaco-faust/Faust2Doc";
 import type { ProjectFileEventMap } from "../file/AbstractProjectFile";
 import type { IJSPatcherObjectMeta, IPropsMeta } from "./base/AbstractObject";
 
-type TObjectExpr = {
+export type TObjectExpr = {
     exprs?: string[];
     onces?: string[];
 };
@@ -626,25 +626,27 @@ export class Rec extends FaustOp {
         return ["~"];
     }
     _: FaustOpInternalState = { ...this._, inlets: 1, outlets: 1 };
+    handlePreInit = () => {
+        this.inlets = 1;
+        this.outlets = 1;
+    };
     subscribe() {
         super.subscribe();
         this.off("updateArgs", this.handleUpdateArgs);
         this.off("updateProps", this.handleUpdateProps);
         this.off("postInit", this.handlePostInit);
-        this.on("preInit", () => {
-            this.inlets = 1;
-            this.outlets = 1;
-        });
+        this.on("preInit", this.handlePreInit);
     }
     toInletsExpr(lineMap: TLineMap) {
         const { inletLines, _ } = this;
         const incoming = inletLines.map((set, i) => {
             const lines = Array.from(set);
-            if (lines.length === 0) return `${_.defaultArgs[i]}` || "0";
-            if (lines.length === 1) return lineMap.get(lines[0]) || `${_.defaultArgs[i]}` || "0";
+            const defaultArg = typeof _.defaultArgs[i] === "undefined" ? "0" : `${_.defaultArgs[i]}`;
+            if (lines.length === 0) return defaultArg;
+            if (lines.length === 1) return lineMap.get(lines[0]) || defaultArg;
             return `(${lines.map(line => lineMap.get(line)).filter(line => line !== undefined).join(", ")} :> _)`;
         });
-        return incoming.join(", ");
+        return incoming.reverse().join(", ");
     }
     toExpr(lineMap: TLineMap): TObjectExpr {
         const exprs: string[] = [];

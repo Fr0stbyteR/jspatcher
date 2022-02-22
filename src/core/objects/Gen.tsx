@@ -1,7 +1,7 @@
 import { comment } from "./base/index.jspatpkg";
-import { LibOp, EmptyObject, InvalidObject, Const, In, Out, Rec, Send, Receive, Param, Expr, LibOpProps, FaustOpInternalState, Gen } from "./Faust";
+import { LibOp, EmptyObject, InvalidObject, Const, In, Out, Rec as _Rec, Send, Receive, Param, Expr, LibOpProps, FaustOpInternalState, Gen, FaustOp, TLineMap, TObjectExpr } from "./Faust";
 import type { TPackage } from "../types";
-import type { IPropsMeta } from "./base/AbstractObject";
+import type { IJSPatcherObjectMeta, IPropsMeta } from "./base/AbstractObject";
 import "./Gen.scss";
 
 export class GenLibOp<P extends Record<string, any> = {}> extends LibOp<P> {
@@ -70,6 +70,59 @@ export class Interp extends GenLibOp<InterpProps> {
             this.outlets = ~~this._.outlets;
         }
     };
+}
+export class Rec extends _Rec {
+    static package = "Gen";
+    static description = "x-samples delay";
+    static args: IJSPatcherObjectMeta["args"] = [{
+        type: "number",
+        optional: true,
+        default: 48000,
+        description: "Maximum delay size in samples"
+    }, {
+        type: "number",
+        optional: true,
+        default: 1,
+        description: "Number of delay taps"
+    }];
+    get symbol() {
+        return ["~"];
+    }
+    _: FaustOpInternalState = { ...this._, inlets: 2/* (+this.args[1] || 1) + 1*/, outlets: /* +this.args[1] || */1 };
+    handlePostInit = async () => {
+        const taps = 1/* Math.max(1, +~~this.args[1] || 1) */;
+        this._.inlets = taps + 1;
+        this._.outlets = taps;
+        this.inlets = this._.inlets;
+        this.outlets = this._.outlets;
+        this.patcher.emit("graphChanged");
+    };
+    handleUpdateArgs = (args: any[]) => {
+        /*
+        const taps = Math.max(1, +~~args[1] || 1);
+        this._.inlets = taps + 1;
+        this._.outlets = taps;
+        this.inlets = this._.inlets;
+        this.outlets = this._.outlets;
+        */
+        this.patcher.emit("graphChanged");
+    };
+    subscribe() {
+        super.subscribe();
+        this.on("updateArgs", this.handleUpdateArgs);
+        this.on("postInit", this.handlePostInit);
+        this.off("preInit", this.handlePreInit);
+    }
+    toOnceExpr(): string[] {
+        return ['import("stdfaust.lib");'];
+    }
+    toExpr(lineMap: TLineMap): TObjectExpr {
+        const exprs: string[] = [];
+        const inlets = this.toInletsExpr(lineMap);
+
+        exprs.push(`${this.resultID} = ${Math.max(1, +~~this.args[0] || this.audioCtx.sampleRate)}, ${inlets} : de.fdelay;`);
+        return { exprs, onces: this.toOnceExpr() };
+    }
 }
 const genOps: TPackage = {
     comment,
