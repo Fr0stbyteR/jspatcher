@@ -119,7 +119,6 @@ const config = {
       globalAPI: true
     }),
     new WorkboxWebpackPlugin.GenerateSW({
-      cacheId: VERSION,
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       skipWaiting: true,
