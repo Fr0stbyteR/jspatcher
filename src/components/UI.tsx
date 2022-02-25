@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Dimmer, Loader } from "semantic-ui-react";
+import { Dimmer, Loader, Button } from "semantic-ui-react";
 import TopMenu from "./topmenu/TopMenu";
 import LeftMenu from "./leftmenu/LeftMenu";
 import StatusBar from "./StatusBar";
 import EditorContainerUI from "./editors/EditorContainerUI";
 import type Env from "../core/Env";
+import type { EnvEventMap } from "../core/Env";
 import type { TaskManagerEventMap, Task, TaskError } from "../core/TaskMgr";
 import "./UI.scss";
 import "./zIndex.scss";
@@ -20,6 +21,8 @@ interface S {
     envTasks: Task[];
     envErrors: TaskError[];
     fileDropping: boolean;
+    runtime: boolean;
+    audioOn: boolean;
 }
 
 export default class UI extends React.PureComponent<P, S> {
@@ -28,7 +31,9 @@ export default class UI extends React.PureComponent<P, S> {
         errors: this.props.env.taskMgr.errors,
         envTasks: this.props.env.taskMgr.getTasksFromEmitter(this.props.env),
         envErrors: this.props.env.taskMgr.getErrorsFromEmitter(this.props.env),
-        fileDropping: false
+        fileDropping: false,
+        runtime: this.props.env.options.runtime,
+        audioOn: this.props.env.audioCtx.state === "running"
     };
     handleKeyDown = (e: React.KeyboardEvent) => {
         // e.stopPropagation();
@@ -57,6 +62,9 @@ export default class UI extends React.PureComponent<P, S> {
     handleEnvReady = () => {
         this.setState({ envTasks: [], envErrors: [] });
         this.props.env.off("ready", this.handleEnvReady);
+    };
+    handleOptions = ({ options }: EnvEventMap["options"]) => {
+        if (options.runtime !== this.state.runtime) this.setState({ runtime: options.runtime });
     };
     handleBeforeUnload = (e: BeforeUnloadEvent) => {
         const { isDirty } = this.props.env.editorContainer;
@@ -94,16 +102,43 @@ export default class UI extends React.PureComponent<P, S> {
             }
         }
     };
+    handleEnvAudioCtxStateChange = () => {
+        const { state } = this.props.env.audioCtx;
+        if (state === "running") {
+            this.props.env.currentProject?.audioCtx?.resume();
+        } else {
+            this.props.env.currentProject?.audioCtx?.suspend();
+        }
+        this.setState({ audioOn: state === "running" });
+    };
+    handleAudioSwitch = () => {
+        const envAudioCtx = this.props.env.audioCtx;
+        const projAudioCtx = this.props.env.currentProject?.audioCtx;
+        if (this.state.audioOn) {
+            projAudioCtx?.suspend();
+            envAudioCtx.suspend();
+        } else {
+            projAudioCtx?.resume();
+            envAudioCtx.resume();
+        }
+    };
     componentDidMount() {
         this.props.env.taskMgr.on("tasks", this.handleTasks);
         this.props.env.taskMgr.on("errors", this.handleErrors);
         this.props.env.on("ready", this.handleEnvReady);
+        this.props.env.on("options", this.handleOptions);
+        const audioCtx = this.props.env.audioCtx;
+        audioCtx.addEventListener("statechange", this.handleEnvAudioCtxStateChange);
         window.addEventListener("beforeunload", this.handleBeforeUnload);
     }
     componentWillUnmount() {
+        const audioCtx = this.props.env.audioCtx;
+        audioCtx.removeEventListener("statechange", this.handleEnvAudioCtxStateChange);
+        window.removeEventListener("beforeunload", this.handleBeforeUnload);
         this.props.env.taskMgr.off("tasks", this.handleTasks);
         this.props.env.taskMgr.off("errors", this.handleErrors);
         this.props.env.off("ready", this.handleEnvReady);
+        this.props.env.off("options", this.handleOptions);
     }
     render() {
         let dimmer: JSX.Element;
@@ -121,16 +156,31 @@ export default class UI extends React.PureComponent<P, S> {
                 {
                     dimmer
                     || <>
-                        <TopMenu {...this.props} />
-                        <div className="ui-flex-row" style={{ flex: "1 1 auto", overflow: "auto" }}>
-                            <div className="ui-left">
-                                <LeftMenu {...this.props} />
+                        {this.state.runtime
+                            ? <div className="ui-flex-row" style={{ flex: "1 1 auto", overflow: "auto" }}>
+                                <div className="ui-center">
+                                    {this.state.audioOn
+                                        ? undefined
+                                        : <div className="ui-runtime-audio-switch">
+                                            <Button inverted size="massive" icon="play" onClick={this.handleAudioSwitch} />
+                                        </div>
+                                    }
+                                    <EditorContainerUI {...this.props} editorContainer={this.props.env.editorContainer} runtime={this.state.runtime} />
+                                </div>
                             </div>
-                            <div className="ui-center">
-                                <EditorContainerUI {...this.props} editorContainer={this.props.env.editorContainer} />
-                            </div>
-                        </div>
-                        <StatusBar {...this.props} lang={this.props.env.language} />
+                            : <>
+                                <TopMenu {...this.props} />
+                                <div className="ui-flex-row" style={{ flex: "1 1 auto", overflow: "auto" }}>
+                                    <div className="ui-left">
+                                        <LeftMenu {...this.props} />
+                                    </div>
+                                    <div className="ui-center">
+                                        <EditorContainerUI {...this.props} editorContainer={this.props.env.editorContainer} runtime={this.state.runtime} />
+                                    </div>
+                                </div>
+                                <StatusBar {...this.props} lang={this.props.env.language} />
+                            </>
+                        }
                     </>
                 }
             </div>

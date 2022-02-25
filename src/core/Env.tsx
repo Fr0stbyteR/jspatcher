@@ -57,6 +57,8 @@ export interface EnvOptions {
     audioUnit: TAudioUnit;
     audioUnitOptions: AudioUnitOptions;
     audioDisplayOptions: AudioDisplayOptions;
+    runtime: boolean;
+    noUI: boolean;
 }
 
 export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
@@ -160,7 +162,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     }
     instances = new Set<IFileInstance>();
     currentProject: Project;
-    private _noUI: boolean;
     private _divRoot: HTMLDivElement;
     private _options: EnvOptions = {
         language: "en",
@@ -178,7 +179,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             hueOffset: 0,
             seperatorColor: "grey",
             cursorColor: "rgba(191, 0, 0)"
-        }
+        },
+        runtime: false,
+        noUI: false
     };
     set options(options: EnvOptions) {
         const oldOptions = this._options;
@@ -226,8 +229,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             projectZip: urlParams.get("projectZip"),
             file: urlParams.get("file")
         };
-        this._noUI = urlParamsOptions.noUI;
-        if (!this._noUI && this.divRoot) ReactDOM.render(<UI env={this} lang={this.language} />, this.divRoot);
+        this.options.noUI = urlParamsOptions.noUI;
+        this.options.runtime = urlParamsOptions.runtime;
+        if (!this.options.noUI && this.divRoot) ReactDOM.render(<UI env={this} lang={this.language} />, this.divRoot);
 
         await this.taskMgr.newTask(this, "Initializing JSPatcher Environment...", async () => {
             await this.taskMgr.newTask("Env", "Loading Faust2WebAudio...", async () => {
@@ -405,7 +409,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     }
     set divRoot(root: HTMLDivElement) {
         if (root === this._divRoot) return;
-        if (!this._noUI && this._divRoot) ReactDOM.unmountComponentAtNode(this._divRoot);
+        if (!this.options.noUI && this._divRoot) ReactDOM.unmountComponentAtNode(this._divRoot);
         this._divRoot = root;
         // if (!this._noUI && root) ReactDOM.render(this.loaded ? <UI patcher={this.activeInstance} /> : <LoaderUI env={this} />, root);
     }

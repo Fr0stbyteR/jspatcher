@@ -196,59 +196,68 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             this.emit("ready");
             return this;
         }
-        this.props.mode = patcherIn.props?.mode || modeIn || "js";
-        this.state.pkgMgr = new PackageManager(this);
-        const { mode } = this.props;
-        const $init: Promise<Box>[] = [];
-        let patcher;
-        if (mode === "max" || mode === "gen") {
-            if (!(patcherIn as TMaxPatcher).patcher) {
-                patcher = patcherIn;
-            } else {
-                patcher = max2js(patcherIn as TMaxPatcher);
-            }
-        } else if (mode === "js" || mode === "faust" || mode === "jsaw") {
-            if ("data" in patcherIn && "patcher" in patcherIn) {
-                patcher = patcherIn.patcher;
-            } else {
-                patcher = patcherIn;
-            }
-        }
-        if (patcher.props) this.props = { ...this.props, ...patcher.props, mode };
-        if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
-        if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
-        if (mode === "js" && this.props.dependencies) {
-            const { dependencies } = this.props;
-            if (!Array.isArray(dependencies)) {
-                this.props.dependencies = [];
-                for (const key in dependencies as Record<string, string>) {
-                    this.props.dependencies.push([key, dependencies[key]]);
+        await this.env.taskMgr.newTask(this, "Loading patcher...", async (onUpdate) => {
+            this.props.mode = patcherIn.props?.mode || modeIn || "js";
+            this.state.pkgMgr = new PackageManager(this);
+            const { mode } = this.props;
+            const $init: Promise<Box>[] = [];
+            onUpdate("Decoding Patcher...");
+            let patcher;
+            if (mode === "max" || mode === "gen") {
+                if (!(patcherIn as TMaxPatcher).patcher) {
+                    patcher = patcherIn;
+                } else {
+                    patcher = max2js(patcherIn as TMaxPatcher);
+                }
+            } else if (mode === "js" || mode === "faust" || mode === "jsaw") {
+                if ("data" in patcherIn && "patcher" in patcherIn) {
+                    patcher = patcherIn.patcher;
+                } else {
+                    patcher = patcherIn;
                 }
             }
-        }
-        await this._state.pkgMgr.init();
-        if (patcher.boxes) { // Boxes & data
-            for (const id in patcher.boxes) {
-                const $ = this.createBox(patcher.boxes[id]);
-                $init.push($);
-                const numID = parseInt(id.match(/\d+/)[0]);
-                if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
+            if (patcher.props) this.props = { ...this.props, ...patcher.props, mode };
+            if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
+            if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
+            if (mode === "js" && this.props.dependencies) {
+                const { dependencies } = this.props;
+                if (!Array.isArray(dependencies)) {
+                    this.props.dependencies = [];
+                    for (const key in dependencies as Record<string, string>) {
+                        this.props.dependencies.push([key, dependencies[key]]);
+                    }
+                }
             }
-        }
-        await Promise.all($init);
-        if (patcher.lines) { // Lines
-            for (const id in patcher.lines) {
-                this.createLine(patcher.lines[id]);
-                const numID = parseInt(id.match(/\d+/)[0]);
-                if (numID > this.props.lineIndexCount) this.props.lineIndexCount = numID;
+            onUpdate("Initializing Packages...");
+            await this._state.pkgMgr.init();
+            onUpdate("Creating Boxes...");
+            if (patcher.boxes) { // Boxes & data
+                for (const id in patcher.boxes) {
+                    onUpdate(`Creating Boxes ${id}`);
+                    const $ = this.createBox(patcher.boxes[id]);
+                    $init.push($);
+                    const numID = parseInt(id.match(/\d+/)[0]);
+                    if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
+                }
             }
-        }
-        this._state.isReady = true;
-        this._state.preventEmitChanged = false;
-        this.emitGraphChanged();
-        this.emit("ready");
-        await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].postInit()));
-        this.emit("postInited");
+            onUpdate("Initializing Boxes...");
+            await Promise.all($init);
+            onUpdate("Creating Lines...");
+            if (patcher.lines) { // Lines
+                for (const id in patcher.lines) {
+                    this.createLine(patcher.lines[id]);
+                    const numID = parseInt(id.match(/\d+/)[0]);
+                    if (numID > this.props.lineIndexCount) this.props.lineIndexCount = numID;
+                }
+            }
+            onUpdate("Finishing...");
+            this._state.isReady = true;
+            this._state.preventEmitChanged = false;
+            this.emitGraphChanged();
+            this.emit("ready");
+            await Promise.all(Object.keys(this.boxes).map(id => this.boxes[id].postInit()));
+            this.emit("postInited");
+        });
         return this;
     }
     async getPatcherNode(inputs = 2, outputs = 2) {

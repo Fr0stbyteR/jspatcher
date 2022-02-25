@@ -11,6 +11,7 @@ interface P {
     env: Env;
     lang: string;
     editor: PatcherEditor;
+    runtime?: boolean;
 }
 
 interface S {
@@ -26,16 +27,16 @@ export default class PatcherEditorUI extends React.PureComponent<P, S> {
         editorReady: this.props.editor.isReady
     };
     get tasks() {
-        return {
+        return [
             ...this.props.env.taskMgr.getTasksFromEmitter(this.props.editor.instance),
             ...this.props.env.taskMgr.getTasksFromEmitter(this.props.editor)
-        };
+        ];
     }
     get errors() {
-        return {
+        return [
             ...this.props.env.taskMgr.getErrorsFromEmitter(this.props.editor.instance),
             ...this.props.env.taskMgr.getErrorsFromEmitter(this.props.editor)
-        };
+        ];
     }
     handleTasks = () => this.setState({ tasks: this.tasks });
     handleErrors = () => this.setState({ errors: this.errors });
@@ -76,11 +77,14 @@ export default class PatcherEditorUI extends React.PureComponent<P, S> {
                         {dimmer}
                         <PatcherUI {...this.props} />
                     </div>
-                    <PatcherBottomMenu {...this.props} />
+                    {this.props.runtime ? undefined : <PatcherBottomMenu {...this.props} />}
                 </div>
-                <div className="ui-right">
-                    <PatcherRightMenu {...this.props} />
-                </div>
+                {this.props.runtime
+                    ? undefined
+                    : <div className="ui-right">
+                        <PatcherRightMenu {...this.props} />
+                    </div>
+                }
             </div>
         );
     }

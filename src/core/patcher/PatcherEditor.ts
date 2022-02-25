@@ -1,5 +1,5 @@
 import type { SemanticICONS } from "semantic-ui-react";
-import { isRectMovable, isRectResizable, isTRect } from "../../utils/utils";
+import { getTimestamp, isRectMovable, isRectResizable, isTRect } from "../../utils/utils";
 import FileEditor from "../file/FileEditor";
 import Box from "./Box";
 import Line from "./Line";
@@ -247,7 +247,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             .filter(id => id.startsWith("box") && this.boxes[id])
             .map(id => this.boxes[id])
             .forEach((box) => {
-                box.setZIndex(performance.now());
+                box.setZIndex(getTimestamp());
             });
     }
     sendToBack() {
@@ -255,7 +255,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             .filter(id => id.startsWith("box") && this.boxes[id])
             .map(id => this.boxes[id])
             .forEach((box) => {
-                box.setZIndex(-performance.now());
+                box.setZIndex(-getTimestamp());
             });
     }
     async pasteToPatcher(clipboard: RawPatcher | TMaxClipboard) {

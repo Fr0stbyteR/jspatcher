@@ -17,6 +17,7 @@ import "./EditorContainerUI.scss";
 
 interface P {
     env: Env;
+    runtime?: boolean;
     editorContainer: EditorContainer;
     lang: string;
 }
@@ -51,11 +52,14 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
     render() {
         return (
             <div className="editor-container ui-flex-column ui-flex-full">
-                <div className="editor-container-tabs-container">
-                    <div className="editor-container-tabs">
-                        {this.state.editors.map(editor => <EditorContainerTabUI {...this.props} key={editor.editorId} editor={editor} active={this.state.activeEditor === editor} onActive={this.handleActiveTab} onClose={this.handleCloseTab} />)}
+                {!this.props.runtime || (this.props.runtime && this.state.editors.length > 1)
+                    ? <div className="editor-container-tabs-container">
+                        <div className="editor-container-tabs">
+                            {this.state.editors.map(editor => <EditorContainerTabUI {...this.props} key={editor.editorId} editor={editor} active={this.state.activeEditor === editor} onActive={this.handleActiveTab} onClose={this.handleCloseTab} />)}
+                        </div>
                     </div>
-                </div>
+                    : undefined
+                }
                 <div className="editor-container-body ui-flex-column ui-flex-full">
                     {this.state.editors.length
                         ? this.state.editors.map((editor) => {
@@ -86,7 +90,9 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
                             }
                             return undefined;
                         })
-                        : <div className="empty"><span>Double-click to open a file or use File &gt; New to create a File</span></div>
+                        : <div className="empty">
+                            {this.props.runtime ? undefined : <span>Double-click to open a file or use File &gt; New to create a File</span>}
+                        </div>
                     }
                 </div>
             </div>
