@@ -880,7 +880,7 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "revision": "fa6a6a09918e16781ac25b3ea025b4e5"
   }, {
     "url": "packages/live/index.jspatpkg.js",
-    "revision": "a3452eb99396789003fdc1f609037a3e"
+    "revision": "43376ce25cece0fefc746cbb379fabeb"
   }, {
     "url": "packages/midi/index.js",
     "revision": "83bdb9f4d9c6ee2bb77d3a226d556c38"
@@ -892,31 +892,31 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "revision": "549601486a7aef08ad83b657b6cdc2aa"
   }, {
     "url": "packages/op/index.jsdsppkg.aw.js",
-    "revision": "676e814d94d1a36a868476b42aaaa89b"
+    "revision": "c670096c1a7f9c3bd31673cb0da82dd4"
   }, {
     "url": "packages/op/index.jsdsppkg.main.js",
-    "revision": "132526929691770b0fc22a770ae7fe59"
+    "revision": "014457e0532b9ff74c951acc6394d04b"
   }, {
     "url": "packages/op/index.jspatpkg.js",
-    "revision": "0be4e28666566e3d75b08b07298164bc"
+    "revision": "d0a0f222e40668ef030524bbc5472bea"
   }, {
     "url": "packages/std/index.js",
     "revision": "30a0b4840c53ae78f87ef98780828834"
   }, {
     "url": "packages/std/index.jsdsppkg.aw.js",
-    "revision": "bff2a8e17c884e5129991340def10813"
+    "revision": "69c4faff773988c47539af08760d4604"
   }, {
     "url": "packages/std/index.jsdsppkg.main.js",
-    "revision": "a9e77099e6b1575a9282abc9f6d7176c"
+    "revision": "c462b3f1f125db1c59e9bbc451d8a24b"
   }, {
     "url": "packages/std/index.jspatpkg.js",
-    "revision": "584f5d7d5caa4aed4f05d158908add5f"
+    "revision": "4386082de8ecdd5fc9d1221ed68fba4f"
   }, {
     "url": "packages/ui/index.js",
     "revision": "01d1aa6004f25aa4cb1257a3f0e94574"
   }, {
     "url": "packages/ui/index.jspatpkg.js",
-    "revision": "d38f4b26477c59b81e89464106e7ec21"
+    "revision": "ead45ebae58c74d666978abccca3ec50"
   }, {
     "url": "packages/webaudio/index.js",
     "revision": "d09ab0b6eaf7e9027de37aa17bbc4108"

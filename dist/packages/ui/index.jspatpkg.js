@@ -965,7 +965,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "@charset \"UTF-8\";\n.patcher div.box-ui > div.package-ui.package-ui-code {\n  height: 100%;\n  width: 100%;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button.box-ui-container {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: auto;\n  padding: 0px;\n  margin: 0px;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container {\n  display: flex;\n  flex: 0 0 auto;\n  padding: 4px 5px;\n  width: 100%;\n  font-family: Lato, Tahoma, sans-serif;\n  font-size: 12px;\n  text-align: left;\n  margin: 0px;\n  overflow-wrap: break-word;\n  cursor: default;\n  user-select: none;\n  -webkit-user-select: none;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container:first-child {\n  border-top-width: 4px;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container:last-child {\n  border-bottom-width: 4px;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container > span {\n  position: relative;\n  word-break: break-all;\n  width: 100%;\n  line-height: 14px;\n  font-weight: normal;\n  color: black;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container > span.editing {\n  pointer-events: auto;\n  cursor: text;\n  user-select: auto;\n  -webkit-user-select: auto;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container > span:empty::before {\n  content: \"​\";\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container > span::selection {\n  background-color: #004eff;\n  color: white;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container i.icon {\n  line-height: 14px;\n}\n.patcher div.box-ui > div.package-ui.package-ui-menu > .dropdown {\n  user-select: none;\n  -webkit-user-select: none;\n  font-size: 12px;\n  padding: 4px 15px 4px 5px;\n  min-height: auto;\n}\n.patcher div.box-ui > div.package-ui.package-ui-menu > .dropdown > .dropdown.icon {\n  padding: 5px 5px;\n}\n.patcher div.box-ui > div.package-ui.package-ui-menu > .dropdown > .menu > .item {\n  user-select: none;\n  -webkit-user-select: none;\n  font-size: 12px;\n  padding: 4px 5px !important;\n}\n.patcher div.box-ui > div.package-ui.package-ui-menu > .dropdown > .menu > .item.active {\n  font-weight: 600;\n}\n\n.patcher.unlocked div.box.selected > div.box-ui > div.package-ui.box-ui-button:hover, .patcher.unlocked div.box.selected > div.box-ui > div.package-ui.box-ui-button:active {\n  background-color: #e0e1e2;\n}\n.patcher.unlocked div.box.selected > div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container {\n  pointer-events: auto;\n}\n.patcher.unlocked div.box.selected > div.box-ui > div.package-ui > span {\n  pointer-events: auto;\n}", "",{"version":3,"sources":["webpack://./src/ui/ui.scss"],"names":[],"mappings":"AAAA,gBAAgB;AACZ;EACI,YAAA;EACA,WAAA;AACR;AAEQ;EACI,aAAA;EACA,sBAAA;EACA,YAAA;EACA,cAAA;EACA,YAAA;EACA,WAAA;AAAZ;AAEQ;EACI,aAAA;EACA,cAAA;EACA,gBAAA;EACA,WAAA;EACA,qCAAA;EACA,eAAA;EACA,gBAAA;EACA,WAAA;EACA,yBAAA;EACA,eAAA;EACA,iBAAA;EACA,yBAAA;AAAZ;AACY;EACI,qBAAA;AAChB;AACY;EACI,wBAAA;AAChB;AACY;EACI,kBAAA;EACA,qBAAA;EACA,WAAA;EACA,iBAAA;EACA,mBAAA;EACA,YAAA;AAChB;AAAgB;EACI,oBAAA;EACA,YAAA;EACA,iBAAA;EACA,yBAAA;AAEpB;AAAgB;EACI,YAAA;AAEpB;AAAgB;EACI,yBAAA;EACA,YAAA;AAEpB;AACY;EACI,iBAAA;AAChB;AAIQ;EACI,iBAAA;EACA,yBAAA;EACA,eAAA;EACA,yBAAA;EACA,gBAAA;AAFZ;AAGY;EACI,gBAAA;AADhB;AAGY;EACI,iBAAA;EACA,yBAAA;EACA,eAAA;EACA,2BAAA;AADhB;AAEgB;EACI,gBAAA;AAApB;;AAQQ;EACI,yBAAA;AALZ;AAOQ;EACI,oBAAA;AALZ;AAQI;EACI,oBAAA;AANR","sourcesContent":[".patcher div.box-ui > div.package-ui {\n    &.package-ui-code {\n        height: 100%;\n        width: 100%;\n    }\n    &.box-ui-button {\n        &.box-ui-container {\n            display: flex;\n            flex-direction: column;\n            height: 100%;\n            overflow: auto;\n            padding: 0px;\n            margin: 0px;\n        }\n        & > .box-ui-text-container {\n            display: flex;\n            flex: 0 0 auto;\n            padding: 4px 5px;\n            width: 100%;\n            font-family: Lato, Tahoma, sans-serif;\n            font-size: 12px;\n            text-align: left;\n            margin: 0px;\n            overflow-wrap: break-word;\n            cursor: default;\n            user-select: none;\n            -webkit-user-select: none;\n            &:first-child {\n                border-top-width: 4px;\n            }\n            &:last-child {\n                border-bottom-width: 4px;\n            }\n            & > span {\n                position: relative;\n                word-break: break-all;\n                width: 100%;\n                line-height: 14px;\n                font-weight: normal;\n                color: black;\n                &.editing {\n                    pointer-events: auto;\n                    cursor: text;\n                    user-select: auto;\n                    -webkit-user-select: auto;\n                }\n                &:empty::before {\n                    content: \"\\200b\";\n                }\n                &::selection {\n                    background-color: #004eff;\n                    color: white;\n                }\n            }\n            i.icon {\n                line-height: 14px;\n            }\n        }\n    }\n    &.package-ui-menu {\n        & > .dropdown {\n            user-select: none;\n            -webkit-user-select: none;\n            font-size: 12px;\n            padding: 4px 15px 4px 5px;\n            min-height: auto;\n            & > .dropdown.icon {\n                padding: 5px 5px;\n            }\n            & > .menu > .item {\n                user-select: none;\n                -webkit-user-select: none;\n                font-size: 12px;\n                padding: 4px 5px!important;\n                &.active {\n                    font-weight: 600;\n                }\n            }\n        }\n    }\n}\n.patcher.unlocked div.box.selected > div.box-ui > div.package-ui {\n    &.box-ui-button {\n        &:hover, &:active {\n            background-color: #e0e1e2;\n        }\n        & > .box-ui-text-container {\n            pointer-events: auto;\n        }\n    }\n    & > span {\n        pointer-events: auto;\n    }\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "@charset \"UTF-8\";\n.patcher div.box-ui > div.package-ui.package-ui-code {\n  height: 100%;\n  width: 100%;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button.box-ui-container {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  overflow: auto;\n  padding: 0px;\n  margin: 0px;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container {\n  display: flex;\n  flex: 0 0 auto;\n  padding: 4px 5px;\n  width: 100%;\n  font-family: Lato, Tahoma, sans-serif;\n  font-size: 12px;\n  text-align: left;\n  margin: 0px;\n  overflow-wrap: break-word;\n  cursor: default;\n  user-select: none;\n  -webkit-user-select: none;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container:first-child {\n  border-top-width: 4px;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container:last-child {\n  border-bottom-width: 4px;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container > span {\n  position: relative;\n  word-break: break-all;\n  width: 100%;\n  line-height: 14px;\n  font-weight: normal;\n  color: black;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container > span.editing {\n  pointer-events: auto;\n  cursor: text;\n  user-select: auto;\n  -webkit-user-select: auto;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container > span:empty::before {\n  content: \"​\";\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container > span::selection {\n  background-color: #004eff;\n  color: white;\n}\n.patcher div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container i.icon {\n  line-height: 14px;\n}\n.patcher div.box-ui > div.package-ui.package-ui-menu > .dropdown {\n  user-select: none;\n  -webkit-user-select: none;\n  font-size: 12px;\n  padding: 4px 15px 4px 5px;\n  min-height: auto;\n}\n.patcher div.box-ui > div.package-ui.package-ui-menu > .dropdown > .dropdown.icon {\n  padding: 5px 5px;\n}\n.patcher div.box-ui > div.package-ui.package-ui-menu > .dropdown > .menu > .item {\n  user-select: none;\n  -webkit-user-select: none;\n  font-size: 12px;\n  padding: 4px 5px !important;\n}\n.patcher div.box-ui > div.package-ui.package-ui-menu > .dropdown > .menu > .item.active {\n  font-weight: 600;\n}\n.patcher div.box-ui > div.package-ui.package-ui-preset .preset-bubble:hover {\n  box-shadow: inset rgba(255, 255, 255, 0.5) 0px 0px 2px 2px;\n}\n.patcher div.box-ui > div.package-ui.package-ui-preset .preset-hovered {\n  position: absolute;\n  overflow: hidden;\n  display: flex;\n  top: 0;\n  background-color: rgba(255, 255, 255, 0.5);\n}\n.patcher div.box-ui > div.package-ui.package-ui-preset .preset-hovered > span {\n  margin: 0px 4px;\n}\n\n.patcher.unlocked div.box.selected > div.box-ui > div.package-ui.box-ui-button:hover, .patcher.unlocked div.box.selected > div.box-ui > div.package-ui.box-ui-button:active {\n  background-color: #e0e1e2;\n}\n.patcher.unlocked div.box.selected > div.box-ui > div.package-ui.box-ui-button > .box-ui-text-container {\n  pointer-events: auto;\n}\n.patcher.unlocked div.box.selected > div.box-ui > div.package-ui > span {\n  pointer-events: auto;\n}", "",{"version":3,"sources":["webpack://./src/ui/ui.scss"],"names":[],"mappings":"AAAA,gBAAgB;AACZ;EACI,YAAA;EACA,WAAA;AACR;AAEQ;EACI,aAAA;EACA,sBAAA;EACA,YAAA;EACA,cAAA;EACA,YAAA;EACA,WAAA;AAAZ;AAEQ;EACI,aAAA;EACA,cAAA;EACA,gBAAA;EACA,WAAA;EACA,qCAAA;EACA,eAAA;EACA,gBAAA;EACA,WAAA;EACA,yBAAA;EACA,eAAA;EACA,iBAAA;EACA,yBAAA;AAAZ;AACY;EACI,qBAAA;AAChB;AACY;EACI,wBAAA;AAChB;AACY;EACI,kBAAA;EACA,qBAAA;EACA,WAAA;EACA,iBAAA;EACA,mBAAA;EACA,YAAA;AAChB;AAAgB;EACI,oBAAA;EACA,YAAA;EACA,iBAAA;EACA,yBAAA;AAEpB;AAAgB;EACI,YAAA;AAEpB;AAAgB;EACI,yBAAA;EACA,YAAA;AAEpB;AACY;EACI,iBAAA;AAChB;AAIQ;EACI,iBAAA;EACA,yBAAA;EACA,eAAA;EACA,yBAAA;EACA,gBAAA;AAFZ;AAGY;EACI,gBAAA;AADhB;AAGY;EACI,iBAAA;EACA,yBAAA;EACA,eAAA;EACA,2BAAA;AADhB;AAEgB;EACI,gBAAA;AAApB;AAMQ;EACI,0DAAA;AAJZ;AAMQ;EACI,kBAAA;EACA,gBAAA;EACA,aAAA;EACA,MAAA;EACA,0CAAA;AAJZ;AAKY;EACI,eAAA;AAHhB;;AAUQ;EACI,yBAAA;AAPZ;AASQ;EACI,oBAAA;AAPZ;AAUI;EACI,oBAAA;AARR","sourcesContent":[".patcher div.box-ui > div.package-ui {\n    &.package-ui-code {\n        height: 100%;\n        width: 100%;\n    }\n    &.box-ui-button {\n        &.box-ui-container {\n            display: flex;\n            flex-direction: column;\n            height: 100%;\n            overflow: auto;\n            padding: 0px;\n            margin: 0px;\n        }\n        & > .box-ui-text-container {\n            display: flex;\n            flex: 0 0 auto;\n            padding: 4px 5px;\n            width: 100%;\n            font-family: Lato, Tahoma, sans-serif;\n            font-size: 12px;\n            text-align: left;\n            margin: 0px;\n            overflow-wrap: break-word;\n            cursor: default;\n            user-select: none;\n            -webkit-user-select: none;\n            &:first-child {\n                border-top-width: 4px;\n            }\n            &:last-child {\n                border-bottom-width: 4px;\n            }\n            & > span {\n                position: relative;\n                word-break: break-all;\n                width: 100%;\n                line-height: 14px;\n                font-weight: normal;\n                color: black;\n                &.editing {\n                    pointer-events: auto;\n                    cursor: text;\n                    user-select: auto;\n                    -webkit-user-select: auto;\n                }\n                &:empty::before {\n                    content: \"\\200b\";\n                }\n                &::selection {\n                    background-color: #004eff;\n                    color: white;\n                }\n            }\n            i.icon {\n                line-height: 14px;\n            }\n        }\n    }\n    &.package-ui-menu {\n        & > .dropdown {\n            user-select: none;\n            -webkit-user-select: none;\n            font-size: 12px;\n            padding: 4px 15px 4px 5px;\n            min-height: auto;\n            & > .dropdown.icon {\n                padding: 5px 5px;\n            }\n            & > .menu > .item {\n                user-select: none;\n                -webkit-user-select: none;\n                font-size: 12px;\n                padding: 4px 5px!important;\n                &.active {\n                    font-weight: 600;\n                }\n            }\n        }\n    }\n    &.package-ui-preset {\n        & .preset-bubble:hover {\n            box-shadow: inset rgba(255, 255, 255, 0.5) 0px 0px 2px 2px;\n        }\n        & .preset-hovered {\n            position: absolute;\n            overflow: hidden;\n            display: flex;\n            top: 0;\n            background-color: rgba(255, 255, 255, 0.5);\n            & > span {\n                margin: 0px 4px;\n            }\n        }\n    }\n}\n.patcher.unlocked div.box.selected > div.box-ui > div.package-ui {\n    &.box-ui-button {\n        &:hover, &:active {\n            background-color: #e0e1e2;\n        }\n        & > .box-ui-text-container {\n            pointer-events: auto;\n        }\n    }\n    & > span {\n        pointer-events: auto;\n    }\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2645,6 +2645,264 @@ panel.props = {
   }
 };
 panel.UI = _ui_panel__WEBPACK_IMPORTED_MODULE_0__["default"];
+
+
+/***/ }),
+
+/***/ "./src/objects/preset.ts":
+/*!*******************************!*\
+  !*** ./src/objects/preset.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ preset)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+/* harmony import */ var _ui_preset__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ui/preset */ "./src/ui/preset.tsx");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+
+
+
+class preset extends _base__WEBPACK_IMPORTED_MODULE_2__["default"] {
+  constructor() {
+    super(...arguments);
+    this._ = { boxInspected: /* @__PURE__ */ new Set() };
+    this.handleStateUpdated = () => {
+      const { boxesInspected } = this;
+      const data = {};
+      for (const b of boxesInspected) {
+        data[b.id] = b.object.state;
+      }
+      this.outlet(4, data);
+    };
+  }
+  get included() {
+    var _a;
+    const included = /* @__PURE__ */ new Set();
+    (_a = this.outletLines[0]) == null ? void 0 : _a.forEach((l) => included.add(l.destBox));
+    return included;
+  }
+  get excluded() {
+    var _a;
+    const excluded = /* @__PURE__ */ new Set();
+    (_a = this.outletLines[2]) == null ? void 0 : _a.forEach((l) => excluded.add(l.destBox));
+    return excluded;
+  }
+  get boxesInspected() {
+    const { included, excluded } = this;
+    const boxes = included.size ? included : new Set(Object.values(this.patcher.boxes));
+    for (const b of excluded) {
+      boxes.delete(b);
+    }
+    return boxes;
+  }
+  updateBoxInspected() {
+    var _a;
+    const oldBoxes = this._.boxInspected;
+    const newBoxes = [...this.boxesInspected];
+    for (const boxId of [...oldBoxes]) {
+      const found = newBoxes.find((b) => b.id === boxId);
+      if (!found) {
+        oldBoxes.delete(boxId);
+        (_a = this.patcher.boxes[boxId]) == null ? void 0 : _a.object.off("stateUpdated", this.handleStateUpdated);
+      }
+    }
+    for (const box of newBoxes) {
+      if (!oldBoxes.has(box.id)) {
+        oldBoxes.add(box.id);
+        box.object.on("stateUpdated", this.handleStateUpdated);
+      }
+    }
+  }
+  store(slot) {
+    const { boxesInspected } = this;
+    const data = {};
+    for (const b of boxesInspected) {
+      const { state } = b.object;
+      if (state)
+        data[b.id] = __spreadValues({}, state);
+    }
+    this.data[slot] = data;
+    this.setData(this.data);
+    this.updateUI({ data: __spreadValues({}, this.data) });
+    return data;
+  }
+  recall(slot) {
+    const data = this.data[slot];
+    if (!data)
+      return false;
+    const { boxesInspected } = this;
+    for (const b of boxesInspected) {
+      if (b.id in data)
+        b.object.updateState(data[b.id]);
+    }
+    this.updateUI({ currentPreset: slot });
+    return true;
+  }
+  clear(slot) {
+    delete this.data[slot];
+    this.setData(this.data);
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 2;
+      this.outlets = 5;
+      if (!this.data)
+        this.setData([]);
+    });
+    this.on("postInit", () => {
+    });
+    this.on("connectedOutlet", ({ outlet }) => {
+      if (outlet === 0 || outlet === 2)
+        this.updateBoxInspected();
+    });
+    this.on("disconnectedOutlet", ({ outlet }) => {
+      if (outlet === 0 || outlet === 2)
+        this.updateBoxInspected();
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data)) {
+          if (typeof data === "number") {
+            if (!this.recall(~~+data))
+              return;
+            this.outlet(1, ~~+data);
+          } else if (typeof data === "object") {
+            if ("store" in data) {
+              this.store(data.store);
+              this.outlet(3, ~~+data);
+            } else if ("clear" in data) {
+              this.clear(data.clear);
+              this.updateUI({ data: __spreadValues({}, this.data) });
+            }
+          } else if (data === "clearall") {
+            this.setData([]);
+            this.updateUI({ data: __spreadValues({}, this.data) });
+          }
+        }
+      } else if (inlet === 1) {
+        if (typeof data === "object") {
+          const { boxesInspected } = this;
+          for (const b of boxesInspected) {
+            if (b.id in data)
+              b.object.updateState(data[b.id]);
+          }
+        }
+      }
+    });
+    this.on("destroy", () => {
+      this._.boxInspected.forEach((boxId) => {
+        var _a;
+        return (_a = this.patcher.boxes[boxId]) == null ? void 0 : _a.object.off("stateUpdated", this.handleStateUpdated);
+      });
+    });
+  }
+}
+preset.description = "Store and recall settings";
+preset.inlets = [{
+  type: "anything",
+  isHot: true,
+  description: `Store or Recall Presets: number | { store: number } | "clearall" | { clear: number }`
+}, {
+  type: "anything",
+  isHot: true,
+  description: "Preset data"
+}];
+preset.outlets = [{
+  type: "anything",
+  description: "Connect to Objects to Include in a Preset"
+}, {
+  type: "number",
+  description: "Preset number when called"
+}, {
+  type: "anything",
+  description: "Connect to Objects to Exclude in a Preset"
+}, {
+  type: "anything",
+  description: "Preset number when stored"
+}, {
+  type: "anything",
+  description: "Preset data"
+}];
+preset.props = {
+  bubbleSize: {
+    type: "number",
+    default: 8,
+    description: "Size in pixel of each preset slot",
+    isUIState: true
+  },
+  activeColor: {
+    type: "color",
+    default: "#CEE5E8",
+    description: "Active preset slot color.",
+    isUIState: true
+  },
+  storedColor: {
+    type: "color",
+    default: "#7D7F84",
+    description: "Stored preset slot color.",
+    isUIState: true
+  },
+  emptyColor: {
+    type: "color",
+    default: "#595959",
+    description: "Empty preset slot color.",
+    isUIState: true
+  },
+  bgColor: {
+    type: "color",
+    default: "rgb(51, 51, 51)",
+    description: "Background color.",
+    isUIState: true
+  },
+  textColor: {
+    type: "color",
+    default: "rgb(33, 33, 33)",
+    description: "Text color.",
+    isUIState: true
+  },
+  fontFamily: {
+    type: "enum",
+    enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
+    default: "Lato",
+    description: "Font family",
+    isUIState: true
+  },
+  fontSize: {
+    type: "number",
+    default: 11,
+    description: "Text font size",
+    isUIState: true
+  },
+  fontFace: {
+    type: "enum",
+    enums: ["regular", "bold", "italic", "bold italic"],
+    default: "regular",
+    description: "Text style",
+    isUIState: true
+  }
+};
+preset.UI = _ui_preset__WEBPACK_IMPORTED_MODULE_1__["default"];
 
 
 /***/ }),
@@ -5371,6 +5629,106 @@ class PanelUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
 }
 PanelUI.sizing = "both";
 PanelUI.defaultSize = [210, 210];
+
+
+/***/ }),
+
+/***/ "./src/ui/preset.tsx":
+/*!***************************!*\
+  !*** ./src/ui/preset.tsx ***!
+  \***************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ PresetUI)
+/* harmony export */ });
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+class PresetUI extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI {
+  constructor() {
+    super(...arguments);
+    this.state = __spreadProps(__spreadValues({}, this.state), { data: this.object.data, currentPreset: -1, hover: -1 });
+    this.refContainer = _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createRef();
+    this.handleClick = ($, e) => {
+      if (e.shiftKey)
+        this.object.store($);
+      else
+        this.object.recall($);
+    };
+    this.handleMouseMove = (e) => {
+      if (e.target && e.target instanceof HTMLDivElement && e.target.className === "preset-bubble") {
+        const $ = [...e.currentTarget.children].indexOf(e.target);
+        this.setState({ hover: $ });
+      } else {
+        this.setState({ hover: -1 });
+      }
+    };
+  }
+  render() {
+    var _a;
+    const { width, height, data, currentPreset, bgColor, bubbleSize, fontFace, fontFamily, fontSize, textColor, storedColor, activeColor, emptyColor, hover } = this.state;
+    const rect = (_a = this.refContainer.current) == null ? void 0 : _a.getBoundingClientRect();
+    const columns = ~~(((typeof width === "number" ? width : rect == null ? void 0 : rect.width) || 100 - 4) / (bubbleSize + 4));
+    const rows = ~~(((typeof height === "number" ? height : rect == null ? void 0 : rect.height) || 40 - 4) / (bubbleSize + 4));
+    const bubbles = [];
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        const $ = i * columns + j;
+        const bubbleStyle = {
+          position: "absolute",
+          display: "flex",
+          left: `${4 + j * (bubbleSize + 4)}px`,
+          top: `${4 + i * (bubbleSize + 4)}px`,
+          width: `${bubbleSize}px`,
+          height: `${bubbleSize}px`,
+          backgroundColor: data[$] ? currentPreset === $ ? activeColor : storedColor : emptyColor,
+          overflow: "hidden"
+        };
+        bubbles.push(/* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
+          key: `bubble${$}`,
+          className: "preset-bubble",
+          style: bubbleStyle,
+          onClick: (e) => this.handleClick($, e)
+        }));
+      }
+    }
+    return /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement(_sdk__WEBPACK_IMPORTED_MODULE_0__.BaseUI, __spreadValues({}, this.props), /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
+      ref: this.refContainer,
+      style: { position: "absolute", width: "100%", height: "100%", display: "block", overflow: "hidden", backgroundColor: bgColor },
+      onMouseMove: this.handleMouseMove
+    }, bubbles, hover >= 0 ? /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("div", {
+      className: "preset-hovered",
+      style: __spreadValues({
+        height: `${fontSize + 4}px`,
+        font: `${fontFace === "regular" ? "" : fontFace} ${fontSize}px ${fontFamily}, sans-serif`,
+        color: textColor
+      }, hover % columns > columns / 2 ? { left: 0 } : { right: 0 })
+    }, /* @__PURE__ */ _sdk__WEBPACK_IMPORTED_MODULE_0__.React.createElement("span", null, hover)) : void 0));
+  }
+}
+PresetUI.sizing = "both";
+PresetUI.defaultSize = [100, 40];
 
 
 /***/ }),
@@ -8846,7 +9204,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_text__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./objects/text */ "./src/objects/text.ts");
 /* harmony import */ var _objects_video__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./objects/video */ "./src/objects/video.ts");
 /* harmony import */ var _objects_panel__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./objects/panel */ "./src/objects/panel.ts");
-/* harmony import */ var _ui_ui_scss__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./ui/ui.scss */ "./src/ui/ui.scss");
+/* harmony import */ var _objects_preset__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./objects/preset */ "./src/objects/preset.ts");
+/* harmony import */ var _ui_ui_scss__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./ui/ui.scss */ "./src/ui/ui.scss");
+
 
 
 
@@ -8876,7 +9236,8 @@ __webpack_require__.r(__webpack_exports__);
   multislider: _objects_multislider__WEBPACK_IMPORTED_MODULE_10__["default"],
   ptext: _objects_text__WEBPACK_IMPORTED_MODULE_11__["default"],
   video: _objects_video__WEBPACK_IMPORTED_MODULE_12__["default"],
-  panel: _objects_panel__WEBPACK_IMPORTED_MODULE_13__["default"]
+  panel: _objects_panel__WEBPACK_IMPORTED_MODULE_13__["default"],
+  preset: _objects_preset__WEBPACK_IMPORTED_MODULE_14__["default"]
 }));
 
 })();

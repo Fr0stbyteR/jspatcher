@@ -98,9 +98,6 @@ class LiveObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {
           this.updateUI({ value: this.state.value });
       }
     });
-    this.on("updateState", ({ value }) => {
-      this.validateValue(value);
-    });
   }
 }
 LiveObject.package = _index__WEBPACK_IMPORTED_MODULE_0__.name;
@@ -251,6 +248,12 @@ class LiveButton extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       if (b01 && lastValue < this.state.value || b10 && lastValue > this.state.value)
         this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_0__.Bang());
     });
+    this.on("updateState", ({ value }) => {
+      validateAndUpdateUI(value);
+      this.outlet(1, this.state.value);
+      if (this.state.value && this.getProp("transition") !== "One->Zero")
+        this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_0__.Bang());
+    });
   }
 }
 LiveButton.description = "Button";
@@ -385,6 +388,10 @@ class LiveDial extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
     });
     this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
+      this.outletAll([this.state.value, this._.displayValue]);
+    });
+    this.on("updateState", ({ value }) => {
+      validateAndUpdateUI(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
@@ -700,6 +707,10 @@ class LiveGain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       window.clearTimeout(this._.$requestTimer);
       if (this._.analyserNode)
         await this._.analyserNode.destroy();
+    });
+    this.on("updateState", ({ value }) => {
+      validateAndUpdateUI(value);
+      this.outletAll([, this.state.value, this._.displayValue]);
     });
   }
 }
@@ -1171,6 +1182,10 @@ class LiveNumbox extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
+    this.on("updateState", ({ value }) => {
+      validateAndUpdateUI(value);
+      this.outletAll([this.state.value, this._.displayValue]);
+    });
   }
 }
 LiveNumbox.description = "Number box";
@@ -1338,6 +1353,10 @@ class LiveSlider extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
+    this.on("updateState", ({ value }) => {
+      validateAndUpdateUI(value);
+      this.outletAll([this.state.value, this._.displayValue]);
+    });
   }
 }
 LiveSlider.description = "Slider";
@@ -1503,6 +1522,10 @@ class LiveTab extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
     });
     this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
+      this.outletAll([this.state.value, this._.displayValue]);
+    });
+    this.on("updateState", ({ value }) => {
+      validateAndUpdateUI(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
@@ -1696,6 +1719,10 @@ class LiveText extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
+    this.on("updateState", ({ value }) => {
+      validateAndUpdateUI(value);
+      this.outletAll([this.state.value, this._.displayValue]);
+    });
   }
 }
 LiveText.description = "Button or toggle with text";
@@ -1873,6 +1900,10 @@ class LiveToggle extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
     });
     this.on("changeFromUI", ({ value }) => {
       this.validateValue(value);
+      this.outletAll([this.state.value, this._.displayValue]);
+    });
+    this.on("updateState", ({ value }) => {
+      validateAndUpdateUI(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }

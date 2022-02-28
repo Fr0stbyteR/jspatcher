@@ -198,6 +198,119 @@ _.args = [{
 
 /***/ }),
 
+/***/ "./src/objects/arr.ts":
+/*!****************************!*\
+  !*** ./src/objects/arr.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ arr)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+
+
+const _arr = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor() {
+    super(...arguments);
+    this._ = { arr: [] };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("updateArgs", () => {
+      this.inlets = Math.max(0, ~~+this.args[0]) + 2;
+      updateInletsMeta(this.getProp("hot"));
+    });
+    const updateInletsMeta = (isHot) => {
+      const inlet1Meta = __spreadValues({}, _arr.inlets[1]);
+      const lastInletMeta = _arr.inlets[2];
+      const restInletsMeta = new Array(Math.max(0, ~~+this.args[0])).fill(null).map((v, i) => __spreadProps(__spreadValues({}, inlet1Meta), { description: `${inlet1Meta.description}: ${i}`, isHot }));
+      this.setMeta({ inlets: [inlet1Meta, ...restInletsMeta, lastInletMeta] });
+    };
+    this.on("postInit", () => {
+      this.inlets = Math.max(0, ~~+this.args[0]) + 2;
+      this.outlets = 1;
+      updateInletsMeta(this.getProp("hot"));
+    });
+    this.on("updateProps", (props) => {
+      updateInletsMeta(props.hot);
+    });
+    this.on("inlet", ({ data, inlet }) => {
+      if (inlet === 0) {
+        const { arr: arr2 } = this._;
+        this._.arr = [];
+        this.outlet(0, arr2);
+      } else if (inlet === this.inlets - 1) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data) && Array.isArray(data))
+          this._.arr = data;
+      } else {
+        this._.arr[inlet - 1] = data;
+        if (this.getProp("hot"))
+          this.outlet(0, this._.arr);
+      }
+    });
+  }
+};
+let arr = _arr;
+arr.description = "Construct an array with sufficient inlets";
+arr.inlets = [{
+  isHot: true,
+  type: "object",
+  description: "Bang to output current array and initialize a new one"
+}, {
+  isHot: false,
+  type: "anything",
+  varLength: true,
+  description: "Value to set to the index"
+}, {
+  isHot: false,
+  type: "object",
+  description: "Pre-set the array"
+}];
+arr.outlets = [{
+  type: "object",
+  description: "Created array"
+}];
+arr.args = [{
+  type: "anything",
+  optional: true,
+  default: 1,
+  description: "Array length"
+}];
+arr.props = {
+  hot: {
+    type: "boolean",
+    default: false,
+    description: "Output the array on any index set"
+  }
+};
+
+
+
+/***/ }),
+
 /***/ "./src/objects/bang.ts":
 /*!*****************************!*\
   !*** ./src/objects/bang.ts ***!
@@ -1028,8 +1141,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ obj)
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj2, key, value) => key in obj2 ? __defProp(obj2, key, { enumerable: true, configurable: true, writable: true, value }) : obj2[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
-class obj extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+
+const _obj = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   constructor() {
     super(...arguments);
     this._ = { obj: {} };
@@ -1037,23 +1171,41 @@ class obj extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   subscribe() {
     super.subscribe();
     this.on("updateArgs", (args) => {
-      this.inlets = args.length + 1;
+      this.inlets = args.length + 2;
+      updateInletsMeta(this.getProp("hot"));
     });
+    const updateInletsMeta = (isHot) => {
+      const inlet1Meta = __spreadValues({}, _obj.inlets[1]);
+      const lastInletMeta = _obj.inlets[2];
+      const restInletsMeta = this.args.map((propKey) => __spreadProps(__spreadValues({}, inlet1Meta), { description: `${inlet1Meta.description}: ${propKey}`, isHot }));
+      this.setMeta({ inlets: [inlet1Meta, ...restInletsMeta, lastInletMeta] });
+    };
     this.on("postInit", () => {
-      this.inlets = this.args.length + 1;
+      this.inlets = this.args.length + 2;
       this.outlets = 1;
+      updateInletsMeta(this.getProp("hot"));
+    });
+    this.on("updateProps", (props) => {
+      updateInletsMeta(props.hot);
     });
     this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
-        this.outlet(0, this._.obj);
+        const { obj: obj2 } = this._;
         this._.obj = {};
+        this.outlet(0, obj2);
+      } else if (inlet === this.inlets - 1) {
+        if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data) && typeof data === "object")
+          this._.obj = data;
       } else {
         const propKey = this.box.args[inlet - 1];
         this._.obj[propKey] = data;
+        if (this.getProp("hot"))
+          this.outlet(0, this._.obj);
       }
     });
   }
-}
+};
+let obj = _obj;
 obj.description = "Construct an object with various properties";
 obj.inlets = [{
   isHot: true,
@@ -1064,6 +1216,10 @@ obj.inlets = [{
   type: "anything",
   varLength: true,
   description: "Value to set to the property"
+}, {
+  isHot: false,
+  type: "object",
+  description: "Pre-set the object"
 }];
 obj.outlets = [{
   type: "object",
@@ -1075,6 +1231,14 @@ obj.args = [{
   varLength: true,
   description: "Key / name of the property"
 }];
+obj.props = {
+  hot: {
+    type: "boolean",
+    default: false,
+    description: "Output the object on any property set"
+  }
+};
+
 
 
 /***/ }),
@@ -3739,14 +3903,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_lambda__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./objects/lambda */ "./src/objects/lambda.ts");
 /* harmony import */ var _objects_loadbang__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./objects/loadbang */ "./src/objects/loadbang.ts");
 /* harmony import */ var _objects_obj__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./objects/obj */ "./src/objects/obj.ts");
-/* harmony import */ var _objects_print__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./objects/print */ "./src/objects/print.ts");
-/* harmony import */ var _objects_sel__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./objects/sel */ "./src/objects/sel.ts");
-/* harmony import */ var _objects_set__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./objects/set */ "./src/objects/set.ts");
-/* harmony import */ var _objects_thispatcher__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./objects/thispatcher */ "./src/objects/thispatcher.ts");
-/* harmony import */ var _objects_v__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./objects/v */ "./src/objects/v.ts");
-/* harmony import */ var _objects___WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./objects/_ */ "./src/objects/_.ts");
-/* harmony import */ var _objects_unloadbang__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./objects/unloadbang */ "./src/objects/unloadbang.ts");
-/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
+/* harmony import */ var _objects_arr__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./objects/arr */ "./src/objects/arr.ts");
+/* harmony import */ var _objects_print__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./objects/print */ "./src/objects/print.ts");
+/* harmony import */ var _objects_sel__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./objects/sel */ "./src/objects/sel.ts");
+/* harmony import */ var _objects_set__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./objects/set */ "./src/objects/set.ts");
+/* harmony import */ var _objects_thispatcher__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./objects/thispatcher */ "./src/objects/thispatcher.ts");
+/* harmony import */ var _objects_v__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./objects/v */ "./src/objects/v.ts");
+/* harmony import */ var _objects___WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./objects/_ */ "./src/objects/_.ts");
+/* harmony import */ var _objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./objects/unloadbang */ "./src/objects/unloadbang.ts");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
 
 
 
@@ -3767,27 +3932,33 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+const obj = (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_11__.default);
+const arr = (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_arr__WEBPACK_IMPORTED_MODULE_12__.default);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => {
   return {
-    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_print__WEBPACK_IMPORTED_MODULE_12__.default),
-    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__.default),
-    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__.default),
-    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__.default),
-    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_7__.default),
-    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_13__.default),
-    obj: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_11__.default),
-    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_set__WEBPACK_IMPORTED_MODULE_14__.default),
-    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_get__WEBPACK_IMPORTED_MODULE_8__.default),
-    collect: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_collect__WEBPACK_IMPORTED_MODULE_5__.default),
-    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_6__.default),
-    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__.default),
-    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_v__WEBPACK_IMPORTED_MODULE_16__.default),
-    _: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects___WEBPACK_IMPORTED_MODULE_17__.default),
-    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_9__.default),
-    bang: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default),
-    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_10__.default),
-    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_18__.default),
-    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_19__.generateRemotedObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_15__.default)
+    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_print__WEBPACK_IMPORTED_MODULE_13__.default),
+    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__.default),
+    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__.default),
+    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__.default),
+    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_7__.default),
+    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_14__.default),
+    obj,
+    "{}": obj,
+    arr,
+    "[]": arr,
+    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_set__WEBPACK_IMPORTED_MODULE_15__.default),
+    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_get__WEBPACK_IMPORTED_MODULE_8__.default),
+    collect: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_collect__WEBPACK_IMPORTED_MODULE_5__.default),
+    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_6__.default),
+    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__.default),
+    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_v__WEBPACK_IMPORTED_MODULE_17__.default),
+    _: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects___WEBPACK_IMPORTED_MODULE_18__.default),
+    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_9__.default),
+    bang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default),
+    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_10__.default),
+    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__.default),
+    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_16__.default)
   };
 });
 
