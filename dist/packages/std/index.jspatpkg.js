@@ -244,10 +244,11 @@ const _arr = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       updateInletsMeta(this.getProp("hot"));
     });
     const updateInletsMeta = (isHot) => {
+      const inlet0Meta = _arr.inlets[0];
       const inlet1Meta = __spreadValues({}, _arr.inlets[1]);
       const lastInletMeta = _arr.inlets[2];
       const restInletsMeta = new Array(Math.max(0, ~~+this.args[0])).fill(null).map((v, i) => __spreadProps(__spreadValues({}, inlet1Meta), { description: `${inlet1Meta.description}: ${i}`, isHot }));
-      this.setMeta({ inlets: [inlet1Meta, ...restInletsMeta, lastInletMeta] });
+      this.setMeta({ inlets: [inlet0Meta, ...restInletsMeta, lastInletMeta] });
     };
     this.on("postInit", () => {
       this.inlets = Math.max(0, ~~+this.args[0]) + 2;
@@ -1475,10 +1476,11 @@ const _obj = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       updateInletsMeta(this.getProp("hot"));
     });
     const updateInletsMeta = (isHot) => {
+      const inlet0Meta = _obj.inlets[0];
       const inlet1Meta = __spreadValues({}, _obj.inlets[1]);
       const lastInletMeta = _obj.inlets[2];
       const restInletsMeta = this.args.map((propKey) => __spreadProps(__spreadValues({}, inlet1Meta), { description: `${inlet1Meta.description}: ${propKey}`, isHot }));
-      this.setMeta({ inlets: [inlet1Meta, ...restInletsMeta, lastInletMeta] });
+      this.setMeta({ inlets: [inlet0Meta, ...restInletsMeta, lastInletMeta] });
     };
     this.on("postInit", () => {
       this.inlets = this.args.length + 2;
