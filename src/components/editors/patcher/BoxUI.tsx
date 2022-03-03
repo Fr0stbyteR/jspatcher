@@ -269,8 +269,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
             return;
         }
         const { isSrc, i } = highlightPort;
-        if (isSrc && this.state.highlightOutlet === null) this.setState({ highlightOutlet: i });
-        else if (!isSrc && this.state.highlightInlet === null) this.setState({ highlightInlet: i });
+        if (isSrc && this.state.highlightOutlet !== i) this.setState({ highlightOutlet: i });
+        else if (!isSrc && this.state.highlightInlet !== i) this.setState({ highlightInlet: i });
     };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
