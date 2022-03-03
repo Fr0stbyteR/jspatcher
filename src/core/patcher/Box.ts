@@ -11,9 +11,7 @@ export interface BoxEventMap extends Pick<JSPatcherObjectEventMap<any, any, any,
     "backgroundChanged": Box;
     "presentationChanged": Box;
     "textChanged": Box;
-    "highlight": Box;
     "error": string;
-    "highlightPort": { isSrc: boolean; i: number; highlight: boolean };
     "connectedPort": { isSrc: boolean; i: number; last?: false };
     "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
     "ioCountChanged": Box;
@@ -392,10 +390,10 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         this.emit("error", text);
     }
     highlight() {
-        this.emit("highlight", this);
+        this._patcher.emit("highlightBox", this.id);
     }
-    highlightPort(isSrc: boolean, i: number, highlight: boolean) {
-        this.emit("highlightPort", { isSrc, i, highlight });
+    highlightPort(isSrc: boolean, portIndex: number) {
+        this._patcher.emit("highlightPort", { boxId: this.id, isSrc, i: portIndex });
     }
     undoable(e: { oldArgs?: Args<T>; args?: Args<T>; oldProps?: Props<T>; props?: Props<T>; oldState?: State<T>; state?: State<T>; oldZIndex: number; zIndex?: number }) {
         this._patcher.boxChanged(this.id, e);

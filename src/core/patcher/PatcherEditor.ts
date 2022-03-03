@@ -27,6 +27,8 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "inspector": never;
     "dockUI": string;
     "propsChanged": { props: Partial<TPublicPatcherProps>; oldProps: Partial<TPublicPatcherProps> };
+    "highlightBox": string;
+    "highlightPort": { boxId: string; isSrc: boolean; i: number } | null;
 }
 
 export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized" | "boxChanged" | "propsChanged"> {}
@@ -83,6 +85,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     handleBoxChanged = (e: PatcherEventMap["boxChanged"]) => this.emit("boxChanged", e);
     handlePropsChanged = (e: PatcherEventMap["propsChanged"]) => this.emit("propsChanged", e);
     handleZIndexChanged = (e: PatcherEventMap["zIndexChanged"]) => this.emit("zIndexChanged", e);
+    handleHighlightBox = (e: PatcherEventMap["highlightBox"]) => this.emit("highlightBox", e);
+    handleHighlightPort = (e: PatcherEventMap["highlightPort"]) => this.emit("highlightPort", e);
     handleChanged = () => this.instance.emitChanged();
     constructor(instance: Patcher) {
         super(instance);
@@ -112,6 +116,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.instance.on("boxChanged", this.handleBoxChanged);
         this.instance.on("propsChanged", this.handlePropsChanged);
         this.instance.on("zIndexChanged", this.handleZIndexChanged);
+        this.instance.on("highlightBox", this.handleHighlightBox);
+        this.instance.on("highlightPort", this.handleHighlightPort);
         const { openInPresentation } = this.props;
         this.setState({
             locked: true,
@@ -651,14 +657,19 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         const origPos = to ? this.boxes[to[0]][findSrc ? "getOutletPos" : "getInletPos"](to[1]) : this.boxes[from[0]][findSrc ? "getInletPos" : "getOutletPos"](from[1]);
         const left = origPos.left + dragOffset.x;
         const top = origPos.top + dragOffset.y;
-        const nearest = this.findNearestPort(findSrc, left, top, from, to);
-        for (const id in this.boxes) {
-            const box = this.boxes[id];
-            for (let i = 0; i < box[findSrc ? "outlets" : "inlets"]; i++) {
-                box.highlightPort(findSrc, i, nearest[0] === id && nearest[1] === i);
-            }
-        }
-        return nearest;
+        const [boxId, portIndex] = this.findNearestPort(findSrc, left, top, from, to);
+        if (boxId) this.highlightPort(boxId, findSrc, portIndex);
+        else this.unhighlightPort();
+        return [boxId, portIndex] as [string, number];
+    }
+    highlightBox(boxId: string) {
+        this.emit("highlightBox", boxId);
+    }
+    highlightPort(boxId: string, isSrc: boolean, portIndex: number) {
+        this.emit("highlightPort", { boxId, isSrc, i: portIndex });
+    }
+    unhighlightPort() {
+        this.emit("highlightPort", null);
     }
     tempLine(findSrc: boolean, from: [string, number]) {
         this.emit("tempLine", { findSrc, from });

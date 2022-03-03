@@ -24,8 +24,10 @@ interface S {
     inPresentationMode: boolean;
     InnerUI: typeof AbstractUI;
     editing: boolean;
-    highlight: boolean;
     error: boolean;
+    highlight: boolean;
+    highlightInlet: number;
+    highlightOutlet: number;
     key: string;
 }
 export default class BoxUI extends React.PureComponent<P, S> {
@@ -43,8 +45,10 @@ export default class BoxUI extends React.PureComponent<P, S> {
         inPresentationMode: this.props.editor.state.presentation,
         InnerUI: this.box.UI || BaseUI,
         editing: (this.box.UI || BaseUI).editableOnUnlock && this.box._editing,
-        highlight: false,
         error: false,
+        highlight: false,
+        highlightInlet: null,
+        highlightOutlet: null,
         key: performance.now().toString()
     };
     handleResetPos = () => {
@@ -238,8 +242,11 @@ export default class BoxUI extends React.PureComponent<P, S> {
         this.setState({ highlight: false, error: false });
         document.removeEventListener("mousedown", this.clearOverlay);
     };
-    handleHighlight = () => {
+    handleHighlight = (boxId: string) => {
+        const highlight = boxId === this.box.id;
         document.removeEventListener("mousedown", this.clearOverlay);
+        this.setState({ highlight });
+        if (!highlight) return;
         if (!this.refDiv.current) return;
         const div = this.refDiv.current;
         const patcherDiv = div.parentElement.parentElement;
@@ -248,13 +255,22 @@ export default class BoxUI extends React.PureComponent<P, S> {
             || div.offsetTop + div.offsetHeight < patcherDiv.scrollTop + patcherDiv.offsetHeight
             || div.offsetLeft + div.offsetWidth < patcherDiv.scrollLeft + patcherDiv.offsetWidth
         ) div.scrollIntoView({ block: "nearest", inline: "nearest" });
-        this.setState({ highlight: true });
         document.addEventListener("mousedown", this.clearOverlay);
     };
     handleError = () => {
         document.removeEventListener("mousedown", this.clearOverlay);
         this.setState({ error: true });
         document.addEventListener("mousedown", this.clearOverlay);
+    };
+    handleHighlightPort = (highlightPort: PatcherEditorEventMap["highlightPort"]) => {
+        if (!highlightPort || highlightPort.boxId !== this.box.id) {
+            if (this.state.highlightInlet === null && this.state.highlightOutlet === null) return;
+            this.setState({ highlightInlet: null, highlightOutlet: null });
+            return;
+        }
+        const { isSrc, i } = highlightPort;
+        if (isSrc && this.state.highlightOutlet === null) this.setState({ highlightOutlet: i });
+        else if (!isSrc && this.state.highlightInlet === null) this.setState({ highlightInlet: i });
     };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
@@ -348,33 +364,37 @@ export default class BoxUI extends React.PureComponent<P, S> {
         e.stopPropagation();
     };
     componentDidMount() {
+        const { editor } = this.props;
         const { box } = this;
         this.setState({ selected: this.props.editor.state.selected.indexOf(box.id) !== -1 });
         box.on("textChanged", this.handleTextChanged);
         box.on("rectChanged", this.handleRectChanged);
         box.on("presentationRectChanged", this.handlePresentationRectChanged);
         box.on("presentationChanged", this.handlePresentationChanged);
-        box.on("highlight", this.handleHighlight);
         box.on("error", this.handleError);
-        this.props.editor.on("selected", this.handleSelected);
-        this.props.editor.on("presentation", this.handlePatcherPresentationChanged);
-        this.props.editor.on("moving", this.handleMoving);
-        this.props.editor.on("moved", this.handleMoved);
-        this.props.editor.on("resized", this.handleResized);
+        editor.on("selected", this.handleSelected);
+        editor.on("presentation", this.handlePatcherPresentationChanged);
+        editor.on("moving", this.handleMoving);
+        editor.on("moved", this.handleMoved);
+        editor.on("resized", this.handleResized);
+        editor.on("highlightBox", this.handleHighlight);
+        editor.on("highlightPort", this.handleHighlightPort);
         this.inspectRectChange();
     }
     componentWillUnmount() {
-        this.props.editor.deselect(this.props.id);
-        this.props.editor.off("selected", this.handleSelected);
-        this.props.editor.off("presentation", this.handlePatcherPresentationChanged);
-        this.props.editor.off("resized", this.handleResized);
+        const { editor } = this.props;
+        editor.deselect(this.props.id);
+        editor.off("selected", this.handleSelected);
+        editor.off("presentation", this.handlePatcherPresentationChanged);
+        editor.off("resized", this.handleResized);
+        editor.off("highlightBox", this.handleHighlight);
+        editor.off("highlightPort", this.handleHighlightPort);
         const box = this.props.editor.boxes[this.props.id];
         if (!box) return;
         box.off("textChanged", this.handleTextChanged);
         box.off("rectChanged", this.handleRectChanged);
         box.off("presentationRectChanged", this.handlePresentationRectChanged);
         box.off("presentationChanged", this.handlePresentationChanged);
-        box.off("highlight", this.handleHighlight);
         box.off("error", this.handleError);
     }
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -413,8 +433,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 </div>
                 {
                     this.state.inPresentationMode ? undefined : <>
-                        <Inlets editor={this.props.editor} box={box} runtime={this.props.runtime} />
-                        <Outlets editor={this.props.editor} box={box} runtime={this.props.runtime} />
+                        <Inlets editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightInlet} />
+                        <Outlets editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightOutlet} />
                     </>
                 }
                 {
@@ -424,15 +444,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
         );
     }
 }
-class Inlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean }, { ports: JSX.Element[] }> {
-    get ports() {
-        const ports: JSX.Element[] = [];
-        for (let i = 0; i < this.props.box.inlets; i++) {
-            ports.push(<Inlet {...this.props} index={i} key={i} />);
-        }
-        return ports;
-    }
-    state = { ports: this.ports };
+class Inlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean; highlight: number }, { key: number }> {
+    state = { key: performance.now() };
     componentDidMount() {
         this.props.box.on("textChanged", this.handleUpdate);
         this.props.box.on("ioCountChanged", this.handleUpdate);
@@ -443,25 +456,18 @@ class Inlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runt
         this.props.box.off("ioCountChanged", this.handleUpdate);
     }
     handleUpdate = () => {
-        this.setState({ ports: this.ports });
+        this.setState({ key: performance.now() });
     };
     render() {
         return (
             <div className="box-inlets box-ports">
-                {this.state.ports}
+                {...new Array(this.props.box.inlets).fill(null).map((v, i) => <Inlet {...this.props} index={i} key={i} highlight={i === this.props.highlight} />)}
             </div>
         );
     }
 }
-class Outlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean }, { ports: JSX.Element[] }> {
-    get ports() {
-        const ports: JSX.Element[] = [];
-        for (let i = 0; i < this.props.box.outlets; i++) {
-            ports.push(<Outlet {...this.props} index={i} key={i} />);
-        }
-        return ports;
-    }
-    state = { ports: this.ports };
+class Outlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean; highlight: number }, { key: number }> {
+    state = { key: performance.now() };
     componentDidMount() {
         this.props.box.on("textChanged", this.handleUpdate);
         this.props.box.on("ioCountChanged", this.handleUpdate);
@@ -472,35 +478,28 @@ class Outlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; run
         this.props.box.off("ioCountChanged", this.handleUpdate);
     }
     handleUpdate = () => {
-        this.setState({ ports: this.ports });
+        this.setState({ key: performance.now() });
     };
     render() {
         return (
             <div className="box-outlets box-ports">
-                {this.ports}
+                {...new Array(this.props.box.outlets).fill(null).map((v, i) => <Outlet {...this.props} index={i} key={i} highlight={i === this.props.highlight} />)}
             </div>
         );
     }
 }
-class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: number; runtime?: boolean }, { isConnected: boolean; highlight: boolean }> {
+class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.inletLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
-        this.props.box.on("highlightPort", this.handleHighlight);
         this.props.box.on("connectedPort", this.handleConnectedChange);
         this.props.box.on("disconnectedPort", this.handleConnectedChange);
     }
     componentWillUnmount() {
         if (!this.props.box) return;
-        this.props.box.off("highlightPort", this.handleHighlight);
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
-    handleHighlight = (e: BoxEventMap["highlightPort"]) => {
-        if (this.props.runtime) return;
-        const { isSrc, i, highlight } = e;
-        if (!isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
-    };
     handleConnectedChange = (e: BoxEventMap["disconnectedPort" | "connectedPort"]) => {
         const { isSrc, i, last } = e;
         if (!isSrc && i === this.props.index) this.setState({ isConnected: !last });
@@ -530,19 +529,20 @@ class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index
         this.setState({ highlight: false });
     };
     render() {
-        const { box, index: i, editor: patcher } = this.props;
-        const forceHot = patcher.props.mode === "gen" || patcher.props.mode === "faust";
+        const { box, index: i, editor } = this.props;
+        const highlight = this.state.highlight || this.props.highlight;
+        const forceHot = editor.props.mode === "gen" || editor.props.mode === "faust";
         let props = { isHot: false, type: "anything", description: "" };
         const meta = box.meta.inlets;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? (meta[meta.length - 1].varLength ? { ...meta[meta.length - 1], isHot: false } : {}) : meta[i]) };
-        const className = "box-port box-inlet" + (props.isHot || forceHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
+        const className = "box-port box-inlet" + (props.isHot || forceHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (highlight ? " box-port-highlight" : "");
         return (
             <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
                 <Popup
                     trigger={<div style={{ pointerEvents: "none" }} />}
                     content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
                     position="top center"
-                    open={this.state.highlight}
+                    open={highlight}
                     size="mini"
                     inverted
                 />
@@ -550,25 +550,18 @@ class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index
         );
     }
 }
-class Outlet extends React.PureComponent< { editor: PatcherEditor; box: Box; index: number; runtime?: boolean }, { isConnected: boolean; highlight: boolean }> {
+class Outlet extends React.PureComponent< { editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.outletLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
-        this.props.box.on("highlightPort", this.handleHighlight);
         this.props.box.on("connectedPort", this.handleConnectedChange);
         this.props.box.on("disconnectedPort", this.handleConnectedChange);
     }
     componentWillUnmount() {
         if (!this.props.box) return;
-        this.props.box.off("highlightPort", this.handleHighlight);
         this.props.box.off("connectedPort", this.handleConnectedChange);
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
-    handleHighlight = (e: BoxEventMap["highlightPort"]) => {
-        if (this.props.runtime) return;
-        const { isSrc, i, highlight } = e;
-        if (isSrc && i === this.props.index && highlight !== this.state.highlight) this.setState({ highlight });
-    };
     handleConnectedChange = (e: BoxEventMap["disconnectedPort" | "connectedPort"]) => {
         const { isSrc, i, last } = e;
         if (isSrc && i === this.props.index) this.setState({ isConnected: !last });
@@ -598,19 +591,19 @@ class Outlet extends React.PureComponent< { editor: PatcherEditor; box: Box; ind
         if (e.currentTarget !== e.target) this.setState({ highlight: false });
     };
     render() {
-        const box = this.props.box;
-        const i = this.props.index;
+        const { box, index: i } = this.props;
+        const highlight = this.state.highlight || this.props.highlight;
         let props = { type: "anything", description: "" };
         const meta = box.meta.outlets;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? (meta[meta.length - 1].varLength ? meta[meta.length - 1] : {}) : meta[i]) };
-        const className = "box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (this.state.highlight ? " box-port-highlight" : "");
+        const className = "box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (highlight ? " box-port-highlight" : "");
         return (
             <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
                 <Popup
                     trigger={<div />}
                     content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
                     position="bottom center"
-                    open={this.state.highlight}
+                    open={highlight}
                     size="mini"
                     inverted
                     offset={[0, 5]}

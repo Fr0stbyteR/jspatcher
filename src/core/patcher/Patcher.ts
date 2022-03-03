@@ -68,6 +68,8 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "connectAudioOutlet": number;
     "propsChanged": { props: Partial<TPublicPatcherProps>; oldProps: Partial<TPublicPatcherProps> };
     "libChanged": { pkg: TPackage; lib: TFlatPackage };
+    "highlightBox": string;
+    "highlightPort": { boxId: string; isSrc: boolean; i: number } | null;
 }
 
 export default class Patcher extends FileInstance<PatcherEventMap, PersistentProjectFile | TempPatcherFile> {

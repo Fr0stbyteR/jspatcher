@@ -163,7 +163,7 @@ export default class LineUI extends React.PureComponent<P, S> {
             this.setState({ dragging: false });
             if (!this.dragged) return;
             if (nearest[0]) {
-                this.props.editor.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
+                this.props.editor.unhighlightPort();
                 if (line[isSrc ? "srcId" : "destId"] === nearest[0] && line[isSrc ? "srcOutlet" : "destInlet"] === nearest[1]) this.handleResetPos();
                 else this.props.editor[isSrc ? "changeLineSrc" : "changeLineDest"](this.props.id, ...nearest);
             } else {
@@ -281,7 +281,7 @@ export class TempLineUI extends React.PureComponent<{ editor: PatcherEditor }, {
             e.preventDefault();
             if (!this.dragged) return;
             if (nearest[0]) {
-                this.props.editor.boxes[nearest[0]].highlightPort(isSrc, nearest[1], false);
+                this.props.editor.unhighlightPort();
                 this.props.editor.createLine({ src: this.findSrc ? nearest : this.from, dest: this.findSrc ? this.from : nearest });
             }
             if (!e.shiftKey) {

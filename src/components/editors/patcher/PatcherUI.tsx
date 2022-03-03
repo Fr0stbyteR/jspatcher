@@ -355,21 +355,6 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
     };
     boxes: Record<string, JSX.Element> = {};
     zIndexes: Record<string, number> = {};
-    componentDidMount() {
-        const { editor } = this.props;
-        editor.on("create", this.handleCreate);
-        editor.on("delete", this.handleDelete);
-        editor.on("zIndexChanged", this.handleZIndexChanged);
-        if (editor.isReady) this.handleReady();
-        else editor.on("ready", this.handleReady);
-    }
-    componentWillUnmount() {
-        const { editor } = this.props;
-        editor.off("create", this.handleCreate);
-        editor.off("delete", this.handleDelete);
-        editor.off("ready", this.handleReady);
-        editor.off("zIndexChanged", this.handleZIndexChanged);
-    }
     handleCreate = (created: RawPatcher) => {
         Object.keys(created.boxes).forEach((id) => {
             const box = created.boxes[id];
@@ -401,6 +386,21 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
         }
         this.setState({ timestamp: performance.now() });
     };
+    componentDidMount() {
+        const { editor } = this.props;
+        editor.on("create", this.handleCreate);
+        editor.on("delete", this.handleDelete);
+        editor.on("zIndexChanged", this.handleZIndexChanged);
+        if (editor.isReady) this.handleReady();
+        else editor.on("ready", this.handleReady);
+    }
+    componentWillUnmount() {
+        const { editor } = this.props;
+        editor.off("create", this.handleCreate);
+        editor.off("delete", this.handleDelete);
+        editor.off("ready", this.handleReady);
+        editor.off("zIndexChanged", this.handleZIndexChanged);
+    }
     render() {
         return (
             <div className="boxes" style={this.state}>

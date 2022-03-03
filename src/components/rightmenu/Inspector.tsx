@@ -72,7 +72,7 @@ class InspectorColorItem extends React.PureComponent<InspectorColorProps, Inspec
     state = { showColorPicker: false, color: this.props.value, colorPickerY: 0 };
     handleClickColorSpan = (e: React.MouseEvent) => {
         if (this.state.showColorPicker) return;
-        this.setState({ showColorPicker: true, colorPickerY: e.screenY });
+        this.setState({ showColorPicker: true, colorPickerY: e.clientY });
     };
     handleClickCover = (e: React.MouseEvent) => {
         this.setState({ showColorPicker: false });
