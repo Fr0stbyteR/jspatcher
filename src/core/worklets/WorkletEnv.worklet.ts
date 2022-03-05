@@ -65,7 +65,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         this.envNewLog(errorLevel, title, message, emitter);
     }
     generateId(objectIn: object) {
-        return this.thread + objectIn.constructor.name + Atomics.add(this.generatedId, 0, 1);
+        return this.thread + objectIn.constructor.name + (((globalThis as any).Atomics as typeof Atomics)?.add(this.generatedId, 0, 1) ?? ++this.generatedId[0]);
     }
     registerInstance(i: IFileInstance, id?: string) {
         this.instances.add(i);

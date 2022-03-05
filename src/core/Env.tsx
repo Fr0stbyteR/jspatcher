@@ -349,7 +349,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         */
     }
     generateId(objectIn: object) {
-        return this.thread + objectIn.constructor.name + Atomics.add(this.generatedId, 0, 1);
+        return this.thread + objectIn.constructor.name + (globalThis.Atomics?.add(this.generatedId, 0, 1) ?? ++this.generatedId[0]);
     }
     openInstance(i: IFileInstance, background = false) {
         this.emit("openInstance", i);
