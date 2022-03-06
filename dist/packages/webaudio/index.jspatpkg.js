@@ -2649,6 +2649,11 @@ class htmlAudio extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseObject {
   }
   subscribe() {
     super.subscribe();
+    const handleAudioCtxStateChange = () => {
+      const e = this._.element;
+      if (e.autoplay && e.paused)
+        e.play();
+    };
     this.on("preInit", () => {
       this.inlets = 1;
       this.outlets = 1;
@@ -2669,6 +2674,7 @@ class htmlAudio extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseObject {
       e.crossOrigin = crossOrigin;
       e.src = this.args[0] || "";
       this.updateUI({ children: [e] });
+      this.audioCtx.addEventListener("statechange", handleAudioCtxStateChange);
     });
     this.on("updateArgs", () => {
       this._.element.src = this.args[0] || "";
@@ -2699,6 +2705,9 @@ class htmlAudio extends _sdk__WEBPACK_IMPORTED_MODULE_0__.BaseObject {
         }
         this.outlet(0, this._.element);
       }
+    });
+    this.on("destroy", () => {
+      this.audioCtx.removeEventListener("statechange", handleAudioCtxStateChange);
     });
   }
 }
