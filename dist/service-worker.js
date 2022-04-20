@@ -270,11 +270,26 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "deps/libGUIDOEngine.wasm",
     "revision": "42914c6132a30517e800b4e840079cb6"
   }, {
+    "url": "deps/libfaust-wasm.d.cts",
+    "revision": "03618e323bfe4f59d21bbeb9ed0a7070"
+  }, {
+    "url": "deps/libfaust-wasm.d.ts",
+    "revision": "03618e323bfe4f59d21bbeb9ed0a7070"
+  }, {
     "url": "deps/libfaust-wasm.data",
-    "revision": "de19fa60508ea9133b92e4eed9df67f4"
+    "revision": "31cc63b38067985d6f724b7fe3f1664b"
+  }, {
+    "url": "deps/libfaust-wasm.data.d.ts",
+    "revision": "efb8590a96d416771ef946b323008668"
+  }, {
+    "url": "deps/libfaust-wasm.js",
+    "revision": "2e12de73fd5b29de368d13d4832b9eb1"
   }, {
     "url": "deps/libfaust-wasm.wasm",
-    "revision": "22e2c29eed31c67475007b4511392f66"
+    "revision": "14fcca6642d30dd07726f784e39503e9"
+  }, {
+    "url": "deps/libfaust-wasm.wasm.d.ts",
+    "revision": "efb8590a96d416771ef946b323008668"
   }, {
     "url": "deps/libmusicxml.wasm",
     "revision": "f2855aa8cdc4f78211ffa8273dd3025e"
@@ -295,7 +310,7 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "b5bf4dfa2d0299a501e2c08385f00023"
+    "revision": "446007a2a89ca2fafaedc294d96a2be5"
   }, {
     "url": "js/024c16a3edf18aee81fe.js",
     "revision": null
@@ -339,6 +354,9 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "js/3fb4f39a3f1a3938103d.js",
     "revision": null
   }, {
+    "url": "js/414b9770b3b621e76edf.js",
+    "revision": null
+  }, {
     "url": "js/455af92e7e1dc39fdbc8060f6680ab32.worker.js",
     "revision": "6c96cb396f6c37b118e729c9b96fd18d"
   }, {
@@ -347,6 +365,9 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
   }, {
     "url": "js/6b1ed1bedd96f08944b0e5a8b12c4739.worker.js",
     "revision": "3cafc222030e049a264341e3d78032dc"
+  }, {
+    "url": "js/6e2139066a4dc501281b.js",
+    "revision": null
   }, {
     "url": "js/6ecb4cd37ed8913f29f5.worklet.js",
     "revision": null
@@ -357,13 +378,7 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "js/935cbd49681dce055a65.worker.js",
     "revision": null
   }, {
-    "url": "js/958b15db6807bc4cc9f8.js",
-    "revision": null
-  }, {
     "url": "js/9fafbd929f0362cda40f.worker.js",
-    "revision": null
-  }, {
-    "url": "js/a1c117e897d3bd261728.js",
     "revision": null
   }, {
     "url": "js/a24e7b40b5bb9c187984.worker.js",
@@ -390,7 +405,7 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "js/e05b5ec401b9493def27.worker.js",
     "revision": null
   }, {
-    "url": "js/e0c9bdbf26bd4222a0de.js",
+    "url": "js/e10bd9dccb6d4f3d3d00.js",
     "revision": null
   }, {
     "url": "js/e420ff6929ac4dee4f98.worker.js",
@@ -402,7 +417,13 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "js/eaf685b3c0a73438cd37.js",
     "revision": null
   }, {
+    "url": "js/ed9d26e0c15fbfe1f527.js",
+    "revision": null
+  }, {
     "url": "js/f110948908d77213fe99.js",
+    "revision": null
+  }, {
+    "url": "js/f537a9f9fb49fac4be24.js",
     "revision": null
   }, {
     "url": "js/faa60f4cac914477448f.worker.js",
@@ -441,8 +462,8 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/15e9d939e40ef54bf74a.wasm",
     "revision": "3356445466a7b35024277eaf29cd6bf0"
   }, {
-    "url": "packages/dsp/18676dec3db4ffacf4fa.wasm",
-    "revision": "d9d90eac1ac5bfc4f3795b23af0b7582"
+    "url": "packages/dsp/1a7a8a94557d823827a7.wasm",
+    "revision": "a15d2304c4955ded3444245fb698fc44"
   }, {
     "url": "packages/dsp/1e7fae6afc054abd9ac8.wasm",
     "revision": "5425687aa1d42c6a85a80e2646092dc1"
@@ -477,9 +498,6 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/39e6aa4f571d9d21e167.wasm",
     "revision": "aecc52d2d4885d57787fa8b2f522c8a8"
   }, {
-    "url": "packages/dsp/3b55185c0192f5fa4f05.wasm",
-    "revision": "1f9b3489e043f7f9581c03691c5db9b8"
-  }, {
     "url": "packages/dsp/43355dab800970f156df.wasm",
     "revision": "505a5e82e19662bd2c0133afe955bcf3"
   }, {
@@ -491,6 +509,12 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
   }, {
     "url": "packages/dsp/6472ab63de9593e5e634.wasm",
     "revision": "ae9c51d190da729a1f4b9c99477ea075"
+  }, {
+    "url": "packages/dsp/754092263d289fb1676a.wasm",
+    "revision": "5da67ef48782a2ac39317a7a5bb3594f"
+  }, {
+    "url": "packages/dsp/78874c9e167b04104051.wasm",
+    "revision": "74376a9e022f6146944b0b37fee38726"
   }, {
     "url": "packages/dsp/79a3b8791c3eb54642c5.wasm",
     "revision": "1dfe418d191e84805a523c6bbba38b33"
@@ -512,6 +536,12 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
   }, {
     "url": "packages/dsp/8abe0476673413b70a5a.wasm",
     "revision": "28d9a982c933ef366b2b536a215d0b88"
+  }, {
+    "url": "packages/dsp/8bd46871ab394ea3ffb7.wasm",
+    "revision": "ce020009a26858fa8330e898cbefe0bb"
+  }, {
+    "url": "packages/dsp/8da73fcf6b5e93c209be.wasm",
+    "revision": "0a7f0cd46366ca86615d759b815a27a3"
   }, {
     "url": "packages/dsp/8fae341e3e9522397837.wasm",
     "revision": "58ce56ebe092f6a67fdb7226ed8c73cc"
@@ -543,17 +573,14 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/b1fdb9ae8c5e007459b3.wasm",
     "revision": "a0bbfdf1e0fff9d69fd8fe5f911525cb"
   }, {
-    "url": "packages/dsp/bc577e16bd932e72d92a.wasm",
-    "revision": "5a80f5944caff18c31a7da641cffc599"
-  }, {
     "url": "packages/dsp/c98c83ce6218d8ac12d4.wasm",
     "revision": "a775cd66def6840d60df9429b98f7e63"
   }, {
-    "url": "packages/dsp/cbcd413c3ff10753537c.wasm",
-    "revision": "5817b84ae70225d6bc61945759ff4186"
-  }, {
     "url": "packages/dsp/ce7abd07cd8f0fd65158.wasm",
     "revision": "b58d87e57aee5f3f4a7610208638b4eb"
+  }, {
+    "url": "packages/dsp/cf0c78a24800e84ec7e2.wasm",
+    "revision": "35dbca4079a6a3c34032c12edbd3d754"
   }, {
     "url": "packages/dsp/de8355caff087eb6af0f.wasm",
     "revision": "c44118b1708304220f8475d472aa8925"
@@ -571,10 +598,10 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "revision": "8cb6b9480fb01f1289ca8c10996406b1"
   }, {
     "url": "packages/dsp/index.js",
-    "revision": "574d8f2fca61fdcdd9cbc7ded0b27a26"
+    "revision": "d50f434af3f72dad026b528ec7921832"
   }, {
     "url": "packages/dsp/index.jspatpkg.js",
-    "revision": "69f3eb3b38c30fe0eec4444e27fae04a"
+    "revision": "b2ff75cef2a47ea35415ae096321ba03"
   }, {
     "url": "packages/dsp/js/0053b421a7aa4a22ae8d.js",
     "revision": "9f7695ca57441ab213310833924f91fa"
@@ -599,9 +626,6 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
   }, {
     "url": "packages/dsp/js/0e895ee6791de50053bb.js",
     "revision": "3cb9c3220b1a0b4404ec14dabac0bbc9"
-  }, {
-    "url": "packages/dsp/js/1121a5ebe355b33da5de.js",
-    "revision": "8cf5cc4dd5b7b681b8441a3367f35b8f"
   }, {
     "url": "packages/dsp/js/12133c48a2c05a2cce87.js",
     "revision": "66a1599dfbbe2878906564aa84ff3d0c"
@@ -660,17 +684,11 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/2711f4fa9a20a08f5fd1.js",
     "revision": "04bfe363e01f2eaa6f242567f095b05d"
   }, {
-    "url": "packages/dsp/js/2754144d946786f4459d.js",
-    "revision": "c1312cc5c7b12909dc3f55b3cf1e1920"
-  }, {
     "url": "packages/dsp/js/27e6a55f17c85264824b.js",
     "revision": "131acc12e6c0e18b7e0ef78e43b09870"
   }, {
     "url": "packages/dsp/js/36961c3db5868cbbef4f.js",
     "revision": "35503fa248b9a1229c9398c982f59c0e"
-  }, {
-    "url": "packages/dsp/js/370efb0d1ee02849f919.js",
-    "revision": "0f98b557500c8cf227d094485ffa84e8"
   }, {
     "url": "packages/dsp/js/37e336166cbd304951c1.js",
     "revision": "60ef7e72590aa19d0d64040aaa88d883"
@@ -687,9 +705,6 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/42f19657f03936408587.js",
     "revision": "700ae004a52b0af6273d2a92eafeaacb"
   }, {
-    "url": "packages/dsp/js/440e7ee501ec5cb3d301.js",
-    "revision": "3519f5a12daf7fff3027e02f677e3be4"
-  }, {
     "url": "packages/dsp/js/46eefbd4bf523e0daada.js",
     "revision": "fd2f5a6af7ffb747a81d9ac873cfadc1"
   }, {
@@ -702,11 +717,20 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/4cd9c98d910da452b060.js",
     "revision": "9c502ca641c13d9c7ab2b952280bf34a"
   }, {
+    "url": "packages/dsp/js/4da126b81ce51439f06d.js",
+    "revision": "4a3aeffec0fa55a8a2b27650905cc3d3"
+  }, {
     "url": "packages/dsp/js/4f2b05acbcf5c1d203ac.js",
     "revision": "609d2a7135954d0424367b9187186605"
   }, {
+    "url": "packages/dsp/js/506cb72a60b374af8850.js",
+    "revision": "68735a5528f505afb64db499549c556b"
+  }, {
     "url": "packages/dsp/js/509308f23fc38caba727.js",
     "revision": "7fb80a94e205a3be0e97af16023aee63"
+  }, {
+    "url": "packages/dsp/js/52f5010f0d69768e75c4.js",
+    "revision": "1d1339411d5d2234db6edf6be9fab1e5"
   }, {
     "url": "packages/dsp/js/566e6fac7ded81855f1d.js",
     "revision": "25ee2586c378af960b6ffde779cc609c"
@@ -716,6 +740,9 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
   }, {
     "url": "packages/dsp/js/5df9245c238da4a4c65e.js",
     "revision": "02d2c53ea64ad37b4b1c5bb44a378ec9"
+  }, {
+    "url": "packages/dsp/js/65472c9740c395ddf5a7.js",
+    "revision": "c3fa9371b5b7a9dc093ae71574b7fa18"
   }, {
     "url": "packages/dsp/js/6c3817caecba29c40ba9.js",
     "revision": "ac1996b978cb560028fbe79f43b8de7d"
@@ -735,6 +762,9 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/7b667828b1f1f68b7fdd.js",
     "revision": "7ac8d9cc8acb90d6b709fbe6dba348ed"
   }, {
+    "url": "packages/dsp/js/7d397639059d2034bdc5.js",
+    "revision": "53520656e72fcf9cd778fe70e0dda5b1"
+  }, {
     "url": "packages/dsp/js/7ec716da07a4d1ec02ed.js",
     "revision": "cb921e3088dad4229b28dab5bdb7ff9c"
   }, {
@@ -746,6 +776,9 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
   }, {
     "url": "packages/dsp/js/86e1dda760e4f0723259.js",
     "revision": "404c421d1f72679e59004535ec9e223b"
+  }, {
+    "url": "packages/dsp/js/89c7b5a498ff3327840c.js",
+    "revision": "c5f06a0ecdc47f97ab535a8e051ca57f"
   }, {
     "url": "packages/dsp/js/89fc8050207ddcd23e1b.js",
     "revision": "a16c8df37ffde7bb1fdca14f75308ecb"
@@ -774,8 +807,8 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/96dd39bd6be98c8888ce.js",
     "revision": "f36d730a05204b56f82a9eb070114e83"
   }, {
-    "url": "packages/dsp/js/9b864930ceb49b36521b.js",
-    "revision": "5f9a5a5b68b8b7a6e219ee9fbb999a77"
+    "url": "packages/dsp/js/a37a925b3b9536f22e24.js",
+    "revision": "2b78d877f48a88c6e3eb8ff2e5f2b23f"
   }, {
     "url": "packages/dsp/js/a3e83b249ba823cce546.js",
     "revision": "60861bd055087b54dcf920788ab621c1"
@@ -801,8 +834,8 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/b7928a3a225815b2798b.js",
     "revision": "4ec8b9e534e9014cfcc11d73401048e4"
   }, {
-    "url": "packages/dsp/js/b94d417b259f91304c8d.js",
-    "revision": "1d235b70a76f8fd0756bf00ea7f4f858"
+    "url": "packages/dsp/js/cac6aaa2811ca8056443.js",
+    "revision": "fdbed7d10361e852064ce5691af9fa30"
   }, {
     "url": "packages/dsp/js/cafe56cbceb7ad260a00.js",
     "revision": "694cbb071756f50587cef9e0b6f9d94a"
@@ -816,6 +849,9 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/d4e1e7931eda67d94427.js",
     "revision": "9f75dd64fe8b660d1c9f38d15af48308"
   }, {
+    "url": "packages/dsp/js/d5d37bf8aee6208d5af3.js",
+    "revision": "774c0efd98c5fddcd2faf70a5c929954"
+  }, {
     "url": "packages/dsp/js/d96a637731e7ee3f8451.js",
     "revision": "ac975b127c235cd7963623516d9dab4f"
   }, {
@@ -825,8 +861,8 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/dcc8d4127b3045caf0e4.js",
     "revision": "047c74bc417f83feec2ee8f51ef58baa"
   }, {
-    "url": "packages/dsp/js/e093628cc3e6ac1f5703.js",
-    "revision": "c315f7554da2957286cac205f3a58c8c"
+    "url": "packages/dsp/js/def23c0013b9897cceab.js",
+    "revision": "b53903649f557163fac78df52acfbebd"
   }, {
     "url": "packages/dsp/js/e1579605d823cde93805.js",
     "revision": "88808d657d2cf3748ac8f1a57d1af301"
@@ -843,11 +879,11 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/e33d4407bd2b8d3dc448.js",
     "revision": "12edf10dfdc57503e0908283cc8eb0ee"
   }, {
+    "url": "packages/dsp/js/e46593c7da5e7bf7552f.js",
+    "revision": "3d8a52855f0087a20e78dd73433daf47"
+  }, {
     "url": "packages/dsp/js/e59fbc64dbabf8bece3d.js",
     "revision": "2b6a328f1994bc4e56fdfc8408936daf"
-  }, {
-    "url": "packages/dsp/js/e712f4c98963a774b5ae.js",
-    "revision": "2216b3c4c0c3050d0a2212d3230ad427"
   }, {
     "url": "packages/dsp/js/eaf6bfdb89fe3b675a68.js",
     "revision": "d3627aa3c2d0381d163b48f4208fa99c"
@@ -858,11 +894,14 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/dsp/js/ed0a39232ed1fbf0c58e.js",
     "revision": "a09b92561fb025c2e0e27901892219fb"
   }, {
+    "url": "packages/dsp/js/f2365c644301268f5039.js",
+    "revision": "79a61ef2c0fc19343da06e5941319ead"
+  }, {
     "url": "packages/dsp/js/f39523de16707d695fab.js",
     "revision": "c62738b8c0db415d163528c302347fb3"
   }, {
-    "url": "packages/dsp/js/f4ed75a5700751a38c75.js",
-    "revision": "38e1a4bb689ecfa965e37a705e4393d9"
+    "url": "packages/dsp/js/f91abe1ae0f8c4af93cc.js",
+    "revision": "3541e178964562bbec5cd8d6048f9219"
   }, {
     "url": "packages/dsp/js/facbf9ea77af396e0dd7.js",
     "revision": "0ab260623e6a91f78d2a6a1bb5b49887"

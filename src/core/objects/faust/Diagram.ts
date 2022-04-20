@@ -6,7 +6,7 @@ import type { IInletsMeta, IOutletsMeta } from "../base/AbstractObject";
 import type { FaustNodeInternalState } from "./FaustNode";
 import "./Diagram.scss";
 
-export default class diagram extends BaseObject<{}, {}, [Bang | string | FaustNodeInternalState["node"]], [string], [], {}, DOMUIState> {
+export default class diagram extends BaseObject<{}, {}, [Bang | string | FaustNodeInternalState["node"]], [Record<string, string>], [], {}, DOMUIState> {
     static package = "Faust";
     static description = "Get Faust code diagram";
     static inlets: IInletsMeta = [{
@@ -16,12 +16,12 @@ export default class diagram extends BaseObject<{}, {}, [Bang | string | FaustNo
     }];
     static outlets: IOutletsMeta = [{
         type: "string",
-        description: "SVG code"
+        description: "SVG file - SVG code pairs"
     }];
     static UI = class extends DOMUI<diagram> {
         state: DOMUIState = { ...this.state, children: this.props.object._.container ? [this.props.object._.container] : [] };
     };
-    _ = { svg: "", container: undefined as HTMLDivElement };
+    _ = { svgs: {} as Record<string, string>, container: undefined as HTMLDivElement };
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -29,35 +29,31 @@ export default class diagram extends BaseObject<{}, {}, [Bang | string | FaustNo
             this.outlets = 1;
         });
         this.on("inlet", async ({ data, inlet }) => {
-            const faust = await (this.env as Env).getFaust();
+            const faustCompiler = await (this.env as Env).getFaustCompiler();
+            const faustSvgDiagrams = new (this.env as Env).Faust.FaustSvgDiagrams(faustCompiler);
             if (inlet === 0) {
                 if (!isBang(data)) {
                     try {
-                        this._.svg = faust.getDiagram(typeof data === "string" ? data : data.dspCode, { "-I": ["libraries/", "project/"] });
+                        this._.svgs = faustSvgDiagrams.from("FaustDSP", typeof data === "string" ? data : data.dspCode, "");
                     } catch (e) {
                         this.error(e);
                         return;
                     }
                 }
-                if (this._.svg) {
-                    this.outlet(0, this._.svg);
+                if (this._.svgs) {
+                    this.outlet(0, this._.svgs);
                     const template = document.createElement("template");
                     const container = document.createElement("div");
-                    container.addEventListener("click", (e) => {
-                        let target = e.target as HTMLElement;
-                        while (target !== container && !(target instanceof SVGAElement)) {
-                            target = target.parentElement;
-                        }
-                        if (target === container) return;
-                        if (target instanceof SVGAElement) {
-                            e.preventDefault();
-                            const fileName = target.href.baseVal;
-                            const svg = faust.fs.readFile("FaustDSP-svg/" + fileName, { encoding: "utf8" }) as string;
-                            container.innerHTML = svg;
-                        }
-                    });
                     template.appendChild(container);
-                    container.innerHTML = this._.svg;
+                    const mountSvg = (svgStr: string) => {
+                        container.innerHTML = svgStr;
+                        container.querySelectorAll(".link").forEach((e: HTMLElement) => {
+                            if (!e.onclick) return;
+                            const fileName = e.onclick.toString().match(/'.+\/(.+)'/)[1];
+                            e.onclick = () => mountSvg(this._.svgs[fileName]);
+                        });
+                    };
+                    mountSvg(this._.svgs["process.svg"]);
                     this._.container = container;
                     this.updateUI({ children: [container] });
                 }

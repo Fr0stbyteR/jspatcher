@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import type { Faust, FaustAudioWorkletNode } from "faust2webaudio";
+import type * as Faust from "@shren/faustwasm";
 import { VERSION as wamApiVersion } from "@webaudiomodules/api";
 import { addFunctionModule, initializeWamEnv, initializeWamGroup } from "@webaudiomodules/sdk";
 import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitter";
@@ -114,8 +114,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     envNode: WorkletEnvNode;
     globalTransportNode: GlobalTransportNode;
     Faust: typeof Faust;
-    FaustAudioWorkletNode: typeof FaustAudioWorkletNode;
-    faust: Faust;
+    faustCompiler: Faust.FaustCompiler;
     faustDocs: TFaustDocs;
     faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
@@ -199,8 +198,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     get ready() {
         return this.init();
     }
-    async getFaust() {
-        return this.faust;
+    async getFaustCompiler() {
+        return this.faustCompiler;
     }
     async getFFmpeg() {
         return this.taskMgr.newTask(this, "Loading ffmpeg...", async () => {
@@ -234,30 +233,31 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         if (!this.options.noUI && this.divRoot) ReactDOM.render(<UI env={this} lang={this.language} />, this.divRoot);
 
         await this.taskMgr.newTask(this, "Initializing JSPatcher Environment...", async () => {
-            await this.taskMgr.newTask("Env", "Loading Faust2WebAudio...", async () => {
-                const { Faust, FaustAudioWorkletNode } = await import("faust2webaudio");
+            await this.taskMgr.newTask("Env", "Loading FaustWasm...", async () => {
+                const Faust = await import("@shren/faustwasm");
                 this.Faust = Faust;
-                this.FaustAudioWorkletNode = FaustAudioWorkletNode;
             });
             await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {
-                const faust = new this.Faust({ wasmLocation: "./deps/libfaust-wasm.wasm", dataLocation: "./deps/libfaust-wasm.data" });
-                await faust.ready;
-                this.faustAdditionalObjects = DefaultImporter.import("faust", { FaustNode: this.FaustAudioWorkletNode }, true);
-                this.faust = faust;
+                const { instantiateFaustModuleFromFile, LibFaust, FaustCompiler } = this.Faust;
+                const faustModule = await instantiateFaustModuleFromFile("./deps/libfaust-wasm.js");
+                const libFaust = new LibFaust(faustModule);
+                const faustCompiler = new FaustCompiler(libFaust);
+                this.faustCompiler = faustCompiler;
+                this.faustAdditionalObjects = DefaultImporter.import("faust", { ...this.Faust });
             });
             await this.taskMgr.newTask(this, "Fetching Faust Standard Library...", async () => {
                 const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
                 const faustPrimitiveLib = await faustPrimitiveLibFile.text();
-                this.faust.fs.writeFile("./libraries/primitives.lib", faustPrimitiveLib);
+                this.faustCompiler.fs().writeFile("/usr/share/faust/primitives.lib", faustPrimitiveLib);
             });
             await this.taskMgr.newTask(this, "Fetching Gen-to-Faust Library...", async () => {
                 const gen2FaustLibFile = await fetch("./deps/gen2faust.lib");
                 const gen2FaustLib = await gen2FaustLibFile.text();
-                this.faust.fs.writeFile("./libraries/gen2faust.lib", gen2FaustLib);
+                this.faustCompiler.fs().writeFile("/usr/share/faust/gen2faust.lib", gen2FaustLib);
             });
             await this.taskMgr.newTask(this, "Loading Monaco Editor...", async () => {
                 const { monaco } = await import("react-monaco-editor");
-                const { providers } = await faustLangRegister(monaco, this.faust);
+                const { providers } = await faustLangRegister(monaco, this.faustCompiler);
                 this.faustDocs = providers.docs;
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
             });
@@ -303,6 +303,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                     await this.pkgMgr.importFromURL(`./packages/${p}/index.js`, undefined, true);
                     // await this.pkgMgr.importFromURL(`../../@jspatcher/package-${p}/dist/index.js`, undefined, true);
                 }
+                // this.pkgMgr.add(this.faustAdditionalObjects, "js", ["faust"]);
                 // await this.pkgMgr.importFromURL("../../@jspatcher/package-cac/dist/index.js", undefined, true);
             });
             await this.taskMgr.newTask(this, "Creating Project", async () => {

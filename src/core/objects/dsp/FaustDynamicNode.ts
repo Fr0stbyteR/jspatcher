@@ -1,4 +1,4 @@
-import type { FaustAudioWorkletNode, FaustScriptProcessorNode } from "faust2webaudio";
+import type { FaustAudioWorkletNode, FaustScriptProcessorNode } from "@shren/faustwasm";
 import DefaultObject from "../base/DefaultObject";
 import type { DefaultUIState } from "../base/DefaultUI";
 
@@ -20,8 +20,16 @@ export default abstract class FaustDynamicNode<
 > extends DefaultObject<D, S & DefaultFaustDynamicNodeState, I, O, A, P, U & DefaultUIState, E> {
     async getFaustNode(code: string, voices: number) {
         const { audioCtx } = this.patcher;
-        const { faust } = this.env;
-        return faust.getNode(code, { audioCtx, useWorklet: true, voices, args: { "-I": ["libraries/", "project/"] } });
+        const { FaustMonoDspGenerator, FaustPolyDspGenerator } = this.env.Faust;
+        const faustCompiler = await this.env.getFaustCompiler();
+        if (voices) {
+            const generator = new FaustPolyDspGenerator();
+            await generator.compile(faustCompiler, "FaustDSP", code, "");
+            return generator.createNode(audioCtx, voices);
+        }
+        const generator = new FaustMonoDspGenerator();
+        await generator.compile(faustCompiler, "FaustDSP", code, "");
+        return generator.createNode(audioCtx);
     }
     async compile(code: string, voices: number) {
         let splitter: ChannelSplitterNode;

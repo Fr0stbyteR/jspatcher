@@ -973,7 +973,11 @@ export class Expr extends FaustOp<{}, {}, (string | number)[]> {
         const expr = this.box.args.join(" ").replace(/\\,/g, ",").replace(/^-/, "0-");
         const inspectCode = `${this.toOnceExpr().join(" ")} process = ${expr.replace(regexp, "0")};`;
         try {
-            const { dspMeta } = await this.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
+            const faustCompiler = await this.env.getFaustCompiler();
+            const { FaustMonoDspGenerator } = this.env.Faust;
+            const faustGenerator = new FaustMonoDspGenerator();
+            const { factory: { json } } = await faustGenerator.compile(faustCompiler, "FaustDSP", inspectCode, "");
+            const dspMeta = JSON.parse(json);
             return ~~dspMeta.outputs;
         } catch {
             return 1;
@@ -1062,7 +1066,11 @@ export class LibOp<P extends Record<string, any> = {}> extends FaustOp<{}, {}, (
             const { args } = this.box;
             const inspectCode = `${this.toOnceExpr().join(" ")} process = ${this.symbol[0]}${args.length ? `(${args.map(_ => (_ === "_" ? 0 : _)).join(", ")})` : ""};`;
             try {
-                const { dspMeta } = await this.env.faust.inspect(inspectCode, { args: { "-I": "libraries/" } });
+                const faustCompiler = await this.env.getFaustCompiler();
+                const { FaustMonoDspGenerator } = this.env.Faust;
+                const faustGenerator = new FaustMonoDspGenerator();
+                const { factory: { json } } = await faustGenerator.compile(faustCompiler, "FaustDSP", inspectCode, "");
+                const dspMeta = JSON.parse(json);
                 if (!inletsForced) this._.inlets = ~~dspMeta.inputs + args.length;
                 if (!outletsForced) this._.outlets = ~~dspMeta.outputs;
             } catch (e) {
@@ -1306,7 +1314,11 @@ class Code extends FaustOp<{ value: string }, {}, [], LibOpProps, { language: st
             const { value: code } = this.data;
             if (code) {
                 try {
-                    const { dspMeta } = await this.env.faust.inspect(code, { args: { "-I": "libraries/" } });
+                    const faustCompiler = await this.env.getFaustCompiler();
+                    const { FaustMonoDspGenerator } = this.env.Faust;
+                    const faustGenerator = new FaustMonoDspGenerator();
+                    const { factory: { json } } = await faustGenerator.compile(faustCompiler, "FaustDSP", code, "");
+                    const dspMeta = JSON.parse(json);
                     if (!inletsForced) this._.inlets = ~~dspMeta.inputs;
                     if (!outletsForced) this._.outlets = ~~dspMeta.outputs;
                 } catch (e) {

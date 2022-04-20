@@ -1,5 +1,4 @@
-import type { FaustAudioWorkletNode } from "faust2webaudio";
-import type { TFaustUI } from "faust2webaudio/src/types";
+import type { FaustAudioWorkletNode } from "@shren/faustwasm";
 import type { FaustUI } from "@shren/faust-ui";
 import DOMUI, { DOMUIState } from "../base/DOMUI";
 import BaseObject from "../base/BaseObject";
@@ -51,7 +50,7 @@ export default class ui extends BaseObject<{}, {}, [FaustAudioWorkletNode], [Rec
                     this._.node?.removeEventListener("paramChanged", handleParamChangedByDSP);
                     this._.node?.removeEventListener("destroy", handleDestroyDSP);
                     this._.node = data;
-                    const ui = data.getUI() as TFaustUI;
+                    const ui = data.getUI();
                     const root = document.createElement("div");
                     root.style.width = "100%";
                     root.style.height = "100%";
@@ -66,13 +65,13 @@ export default class ui extends BaseObject<{}, {}, [FaustAudioWorkletNode], [Rec
                     faustUI.paramChangeByUI = (path: string, value: number) => {
                         this.outlet(0, { [path]: value });
                     };
-                    if (!data.outputHandler) data.outputHandler = (path, value) => data.dispatchEvent(new CustomEvent("paramChanged", { detail: { path, value } }));
+                    if (!data.getOutputParamHandler()) data.setOutputParamHandler((path, value) => data.dispatchEvent(new CustomEvent("paramChanged", { detail: { path, value } })));
                     data.destroy = () => {
                         data.dispatchEvent(new CustomEvent("destroy", { detail: { target: data } }));
                         data.port.postMessage({ type: "destroy" });
                         data.port.close();
-                        delete data.plotHandler;
-                        delete data.outputHandler;
+                        data.setOutputParamHandler(null);
+                        data.setPlotHandler(null);
                     };
                     data.addEventListener("paramChanged", handleParamChangedByDSP);
                     data.addEventListener("destroy", handleDestroyDSP);

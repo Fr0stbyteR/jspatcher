@@ -1,7 +1,7 @@
-import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
-import { Faust } from "faust2webaudio";
+import type * as monaco from "monaco-editor/esm/vs/editor/editor.api";
+import type { FaustCompiler } from "@shren/faustwasm";
 
-export const faustLangRegister = async (monacoEditor: typeof monaco, faust: Faust) => {
+export const faustLangRegister = async (monacoEditor: typeof monaco, faust: FaustCompiler) => {
     const faustLang = await import("./FaustLang");
     monacoEditor.languages.register(faustLang.language);
     monacoEditor.languages.setLanguageConfiguration("faust", faustLang.config);
