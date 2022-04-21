@@ -4,7 +4,6 @@ import type * as Faust from "@shren/faustwasm";
 import { VERSION as wamApiVersion } from "@webaudiomodules/api";
 import { addFunctionModule, initializeWamEnv, initializeWamGroup } from "@webaudiomodules/sdk";
 import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitter";
-import DefaultImporter from "./objects/importer/DefaultImporter";
 import GlobalPackageManager from "./GlobalPackageManager";
 import PersistentProjectItemManager, { IPersistentProjectItemManager } from "./file/PersistentProjectItemManager";
 import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
@@ -243,7 +242,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 const libFaust = new LibFaust(faustModule);
                 const faustCompiler = new FaustCompiler(libFaust);
                 this.faustCompiler = faustCompiler;
-                this.faustAdditionalObjects = DefaultImporter.import("faust", { ...this.Faust });
             });
             await this.taskMgr.newTask(this, "Fetching Faust Standard Library...", async () => {
                 const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
@@ -305,6 +303,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 }
                 // this.pkgMgr.add(this.faustAdditionalObjects, "js", ["faust"]);
                 // await this.pkgMgr.importFromURL("../../@jspatcher/package-cac/dist/index.js", undefined, true);
+                onUpdate("internal");
+                await this.pkgMgr.postInit();
             });
             await this.taskMgr.newTask(this, "Creating Project", async () => {
                 const project = new Project(this);

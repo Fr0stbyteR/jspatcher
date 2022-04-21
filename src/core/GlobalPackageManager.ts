@@ -31,7 +31,7 @@ export default class GlobalPackageManager {
     readonly externals = new Map<string, Record<string, any>>();
     readonly importedPackages: IExternalPackage[] = [];
     get builtInPackagesNames() {
-        return [...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "Base", "globalThis", "api", "faust", "stdfaust.lib"];
+        return [...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "Base", "globalThis", "API", "Faust", "stdfaust.lib"];
     }
     get externalPackagesNames() {
         return this.importedPackages.filter(p => !p.isBuiltIn).map(p => p.name);
@@ -41,10 +41,10 @@ export default class GlobalPackageManager {
     }
     async init() {
         this.js = {
-            Base: await (await import("./objects/base/index.jspatpkg")).default(),
+            Base: await (await import("./objects/base/index.jspatpkg")).default()/* ,
             globalThis: await (await import("./objects/globalThis/index.jspatpkg")).default(),
             api: await (await import("./objects/api/index.jspatpkg")).default(),
-            faust: await (await import("./objects/faust/index.jspatpkg")).default()/* ,
+            faust: await (await import("./objects/faust/index.jspatpkg")).default(),
             Std: (await import("./objects/Std")).default,
             new: (await import("./objects/importer/New")).default,
             func: (await import("./objects/importer/Func")).default,
@@ -62,14 +62,24 @@ export default class GlobalPackageManager {
         this.jsaw = {
             Base: await (await import("./objects/base/index.jsdsppkg.main")).default()
         };
-        this.gen = { Base: (await import("./objects/Gen")).default };
+        this.gen = {
+            Base: (await import("./objects/Gen")).default
+        };
         /*
         this.max = (await import("./objects/Max")).default;
         this.add(this.env.faustAdditionalObjects, "js", ["faust"]);
         this.add(this.env.faustLibObjects, "faust");
         */
-        this.faust = { Base: (await import("./objects/Faust")).default, "stdfaust.lib": this.env.faustLibObjects };
+        this.faust = {
+            Base: (await import("./objects/Faust")).default,
+            "stdfaust.lib": this.env.faustLibObjects
+        };
         // this.add({ globalThis: globalThis }, "js");
+    }
+    async postInit() {
+        this.add(await (await import("./objects/globalThis/index.jspatpkg")).default(), "js", ["globalThis"]);
+        this.add(await (await import("./objects/api/index.jspatpkg")).default(), "js", ["API"]);
+        this.add(await (await import("./objects/faust/index.jspatpkg")).default(this.env), "js", ["Faust"]);
     }
     add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();
