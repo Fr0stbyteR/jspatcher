@@ -33,6 +33,7 @@
     "@monaco-editor/react": "^4.2.2",
     "@shren/faust-ui": "^1.0.4",
     "@shren/faustwasm": "^0.0.16",
+    "@shren/fftw-js": "^0.1.6",
     "@shren/guidolib": "^1.7.3",
     "@types/emscripten": "^1.39.5",
     "@types/express": "^4.17.13",

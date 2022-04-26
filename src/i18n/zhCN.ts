@@ -1,6 +1,13 @@
 import en from "./en";
 
 export default {
+    EnvOptionsModal: {
+        title: "JSPatcher 选项",
+        audioUnit: "音频单位",
+        language: "语言",
+        confirm: "确认",
+        cancel: "取消"
+    },
     AddPluginModal: {
         title: "添加插件",
         msg: "插件URL",
@@ -158,6 +165,9 @@ export default {
     UnitOptions: {
         time: "时间单位",
         sample: "采样数",
-        measure: "小节"
+        measure: "小节",
+        bpm: "BPM",
+        beatsPerMeasure: "每小节拍数",
+        division: "每拍细分"
     }
 } as typeof en;

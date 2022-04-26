@@ -1,10 +1,13 @@
 import * as React from "react";
-import Env, { EnvEventMap, EnvOptions } from "../../../core/Env";
+import Env, { EnvEventMap } from "../../../core/Env";
 import AudioEditor, { AudioEditorEventMap, AudioEditorState } from "../../../core/audio/AudioEditor";
 import AudioEditorMapUI from "./AudioEditorMapUI";
 import AudioEditorMainUI from "./AudioEditorMainUI";
+import AudioEditorMainControlsUI from "./AudioEditorMainControlsUI";
 import AudioEditorMonitorUI from "./AudioEditorMonitorUI";
+import type { EnvOptions } from "../../../core/EnvOptionsManager";
 import "./AudioEditorUI.scss";
+import AudioEditorSpectrogramUI from "./AudioEditorSpectrogramUI";
 
 interface P {
     env: Env;
@@ -14,12 +17,14 @@ interface P {
 
 interface S extends AudioEditorState, EnvOptions {
     $audio: number;
+    spectrogramOn: boolean;
 }
 
 export default class AudioEditorUI extends React.PureComponent<P, S> {
     state: S = {
         ...this.props.editor.state,
         ...this.props.env.options,
+        spectrogramOn: false,
         $audio: performance.now()
     };
     editorEventsListening: (keyof (AudioEditorEventMap | S))[] = ["cursor", "enabledChannels", "loop", "monitoring", "playing", "recording", "selRange", "viewRange"];
@@ -37,6 +42,7 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
     handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => {
         if (editor === this.props.editor) this.handleResize();
     };
+    handleClickSpectrogram = () => this.setState(({ spectrogramOn }) => ({ spectrogramOn: !spectrogramOn }));
     componentDidMount() {
         this.props.env.on("options", this.handleEnvOptions);
         this.props.env.on("activeEditor", this.handleActiveEditor);
@@ -55,8 +61,10 @@ export default class AudioEditorUI extends React.PureComponent<P, S> {
     render() {
         return (
             <div className="audio-editor-container ui-flex-column ui-flex-full">
-                <AudioEditorMapUI {...this.state} {...this.props} />
+                <AudioEditorMapUI {...this.state} {...this.props} onClickSpectrogram={this.handleClickSpectrogram} />
                 <AudioEditorMainUI {...this.state} {...this.props} />
+                {this.state.spectrogramOn ? <AudioEditorSpectrogramUI {...this.state} {...this.props} /> : undefined}
+                <AudioEditorMainControlsUI {...this.state} {...this.props} />
                 <AudioEditorMonitorUI {...this.state} {...this.props} {...this.state.audioDisplayOptions} />
             </div>
         );

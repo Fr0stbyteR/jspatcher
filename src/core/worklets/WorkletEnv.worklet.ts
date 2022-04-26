@@ -27,7 +27,6 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     readonly thread = "AudioWorklet";
     readonly os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
     readonly browser: "Unknown" | "Chromium" | "Gecko" | "WebKit";
-    readonly language: string;
     readonly generatedId: Uint32Array;
     readonly taskMgr = new TaskManager();
     readonly fileMgr: WorkletProjectItemManager;
@@ -40,10 +39,9 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
         super(options);
         globalThis.jspatcherEnv = this;
-        const { os, browser, language, generatedId } = options.processorOptions;
+        const { os, browser, generatedId } = options.processorOptions;
         this.os = os;
         this.browser = browser;
-        this.language = language;
         this.generatedId = generatedId;
         this.fileMgr = new WorkletProjectItemManager(this);
         this.tempMgr = new TemporaryProjectItemManager(this);

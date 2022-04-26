@@ -1,0 +1,23 @@
+.modal.modal-env-options {
+    & .ui.form .inline.field {
+        & > label {
+            width: 50%;
+        }
+        & > .time-input {
+            width: 30%;
+            margin: 2px 10px;
+        }
+    }
+
+    & .ui.mini .ui.dropdown .menu > .item {
+        font-size: 1em;
+        padding: 6px 10px !important;
+    }
+    & .ui.mini input[type="number"] {
+        width: 80px;
+        padding: 4px 8px;
+    }
+    & .ui.mini .chrome-picker input {
+        padding: unset;
+    }
+}

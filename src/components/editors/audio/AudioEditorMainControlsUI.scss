@@ -1,0 +1,63 @@
+.editor-container .audio-editor-container {
+    & > .editor-main-controls {
+        display: flex;
+        flex-direction: row;
+        flex: 0 0 auto;
+        height: auto;
+        align-items: center;
+        padding: 10px 4px;
+
+        & > span {
+            align-self: center;
+
+            &.time-input {
+                position: absolute;
+            }
+        }
+
+        & > span.editor-main-player-controls-container {
+            flex: 1 1 auto;
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            text-align: center;
+
+            & > span.editor-main-player-controls {
+                flex: 1 1 auto;
+
+                & > .ui.buttons {
+                    height: 30px;
+
+                    & > button.ui.button {
+                        margin: 0;
+
+                        &:last-child {
+                            border-top-right-radius: 0px;
+                            border-bottom-right-radius: 0px;
+                        }
+                    }
+                }
+
+                & > .menu {
+                    display: inline-flex;
+                    margin-top: 0;
+                    
+                    & > .audio-editor-device-selector {
+                        display: inline-flex;
+                        width: 300px;
+                        border-top-left-radius: 0px;
+                        border-bottom-left-radius: 0px;
+
+                        & > div:first-child {
+                            text-overflow: ellipsis;
+                            overflow: hidden;
+                            white-space: nowrap;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

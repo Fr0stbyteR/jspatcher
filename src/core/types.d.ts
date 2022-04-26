@@ -1,3 +1,4 @@
+import type * as WindowFunction from "window-function";
 import type { IJSPatcherObject, IJSPatcherObjectMeta } from "./objects/base/AbstractObject";
 import type { TPatcherProps, TPublicPatcherProps } from "./patcher/Patcher";
 import type Patcher from "./patcher/Patcher";
@@ -198,6 +199,7 @@ export type TStrictBPF = TBPFPoint[];
 export type TMIDIEvent = [number, number, number] | (Uint8Array & { length: 3 });
 export type TAudioUnit = "time" | "sample" | "measure";
 export type TAudioPlayingState = "stopped" | "paused" | "playing";
+export type TWindowFunction = Exclude<keyof (typeof WindowFunction), "gaussian" | "tukey">;
 export interface AudioUnitOptions {
     bpm: number;
     beatsPerMeasure: number;
@@ -211,6 +213,10 @@ export interface AudioDisplayOptions {
     hueOffset: number;
     seperatorColor: string;
     cursorColor: string;
+    fftSize: number;
+    fftWindowFunction: TWindowFunction;
+    fftOverlap: number;
+    fftDrawThreshold: number;
 }
 
 export interface WaveformMinMaxData {

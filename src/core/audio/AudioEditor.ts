@@ -66,7 +66,6 @@ export default class AudioEditor extends FileEditor<PatcherAudio, AudioEditorEve
         const editor = new this(audio);
         return editor.init();
     }
-    readonly audio: PatcherAudio;
     readonly player = new AudioPlayer(this);
     readonly recorder = new AudioRecorder(this);
     readonly state: AudioEditorState = {

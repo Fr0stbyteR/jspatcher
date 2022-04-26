@@ -2,11 +2,14 @@ import * as React from "react";
 import { Modal, Button, DropdownItemProps, Dropdown, DropdownProps, Form } from "semantic-ui-react";
 import TimeInputUI from "../editors/audio/TimeInput";
 import AudioEditor from "../../core/audio/AudioEditor";
-import { TAudioUnit } from "../../core/types";
+import { AudioUnitOptions, TAudioUnit } from "../../core/types";
 import I18n from "../../i18n/I18n";
+import type Env from "../../core/Env";
+import type { EnvEventMap } from "../../core/Env";
 import "./InsertSilenceModal.scss";
 
 interface Props {
+    env: Env;
     editor: AudioEditor;
     lang: string;
     open: boolean;
@@ -14,12 +17,14 @@ interface Props {
 }
 interface State {
     audioUnit: TAudioUnit;
+    audioUnitOptions: AudioUnitOptions;
     samples: number;
 }
 
 export default class InsertSilenceModal extends React.PureComponent<Props, State> {
     state: State = {
-        audioUnit: this.props.editor.env.options.audioUnit,
+        audioUnit: this.props.env.options.audioUnit,
+        audioUnitOptions: this.props.env.options.audioUnitOptions,
         samples: this.props.editor.sampleRate || 48000
     };
     get strings() {
@@ -38,6 +43,13 @@ export default class InsertSilenceModal extends React.PureComponent<Props, State
         this.props.editor.insertSilence(this.state.samples);
         this.props.onClose();
     };
+    handleOptions = ({ options: { audioUnitOptions } }: EnvEventMap["options"]) => this.setState({ audioUnitOptions });
+    componentDidMount() {
+        this.props.env.on("options", this.handleOptions);
+    }
+    componentWillUnmount() {
+        this.props.env.off("options", this.handleOptions);
+    }
     render() {
         return (
             <Modal className="modal-insert-silence" basic size="mini" open={this.props.open} onClose={this.props.onClose} closeIcon>
@@ -46,7 +58,7 @@ export default class InsertSilenceModal extends React.PureComponent<Props, State
                     <Form inverted size="mini">
                         <Form.Field inline>
                             <label>{this.strings.msg}</label>
-                            <TimeInputUI audioUnit={this.state.audioUnit} {...this.props.editor.env.options.audioUnitOptions} samples={this.state.samples} sampleRate={this.props.editor.sampleRate} onChange={this.handleTimeChange} />
+                            <TimeInputUI audioUnit={this.state.audioUnit} {...this.state.audioUnitOptions} samples={this.state.samples} sampleRate={this.props.editor.sampleRate} onChange={this.handleTimeChange} />
                             <Dropdown options={this.unitOptions} value={this.state.audioUnit} onChange={this.handleUnitChange} />
                         </Form.Field>
                     </Form>

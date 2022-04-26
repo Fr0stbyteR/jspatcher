@@ -7,6 +7,7 @@ import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitte
 import GlobalPackageManager from "./GlobalPackageManager";
 import PersistentProjectItemManager, { IPersistentProjectItemManager } from "./file/PersistentProjectItemManager";
 import TemporaryProjectItemManager from "./file/TemporaryProjectItemManager";
+import FFTWWorker from "./workers/FFTWWorker";
 import FileMgrWorker from "./workers/FileMgrWorker";
 import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import GuidoWorker from "./workers/GuidoWorker";
@@ -21,6 +22,7 @@ import AudioWorkletRegister from "./worklets/AudioWorkletRegister";
 import JSPatcherSDK, { IJSPatcherSDK } from "./SDK";
 import WorkletEnvNode from "./worklets/WorkletEnv";
 import LiveShare from "./LiveShare";
+import GlobalTransportNode from "./worklets/GlobalTransportNode";
 import { getFaustLibObjects } from "./objects/Faust";
 import { faustLangRegister } from "../misc/monaco-faust/register";
 import { detectOS, detectBrowserCore } from "../utils/utils";
@@ -28,8 +30,9 @@ import type PatcherAudio from "./audio/PatcherAudio";
 import type { IFileEditor } from "./file/FileEditor";
 import type { IFileInstance } from "./file/FileInstance";
 import type { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
-import type { AudioDisplayOptions, AudioUnitOptions, TAudioUnit, TErrorLevel, TPackage, TPatcherLog } from "./types";
-import GlobalTransportNode from "./worklets/GlobalTransportNode";
+import type { TErrorLevel, TPackage, TPatcherLog } from "./types";
+import type { EnvOptions, PartialEnvOptions } from "./EnvOptionsManager";
+import EnvOptionsManager from "./EnvOptionsManager";
 /*
 import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import GuidoWorker from "./workers/GuidoWorker";
@@ -50,21 +53,10 @@ export interface EnvEventMap {
     "newLog": TPatcherLog;
     "options": { options: EnvOptions; oldOptions: EnvOptions };
 }
-
-export interface EnvOptions {
-    language: "en" | "zh-CN";
-    audioUnit: TAudioUnit;
-    audioUnitOptions: AudioUnitOptions;
-    audioDisplayOptions: AudioDisplayOptions;
-    runtime: boolean;
-    noUI: boolean;
-}
-
 export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
     readonly thread: "main" | "AudioWorklet";
     readonly os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
     readonly browser: "Unknown" | "Chromium" | "Gecko" | "WebKit";
-    readonly language: string;
     readonly sdk: IJSPatcherSDK;
     readonly pkgMgr: Partial<GlobalPackageManager>;
     /** Show as status what task is proceeding */
@@ -90,6 +82,7 @@ export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
 export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPatcherEnv {
     readonly thread = "main";
     readonly generatedId = new Uint32Array(new SharedArrayBuffer(Uint32Array.BYTES_PER_ELEMENT));
+    readonly fftwWorker = new FFTWWorker();
     readonly fileMgrWorker = new FileMgrWorker();
     readonly waveformWorker = new WaveformWorker();
     readonly wavEncoderWorker = new WavEncoderWorker();
@@ -99,7 +92,6 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     readonly audioCtx = new AudioContext({ latencyHint: 0.00001 });
     readonly os = detectOS();
     readonly browser = detectBrowserCore();
-    readonly language = /* navigator.language === "zh-CN" ? "zh-CN" : */"en";
     readonly taskMgr = new TaskManager();
     readonly fileMgr: PersistentProjectItemManager = new PersistentProjectItemManager(this, this.fileMgrWorker);
     readonly tempMgr: TemporaryProjectItemManager = new TemporaryProjectItemManager(this);
@@ -115,7 +107,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     Faust: typeof Faust;
     faustCompiler: Faust.FaustCompiler;
     faustDocs: TFaustDocs;
-    faustAdditionalObjects: TPackage;
+    // faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
     pkgMgr: GlobalPackageManager;
     audioClipboard: PatcherAudio;
@@ -161,33 +153,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     instances = new Set<IFileInstance>();
     currentProject: Project;
     private _divRoot: HTMLDivElement;
-    private _options: EnvOptions = {
-        language: "en",
-        audioUnit: "time",
-        audioUnitOptions: {
-            bpm: 60,
-            beatsPerMeasure: 4,
-            division: 16
-        },
-        audioDisplayOptions: {
-            frameRate: 60,
-            bgColor: "black",
-            gridColor: "rgb(0, 53, 0)",
-            phosphorColor: "rgb(67, 217, 150)",
-            hueOffset: 0,
-            seperatorColor: "grey",
-            cursorColor: "rgba(191, 0, 0)"
-        },
-        runtime: false,
-        noUI: false
-    };
-    set options(options: EnvOptions) {
-        const oldOptions = this._options;
-        this._options = options;
-        this.emit("options", { oldOptions, options });
+    private _options = new EnvOptionsManager(this);
+    set options(options: PartialEnvOptions) {
+        this._options.setOptions(options);
     }
-    get options() {
-        return this._options;
+    get options(): EnvOptions {
+        return this._options.currentOptions;
     }
     constructor(root?: HTMLDivElement) {
         super();
@@ -218,6 +189,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             return this.libMusicXMLWorker;
         });
     }
+    async getFFTW() {
+        return this.taskMgr.newTask(this, "Loading FFTW...", async () => {
+            await this.fftwWorker.init();
+            return this.fftwWorker;
+        });
+    }
     async init() {
         const urlParams = new URLSearchParams(window.location.search);
         const urlParamsOptions = {
@@ -229,7 +206,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         };
         this.options.noUI = urlParamsOptions.noUI;
         this.options.runtime = urlParamsOptions.runtime;
-        if (!this.options.noUI && this.divRoot) ReactDOM.render(<UI env={this} lang={this.language} />, this.divRoot);
+        if (!this.options.noUI && this.divRoot) ReactDOM.render(<UI env={this} />, this.divRoot);
 
         await this.taskMgr.newTask(this, "Initializing JSPatcher Environment...", async () => {
             await this.taskMgr.newTask("Env", "Loading FaustWasm...", async () => {

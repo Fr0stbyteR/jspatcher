@@ -1,11 +1,13 @@
 import * as React from "react";
 import { Button } from "semantic-ui-react";
 import * as Color from "color-js";
-import AudioEditor from "../../../core/audio/AudioEditor";
-import { AudioDisplayOptions } from "../../../core/types";
+import I18n from "../../../i18n/I18n";
+import type AudioEditor from "../../../core/audio/AudioEditor";
+import type { AudioDisplayOptions } from "../../../core/types";
 import "./AudioEditorMapUI.scss";
 
 interface P {
+    lang: string;
     editor: AudioEditor;
     cursor: number;
     selRange: [number, number];
@@ -13,6 +15,8 @@ interface P {
     audioDisplayOptions: AudioDisplayOptions;
     enabledChannels: boolean[];
     $audio: number;
+    spectrogramOn: boolean;
+    onClickSpectrogram: () => any;
 }
 
 export default class EditorMapUI extends React.PureComponent<P> {
@@ -20,6 +24,9 @@ export default class EditorMapUI extends React.PureComponent<P> {
     refCanvas = React.createRef<HTMLCanvasElement>();
     paintScheduled = false;
     $paintRaf = -1;
+    get strings() {
+        return I18n[this.props.lang].AudioEditorUI;
+    }
     get canvas() {
         return this.refCanvas.current;
     }
@@ -316,7 +323,12 @@ export default class EditorMapUI extends React.PureComponent<P> {
                     </div>
                 </div>
                 <div className="editor-map-controls">
-                    <span className="editor-map-select-all" ><Button color="black" size="mini" icon="expand" onClick={this.handleClickSelectAll} /></span>
+                    <span className="editor-map-select-all" >
+                        <Button title={this.strings.viewAll} color="black" size="mini" icon="expand" onClick={this.handleClickSelectAll} />
+                    </span>
+                    <span className="switch-spectrogram">
+                        <Button title={this.strings.spectrogram} color={this.props.spectrogramOn ? "grey" : "black"} size="mini" icon="signal" onClick={this.props.onClickSpectrogram} />
+                    </span>
                 </div>
             </div>
         );

@@ -3,7 +3,7 @@ import { Modal, Form, Input, Button, Dropdown, DropdownProps, DropdownItemProps,
 import Env from "../../core/Env";
 import TimeInputUI from "../editors/audio/TimeInput";
 import I18n from "../../i18n/I18n";
-import { TAudioUnit } from "../../core/types";
+import type { TAudioUnit } from "../../core/types";
 import "./NewAudioModal.scss";
 
 interface Props {

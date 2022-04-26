@@ -1,4 +1,12 @@
 export default {
+    EnvOptionsModal: {
+        title: "JSPatcher Options",
+        audioUnit: "Audio Unit",
+        language: "Language",
+        reset: "Reset to Default",
+        confirm: "OK",
+        cancel: "Cancel"
+    },
     AddPluginModal: {
         title: "Add Plugin",
         msg: "Plugin URL",
@@ -19,6 +27,13 @@ export default {
     },
     DeviceSelector: {
         input: "Input"
+    },
+    AudioEditorUI: {
+        viewAll: "View All",
+        spectrogram: "Toggle Spectrogram",
+        fadeIn: "Fade In",
+        fadeOut: "Fade Out",
+        gain: "Adjust Gain"
     },
     AudioEditorMainControlsUI: {
         stop: "Stop",
@@ -154,8 +169,26 @@ export default {
         start: "Select or drop a file to start..."
     },
     UnitOptions: {
+        unitOptions: "Tempo Options",
         time: "time",
         sample: "sample",
-        measure: "measure"
+        measure: "measure",
+        bpm: "BPM",
+        beatsPerMeasure: "Beats / Measure",
+        division: "Subdivision"
+    },
+    DisplayOptions: {
+        displayOptions: "Audio Editor Display Options",
+        frameRate: "Frame Rate",
+        bgColor: "Background Color",
+        gridColor: "Grid Color",
+        phosphorColor: "Waveform Color",
+        hueOffset: "Hue Offset for Channels",
+        seperatorColor: "Seperator Color",
+        cursorColor: "Cursor Color",
+        fftSize: "FFT Size",
+        fftOverlap: "FFT Overlap",
+        fftWindowFunction: "FFT Window Function",
+        fftDrawThreshold: "FFT Drawing Minimum Amplitude"
     }
 };

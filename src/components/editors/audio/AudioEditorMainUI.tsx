@@ -1,14 +1,15 @@
 import * as React from "react";
 import { Button, Icon } from "semantic-ui-react";
 import * as Color from "color-js";
-import Env, { EnvOptions } from "../../../core/Env";
 import AudioEditor, { AudioEditorState } from "../../../core/audio/AudioEditor";
 import GainInputUI from "./GainInput";
 import AudioEditorVerticalRulerUI from "./AudioEditorVerticalRulerUI";
 import AudioEditorHorizontalRulerUI from "./AudioEditorHorizontalRulerUI";
-import AudioEditorMainControlsUI from "./AudioEditorMainControlsUI";
+import I18n from "../../../i18n/I18n";
 import { normExp, dbtoa } from "../../../utils/math";
 import { getRuler } from "../../../utils/utils";
+import type Env from "../../../core/Env";
+import type { EnvOptions } from "../../../core/EnvOptionsManager";
 import "./AudioEditorMainUI.scss";
 
 interface P extends AudioEditorState, EnvOptions {
@@ -35,6 +36,9 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
     $paintRaf = -1;
     vRuler: Record<number, string>;
     grid: number;
+    get strings() {
+        return I18n[this.props.lang].AudioEditorUI;
+    }
     get canvas() {
         return this.refCanvas.current;
     }
@@ -580,9 +584,9 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                             <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeEndMouseDown} />
                         </div>
                         <div className="editor-main-fades">
-                            {viewStart === 0 ? <div className="editor-main-fadein-handler" onMouseDown={this.handleFadeInMouseDown}><Icon name="adjust" inverted size="small" /></div> : undefined}
-                            {viewEnd === l ? <div className="editor-main-fadeout-handler" onMouseDown={this.handleFadeOutMouseDown}><Icon name="adjust" inverted size="small" /></div> : undefined}
-                            {selRange ? <div className="editor-main-fade-handler" style={{ left: `${Math.max(10, Math.min(90, $selStart * 100))}%` }}><Icon name="adjust" inverted size="small" /><GainInputUI unit="dB" gain={this.state.fade || 0} onAdjust={this.handleFadeAdjust} onChange={this.handleFadeChange} /></div> : undefined}
+                            {viewStart === 0 ? <div title={this.strings.fadeIn} className="editor-main-fadein-handler" onMouseDown={this.handleFadeInMouseDown}><Icon name="adjust" inverted size="small" /></div> : undefined}
+                            {viewEnd === l ? <div title={this.strings.fadeOut} className="editor-main-fadeout-handler" onMouseDown={this.handleFadeOutMouseDown}><Icon name="adjust" inverted size="small" /></div> : undefined}
+                            {selRange ? <div title={this.strings.gain} className="editor-main-fade-handler" style={{ left: `${Math.max(10, Math.min(90, $selStart * 100))}%` }}><Icon name="adjust" inverted size="small" /><GainInputUI unit="dB" gain={this.state.fade || 0} onAdjust={this.handleFadeAdjust} onChange={this.handleFadeChange} /></div> : undefined}
                         </div>
                     </div>
                     <div className="editor-main-channel-enabler">
@@ -605,7 +609,6 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
                         <div className="editor-main-cursor-handler" style={{ left: cursorLeft }} onMouseDown={this.handleCursorHandlerMouseDown} />
                     </div>
                 </div>
-                <AudioEditorMainControlsUI {...this.props} />
             </div>
         );
     }

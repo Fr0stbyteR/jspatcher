@@ -5,6 +5,7 @@ import LeftMenu from "./leftmenu/LeftMenu";
 import StatusBar from "./StatusBar";
 import EditorContainerUI from "./editors/EditorContainerUI";
 import type Env from "../core/Env";
+import type { EnvOptions } from "../core/EnvOptionsManager";
 import type { EnvEventMap } from "../core/Env";
 import type { TaskManagerEventMap, Task, TaskError } from "../core/TaskMgr";
 import "./UI.scss";
@@ -12,7 +13,6 @@ import "./zIndex.scss";
 
 interface P {
     env: Env;
-    lang: string;
 }
 
 interface S {
@@ -22,6 +22,7 @@ interface S {
     envErrors: TaskError[];
     fileDropping: boolean;
     runtime: boolean;
+    language: EnvOptions["language"];
     audioOn: boolean;
 }
 
@@ -33,6 +34,7 @@ export default class UI extends React.PureComponent<P, S> {
         envErrors: this.props.env.taskMgr.getErrorsFromEmitter(this.props.env),
         fileDropping: false,
         runtime: this.props.env.options.runtime,
+        language: this.props.env.options.language,
         audioOn: this.props.env.audioCtx.state === "running"
     };
     handleKeyDown = (e: React.KeyboardEvent) => {
@@ -65,6 +67,7 @@ export default class UI extends React.PureComponent<P, S> {
     };
     handleOptions = ({ options }: EnvEventMap["options"]) => {
         if (options.runtime !== this.state.runtime) this.setState({ runtime: options.runtime });
+        if (options.language !== this.state.language) this.setState({ language: options.language });
     };
     handleBeforeUnload = (e: BeforeUnloadEvent) => {
         const { isDirty } = this.props.env.editorContainer;
@@ -165,20 +168,20 @@ export default class UI extends React.PureComponent<P, S> {
                                             <Button inverted size="massive" icon="play" onClick={this.handleAudioSwitch} />
                                         </div>
                                     }
-                                    <EditorContainerUI {...this.props} editorContainer={this.props.env.editorContainer} runtime={this.state.runtime} />
+                                    <EditorContainerUI {...this.props} lang={this.state.language} editorContainer={this.props.env.editorContainer} runtime={this.state.runtime} />
                                 </div>
                             </div>
                             : <>
-                                <TopMenu {...this.props} />
+                                <TopMenu {...this.props} lang={this.state.language} />
                                 <div className="ui-flex-row" style={{ flex: "1 1 auto", overflow: "auto" }}>
                                     <div className="ui-left">
-                                        <LeftMenu {...this.props} />
+                                        <LeftMenu {...this.props} lang={this.state.language} />
                                     </div>
                                     <div className="ui-center">
-                                        <EditorContainerUI {...this.props} editorContainer={this.props.env.editorContainer} runtime={this.state.runtime} />
+                                        <EditorContainerUI {...this.props} lang={this.state.language} editorContainer={this.props.env.editorContainer} runtime={this.state.runtime} />
                                     </div>
                                 </div>
-                                <StatusBar {...this.props} lang={this.props.env.language} />
+                                <StatusBar {...this.props} lang={this.state.language} />
                             </>
                         }
                     </>

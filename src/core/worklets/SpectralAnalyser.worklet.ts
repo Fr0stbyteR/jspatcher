@@ -1,12 +1,12 @@
 import apply from "window-function/apply";
-import { blackman, hamming, hann, triangular } from "window-function";
+import * as WindowFunction from "window-function";
 import { RFFT } from "../../utils/fftw";
 import { setTypedArray, getSubTypedArray, indexToFreq, sum, centroid, estimateFreq, fftw2Amp, flatness, flux, kurtosis, rolloff, skewness, slope, spread } from "../../utils/buffer";
 import { ceil, mod } from "../../utils/math";
 import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./TypedAudioWorklet";
 import { ISpectralAnalyserProcessor, ISpectralAnalyserNode, SpectralAnalyserParameters, SpectralAnalysis } from "./SpectralAnalyserWorklet.types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
-import { windowEnergyFactor } from "../../utils/windowEnergy";
+import WindowEnergyFactor from "../../utils/windowEnergy";
 
 const processorId = "__JSPatcher_SpectralAnalyser";
 declare const globalThis: AudioWorkletGlobalScope & { SharedArrayBuffer: typeof SharedArrayBuffer | typeof ArrayBuffer; Atomics: typeof Atomics };
@@ -277,15 +277,18 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
             this._fftSize = fftSize;
         }
     }
-    private _windowFunction = blackman;
+    private _windowFunction = WindowFunction.blackman;
+    private _windowEnergyFactor = WindowEnergyFactor.blackman;
     get windowFunction() {
         return this._windowFunction;
     }
-    set windowFunction(funcIn: (i: number, N: number) => number) {
-        this._windowFunction = funcIn;
+    get windowEnergyFactor() {
+        return this._windowEnergyFactor;
     }
     setWindowFunctionFromIndex(funcIn: number) {
-        this.windowFunction = [blackman, hamming, hann, triangular][~~funcIn];
+        const id = (["blackman", "hamming", "hann", "triangular"] as const)[~~funcIn];
+        this._windowFunction = WindowFunction[id];
+        this._windowEnergyFactor = WindowEnergyFactor[id];
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: Record<SpectralAnalyserParameters, Float32Array>) {
         if (this.destroyed) return false;
@@ -367,7 +370,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
                     setTypedArray(trunc, window, 0, $write - samplesWaiting + fftHopSize - fftSize);
                     apply(trunc, this._windowFunction);
                     const ffted = this.fftw.forward(trunc);
-                    const amps = fftw2Amp(ffted, windowEnergyFactor.blackman);
+                    const amps = fftw2Amp(ffted, this.windowEnergyFactor);
                     this.fftWindow[i].set(amps, $writeFrame * fftBins);
                     $writeFrame = ($writeFrame + 1) % dataFrames;
                 }

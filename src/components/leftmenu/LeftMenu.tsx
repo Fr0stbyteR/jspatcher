@@ -10,6 +10,9 @@ import FileManagerUI from "./FileMgrUI";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 import AudioEditor from "../../core/audio/AudioEditor";
 import PluginManagerUI from "./PluginMgrUI";
+import EnvOptionsModal from "../modals/EnvOptionsModal";
+import EnvOptionsManager from "../../core/EnvOptionsManager";
+import type { EnvOptions } from "../../core/EnvOptionsManager";
 
 enum TPanels {
     None = "None",
@@ -19,15 +22,32 @@ enum TPanels {
     Plugins = "Plugins"
 }
 
-class ConfigMenu extends React.PureComponent {
+class ConfigMenu extends React.PureComponent<{ env: Env; lang: string }, { envOptionsModalOpen: boolean }> {
+    state = {
+        envOptionsModalOpen: false
+    };
+    onCloseEnvOptionsModal = (options: EnvOptions) => {
+        this.props.env.options = options;
+        this.setState({ envOptionsModalOpen: false });
+    };
+    onConfirmEnvOptionsModal = () => {
+        this.setState({ envOptionsModalOpen: false });
+    };
+    onResetEnvOptionsModal = () => {
+        this.props.env.options = EnvOptionsManager.defaultOptions;
+    };
     render() {
         return (
-            <Dropdown item={true} icon={<Icon name="cog" color="grey" inverted />}>
-                <Dropdown.Menu style={{ minWidth: "max-content", zIndex: 200 }}>
-                    <Dropdown.Item href="https://github.com/fr0stbyter/jspatcher" target="_blank" text="Visit GitHub" />
-                    <Dropdown.Item disabled text={`Version: ${VERSION}`} />
-                </Dropdown.Menu>
-            </Dropdown>
+            <>
+                <Dropdown item={true} icon={<Icon name="cog" color="grey" inverted />}>
+                    <Dropdown.Menu style={{ minWidth: "max-content", zIndex: 200 }}>
+                        <Dropdown.Item onClick={() => this.setState({ envOptionsModalOpen: true })} text="Options..." />
+                        <Dropdown.Item href="https://github.com/fr0stbyter/jspatcher" target="_blank" text="Visit GitHub" />
+                        <Dropdown.Item disabled text={`Version: ${VERSION}`} />
+                    </Dropdown.Menu>
+                </Dropdown>
+                <EnvOptionsModal {...this.props} open={this.state.envOptionsModalOpen} onReset={this.onResetEnvOptionsModal} onClose={this.onCloseEnvOptionsModal} onConfirm={this.onConfirmEnvOptionsModal} />
+            </>
         );
     }
 }
@@ -145,7 +165,7 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                         : undefined
                     }
                     <div style={{ flex: "1 1 auto" }}></div>
-                    <ConfigMenu />
+                    <ConfigMenu {...this.props} />
                 </Menu>
                 <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown} hidden={this.state.active === TPanels.None}></div>
             </>
