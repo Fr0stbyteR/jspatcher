@@ -1,9 +1,9 @@
 import apply from "window-function/apply";
 import * as WindowFunction from "window-function";
-import { RFFT } from "../../utils/fftw";
+import { instantiateFFTWModule, FFTWModule, FFTW, FFT } from "@shren/fftw-js/dist/esm-bundle";
 import { setTypedArray, getSubTypedArray, indexToFreq, sum, centroid, estimateFreq, fftw2Amp, flatness, flux, kurtosis, rolloff, skewness, slope, spread } from "../../utils/buffer";
 import { ceil, mod } from "../../utils/math";
-import { AudioWorkletGlobalScope, TypedAudioParamDescriptor } from "./TypedAudioWorklet";
+import { AudioWorkletGlobalScope, TypedAudioParamDescriptor, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
 import { ISpectralAnalyserProcessor, ISpectralAnalyserNode, SpectralAnalyserParameters, SpectralAnalysis } from "./SpectralAnalyserWorklet.types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 import WindowEnergyFactor from "../../utils/windowEnergy";
@@ -240,7 +240,12 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
     /** Samples that already written into window, but not analysed by FFT yet */
     private samplesWaiting = 0;
     /** FFTW.js instance */
-    private fftw = new RFFT(1024);
+    private fftwModule: FFTWModule;
+    private fftw: FFTW;
+    private get FFT1D() {
+        return this.fftw.r2r.FFT1D;
+    }
+    private rfft: FFT;
     private _windowSize = 1024;
     get windowSize() {
         return this._windowSize;
@@ -269,8 +274,8 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
     set fftSize(sizeIn: number) {
         const fftSize = ~~ceil(Math.min(this._windowSize, Math.max(2, sizeIn || 1024)), 2);
         if (fftSize !== this._fftSize) {
-            this.fftw.dispose();
-            this.fftw = new RFFT(fftSize);
+            this.rfft.dispose();
+            this.rfft = new this.FFT1D(fftSize);
             this.samplesWaiting = 0;
             this.$readFrame = 0;
             this.$writeFrame = 0;
@@ -289,6 +294,16 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
         const id = (["blackman", "hamming", "hann", "triangular"] as const)[~~funcIn];
         this._windowFunction = WindowFunction[id];
         this._windowEnergyFactor = WindowEnergyFactor[id];
+    }
+    constructor(options: TypedAudioWorkletNodeOptions<any>) {
+        super(options);
+        this.init();
+    }
+    async init(): Promise<true> {
+        this.fftwModule = await instantiateFFTWModule();
+        this.fftw = new FFTW(this.fftwModule);
+        this.rfft = new this.FFT1D(1024);
+        return true;
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: Record<SpectralAnalyserParameters, Float32Array>) {
         if (this.destroyed) return false;
@@ -369,7 +384,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
                     const trunc = new Float32Array(fftSize);
                     setTypedArray(trunc, window, 0, $write - samplesWaiting + fftHopSize - fftSize);
                     apply(trunc, this._windowFunction);
-                    const ffted = this.fftw.forward(trunc);
+                    const ffted = this.rfft.forward(trunc);
                     const amps = fftw2Amp(ffted, this.windowEnergyFactor);
                     this.fftWindow[i].set(amps, $writeFrame * fftBins);
                     $writeFrame = ($writeFrame + 1) % dataFrames;
