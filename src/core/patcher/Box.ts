@@ -71,6 +71,9 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         if (this._parsed.args.length) this.args = this._parsed.args;
         Object.assign(this.props, this._parsed.props);
         const Constructor = this._patcher.getObjectConstructor(this._parsed);
+        if (Constructor === this._patcher.activeLib.InvalidObject) {
+            this.error(`Object ${this._parsed.class} not found.`);
+        }
         this._Object = Constructor;
         if (!this.size.every(v => v > 0)) this.size = this.defaultSize;
         if (!isTPresentationRect(this.presentationRect) || (this.presentationSize.every(v => typeof v === "number") && !this.presentationSize.every(v => v > 0))) this.presentationSize = this.defaultSize;
@@ -388,6 +391,7 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
     }
     error(text: string) {
         this.emit("error", text);
+        this._patcher.newLog("error", "Patcher", text, this);
     }
     highlight() {
         this._patcher.emit("highlightBox", this.id);

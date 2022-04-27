@@ -1,0 +1,24 @@
+.top-menu .menu-share-container {
+    position: absolute;
+    right: 5px;
+    top: 35px;
+    padding: 10px;
+    width: 320px;
+    cursor: auto;
+
+    & .ui.form {
+        width: 100%;
+
+        & .inline.field {
+            display: flex;
+
+            & > label {
+                flex: 0 0 35%;
+                margin: auto 0px;
+            }
+            & > .ui.input {
+                flex: 1 1 auto;
+            }
+        }
+    }
+}

@@ -11,6 +11,7 @@ interface P {
     frameRate: number;
     gridColor: string;
     phosphorColor: string;
+    drawAbove?: boolean;
 }
 
 export default class AudioEditorVerticalRulerUI extends React.PureComponent<P> {
@@ -77,7 +78,7 @@ export default class AudioEditorVerticalRulerUI extends React.PureComponent<P> {
         const [width, height] = this.fullSize();
 
         ctx.clearRect(0, 0, width, height);
-        const top = 40;
+        const top = this.props.drawAbove ? 40 : 0;
         const [viewStart, viewEnd] = viewRange;
         const viewLength = viewEnd - viewStart;
         ctx.strokeStyle = gridColor;
@@ -89,6 +90,7 @@ export default class AudioEditorVerticalRulerUI extends React.PureComponent<P> {
             ctx.lineTo(x, height);
         }
         ctx.stroke();
+        if (!this.props.drawAbove) return;
         ctx.strokeStyle = "white";
         ctx.fillStyle = phosphorColor;
         ctx.font = "12px Consolas, monospace";

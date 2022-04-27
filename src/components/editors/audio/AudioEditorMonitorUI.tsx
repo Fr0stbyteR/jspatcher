@@ -172,11 +172,11 @@ export default class AudioEditorMonitorUI extends React.PureComponent<P> {
             ctx.textBaseline = "top";
             ctx.fillText("dB", 10, height - bottom + 6);
             ctx.beginPath();
-            for (let db = -60; db <= 5; db++) {
+            for (let db = -60; db <= 5; db += (width > 250 ? 1 : width > 100 ? 3 : 12)) {
                 const x = (db - min) / (max - min) * width;
                 ctx.moveTo(x, height - bottom - 2);
                 ctx.lineTo(x, height - bottom + (db % 6 === 0 ? 4 : 2));
-                if (db % 6 === 0) ctx.fillText(db.toString(), x, height - bottom + 6);
+                if (db % (width > 250 ? 6 : width > 100 ? 12 : 36) === 0) ctx.fillText(db.toString(), x, height - bottom + 6);
             }
             ctx.stroke();
         }

@@ -25,7 +25,6 @@ export default class WorkletEnvNode extends AudioWorkletProxyNode<IWorkletEnvNod
             processorOptions: {
                 os: mainEnv.os,
                 browser: mainEnv.browser,
-                language: mainEnv.language,
                 generatedId: mainEnv.generatedId
             }
         });

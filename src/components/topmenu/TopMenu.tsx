@@ -4,6 +4,7 @@ import type Env from "../../core/Env";
 import FileMenu from "./FileMenu";
 import EditMenu from "./EditMenu";
 import "./TopMenu.scss";
+import ShareMenu from "./ShareMenu";
 
 interface P {
     env: Env;
@@ -49,6 +50,8 @@ export default class TopMenu extends React.PureComponent<P> {
                 <Menu inverted size="mini" className="top-menu">
                     <FileMenu {...this.props} ref={this.refFileMenu} />
                     <EditMenu {...this.props} ref={this.refEditMenu} />
+                    <div style={{ flex: "1 1 auto" }}></div>
+                    <ShareMenu {...this.props} />
                 </Menu>
             </Ref>
         );

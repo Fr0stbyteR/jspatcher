@@ -87,11 +87,12 @@ export type TDependencies = [string, string][];
 
 export type TErrorLevel = "error" | "warn" | "info" | "none";
 
-export interface TPatcherLog {
+export interface ILogInfo {
     errorLevel: TErrorLevel;
     emitter?: Box | Patcher | any;
     title: string;
     message: string;
+    timestamp: number;
 }
 
 export interface TMaxPatcher {
@@ -217,6 +218,15 @@ export interface AudioDisplayOptions {
     fftWindowFunction: TWindowFunction;
     fftOverlap: number;
     fftDrawThreshold: number;
+}
+export interface LiveShareOptions {
+    server: string;
+    hostRoomId: string;
+    joinRoomId: string;
+    hostPassword: string;
+    hostPermission: "read" | "write";
+    username: string;
+    joinPassword: string;
 }
 
 export interface WaveformMinMaxData {

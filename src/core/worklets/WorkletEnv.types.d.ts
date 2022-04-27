@@ -22,7 +22,6 @@ export interface IWorkletEnvNode extends PrefixKeys<Pick<IPersistentProjectItemM
 export interface WorkletEnvOptions {
     os: "Windows" | "MacOS" | "UNIX" | "Linux" | "Unknown";
     browser: "Unknown" | "Chromium" | "Gecko" | "WebKit";
-    language: string;
     generatedId: Uint32Array;
 }
 export type WorkletEnvParameters = never;

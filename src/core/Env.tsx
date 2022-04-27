@@ -23,16 +23,17 @@ import JSPatcherSDK, { IJSPatcherSDK } from "./SDK";
 import WorkletEnvNode from "./worklets/WorkletEnv";
 import LiveShare from "./LiveShare";
 import GlobalTransportNode from "./worklets/GlobalTransportNode";
+import EnvOptionsManager from "./EnvOptionsManager";
+import Logger from "./Logger";
 import { getFaustLibObjects } from "./objects/Faust";
 import { faustLangRegister } from "../misc/monaco-faust/register";
-import { detectOS, detectBrowserCore } from "../utils/utils";
+import { detectOS, detectBrowserCore, getTimestamp } from "../utils/utils";
 import type PatcherAudio from "./audio/PatcherAudio";
 import type { IFileEditor } from "./file/FileEditor";
 import type { IFileInstance } from "./file/FileInstance";
 import type { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
-import type { TErrorLevel, TPackage, TPatcherLog } from "./types";
+import type { TErrorLevel, TPackage, ILogInfo } from "./types";
 import type { EnvOptions, PartialEnvOptions } from "./EnvOptionsManager";
-import EnvOptionsManager from "./EnvOptionsManager";
 /*
 import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import GuidoWorker from "./workers/GuidoWorker";
@@ -50,7 +51,7 @@ export interface EnvEventMap {
     "openEditor": IFileEditor;
     "activeEditorContainer": { editorContainer: EditorContainer; oldEditorContainer: EditorContainer };
     "instances": IFileInstance[];
-    "newLog": TPatcherLog;
+    "newLog": ILogInfo;
     "options": { options: EnvOptions; oldOptions: EnvOptions };
 }
 export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
@@ -96,7 +97,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     readonly fileMgr: PersistentProjectItemManager = new PersistentProjectItemManager(this, this.fileMgrWorker);
     readonly tempMgr: TemporaryProjectItemManager = new TemporaryProjectItemManager(this);
     readonly editorContainer = new EditorContainer(this);
-    readonly log: TPatcherLog[] = [];
+    readonly logger = new Logger();
     readonly AudioWorkletRegister = AudioWorkletRegister;
     readonly sdk = new JSPatcherSDK();
     readonly liveShare = new LiveShare(this);
@@ -378,8 +379,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         return project;
     }
     newLog(errorLevel: TErrorLevel, title: string, message: string, emitter?: any) {
-        const log = { errorLevel, title, message, emitter };
-        this.log.push(log);
+        const log = { errorLevel, title, message, emitter, timestamp: getTimestamp() };
+        this.logger.push(log);
         this.emit("newLog", log);
     }
     get divRoot(): HTMLDivElement {

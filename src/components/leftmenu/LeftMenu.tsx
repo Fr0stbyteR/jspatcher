@@ -1,18 +1,15 @@
 import * as React from "react";
-import { MenuItemProps, Menu, Icon, Header, Dropdown } from "semantic-ui-react";
-import "./LeftMenu.scss";
+import { MenuItemProps, Menu, Icon, Header } from "semantic-ui-react";
 import Objects from "./Objects";
 import Packages from "./Packages";
-import VERSION from "../../scripts/version";
 import Env, { EnvEventMap } from "../../core/Env";
 import { IFileEditor } from "../../core/file/FileEditor";
 import FileManagerUI from "./FileMgrUI";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 import AudioEditor from "../../core/audio/AudioEditor";
 import PluginManagerUI from "./PluginMgrUI";
-import EnvOptionsModal from "../modals/EnvOptionsModal";
-import EnvOptionsManager from "../../core/EnvOptionsManager";
-import type { EnvOptions } from "../../core/EnvOptionsManager";
+import ConfigMenu from "./ConfigMenu";
+import "./LeftMenu.scss";
 
 enum TPanels {
     None = "None",
@@ -20,36 +17,6 @@ enum TPanels {
     Objects = "Objects",
     Packages = "Packages",
     Plugins = "Plugins"
-}
-
-class ConfigMenu extends React.PureComponent<{ env: Env; lang: string }, { envOptionsModalOpen: boolean }> {
-    state = {
-        envOptionsModalOpen: false
-    };
-    onCloseEnvOptionsModal = (options: EnvOptions) => {
-        this.props.env.options = options;
-        this.setState({ envOptionsModalOpen: false });
-    };
-    onConfirmEnvOptionsModal = () => {
-        this.setState({ envOptionsModalOpen: false });
-    };
-    onResetEnvOptionsModal = () => {
-        this.props.env.options = EnvOptionsManager.defaultOptions;
-    };
-    render() {
-        return (
-            <>
-                <Dropdown item={true} icon={<Icon name="cog" color="grey" inverted />}>
-                    <Dropdown.Menu style={{ minWidth: "max-content", zIndex: 200 }}>
-                        <Dropdown.Item onClick={() => this.setState({ envOptionsModalOpen: true })} text="Options..." />
-                        <Dropdown.Item href="https://github.com/fr0stbyter/jspatcher" target="_blank" text="Visit GitHub" />
-                        <Dropdown.Item disabled text={`Version: ${VERSION}`} />
-                    </Dropdown.Menu>
-                </Dropdown>
-                <EnvOptionsModal {...this.props} open={this.state.envOptionsModalOpen} onReset={this.onResetEnvOptionsModal} onClose={this.onCloseEnvOptionsModal} onConfirm={this.onConfirmEnvOptionsModal} />
-            </>
-        );
-    }
 }
 
 interface P {

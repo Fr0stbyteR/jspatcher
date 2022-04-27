@@ -67,8 +67,8 @@ export default class AudioEditorSpectrogramUI extends React.PureComponent<P, S> 
                 if (v < thresh) continue;
                 const n = (v - thresh) / -thresh;
                 const hue = (n * 180 + 240) % 360;
-                const lum = n * 50;
-                ctx.fillStyle = `hsl(${hue}, 100%, ${lum}%)`;
+                // const lum = 50;
+                ctx.fillStyle = `hsla(${hue}, 100%, 50%, ${n})`;
                 ctx.fillRect(~~(i / height), height - 1 - (i % height), 1, 1);
             }
             return ctx;
@@ -412,8 +412,8 @@ export default class AudioEditorSpectrogramUI extends React.PureComponent<P, S> 
             <div className="editor-spectrogram">
                 <div className="editor-spectrogram-canvases">
                     <div className="editor-spectrogram-canvas-background" style={{ backgroundColor: bgColor }} />
-                    {/*
                     <AudioEditorVerticalRulerUI ruler={this.vRuler} {...this.props} {...audioDisplayOptions} />
+                    {/*
                     <AudioEditorHorizontalRulerUI {...this.props} {...audioDisplayOptions} />
                     */}
                     <div ref={this.refDivMain} className="editor-spectrogram-canvas-container" onMouseDown={this.handleCanvasMouseDown} onWheel={this.handleWheel}>
@@ -441,6 +441,7 @@ export default class AudioEditorSpectrogramUI extends React.PureComponent<P, S> 
                             ))
                         }
                     </div>
+                    {/*
                     <div className="editor-spectrogram-vertical-ruler-area" onMouseDown={this.handleCursorHandlerMouseDown}>
                         <div className="editor-main-selrange-handler" ref={this.refDivSelRange} style={{ left: selLeft, width: selWidth }} hidden={!selRange} >
                             <div className="resize-handler resize-handler-w" onMouseDown={this.handleResizeStartMouseDown} />
@@ -449,6 +450,7 @@ export default class AudioEditorSpectrogramUI extends React.PureComponent<P, S> 
                         </div>
                         <div className="editor-spectrogram-cursor-handler" style={{ left: cursorLeft }} onMouseDown={this.handleCursorHandlerMouseDown} />
                     </div>
+                    */}
                 </div>
             </div>
         );

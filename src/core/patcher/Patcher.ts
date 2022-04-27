@@ -13,7 +13,7 @@ import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta, IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
-import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, TPatcherLog, TDependencies } from "../types";
+import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, ILogInfo, TDependencies } from "../types";
 import type PatcherNode from "../worklets/PatcherNode";
 import type PatcherProcessor from "../worklets/Patcher.worklet";
 
@@ -38,7 +38,7 @@ export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor"
 export interface TPatcherState {
     name: string;
     isReady: boolean;
-    log: TPatcherLog[];
+    log: ILogInfo[];
     selected: string[];
     pkgMgr: IPackageManager;
     preventEmitChanged: boolean;
@@ -370,7 +370,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const className = parsed.class;
         if (typeof className !== "string" || className.length === 0) return this.activeLib.EmptyObject;
         if (this.activeLib[className]) return this.activeLib[className];
-        this.error(`Object ${className} not found.`);
         return this.activeLib.InvalidObject;
     }
     getObjectMeta(parsed: { class: string; args: any[]; props: Record<string, any> }) {

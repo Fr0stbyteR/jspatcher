@@ -74,7 +74,7 @@ export default class EditorHorizontalRulerUI extends React.PureComponent<P> {
 
         ctx.clearRect(0, 0, width, height);
         const right = 80;
-        const range = [-3, -6, -12, -18];
+        const range = height > 250 ? [-3, -6, -12, -18] : [-3, -12];
         ctx.strokeStyle = gridColor;
         ctx.beginPath();
         for (let i = 0; i < channels; i++) {
@@ -110,7 +110,7 @@ export default class EditorHorizontalRulerUI extends React.PureComponent<P> {
             ctx.lineTo(width - right + 10, center);
             ctx.fillText("-∞", width - right + 14, center);
             let y: number;
-            for (let db = -1; db >= -18; db--) {
+            for (let db = height > 250 ? -1 : -3; db >= -18; db -= (height > 250 ? 1 : 3)) {
                 const a = dbtoa(db);
                 y = center - a * channelHeight * 0.5;
                 ctx.moveTo(width - right, y);

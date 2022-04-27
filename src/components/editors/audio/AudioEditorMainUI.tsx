@@ -575,7 +575,7 @@ export default class AudioEditorMainUI extends React.PureComponent<P, S> {
             <div className="editor-main">
                 <div className="editor-main-canvases">
                     <div className="editor-main-canvas-background" style={{ backgroundColor: bgColor }} />
-                    <AudioEditorVerticalRulerUI ruler={this.vRuler} {...this.props} {...audioDisplayOptions} />
+                    <AudioEditorVerticalRulerUI drawAbove ruler={this.vRuler} {...this.props} {...audioDisplayOptions} />
                     <AudioEditorHorizontalRulerUI {...this.props} {...audioDisplayOptions} />
                     <div ref={this.refDivMain} className="editor-main-canvas-container" onMouseDown={this.handleCanvasMouseDown} onWheel={this.handleWheel}>
                         <canvas ref={this.refCanvas} />

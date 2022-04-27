@@ -10,6 +10,7 @@
         position: relative;
         margin: 18px 6px;
         overflow: hidden;
+        min-width: 50px;
 
         & > canvas {
             position: absolute;
@@ -20,10 +21,10 @@
     }
 
     & > div.editor-monitor-ranges {
-        flex: 0 0 auto;
+        flex: 0 1 320px;
         display: inline-block;
         position: relative;
-        width: 320px;
+        // width: 320px;
         margin: 6px;
         user-select: none;
 

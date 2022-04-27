@@ -14,12 +14,12 @@
             & > .editor-spectrogram-canvas-background {
                 display: block;
                 position: absolute;
-                height: calc(100% - 40px);
+                height: 100%;
                 width: calc(100% - 80px);
-                margin: 40px 80px 0px 0px;
+                margin: 0px 80px 0px 0px;
             }
 
-            & > .editor-spectrogram-vertical-ruler-container {
+            & > .editor-main-vertical-ruler-container {
                 display: block;
                 position: absolute;
                 height: 100%;
@@ -38,9 +38,9 @@
             & > .editor-spectrogram-horizontal-ruler-container {
                 display: block;
                 position: absolute;
-                height: calc(100% - 40px);
+                height: 100%;
                 width: 100%;
-                margin: 40px 0px 0px 0px;
+                margin: 0px 0px 0px 0px;
                 pointer-events: none;
     
                 & > canvas {
@@ -54,10 +54,10 @@
             & > .editor-spectrogram-canvas-container {
                 display: block;
                 position: absolute;
-                height: calc(100% - 40px);
+                height: 100%;
                 width: calc(100% - 80px);
                 cursor: text;
-                margin: 40px 80px 0px 0px;
+                margin: 0px 80px 0px 0px;
                 overflow: hidden;
     
                 & > canvas {
@@ -108,40 +108,6 @@
                     position: absolute;
                     width: 100%;
 
-                    & > div.editor-spectrogram-fadein-handler {
-                        position: absolute;
-                        left: 10px;
-                        top: 10px;
-                        cursor: col-resize;
-                        transform: rotate(-135deg);
-                        opacity: 0.35;
-    
-                        &:hover {
-                            opacity: 1;
-                        }
-
-                        & > i {
-                            margin: 0px;
-                        }
-                    }
-
-                    & > div.editor-spectrogram-fadeout-handler {
-                        position: absolute;
-                        right: 10px;
-                        top: 10px;
-                        cursor: col-resize;
-                        transform: rotate(-45deg);
-                        opacity: 0.35;
-    
-                        &:hover {
-                            opacity: 1;
-                        }
-
-                        & > i {
-                            margin: 0px;
-                        }
-                    }
-
                     & > div.editor-spectrogram-fade-handler {
                         position: absolute;
                         display: flex;
@@ -169,85 +135,14 @@
                     }
                 }
             }
-
-            & > div.editor-spectrogram-vertical-ruler-area {
-                position: absolute;
-                display: block;
-                height: 40px;
-                width: calc(100% - 80px);
-                overflow: hidden;
-    
-                & > div.editor-spectrogram-selrange-handler {
-                    position: absolute;
-                    display: block;
-                    height: 40px;
-                    width: 0%;
-                    background-color: rgba(255, 255, 255, 0.1);
-                    pointer-events: none;
-                    border: 0px rgba(255, 255, 255, 0.5) dotted;
-                    border-width: 0px 2px;
-                    overflow: hidden;
-    
-                    &[hidden] {
-                        display: none;
-                    }
-                    
-                    & > div {
-                        pointer-events: auto;
-                    }
-    
-                    & > div.editor-spectrogram-selrange-mover {
-                        position: relative;
-                        width: 16px;
-                        height: 10px;
-                        margin-left: auto;
-                        margin-right: auto;
-                        margin-top: 30px;
-                        cursor: grab;
-                        background-image: linear-gradient(to bottom, transparent 4px, grey 4px, grey 5px, transparent 5px, transparent 6px, grey 6px, grey 7px, transparent 7px);
-                    }
-    
-                    & > div.resize-handler-w {
-                        position: absolute;
-                        display: block;
-                        top: 0;
-                        left: -2px;
-                        width: 4px;
-                        height: 100%;
-                        cursor: ew-resize;
-                    }
-        
-                    & > div.resize-handler-e {
-                        position: absolute;
-                        display: block;
-                        top: 0;
-                        right: -2px;
-                        width: 4px;
-                        height: 100%;
-                        cursor: ew-resize;
-                    }
-                }
-    
-                & > div.editor-spectrogram-cursor-handler {
-                    display: block;
-                    position: absolute;
-                    width: 16px;
-                    height: 12px;
-                    background-color: #0197fb;
-                    border-radius: 0px 0px 8px 8px;
-                    bottom: 0;
-                    margin-left: -8px;
-                    cursor: grab;
-                }
-            }
     
             & > div.editor-spectrogram-channel-enabler {
                 display: flex;
                 flex-direction: column;
                 position: absolute;
-                height: calc(100% - 40px);
+                height: 100%;
                 width: 100%;
-                margin: 40px 0px 0px 0px;
+                margin: 0px 0px 0px 0px;
                 pointer-events: none;
     
                 & > div {

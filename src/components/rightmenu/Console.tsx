@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Menu, Icon, Table, Ref } from "semantic-ui-react";
 import Box from "../../core/patcher/Box";
-import { TPatcherLog } from "../../core/types";
+import { ILogInfo } from "../../core/types";
 import Env from "../../core/Env";
 import { isJSPatcherObject } from "../../core/objects/base/AbstractObject";
 
@@ -11,23 +11,24 @@ interface P {
 }
 
 interface S {
-    cached: TPatcherLog[];
+    cached: ILogInfo[];
 }
 
 export default class Console extends React.PureComponent<P, S> {
-    state = { cached: this.props.env.log.slice() };
+    state = { cached: this.props.env.logger.log };
     refTable = React.createRef<HTMLTableElement>();
-    logDuringLoading: TPatcherLog[] = [];
-    handleNewLog = (log: TPatcherLog) => {
-        this.setState(({ cached }) => ({ cached: [...cached, log] }), this.scrollToEnd);
+    logDuringLoading: ILogInfo[] = [];
+    handleNewLog = (log: ILogInfo) => {
+        this.setState({ cached: this.props.env.logger.log }, this.scrollToEnd);
     };
-    handleClear = () => this.setState({ cached: [] });
+    handleClear = () => {
+        this.props.env.logger.clear();
+        this.setState({ cached: this.props.env.logger.log });
+    };
     scrollToEnd = () => {
-        if (!this.refTable.current) return;
-        let bottom = true;
         const table = this.refTable.current;
-        if (table.scrollTop + table.clientHeight !== table.scrollHeight) bottom = false;
-        if (bottom) table.scrollTop = table.scrollHeight;
+        if (!table) return;
+        table.tBodies[0]?.lastElementChild?.scrollIntoView();
     };
     handleHighlight = (emitter: any) => {
         if ((isJSPatcherObject(emitter)) || (emitter instanceof Box)) emitter.highlight();

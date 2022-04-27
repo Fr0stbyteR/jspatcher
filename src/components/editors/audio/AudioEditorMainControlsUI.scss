@@ -16,9 +16,10 @@
         }
 
         & > span.editor-main-player-controls-container {
-            flex: 1 1 auto;
+            flex: 0 0 calc(100% - 80px);
+            margin-left: 80px;
             position: relative;
-            width: 100%;
+            white-space: nowrap;
             display: flex;
             flex-direction: row;
             align-items: center;

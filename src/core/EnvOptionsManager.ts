@@ -1,5 +1,6 @@
+import { uuid } from "../utils/utils";
 import Env from "./Env";
-import { AudioDisplayOptions, AudioUnitOptions, TAudioUnit } from "./types";
+import { AudioDisplayOptions, AudioUnitOptions, LiveShareOptions, TAudioUnit } from "./types";
 
 type DeepPartial<T> = T extends object ? {
     [P in keyof T]?: DeepPartial<T[P]>;
@@ -10,6 +11,7 @@ export interface EnvOptions {
     audioUnit: TAudioUnit;
     audioUnitOptions: AudioUnitOptions;
     audioDisplayOptions: AudioDisplayOptions;
+    liveShare: LiveShareOptions;
     runtime: boolean;
     noUI: boolean;
 }
@@ -38,6 +40,15 @@ export default class EnvOptionsManager {
                 fftOverlap: 2,
                 fftWindowFunction: "blackmanHarris",
                 fftDrawThreshold: -120
+            },
+            liveShare: {
+                server: "",
+                hostRoomId: uuid(),
+                hostPassword: "",
+                hostPermission: "read",
+                joinRoomId: "",
+                username: "User007",
+                joinPassword: ""
             },
             runtime: false,
             noUI: false
