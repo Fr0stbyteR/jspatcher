@@ -225,7 +225,7 @@ export interface LiveShareOptions {
     joinRoomId: string;
     hostPassword: string;
     hostPermission: "read" | "write";
-    username: string;
+    nickname: string;
     joinPassword: string;
 }
 

@@ -18,6 +18,20 @@
             }
             & > .ui.input {
                 flex: 1 1 auto;
+
+                &.disabled {
+                    opacity: 1;
+                }
+
+                & > input {
+                    flex: 1 1 auto;
+                    width: 100%;
+                }
+
+                &.error > input {
+                    border-color: #e0b4b4;
+                    color: #9f3a38;
+                }
             }
         }
     }

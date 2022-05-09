@@ -17,7 +17,13 @@ export interface WebSocketLog {
     msg: string;
 }
 
-export type ProxyClient<IClient extends {} = {}, IServer extends {} = {}, EventMap extends {} = {}> = PromisifiedFunctionMap<IServer> & IClient & TypedEventEmitter<EventMap> & { _handleLog?: (log: WebSocketLog) => any; _serverUrl: string; _socket: WebSocket; _connect(): Promise<void> };
+export type ProxyClient<IClient extends {} = {}, IServer extends {} = {}, EventMap extends {} = {}> = PromisifiedFunctionMap<IServer> & IClient & TypedEventEmitter<EventMap> & {
+    _handleLog?: (log: WebSocketLog) => any;
+    _serverUrl: string;
+    _socket: WebSocket;
+    _connect(): Promise<void>;
+    _disconnect(): void;
+};
 export const ProxyClient: {
     fnNames: string[];
     prototype: ProxyClient;

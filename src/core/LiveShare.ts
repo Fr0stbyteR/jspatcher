@@ -1,12 +1,31 @@
 import { getTimestamp } from "../utils/utils";
 import LiveShareClient, { ChangeEvent, LiveShareProject, RoomInfo } from "./LiveShareClient";
 import Patcher from "./patcher/Patcher";
+import TypedEventEmitter from "../utils/TypedEventEmitter";
 import type Env from "./Env";
 import type { IFileInstance } from "./file/FileInstance";
 import type { WebSocketLog } from "./websocket/ProxyClient.types";
 import type PatcherHistory from "./patcher/PatcherHistory";
+import { IHistoryData } from "./file/History";
 
-export default class LiveShare {
+export interface ILiveShareState {
+    socketState: LiveShareClient["socketState"];
+    ping: number;
+    roomInfo: RoomInfo;
+    clientId: string;
+}
+
+export interface LiveShareEventMap {
+    "state": ILiveShareState;
+}
+
+export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
+    state: ILiveShareState = {
+        socketState: "closed",
+        ping: -1,
+        roomInfo: null,
+        clientId: null
+    };
     roomInfo: RoomInfo;
     history: ChangeEvent[];
     readonly env: Env;
@@ -14,6 +33,29 @@ export default class LiveShare {
     clientId = "";
     username = "";
     instances = new Set<IFileInstance>();
+    pingScheduled = false;
+    $ping = -1;
+    setState(state: Partial<ILiveShareState>) {
+        this.state = { ...this.state, ...state };
+        this.emit("state", this.state);
+    }
+    pingCallback = async () => {
+        this.pingScheduled = false;
+        this.$ping = -1;
+        if (this.state.socketState !== "open") return;
+        const t0 = getTimestamp();
+        await this.client.pingServer(t0);
+        const t1 = getTimestamp();
+        this.setState({ ping: t1 - t0 });
+        await this.client.reportPing(this.state.ping);
+        this.schedulePing();
+    };
+    schedulePing = (timeout = 5000) => {
+        if (this.pingScheduled) return;
+        if (this.state.socketState !== "open") return;
+        this.pingScheduled = true;
+        this.$ping = window.setTimeout(this.pingCallback, timeout);
+    };
     get logged() {
         return !!this.clientId;
     }
@@ -21,7 +63,13 @@ export default class LiveShare {
         return !!this.roomInfo?.userIsOwner;
     }
     constructor(env: Env) {
+        super();
         this.env = env;
+        this.client.on("socketState", (socketState) => {
+            const oldSocketState = this.state.socketState;
+            this.setState({ socketState, clientId: socketState === "open" ? this.state.clientId : null });
+            if (socketState === "open" && oldSocketState !== "open") this.schedulePing(0);
+        });
         this.client.on("roomClosedByOwner", (roomId) => {
             if (this.roomInfo?.roomId === roomId) {
                 this.roomInfo = undefined;
@@ -87,35 +135,55 @@ export default class LiveShare {
             this.client.requestChanges(this.roomInfo.roomId, changeEvent);
         }
     };
-    async init(serverUrl: string) {
+    async login(serverUrl: string, nickname: string, username?: string, password?: string) {
+        if (this.state.clientId) {
+            try {
+                await this.logout();
+            } catch (error) {
+            }
+        }
         this.client._serverUrl = serverUrl;
-        await this.client._connect();
-    }
-    async login(username: string, password: string) {
-        const timestamp = getTimestamp();
         try {
-            this.clientId = await this.client.login(username, password, timestamp);
+            await this.client._connect();
+            const timestamp = getTimestamp();
+            const clientId = await this.client.login(timestamp, nickname, username, password);
+            this.setState({ clientId, roomInfo: null });
         } catch (error) {
-            this.clientId = "";
+            this.setState({ clientId: null, roomInfo: null });
             throw error;
         }
     }
-    async join(roomId: string) {
+    async setUsername(username: string) {
+
+    }
+    async join(roomId: string, password: string, username: string) {
         const timestamp = getTimestamp();
-        const { roomInfo, project, history } = await this.client.joinRoom(timestamp, roomId);
+        const { roomInfo, project, history } = await this.client.joinRoom(roomId, username, password, timestamp);
         this.roomInfo = roomInfo;
         this.history = history;
         await this.env.newProject(project.props);
         await this.env.fileMgr.processBson(project.items);
     }
-    async hostRoom(permission: "write" | "read") {
-        const project: LiveShareProject = { props: this.env.currentProject.props, items: this.env.fileMgr.getDataForBson() };
-        const { roomInfo } = await this.client.hostRoom(getTimestamp(), permission, project);
-        this.roomInfo = roomInfo;
+    async hostRoom(roomId: string, password: string, permission: "write" | "read") {
+        const history: Record<string, IHistoryData> = {};
+        this.instances.forEach((instance) => {
+            history[instance.id] = instance.history.getSyncData();
+        });
+        const project: LiveShareProject = {
+            props: this.env.currentProject.props,
+            items: this.env.fileMgr.getDataForBson(),
+            history
+        };
+        const { roomInfo } = await this.client.hostRoom(roomId, password, getTimestamp(), permission, project);
+        this.setState({ roomInfo });
         this.history = [];
     }
     async logout() {
-        await this.client.logout();
-        this.clientId = "";
+        try {
+            await this.client.logout();
+            await this.client._disconnect();
+        } finally {
+            this.setState({ clientId: null, roomInfo: null });
+        }
     }
 }

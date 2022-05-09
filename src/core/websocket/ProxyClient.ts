@@ -19,17 +19,25 @@ const Client = class ProxyClient extends TypedEventEmitter<any> {
         return new Promise<void>((resolve, reject) => {
             const handleOpen = () => {
                 resolve();
+                socket.removeEventListener("open", handleOpen);
+                socket.removeEventListener("error", handleError);
                 socket.addEventListener("message", handleMessage);
                 socket.addEventListener("close", handleClose);
             };
             const handleClose = (e: CloseEvent) => {
                 socket.removeEventListener("open", handleOpen);
+                socket.removeEventListener("error", handleError);
                 socket.removeEventListener("message", handleMessage);
                 socket.removeEventListener("close", handleClose);
                 if (!e.wasClean) {
                     this._handleLog?.({ error: true, msg: `Error: WebSocket closed: ${e.code} - ${e.reason}` });
                     throw new Error(`WebSocket closed: ${e.code} - ${e.reason}`);
                 }
+            };
+            const handleError = (e: ErrorEvent) => {
+                socket.removeEventListener("open", handleOpen);
+                socket.removeEventListener("error", handleError);
+                reject(new Error(`WebSocket connect to '${this._serverUrl}' failed.`));
             };
             const handleMessage = async (e: TypedMessageEvent<Blob>) => {
                 const data = await e.data.arrayBuffer();
@@ -46,15 +54,10 @@ const Client = class ProxyClient extends TypedEventEmitter<any> {
                     this._handleLog?.({ msg: `Send: \t${call}\t${data.byteLength} bytes` });
                     socket.send(data);
                 } else {
-                    if (error) {
-                        if (rejects[id]) rejects[id](error);
-                        delete rejects[id];
-                        return;
-                    }
-                    if (resolves[id]) {
-                        resolves[id](value);
-                        delete resolves[id];
-                    }
+                    if (error) rejects[id]?.(error);
+                    else resolves[id]?.(value);
+                    delete resolves[id];
+                    delete rejects[id];
                 }
             };
             // eslint-disable-next-line arrow-body-style
@@ -81,15 +84,19 @@ const Client = class ProxyClient extends TypedEventEmitter<any> {
             let socket: WebSocket;
             try {
                 socket = new WebSocket(this._serverUrl);
-                this._handleLog?.({ msg: `Client connected on ${this._serverUrl}` });
+                this._handleLog?.({ msg: `Client connecting on ${this._serverUrl}` });
             } catch (error) {
                 this._handleLog?.({ error: true, msg: `Error on Initializing client on ${this._serverUrl}: ${(error as Error).message}` });
                 reject(error);
             }
             Ctor.fnNames.forEach(name => (this as any)[name] = (...args: any[]) => call(name, ...args));
             socket.addEventListener("open", handleOpen);
+            socket.addEventListener("error", handleError);
             this._socket = socket;
         });
+    }
+    _disconnect() {
+        if (this._socket && this._socket?.readyState !== WebSocket.CLOSED) this._socket.close();
     }
 } as typeof ProxyClient;
 

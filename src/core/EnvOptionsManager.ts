@@ -8,6 +8,7 @@ type DeepPartial<T> = T extends object ? {
 
 export interface EnvOptions {
     language: "en" | "zh-CN";
+    autoSave: boolean;
     audioUnit: TAudioUnit;
     audioUnitOptions: AudioUnitOptions;
     audioDisplayOptions: AudioDisplayOptions;
@@ -22,6 +23,7 @@ export default class EnvOptionsManager {
     static get defaultOptions(): EnvOptions {
         return {
             language: "en",
+            autoSave: false,
             audioUnit: "time",
             audioUnitOptions: {
                 bpm: 60,
@@ -47,7 +49,7 @@ export default class EnvOptionsManager {
                 hostPassword: "",
                 hostPermission: "read",
                 joinRoomId: "",
-                username: "User007",
+                nickname: "User007",
                 joinPassword: ""
             },
             runtime: false,

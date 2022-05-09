@@ -66,6 +66,7 @@ export interface IJSPatcherEnv extends ITypedEventEmitter<EnvEventMap> {
     readonly tempMgr: TemporaryProjectItemManager;
     readonly currentProject: Project;
     readonly username: string;
+    readonly autoSave: boolean;
     activeInstance: IFileInstance;
     activeEditor: IFileEditor;
     instances: Set<IFileInstance>;
@@ -160,6 +161,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     }
     get options(): EnvOptions {
         return this._options.currentOptions;
+    }
+    get autoSave() {
+        return this._options.currentOptions.autoSave;
     }
     constructor(root?: HTMLDivElement) {
         super();

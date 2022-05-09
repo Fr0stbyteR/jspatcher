@@ -34,6 +34,7 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     readonly pkgMgr: WorkletGlobalPackageManager;
     readonly sdk = new JSPatcherWorkletSDK();
     readonly username = "";
+    readonly autoSave = true;
     currentProject: Project;
     globalTransport: GlobalTransportProcessor;
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
