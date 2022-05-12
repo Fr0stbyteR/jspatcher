@@ -58,7 +58,7 @@ export default class ShareMenu extends React.PureComponent<P, S> {
                     {"Share"}
                     {socketState === "open"
                         ? (roomInfo
-                            ? <Label size="mini" color="green">{roomInfo.clients.length}</Label>
+                            ? <Label style={{ padding: "1px 5px", margin: "-1px 0px -1px 8px" }} size="mini" color="green">{roomInfo.clients.length}</Label>
                             : <Label size="mini" circular color="green" empty />)
                         : <Label size="mini" circular color="grey" empty />
                     }
@@ -96,15 +96,17 @@ export default class ShareMenu extends React.PureComponent<P, S> {
                             {clientId
                                 ? roomInfo
                                     ? <>
-                                        <Header>Room {roomInfo.roomId}</Header>
+                                        <Header as="h6">Room {roomInfo.roomId}</Header>
                                         <div className="menu-share-room-info">
-                                            {roomInfo.clients.map(clientInfo => (
-                                                <div>
-                                                    <span>{clientInfo.nickname} :</span>
-                                                    <span>{clientInfo.ping}</span>
+                                            {roomInfo.clients.map((clientInfo, i) => (
+                                                <div key={i} className="menu-share-room-client">
+                                                    <span className="menu-share-room-client client-nickname">{clientInfo.nickname}</span>
+                                                    <span>{~~clientInfo.ping}ms</span>
                                                 </div>
                                             ))}
                                         </div>
+                                        <Button size="mini" color="orange" onClick={() => this.state.liveShare.leaveRoom()}>Leave Room</Button>
+                                        <Button size="mini" color="red" onClick={() => this.state.liveShare.closeRoom()}>Close Room</Button>
                                     </>
                                     : <>
                                         <Header>Host Room</Header>

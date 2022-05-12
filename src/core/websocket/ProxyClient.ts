@@ -48,13 +48,13 @@ const Client = class ProxyClient extends TypedEventEmitter<any> {
                     try {
                         r.value = await (this as any)[call](...args);
                     } catch (e) {
-                        r.error = e;
+                        r.error = e.message;
                     }
                     const data = BSON.serialize(r);
                     this._handleLog?.({ msg: `Send: \t${call}\t${data.byteLength} bytes` });
                     socket.send(data);
                 } else {
-                    if (error) rejects[id]?.(error);
+                    if (error) rejects[id]?.(new Error(error));
                     else resolves[id]?.(value);
                     delete resolves[id];
                     delete rejects[id];

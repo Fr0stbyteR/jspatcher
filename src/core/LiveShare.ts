@@ -26,12 +26,8 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
         roomInfo: null,
         clientId: null
     };
-    roomInfo: RoomInfo;
-    history: ChangeEvent[];
     readonly env: Env;
     readonly client = new LiveShareClient();
-    clientId = "";
-    username = "";
     instances = new Set<IFileInstance>();
     pingScheduled = false;
     $ping = -1;
@@ -44,11 +40,15 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
         this.$ping = -1;
         if (this.state.socketState !== "open") return;
         const t0 = getTimestamp();
-        await this.client.pingServer(t0);
-        const t1 = getTimestamp();
-        this.setState({ ping: t1 - t0 });
-        await this.client.reportPing(this.state.ping);
-        this.schedulePing();
+        try {
+            await this.client.pingServer(t0);
+            const t1 = getTimestamp();
+            this.setState({ ping: t1 - t0 });
+            await this.client.reportPing(this.state.ping);
+            this.schedulePing();
+        } catch (error) {
+            await this.logout();
+        }
     };
     schedulePing = (timeout = 5000) => {
         if (this.pingScheduled) return;
@@ -57,10 +57,10 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
         this.$ping = window.setTimeout(this.pingCallback, timeout);
     };
     get logged() {
-        return !!this.clientId;
+        return !!this.state.clientId;
     }
     get isOwner() {
-        return !!this.roomInfo?.userIsOwner;
+        return !!this.state.roomInfo?.userIsOwner;
     }
     constructor(env: Env) {
         super();
@@ -71,72 +71,65 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
             if (socketState === "open" && oldSocketState !== "open") this.schedulePing(0);
         });
         this.client.on("roomClosedByOwner", (roomId) => {
-            if (this.roomInfo?.roomId === roomId) {
-                this.roomInfo = undefined;
+            if (this.state.roomInfo?.roomId === roomId) {
+                this.setState({ roomInfo: null });
             }
         });
         this.client.on("roomStateChanged", (roomInfo: RoomInfo) => {
             if (roomInfo) {
-                this.roomInfo = roomInfo;
+                this.setState({ roomInfo });
             }
         });
-        this.client.on("changesFrom", async ({ events }) => {
-            for (let i = 0; i < events.length; i++) {
-                const event = events[i];
-                let instance = Array.from(this.env.instances).find(i => i.file?.id === event.fileId);
-                if (!instance) {
-                    const file = this.env.fileMgr.getProjectItemFromId(event.fileId);
-                    if (!file || file.isFolder === true) throw new Error(`No Such File ${event.fileId}`);
-                    const editor = await file.instantiateEditor({ env: this.env, project: this.env.currentProject });
-                    instance = editor.instance;
-                    const historyEvents = this.history.filter(ce => ce.fileId === instance.file?.id);
-                    await instance.history.mergeEvents(...historyEvents);
-                    this.env.openEditor(editor, true);
-                }
-                const [mergedEvent] = await instance.history.mergeEvents(event);
-                if (instance.history.editors.size) {
-                    const [editor] = instance.history.editors;
-                    await editor.save();
-                }
-                events[i] = mergedEvent;
-                this.history.push(mergedEvent);
-            }
-            return events;
-        });
+        this.client.on("changesFrom", ({ events }) => this.handleReceivedChangeEvent(events));
         this.client._handleLog = (log: WebSocketLog) => {
             this.env.newLog(log.error ? "error" : "none", this.constructor.name, log.msg, this);
         };
         this.env.on("instances", (instances) => {
-            for (const i of Array.from(this.instances)) {
-                if (instances.indexOf(i) === -1) this.instances.delete(i);
+            const oncePatcherReady = async (e: any, i: Patcher) => {
+                if (!this.state.roomInfo) return;
+                i.history.on("change", this.handlePatcherChange);
+                i.once("destroy", () => i.history.off("change", this.handlePatcherChange));
+            };
+            for (const i of this.instances) {
+                if (instances.indexOf(i) === -1) {
+                    i.off("ready", oncePatcherReady);
+                    this.instances.delete(i);
+                }
             }
             for (const i of instances) {
-                if (instances.indexOf(i) === -1) this.instances.add(i);
+                this.instances.add(i);
                 if (i instanceof Patcher) {
-                    i.once("ready", async () => {
-                        if (!this.roomInfo) return;
-                        if (!this.isOwner) {
-                            const historyEvents = this.history.filter(ce => ce.fileId === i.file?.id);
-                            await i.history.mergeEvents(...historyEvents);
-                        }
-                        i.history.on("change", this.handlePatcherChange);
-                        i.once("destroy", () => i.history.off("change", this.handlePatcherChange));
-                    });
+                    if (i.isReady) oncePatcherReady(null, i);
+                    else i.once("ready", oncePatcherReady);
                 }
             }
         });
     }
+    handleReceivedChangeEvent = async (events: ChangeEvent[]) => {
+        for (let i = 0; i < events.length; i++) {
+            const event = events[i];
+            let instance = Array.from(this.env.instances).find(i => i.file?.id === event.fileId);
+            if (!instance) {
+                const file = this.env.fileMgr.getProjectItemFromId(event.fileId);
+                if (!file || file.isFolder === true) throw new Error(`No Such File ${event.fileId}`);
+                const editor = await file.instantiateEditor({ env: this.env, project: this.env.currentProject });
+                instance = editor.instance;
+                this.env.openEditor(editor, true);
+            }
+            await instance.history.mergeEvents(event);
+        }
+    };
     handlePatcherChange = (changeEvent: ChangeEvent, history: PatcherHistory) => {
         if (this.logged) {
             if (history.editors.size) {
                 const [editor] = history.editors;
                 editor.save();
             }
-            this.client.requestChanges(this.roomInfo.roomId, changeEvent);
+            this.client.requestChanges(this.state.roomInfo.roomId, changeEvent);
         }
     };
     async login(serverUrl: string, nickname: string, username?: string, password?: string) {
-        if (this.state.clientId) {
+        if (this.logged) {
             try {
                 await this.logout();
             } catch (error) {
@@ -153,21 +146,19 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
             throw error;
         }
     }
-    async setUsername(username: string) {
-
-    }
     async join(roomId: string, password: string, username: string) {
         const timestamp = getTimestamp();
         const { roomInfo, project, history } = await this.client.joinRoom(roomId, username, password, timestamp);
-        this.roomInfo = roomInfo;
-        this.history = history;
+        this.setState({ roomInfo });
         await this.env.newProject(project.props);
         await this.env.fileMgr.processBson(project.items);
+        await this.handleReceivedChangeEvent(history);
     }
     async hostRoom(roomId: string, password: string, permission: "write" | "read") {
         const history: Record<string, IHistoryData> = {};
         this.instances.forEach((instance) => {
-            history[instance.id] = instance.history.getSyncData();
+            if (instance.isInMemory) return;
+            history[instance.file.id] = instance.history.getSyncData();
         });
         const project: LiveShareProject = {
             props: this.env.currentProject.props,
@@ -176,9 +167,19 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
         };
         const { roomInfo } = await this.client.hostRoom(roomId, password, getTimestamp(), permission, project);
         this.setState({ roomInfo });
-        this.history = [];
+    }
+    async leaveRoom() {
+        const { roomId } = this.state.roomInfo;
+        this.setState({ roomInfo: null });
+        await this.client.leaveRoom(roomId);
+    }
+    async closeRoom() {
+        const { roomId } = this.state.roomInfo;
+        this.setState({ roomInfo: null });
+        await this.client.closeRoom(roomId);
     }
     async logout() {
+        if (!this.logged) return;
         try {
             await this.client.logout();
             await this.client._disconnect();

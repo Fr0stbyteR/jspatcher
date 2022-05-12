@@ -148,7 +148,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         return this._state.pkgMgr.lib;
     }
     get isReady() {
-        return true;
+        return !!this._state?.isReady;
     }
     get audioCtx() {
         return (this.project as Project)?.audioCtx || (this.env as Env).audioCtx;

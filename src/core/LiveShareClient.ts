@@ -12,6 +12,7 @@ export interface LiveShareProject {
 export interface ChangeEvent extends IHistoryEvent {}
 
 export interface RoomClientInfo {
+    clientId: string;
     nickname: string;
     ping: number;
     isOwner?: boolean;
@@ -40,6 +41,8 @@ export interface ILiveShareServer {
     logout(): void;
     hostRoom(roomId: string, password: string, timestamp: number, permission: "read" | "write", project: LiveShareProject): { roomInfo: RoomInfo };
     joinRoom(roomId: string, username: string, password: string, timestamp: number): { roomInfo: RoomInfo; project: LiveShareProject; history: ChangeEvent[] };
+    transferOwnership(roomId: string, toClientId: string): RoomInfo;
+    leaveRoom(roomId: string): void;
     closeRoom(roomId: string): void;
     requestChanges(roomId: string, ...events: ChangeEvent[]): Promise<ChangeEvent[]>;
 }
@@ -52,7 +55,7 @@ export interface LiveShareClientEventMap {
 }
 
 export default class LiveShareClient extends ProxyClient<ILiveShareClient, ILiveShareServer, LiveShareClientEventMap> {
-    static fnNames: (keyof ILiveShareServer)[] = ["pingServer", "reportPing", "closeRoom", "hostRoom", "joinRoom", "login", "logout", "requestChanges"];
+    static fnNames: (keyof ILiveShareServer)[] = ["pingServer", "reportPing", "closeRoom", "hostRoom", "leaveRoom", "transferOwnership", "joinRoom", "login", "logout", "requestChanges"];
     ping(timestamp: number, roomInfo?: RoomInfo) {
         this.emit("roomStateChanged", roomInfo);
         return timestamp;

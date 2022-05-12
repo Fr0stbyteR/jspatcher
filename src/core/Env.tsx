@@ -115,7 +115,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     audioClipboard: PatcherAudio;
     loaded = false;
     get username() {
-        return this.liveShare.username;
+        return this.options.liveShare.nickname;
     }
     private _activeInstance: IFileInstance;
     get activeInstance(): IFileInstance {
