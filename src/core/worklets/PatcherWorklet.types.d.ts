@@ -5,7 +5,7 @@ import type { RawPatcher } from "../types";
 export interface IPatcherProcessor {
     init(): Promise<void>;
     fn(data: any, port: number): void;
-    sync(data: IHistoryData<PatcherEditorEventMap>): void;
+    sync(data: /* IHistoryData<PatcherEditorEventMap> */any): void;
     objectEmit(boxId: string, eventName: string, eventData: any): Promise<any>;
     destroy(): void;
 }

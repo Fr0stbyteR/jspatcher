@@ -46,6 +46,7 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
         author: Project.props.author.default,
         version: Project.props.version.default
     };
+    ready = false;
     get audioCtx() {
         return (this.env as Env).audioCtx;
     }
@@ -54,7 +55,7 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
         this.env = envIn;
         if (props) this.setProps(props);
     }
-    setProps(props: Partial<ProjectProps>) {
+    async setProps(props: Partial<ProjectProps>) {
         let changed = false;
         for (const keyIn in props) {
             const key = keyIn as keyof ProjectProps;
@@ -62,17 +63,17 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
             changed = true;
             (this.props as any)[key] = props[key];
         }
-        if (changed) {
+        if (this.ready && changed) {
             this.emit("propsChanged", props);
-            this.saveProps();
+            await this.saveProps();
         }
     }
     async saveProps() {
         const data = str2ab(JSON.stringify(this.props));
-        try {
+        if (await this.env.fileMgr.exists(`/project/${this.projectFilename}`)) {
             const item = this.env.fileMgr.getProjectItemFromPath(`./${this.projectFilename}`) as PersistentProjectFile;
             await item.save(data, this);
-        } catch (error) {
+        } else {
             await this.env.fileMgr.projectRoot.addFile(this.projectFilename, data);
         }
     }
@@ -84,7 +85,7 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
         await this.init();
     }
     async init() {
-        try {
+        if (await this.env.fileMgr.exists(`/project/${this.projectFilename}`)) {
             const item = this.env.fileMgr.getProjectItemFromPath(`./${this.projectFilename}`) as PersistentProjectFile;
             const props = JSON.parse(ab2str(item.data)) as ProjectProps;
             for (const keyIn in props) {
@@ -92,14 +93,11 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
                 if (this.props[key] === props[key]) continue;
                 (this.props as any)[key] = props[key];
             }
-        } catch (error) {
-            if (error instanceof SyntaxError) {
-                const item = this.env.fileMgr.getProjectItemFromPath(`./${this.projectFilename}`) as PersistentProjectFile;
-                await item.destroy();
-            }
+        } else {
             const data = str2ab(JSON.stringify(this.props));
             await this.env.fileMgr.projectRoot.addFile(this.projectFilename, data);
         }
+        this.ready = true;
     }
     async unload() {
         for (const i of this.env.instances) {

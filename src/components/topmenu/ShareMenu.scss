@@ -35,4 +35,14 @@
             }
         }
     }
+
+    & .menu-share-room-info {
+        margin-bottom: 6px;
+
+        & > table {
+            & th, & td {
+                padding: 0px 1em;
+            }
+        }
+    }
 }

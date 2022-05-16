@@ -8,11 +8,12 @@ export interface HistoryEventMap {
 
 export interface IHistoryEvent<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> {
     timestamp: number;
-    editorId: string;
+    editorId?: string;
     fileId: string;
     eventName?: keyof EventMap & string;
     eventData?: EventMap[keyof EventMap & string];
-    currentHistoryIndex: number;
+    prevHistoryIndex: number;
+    nextHistoryIndex: number;
 }
 
 export interface IHistoryData<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}> {
@@ -23,13 +24,15 @@ export interface IHistoryData<EventMap extends Record<string, any> & Partial<Fil
 }
 
 /** The class records some events and allows to perform undo/redo with a specific editor. */
-export default abstract class History<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}, Editor extends FileEditor<any, EventMap> = FileEditor<any, EventMap>> extends TypedEventEmitter<HistoryEventMap> implements IHistoryData<EventMap> {
+export default abstract class History<EventMap extends Record<string, any> & Partial<FileEditorEventMap> = {}, Editor extends FileEditor<any, EventMap> = FileEditor<any, EventMap>> extends TypedEventEmitter<HistoryEventMap> {
     /** Editors to sync and to listen */
     editors: Set<Editor> = new Set();
     $ = 0;
     /** index of the save */
     $save = 0;
     eventQueue: IHistoryEvent<EventMap>[] = [];
+    /** Another event queue including index changes. There's no going back here. */
+    changes: IHistoryEvent<EventMap>[] = [];
     /** Can be set to `false` to prevent recording events while undoing/redoing */
     capture = true;
     get eventListening(): (keyof EventMap & string)[] {
@@ -40,6 +43,9 @@ export default abstract class History<EventMap extends Record<string, any> & Par
     }
     get firstEditor(): Editor {
         return this.editors.values().next().value;
+    }
+    get fileId() {
+        return this.firstEditor.file?.id;
     }
 
     addEditor(editor: Editor) {
@@ -70,14 +76,15 @@ export default abstract class History<EventMap extends Record<string, any> & Par
             timestamp: this.now,
             editorId: editor.editorId,
             fileId: editor.file?.id,
-            currentHistoryIndex: this.eventQueue.length
+            prevHistoryIndex: this.$,
+            nextHistoryIndex: this.$ + 1
         };
         this.$ = this.eventQueue.push(event);
         this.emitChanged(event);
     };
-    emitChanged(event?: IHistoryEvent<EventMap>) {
-        if (event) this.emit("change", event);
-        else this.emit("change", { currentHistoryIndex: this.$, timestamp: this.now, editorId: this.firstEditor.editorId, fileId: this.firstEditor.file?.id });
+    emitChanged(event: IHistoryEvent<EventMap>) {
+        this.changes.push(event);
+        this.emit("change", event);
         this.editors.forEach(editor => editor.emit("changed"));
         this.emitDirty();
     }
@@ -109,7 +116,7 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         await Promise.all((editors.length ? editors : Array.from(this.editors)).map(editor => this.undoOf(editor, eventName, eventData)));
         this.$--;
         this.capture = true;
-        if (!passive) this.emitChanged();
+        if (!passive) this.emitChanged({ prevHistoryIndex: this.$ + 1, nextHistoryIndex: this.$, timestamp: this.now, fileId: this.fileId });
     }
     abstract redoOf(editor: Editor, eventName: keyof EventMap, eventData?: any): Promise<void>;
     async redo(passive = false, ...editors: Editor[]) {
@@ -119,27 +126,27 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         await Promise.all((editors.length ? editors : Array.from(this.editors)).map(editor => this.redoOf(editor, eventName, eventData)));
         this.$++;
         this.capture = true;
-        if (!passive) this.emitChanged();
+        if (!passive) this.emitChanged({ prevHistoryIndex: this.$ - 1, nextHistoryIndex: this.$, timestamp: this.now, fileId: this.fileId });
     }
-    /** event at timestamp exclusive */
-    async undoUntil(timestamp: number, passive = false, ...editors: Editor[]) {
-        while (this.isUndoable && this.eventQueue[this.$ - 1].timestamp >= timestamp) {
+    /** event at index exclusive */
+    async undoUntil($: number, passive = false, ...editors: Editor[]) {
+        while (this.isUndoable && $ < this.$) {
             await this.undo(passive, ...editors);
         }
     }
     /** event at timestamp inclusive */
-    async redoUntil(timestamp: number, passive = false, ...editors: Editor[]) {
-        while (this.isRedoable && this.eventQueue[this.$].timestamp <= timestamp) {
+    async redoUntil($: number, passive = false, ...editors: Editor[]) {
+        while (this.isRedoable && $ > this.$) {
             await this.redo(passive, ...editors);
         }
     }
     async setIndex($: number, passive = false) {
-        if ($ < this.$) await this.undoUntil(this.eventQueue[$].timestamp, passive);
-        else if ($ > this.$) await this.redoUntil(this.eventQueue[$ - 1].timestamp, passive);
+        if ($ < this.$) await this.undoUntil($, passive);
+        else if ($ > this.$) await this.redoUntil($, passive);
     }
-    getSyncData(): IHistoryData<EventMap> {
-        const { $, eventQueue } = this;
-        return { $, eventQueue };
+    getSyncData()/* : IHistoryData<EventMap> */ {
+        // const { $, eventQueue } = this;
+        // return { $, eventQueue };
     }
     async syncData(data: IHistoryData<EventMap>) {
         for (let i = 0; i < this.eventQueue.length; i++) {
@@ -152,19 +159,49 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         this.eventQueue = data.eventQueue;
         await this.setIndex(data.$);
     }
-    async mergeEvents(...events: IHistoryEvent<EventMap>[]) {
-        if (!events.length) return;
-        const sortedEvents = events.sort((a, b) => a.timestamp - b.timestamp);
-        for (const event of sortedEvents) {
-            const $ = event.currentHistoryIndex;
-            if (event.eventData) {
-                this.setIndex($ - 1, true);
-                this.eventQueue.splice(this.$ - 1);
-                this.eventQueue.push(event.eventData);
-                this.setIndex($, true);
-            } else {
-                this.setIndex($, true);
-            }
+    async mergeChanges(...changes: IHistoryEvent<EventMap>[]) {
+        if (!changes.length) return;
+        const sortedChanges = changes.filter(e => e.fileId === this.fileId).sort((a, b) => a.timestamp - b.timestamp);
+        if (!sortedChanges.length) return;
+        const t0 = sortedChanges[0].timestamp;
+        let $change = this.changes.length;
+        while ($change && this.changes[$change - 1].timestamp > t0) {
+            $change--;
         }
+        const unmerge = this.changes.splice($change);
+        await this.unmergeChanges(...unmerge);
+        for (const change of sortedChanges) {
+            const { nextHistoryIndex: $, prevHistoryIndex: $prev, eventData } = change;
+            if (eventData) {
+                if (this.$ !== $prev) await this.setIndex($prev, true);
+                this.eventQueue.splice($prev);
+                this.eventQueue.push(change);
+                await this.setIndex($, true);
+            }
+            await this.setIndex($, true);
+            this.changes.push(change);
+        }
+    }
+    async unmergeChanges(...changes: IHistoryEvent<EventMap>[]) {
+        if (!changes.length) return;
+        const sortedChanges = changes.filter(e => e.fileId === this.fileId).sort((a, b) => a.timestamp - b.timestamp);
+        if (!sortedChanges.length) return;
+        let $change = changes.length - 1;
+        this.capture = false;
+        while ($change >= 0) {
+            const { eventName, eventData, prevHistoryIndex, timestamp } = changes[$change];
+            if (eventData) {
+                await Promise.all((Array.from(this.editors)).map(editor => this.undoOf(editor, eventName, eventData)));
+                this.$ = prevHistoryIndex;
+                const i = this.eventQueue.findIndex(e => e.timestamp === timestamp);
+                if (i >= 0) this.eventQueue.splice(i);
+            } else {
+                await this.setIndex(prevHistoryIndex, true);
+            }
+            const i = this.changes.findIndex(e => e.timestamp === timestamp);
+            if (i >= 0) this.changes.splice(i, 1);
+            $change--;
+        }
+        this.capture = true;
     }
 }

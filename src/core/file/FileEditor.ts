@@ -122,7 +122,7 @@ export default class FileEditor<Instance extends IFileInstance = IFileInstance, 
         this.instance.on("destroy", this.handleDestroy);
         this.history?.addEditor(this);
         this.on("dirty", async (isDirty) => {
-            if (this.env.autoSave && !this.isReadonly && !this.isInMemory) await this.save();
+            if (isDirty && this.env.autoSave && !this.isReadonly && !this.isInMemory) await this.save();
             else this.file?.emit("dirty", isDirty);
         });
         this.env.on("options", ({ options: { autoSave } }) => {

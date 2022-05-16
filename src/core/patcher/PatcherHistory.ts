@@ -86,9 +86,9 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             editor.instance.setProps(e.props);
         }
     }
-    async mergeEvents(...events: IHistoryEvent<PatcherHistoryEventMap>[]) {
+    async mergeChanges(...events: IHistoryEvent<PatcherHistoryEventMap>[]) {
         this.editors.forEach(e => e.state.selectAfterEdit = false);
-        const merged = await super.mergeEvents(...events);
+        const merged = await super.mergeChanges(...events);
         this.editors.forEach(e => e.state.selectAfterEdit = true);
         return merged;
     }

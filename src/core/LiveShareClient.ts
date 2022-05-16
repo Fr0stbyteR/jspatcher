@@ -1,15 +1,13 @@
 import ProxyClient from "./websocket/ProxyClient";
-import type { IHistoryData, IHistoryEvent } from "./file/History";
+import type { IHistoryEvent } from "./file/History";
 import type { ProjectItemManagerDataForBson } from "./file/PersistentProjectItemManager";
 import type { ProjectProps } from "./Project";
 
 export interface LiveShareProject {
     items: ProjectItemManagerDataForBson;
     props: ProjectProps;
-    history: Record<string, IHistoryData>;
+    history: Record<string, IHistoryEvent[]>;
 }
-
-export interface ChangeEvent extends IHistoryEvent {}
 
 export interface RoomClientInfo {
     clientId: string;
@@ -29,28 +27,28 @@ export interface RoomInfo {
 
 export interface ILiveShareClient {
     ping(timestamp: number, roomInfo?: RoomInfo): number;
-    changesFrom(username: string, ...events: ChangeEvent[]): Promise<ChangeEvent[]>;
+    changesFrom(username: string, ...events: IHistoryEvent[]): Promise<IHistoryEvent[]>;
     roomClosedByOwner(roomId: string): void;
     roomStateChanged(roomInfo: RoomInfo): void;
 }
 
 export interface ILiveShareServer {
     pingServer(timestamp: number): number;
-    reportPing(ping: number): void;
+    reportPing(ping: number): Record<string, number>;
     login(timestamp: number, nickname: string, username?: string, password?: string): string;
     logout(): void;
     hostRoom(roomId: string, password: string, timestamp: number, permission: "read" | "write", project: LiveShareProject): { roomInfo: RoomInfo };
-    joinRoom(roomId: string, username: string, password: string, timestamp: number): { roomInfo: RoomInfo; project: LiveShareProject; history: ChangeEvent[] };
+    joinRoom(roomId: string, username: string, password: string, timestamp: number): { roomInfo: RoomInfo; project: LiveShareProject };
     transferOwnership(roomId: string, toClientId: string): RoomInfo;
     leaveRoom(roomId: string): void;
     closeRoom(roomId: string): void;
-    requestChanges(roomId: string, ...events: ChangeEvent[]): Promise<ChangeEvent[]>;
+    requestChanges(roomId: string, ...events: IHistoryEvent[]): Promise<IHistoryEvent[]>;
 }
 
 export interface LiveShareClientEventMap {
     "roomStateChanged": RoomInfo;
     "roomClosedByOwner": string;
-    "changesFrom": { username: string; events: ChangeEvent[] };
+    "changesFrom": { username: string; events: IHistoryEvent[] };
     "socketState": LiveShareClient["socketState"];
 }
 
@@ -66,7 +64,7 @@ export default class LiveShareClient extends ProxyClient<ILiveShareClient, ILive
     roomStateChanged(roomInfo: RoomInfo) {
         this.emit("roomStateChanged", roomInfo);
     }
-    async changesFrom(username: string, ...events: ChangeEvent[]) {
+    async changesFrom(username: string, ...events: IHistoryEvent[]) {
         const [mergedEvents] = await this.emit("changesFrom", { username, events });
         return mergedEvents;
     }

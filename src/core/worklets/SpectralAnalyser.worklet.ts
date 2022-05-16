@@ -307,6 +307,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: Record<SpectralAnalyserParameters, Float32Array>) {
         if (this.destroyed) return false;
+        if (!this.rfft) return true;
         const input = inputs[0];
         this.windowSize = ~~parameters.windowSize[0];
         this.fftSize = ~~parameters.fftSize[0];

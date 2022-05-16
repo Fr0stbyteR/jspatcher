@@ -48,8 +48,8 @@ export default class PatcherProcessor extends AudioWorkletProxyProcessor<IPatche
     fn(data: any, port: number) {
         this.patcher.fn(data, port);
     }
-    sync(data: IHistoryData<PatcherEditorEventMap>) {
-        this.patcher.history.syncData(data);
+    sync(data: /* IHistoryData<PatcherEditorEventMap> */any) {
+        // this.patcher.history.syncData(data);
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: Record<PatcherParameters, Float32Array>) {
         if (this._disposed) return false;

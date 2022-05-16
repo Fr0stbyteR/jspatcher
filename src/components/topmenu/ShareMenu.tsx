@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Dropdown, Form, Header, Input, Label, Menu } from "semantic-ui-react";
+import { Button, Dropdown, Form, Header, Input, Label, Menu, Table } from "semantic-ui-react";
 import type Env from "../../core/Env";
 import { EnvEventMap } from "../../core/Env";
 import type LiveShare from "../../core/LiveShare";
@@ -98,15 +98,25 @@ export default class ShareMenu extends React.PureComponent<P, S> {
                                     ? <>
                                         <Header as="h6">Room {roomInfo.roomId}</Header>
                                         <div className="menu-share-room-info">
-                                            {roomInfo.clients.map((clientInfo, i) => (
-                                                <div key={i} className="menu-share-room-client">
-                                                    <span className="menu-share-room-client client-nickname">{clientInfo.nickname}</span>
-                                                    <span>{~~clientInfo.ping}ms</span>
-                                                </div>
-                                            ))}
+                                            <Table size="small" compact="very" unstackable>
+                                                <Table.Header>
+                                                    <Table.Row>
+                                                        <Table.HeaderCell width={8}>Name</Table.HeaderCell>
+                                                        <Table.HeaderCell textAlign="right" width={4}>Ping</Table.HeaderCell>
+                                                    </Table.Row>
+                                                </Table.Header>
+                                                <Table.Body>
+                                                    {roomInfo.clients.map(({ clientId, ping, nickname }) => (
+                                                        <Table.Row key={clientId} className="menu-share-room-client">
+                                                            <Table.Cell className="menu-share-room-client client-nickname">{nickname}</Table.Cell>
+                                                            <Table.Cell textAlign="right" style={{ backgroundColor: ping < 200 ? "#80FF80" : ping < 500 ? "#FF8000" : "FF8080" }}>{~~ping}ms</Table.Cell>
+                                                        </Table.Row>
+                                                    ))}
+                                                </Table.Body>
+                                            </Table>
                                         </div>
                                         <Button size="mini" color="orange" onClick={() => this.state.liveShare.leaveRoom()}>Leave Room</Button>
-                                        <Button size="mini" color="red" onClick={() => this.state.liveShare.closeRoom()}>Close Room</Button>
+                                        {roomInfo.userIsOwner ? <Button size="mini" color="red" onClick={() => this.state.liveShare.closeRoom()}>Close Room</Button> : undefined}
                                     </>
                                     : <>
                                         <Header>Host Room</Header>

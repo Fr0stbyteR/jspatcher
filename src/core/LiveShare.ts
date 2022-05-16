@@ -1,12 +1,12 @@
 import { getTimestamp } from "../utils/utils";
-import LiveShareClient, { ChangeEvent, LiveShareProject, RoomInfo } from "./LiveShareClient";
+import LiveShareClient, { LiveShareProject, RoomInfo } from "./LiveShareClient";
 import Patcher from "./patcher/Patcher";
 import TypedEventEmitter from "../utils/TypedEventEmitter";
 import type Env from "./Env";
 import type { IFileInstance } from "./file/FileInstance";
 import type { WebSocketLog } from "./websocket/ProxyClient.types";
 import type PatcherHistory from "./patcher/PatcherHistory";
-import { IHistoryData } from "./file/History";
+import type { IHistoryEvent } from "./file/History";
 
 export interface ILiveShareState {
     socketState: LiveShareClient["socketState"];
@@ -44,7 +44,15 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
             await this.client.pingServer(t0);
             const t1 = getTimestamp();
             this.setState({ ping: t1 - t0 });
-            await this.client.reportPing(this.state.ping);
+            const pings = await this.client.reportPing(this.state.ping);
+            const { roomInfo } = this.state;
+            if (roomInfo) {
+                for (const roomClientInfo of roomInfo.clients) {
+                    const ping = pings[roomClientInfo.clientId];
+                    if (ping) roomClientInfo.ping = ping;
+                }
+                this.setState({ roomInfo });
+            }
             this.schedulePing();
         } catch (error) {
             await this.logout();
@@ -105,7 +113,7 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
             }
         });
     }
-    handleReceivedChangeEvent = async (events: ChangeEvent[]) => {
+    handleReceivedChangeEvent = async (events: IHistoryEvent[]) => {
         for (let i = 0; i < events.length; i++) {
             const event = events[i];
             let instance = Array.from(this.env.instances).find(i => i.file?.id === event.fileId);
@@ -116,16 +124,15 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
                 instance = editor.instance;
                 this.env.openEditor(editor, true);
             }
-            await instance.history.mergeEvents(event);
+            await instance.history.mergeChanges(event);
+            await instance.history.firstEditor?.save();
         }
     };
-    handlePatcherChange = (changeEvent: ChangeEvent, history: PatcherHistory) => {
+    handlePatcherChange = async (changeEvent: IHistoryEvent, history: PatcherHistory) => {
         if (this.logged) {
-            if (history.editors.size) {
-                const [editor] = history.editors;
-                editor.save();
-            }
-            this.client.requestChanges(this.state.roomInfo.roomId, changeEvent);
+            history.firstEditor?.save();
+            const unmerged = await this.client.requestChanges(this.state.roomInfo.roomId, changeEvent);
+            if (unmerged.length) await this.handleReceivedChangeEvent(unmerged);
         }
     };
     async login(serverUrl: string, nickname: string, username?: string, password?: string) {
@@ -148,17 +155,20 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
     }
     async join(roomId: string, password: string, username: string) {
         const timestamp = getTimestamp();
-        const { roomInfo, project, history } = await this.client.joinRoom(roomId, username, password, timestamp);
+        const { roomInfo, project } = await this.client.joinRoom(roomId, username, password, timestamp);
         this.setState({ roomInfo });
         await this.env.newProject(project.props);
         await this.env.fileMgr.processBson(project.items);
-        await this.handleReceivedChangeEvent(history);
+        for (const key in project.history) {
+            const history = project.history[key];
+            await this.handleReceivedChangeEvent(history);
+        }
     }
     async hostRoom(roomId: string, password: string, permission: "write" | "read") {
-        const history: Record<string, IHistoryData> = {};
+        const history: Record<string, IHistoryEvent[]> = {};
         this.instances.forEach((instance) => {
             if (instance.isInMemory) return;
-            history[instance.file.id] = instance.history.getSyncData();
+            history[instance.file.id] = instance.history.changes;
         });
         const project: LiveShareProject = {
             props: this.env.currentProject.props,

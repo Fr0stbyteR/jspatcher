@@ -142,7 +142,7 @@ export default class FileManagerUI extends React.PureComponent<P, S> {
             container.removeEventListener("keydown", handleKeyDown);
             const newName = span.innerText;
             try {
-                this.props.env.currentProject?.setProps({ name: newName });
+                await this.props.env.currentProject?.setProps({ name: newName });
             } catch (e) {
                 span.innerText = oldName;
             } finally {
