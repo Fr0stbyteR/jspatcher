@@ -78,11 +78,11 @@ class LiveObject extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseObject {
     const { type, unitStyle, units, enums } = this.props;
     return (0,_ui_base__WEBPACK_IMPORTED_MODULE_2__.getDisplayValue)(value, type, unitStyle, units, enums);
   }
-  validateValue(valueIn) {
+  validateValue(valueIn, id) {
     const value = this.toValidValue(valueIn || 0);
     if (value === this.state.value)
       return;
-    this.setState({ value });
+    this.setState({ value }, id);
     this._.displayValue = this.toDisplayValue(this.state.value);
   }
   onChangeFromUI(e) {
@@ -215,8 +215,8 @@ __webpack_require__.r(__webpack_exports__);
 class LiveButton extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   subscribe() {
     super.subscribe();
-    const validateAndUpdateUI = (value = 0) => {
-      this.validateValue(value);
+    const validateAndUpdateUI = (value = 0, id) => {
+      this.validateValue(value, id);
       this.updateUI({ value: this.state.value });
     };
     const handleUpdateArgs = (args) => {
@@ -248,8 +248,8 @@ class LiveButton extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       if (b01 && lastValue < this.state.value || b10 && lastValue > this.state.value)
         this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_0__.Bang());
     });
-    this.on("updateState", ({ value }) => {
-      validateAndUpdateUI(value);
+    this.on("updateState", ({ state: { value }, id }) => {
+      validateAndUpdateUI(value, id);
       this.outlet(1, this.state.value);
       if (this.state.value && this.getProp("transition") !== "One->Zero")
         this.outlet(0, new _sdk__WEBPACK_IMPORTED_MODULE_0__.Bang());
@@ -361,8 +361,8 @@ __webpack_require__.r(__webpack_exports__);
 class LiveDial extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   subscribe() {
     super.subscribe();
-    const validateAndUpdateUI = (value = 0) => {
-      this.validateValue(value);
+    const validateAndUpdateUI = (value = 0, id) => {
+      this.validateValue(value, id);
       this.updateUI({ value: this.state.value });
     };
     const handleUpdateArgs = (args) => {
@@ -390,8 +390,8 @@ class LiveDial extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
-    this.on("updateState", ({ value }) => {
-      validateAndUpdateUI(value);
+    this.on("updateState", ({ state: { value }, id }) => {
+      validateAndUpdateUI(value, id);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
@@ -605,8 +605,8 @@ class LiveGain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
   }
   subscribe() {
     super.subscribe();
-    const validateAndUpdateUI = (value = 0) => {
-      this.validateValue(value);
+    const validateAndUpdateUI = (value = 0, id) => {
+      this.validateValue(value, id);
       const paramValue = this.state.value === this.getProp("min") ? 0 : this.getProp("mode") === "deciBel" ? _sdk__WEBPACK_IMPORTED_MODULE_2__.MathUtils.dbtoa(this.state.value) : this.state.value;
       this.applyBPF(this._.gainNode.gain, [[paramValue, this.getProp("interp")]]);
       this.updateUI({ value: this.state.value });
@@ -708,8 +708,8 @@ class LiveGain extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       if (this._.analyserNode)
         await this._.analyserNode.destroy();
     });
-    this.on("updateState", ({ value }) => {
-      validateAndUpdateUI(value);
+    this.on("updateState", ({ state: { value }, id }) => {
+      validateAndUpdateUI(value, id);
       this.outletAll([, this.state.value, this._.displayValue]);
     });
   }
@@ -1153,8 +1153,8 @@ __webpack_require__.r(__webpack_exports__);
 class LiveNumbox extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   subscribe() {
     super.subscribe();
-    const validateAndUpdateUI = (value = 0) => {
-      this.validateValue(value);
+    const validateAndUpdateUI = (value = 0, id) => {
+      this.validateValue(value, id);
       this.updateUI({ value: this.state.value });
     };
     const handleUpdateArgs = (args) => {
@@ -1182,8 +1182,8 @@ class LiveNumbox extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
-    this.on("updateState", ({ value }) => {
-      validateAndUpdateUI(value);
+    this.on("updateState", ({ state: { value }, id }) => {
+      validateAndUpdateUI(value, id);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
@@ -1324,8 +1324,8 @@ __webpack_require__.r(__webpack_exports__);
 class LiveSlider extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   subscribe() {
     super.subscribe();
-    const validateAndUpdateUI = (value = 0) => {
-      this.validateValue(value);
+    const validateAndUpdateUI = (value = 0, id) => {
+      this.validateValue(value, id);
       this.updateUI({ value: this.state.value });
     };
     const handleUpdateArgs = (args) => {
@@ -1353,8 +1353,8 @@ class LiveSlider extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
-    this.on("updateState", ({ value }) => {
-      validateAndUpdateUI(value);
+    this.on("updateState", ({ state: { value }, id }) => {
+      validateAndUpdateUI(value, id);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
@@ -1495,8 +1495,8 @@ __webpack_require__.r(__webpack_exports__);
 class LiveTab extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   subscribe() {
     super.subscribe();
-    const validateAndUpdateUI = (value = 0) => {
-      this.validateValue(value);
+    const validateAndUpdateUI = (value = 0, id) => {
+      this.validateValue(value, id);
       this.updateUI({ value: this.state.value });
     };
     const handleUpdateArgs = (args) => {
@@ -1524,8 +1524,8 @@ class LiveTab extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
-    this.on("updateState", ({ value }) => {
-      validateAndUpdateUI(value);
+    this.on("updateState", ({ state: { value }, id }) => {
+      validateAndUpdateUI(value, id);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
@@ -1690,8 +1690,8 @@ __webpack_require__.r(__webpack_exports__);
 class LiveText extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   subscribe() {
     super.subscribe();
-    const validateAndUpdateUI = (value = 0) => {
-      this.validateValue(value);
+    const validateAndUpdateUI = (value = 0, id) => {
+      this.validateValue(value, id);
       this.updateUI({ value: this.state.value });
     };
     const handleUpdateArgs = (args) => {
@@ -1719,8 +1719,8 @@ class LiveText extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
-    this.on("updateState", ({ value }) => {
-      validateAndUpdateUI(value);
+    this.on("updateState", ({ state: { value }, id }) => {
+      validateAndUpdateUI(value, id);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }
@@ -1873,8 +1873,8 @@ __webpack_require__.r(__webpack_exports__);
 class LiveToggle extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
   subscribe() {
     super.subscribe();
-    const validateAndUpdateUI = (value = 0) => {
-      this.validateValue(value);
+    const validateAndUpdateUI = (value = 0, id) => {
+      this.validateValue(value, id);
       this.updateUI({ value: this.state.value });
     };
     const handleUpdateArgs = (args) => {
@@ -1902,8 +1902,8 @@ class LiveToggle extends _base__WEBPACK_IMPORTED_MODULE_2__.default {
       this.validateValue(value);
       this.outletAll([this.state.value, this._.displayValue]);
     });
-    this.on("updateState", ({ value }) => {
-      validateAndUpdateUI(value);
+    this.on("updateState", ({ state: { value }, id }) => {
+      validateAndUpdateUI(value, id);
       this.outletAll([this.state.value, this._.displayValue]);
     });
   }

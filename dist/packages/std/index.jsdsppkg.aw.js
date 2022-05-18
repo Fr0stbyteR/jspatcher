@@ -156,8 +156,8 @@ class _ extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.outlets = 1;
     });
     this.on("updateArgs", handleArgs);
-    this.on("updateState", ({ value }) => {
-      this.setState({ value });
+    this.on("updateState", ({ state: { value }, id }) => {
+      this.setState({ value }, id);
       this.outlet(0, this.state.value);
     });
     this.on("postInit", () => {
@@ -1660,9 +1660,9 @@ class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
       this.outlets = 1;
     });
     this.on("updateArgs", handleArgs);
-    this.on("updateState", ({ value }) => {
+    this.on("updateState", ({ state: { value }, id }) => {
       var _a2;
-      this.setState({ value });
+      this.setState({ value }, id);
       (_a2 = this._.sharedItem) == null ? void 0 : _a2.save(this.state.value, this);
       this.outlet(0, this.state.value);
     });

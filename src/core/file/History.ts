@@ -204,4 +204,10 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         }
         this.capture = true;
     }
+    reset() {
+        this.$ = 0;
+        this.$save = 0;
+        this.eventQueue = [];
+        this.changes = [];
+    }
 }

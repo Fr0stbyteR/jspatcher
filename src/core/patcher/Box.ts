@@ -3,7 +3,7 @@ import { isTRect, parseToPrimitive, isTPresentationRect, isRectMovable, isRectRe
 import type Patcher from "./Patcher";
 import type Line from "./Line";
 import type { TBox, TMaxBox, TRect, TPresentationRect } from "../types";
-import type { Args, Data, IJSPatcherObject, JSPatcherObjectEventMap, Props, State } from "../objects/base/AbstractObject";
+import type { Args, Data, IJSPatcherObject, JSPatcherObjectEventMap, ObjectUpdateOptions, Props, State } from "../objects/base/AbstractObject";
 
 export interface BoxEventMap extends Pick<JSPatcherObjectEventMap<any, any, any, any, any, any, any>, "metaUpdated" | "argsUpdated" | "propsUpdated" | "dataUpdated" | "stateUpdated"> {
     "rectChanged": Box;
@@ -402,7 +402,7 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
     undoable(e: { oldArgs?: Args<T>; args?: Args<T>; oldProps?: Props<T>; props?: Props<T>; oldState?: State<T>; state?: State<T>; oldZIndex: number; zIndex?: number }) {
         this._patcher.boxChanged(this.id, e);
     }
-    async changeObject({ args, props, state, zIndex }: { args?: Args<T>; props?: Props<T>; state?: State<T>; zIndex?: number }, options?: { undoable?: boolean }) {
+    async changeObject({ args, props, state, zIndex }: { args?: Args<T>; props?: Props<T>; state?: State<T>; zIndex?: number }, options?: ObjectUpdateOptions) {
         if (args) await this._object?.updateArgs(args, options);
         if (props) await this._object?.updateProps(props, options);
         if (state) await this._object?.updateState(state, options);

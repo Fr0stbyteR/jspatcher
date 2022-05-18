@@ -10,6 +10,7 @@ import DspSubPatcher from "./DspSubPatcher";
 import Buffer from "./Buffer";
 import Record from "./Record";
 import Plugin from "./WebAudioModule";
+import share from "./Share";
 
 export default async () => ({
     in: In,
@@ -25,5 +26,6 @@ export default async () => ({
     bpatcher: BPatcher,
     "buffer~": Buffer,
     "record~": Record,
-    "plugin~": Plugin
+    "plugin~": Plugin,
+    share
 });

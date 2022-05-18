@@ -1,5 +1,5 @@
 import { getTimestamp } from "../utils/utils";
-import LiveShareClient, { LiveShareProject, RoomInfo } from "./LiveShareClient";
+import LiveShareClient, { LiveShareClientEventMap, LiveShareProject, RoomInfo } from "./LiveShareClient";
 import Patcher from "./patcher/Patcher";
 import TypedEventEmitter from "../utils/TypedEventEmitter";
 import type Env from "./Env";
@@ -17,6 +17,7 @@ export interface ILiveShareState {
 
 export interface LiveShareEventMap {
     "state": ILiveShareState;
+    "objectState": LiveShareClientEventMap["objectState"];
 }
 
 export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
@@ -31,6 +32,7 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
     instances = new Set<IFileInstance>();
     pingScheduled = false;
     $ping = -1;
+    objectState: Record<string, Record<string, any>> = {};
     setState(state: Partial<ILiveShareState>) {
         this.state = { ...this.state, ...state };
         this.emit("state", this.state);
@@ -67,8 +69,11 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
     get logged() {
         return !!this.state.clientId;
     }
+    get inRoom() {
+        return this.logged && this.state.roomInfo;
+    }
     get isOwner() {
-        return !!this.state.roomInfo?.userIsOwner;
+        return this.state.roomInfo && this.state.roomInfo?.ownerId === this.state.clientId;
     }
     constructor(env: Env) {
         super();
@@ -90,11 +95,17 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
         });
         this.client.on("changesFrom", ({ events }) => this.handleReceivedChangeEvent(events));
         this.client._handleLog = (log: WebSocketLog) => {
-            this.env.newLog(log.error ? "error" : "none", this.constructor.name, log.msg, this);
+            // this.env.newLog(log.error ? "error" : "none", this.constructor.name, log.msg, this);
         };
+        this.client.on("objectState", (e) => {
+            for (const fileId in e.state) {
+                if (!this.objectState[fileId]) this.objectState[fileId] = e.state[fileId];
+                else Object.assign(this.objectState[fileId], e.state[fileId]);
+            }
+            this.emit("objectState", e);
+        });
         this.env.on("instances", (instances) => {
             const oncePatcherReady = async (e: any, i: Patcher) => {
-                if (!this.state.roomInfo) return;
                 i.history.on("change", this.handlePatcherChange);
                 i.once("destroy", () => i.history.off("change", this.handlePatcherChange));
             };
@@ -129,7 +140,7 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
         }
     };
     handlePatcherChange = async (changeEvent: IHistoryEvent, history: PatcherHistory) => {
-        if (this.logged) {
+        if (this.inRoom) {
             history.firstEditor?.save();
             const unmerged = await this.client.requestChanges(this.state.roomInfo.roomId, changeEvent);
             if (unmerged.length) await this.handleReceivedChangeEvent(unmerged);
@@ -159,32 +170,41 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
         this.setState({ roomInfo });
         await this.env.newProject(project.props);
         await this.env.fileMgr.processBson(project.items);
+        this.objectState = project.objectState;
         for (const key in project.history) {
             const history = project.history[key];
             await this.handleReceivedChangeEvent(history);
         }
+        await this.emit("objectState", { username, state: this.objectState });
     }
     async hostRoom(roomId: string, password: string, permission: "write" | "read") {
         const history: Record<string, IHistoryEvent[]> = {};
-        this.instances.forEach((instance) => {
+        await Promise.all(Array.from(this.instances).map(async (instance) => {
             if (instance.isInMemory) return;
+            await instance.history.firstEditor.save();
+            instance.history.reset();
             history[instance.file.id] = instance.history.changes;
-        });
+        }));
         const project: LiveShareProject = {
             props: this.env.currentProject.props,
             items: this.env.fileMgr.getDataForBson(),
-            history
+            history,
+            objectState: this.objectState
         };
         const { roomInfo } = await this.client.hostRoom(roomId, password, getTimestamp(), permission, project);
         this.setState({ roomInfo });
     }
     async leaveRoom() {
-        const { roomId } = this.state.roomInfo;
+        const { roomInfo } = this.state;
+        if (!roomInfo) return;
+        const { roomId } = roomInfo;
         this.setState({ roomInfo: null });
         await this.client.leaveRoom(roomId);
     }
     async closeRoom() {
-        const { roomId } = this.state.roomInfo;
+        const { roomInfo } = this.state;
+        if (!roomInfo || !this.isOwner) return;
+        const { roomId } = roomInfo;
         this.setState({ roomInfo: null });
         await this.client.closeRoom(roomId);
     }
@@ -196,5 +216,13 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
         } finally {
             this.setState({ clientId: null, roomInfo: null });
         }
+    }
+    async updateState(fileId: string, state: Record<string, any>) {
+        if (!this.objectState[fileId]) this.objectState[fileId] = state;
+        else Object.assign(this.objectState[fileId], state);
+        const { roomInfo } = this.state;
+        if (!roomInfo) return;
+        const { roomId } = roomInfo;
+        await this.client.updateState(roomId, getTimestamp(), { [fileId]: state });
     }
 }

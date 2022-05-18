@@ -7,13 +7,13 @@ export interface LiveShareProject {
     items: ProjectItemManagerDataForBson;
     props: ProjectProps;
     history: Record<string, IHistoryEvent[]>;
+    objectState: Record<string, Record<string, any>>;
 }
 
 export interface RoomClientInfo {
     clientId: string;
     nickname: string;
     ping: number;
-    isOwner?: boolean;
     selection: Record<string, string[]>;
     cursor: { editorId: string; position: number[] };
 }
@@ -22,12 +22,13 @@ export interface RoomInfo {
     roomId: string;
     permission: "read" | "write";
     clients: RoomClientInfo[];
-    userIsOwner: boolean;
+    ownerId: string;
 }
 
 export interface ILiveShareClient {
     ping(timestamp: number, roomInfo?: RoomInfo): number;
     changesFrom(username: string, ...events: IHistoryEvent[]): Promise<IHistoryEvent[]>;
+    stateUpdateFrom(username: string, state: Record<string, Record<string, any>>): void;
     roomClosedByOwner(roomId: string): void;
     roomStateChanged(roomInfo: RoomInfo): void;
 }
@@ -43,6 +44,7 @@ export interface ILiveShareServer {
     leaveRoom(roomId: string): void;
     closeRoom(roomId: string): void;
     requestChanges(roomId: string, ...events: IHistoryEvent[]): Promise<IHistoryEvent[]>;
+    updateState(roomId: string, timestamp: number, state: Record<string, Record<string, any>>): void;
 }
 
 export interface LiveShareClientEventMap {
@@ -50,10 +52,11 @@ export interface LiveShareClientEventMap {
     "roomClosedByOwner": string;
     "changesFrom": { username: string; events: IHistoryEvent[] };
     "socketState": LiveShareClient["socketState"];
+    "objectState": { username: string; state: Record<string, Record<string, any>> };
 }
 
 export default class LiveShareClient extends ProxyClient<ILiveShareClient, ILiveShareServer, LiveShareClientEventMap> {
-    static fnNames: (keyof ILiveShareServer)[] = ["pingServer", "reportPing", "closeRoom", "hostRoom", "leaveRoom", "transferOwnership", "joinRoom", "login", "logout", "requestChanges"];
+    static fnNames: (keyof ILiveShareServer)[] = ["pingServer", "reportPing", "closeRoom", "hostRoom", "leaveRoom", "transferOwnership", "joinRoom", "login", "logout", "requestChanges", "updateState"];
     ping(timestamp: number, roomInfo?: RoomInfo) {
         this.emit("roomStateChanged", roomInfo);
         return timestamp;
@@ -67,6 +70,9 @@ export default class LiveShareClient extends ProxyClient<ILiveShareClient, ILive
     async changesFrom(username: string, ...events: IHistoryEvent[]) {
         const [mergedEvents] = await this.emit("changesFrom", { username, events });
         return mergedEvents;
+    }
+    stateUpdateFrom(username: string, state: Record<string, Record<string, any>>): void {
+        this.emit("objectState", { username, state });
     }
     get socketState() {
         if (!this._socket) return "closed";

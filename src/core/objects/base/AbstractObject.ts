@@ -62,6 +62,8 @@ export interface IJSPatcherObjectMeta<P extends Record<string, any> = Record<str
 }
 
 export interface ObjectUpdateOptions {
+    /** The ID will be passed through update*, set* and *Updated events */
+    id?: string;
     undoable?: boolean;
 }
 
@@ -85,7 +87,7 @@ export type JSPatcherObjectEventMap<D, S, I extends any[], A extends any[], P, U
     /** Emitted immediately when the editor request changes to the props */
     "updateProps": Partial<P>;
     /** Emitted immediately when the editor request changes to the state */
-    "updateState": Partial<S>;
+    "updateState": { id?: string; state: Partial<S> };
     /** The UI will listen to this event type */
     "updateUI": Partial<U> | never;
     /** Emitted if received any input */
@@ -106,7 +108,7 @@ export type JSPatcherObjectEventMap<D, S, I extends any[], A extends any[], P, U
     /** Emitted when the object's data is changed (by itself) */
     "dataUpdated": { oldData: D; data: D };
     /** Emitted when the object's state is changed */
-    "stateUpdated": { oldState: S; state: S };
+    "stateUpdated": { oldState: S; state: S; id?: string };
 } & E;
 
 /**
@@ -150,7 +152,7 @@ export interface IJSPatcherObject<
     setMeta(metaIn: Partial<IJSPatcherObjectMeta>): void;
     /** Serializable, use `setState` to update. State is temporary to the object instance. Can be updated from the host. */
     state: S;
-    setState(stateIn: Partial<S>): void;
+    setState(stateIn: Partial<S>, id?: string): void;
     /** Serializable, type of `data` property, use `setData` to update. Data will be stored with the box in the serialized patcher. */
     readonly data: D;
     setData(dataIn: Partial<D>): void;
@@ -326,10 +328,10 @@ export default abstract class AbstractObject<
         this.emit("metaUpdated", { oldMeta, meta: { ...this.meta } });
     }
     state: S;
-    setState = (stateIn: Partial<S>) => {
+    setState = (stateIn: Partial<S>, id?: string) => {
         const oldState = { ...this.state };
         this.state = Object.assign(this.state, stateIn);
-        this.emit("stateUpdated", { oldState, state: { ...this.state } });
+        this.emit("stateUpdated", { oldState, state: { ...this.state }, id });
     };
     get data(): D {
         return this._box.data;
@@ -441,7 +443,7 @@ export default abstract class AbstractObject<
     async updateState(state: Partial<S>, options?: ObjectUpdateOptions) {
         if (state && Object.keys(state).length) {
             const oldState = { ...this.state };
-            await this.emit("updateState", state);
+            await this.emit("updateState", { id: options?.id, state });
             if (options?.undoable) this.undoable({ oldState, state: { ...this.state } });
         }
     }

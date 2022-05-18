@@ -50,7 +50,7 @@ export default class ShareMenu extends React.PureComponent<P, S> {
         this.state.liveShare.off("state", this.handleState);
     }
     render() {
-        const { showPanel, liveShareState, liveShareOptions, loginError } = this.state;
+        const { showPanel, liveShareState, loginError } = this.state;
         const { socketState, clientId, roomInfo, ping } = liveShareState;
         return (
             <>
@@ -108,7 +108,7 @@ export default class ShareMenu extends React.PureComponent<P, S> {
                                                 <Table.Body>
                                                     {roomInfo.clients.map(({ clientId, ping, nickname }) => (
                                                         <Table.Row key={clientId} className="menu-share-room-client">
-                                                            <Table.Cell className="menu-share-room-client client-nickname">{nickname}</Table.Cell>
+                                                            <Table.Cell style={clientId === roomInfo.ownerId ? { color: "#004000" } : {}} className="menu-share-room-client client-nickname">{nickname}</Table.Cell>
                                                             <Table.Cell textAlign="right" style={{ backgroundColor: ping < 200 ? "#80FF80" : ping < 500 ? "#FF8000" : "FF8080" }}>{~~ping}ms</Table.Cell>
                                                         </Table.Row>
                                                     ))}
@@ -116,7 +116,7 @@ export default class ShareMenu extends React.PureComponent<P, S> {
                                             </Table>
                                         </div>
                                         <Button size="mini" color="orange" onClick={() => this.state.liveShare.leaveRoom()}>Leave Room</Button>
-                                        {roomInfo.userIsOwner ? <Button size="mini" color="red" onClick={() => this.state.liveShare.closeRoom()}>Close Room</Button> : undefined}
+                                        {roomInfo.ownerId === clientId ? <Button size="mini" color="red" onClick={() => this.state.liveShare.closeRoom()}>Close Room</Button> : undefined}
                                     </>
                                     : <>
                                         <Header>Host Room</Header>
