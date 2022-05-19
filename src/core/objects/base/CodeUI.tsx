@@ -42,6 +42,11 @@ export default class CodeUI extends BaseUI<BaseObject<Partial<{ value: string }>
         const reactMonacoEditor = await import("react-monaco-editor");
         this.editorJSX = reactMonacoEditor.default;
         this.setState({ editorLoaded: true });
+        window.addEventListener("resize", this.handleResize);
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.handleResize);
+        super.componentWillUnmount();
     }
     render() {
         return (

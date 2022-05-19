@@ -5263,6 +5263,11 @@ class CodeUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseUI {
     const reactMonacoEditor = await (0,_sdk__WEBPACK_IMPORTED_MODULE_1__.getReactMonacoEditor)();
     this.editorJSX = reactMonacoEditor.default;
     this.setState({ editorLoaded: true });
+    window.addEventListener("resize", this.handleResize);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+    super.componentWillUnmount();
   }
   render() {
     return /* @__PURE__ */ react__WEBPACK_IMPORTED_MODULE_0__.createElement(_sdk__WEBPACK_IMPORTED_MODULE_1__.BaseUI, __spreadProps(__spreadValues({}, this.props), {
