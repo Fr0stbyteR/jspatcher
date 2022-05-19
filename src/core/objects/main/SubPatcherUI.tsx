@@ -67,12 +67,12 @@ export default class SubPatcherUI extends DefaultPopupUI<SubPatcher, {}, SubPatc
         const content = <div style={{ height: "100%", width: "100%", display: "flex", position: "relative" }}>
             <div className="ui-flex-row" style={{ flex: "1 1 auto", overflow: "auto" }}>
                 <div className="ui-left">
-                    <LeftMenu env={this.env} lang={this.env.language} noFileMgr />
+                    <LeftMenu env={this.env} lang={this.env.options.language} noFileMgr />
                 </div>
                 <div className="ui-center">
                     {
                         this.state.editor
-                            ? <PatcherEditorUI key={this.state.timestamp} editor={this.state.editor} env={this.env} lang={this.env.language} />
+                            ? <PatcherEditorUI key={this.state.timestamp} editor={this.state.editor} env={this.env} lang={this.env.options.language} />
                             : undefined
                     }
                 </div>
