@@ -14,6 +14,7 @@ interface P {
     editor: PatcherEditor;
     id: string;
     runtime?: boolean;
+    scrollIntoView?: boolean;
 }
 
 interface S {
@@ -380,6 +381,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         editor.on("highlightBox", this.handleHighlight);
         editor.on("highlightPort", this.handleHighlightPort);
         this.inspectRectChange();
+        if (this.props.scrollIntoView && this.refDiv.current) this.refDiv.current.scrollIntoView();
     }
     componentWillUnmount() {
         const { editor } = this.props;

@@ -20,23 +20,31 @@ interface P {
 interface S {
     folder: IProjectFolder;
     fileName: string;
-    fileNameError: boolean;
 }
 
 export default class SaveAsModal extends React.PureComponent<P, S> {
     state = {
         fileName: this.props.fileName,
-        fileNameError: false,
         folder: this.props.folder
     };
     get strings() {
         return I18n[this.props.lang].SaveAsModal;
     }
+    get fileNameError() {
+        return !this.state.fileName || !!this.state.folder.findItem(this.state.fileName);
+    }
     handleSelection = (selection: IProjectItem[]) => {
-        if (selection[0].type === "folder") this.setState({ folder: selection[0] as IProjectFolder });
+        if (selection[0].type === "folder") {
+            const folder = selection[0] as IProjectFolder;
+            this.setState({ folder });
+        }
     };
     handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
-        this.setState({ fileName: value, fileNameError: !!this.state.folder.findItem(value) });
+        this.setState({ fileName: value });
+    };
+    handleConfirm = () => {
+        if (this.fileNameError) return;
+        this.props.onConfirm(this.state.folder, this.state.fileName);
     };
     handleKeyDown = (e: React.KeyboardEvent<HTMLLabelElement>) => {
         e.stopPropagation();
@@ -59,7 +67,7 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
                             <label>{this.strings.path}</label>
                             <span>{this.state.folder.path}/</span>
                         </Form.Field>
-                        <Form.Field inline error={this.state.fileNameError}>
+                        <Form.Field inline error={this.fileNameError}>
                             <label>{this.strings.fileName}</label>
                             <Input value={this.state.fileName} onChange={this.handleFileNameChange} onKeyDown={this.handleKeyDown} />
                         </Form.Field>
@@ -67,7 +75,7 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button inverted color="grey" size="mini" onClick={this.props.onClose}>{this.strings.cancel}</Button>
-                    <Button inverted color="green" size="mini" onClick={() => this.props.onConfirm(this.state.folder, this.state.fileName)}>{this.strings.confirm}</Button>
+                    <Button inverted color="green" size="mini" disabled={this.fileNameError} onClick={() => this.props.onConfirm(this.state.folder, this.state.fileName)}>{this.strings.confirm}</Button>
                 </Modal.Actions>
             </Modal>
         );

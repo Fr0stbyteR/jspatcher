@@ -5243,7 +5243,11 @@ class CodeUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseUI {
       this.object.emit("editorLoaded", monaco);
       monaco.onDidBlurEditorText(() => this.object.emit("editorBlur", monaco.getValue()));
     };
-    this.handleResize = () => this.state.editorLoaded ? this.codeEditor.layout() : void 0;
+    this.handleResize = () => {
+      if (this.state.editorLoaded) {
+        requestAnimationFrame(() => this.codeEditor.layout());
+      }
+    };
     this.handleChange = (value, event) => {
       this.setState({ value });
       this.object.setData({ value });
@@ -5263,10 +5267,12 @@ class CodeUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.BaseUI {
     const reactMonacoEditor = await (0,_sdk__WEBPACK_IMPORTED_MODULE_1__.getReactMonacoEditor)();
     this.editorJSX = reactMonacoEditor.default;
     this.setState({ editorLoaded: true });
+    this.editor.on("presentation", this.handleResize);
     window.addEventListener("resize", this.handleResize);
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
+    this.editor.off("presentation", this.handleResize);
     super.componentWillUnmount();
   }
   render() {

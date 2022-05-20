@@ -356,9 +356,9 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
     boxes: Record<string, JSX.Element> = {};
     zIndexes: Record<string, number> = {};
     handleCreate = (created: RawPatcher) => {
-        Object.keys(created.boxes).forEach((id) => {
+        Object.keys(created.boxes).forEach((id, i) => {
             const box = created.boxes[id];
-            this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} />;
+            this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} scrollIntoView={i === 0}/>;
             this.zIndexes[box.id] = box.zIndex || 0;
         });
         this.setState({ timestamp: performance.now() });

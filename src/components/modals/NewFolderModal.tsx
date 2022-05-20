@@ -15,20 +15,25 @@ interface P {
 interface S {
     folder: IProjectFolder;
     folderName: string;
-    folderNameError: boolean;
 }
 
 export default class NewFolderModal extends React.PureComponent<P, S> {
     state = {
         folderName: this.props.folderName,
-        folderNameError: false,
         folder: this.props.folder
     };
     get strings() {
         return I18n[this.props.lang].NewFolderModal;
     }
+    get folderNameError() {
+        return !this.state.folderName || !!this.state.folder.findItem(this.state.folderName);
+    }
     handleFolderNameChange = (e: React.ChangeEvent<HTMLInputElement>, { value }: InputOnChangeData) => {
-        this.setState({ folderName: value, folderNameError: !!this.state.folder.findItem(value) });
+        this.setState({ folderName: value });
+    };
+    handleConfirm = () => {
+        if (this.folderNameError) return;
+        this.props.onConfirm(this.state.folder, this.state.folderName);
     };
     render() {
         return (
@@ -36,7 +41,7 @@ export default class NewFolderModal extends React.PureComponent<P, S> {
                 <Modal.Header>{this.strings.title}</Modal.Header>
                 <Modal.Content>
                     <Form inverted size="mini">
-                        <Form.Field inline error={this.state.folderNameError}>
+                        <Form.Field inline error={this.folderNameError}>
                             <label>{this.strings.folderName}</label>
                             <Input defaultValue={this.state.folderName} onChange={this.handleFolderNameChange} />
                         </Form.Field>
@@ -44,7 +49,7 @@ export default class NewFolderModal extends React.PureComponent<P, S> {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button inverted color="grey" size="mini" onClick={this.props.onClose}>{this.strings.cancel}</Button>
-                    <Button inverted color="green" size="mini" onClick={() => this.props.onConfirm(this.state.folder, this.state.folderName)}>{this.strings.confirm}</Button>
+                    <Button inverted color="green" size="mini" disabled={this.folderNameError} onClick={this.handleConfirm}>{this.strings.confirm}</Button>
                 </Modal.Actions>
             </Modal>
         );
