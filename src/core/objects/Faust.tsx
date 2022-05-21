@@ -507,7 +507,7 @@ class Pass extends FaustOp {
     }
 }
 type TSendMap = Record<string, Send[]>;
-const sendMap: TSendMap = {};
+const sendMap: Map<Patcher, TSendMap> = new Map();
 export class Send extends FaustOp<{}, { sendMap: TSendMap }> {
     static description = "Send Signal to receive";
     static args: IJSPatcherObjectMeta["args"] = [{
@@ -518,7 +518,7 @@ export class Send extends FaustOp<{}, { sendMap: TSendMap }> {
     get symbol() {
         return ["s"];
     }
-    _: FaustOpInternalState & { sendMap: TSendMap } = { ...this._, inlets: 1, outlets: 0, sendMap };
+    _: FaustOpInternalState & { sendMap: TSendMap } = { ...this._, inlets: 1, outlets: 0, sendMap: this.initSendMap() };
     get sendID() {
         return this.box.args[0];
     }
@@ -531,6 +531,24 @@ export class Send extends FaustOp<{}, { sendMap: TSendMap }> {
             if (this._.sendMap[sendID].indexOf(this) === -1) this._.sendMap[sendID].push(this);
         }
     };
+    initSendMap() {
+        const { patcher } = this;
+        if (sendMap.has(patcher)) return sendMap.get(patcher);
+        const map = {};
+        sendMap.set(patcher, map);
+        return map;
+    }
+    disposeSend(sendID: string) {
+        const { patcher } = this;
+        if (!sendMap.has(patcher)) return;
+        const map = sendMap.get(patcher);
+        if (!map[sendID]) return;
+        const $ = map[sendID].indexOf(this);
+        if ($ === -1) return;
+        map[sendID].splice($, 1);
+        if (map[sendID].length === 0) delete map[sendID];
+        if (Object.keys(map).length === 0) sendMap.delete(patcher);
+    }
     subscribe() {
         super.subscribe();
         this.on("preInit", () => {
@@ -540,10 +558,7 @@ export class Send extends FaustOp<{}, { sendMap: TSendMap }> {
         this.on("destroy", () => {
             const sendID = this.box.args[0];
             if (!sendID) return;
-            if (!this._.sendMap[sendID]) return;
-            const $ = this._.sendMap[sendID].indexOf(this);
-            if ($ === -1) return;
-            this._.sendMap[sendID].splice($, 1);
+            this.disposeSend(sendID);
         });
     }
     toMainExpr(out: string, inlets: string) {
@@ -560,9 +575,16 @@ export class Receive extends FaustOp<{}, { sendMap: TSendMap }> {
     get symbol() {
         return ["r"];
     }
-    _: FaustOpInternalState & { sendMap: TSendMap } = { ...this._, inlets: 0, outlets: 1, sendMap };
+    _: FaustOpInternalState & { sendMap: TSendMap } = { ...this._, inlets: 0, outlets: 1, sendMap: this.initSendMap() };
     get sendID() {
         return this.box.args[0];
+    }
+    initSendMap() {
+        const { patcher } = this;
+        if (sendMap.has(patcher)) return sendMap.get(patcher);
+        const map = {};
+        sendMap.set(patcher, map);
+        return map;
     }
     subscribe() {
         super.subscribe();

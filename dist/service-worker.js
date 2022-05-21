@@ -316,7 +316,7 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "e52c81e029afbde16c455b3aec32a268"
+    "revision": "99e4a9da143234f47829fc62dee499c6"
   }, {
     "url": "js/017d998140f1ad199103.worker.js",
     "revision": null
@@ -940,7 +940,7 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "revision": "83bdb9f4d9c6ee2bb77d3a226d556c38"
   }, {
     "url": "packages/midi/index.jspatpkg.js",
-    "revision": "c32b4e9b9eb5c55be87f8ae0948cf5a4"
+    "revision": "bcf672e0e8ff71e39a9da4296529c572"
   }, {
     "url": "packages/op/index.js",
     "revision": "549601486a7aef08ad83b657b6cdc2aa"
