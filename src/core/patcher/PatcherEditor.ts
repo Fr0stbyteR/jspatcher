@@ -168,6 +168,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             await this.createBox({ text: `buffer~ ${path}`, ...boxIn });
         } else if (type === "image") {
             await this.createBox({ text: `img ${path}`, ...boxIn });
+        } else if (type === "text") {
+            await this.createBox({ text: `ptext ${path}`, ...boxIn });
         }
     }
     async deleteBox(boxId: string) {

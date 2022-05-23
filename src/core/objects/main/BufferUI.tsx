@@ -91,7 +91,7 @@ export default class BufferUI extends DefaultPopupUI<Buffer, {}, BufferUIState> 
         const content = <div className="editor-container" style={{ height: "100%", width: "100%", display: "flex", position: "relative" }}>
             {
                 editor
-                    ? <AudioEditorUI key={this.state.timestamp} editor={editor} env={this.env} lang={this.env.language} />
+                    ? <AudioEditorUI key={this.state.timestamp} editor={editor} env={this.env} lang={this.env.options.language} />
                     : undefined
             }
         </div>;

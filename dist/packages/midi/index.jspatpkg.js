@@ -325,7 +325,7 @@ makeNote.args = [{
 }, {
   type: "number",
   optional: false,
-  description: "Initial duration in seconds",
+  description: "Initial duration in milliseconds",
   default: 0
 }, {
   type: "number",

@@ -381,7 +381,15 @@ export default class BoxUI extends React.PureComponent<P, S> {
         editor.on("highlightBox", this.handleHighlight);
         editor.on("highlightPort", this.handleHighlightPort);
         this.inspectRectChange();
-        if (this.props.scrollIntoView && this.refDiv.current) this.refDiv.current.scrollIntoView();
+        if (this.props.scrollIntoView && this.refDiv.current) {
+            const div = this.refDiv.current;
+            const patcherDiv = div.parentElement.parentElement;
+            if (div.offsetTop < patcherDiv.scrollTop
+                || div.offsetLeft < patcherDiv.scrollLeft
+                || div.offsetTop + div.offsetHeight < patcherDiv.scrollTop + patcherDiv.offsetHeight
+                || div.offsetLeft + div.offsetWidth < patcherDiv.scrollLeft + patcherDiv.offsetWidth
+            ) div.scrollIntoView({ block: "nearest", inline: "nearest" });
+        }
     }
     componentWillUnmount() {
         const { editor } = this.props;
