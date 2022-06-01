@@ -122,8 +122,7 @@ export default class FaustNode<
             this.outletAudioConnections[i] = { node: splitter, index: i };
         }
         factoryMeta.outlets[outlets] = lastOutletMeta;
-        const audioParams: string[] = [];
-        node.parameters.forEach((v, k) => audioParams.push(k));
+        const audioParams: string[] = [...node.parameters].map(([k]) => k).sort();
         for (let i = inlets || 1; i < (inlets || 1) + audioParams.length; i++) {
             const path = audioParams[i - (inlets || 1)];
             const param = node.parameters.get(path);
@@ -132,7 +131,7 @@ export default class FaustNode<
             this.inletAudioConnections[i] = { node: param };
         }
         this.setMeta(factoryMeta);
-        this.inlets = (inlets || 1) + node.parameters.size;
+        this.inlets = (inlets || 1) + audioParams.length;
         this.outlets = outlets + 1;
         this.connectAudio();
         this.outlet(this.outlets - 1, this._.node);

@@ -16,6 +16,7 @@ export interface IS {
     merger: ChannelMergerNode;
     node: WamNode;
     plugin: WebAudioModule;
+    params: string[];
     children: ChildNode[];
 }
 
@@ -38,7 +39,7 @@ export default class Plugin extends BaseObject<{}, {}, I, O, [string], {}, DOMUI
         description: "WebAudioModule URL"
     }];
     static UI = PluginUI;
-    _: IS = { merger: undefined, splitter: undefined, node: undefined, plugin: undefined, children: [] };
+    _: IS = { merger: undefined, splitter: undefined, node: undefined, plugin: undefined, params: [], children: [] };
     async load(url: string) {
         let WAPCtor: typeof WebAudioModule;
         let plugin: WebAudioModule;
@@ -88,6 +89,7 @@ export default class Plugin extends BaseObject<{}, {}, I, O, [string], {}, DOMUI
         factoryMeta.outlets[outlets] = lastOutletMeta;
         const paramInfo = await plugin.audioNode.getParameterInfo();
         const params = Object.keys(paramInfo);
+        this._.params = params;
         for (let i = inlets || 1; i < (inlets || 1) + params.length; i++) {
             const path = params[i - (inlets || 1)];
             const param = paramInfo[path];
@@ -145,11 +147,16 @@ export default class Plugin extends BaseObject<{}, {}, I, O, [string], {}, DOMUI
                 }
             }
         } else {
-            const con = this.inletAudioConnections[inlet].node;
-            if (con instanceof AudioParam) {
+            if (inlet >= this._.node.numberOfInputs) {
+                const key = this._.params[inlet - this._.node.numberOfInputs];
+                if (typeof key !== "string") return;
                 try {
                     const bpf = decodeLine(data as TBPF);
-                    this.applyBPF(con, bpf);
+                    let t = 0;
+                    bpf.forEach((a) => {
+                        if (a.length > 1) t += a[1];
+                        this._.node.scheduleEvents({ type: "wam-automation", data: { id: key, value: a[0], normalized: false }, time: this.audioCtx.currentTime + t });
+                    });
                 } catch (e) {
                     this.error(e.message);
                 }

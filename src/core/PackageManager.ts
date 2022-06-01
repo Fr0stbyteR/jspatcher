@@ -117,7 +117,15 @@ export default class PackageManager extends TypedEventEmitter<PackageManagerEven
                 }
             }
         }
-        for (const key in pkg) {
+        const pkgKeys = Object.keys(pkg);
+        if (this.pkg === pkg) {
+            pkgKeys.sort((a, b) => {
+                const $a = this.global.builtInPackagesNames.indexOf(a);
+                const $b = this.global.builtInPackagesNames.indexOf(b);
+                return ($a === -1 ? Infinity : $a) - ($b === -1 ? Infinity : $b);
+            });
+        }
+        for (const key of pkgKeys) {
             const el = pkg[key];
             if (typeof el === "object") {
                 this.packageRegister(el, libOut, rootifyDepth, [...path, key]);

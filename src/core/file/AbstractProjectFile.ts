@@ -61,7 +61,7 @@ export default abstract class AbstractProjectFile<Data = ArrayBuffer, Manager ex
     }
     constructor(fileMgrIn: Manager, parentIn: IProjectFolder, nameIn: string, dataIn?: Data) {
         super(fileMgrIn, parentIn, nameIn);
-        if (dataIn) this._data = dataIn;
+        if (typeof dataIn !== "undefined") this._data = dataIn;
         this.onAny((eventName, eventData) => {
             const { id, isFolder, type, path, data } = this;
             this.fileMgr.emit("itemChanged", { id, isFolder, type, path, data, eventName, eventData });

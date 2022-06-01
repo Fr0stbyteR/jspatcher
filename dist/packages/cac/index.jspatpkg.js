@@ -131,10 +131,14 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 class GuidoView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor() {
     super(...arguments);
-    this._ = { guido: void 0, gmn: void 0, svgs: [], container: void 0, parser: void 0, ar: void 0, gr: void 0 };
+    this._ = { guido: void 0, gmn: void 0, svgs: [], container: void 0, parser: void 0, ar: void 0, gr: void 0, busy: false };
   }
   subscribe() {
     super.subscribe();
+    const setBusy = (busy) => {
+      this._.busy = busy;
+      this.outlet(1, busy);
+    };
     const processAR = async () => {
       const { guido, parser, gmn } = this._;
       const ar = await guido.string2AR(parser, gmn);
@@ -187,15 +191,19 @@ class GuidoView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
       }
     };
     const process = async () => {
+      setBusy(true);
       try {
         await processAR();
         await processGR();
         await processSVG();
       } catch (error) {
         this.error(error);
+      } finally {
+        setBusy(false);
       }
     };
     const processFromAR = async (ar) => {
+      setBusy(true);
       try {
         const { guido } = this._;
         if (this._.gr)
@@ -208,11 +216,13 @@ class GuidoView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
         await processSVG();
       } catch (error) {
         this.error(error);
+      } finally {
+        setBusy(false);
       }
     };
     this.on("preInit", () => {
       this.inlets = 1;
-      this.outlets = 1;
+      this.outlets = 2;
     });
     this.on("postInit", async () => {
       this._.guido = await this.env.getGuido();
@@ -235,11 +245,14 @@ class GuidoView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
       if (Object.keys(props).filter((v) => v !== "bgColor").length) {
         if (!this._.gr)
           return;
+        setBusy(true);
         try {
           await updateGR();
           await processSVG();
         } catch (error) {
           this.error(error);
+        } finally {
+          setBusy(false);
         }
       }
     });
@@ -264,6 +277,9 @@ GuidoView.inlets = [{
 GuidoView.outlets = [{
   type: "object",
   description: "SVG codes"
+}, {
+  type: "boolean",
+  description: "Busy state update"
 }];
 GuidoView.props = {
   bgColor: {
@@ -350,24 +366,42 @@ __webpack_require__.r(__webpack_exports__);
 class ToGuido extends _default__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor() {
     super(...arguments);
-    this._ = { guido: void 0, buffer: void 0 };
+    this._ = { guido: void 0, buffer: void 0, busy: false, busyInput: false, tasks: [] };
+  }
+  scheduleTask(data) {
+    if (data)
+      this._.tasks.push(data);
+    if (!this._.busy && !this._.busyInput)
+      this.executeTask();
+  }
+  async executeTask() {
+    this._.busy = true;
+    if (this._.tasks.length) {
+      const data = this._.tasks.shift();
+      this.outlet(0, await data.toGuidoAR(this._.guido));
+      this.scheduleTask();
+    }
+    this._.busy = false;
   }
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
-      this.inlets = 1;
+      this.inlets = 2;
       this.outlets = 1;
     });
     this.on("postInit", async () => {
       this._.guido = await this.env.getGuido();
     });
-    this.on("inlet", async ({ data, inlet }) => {
+    this.on("inlet", ({ data, inlet }) => {
       if (inlet === 0) {
         if ((0,_sdk__WEBPACK_IMPORTED_MODULE_0__.isBang)(data) && typeof this._.buffer === "number") {
           this.outlet(0, this._.buffer);
         } else if (typeof data === "object" && data.toGuidoAR) {
-          this.outlet(0, await data.toGuidoAR(this._.guido));
+          this.scheduleTask(data);
         }
+      } else if (inlet === 1) {
+        this._.busyInput = !!data;
+        this.scheduleTask();
       }
     });
   }
@@ -376,6 +410,10 @@ ToGuido.inlets = [{
   isHot: true,
   type: "object",
   description: "A musical object: Chord | Note | Pitch | Roll | Sequence"
+}, {
+  isHot: false,
+  type: "boolean",
+  description: "Busy state input"
 }];
 ToGuido.outlets = [{
   type: "anything",
@@ -3140,8 +3178,6 @@ const {
         add(p1) {
           if (typeof p1 === "number")
             return this.fromOffset(this.offset + p1);
-          if (p1 instanceof _Note)
-            return this.become(p1);
           let i2;
           if (typeof p1 === "string")
             i2 = new _Interval__WEBPACK_IMPORTED_MODULE_1__["default"](p1);
@@ -3153,13 +3189,15 @@ const {
           return this;
         }
         static add(a, b) {
+          if (typeof b === "number")
+            return a.clone().add(b);
           return a.clone().add(b);
         }
         sub(p1) {
           if (typeof p1 === "number")
             return this.fromOffset(this.offset - p1);
           if (p1 instanceof _Note)
-            return this.become(p1);
+            return (0, _utils__WEBPACK_IMPORTED_MODULE_0__.floorMod)(this.offset - p1.offset, 12);
           let i2;
           if (typeof p1 === "string")
             i2 = new _Interval__WEBPACK_IMPORTED_MODULE_1__["default"](p1);
@@ -3171,6 +3209,10 @@ const {
           return this;
         }
         static sub(a, b) {
+          if (typeof b === "number")
+            return a.clone().sub(b);
+          if (b instanceof _Note)
+            return a.clone().sub(b);
           return a.clone().sub(b);
         }
         mul(fIn) {
@@ -3426,36 +3468,40 @@ const {
           this.octave = octave;
           return this;
         }
-        add(iIn) {
-          if (typeof iIn === "number")
-            return this.fromOffset(this.offset + iIn);
-          if (iIn instanceof _Pitch)
-            return this.mul(1 + iIn.frequency / this.frequency);
+        add(p1) {
+          if (typeof p1 === "number")
+            return this.fromOffset(this.offset + p1);
           let i2;
-          if (typeof iIn === "string")
-            i2 = new _Interval__WEBPACK_IMPORTED_MODULE_2__["default"](iIn);
-          else if (iIn instanceof _Interval__WEBPACK_IMPORTED_MODULE_2__["default"])
-            i2 = iIn;
+          if (typeof p1 === "string")
+            i2 = new _Interval__WEBPACK_IMPORTED_MODULE_2__["default"](p1);
+          else if (p1 instanceof _Interval__WEBPACK_IMPORTED_MODULE_2__["default"])
+            i2 = p1;
           this.octave += Math.floor((this.enumNote.index + i2.degree - 1) / 7) + i2.octave;
           return super.add(i2);
         }
         static add(a, b) {
+          if (typeof b === "number")
+            return a.clone().add(b);
           return a.clone().add(b);
         }
-        sub(iIn) {
-          if (typeof iIn === "number")
-            return this.fromOffset(this.offset - iIn);
-          if (iIn instanceof _Pitch)
-            return this.mul(1 - iIn.frequency / this.frequency);
+        sub(p1) {
+          if (typeof p1 === "number")
+            return this.fromOffset(this.offset - p1);
+          if (p1 instanceof _Pitch)
+            return this.offset - p1.offset;
           let i2;
-          if (typeof iIn === "string")
-            i2 = new _Interval__WEBPACK_IMPORTED_MODULE_2__["default"](iIn);
-          else if (iIn instanceof _Interval__WEBPACK_IMPORTED_MODULE_2__["default"])
-            i2 = iIn;
+          if (typeof p1 === "string")
+            i2 = new _Interval__WEBPACK_IMPORTED_MODULE_2__["default"](p1);
+          else if (p1 instanceof _Interval__WEBPACK_IMPORTED_MODULE_2__["default"])
+            i2 = p1;
           this.octave += Math.floor((this.enumNote.index - i2.degree + 1) / 7) - i2.octave;
           return super.sub(i2);
         }
         static sub(a, b) {
+          if (typeof b === "number")
+            return a.clone().sub(b);
+          if (b instanceof _Pitch)
+            return a.clone().sub(b);
           return a.clone().sub(b);
         }
         mul(fIn) {
@@ -4383,6 +4429,7 @@ const {
             trackChord.trackNotes.forEach((trackNote) => {
               track.addNote({
                 midi: ~~trackNote.pitch.offset,
+                velocity: trackNote.velocity.normalize(),
                 ticks,
                 durationTicks
               });
@@ -4595,6 +4642,7 @@ const {
             trackChord.trackNotes.forEach((trackNote) => {
               track.addNote({
                 midi: ~~trackNote.pitch.offset,
+                velocity: trackNote.velocity.normalize(),
                 ticks,
                 durationTicks
               });
@@ -4692,14 +4740,16 @@ const {
           midi.header.setTempo(bpm);
           midi.header.timeSignatures.push({ ticks: 0, measures: 0, timeSignature: [beats, beatDuration] });
           midi.header.update();
-          this.forEach((sequence) => {
+          this.forEach((sequence, i2) => {
             const track = midi.addTrack();
+            track.channel = i2;
             sequence.forEach((trackChord) => {
               const ticks = trackChord.offset.getTicks(bpm);
               const durationTicks = trackChord.duration.getTicks(bpm);
               trackChord.trackNotes.forEach((trackNote) => {
                 track.addNote({
                   midi: ~~trackNote.pitch.offset,
+                  velocity: trackNote.velocity.normalize(),
                   ticks,
                   durationTicks
                 });
@@ -4842,6 +4892,7 @@ const {
           this.trackNotes.forEach((trackNote) => {
             track.addNote({
               midi: ~~trackNote.pitch.offset,
+              velocity: trackNote.velocity.normalize(),
               ticks,
               durationTicks
             });
@@ -4949,7 +5000,9 @@ const {
         "permutations": () => permutations,
         "permute": () => permute,
         "combinations": () => combinations,
+        "combinationsSized": () => combinationsSized,
         "randomCombination": () => randomCombination,
+        "randomCombinationSized": () => randomCombinationSized,
         "default": () => __WEBPACK_DEFAULT_EXPORT__
       });
       var _Frequency__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2("./src/Frequency.ts");
@@ -5151,8 +5204,49 @@ const {
         };
         return helper(0, [], []);
       };
+      const combinationsSized = (array, size, allowDuplicate = false) => {
+        const { length } = array;
+        if (!size)
+          throw new RangeError("Combination size must be > 0.");
+        if (size > length)
+          throw new RangeError("Combination size is larger than the array length.");
+        const helper = ($, current, result) => {
+          for (let i2 = $; i2 <= length - size; i2++) {
+            const next = current.slice().concat(array[i2]);
+            if (next.length === size)
+              result.push(next);
+            else
+              helper(allowDuplicate ? i2 : i2 + 1, next, result);
+          }
+          return result;
+        };
+        return helper(0, [], []);
+      };
       const randomCombination = (array, random) => {
         return array.filter(() => random ? !!random.randint(0, 1) : Math.random() < 0.5);
+      };
+      const randomCombinationSized = (array, size, allowDuplicate = false, random) => {
+        const { length } = array;
+        if (!size)
+          throw new RangeError("Combination size must be > 0.");
+        if (size > length)
+          throw new RangeError("Combination size is larger than the array length.");
+        let n = size;
+        const taken = new Array(array.length).fill(0);
+        while (n--) {
+          const $ = random ? random.randint(0, length) : ~~(Math.random() * length);
+          if (taken[$] && !allowDuplicate)
+            n++;
+          else
+            taken[$]++;
+        }
+        const result = [];
+        for (let i2 = 0; i2 < array.length; i2++) {
+          while (taken[i2]--) {
+            result.push(array[i2]);
+          }
+        }
+        return result;
       };
       const Utils = {
         precisionFactor,
@@ -6415,7 +6509,7 @@ const {
     }
   };
   var __webpack_module_cache__ = {};
-  function __nested_webpack_require_231754__(moduleId) {
+  function __nested_webpack_require_233960__(moduleId) {
     var cachedModule = __webpack_module_cache__[moduleId];
     if (cachedModule !== void 0) {
       return cachedModule.exports;
@@ -6425,39 +6519,39 @@ const {
       loaded: false,
       exports: {}
     };
-    __webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_231754__);
+    __webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_233960__);
     module.loaded = true;
     return module.exports;
   }
   (() => {
-    __nested_webpack_require_231754__.amdD = function() {
+    __nested_webpack_require_233960__.amdD = function() {
       throw new Error("define cannot be used indirect");
     };
   })();
   (() => {
-    __nested_webpack_require_231754__.amdO = {};
+    __nested_webpack_require_233960__.amdO = {};
   })();
   (() => {
-    __nested_webpack_require_231754__.n = (module) => {
+    __nested_webpack_require_233960__.n = (module) => {
       var getter = module && module.__esModule ? () => module["default"] : () => module;
-      __nested_webpack_require_231754__.d(getter, { a: getter });
+      __nested_webpack_require_233960__.d(getter, { a: getter });
       return getter;
     };
   })();
   (() => {
-    __nested_webpack_require_231754__.d = (exports2, definition) => {
+    __nested_webpack_require_233960__.d = (exports2, definition) => {
       for (var key in definition) {
-        if (__nested_webpack_require_231754__.o(definition, key) && !__nested_webpack_require_231754__.o(exports2, key)) {
+        if (__nested_webpack_require_233960__.o(definition, key) && !__nested_webpack_require_233960__.o(exports2, key)) {
           Object.defineProperty(exports2, key, { enumerable: true, get: definition[key] });
         }
       }
     };
   })();
   (() => {
-    __nested_webpack_require_231754__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+    __nested_webpack_require_233960__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
   })();
   (() => {
-    __nested_webpack_require_231754__.r = (exports2) => {
+    __nested_webpack_require_233960__.r = (exports2) => {
       if (typeof Symbol !== "undefined" && Symbol.toStringTag) {
         Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
       }
@@ -6465,7 +6559,7 @@ const {
     };
   })();
   (() => {
-    __nested_webpack_require_231754__.nmd = (module) => {
+    __nested_webpack_require_233960__.nmd = (module) => {
       module.paths = [];
       if (!module.children)
         module.children = [];
@@ -6478,8 +6572,8 @@ const {
     /*!**********************!*\
       !*** ./src/index.ts ***!
       \**********************/
-    __nested_webpack_require_231754__.r(__webpack_exports__);
-    __nested_webpack_require_231754__.d(__webpack_exports__, {
+    __nested_webpack_require_233960__.r(__webpack_exports__);
+    __nested_webpack_require_233960__.d(__webpack_exports__, {
       "Articulation": () => _Articulation__WEBPACK_IMPORTED_MODULE_0__["default"],
       "Chord": () => _Chord__WEBPACK_IMPORTED_MODULE_1__["default"],
       "Color": () => _Color__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -6504,29 +6598,29 @@ const {
       "Utils": () => _utils__WEBPACK_IMPORTED_MODULE_15__["default"],
       "Series": () => _series__WEBPACK_IMPORTED_MODULE_16__["default"]
     });
-    var _Articulation__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_231754__("./src/Articulation.ts");
-    var _Chord__WEBPACK_IMPORTED_MODULE_1__ = __nested_webpack_require_231754__("./src/Chord.ts");
-    var _Color__WEBPACK_IMPORTED_MODULE_2__ = __nested_webpack_require_231754__("./src/Color.ts");
-    var _Duration__WEBPACK_IMPORTED_MODULE_3__ = __nested_webpack_require_231754__("./src/Duration.ts");
-    var _Frequency__WEBPACK_IMPORTED_MODULE_4__ = __nested_webpack_require_231754__("./src/Frequency.ts");
-    var _Interval__WEBPACK_IMPORTED_MODULE_5__ = __nested_webpack_require_231754__("./src/Interval.ts");
-    var _Note__WEBPACK_IMPORTED_MODULE_6__ = __nested_webpack_require_231754__("./src/Note.ts");
-    var _Param__WEBPACK_IMPORTED_MODULE_7__ = __nested_webpack_require_231754__("./src/Param.ts");
-    var _Pitch__WEBPACK_IMPORTED_MODULE_8__ = __nested_webpack_require_231754__("./src/Pitch.ts");
-    var _Scale__WEBPACK_IMPORTED_MODULE_9__ = __nested_webpack_require_231754__("./src/Scale.ts");
-    var _TimeCode__WEBPACK_IMPORTED_MODULE_10__ = __nested_webpack_require_231754__("./src/TimeCode.ts");
-    var _TonalChord__WEBPACK_IMPORTED_MODULE_11__ = __nested_webpack_require_231754__("./src/TonalChord.ts");
-    var _Tonality__WEBPACK_IMPORTED_MODULE_12__ = __nested_webpack_require_231754__("./src/Tonality.ts");
-    var _Velocity__WEBPACK_IMPORTED_MODULE_13__ = __nested_webpack_require_231754__("./src/Velocity.ts");
-    var _genre_Random__WEBPACK_IMPORTED_MODULE_14__ = __nested_webpack_require_231754__("./src/genre/Random.ts");
-    var _utils__WEBPACK_IMPORTED_MODULE_15__ = __nested_webpack_require_231754__("./src/utils.ts");
-    var _series__WEBPACK_IMPORTED_MODULE_16__ = __nested_webpack_require_231754__("./src/series.ts");
-    var _track_Segment__WEBPACK_IMPORTED_MODULE_17__ = __nested_webpack_require_231754__("./src/track/Segment.ts");
-    var _track_Sequence__WEBPACK_IMPORTED_MODULE_18__ = __nested_webpack_require_231754__("./src/track/Sequence.ts");
-    var _track_Sequences__WEBPACK_IMPORTED_MODULE_19__ = __nested_webpack_require_231754__("./src/track/Sequences.ts");
-    var _track_Roll__WEBPACK_IMPORTED_MODULE_20__ = __nested_webpack_require_231754__("./src/track/Roll.ts");
-    var _track_TrackChord__WEBPACK_IMPORTED_MODULE_21__ = __nested_webpack_require_231754__("./src/track/TrackChord.ts");
-    var _track_TrackNote__WEBPACK_IMPORTED_MODULE_22__ = __nested_webpack_require_231754__("./src/track/TrackNote.ts");
+    var _Articulation__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_233960__("./src/Articulation.ts");
+    var _Chord__WEBPACK_IMPORTED_MODULE_1__ = __nested_webpack_require_233960__("./src/Chord.ts");
+    var _Color__WEBPACK_IMPORTED_MODULE_2__ = __nested_webpack_require_233960__("./src/Color.ts");
+    var _Duration__WEBPACK_IMPORTED_MODULE_3__ = __nested_webpack_require_233960__("./src/Duration.ts");
+    var _Frequency__WEBPACK_IMPORTED_MODULE_4__ = __nested_webpack_require_233960__("./src/Frequency.ts");
+    var _Interval__WEBPACK_IMPORTED_MODULE_5__ = __nested_webpack_require_233960__("./src/Interval.ts");
+    var _Note__WEBPACK_IMPORTED_MODULE_6__ = __nested_webpack_require_233960__("./src/Note.ts");
+    var _Param__WEBPACK_IMPORTED_MODULE_7__ = __nested_webpack_require_233960__("./src/Param.ts");
+    var _Pitch__WEBPACK_IMPORTED_MODULE_8__ = __nested_webpack_require_233960__("./src/Pitch.ts");
+    var _Scale__WEBPACK_IMPORTED_MODULE_9__ = __nested_webpack_require_233960__("./src/Scale.ts");
+    var _TimeCode__WEBPACK_IMPORTED_MODULE_10__ = __nested_webpack_require_233960__("./src/TimeCode.ts");
+    var _TonalChord__WEBPACK_IMPORTED_MODULE_11__ = __nested_webpack_require_233960__("./src/TonalChord.ts");
+    var _Tonality__WEBPACK_IMPORTED_MODULE_12__ = __nested_webpack_require_233960__("./src/Tonality.ts");
+    var _Velocity__WEBPACK_IMPORTED_MODULE_13__ = __nested_webpack_require_233960__("./src/Velocity.ts");
+    var _genre_Random__WEBPACK_IMPORTED_MODULE_14__ = __nested_webpack_require_233960__("./src/genre/Random.ts");
+    var _utils__WEBPACK_IMPORTED_MODULE_15__ = __nested_webpack_require_233960__("./src/utils.ts");
+    var _series__WEBPACK_IMPORTED_MODULE_16__ = __nested_webpack_require_233960__("./src/series.ts");
+    var _track_Segment__WEBPACK_IMPORTED_MODULE_17__ = __nested_webpack_require_233960__("./src/track/Segment.ts");
+    var _track_Sequence__WEBPACK_IMPORTED_MODULE_18__ = __nested_webpack_require_233960__("./src/track/Sequence.ts");
+    var _track_Sequences__WEBPACK_IMPORTED_MODULE_19__ = __nested_webpack_require_233960__("./src/track/Sequences.ts");
+    var _track_Roll__WEBPACK_IMPORTED_MODULE_20__ = __nested_webpack_require_233960__("./src/track/Roll.ts");
+    var _track_TrackChord__WEBPACK_IMPORTED_MODULE_21__ = __nested_webpack_require_233960__("./src/track/TrackChord.ts");
+    var _track_TrackNote__WEBPACK_IMPORTED_MODULE_22__ = __nested_webpack_require_233960__("./src/track/TrackNote.ts");
   })();
   var __webpack_export_target__ = exports;
   for (var i in __webpack_exports__)
