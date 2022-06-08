@@ -21,7 +21,7 @@ export default class SetterGetter<Static extends boolean = false> extends Import
     }, {
         isHot: false,
         type: "anything",
-        description: "Set the value"
+        description: "Set the value, bang to void"
     }];
     static outlets: IJSPatcherObjectMeta["outlets"] = [{
         type: "anything",
@@ -45,12 +45,12 @@ export default class SetterGetter<Static extends boolean = false> extends Import
     };
     initialInlets = 2;
     initialOutlets = 2;
-    _: IS<Static> = { instance: undefined, input: null, result: null };
+    _: IS<Static> = { instance: undefined, input: new Bang(), result: null };
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             if (!isBang(data)) this._.instance = data;
             if (typeof this._.instance === "undefined") return;
-            if (typeof this._.input !== "undefined") {
+            if (!isBang(this._.input)) {
                 try {
                     this._.instance[this.name] = this._.input;
                 } catch (e) {

@@ -34,7 +34,7 @@ export default class Setter<Static extends boolean = false> extends ImportedObje
     }];
     initialInlets = 2;
     initialOutlets = 1;
-    _: IS<Static> = { instance: undefined, input: null };
+    _: IS<Static> = { instance: undefined, input: undefined };
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             if (!isBang(data)) this._.instance = data;

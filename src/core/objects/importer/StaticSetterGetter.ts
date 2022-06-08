@@ -24,7 +24,7 @@ export default class StaticSetterGetter extends SetterGetter<true> {
     handleInlet = ({ data, inlet }: { data: any; inlet: number }) => {
         if (inlet === 0) {
             if (!isBang(data)) return;
-            if (typeof this._.input !== "undefined") {
+            if (!isBang(this._.input)) {
                 try {
                     this.imported = this._.input;
                 } catch (e) {
