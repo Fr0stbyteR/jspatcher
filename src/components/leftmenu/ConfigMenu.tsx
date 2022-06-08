@@ -1,8 +1,8 @@
 import * as React from "react";
-import { MenuItemProps, Menu, Icon, Header, Dropdown } from "semantic-ui-react";
+import { Icon, Dropdown } from "semantic-ui-react";
 import Env from "../../core/Env";
 import EnvOptionsManager, { EnvOptions } from "../../core/EnvOptionsManager";
-import VERSION from "../../scripts/version";
+import VERSION from "../../version";
 import EnvOptionsModal from "../modals/EnvOptionsModal";
 
 export default class ConfigMenu extends React.PureComponent<{ env: Env; lang: string }, { envOptionsModalOpen: boolean }> {

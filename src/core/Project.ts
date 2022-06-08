@@ -1,5 +1,6 @@
 import TypedEventEmitter from "../utils/TypedEventEmitter";
 import { ab2str, str2ab } from "../utils/utils";
+import VERSION from "../version";
 import type Env from "./Env";
 import type FileInstance from "./file/FileInstance";
 import type PersistentProjectFile from "./file/PersistentProjectFile";
@@ -15,6 +16,7 @@ export interface ProjectProps {
     name: string;
     author: string;
     version: string;
+    systemVersion: string;
 }
 
 export interface IProject extends TypedEventEmitter<ProjectEventMap> {
@@ -36,6 +38,11 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
             type: "string",
             description: "Current version",
             default: "0.0.0"
+        },
+        systemVersion: {
+            type: "string",
+            description: "System version",
+            default: VERSION
         }
     };
     readonly projectFilename = ".jspatproj";
@@ -44,7 +51,8 @@ export default class Project extends TypedEventEmitter<ProjectEventMap> {
     readonly props: ProjectProps = {
         name: Project.props.name.default,
         author: Project.props.author.default,
-        version: Project.props.version.default
+        version: Project.props.version.default,
+        systemVersion: Project.props.systemVersion.default
     };
     ready = false;
     get audioCtx() {

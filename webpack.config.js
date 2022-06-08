@@ -1,14 +1,19 @@
 const path = require('path');
+const fs = require("fs");
 const { DefinePlugin, ProvidePlugin } = require('webpack');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-/** @type {string} */
-const VERSION = require("./src/scripts/version");
+const { version } = require("./package.json");
+
 const internalPackagesPath = "./src/scripts/internal-packages.json";
 /** @type {string[]} */
 const INTERNAL_PACKAGES = require(internalPackagesPath);
+
+const timestamp = new Date().getTime();
+
+fs.writeFileSync(path.join(__dirname, "./src/version.ts"), `export default ${JSON.stringify(`${version}.${timestamp}`)};\n`);
 
 /** @type {import('webpack').Configuration} */
 const config = {
