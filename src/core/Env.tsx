@@ -207,7 +207,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             runtime: !!urlParams.get("runtime"),
             init: !!urlParams.get("init"),
             projectZip: urlParams.get("projectZip"),
-            file: urlParams.get("file")
+            file: urlParams.get("file"),
+            server: urlParams.get("server"),
+            room: urlParams.get("room")
         };
         this.options.noUI = urlParamsOptions.noUI;
         this.options.runtime = urlParamsOptions.runtime;
@@ -297,7 +299,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         this.audioCtx.destination.channelCount = this.audioCtx.destination.maxChannelCount;
         this.loaded = true;
         await this.emit("ready");
-        const { file } = urlParamsOptions;
+        const { file, server, room } = urlParamsOptions;
+        if (server) await this.liveShare.login(server, this.options.liveShare.nickname);
+        if (room) await this.liveShare.join(room, "", this.options.liveShare.nickname);
         if (file) {
             try {
                 const item = this.fileMgr.getProjectItemFromPath(file);

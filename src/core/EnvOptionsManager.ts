@@ -49,7 +49,7 @@ export default class EnvOptionsManager {
                 hostPassword: "",
                 hostPermission: "read",
                 joinRoomId: "",
-                nickname: "User007",
+                nickname: `User${uuid().substring(0, 3)}`,
                 joinPassword: ""
             },
             runtime: false,

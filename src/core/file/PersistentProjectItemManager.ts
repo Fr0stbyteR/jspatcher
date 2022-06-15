@@ -1,4 +1,5 @@
 import type * as JsZip from "jszip";
+import * as BSON from "bson";
 import AbstractProjectItemManager, { IProjectItemManager } from "./AbstractProjectItemManager";
 import PersistentProjectFolder from "./PersistentProjectFolder";
 import { sab2ab } from "../../utils/utils";
@@ -193,11 +194,18 @@ export default class PersistentProjectItemManager extends AbstractProjectItemMan
         for (const id in allItems) {
             const item = allItems[id] as PersistentProjectFile | PersistentProjectFolder;
             if (id === "root") continue;
-            if (item.path === "/project/.jspatproj") continue;
+            // if (item.path === "/project/.jspatproj") continue;
             if (item.isFolder === true) map[id] = { isFolder: item.isFolder, parent: item.parent?.id, name: item.name, path: item.path };
             else map[id] = { isFolder: item.isFolder, data: new Uint8Array(item.sab), lastModifiedId: item.lastModifiedId, parent: item.parent?.id, name: item.name, path: item.path };
         }
         return map;
+    }
+    async getDataHash() {
+        const bson = BSON.serialize(this.getDataForBson());
+        const hashBuffer = await crypto.subtle.digest("SHA-256", bson);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+        return hashHex;
     }
     async processBson(bson: ProjectItemManagerDataForBson) {
         const diff: ProjectItemManagerDataForDiff = {};

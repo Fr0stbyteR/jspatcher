@@ -166,10 +166,13 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
     }
     async join(roomId: string, password: string, username: string) {
         const timestamp = getTimestamp();
-        const { roomInfo, project } = await this.client.joinRoom(roomId, username, password, timestamp);
+        const currentProjectHash = await this.env.fileMgr.getDataHash();
+        const { roomInfo, project } = await this.client.joinRoom(roomId, username, password, timestamp, currentProjectHash);
         this.setState({ roomInfo });
-        await this.env.newProject(project.props);
-        await this.env.fileMgr.processBson(project.items);
+        if (project.items) {
+            await this.env.newProject(project.props);
+            await this.env.fileMgr.processBson(project.items);
+        }
         this.objectState = project.objectState;
         for (const key in project.history) {
             const history = project.history[key];
@@ -191,7 +194,8 @@ export default class LiveShare extends TypedEventEmitter<LiveShareEventMap> {
             history,
             objectState: this.objectState
         };
-        const { roomInfo } = await this.client.hostRoom(roomId, password, getTimestamp(), permission, project);
+        const currentProjectHash = await this.env.fileMgr.getDataHash();
+        const { roomInfo } = await this.client.hostRoom(roomId, password, getTimestamp(), permission, project, currentProjectHash);
         this.setState({ roomInfo });
     }
     async leaveRoom() {

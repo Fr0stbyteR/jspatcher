@@ -4,7 +4,7 @@ import type { ProjectItemManagerDataForBson } from "./file/PersistentProjectItem
 import type { ProjectProps } from "./Project";
 
 export interface LiveShareProject {
-    items: ProjectItemManagerDataForBson;
+    items?: ProjectItemManagerDataForBson;
     props: ProjectProps;
     history: Record<string, IHistoryEvent[]>;
     objectState: Record<string, Record<string, any>>;
@@ -38,8 +38,8 @@ export interface ILiveShareServer {
     reportPing(ping: number): Record<string, number>;
     login(timestamp: number, nickname: string, username?: string, password?: string): string;
     logout(): void;
-    hostRoom(roomId: string, password: string, timestamp: number, permission: "read" | "write", project: LiveShareProject): { roomInfo: RoomInfo };
-    joinRoom(roomId: string, username: string, password: string, timestamp: number): { roomInfo: RoomInfo; project: LiveShareProject };
+    hostRoom(roomId: string, password: string, timestamp: number, permission: "read" | "write", project: LiveShareProject, currentProjectHash: string): { roomInfo: RoomInfo };
+    joinRoom(roomId: string, username: string, password: string, timestamp: number, currentProjectHash: string): { roomInfo: RoomInfo; project: LiveShareProject };
     transferOwnership(roomId: string, toClientId: string): RoomInfo;
     leaveRoom(roomId: string): void;
     closeRoom(roomId: string): void;
