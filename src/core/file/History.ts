@@ -53,11 +53,13 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         editor.onAny(this.handleEditorEvent);
         editor.on("saved", this.handleSaved);
         editor.once("destroy", () => this.removeEditor(editor));
+        /*
         editor.once("ready", async () => {
             const { $ } = this;
             this.$ = 0;
             if ($) await this.redoUntil(this.eventQueue[$ - 1].timestamp);
         });
+        */
     }
     removeEditor(editor: Editor) {
         editor.offAny(this.handleEditorEvent);

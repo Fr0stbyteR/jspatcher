@@ -48,7 +48,6 @@ export default class PluginManagerUI extends React.PureComponent<P, S> {
             ...pluginsState
         } as S;
     })();
-    uiMap: WeakMap<WebAudioModule, Element> = new WeakMap();
     get strings() {
         return I18n[this.props.lang].PluginManagerUI;
     }
@@ -83,9 +82,7 @@ export default class PluginManagerUI extends React.PureComponent<P, S> {
     };
     handleAddPlugin = async (url: string, index: number) => {
         try {
-            const plugin = await this.state.editor.addPlugin(url, index);
-            const element = await plugin.createGui();
-            if (element) this.uiMap.set(plugin, element);
+            await this.state.editor.addPlugin(url, index);
             this.state.editor.setPluginShowing(index, true);
         } catch (e) {
             this.setState({ addPluginError: (e as Error).message });
@@ -96,9 +93,7 @@ export default class PluginManagerUI extends React.PureComponent<P, S> {
     handleAddPluginModalClose = () => this.setState({ addPluginModalOpen: -1 });
     handleClickDelete = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         const index = +(e.currentTarget.parentElement.parentElement.firstChild as HTMLSpanElement).innerHTML - 1;
-        const plugin = this.state.plugins[index];
-        const gui = this.uiMap.get(plugin);
-        plugin.destroyGui(gui);
+        this.handleClickPluginClose(index);
         this.state.editor.removePlugin(index);
     };
     handleClickPluginShow = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
@@ -127,7 +122,7 @@ export default class PluginManagerUI extends React.PureComponent<P, S> {
         this.state.editor.setPostFxGain(gain);
     };
     get list() {
-        const { plugins, pluginsEnabled } = this.state;
+        const { plugins, pluginsEnabled, pluginsShowing } = this.state;
         return plugins.map((plugin, i) => {
             const hasPlugin = !!plugin;
             const enabled = hasPlugin && pluginsEnabled[i];
@@ -148,8 +143,8 @@ export default class PluginManagerUI extends React.PureComponent<P, S> {
                         }
                     </span>
                     <AddPluginModal {...this.props} index={i} open={this.state.addPluginModalOpen === i} onClose={this.handleAddPluginModalClose} onConfirm={this.handleAddPlugin} error={this.state.addPluginError} />
-                    {this.uiMap.has(plugin)
-                        ? <PluginContainer index={i} pluginUI={this.uiMap.get(plugin)} hidden={!this.state.pluginsShowing[i]} name={plugin.name} onClose={this.handleClickPluginClose} />
+                    {pluginsShowing[i]
+                        ? <PluginContainer index={i} plugin={plugin} hidden={!this.state.pluginsShowing[i]} name={plugin.name} onClose={this.handleClickPluginClose} />
                         : undefined
                     }
                 </div>

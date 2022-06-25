@@ -1,14 +1,20 @@
+import { WebAudioModule } from "@webaudiomodules/api";
 import * as React from "react";
 
 export interface Props {
     index: number;
     name: string;
-    pluginUI: Element;
+    plugin: WebAudioModule;
     hidden: boolean;
     onClose: (index: number) => any;
 }
 
-export default class PluginContainer extends React.PureComponent<Props> {
+export interface State {
+    pluginUI: Element;
+}
+
+export default class PluginContainer extends React.PureComponent<Props, State> {
+    state: State = { pluginUI: undefined };
     // root: ShadowRoot;
     container = this.createContainer();
     rootContainer = this.createRootContainer();
@@ -74,7 +80,7 @@ export default class PluginContainer extends React.PureComponent<Props> {
         button.appendChild(i);
         return button;
     }
-    componentDidMount() {
+    async componentDidMount() {
         this.titleSpan.appendChild(this.nameSpan);
         this.titleSpan.appendChild(this.closeButton);
         this.container.appendChild(this.titleSpan);
@@ -85,14 +91,16 @@ export default class PluginContainer extends React.PureComponent<Props> {
         // const root = this.rootContainer.attachShadow({ mode: "open" });
         // this.root = root;
         if (this.props.hidden) this.container.classList.add("hidden");
-        if (this.props.pluginUI) this.rootContainer.appendChild(this.props.pluginUI);
+        this.setState({ pluginUI: await this.props.plugin.createGui() });
     }
     componentWillUnmount() {
         this.closeButton.removeEventListener("click", this.handleClose);
         this.nameSpan.removeEventListener("mousedown", this.handleNameMouseDown);
         document.body.removeChild(this.container);
+        this.props.onClose(this.props.index);
+        if (this.state.pluginUI) this.props.plugin.destroyGui(this.state.pluginUI);
     }
-    componentDidUpdate(prevProps: Readonly<Props>) {
+    async componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
         if (this.props.hidden !== prevProps.hidden) {
             if (this.props.hidden) this.container.classList.add("hidden");
             else this.container.classList.remove("hidden");
@@ -101,9 +109,13 @@ export default class PluginContainer extends React.PureComponent<Props> {
             this.nameSpan.innerText = this.props.name;
         }
         if (!this.rootContainer) return;
-        if (this.props.pluginUI !== prevProps.pluginUI) {
+        if (this.props.plugin !== prevProps.plugin) {
+            if (this.state.pluginUI) this.props.plugin.destroyGui(this.state.pluginUI);
+            this.setState({ pluginUI: await this.props.plugin.createGui() });
+        }
+        if (this.state.pluginUI !== prevState.pluginUI) {
             this.rootContainer.innerHTML = "";
-            this.rootContainer.appendChild(this.props.pluginUI);
+            if (this.state.pluginUI) this.rootContainer.appendChild(this.state.pluginUI);
         }
     }
     render() {

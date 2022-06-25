@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import type * as Faust from "@shren/faustwasm";
+import type { Csound } from "@csound/browser";
 import { VERSION as wamApiVersion } from "@webaudiomodules/api";
 import { addFunctionModule, initializeWamEnv, initializeWamGroup } from "@webaudiomodules/sdk";
 import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitter";
@@ -111,6 +112,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     faustDocs: TFaustDocs;
     // faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
+    Csound: typeof Csound;
     pkgMgr: GlobalPackageManager;
     audioClipboard: PatcherAudio;
     loaded = false;
@@ -198,6 +200,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         return this.taskMgr.newTask(this, "Loading FFTW...", async () => {
             await this.fftwWorker.init();
             return this.fftwWorker;
+        });
+    }
+    async getCsound() {
+        return this.taskMgr.newTask(this, "Loading Csound...", async () => {
+            this.Csound = (await import("@csound/browser")).Csound;
+            return this.Csound;
         });
     }
     async init() {

@@ -18,6 +18,7 @@
   "license": "GPL-3.0-or-later",
   "repository": "https://github.com/fr0stbyter/jspatcher",
   "devDependencies": {
+    "@csound/browser": "^6.17.1",
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
     "@grame/libmusicxml": "^3.19.1",
