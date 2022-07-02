@@ -31,7 +31,7 @@ export default class GlobalPackageManager {
     readonly externals = new Map<string, Record<string, any>>();
     readonly importedPackages: IExternalPackage[] = [];
     get builtInPackagesNames() {
-        return [...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "Base", "globalThis", "API", "Faust", "stdfaust.lib"];
+        return [...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "Base", "globalThis", "API", "Faust", "Csound", "stdfaust.lib"];
     }
     get externalPackagesNames() {
         return this.importedPackages.filter(p => !p.isBuiltIn).map(p => p.name);
@@ -80,6 +80,7 @@ export default class GlobalPackageManager {
         this.add(await (await import("./objects/globalThis/index.jspatpkg")).default(), "js", ["globalThis"]);
         this.add(await (await import("./objects/api/index.jspatpkg")).default(), "js", ["API"]);
         this.add(await (await import("./objects/faust/index.jspatpkg")).default(this.env), "js", ["Faust"]);
+        this.add(await (await import("./objects/csound/index.jspatpkg")).default(this.env), "js", ["Csound"]);
     }
     add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();
