@@ -22,7 +22,7 @@ const json = __webpack_require__(/*! ../package.json */ "./package.json");
   \**********************/
 /***/ ((module) => {
 
-module.exports = "{\n  \"name\": \"@jspatcher/package-dsp\",\n  \"version\": \"1.0.0\",\n  \"description\": \"The DSP package for JSPatcher\",\n  \"main\": \"dist/index.js\",\n  \"scripts\": {\n    \"prebuild\": \"node src/scripts/build-faust.js\",\n    \"build\": \"webpack --mode development\",\n    \"build-watch\": \"webpack --mode development --watch --stats-children\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/jspatcher/package-dsp.git\"\n  },\n  \"keywords\": [\n    \"jspatcher\"\n  ],\n  \"jspatcher\": {\n    \"isJSPatcherPackage\": true,\n    \"thumbnail\": \"\",\n    \"jspatpkg\": \"index.jspatpkg.js\"\n  },\n  \"author\": \"Fr0stbyteR\",\n  \"license\": \"GPL-3.0-or-later\",\n  \"bugs\": {\n    \"url\": \"https://github.com/jspatcher/package-dsp/issues\"\n  },\n  \"homepage\": \"https://github.com/jspatcher/package-dsp#readme\",\n  \"devDependencies\": {\n    \"@jspatcher/jspatcher\": \"^0.0.9\",\n    \"@shren/faustwasm\": \"^0.0.12\",\n    \"clean-webpack-plugin\": \"^4.0.0\",\n    \"esbuild-loader\": \"^2.16.0\",\n    \"typescript\": \"^4.4.4\",\n    \"webpack\": \"^5.64.1\",\n    \"webpack-cli\": \"^4.9.1\"\n  }\n}\n";
+module.exports = "{\n  \"name\": \"@jspatcher/package-dsp\",\n  \"version\": \"1.0.1\",\n  \"description\": \"The DSP package for JSPatcher\",\n  \"main\": \"dist/index.js\",\n  \"scripts\": {\n    \"prebuild\": \"node src/scripts/build-faust.js\",\n    \"build\": \"webpack --mode development\",\n    \"build-watch\": \"webpack --mode development --watch --stats-children\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/jspatcher/package-dsp.git\"\n  },\n  \"keywords\": [\n    \"jspatcher\"\n  ],\n  \"jspatcher\": {\n    \"isJSPatcherPackage\": true,\n    \"thumbnail\": \"\",\n    \"jspatpkg\": \"index.jspatpkg.js\"\n  },\n  \"author\": \"Fr0stbyteR\",\n  \"license\": \"GPL-3.0-or-later\",\n  \"bugs\": {\n    \"url\": \"https://github.com/jspatcher/package-dsp/issues\"\n  },\n  \"homepage\": \"https://github.com/jspatcher/package-dsp#readme\",\n  \"devDependencies\": {\n    \"@jspatcher/jspatcher\": \"^0.0.9\",\n    \"@shren/faustwasm\": \"^0.0.19\",\n    \"clean-webpack-plugin\": \"^4.0.0\",\n    \"esbuild-loader\": \"^2.16.0\",\n    \"typescript\": \"^4.4.4\",\n    \"webpack\": \"^5.64.1\",\n    \"webpack-cli\": \"^4.9.1\"\n  }\n}\n";
 
 /***/ })
 
@@ -90,14 +90,14 @@ var __webpack_exports__ = {};
   \**********************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "name": () => (/* binding */ name),
 /* harmony export */   "author": () => (/* binding */ author),
-/* harmony export */   "license": () => (/* binding */ license),
-/* harmony export */   "keywords": () => (/* binding */ keywords),
-/* harmony export */   "version": () => (/* binding */ version),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "description": () => (/* binding */ description),
 /* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "keywords": () => (/* binding */ keywords),
+/* harmony export */   "license": () => (/* binding */ license),
+/* harmony export */   "name": () => (/* binding */ name),
+/* harmony export */   "version": () => (/* binding */ version)
 /* harmony export */ });
 /* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
 var __defProp = Object.defineProperty;
