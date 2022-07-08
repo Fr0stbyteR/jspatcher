@@ -67,7 +67,7 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-d5785303'], (function (workbox) { 'use strict';
+define(['./workbox-f313b8eb'], (function (workbox) { 'use strict';
 
   /**
   * Welcome to your Workbox-powered service worker!
@@ -81,6 +81,9 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
   * See https://goo.gl/2aRDsh
   */
 
+  workbox.setCacheNameDetails({
+    prefix: "JSPatcher"
+  });
   self.skipWaiting();
   workbox.clientsClaim();
   /**
@@ -316,7 +319,7 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "6beb75df841444cf7dc25e8a75960228"
+    "revision": "5110ac5c7237f65a11557e0a87dbc3a1"
   }, {
     "url": "js/017d998140f1ad199103.worker.js",
     "revision": null
@@ -331,6 +334,9 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "revision": null
   }, {
     "url": "js/0a763945e9f4eb8d5543.js",
+    "revision": null
+  }, {
+    "url": "js/0aa8a692bd71da49dd36.worklet.js",
     "revision": null
   }, {
     "url": "js/1b130d9deb0c69ced1ab.worklet.js",
@@ -423,9 +429,6 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "js/e05b5ec401b9493def27.worker.js",
     "revision": null
   }, {
-    "url": "js/e3e4020909ed87703f00.worklet.js",
-    "revision": null
-  }, {
     "url": "js/e420ff6929ac4dee4f98.worker.js",
     "revision": null
   }, {
@@ -460,16 +463,16 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "revision": "a07d822052f82b81bf48230fbb81e078"
   }, {
     "url": "packages/cac/index.js",
-    "revision": "7ec52ba9573ad70301d290898ece61c1"
+    "revision": "305cb6372f8c9ffe4c51d6844ff167c1"
   }, {
     "url": "packages/cac/index.jspatpkg.js",
-    "revision": "9f3f895ba1dab5a482e5ccb150c0a6e4"
+    "revision": "fe9e7c00a6068eabc2455292b6008b33"
   }, {
     "url": "packages/dsp/index.js",
     "revision": "7c39aec8b6a21c8ed37f5e0fe65ea10a"
   }, {
     "url": "packages/dsp/index.jspatpkg.js",
-    "revision": "7143ba59d2c031eb178c815faeff0768"
+    "revision": "100c75105dd7cf252719df32109dfc2d"
   }, {
     "url": "packages/internal-packages.json",
     "revision": "95e8ad0b02143d69cb4c2fa71d8d14c9"
@@ -522,28 +525,28 @@ define(['./workbox-d5785303'], (function (workbox) { 'use strict';
     "url": "packages/webaudio/index.jspatpkg.js",
     "revision": "01193be29c15ac36f796f5af9c3f8485"
   }, {
-    "url": "src_core_audio_AudioEditor_ts-src_core_audio_AudioRecorder_ts-src_core_audio_PatcherAudio_ts.js/e3e4020909ed87703f00.worklet.js",
+    "url": "src_core_audio_AudioEditor_ts-src_core_audio_AudioRecorder_ts-src_core_audio_PatcherAudio_ts.js/0aa8a692bd71da49dd36.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_image_ImageEditor_ts.js/e3e4020909ed87703f00.worklet.js",
+    "url": "src_core_image_ImageEditor_ts.js/0aa8a692bd71da49dd36.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_image_PatcherImage_ts.js/e3e4020909ed87703f00.worklet.js",
+    "url": "src_core_image_PatcherImage_ts.js/0aa8a692bd71da49dd36.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_text_PatcherText_ts.js/e3e4020909ed87703f00.worklet.js",
+    "url": "src_core_text_PatcherText_ts.js/0aa8a692bd71da49dd36.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_text_TextEditor_ts.js/e3e4020909ed87703f00.worklet.js",
+    "url": "src_core_text_TextEditor_ts.js/0aa8a692bd71da49dd36.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_video_PatcherVideo_ts.js/e3e4020909ed87703f00.worklet.js",
+    "url": "src_core_video_PatcherVideo_ts.js/0aa8a692bd71da49dd36.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_video_VideoEditor_ts.js/e3e4020909ed87703f00.worklet.js",
+    "url": "src_core_video_VideoEditor_ts.js/0aa8a692bd71da49dd36.worklet.js",
     "revision": null
   }, {
-    "url": "src_core_worklets_PatcherNode_ts.js/e3e4020909ed87703f00.worklet.js",
+    "url": "src_core_worklets_PatcherNode_ts.js/0aa8a692bd71da49dd36.worklet.js",
     "revision": null
   }], {});
   workbox.cleanupOutdatedCaches();

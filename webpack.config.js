@@ -125,6 +125,7 @@ const config = {
       globalAPI: true
     }),
     new WorkboxWebpackPlugin.GenerateSW({
+      cacheId: "JSPatcher",
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       skipWaiting: true,

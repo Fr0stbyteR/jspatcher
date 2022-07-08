@@ -19,6 +19,16 @@ export default class ConfigMenu extends React.PureComponent<{ env: Env; lang: st
     onResetEnvOptionsModal = () => {
         this.props.env.options = EnvOptionsManager.defaultOptions;
     };
+    onReload = async () => {
+        if ("serviceWorker" in navigator) {
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration) registration.unregister();
+        }
+        const cacheNames = await caches.keys();
+        const cacheName = cacheNames.find(n => n.includes("JSPatcher"));
+        if (cacheName) await caches.delete(cacheName);
+        window.location.reload();
+    };
     render() {
         return (
             <>
@@ -27,6 +37,7 @@ export default class ConfigMenu extends React.PureComponent<{ env: Env; lang: st
                         <Dropdown.Item onClick={() => this.setState({ envOptionsModalOpen: true })} text="Options..." />
                         <Dropdown.Item href="https://github.com/fr0stbyter/jspatcher" target="_blank" text="Visit GitHub" />
                         <Dropdown.Item disabled text={`Version: ${VERSION}`} />
+                        <Dropdown.Item onClick={this.onReload} text="Force Reload" />
                     </Dropdown.Menu>
                 </Dropdown>
                 <EnvOptionsModal {...this.props} open={this.state.envOptionsModalOpen} onReset={this.onResetEnvOptionsModal} onClose={this.onCloseEnvOptionsModal} onConfirm={this.onConfirmEnvOptionsModal} />

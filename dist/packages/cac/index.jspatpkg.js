@@ -10,14 +10,14 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "name": () => (/* binding */ name),
 /* harmony export */   "author": () => (/* binding */ author),
-/* harmony export */   "license": () => (/* binding */ license),
-/* harmony export */   "keywords": () => (/* binding */ keywords),
-/* harmony export */   "version": () => (/* binding */ version),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "description": () => (/* binding */ description),
 /* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "keywords": () => (/* binding */ keywords),
+/* harmony export */   "license": () => (/* binding */ license),
+/* harmony export */   "name": () => (/* binding */ name),
+/* harmony export */   "version": () => (/* binding */ version)
 /* harmony export */ });
 /* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
 var __defProp = Object.defineProperty;
@@ -451,36 +451,36 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Bang": () => (/* binding */ Bang),
+/* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
+/* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
+/* harmony export */   "Box": () => (/* binding */ Box),
+/* harmony export */   "BufferUtils": () => (/* binding */ BufferUtils),
+/* harmony export */   "CanvasUI": () => (/* binding */ CanvasUI),
+/* harmony export */   "CodePopupUI": () => (/* binding */ CodePopupUI),
+/* harmony export */   "CodeUI": () => (/* binding */ CodeUI),
+/* harmony export */   "DOMUI": () => (/* binding */ DOMUI),
+/* harmony export */   "DefaultImporter": () => (/* binding */ DefaultImporter),
+/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
+/* harmony export */   "DefaultPopupUI": () => (/* binding */ DefaultPopupUI),
+/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
+/* harmony export */   "Line": () => (/* binding */ Line),
+/* harmony export */   "MathUtils": () => (/* binding */ MathUtils),
+/* harmony export */   "OperableAudioBuffer": () => (/* binding */ OperableAudioBuffer),
+/* harmony export */   "Patcher": () => (/* binding */ Patcher),
+/* harmony export */   "PatcherAudio": () => (/* binding */ PatcherAudio),
 /* harmony export */   "React": () => (/* binding */ React),
 /* harmony export */   "ReactDOM": () => (/* binding */ ReactDOM),
 /* harmony export */   "SemanticUI": () => (/* binding */ SemanticUI),
-/* harmony export */   "PatcherAudio": () => (/* binding */ PatcherAudio),
-/* harmony export */   "OperableAudioBuffer": () => (/* binding */ OperableAudioBuffer),
-/* harmony export */   "Patcher": () => (/* binding */ Patcher),
-/* harmony export */   "Box": () => (/* binding */ Box),
-/* harmony export */   "Line": () => (/* binding */ Line),
-/* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
-/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
-/* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
-/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
-/* harmony export */   "CanvasUI": () => (/* binding */ CanvasUI),
-/* harmony export */   "CodeUI": () => (/* binding */ CodeUI),
-/* harmony export */   "DefaultPopupUI": () => (/* binding */ DefaultPopupUI),
-/* harmony export */   "CodePopupUI": () => (/* binding */ CodePopupUI),
-/* harmony export */   "DOMUI": () => (/* binding */ DOMUI),
+/* harmony export */   "SpectralAnalyserNode": () => (/* binding */ SpectralAnalyserNode),
+/* harmony export */   "TemporalAnalyserNode": () => (/* binding */ TemporalAnalyserNode),
+/* harmony export */   "TransmitterNode": () => (/* binding */ TransmitterNode),
+/* harmony export */   "Utils": () => (/* binding */ Utils),
 /* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
 /* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
 /* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
-/* harmony export */   "Bang": () => (/* binding */ Bang),
-/* harmony export */   "isBang": () => (/* binding */ isBang),
-/* harmony export */   "TransmitterNode": () => (/* binding */ TransmitterNode),
-/* harmony export */   "TemporalAnalyserNode": () => (/* binding */ TemporalAnalyserNode),
-/* harmony export */   "SpectralAnalyserNode": () => (/* binding */ SpectralAnalyserNode),
-/* harmony export */   "MathUtils": () => (/* binding */ MathUtils),
-/* harmony export */   "BufferUtils": () => (/* binding */ BufferUtils),
-/* harmony export */   "Utils": () => (/* binding */ Utils),
-/* harmony export */   "DefaultImporter": () => (/* binding */ DefaultImporter),
-/* harmony export */   "getReactMonacoEditor": () => (/* binding */ getReactMonacoEditor)
+/* harmony export */   "getReactMonacoEditor": () => (/* binding */ getReactMonacoEditor),
+/* harmony export */   "isBang": () => (/* binding */ isBang)
 /* harmony export */ });
 const sdk = globalThis.jspatcherEnv.sdk;
 const {
@@ -598,8 +598,8 @@ const {
         obj[exports2.controlChangeNames[key]] = key;
         return obj;
       }, {});
-      var privateHeaderMap = new WeakMap();
-      var privateCCNumberMap = new WeakMap();
+      var privateHeaderMap = /* @__PURE__ */ new WeakMap();
+      var privateCCNumberMap = /* @__PURE__ */ new WeakMap();
       var ControlChange = function() {
         function ControlChange2(event, header) {
           privateHeaderMap.set(this, header);
@@ -869,7 +869,7 @@ const {
       "use strict";
       Object.defineProperty(exports2, "__esModule", { value: true });
       var BinarySearch_1 = __webpack_require__2("./node_modules/@tonejs/midi/dist/BinarySearch.js");
-      var privatePPQMap = new WeakMap();
+      var privatePPQMap = /* @__PURE__ */ new WeakMap();
       exports2.keySignatureKeys = [
         "Cb",
         "Gb",
@@ -1057,7 +1057,7 @@ const {
       "use strict";
       Object.defineProperty(exports2, "__esModule", { value: true });
       var InstrumentMaps_1 = __webpack_require__2("./node_modules/@tonejs/midi/dist/InstrumentMaps.js");
-      var privateTrackMap = new WeakMap();
+      var privateTrackMap = /* @__PURE__ */ new WeakMap();
       var Instrument = function() {
         function Instrument2(trackData, track) {
           this.number = 0;
@@ -1517,7 +1517,7 @@ const {
         var newTracks = [];
         for (var i2 = 0; i2 < tracks.length; i2++) {
           var defaultTrack = newTracks.length;
-          var trackMap = new Map();
+          var trackMap = /* @__PURE__ */ new Map();
           var currentProgram = Array(16).fill(0);
           for (var _i = 0, _a = tracks[i2]; _i < _a.length; _i++) {
             var event_1 = _a[_i];
@@ -1608,7 +1608,7 @@ const {
           return index + (parseInt(octave, 10) + 1) * 12;
         };
       }();
-      var privateHeaderMap = new WeakMap();
+      var privateHeaderMap = /* @__PURE__ */ new WeakMap();
       var Note = function() {
         function Note2(noteOn, noteOff, header) {
           privateHeaderMap.set(this, header);
@@ -1700,7 +1700,7 @@ const {
     "./node_modules/@tonejs/midi/dist/PitchBend.js": (__unused_webpack_module, exports2) => {
       "use strict";
       Object.defineProperty(exports2, "__esModule", { value: true });
-      var privateHeaderMap = new WeakMap();
+      var privateHeaderMap = /* @__PURE__ */ new WeakMap();
       var PitchBend = function() {
         function PitchBend2(event, header) {
           privateHeaderMap.set(this, header);
@@ -1739,7 +1739,7 @@ const {
       var PitchBend_1 = __webpack_require__2("./node_modules/@tonejs/midi/dist/PitchBend.js");
       var Instrument_1 = __webpack_require__2("./node_modules/@tonejs/midi/dist/Instrument.js");
       var Note_1 = __webpack_require__2("./node_modules/@tonejs/midi/dist/Note.js");
-      var privateHeaderMap = new WeakMap();
+      var privateHeaderMap = /* @__PURE__ */ new WeakMap();
       var Track = function() {
         function Track2(trackData, header) {
           var _this = this;
@@ -4653,10 +4653,19 @@ const {
         async toGuidoAR(factory) {
           factory.openMusic();
           factory.openVoice();
+          const t = new _Duration__WEBPACK_IMPORTED_MODULE_1__["default"](0, 4);
           for (const trackChord of this) {
+            if (!trackChord.offset.equals(t)) {
+              const silenceDuration = trackChord.offset.clone().sub(t);
+              factory.openEvent("_");
+              factory.setDuration(silenceDuration.numerator, silenceDuration.denominator);
+              factory.closeEvent();
+              t.add(silenceDuration);
+            }
             factory.openChord();
             if (!trackChord.trackNotes.length) {
               factory.openEvent("_");
+              factory.setDuration(trackChord.duration.numerator, trackChord.duration.denominator);
               factory.closeEvent();
             } else {
               for (const trackNote of trackChord) {
@@ -4664,6 +4673,7 @@ const {
               }
             }
             factory.closeChord();
+            t.add(trackChord.duration);
           }
           factory.closeVoice();
           return factory.closeMusic();
@@ -4898,6 +4908,17 @@ const {
             });
           });
           return midi.toArray();
+        }
+        async openGuidoEvent(factory, durationIn, close = true) {
+          if (this.trackNotes.length) {
+            for (const trackNote of this) {
+              trackNote.pitch.openGuidoEvent(factory, this.duration);
+            }
+          } else {
+            factory.openEvent("_");
+            factory.setDuration(durationIn.numerator, durationIn.denominator);
+            factory.closeEvent();
+          }
         }
         *[Symbol.iterator]() {
           for (const trackNote of this.trackNotes) {
@@ -6509,7 +6530,7 @@ const {
     }
   };
   var __webpack_module_cache__ = {};
-  function __nested_webpack_require_233960__(moduleId) {
+  function __nested_webpack_require_235069__(moduleId) {
     var cachedModule = __webpack_module_cache__[moduleId];
     if (cachedModule !== void 0) {
       return cachedModule.exports;
@@ -6519,39 +6540,39 @@ const {
       loaded: false,
       exports: {}
     };
-    __webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_233960__);
+    __webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_235069__);
     module.loaded = true;
     return module.exports;
   }
   (() => {
-    __nested_webpack_require_233960__.amdD = function() {
+    __nested_webpack_require_235069__.amdD = function() {
       throw new Error("define cannot be used indirect");
     };
   })();
   (() => {
-    __nested_webpack_require_233960__.amdO = {};
+    __nested_webpack_require_235069__.amdO = {};
   })();
   (() => {
-    __nested_webpack_require_233960__.n = (module) => {
+    __nested_webpack_require_235069__.n = (module) => {
       var getter = module && module.__esModule ? () => module["default"] : () => module;
-      __nested_webpack_require_233960__.d(getter, { a: getter });
+      __nested_webpack_require_235069__.d(getter, { a: getter });
       return getter;
     };
   })();
   (() => {
-    __nested_webpack_require_233960__.d = (exports2, definition) => {
+    __nested_webpack_require_235069__.d = (exports2, definition) => {
       for (var key in definition) {
-        if (__nested_webpack_require_233960__.o(definition, key) && !__nested_webpack_require_233960__.o(exports2, key)) {
+        if (__nested_webpack_require_235069__.o(definition, key) && !__nested_webpack_require_235069__.o(exports2, key)) {
           Object.defineProperty(exports2, key, { enumerable: true, get: definition[key] });
         }
       }
     };
   })();
   (() => {
-    __nested_webpack_require_233960__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+    __nested_webpack_require_235069__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
   })();
   (() => {
-    __nested_webpack_require_233960__.r = (exports2) => {
+    __nested_webpack_require_235069__.r = (exports2) => {
       if (typeof Symbol !== "undefined" && Symbol.toStringTag) {
         Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
       }
@@ -6559,7 +6580,7 @@ const {
     };
   })();
   (() => {
-    __nested_webpack_require_233960__.nmd = (module) => {
+    __nested_webpack_require_235069__.nmd = (module) => {
       module.paths = [];
       if (!module.children)
         module.children = [];
@@ -6572,8 +6593,8 @@ const {
     /*!**********************!*\
       !*** ./src/index.ts ***!
       \**********************/
-    __nested_webpack_require_233960__.r(__webpack_exports__);
-    __nested_webpack_require_233960__.d(__webpack_exports__, {
+    __nested_webpack_require_235069__.r(__webpack_exports__);
+    __nested_webpack_require_235069__.d(__webpack_exports__, {
       "Articulation": () => _Articulation__WEBPACK_IMPORTED_MODULE_0__["default"],
       "Chord": () => _Chord__WEBPACK_IMPORTED_MODULE_1__["default"],
       "Color": () => _Color__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -6598,29 +6619,29 @@ const {
       "Utils": () => _utils__WEBPACK_IMPORTED_MODULE_15__["default"],
       "Series": () => _series__WEBPACK_IMPORTED_MODULE_16__["default"]
     });
-    var _Articulation__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_233960__("./src/Articulation.ts");
-    var _Chord__WEBPACK_IMPORTED_MODULE_1__ = __nested_webpack_require_233960__("./src/Chord.ts");
-    var _Color__WEBPACK_IMPORTED_MODULE_2__ = __nested_webpack_require_233960__("./src/Color.ts");
-    var _Duration__WEBPACK_IMPORTED_MODULE_3__ = __nested_webpack_require_233960__("./src/Duration.ts");
-    var _Frequency__WEBPACK_IMPORTED_MODULE_4__ = __nested_webpack_require_233960__("./src/Frequency.ts");
-    var _Interval__WEBPACK_IMPORTED_MODULE_5__ = __nested_webpack_require_233960__("./src/Interval.ts");
-    var _Note__WEBPACK_IMPORTED_MODULE_6__ = __nested_webpack_require_233960__("./src/Note.ts");
-    var _Param__WEBPACK_IMPORTED_MODULE_7__ = __nested_webpack_require_233960__("./src/Param.ts");
-    var _Pitch__WEBPACK_IMPORTED_MODULE_8__ = __nested_webpack_require_233960__("./src/Pitch.ts");
-    var _Scale__WEBPACK_IMPORTED_MODULE_9__ = __nested_webpack_require_233960__("./src/Scale.ts");
-    var _TimeCode__WEBPACK_IMPORTED_MODULE_10__ = __nested_webpack_require_233960__("./src/TimeCode.ts");
-    var _TonalChord__WEBPACK_IMPORTED_MODULE_11__ = __nested_webpack_require_233960__("./src/TonalChord.ts");
-    var _Tonality__WEBPACK_IMPORTED_MODULE_12__ = __nested_webpack_require_233960__("./src/Tonality.ts");
-    var _Velocity__WEBPACK_IMPORTED_MODULE_13__ = __nested_webpack_require_233960__("./src/Velocity.ts");
-    var _genre_Random__WEBPACK_IMPORTED_MODULE_14__ = __nested_webpack_require_233960__("./src/genre/Random.ts");
-    var _utils__WEBPACK_IMPORTED_MODULE_15__ = __nested_webpack_require_233960__("./src/utils.ts");
-    var _series__WEBPACK_IMPORTED_MODULE_16__ = __nested_webpack_require_233960__("./src/series.ts");
-    var _track_Segment__WEBPACK_IMPORTED_MODULE_17__ = __nested_webpack_require_233960__("./src/track/Segment.ts");
-    var _track_Sequence__WEBPACK_IMPORTED_MODULE_18__ = __nested_webpack_require_233960__("./src/track/Sequence.ts");
-    var _track_Sequences__WEBPACK_IMPORTED_MODULE_19__ = __nested_webpack_require_233960__("./src/track/Sequences.ts");
-    var _track_Roll__WEBPACK_IMPORTED_MODULE_20__ = __nested_webpack_require_233960__("./src/track/Roll.ts");
-    var _track_TrackChord__WEBPACK_IMPORTED_MODULE_21__ = __nested_webpack_require_233960__("./src/track/TrackChord.ts");
-    var _track_TrackNote__WEBPACK_IMPORTED_MODULE_22__ = __nested_webpack_require_233960__("./src/track/TrackNote.ts");
+    var _Articulation__WEBPACK_IMPORTED_MODULE_0__ = __nested_webpack_require_235069__("./src/Articulation.ts");
+    var _Chord__WEBPACK_IMPORTED_MODULE_1__ = __nested_webpack_require_235069__("./src/Chord.ts");
+    var _Color__WEBPACK_IMPORTED_MODULE_2__ = __nested_webpack_require_235069__("./src/Color.ts");
+    var _Duration__WEBPACK_IMPORTED_MODULE_3__ = __nested_webpack_require_235069__("./src/Duration.ts");
+    var _Frequency__WEBPACK_IMPORTED_MODULE_4__ = __nested_webpack_require_235069__("./src/Frequency.ts");
+    var _Interval__WEBPACK_IMPORTED_MODULE_5__ = __nested_webpack_require_235069__("./src/Interval.ts");
+    var _Note__WEBPACK_IMPORTED_MODULE_6__ = __nested_webpack_require_235069__("./src/Note.ts");
+    var _Param__WEBPACK_IMPORTED_MODULE_7__ = __nested_webpack_require_235069__("./src/Param.ts");
+    var _Pitch__WEBPACK_IMPORTED_MODULE_8__ = __nested_webpack_require_235069__("./src/Pitch.ts");
+    var _Scale__WEBPACK_IMPORTED_MODULE_9__ = __nested_webpack_require_235069__("./src/Scale.ts");
+    var _TimeCode__WEBPACK_IMPORTED_MODULE_10__ = __nested_webpack_require_235069__("./src/TimeCode.ts");
+    var _TonalChord__WEBPACK_IMPORTED_MODULE_11__ = __nested_webpack_require_235069__("./src/TonalChord.ts");
+    var _Tonality__WEBPACK_IMPORTED_MODULE_12__ = __nested_webpack_require_235069__("./src/Tonality.ts");
+    var _Velocity__WEBPACK_IMPORTED_MODULE_13__ = __nested_webpack_require_235069__("./src/Velocity.ts");
+    var _genre_Random__WEBPACK_IMPORTED_MODULE_14__ = __nested_webpack_require_235069__("./src/genre/Random.ts");
+    var _utils__WEBPACK_IMPORTED_MODULE_15__ = __nested_webpack_require_235069__("./src/utils.ts");
+    var _series__WEBPACK_IMPORTED_MODULE_16__ = __nested_webpack_require_235069__("./src/series.ts");
+    var _track_Segment__WEBPACK_IMPORTED_MODULE_17__ = __nested_webpack_require_235069__("./src/track/Segment.ts");
+    var _track_Sequence__WEBPACK_IMPORTED_MODULE_18__ = __nested_webpack_require_235069__("./src/track/Sequence.ts");
+    var _track_Sequences__WEBPACK_IMPORTED_MODULE_19__ = __nested_webpack_require_235069__("./src/track/Sequences.ts");
+    var _track_Roll__WEBPACK_IMPORTED_MODULE_20__ = __nested_webpack_require_235069__("./src/track/Roll.ts");
+    var _track_TrackChord__WEBPACK_IMPORTED_MODULE_21__ = __nested_webpack_require_235069__("./src/track/TrackChord.ts");
+    var _track_TrackNote__WEBPACK_IMPORTED_MODULE_22__ = __nested_webpack_require_235069__("./src/track/TrackNote.ts");
   })();
   var __webpack_export_target__ = exports;
   for (var i in __webpack_exports__)
@@ -6639,7 +6660,7 @@ const {
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-cac","version":"1.0.0","description":"The Computer-Aided Coposition package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-cac","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@shren/guidolib":"^1.7.3","@shren/sol":"file:../../sol","@types/react":"^17.0.32","@types/react-dom":"^17.0.10","clean-webpack-plugin":"^4.0.0","copy-webpack-plugin":"^9.0.1","esbuild":"^0.14.1","esbuild-loader":"^2.16.0","react":"^17.0.2","react-dom":"^17.0.2","typescript":"^4.4.4","webpack":"^5.59.1","webpack-cli":"^4.9.1"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-cac","version":"1.0.1","description":"The Computer-Aided Coposition package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-cac","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@shren/guidolib":"^1.7.3","@shren/sol":"file:../../sol","@types/react":"^17.0.32","@types/react-dom":"^17.0.10","clean-webpack-plugin":"^4.0.0","copy-webpack-plugin":"^9.0.1","esbuild":"^0.14.1","esbuild-loader":"^2.16.0","react":"^17.0.2","react-dom":"^17.0.2","typescript":"^4.4.4","webpack":"^5.59.1","webpack-cli":"^4.9.1"}}');
 
 /***/ })
 
