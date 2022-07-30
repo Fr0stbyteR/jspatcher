@@ -61,8 +61,14 @@ export default class Func extends BaseObject<{}, {}, [Bang], [TAnyFunction], any
         this.updateUI({ loading });
     }
     get name() {
-        const c = this._.Wrapper;
-        return c.path[c.path.length - 1];
+        const { path } = this;
+        return path[path.length - 1];
+    }
+    get path() {
+        return this._.Wrapper.path;
+    }
+    get tsText() {
+        return this.path.map(s => s || "prototype").join(".");
     }
     get imported(): TAnyFunction {
         const c = this._.Wrapper || this.patcher.activeLib.Object as TWrapper;

@@ -393,8 +393,8 @@ var MonacoEditor = /** @class */ (function (_super) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* reexport safe */ _editor__WEBPACK_IMPORTED_MODULE_2__["default"]),
 /* harmony export */   "MonacoDiffEditor": () => (/* reexport safe */ _diff__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "default": () => (/* reexport safe */ _editor__WEBPACK_IMPORTED_MODULE_2__["default"]),
 /* harmony export */   "monaco": () => (/* reexport module object */ monaco_editor_esm_vs_editor_editor_api__WEBPACK_IMPORTED_MODULE_0__)
 /* harmony export */ });
 /* harmony import */ var monaco_editor_esm_vs_editor_editor_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! monaco-editor/esm/vs/editor/editor.api */ "include-loader!./node_modules/monaco-editor/esm/vs/editor/editor.api.js");
@@ -430,8 +430,8 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "processSize": () => (/* binding */ processSize),
-/* harmony export */   "noop": () => (/* binding */ noop)
+/* harmony export */   "noop": () => (/* binding */ noop),
+/* harmony export */   "processSize": () => (/* binding */ processSize)
 /* harmony export */ });
 function processSize(size) {
     return !/^\d+$/.test(size) ? size : size + "px";

@@ -1,6 +1,6 @@
 /* eslint-disable arrow-body-style */
 import type { TPatcherProps } from "../core/patcher/Patcher";
-import type { TMIDIEvent, TBPF, TRect, TPresentationRect, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit } from "../core/types";
+import type { TMIDIEvent, TBPF, TRect, TPresentationRect, ProjectItemType, RawPatcher, TMaxPatcher, TAudioUnit, TypedArray } from "../core/types";
 
 export const uuid = () => {
     return globalThis?.crypto?.randomUUID
@@ -21,6 +21,22 @@ export const getTimestamp = () => {
 
 export const isStringArray = (x: any): x is string[] => Array.isArray(x) && x.every(e => typeof e === "string");
 export const isNumberArray = (x: any): x is number[] => Array.isArray(x) && x.every(e => typeof e === "number");
+
+export const isTypedArray = (x: any): x is TypedArray => {
+    return typeof x === "object" && (
+        x instanceof Int8Array
+        || x instanceof Int16Array
+        || x instanceof Int32Array
+        || x instanceof Uint8Array
+        || x instanceof Uint8ClampedArray
+        || x instanceof Uint16Array
+        || x instanceof Uint32Array
+        || x instanceof Float32Array
+        || x instanceof Float64Array
+        || x instanceof BigInt64Array
+        || x instanceof BigUint64Array
+    );
+};
 export const isTRect = (x: any): x is TRect => {
     return isNumberArray(x)
         && x.length === 4

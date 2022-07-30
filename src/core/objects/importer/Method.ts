@@ -78,6 +78,8 @@ export default class Method<Static extends boolean = false> extends ImportedObje
     subscribe() {
         super.subscribe();
         this.on("postInit", () => {
+            const structure = this.updatefunctionMetaFromTS(this.initialInlets ? "Method" : "StaticMethod");
+            this.initialInlets = structure?.parameters?.length || 1;
             handleUpdateArgs(this.args);
         });
         const handleUpdateArgs = (args: any[]) => {

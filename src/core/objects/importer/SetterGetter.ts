@@ -70,6 +70,7 @@ export default class SetterGetter<Static extends boolean = false> extends Import
             this.outlets = this.initialOutlets;
             handleUpdateArgs(this.args);
         });
+        this.on("postInit", this.updatePropertyMetaFromTS);
         const handleUpdateArgs = (args: [any?]) => {
             if (args.length) this._.input = args[0];
         };

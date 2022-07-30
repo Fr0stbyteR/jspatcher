@@ -45,6 +45,7 @@ export default class Getter<Static extends boolean = false> extends ImportedObje
     subscribe() {
         super.subscribe();
         this.on("preInit", this.handlePreInit);
+        this.on("postInit", this.updatePropertyMetaFromTS);
         this.on("inlet", this.handleInlet);
     }
     execute() {

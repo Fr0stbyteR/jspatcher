@@ -1,7 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import type * as Faust from "@shren/faustwasm";
+import type * as Faust from "@shren/faustwasm/dist/esm-bundle";
 import type { Csound } from "@csound/browser";
+import type * as ts from "typescript";
+import { createDefaultMapFromCDN, VirtualTypeScriptEnvironment } from "@typescript/vfs";
 import { VERSION as wamApiVersion } from "@webaudiomodules/api";
 import { addFunctionModule, initializeWamEnv, initializeWamGroup } from "@webaudiomodules/sdk";
 import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitter";
@@ -113,6 +115,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     // faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
     Csound: typeof Csound;
+    tsEnv: VirtualTypeScriptEnvironment & { ts: typeof ts; program: ts.Program; typeChecker: ts.TypeChecker; compilerOptions: ts.CompilerOptions };
     pkgMgr: GlobalPackageManager;
     audioClipboard: PatcherAudio;
     loaded = false;
@@ -225,7 +228,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
 
         await this.taskMgr.newTask(this, "Initializing JSPatcher Environment...", async () => {
             await this.taskMgr.newTask("Env", "Loading FaustWasm...", async () => {
-                const Faust = await import("@shren/faustwasm");
+                const Faust = await import("@shren/faustwasm/dist/esm-bundle");
                 this.Faust = Faust;
             });
             await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {
@@ -250,6 +253,24 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 const { providers } = await faustLangRegister(monaco, this.faustCompiler);
                 this.faustDocs = providers.docs;
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
+            });
+            await this.taskMgr.newTask(this, "Loading TypeScript VEnv...", async () => {
+                const ts = await import("typescript");
+                const { createSystem, createVirtualTypeScriptEnvironment } = await import("@typescript/vfs");
+                const compilerOptions: ts.CompilerOptions = { target: ts.ScriptTarget.ESNext, lib: ["es2021", "dom"] };
+                const fsMap = await createDefaultMapFromCDN(compilerOptions, "4.5.4", true, ts);
+                const tsSys = createSystem(fsMap);
+                const tsEnv = createVirtualTypeScriptEnvironment(tsSys, [...fsMap.keys()], ts, compilerOptions);
+                const program = tsEnv.languageService.getProgram();
+                const typeChecker = program.getTypeChecker();
+                this.tsEnv = {
+                    ts,
+                    ...tsEnv,
+                    program,
+                    typeChecker,
+                    compilerOptions
+                };
+                tsEnv.createFile("/index.ts", "//");
             });
             await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);
