@@ -1,7 +1,7 @@
-import { ConstructSignatureDeclarationStructure, createWrappedNode, FunctionDeclarationStructure, InterfaceDeclarationStructure, MethodSignatureStructure, PropertySignatureStructure, ts, VariableDeclarationStructure } from "ts-morph";
+import { createWrappedNode, ImplementedKindToNodeMappings, OptionalKind, ParameterDeclarationStructure, Structure, ts } from "ts-morph";
 import BaseObject from "../base/BaseObject";
-import type { ImportedObjectType } from "../../types";
 import type Env from "../../Env";
+import type { ImportedObjectType } from "../../types";
 
 /**
 * ```JavaScript
@@ -26,30 +26,24 @@ import type Env from "../../Env";
 * ```
 */
 
-type StructuredSyntaxKind = ts.SyntaxKind.PropertySignature
-    | ts.SyntaxKind.MethodSignature
+type StructuredSyntaxKind = ts.SyntaxKind.PropertyDeclaration
+    | ts.SyntaxKind.PropertySignature
+    | ts.SyntaxKind.PropertySignature
     | ts.SyntaxKind.VariableDeclaration
+    | ts.SyntaxKind.GetAccessor
+    | ts.SyntaxKind.SetAccessor
+    | ts.SyntaxKind.Constructor
+    | ts.SyntaxKind.MethodDeclaration
+    | ts.SyntaxKind.MethodSignature
     | ts.SyntaxKind.FunctionDeclaration
-    | ts.SyntaxKind.InterfaceDeclaration
-    | ts.SyntaxKind.ConstructSignature;
+    | ts.SyntaxKind.ClassDeclaration;
 
-type StructureOfSyntaxKind<T extends StructuredSyntaxKind> = T extends ts.SyntaxKind.PropertySignature
-    ? PropertySignatureStructure
-    : T extends ts.SyntaxKind.MethodSignature
-    ? MethodSignatureStructure
-    : T extends ts.SyntaxKind.VariableDeclaration
-    ? VariableDeclarationStructure
-    : T extends ts.SyntaxKind.FunctionDeclaration
-    ? FunctionDeclarationStructure
-    : T extends ts.SyntaxKind.InterfaceDeclaration
-    ? InterfaceDeclarationStructure
-    : T extends ts.SyntaxKind.ConstructSignature
-    ? ConstructSignatureDeclarationStructure
-    : never;
-
-export const getTypeScriptStructureFromString = <T extends StructuredSyntaxKind>(tsEnv: Env["tsEnv"], text: string, syntaxKind: T): StructureOfSyntaxKind<T> => {
-    const { ts, typeChecker, compilerOptions } = tsEnv;
+type StructureOfSyntaxKind<T extends StructuredSyntaxKind> = ReturnType<ImplementedKindToNodeMappings[T]["getStructure"]>;
+export const getTypeScriptStructureFromString = <T extends StructuredSyntaxKind>(tsEnv: Env["tsEnv"], text: string, syntaxKinds: readonly T[]): StructureOfSyntaxKind<T> => {
+    const { ts, compilerOptions } = tsEnv;
     tsEnv.updateFile("/index.ts", text);
+    const program = tsEnv.languageService.getProgram();
+    const typeChecker = program.getTypeChecker();
     const sourceFile = tsEnv.getSourceFile("/index.ts");
     const node = createWrappedNode(sourceFile as ts.Node, { typeChecker, compilerOptions, sourceFile });
     const identifiers = node.getDescendantsOfKind(ts.SyntaxKind.Identifier);
@@ -57,29 +51,53 @@ export const getTypeScriptStructureFromString = <T extends StructuredSyntaxKind>
     const symbol = identifier.getSymbolOrThrow();
     const declarations = symbol.getDeclarations();
     for (const declaration of declarations) {
-        if (declaration?.isKind(syntaxKind)) {
-            return declaration.getStructure() as StructureOfSyntaxKind<T>;
+        for (const syntaxKind of syntaxKinds) {
+            if (declaration?.isKind(syntaxKind)) {
+                return declaration.getStructure() as StructureOfSyntaxKind<T>;
+            }
         }
     }
     for (const declaration of declarations) {
-        const [decl1] = declaration.getDescendantsOfKind(syntaxKind);
-        if (decl1) return decl1.getStructure() as StructureOfSyntaxKind<T>;
+        for (const syntaxKind of syntaxKinds) {
+            const [decl1] = declaration.getDescendantsOfKind(syntaxKind);
+            if (decl1) return decl1.getStructure() as StructureOfSyntaxKind<T>;
+        }
     }
     return null;
 };
 
-export const updateObjectPropertyMetaFromTS = (object: BaseObject, tsText: string) => {
-    const { tsEnv, tsEnv: { ts } } = object.env as Env;
+const syntaxKindsForAccessors = [
+    ts.SyntaxKind.PropertyDeclaration,
+    ts.SyntaxKind.PropertySignature,
+    ts.SyntaxKind.PropertySignature,
+    ts.SyntaxKind.VariableDeclaration,
+    ts.SyntaxKind.GetAccessor,
+    ts.SyntaxKind.SetAccessor
+] as const;
+
+const syntaxKindsForFunctions = [
+    ts.SyntaxKind.Constructor,
+    ts.SyntaxKind.MethodDeclaration,
+    ts.SyntaxKind.MethodSignature,
+    ts.SyntaxKind.FunctionDeclaration
+] as const;
+
+const syntaxKindsForConstructors = [
+    ts.SyntaxKind.Constructor,
+    ts.SyntaxKind.ClassDeclaration
+] as const;
+
+export const updateAccessorObjectMetaFromTS = (object: BaseObject, tsText: string) => {
+    const { tsEnv } = object.env as Env;
     const structure = (() => {
         try {
-            return getTypeScriptStructureFromString(tsEnv, tsText, ts.SyntaxKind.PropertySignature)
-            || getTypeScriptStructureFromString(tsEnv, tsText, ts.SyntaxKind.VariableDeclaration);
+            return getTypeScriptStructureFromString(tsEnv, tsText, syntaxKindsForAccessors);
         } catch (error) {
             return null;
         }
     })();
     if (!structure) return null;
-    const { type } = structure;
+    const type = Structure.isTyped(structure) ? structure.type : structure.returnType;
     const doc = "docs" in structure ? structure.docs?.[0] : null;
     let { inlets, outlets, description } = object.meta;
     let changed = false;
@@ -106,18 +124,11 @@ export const updateObjectPropertyMetaFromTS = (object: BaseObject, tsText: strin
     return structure;
 };
 
-export const updateObjectFunctionMetaFromTS = (object: BaseObject, tsText: string, kind: "StaticMethod" | "Method" | "Constructor" = "StaticMethod") => {
-    const { tsEnv, tsEnv: { ts } } = object.env as Env;
-    const syntaxKind = kind === "StaticMethod"
-        ? ts.SyntaxKind.FunctionDeclaration
-        : kind === "Method"
-            ? ts.SyntaxKind.MethodSignature
-            : kind === "Constructor"
-                ? ts.SyntaxKind.ConstructSignature
-                : null;
+export const updateObjectFunctionMetaFromTS = (object: BaseObject, tsText: string, kind: "StaticMethod" | "Method" = "StaticMethod") => {
+    const { tsEnv } = object.env as Env;
     const structure = (() => {
         try {
-            return getTypeScriptStructureFromString(tsEnv, tsText, syntaxKind);
+            return getTypeScriptStructureFromString(tsEnv, tsText, syntaxKindsForFunctions);
         } catch (error) {
             return null;
         }
@@ -137,6 +148,61 @@ export const updateObjectFunctionMetaFromTS = (object: BaseObject, tsText: strin
             const $ = kind === "Method" ? i + 1 : i;
             inlets[$] = {
                 ...inlets[$],
+                description,
+                varLength: isRestParameter
+            };
+        }
+        changed = true;
+    }
+    if (typeof returnType === "string") {
+        outlets = outlets.slice();
+        const outlet0 = { ...outlets[0] };
+        outlets[0] = { ...outlet0, description: `${outlet0.description}: ${returnType}` };
+        changed = true;
+    }
+    if (typeof doc === "string") {
+        description = doc;
+        changed = true;
+    } else if (typeof doc?.description === "string") {
+        description = doc.description;
+        changed = true;
+    }
+    if (changed) object.setMeta({ inlets, outlets, description });
+    return structure;
+};
+
+export const updateObjectNewMetaFromTS = (object: BaseObject, tsText: string) => {
+    const { tsEnv } = object.env as Env;
+    const structure = (() => {
+        try {
+            return getTypeScriptStructureFromString(tsEnv, tsText, syntaxKindsForConstructors);
+        } catch (error) {
+            return null;
+        }
+    })();
+    if (!structure) return null;
+    let parameters: OptionalKind<ParameterDeclarationStructure>[];
+    let returnType: string;
+    if (Structure.isClass(structure)) {
+        const ctor = structure.ctors[structure.ctors.length - 1];
+        parameters = ctor.parameters;
+        returnType = structure.name;
+    } else {
+        parameters = structure.parameters;
+        returnType = typeof structure.returnType === "string" ? structure.returnType : "";
+    }
+    const doc = structure.docs?.[0];
+    let { inlets, outlets, description } = object.meta;
+    let changed = false;
+    if (parameters?.length) {
+        inlets = inlets.slice();
+        for (let i = 0; i < parameters.length; i++) {
+            const parameter = parameters[i];
+            const type = typeof parameter.type === "string" ? parameter.type : "";
+            const { name, isRestParameter, isReadonly, hasQuestionToken } = parameter;
+            const description = `${inlets[i].description} -> ${isReadonly ? "readonly " : ""}${isRestParameter ? "..." : ""}${name}${hasQuestionToken ? "?" : ""}: ${type}`;
+            inlets[i] = {
+                ...inlets[i],
                 description,
                 varLength: isRestParameter
             };
@@ -181,7 +247,11 @@ export default abstract class ImportedObject<T, S, I extends any[], O extends an
         return path[path.length - 1];
     }
     get tsText() {
-        return this.path.map(s => s || "prototype").join(".");
+        const pkgName = (this.constructor as typeof ImportedObject).package;
+        return `\
+${(this.env as Env).tsEnv.getImportString(this.patcher.props.dependencies)}
+${[pkgName, ...this.path].map(s => s || "prototype").join(".")}
+`;
     }
     get imported(): T {
         let r: T;
@@ -208,9 +278,9 @@ export default abstract class ImportedObject<T, S, I extends any[], O extends an
     }
     updatePropertyMetaFromTS = () => {
         const { tsText } = this;
-        return updateObjectPropertyMetaFromTS(this, tsText);
+        return updateAccessorObjectMetaFromTS(this, tsText);
     };
-    updatefunctionMetaFromTS = (kind: "StaticMethod" | "Method" = "StaticMethod") => {
+    updateFunctionMetaFromTS = (kind: "StaticMethod" | "Method" = "StaticMethod") => {
         const { tsText } = this;
         return updateObjectFunctionMetaFromTS(this, tsText, kind);
     };

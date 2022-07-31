@@ -275,6 +275,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     async loadFromURL(url: string) {
         try {
             const file = await fetch(url);
+            if (!file.ok) throw new Error();
             const parsed = await file.json() as RawPatcher | TMaxPatcher;
             return this.load(parsed);
         } catch (e) {

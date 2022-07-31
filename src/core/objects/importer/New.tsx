@@ -1,9 +1,10 @@
 import StaticMethod from "./StaticMethod";
 import BaseObject from "../base/BaseObject";
 import Bang, { isBang } from "../base/Bang";
+import { updateObjectNewMetaFromTS } from "./ImportedObject";
+import type Env from "../../Env";
 import type ImportedObject from "./ImportedObject";
 import type { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
-import { updateObjectFunctionMetaFromTS } from "./ImportedObject";
 
 type TAnyConstructor = new (...args: any[]) => any;
 interface P {
@@ -64,7 +65,7 @@ export default class New extends BaseObject<{}, {}, [any | Bang, ...any[]], [any
         super.subscribe();
         this.on("postInit", () => {
             handleUpdateArgs(this.args);
-            updateObjectFunctionMetaFromTS(this, this.tsText, "Constructor");
+            updateObjectNewMetaFromTS(this, this.tsText);
         });
         const handleUpdateArgs = (args: any[]) => {
             if (typeof args[0] !== "undefined") {
@@ -127,7 +128,11 @@ export default class New extends BaseObject<{}, {}, [any | Bang, ...any[]], [any
         return this._.Wrapper.path;
     }
     get tsText() {
-        return this.path.map(s => s || "prototype").join(".");
+        const pkgName = this._.Wrapper.package;
+        return `\
+${(this.env as Env).tsEnv.getImportString(this.patcher.props.dependencies)}
+${[pkgName, ...this.path].map(s => s || "prototype").join(".")}
+`;
     }
     get imported(): TAnyConstructor {
         const c = this._.Wrapper || this.patcher.activeLib.Object as typeof StaticMethod;

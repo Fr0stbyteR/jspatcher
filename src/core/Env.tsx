@@ -2,8 +2,6 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import type * as Faust from "@shren/faustwasm/dist/esm-bundle";
 import type { Csound } from "@csound/browser";
-import type * as ts from "typescript";
-import { createDefaultMapFromCDN, VirtualTypeScriptEnvironment } from "@typescript/vfs";
 import { VERSION as wamApiVersion } from "@webaudiomodules/api";
 import { addFunctionModule, initializeWamEnv, initializeWamGroup } from "@webaudiomodules/sdk";
 import TypedEventEmitter, { ITypedEventEmitter } from "../utils/TypedEventEmitter";
@@ -28,6 +26,7 @@ import LiveShare from "./LiveShare";
 import GlobalTransportNode from "./worklets/GlobalTransportNode";
 import EnvOptionsManager from "./EnvOptionsManager";
 import Logger from "./Logger";
+import TypeScriptEnv from "./TSEnv";
 import { getFaustLibObjects } from "./objects/Faust";
 import { faustLangRegister } from "../misc/monaco-faust/register";
 import { detectOS, detectBrowserCore, getTimestamp } from "../utils/utils";
@@ -115,7 +114,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     // faustAdditionalObjects: TPackage;
     faustLibObjects: TPackage;
     Csound: typeof Csound;
-    tsEnv: VirtualTypeScriptEnvironment & { ts: typeof ts; program: ts.Program; typeChecker: ts.TypeChecker; compilerOptions: ts.CompilerOptions };
+    tsEnv = new TypeScriptEnv();
     pkgMgr: GlobalPackageManager;
     audioClipboard: PatcherAudio;
     loaded = false;
@@ -255,22 +254,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                 this.faustLibObjects = getFaustLibObjects(this.faustDocs);
             });
             await this.taskMgr.newTask(this, "Loading TypeScript VEnv...", async () => {
-                const ts = await import("typescript");
-                const { createSystem, createVirtualTypeScriptEnvironment } = await import("@typescript/vfs");
-                const compilerOptions: ts.CompilerOptions = { target: ts.ScriptTarget.ESNext, lib: ["es2021", "dom"] };
-                const fsMap = await createDefaultMapFromCDN(compilerOptions, "4.5.4", true, ts);
-                const tsSys = createSystem(fsMap);
-                const tsEnv = createVirtualTypeScriptEnvironment(tsSys, [...fsMap.keys()], ts, compilerOptions);
-                const program = tsEnv.languageService.getProgram();
-                const typeChecker = program.getTypeChecker();
-                this.tsEnv = {
-                    ts,
-                    ...tsEnv,
-                    program,
-                    typeChecker,
-                    compilerOptions
-                };
-                tsEnv.createFile("/index.ts", "//");
+                await this.tsEnv.init();
             });
             await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);
@@ -281,6 +265,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                     onUpdate(projectZip);
                     try {
                         const response = await fetch(projectZip);
+                        if (!response.ok) throw new Error();
                         const data = await response.arrayBuffer();
                         await this.loadFromZip(data);
                     } catch (error) {
