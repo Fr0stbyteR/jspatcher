@@ -139,15 +139,16 @@ export const updateObjectFunctionMetaFromTS = (object: BaseObject, tsText: strin
     let { inlets, outlets, description } = object.meta;
     let changed = false;
     if (parameters?.length) {
+        const metaInlets = inlets;
         inlets = inlets.slice();
         for (let i = 0; i < parameters.length; i++) {
             const parameter = parameters[i];
             const type = typeof parameter.type === "string" ? parameter.type : "";
             const { name, isRestParameter, isReadonly, hasQuestionToken } = parameter;
-            const description = `${inlets[i].description} -> ${isReadonly ? "readonly " : ""}${isRestParameter ? "..." : ""}${name}${hasQuestionToken ? "?" : ""}: ${type}`;
+            const description = `${metaInlets[Math.min(metaInlets.length - 1, i)].description} -> ${isReadonly ? "readonly " : ""}${isRestParameter ? "..." : ""}${name}${hasQuestionToken ? "?" : ""}: ${type}`;
             const $ = kind === "Method" ? i + 1 : i;
             inlets[$] = {
-                ...inlets[$],
+                ...metaInlets[Math.min(metaInlets.length - 1, $)],
                 description,
                 varLength: isRestParameter
             };
@@ -195,14 +196,15 @@ export const updateObjectNewMetaFromTS = (object: BaseObject, tsText: string) =>
     let { inlets, outlets, description } = object.meta;
     let changed = false;
     if (parameters?.length) {
+        const metaInlets = inlets;
         inlets = inlets.slice();
         for (let i = 0; i < parameters.length; i++) {
             const parameter = parameters[i];
             const type = typeof parameter.type === "string" ? parameter.type : "";
             const { name, isRestParameter, isReadonly, hasQuestionToken } = parameter;
-            const description = `${inlets[i].description} -> ${isReadonly ? "readonly " : ""}${isRestParameter ? "..." : ""}${name}${hasQuestionToken ? "?" : ""}: ${type}`;
+            const description = `${metaInlets[Math.min(metaInlets.length - 1, i)].description} -> ${isReadonly ? "readonly " : ""}${isRestParameter ? "..." : ""}${name}${hasQuestionToken ? "?" : ""}: ${type}`;
             inlets[i] = {
-                ...inlets[i],
+                ...metaInlets[Math.min(metaInlets.length - 1, i)],
                 description,
                 varLength: isRestParameter
             };
