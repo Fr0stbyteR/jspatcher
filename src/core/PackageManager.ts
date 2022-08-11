@@ -96,7 +96,7 @@ export default class PackageManager extends TypedEventEmitter<PackageManagerEven
     emitLibChanged() {
         this.patcher.emit("libChanged", { pkg: this.pkg, lib: this.lib });
     }
-    packageRegister(pkg: TPackage, libOut: TFlatPackage = {}, rootifyDepth = 2, pathIn?: string[]) {
+    packageRegister(pkg: TPackage, libOut: TFlatPackage = {}, rootifyDepth = 3, pathIn?: string[]) {
         const path = pathIn ? pathIn.slice() : [];
         if (path.length && ImporterDirSelfObject in pkg) {
             const el = pkg[ImporterDirSelfObject as any];

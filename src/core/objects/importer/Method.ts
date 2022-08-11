@@ -80,7 +80,7 @@ export default class Method<Static extends boolean = false> extends ImportedObje
         this.on("postInit", () => {
             const { initialInlets } = this;
             const structure = this.updateFunctionMetaFromTS(initialInlets ? "Method" : "StaticMethod");
-            this.inlets = structure?.parameters?.length || initialInlets;
+            this.inlets = Math.max(1, structure?.parameters?.length || initialInlets);
             handleUpdateArgs(this.args);
         });
         const handleUpdateArgs = (args: any[]) => {
