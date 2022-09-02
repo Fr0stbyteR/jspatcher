@@ -1,9 +1,9 @@
 import { StrictDropdownItemProps } from "semantic-ui-react";
-import { Bang, isBang } from "../base/index.jspatpkg";
+import { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
+import Bang, { isBang } from "../base/Bang";
 import { DefaultWebRTCObject } from "./Base";
-import { IJSPatcherObjectMeta, IPropsMeta } from "../../types";
 
-export class mediaDevices extends DefaultWebRTCObject<{}, {}, [Bang | MediaDeviceKind[]], [MediaDeviceInfo[], StrictDropdownItemProps[]], MediaDeviceKind[], { autoUpdate: boolean }> {
+export default class mediaDevices extends DefaultWebRTCObject<{}, {}, [Bang | MediaDeviceKind[]], [MediaDeviceInfo[], StrictDropdownItemProps[]], MediaDeviceKind[], { autoUpdate: boolean }> {
     static description = "Enumerate media devices";
     static inlets: IJSPatcherObjectMeta["inlets"] = [{
         isHot: true,
