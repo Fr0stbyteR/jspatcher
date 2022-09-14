@@ -75,7 +75,7 @@ export default class New extends BaseObject<{}, {}, [any | Bang, ...any[]], [any
                     this._.Wrapper = Wrapper as typeof StaticMethod;
                     const Fn = this.imported;
                     const argsCount = Math.max(Fn.length, args.length - 1, ~~+this.getProp("args"));
-                    this.inlets = Math.max(1, argsCount);
+                    this.inlets = Math.max(1, this.meta.args.length, argsCount);
                     this.outlets = 1 + this.inlets;
                 } else {
                     this.error("Given function is not constructable");

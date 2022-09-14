@@ -217,6 +217,8 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             runtime: !!urlParams.get("runtime"),
             init: !!urlParams.get("init"),
             projectZip: urlParams.get("projectZip"),
+            fetchFile: urlParams.get("fetchFile"),
+            fetchFilename: urlParams.get("fetchFilename"),
             file: urlParams.get("file"),
             server: urlParams.get("server"),
             room: urlParams.get("room")
@@ -259,18 +261,28 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             await this.taskMgr.newTask(this, "Loading Files...", async (onUpdate) => {
                 this.pkgMgr = new GlobalPackageManager(this);
                 await this.pkgMgr.init();
-                const { projectZip } = urlParamsOptions;
+                const { projectZip, fetchFile, fetchFilename } = urlParamsOptions;
                 if (projectZip) {
-                    await this.fileMgr.init(true);
                     onUpdate(projectZip);
                     try {
                         const response = await fetch(projectZip);
                         if (!response.ok) throw new Error();
                         const data = await response.arrayBuffer();
+                        await this.fileMgr.init(true);
                         await this.loadFromZip(data);
                     } catch (error) {
                         await this.fileMgr.init(urlParamsOptions.init);
                     }
+                } else if (fetchFile) {
+                    onUpdate(fetchFile);
+                    const response = await fetch(fetchFile);
+                    if (!response.ok) throw new Error();
+                    const data = await response.arrayBuffer();
+                    const urlPath = new URL(fetchFile, location.href).pathname;
+                    await this.fileMgr.init(urlParamsOptions.init);
+                    const filename = fetchFilename || urlPath.substring(urlPath.lastIndexOf("/") + 1);
+                    if (this.fileMgr.projectRoot.existItem(filename)) await this.fileMgr.projectRoot.findItem(filename).destroy();
+                    await this.fileMgr.projectRoot.addFile(filename, data);
                 } else {
                     await this.fileMgr.init(urlParamsOptions.init);
                 }
