@@ -11,7 +11,8 @@ import Buffer from "./Buffer";
 import Record from "./Record";
 import Plugin from "./WebAudioModule";
 import share from "./Share";
-import serial from "../WebSerial/serial";
+import Serial from "./Serial";
+import WS from "./WebSocket";
 
 export default async () => ({
     in: In,
@@ -29,5 +30,6 @@ export default async () => ({
     "record~": Record,
     "plugin~": Plugin,
     share,
-    serial
+    serial: Serial,
+    websocket: WS
 });
