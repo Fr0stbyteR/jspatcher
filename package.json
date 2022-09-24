@@ -28,6 +28,7 @@
     "@jspatcher/package-live": "file:../@jspatcher/package-live",
     "@jspatcher/package-midi": "file:../@jspatcher/package-midi",
     "@jspatcher/package-op": "file:../@jspatcher/package-op",
+    "@jspatcher/package-osc": "file:../@jspatcher/package-osc",
     "@jspatcher/package-std": "file:../@jspatcher/package-std",
     "@jspatcher/package-ui": "file:../@jspatcher/package-ui",
     "@jspatcher/package-webaudio": "file:../@jspatcher/package-webaudio",
