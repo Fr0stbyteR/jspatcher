@@ -150,15 +150,17 @@ class _ extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
   subscribe() {
     super.subscribe();
-    const handleArgs = (args) => this.setState({ value: args[0] });
+    const handleArgs = (args) => {
+      this.setState({ value: args[0] });
+      this.outlets = Math.max(1, ~~+args[1] || 1);
+    };
     this.on("preInit", () => {
       this.inlets = 2;
-      this.outlets = 1;
     });
     this.on("updateArgs", handleArgs);
     this.on("updateState", ({ state: { value }, id }) => {
       this.setState({ value }, id);
-      this.outlet(0, this.state.value);
+      this.outletAll(new Array(this.outlets).fill(this.state.value));
     });
     this.on("postInit", () => {
       handleArgs(this.args);
@@ -168,7 +170,7 @@ class _ extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
           this.setState({ value: data });
         }
-        this.outlet(0, this.state.value);
+        this.outletAll(new Array(this.outlets).fill(this.state.value));
       } else if (inlet === 1) {
         this.setState({ value: data });
       }
@@ -187,12 +189,18 @@ _.inlets = [{
 }];
 _.outlets = [{
   type: "anything",
-  description: "Value"
+  description: "Value",
+  varLength: true
 }];
 _.args = [{
   type: "anything",
   optional: true,
   description: "Initial value"
+}, {
+  type: "number",
+  optional: true,
+  description: "Number of Outlets",
+  default: 1
 }];
 
 
@@ -511,6 +519,66 @@ call.props = {
     type: "boolean",
     default: false,
     description: "If true and in case the result is a Promise, instead of waiting for result, will output the Promise object"
+  }
+};
+
+
+/***/ }),
+
+/***/ "./src/objects/change.ts":
+/*!*******************************!*\
+  !*** ./src/objects/change.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ change)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+class change extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor() {
+    super(...arguments);
+    this._ = { prev: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+    });
+    this.on("inlet", ({ inlet, data }) => {
+      const result = this.getProp("mode") === "==" ? this._.prev == data : this._.prev === data;
+      if (!result)
+        this.outlet(0, data);
+      this._.prev = data;
+    });
+  }
+}
+change.description = "Filter out undesirable repetitions";
+change.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Anything to be compared with the previous input"
+}];
+change.outlets = [{
+  type: "anything",
+  description: "Output if changed"
+}];
+change.args = [{
+  type: "anything",
+  description: "Initial state",
+  default: void 0,
+  optional: true
+}];
+change.props = {
+  mode: {
+    type: "enum",
+    enums: ["==", "==="],
+    default: "===",
+    description: "Comparison algorithm"
   }
 };
 
@@ -4465,6 +4533,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects_line__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./objects/line */ "./src/objects/line.ts");
 /* harmony import */ var _ui_bang__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./ui/bang */ "./src/ui/bang.tsx");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
+/* harmony import */ var _objects_change__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./objects/change */ "./src/objects/change.ts");
+
 
 
 
@@ -4521,7 +4591,8 @@ const arr = (0,_sdk__WEBPACK_IMPORTED_MODULE_24__.generateDefaultObject)(_object
     delay: (0,_sdk__WEBPACK_IMPORTED_MODULE_24__.generateDefaultObject)(_objects_delay__WEBPACK_IMPORTED_MODULE_5__["default"]),
     metro: (0,_sdk__WEBPACK_IMPORTED_MODULE_24__.generateDefaultObject)(_objects_metro__WEBPACK_IMPORTED_MODULE_6__["default"]),
     line: (0,_sdk__WEBPACK_IMPORTED_MODULE_24__.generateDefaultObject)(_objects_line__WEBPACK_IMPORTED_MODULE_22__["default"]),
-    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_24__.generateDefaultObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_18__["default"])
+    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_24__.generateDefaultObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_18__["default"]),
+    change: (0,_sdk__WEBPACK_IMPORTED_MODULE_24__.generateDefaultObject)(_objects_change__WEBPACK_IMPORTED_MODULE_25__["default"])
   };
 });
 
