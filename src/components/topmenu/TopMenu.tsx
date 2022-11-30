@@ -3,6 +3,7 @@ import { Menu, Ref } from "semantic-ui-react";
 import type Env from "../../core/Env";
 import FileMenu from "./FileMenu";
 import EditMenu from "./EditMenu";
+import FlashMenu from "./FlashMenu";
 import "./TopMenu.scss";
 import ShareMenu from "./ShareMenu";
 
@@ -15,12 +16,14 @@ export default class TopMenu extends React.PureComponent<P> {
     ref = React.createRef<HTMLDivElement>();
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();
+    refFlashMenu = React.createRef<FlashMenu>();
     handleKeyDown = (e: KeyboardEvent) => {
         const { activeEditor } = this.props.env;
         if (!activeEditor) return;
         const fileMenu = this.refFileMenu.current;
         const editMenu = this.refEditMenu.current;
-        if (!fileMenu || !editMenu) return;
+        const flashMenu = this.refFlashMenu.current;
+        if (!fileMenu || !editMenu || !flashMenu) return;
 
         if (e.target instanceof HTMLInputElement) return;
         if (e.target instanceof HTMLTextAreaElement) return;
@@ -34,7 +37,7 @@ export default class TopMenu extends React.PureComponent<P> {
         else if (ctrlKey && e.shiftKey && e.key === "e") fileMenu.handleClickExportFile();
         else if (ctrlKey && e.key === "e") fileMenu.handleClickExportProject();
         else if (ctrlKey && e.key === "r") fileMenu.handleClickReload();
-        else if (!editMenu.onShortKey(e)) return;
+        else if (!editMenu.onShortKey(e) || !flashMenu.onShortKey(e)) return;
         e.stopPropagation();
         e.preventDefault();
     };
@@ -50,6 +53,7 @@ export default class TopMenu extends React.PureComponent<P> {
                 <Menu inverted size="mini" className="top-menu">
                     <FileMenu {...this.props} ref={this.refFileMenu} />
                     <EditMenu {...this.props} ref={this.refEditMenu} />
+                    <FlashMenu {...this.props} ref={this.refFlashMenu} />
                     <div style={{ flex: "1 1 auto" }}></div>
                     <ShareMenu {...this.props} />
                 </Menu>
