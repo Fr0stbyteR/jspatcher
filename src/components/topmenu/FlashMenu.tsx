@@ -32,7 +32,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
         // var decoder = new TextDecoder('utf-8');
         // const string = decoder.decode(data);
 
-        const webSocket = new WebSocket("ws://ws/compile/");
+        const webSocket = new WebSocket("ws://localhost:8000/ws/compile/");
 
         webSocket.onopen = (event) => {
             webSocket.send(data);
@@ -41,6 +41,23 @@ export default class FlashMenu extends React.PureComponent<P, S> {
         // For now, we'll simply assume the connection ends here
         webSocket.onmessage = (event) => {
             console.log(event.data);
+
+            var saveData = (function () {
+                var a = document.createElement("a");
+                document.body.appendChild(a);
+                
+                a.style.display = "none";
+                return function (data: BinaryData, fileName: string) {
+                    var blob = new Blob([data], {type: "octet/stream"});
+                    var url = window.URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = fileName;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                };
+            }());
+            
+            saveData(event.data, "patcher.bin");
         };
         
 
