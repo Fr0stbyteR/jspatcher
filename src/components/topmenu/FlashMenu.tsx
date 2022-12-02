@@ -29,17 +29,29 @@ export default class FlashMenu extends React.PureComponent<P, S> {
         // to an array buffer and then back into a string
         const data = await this.props.env.activeEditor.instance.serialize();
 
-        var decoder = new TextDecoder('utf-8');
-        const string = decoder.decode(data);
+        // var decoder = new TextDecoder('utf-8');
+        // const string = decoder.decode(data);
 
-        const response = await fetch("compile/", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({'patcher': string})
-        });
-        console.log(response);
+        const webSocket = new WebSocket("ws://ws/compile/");
+
+        webSocket.onopen = (event) => {
+            webSocket.send(data);
+        };
+
+        // For now, we'll simply assume the connection ends here
+        webSocket.onmessage = (event) => {
+            console.log(event.data);
+        };
+        
+
+        // const response = await fetch("compile/", {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({'patcher': string})
+        // });
+        // console.log(response);
     };
     onShortKey(e: KeyboardEvent) {
         // if (this.state.locked) return false;
@@ -69,10 +81,10 @@ export default class FlashMenu extends React.PureComponent<P, S> {
         const ctrlKey = this.props.env.os === "MacOS" ? "Cmd" : "Ctrl";
         const locked = this.state.locked || !this.state.editor;
         return (
-            <Dropdown item={true} icon={false} text="Flash">
+            <Dropdown item={true} icon={false} text="Daisy">
                 <Dropdown.Menu style={{ minWidth: "max-content" }}>
                     <Dropdown.Item onClick={this.handleClickBuild} text="Build" description={`${ctrlKey} + B`} />
-                    {this.state.editor ? <Dropdown.Divider /> : undefined}
+                    {/* {this.state.editor ? <Dropdown.Divider /> : undefined} */}
                     {/* {
                         this.state.editor instanceof PatcherEditor
                             ? <PatcherEditMenu ref={this.refInstanceEditMenu} {...this.props} locked={this.state.locked} editor={this.state.editor} />
