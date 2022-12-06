@@ -19,6 +19,7 @@ interface S {
     locked: boolean;
     building: boolean;
     build_error: boolean;
+    error_message: string;
 }
 
 export default class FlashMenu extends React.PureComponent<P, S> {
@@ -26,12 +27,13 @@ export default class FlashMenu extends React.PureComponent<P, S> {
         editor: this.props.env.activeEditor,
         locked: this.props.env.activeEditor == null,
         building: false,
-        build_error: false
+        build_error: false,
+        error_message: ""
     };
     // refInstanceEditMenu = React.createRef<PatcherEditMenu & AudioEditMenu>();
     handleClickBuild = async () => {
 
-        if (this.state.locked)
+        if (this.state.locked || this.state.building)
             return;
 
         const data = await this.props.env.activeEditor.instance.serialize();
@@ -48,13 +50,11 @@ export default class FlashMenu extends React.PureComponent<P, S> {
         // For now, we'll simply assume the connection ends here
         webSocket.onmessage = (event) => {
 
-            if (event.data === String)
-            {
-                let json = JSON.parse(event.data);
+            try {
+                let json = JSON.parse(event.data.toString('utf-8'));
                 this.state.build_error = true;
-            }
-            else
-            {
+                this.state.error_message = json.error_message;
+            } catch (error) {
                 var saveData = (function () {
                     var a = document.createElement("a");
                     document.body.appendChild(a);
@@ -108,7 +108,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
                 <div>
                     <Dropdown item={true} icon={false} text="Daisy">
                         <Dropdown.Menu style={{ minWidth: "max-content" }}>
-                            <Dropdown.Item onClick={this.handleClickBuild} text="Build" description={`${ctrlKey} + Shift + C`} disabled={this.state.locked} />
+                            <Dropdown.Item onClick={this.handleClickBuild} text="Build" description={`${ctrlKey} + Shift + C`} disabled={this.state.locked || this.state.building} />
                             {/* {this.state.editor ? <Dropdown.Divider /> : undefined} */}
                             {/* {
                                 this.state.editor instanceof PatcherEditor
