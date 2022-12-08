@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Dropdown, Loader } from "semantic-ui-react";
-import AudioEditor from "../../core/audio/AudioEditor";
+// import AudioEditor from "../../core/audio/AudioEditor";
 import Env, { EnvEventMap } from "../../core/Env";
 import { IFileEditor } from "../../core/file/FileEditor";
-import PatcherEditor from "../../core/patcher/PatcherEditor";
-import AudioEditMenu from "./AudioEditMenu";
-import PatcherEditMenu from "./PatcherEditMenu";
+// import PatcherEditor from "../../core/patcher/PatcherEditor";
+// import AudioEditMenu from "./AudioEditMenu";
+// import PatcherEditMenu from "./PatcherEditMenu";
 import "./FlashMenu.scss";
-import { NullLiteral } from "ts-morph";
+// import { NullLiteral } from "ts-morph";
 
 interface P {
     env: Env;
@@ -58,7 +58,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
                 var saveData = (function () {
                     var a = document.createElement("a");
                     document.body.appendChild(a);
-                    
+
                     a.style.display = "none";
                     return function (data: BinaryData, fileName: string) {
                         var blob = new Blob([data], {type: "octet/stream"});
@@ -69,7 +69,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
                         window.URL.revokeObjectURL(url);
                     };
                 }());
-                
+
                 saveData(event.data, "patcher.bin");
             }
 
@@ -122,7 +122,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
                 </div>
                 { this.state.building ? <Loader active inline size="mini" style={{ "margin-left": "1em" }}></Loader> : <div></div> }
                 { this.state.building ? <div className="monitor">Building patcher...</div> : <div></div> }
-                { this.state.build_error ? <div className="monitor">Build error encountered! D:</div> : <div></div> }
+                { this.state.build_error ? <div className="monitor"> {this.state.error_message} </div> : <div></div> }
             </div>
         );
     }
