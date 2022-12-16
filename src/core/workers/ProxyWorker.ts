@@ -1,5 +1,5 @@
 import { ProxyWorker } from "./ProxyWorker.types";
-import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./Worker";
+import { MessagePortResponse, MessagePortRequest } from "./Worker";
 
 const Worker = class ProxyWorker {
     static fnNames: string[] = [];
@@ -12,7 +12,7 @@ const Worker = class ProxyWorker {
             removeEventListener("message", handleMessage);
             close();
         };
-        const handleMessage = async (e: TypedMessageEvent<MessagePortResponse & MessagePortRequest>) => {
+        const handleMessage = async (e: MessageEvent<MessagePortResponse & MessagePortRequest>) => {
             const { id, call, args, value, error } = e.data;
             if (call) {
                 const r: MessagePortResponse = { id };

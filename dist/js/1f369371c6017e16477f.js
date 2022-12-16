@@ -9,23 +9,23 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "flattenDiagnosticMessageText": () => (/* binding */ flattenDiagnosticMessageText),
 /* harmony export */   "Adapter": () => (/* binding */ Adapter),
-/* harmony export */   "LibFiles": () => (/* binding */ LibFiles),
-/* harmony export */   "DiagnosticsAdapter": () => (/* binding */ DiagnosticsAdapter),
-/* harmony export */   "SuggestAdapter": () => (/* binding */ SuggestAdapter),
-/* harmony export */   "SignatureHelpAdapter": () => (/* binding */ SignatureHelpAdapter),
-/* harmony export */   "QuickInfoAdapter": () => (/* binding */ QuickInfoAdapter),
-/* harmony export */   "OccurrencesAdapter": () => (/* binding */ OccurrencesAdapter),
-/* harmony export */   "DefinitionAdapter": () => (/* binding */ DefinitionAdapter),
-/* harmony export */   "ReferenceAdapter": () => (/* binding */ ReferenceAdapter),
-/* harmony export */   "OutlineAdapter": () => (/* binding */ OutlineAdapter),
-/* harmony export */   "Kind": () => (/* binding */ Kind),
-/* harmony export */   "FormatHelper": () => (/* binding */ FormatHelper),
-/* harmony export */   "FormatAdapter": () => (/* binding */ FormatAdapter),
-/* harmony export */   "FormatOnTypeAdapter": () => (/* binding */ FormatOnTypeAdapter),
 /* harmony export */   "CodeActionAdaptor": () => (/* binding */ CodeActionAdaptor),
-/* harmony export */   "RenameAdapter": () => (/* binding */ RenameAdapter)
+/* harmony export */   "DefinitionAdapter": () => (/* binding */ DefinitionAdapter),
+/* harmony export */   "DiagnosticsAdapter": () => (/* binding */ DiagnosticsAdapter),
+/* harmony export */   "FormatAdapter": () => (/* binding */ FormatAdapter),
+/* harmony export */   "FormatHelper": () => (/* binding */ FormatHelper),
+/* harmony export */   "FormatOnTypeAdapter": () => (/* binding */ FormatOnTypeAdapter),
+/* harmony export */   "Kind": () => (/* binding */ Kind),
+/* harmony export */   "LibFiles": () => (/* binding */ LibFiles),
+/* harmony export */   "OccurrencesAdapter": () => (/* binding */ OccurrencesAdapter),
+/* harmony export */   "OutlineAdapter": () => (/* binding */ OutlineAdapter),
+/* harmony export */   "QuickInfoAdapter": () => (/* binding */ QuickInfoAdapter),
+/* harmony export */   "ReferenceAdapter": () => (/* binding */ ReferenceAdapter),
+/* harmony export */   "RenameAdapter": () => (/* binding */ RenameAdapter),
+/* harmony export */   "SignatureHelpAdapter": () => (/* binding */ SignatureHelpAdapter),
+/* harmony export */   "SuggestAdapter": () => (/* binding */ SuggestAdapter),
+/* harmony export */   "flattenDiagnosticMessageText": () => (/* binding */ flattenDiagnosticMessageText)
 /* harmony export */ });
 /* harmony import */ var _monaco_contribution_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./monaco.contribution.js */ "./node_modules/monaco-editor/esm/vs/language/typescript/monaco.contribution.js");
 /* harmony import */ var _lib_lib_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lib/lib.index.js */ "./node_modules/monaco-editor/esm/vs/language/typescript/lib/lib.index.js");
@@ -1371,10 +1371,10 @@ libFileSet['lib.webworker.iterable.d.ts'] = true;
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "setupTypeScript": () => (/* binding */ setupTypeScript),
-/* harmony export */   "setupJavaScript": () => (/* binding */ setupJavaScript),
 /* harmony export */   "getJavaScriptWorker": () => (/* binding */ getJavaScriptWorker),
-/* harmony export */   "getTypeScriptWorker": () => (/* binding */ getTypeScriptWorker)
+/* harmony export */   "getTypeScriptWorker": () => (/* binding */ getTypeScriptWorker),
+/* harmony export */   "setupJavaScript": () => (/* binding */ setupJavaScript),
+/* harmony export */   "setupTypeScript": () => (/* binding */ setupTypeScript)
 /* harmony export */ });
 /* harmony import */ var _workerManager_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./workerManager.js */ "./node_modules/monaco-editor/esm/vs/language/typescript/workerManager.js");
 /* harmony import */ var _languageFeatures_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./languageFeatures.js */ "./node_modules/monaco-editor/esm/vs/language/typescript/languageFeatures.js");

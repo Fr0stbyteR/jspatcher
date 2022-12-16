@@ -25,9 +25,6 @@ declare global {
         sinkId: string;
         setSinkId?(sinkId: string): Promise<undefined>;
     }
-    interface Crypto {
-        randomUUID?(): string;
-    }
 }
 
 /** This class will know of if itself is observed and perform reactions when the situation changed. */
@@ -35,6 +32,8 @@ export interface IObservee<T = any> {
     addObserver(observer: T): Promise<void>;
     removeObserver(observer: T): Promise<void>;
 }
+
+export type TypedArray = Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | BigInt64Array | BigUint64Array;
 
 export type PrefixKeys<I, P extends string> = { [K in keyof I & string as `${P}${Capitalize<K>}`]: I[K] };
 

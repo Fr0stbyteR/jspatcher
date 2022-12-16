@@ -21,11 +21,8 @@ export interface MessagePortResponse<M = Record<string, any>, K extends keyof M 
     error?: Error;
 }
 
-export interface TypedMessageEvent<T = any> extends MessageEvent {
-    data: T;
-}
 export interface TypedMessagePortEventMap<T = any> extends MessagePortEventMap {
-    "message": TypedMessageEvent<T>;
+    "message": MessageEvent<T>;
 }
 
 export interface TypedEventListener<EventDetail = any> {
@@ -46,10 +43,10 @@ export interface TypedEventTarget<EventMap extends Record<string, any> = any> ex
     removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 export interface TypedMessagePort<In = any, Out = any> extends MessagePort {
-    onmessage: ((this: TypedMessagePort<In, Out>, ev: TypedMessageEvent<In>) => any) | null;
-    onmessageerror: ((this: TypedMessagePort<In, Out>, ev: TypedMessageEvent<In>) => any) | null;
+    onmessage: ((this: TypedMessagePort<In, Out>, ev: MessageEvent<In>) => any) | null;
+    onmessageerror: ((this: TypedMessagePort<In, Out>, ev: MessageEvent<In>) => any) | null;
     postMessage(message: Out, transfer: Transferable[]): void;
-    postMessage(message: Out, options?: PostMessageOptions): void;
+    postMessage(message: Out, options?: StructuredSerializeOptions): void;
     addEventListener<K extends keyof TypedMessagePortEventMap<In>>(type: K, listener: (this: MessagePort, ev: TypedMessagePortEventMap<In>[K]) => any, options?: boolean | AddEventListenerOptions): void;
     addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
     removeEventListener<K extends keyof TypedMessagePortEventMap<In>>(type: K, listener: (this: MessagePort, ev: TypedMessagePortEventMap<In>[K]) => any, options?: boolean | EventListenerOptions): void;

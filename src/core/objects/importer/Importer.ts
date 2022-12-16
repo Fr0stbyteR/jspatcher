@@ -1,5 +1,5 @@
 import { ImporterDirSelfObject } from "../../../utils/symbols";
-import { getPropertyDescriptors } from "../../../utils/utils";
+import { getPropertyDescriptors, isTypedArray } from "../../../utils/utils";
 import { IJSPatcherObject, IJSPatcherObjectMeta, isJSPatcherObjectConstructor } from "../base/AbstractObject";
 import type { TPackage } from "../../types";
 
@@ -75,7 +75,7 @@ export default abstract class Importer {
             const newObj = this.getObject(prop, pkgName, root, newPath, metaIn[newPath.join(".")]);
             if (newObj) this.writeInPath(out, newPath.map((s, i) => (i !== newPath.length - 1 && s === "prototype" ? "" : s)), newObj);
             const value = prop.value;
-            if ((typeof value === "object" || typeof value === "function") && value !== null && (value === Array.prototype || !Array.isArray(value))) {
+            if ((typeof value === "object" || typeof value === "function") && value !== null && (value === Array.prototype || !Array.isArray(value)) && !isTypedArray(value)) {
                 this.import(pkgName, root, all, metaIn, out, newPath, stack, depth + 1);
             }
         }

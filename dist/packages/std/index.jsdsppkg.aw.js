@@ -94,14 +94,14 @@ if ($defineProperty) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "name": () => (/* binding */ name),
 /* harmony export */   "author": () => (/* binding */ author),
-/* harmony export */   "license": () => (/* binding */ license),
-/* harmony export */   "keywords": () => (/* binding */ keywords),
-/* harmony export */   "version": () => (/* binding */ version),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "description": () => (/* binding */ description),
 /* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "keywords": () => (/* binding */ keywords),
+/* harmony export */   "license": () => (/* binding */ license),
+/* harmony export */   "name": () => (/* binding */ name),
+/* harmony export */   "version": () => (/* binding */ version)
 /* harmony export */ });
 /* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
 var __defProp = Object.defineProperty;
@@ -121,8 +121,8 @@ var __spreadValues = (a, b) => {
   return a;
 };
 
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
-const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"].name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
 
 
@@ -143,22 +143,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class _ extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class _ extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this.state = { value: void 0 };
   }
   subscribe() {
     super.subscribe();
-    const handleArgs = (args) => this.setState({ value: args[0] });
+    const handleArgs = (args) => {
+      this.setState({ value: args[0] });
+      this.outlets = Math.max(1, ~~+args[1] || 1);
+    };
     this.on("preInit", () => {
       this.inlets = 2;
-      this.outlets = 1;
     });
     this.on("updateArgs", handleArgs);
     this.on("updateState", ({ state: { value }, id }) => {
       this.setState({ value }, id);
-      this.outlet(0, this.state.value);
+      this.outletAll(new Array(this.outlets).fill(this.state.value));
     });
     this.on("postInit", () => {
       handleArgs(this.args);
@@ -168,7 +170,7 @@ class _ extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
         if (!(0,_sdk__WEBPACK_IMPORTED_MODULE_1__.isBang)(data)) {
           this.setState({ value: data });
         }
-        this.outlet(0, this.state.value);
+        this.outletAll(new Array(this.outlets).fill(this.state.value));
       } else if (inlet === 1) {
         this.setState({ value: data });
       }
@@ -187,12 +189,18 @@ _.inlets = [{
 }];
 _.outlets = [{
   type: "anything",
-  description: "Value"
+  description: "Value",
+  varLength: true
 }];
 _.args = [{
   type: "anything",
   optional: true,
   description: "Initial value"
+}, {
+  type: "number",
+  optional: true,
+  description: "Number of Outlets",
+  default: 1
 }];
 
 
@@ -232,7 +240,7 @@ var __spreadValues = (a, b) => {
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
-const _arr = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+const _arr = class extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { arr: [] };
@@ -327,7 +335,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class bang extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class bang extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -394,7 +402,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class call extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class call extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { instance: void 0, inputs: [], result: null };
@@ -517,6 +525,66 @@ call.props = {
 
 /***/ }),
 
+/***/ "./src/objects/change.ts":
+/*!*******************************!*\
+  !*** ./src/objects/change.ts ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ change)
+/* harmony export */ });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
+
+class change extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor() {
+    super(...arguments);
+    this._ = { prev: void 0 };
+  }
+  subscribe() {
+    super.subscribe();
+    this.on("preInit", () => {
+      this.inlets = 1;
+      this.outlets = 1;
+    });
+    this.on("inlet", ({ inlet, data }) => {
+      const result = this.getProp("mode") === "==" ? this._.prev == data : this._.prev === data;
+      if (!result)
+        this.outlet(0, data);
+      this._.prev = data;
+    });
+  }
+}
+change.description = "Filter out undesirable repetitions";
+change.inlets = [{
+  isHot: true,
+  type: "anything",
+  description: "Anything to be compared with the previous input"
+}];
+change.outlets = [{
+  type: "anything",
+  description: "Output if changed"
+}];
+change.args = [{
+  type: "anything",
+  description: "Initial state",
+  default: void 0,
+  optional: true
+}];
+change.props = {
+  mode: {
+    type: "enum",
+    enums: ["==", "==="],
+    default: "===",
+    description: "Comparison algorithm"
+  }
+};
+
+
+/***/ }),
+
 /***/ "./src/objects/collect.ts":
 /*!********************************!*\
   !*** ./src/objects/collect.ts ***!
@@ -526,13 +594,13 @@ call.props = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ sel)
+/* harmony export */   "default": () => (/* binding */ collect)
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class sel extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class collect extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { array: [] };
@@ -558,8 +626,8 @@ class sel extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
     });
   }
 }
-sel.description = "Collect data in an array";
-sel.inlets = [{
+collect.description = "Collect data in an array";
+collect.inlets = [{
   isHot: true,
   type: "anything",
   varLength: false,
@@ -570,7 +638,7 @@ sel.inlets = [{
   varLength: false,
   description: "Reset without output"
 }];
-sel.outlets = [{
+collect.outlets = [{
   type: "object",
   varLength: false,
   description: "Collected data as array"
@@ -592,7 +660,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 
-class dget extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class dget extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { keys: [] };
@@ -672,7 +740,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class ForIn extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class ForIn extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { buffer: this.args[0] };
@@ -742,7 +810,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class For extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class For extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { start: +this.args[0] || 0, end: +this.args[1] || 0, step: +this.args[2] || 1 };
@@ -837,7 +905,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 
-class gate extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class gate extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { pass: this.args[0] === "undefined" || this.args[0] === "" || !!this.args[0] };
@@ -898,7 +966,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 
-class get extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class get extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { keys: [] };
@@ -975,7 +1043,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class If extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class If extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1020,7 +1088,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class lambda extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { argsCount: typeof this.args[0] === "number" && this.args[0] >= 0 ? ~~this.args[0] : 0, result: void 0 };
@@ -1102,7 +1170,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class loadbang extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class loadbang extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1164,7 +1232,7 @@ var __spreadValues = (a, b) => {
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
 
-const _obj = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+const _obj = class extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { obj: {} };
@@ -1263,7 +1331,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class print extends _base__WEBPACK_IMPORTED_MODULE_1__.default {
+class print extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
   get title() {
     return `${this.args[0] || "Print"}`;
   }
@@ -1331,7 +1399,7 @@ var __spreadValues = (a, b) => {
 };
 
 
-const _sel = class extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+const _sel = class extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { array: [] };
@@ -1419,7 +1487,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 
-class set extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class set extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { key: typeof this.args[0] === "string" || typeof this.args[0] === "number" ? this.args[0] : void 0, value: this.args[1] };
@@ -1504,7 +1572,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/objects/base.ts");
 
-class thispatcher extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class thispatcher extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1547,7 +1615,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class unloadbang extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class unloadbang extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   subscribe() {
     super.subscribe();
     this.on("preInit", () => {
@@ -1591,7 +1659,7 @@ __webpack_require__.r(__webpack_exports__);
 var _a;
 
 
-class v extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class v extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this.state = { value: this.args[1] };
@@ -1750,20 +1818,20 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "React": () => (/* binding */ React),
-/* harmony export */   "Patcher": () => (/* binding */ Patcher),
-/* harmony export */   "Box": () => (/* binding */ Box),
-/* harmony export */   "Line": () => (/* binding */ Line),
+/* harmony export */   "Bang": () => (/* binding */ Bang),
 /* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
 /* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
+/* harmony export */   "Box": () => (/* binding */ Box),
 /* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
 /* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
-/* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
+/* harmony export */   "Line": () => (/* binding */ Line),
+/* harmony export */   "Patcher": () => (/* binding */ Patcher),
+/* harmony export */   "React": () => (/* binding */ React),
+/* harmony export */   "Utils": () => (/* binding */ Utils),
 /* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
 /* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
-/* harmony export */   "Bang": () => (/* binding */ Bang),
-/* harmony export */   "isBang": () => (/* binding */ isBang),
-/* harmony export */   "Utils": () => (/* binding */ Utils)
+/* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
+/* harmony export */   "isBang": () => (/* binding */ isBang)
 /* harmony export */ });
 const sdk = globalThis.jspatcherEnv.sdk;
 const {
@@ -1786,34 +1854,75 @@ const {
 
 /***/ }),
 
-/***/ "./node_modules/foreach/index.js":
-/*!***************************************!*\
-  !*** ./node_modules/foreach/index.js ***!
-  \***************************************/
-/***/ ((module) => {
+/***/ "./node_modules/for-each/index.js":
+/*!****************************************!*\
+  !*** ./node_modules/for-each/index.js ***!
+  \****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
 
 
-var hasOwn = Object.prototype.hasOwnProperty;
-var toString = Object.prototype.toString;
+var isCallable = __webpack_require__(/*! is-callable */ "./node_modules/is-callable/index.js");
 
-module.exports = function forEach (obj, fn, ctx) {
-    if (toString.call(fn) !== '[object Function]') {
-        throw new TypeError('iterator must be a function');
-    }
-    var l = obj.length;
-    if (l === +l) {
-        for (var i = 0; i < l; i++) {
-            fn.call(ctx, obj[i], i, obj);
-        }
-    } else {
-        for (var k in obj) {
-            if (hasOwn.call(obj, k)) {
-                fn.call(ctx, obj[k], k, obj);
+var toStr = Object.prototype.toString;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+var forEachArray = function forEachArray(array, iterator, receiver) {
+    for (var i = 0, len = array.length; i < len; i++) {
+        if (hasOwnProperty.call(array, i)) {
+            if (receiver == null) {
+                iterator(array[i], i, array);
+            } else {
+                iterator.call(receiver, array[i], i, array);
             }
         }
     }
 };
 
+var forEachString = function forEachString(string, iterator, receiver) {
+    for (var i = 0, len = string.length; i < len; i++) {
+        // no such thing as a sparse string.
+        if (receiver == null) {
+            iterator(string.charAt(i), i, string);
+        } else {
+            iterator.call(receiver, string.charAt(i), i, string);
+        }
+    }
+};
+
+var forEachObject = function forEachObject(object, iterator, receiver) {
+    for (var k in object) {
+        if (hasOwnProperty.call(object, k)) {
+            if (receiver == null) {
+                iterator(object[k], k, object);
+            } else {
+                iterator.call(receiver, object[k], k, object);
+            }
+        }
+    }
+};
+
+var forEach = function forEach(list, iterator, thisArg) {
+    if (!isCallable(iterator)) {
+        throw new TypeError('iterator must be a function');
+    }
+
+    var receiver;
+    if (arguments.length >= 3) {
+        receiver = thisArg;
+    }
+
+    if (toStr.call(list) === '[object Array]') {
+        forEachArray(list, iterator, receiver);
+    } else if (typeof list === 'string') {
+        forEachString(list, iterator, receiver);
+    } else {
+        forEachObject(list, iterator, receiver);
+    }
+};
+
+module.exports = forEach;
 
 
 /***/ }),
@@ -2108,6 +2217,7 @@ var $concat = bind.call(Function.call, Array.prototype.concat);
 var $spliceApply = bind.call(Function.apply, Array.prototype.splice);
 var $replace = bind.call(Function.call, String.prototype.replace);
 var $strSlice = bind.call(Function.call, String.prototype.slice);
+var $exec = bind.call(Function.call, RegExp.prototype.exec);
 
 /* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
 var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
@@ -2163,6 +2273,9 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 		throw new $TypeError('"allowMissing" argument must be a boolean');
 	}
 
+	if ($exec(/^%?[^%]*%?$/g, name) === null) {
+		throw new $SyntaxError('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
+	}
 	var parts = stringToPath(name);
 	var intrinsicBaseName = parts.length > 0 ? parts[0] : '';
 
@@ -2430,6 +2543,91 @@ module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArgum
 
 /***/ }),
 
+/***/ "./node_modules/is-callable/index.js":
+/*!*******************************************!*\
+  !*** ./node_modules/is-callable/index.js ***!
+  \*******************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+var fnToStr = Function.prototype.toString;
+var reflectApply = typeof Reflect === 'object' && Reflect !== null && Reflect.apply;
+var badArrayLike;
+var isCallableMarker;
+if (typeof reflectApply === 'function' && typeof Object.defineProperty === 'function') {
+	try {
+		badArrayLike = Object.defineProperty({}, 'length', {
+			get: function () {
+				throw isCallableMarker;
+			}
+		});
+		isCallableMarker = {};
+		// eslint-disable-next-line no-throw-literal
+		reflectApply(function () { throw 42; }, null, badArrayLike);
+	} catch (_) {
+		if (_ !== isCallableMarker) {
+			reflectApply = null;
+		}
+	}
+} else {
+	reflectApply = null;
+}
+
+var constructorRegex = /^\s*class\b/;
+var isES6ClassFn = function isES6ClassFunction(value) {
+	try {
+		var fnStr = fnToStr.call(value);
+		return constructorRegex.test(fnStr);
+	} catch (e) {
+		return false; // not a function
+	}
+};
+
+var tryFunctionObject = function tryFunctionToStr(value) {
+	try {
+		if (isES6ClassFn(value)) { return false; }
+		fnToStr.call(value);
+		return true;
+	} catch (e) {
+		return false;
+	}
+};
+var toStr = Object.prototype.toString;
+var fnClass = '[object Function]';
+var genClass = '[object GeneratorFunction]';
+var hasToStringTag = typeof Symbol === 'function' && !!Symbol.toStringTag; // better: use `has-tostringtag`
+/* globals document: false */
+var documentDotAll = typeof document === 'object' && typeof document.all === 'undefined' && document.all !== undefined ? document.all : {};
+
+module.exports = reflectApply
+	? function isCallable(value) {
+		if (value === documentDotAll) { return true; }
+		if (!value) { return false; }
+		if (typeof value !== 'function' && typeof value !== 'object') { return false; }
+		if (typeof value === 'function' && !value.prototype) { return true; }
+		try {
+			reflectApply(value, null, badArrayLike);
+		} catch (e) {
+			if (e !== isCallableMarker) { return false; }
+		}
+		return !isES6ClassFn(value);
+	}
+	: function isCallable(value) {
+		if (value === documentDotAll) { return true; }
+		if (!value) { return false; }
+		if (typeof value !== 'function' && typeof value !== 'object') { return false; }
+		if (typeof value === 'function' && !value.prototype) { return true; }
+		if (hasToStringTag) { return tryFunctionObject(value); }
+		if (isES6ClassFn(value)) { return false; }
+		var strClass = toStr.call(value);
+		return strClass === fnClass || strClass === genClass;
+	};
+
+
+/***/ }),
+
 /***/ "./node_modules/is-generator-function/index.js":
 /*!*****************************************************!*\
   !*** ./node_modules/is-generator-function/index.js ***!
@@ -2488,13 +2686,14 @@ module.exports = function isGeneratorFunction(fn) {
 "use strict";
 
 
-var forEach = __webpack_require__(/*! foreach */ "./node_modules/foreach/index.js");
+var forEach = __webpack_require__(/*! for-each */ "./node_modules/for-each/index.js");
 var availableTypedArrays = __webpack_require__(/*! available-typed-arrays */ "./node_modules/available-typed-arrays/index.js");
 var callBound = __webpack_require__(/*! call-bind/callBound */ "./node_modules/call-bind/callBound.js");
 
 var $toString = callBound('Object.prototype.toString');
 var hasToStringTag = __webpack_require__(/*! has-tostringtag/shams */ "./node_modules/has-tostringtag/shams.js")();
 
+var g = typeof globalThis === 'undefined' ? __webpack_require__.g : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $indexOf = callBound('Array.prototype.indexOf', true) || function indexOf(array, value) {
@@ -2511,7 +2710,7 @@ var gOPD = __webpack_require__(/*! es-abstract/helpers/getOwnPropertyDescriptor 
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		var arr = new __webpack_require__.g[typedArray]();
+		var arr = new g[typedArray]();
 		if (Symbol.toStringTag in arr) {
 			var proto = getPrototypeOf(arr);
 			var descriptor = gOPD(proto, Symbol.toStringTag);
@@ -3643,13 +3842,14 @@ exports.callbackify = callbackify;
 "use strict";
 
 
-var forEach = __webpack_require__(/*! foreach */ "./node_modules/foreach/index.js");
+var forEach = __webpack_require__(/*! for-each */ "./node_modules/for-each/index.js");
 var availableTypedArrays = __webpack_require__(/*! available-typed-arrays */ "./node_modules/available-typed-arrays/index.js");
 var callBound = __webpack_require__(/*! call-bind/callBound */ "./node_modules/call-bind/callBound.js");
 
 var $toString = callBound('Object.prototype.toString');
 var hasToStringTag = __webpack_require__(/*! has-tostringtag/shams */ "./node_modules/has-tostringtag/shams.js")();
 
+var g = typeof globalThis === 'undefined' ? __webpack_require__.g : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $slice = callBound('String.prototype.slice');
@@ -3658,8 +3858,8 @@ var gOPD = __webpack_require__(/*! es-abstract/helpers/getOwnPropertyDescriptor 
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		if (typeof __webpack_require__.g[typedArray] === 'function') {
-			var arr = new __webpack_require__.g[typedArray]();
+		if (typeof g[typedArray] === 'function') {
+			var arr = new g[typedArray]();
 			if (Symbol.toStringTag in arr) {
 				var proto = getPrototypeOf(arr);
 				var descriptor = gOPD(proto, Symbol.toStringTag);
@@ -3722,10 +3922,12 @@ var possibleNames = [
 	'Uint8ClampedArray'
 ];
 
+var g = typeof globalThis === 'undefined' ? __webpack_require__.g : globalThis;
+
 module.exports = function availableTypedArrays() {
 	var out = [];
 	for (var i = 0; i < possibleNames.length; i++) {
-		if (typeof __webpack_require__.g[possibleNames[i]] === 'function') {
+		if (typeof g[possibleNames[i]] === 'function') {
 			out[out.length] = possibleNames[i];
 		}
 	}
@@ -3746,7 +3948,7 @@ module.exports = function availableTypedArrays() {
 
 var GetIntrinsic = __webpack_require__(/*! get-intrinsic */ "./node_modules/get-intrinsic/index.js");
 
-var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%');
+var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
 if ($gOPD) {
 	try {
 		$gOPD([], 'length');
@@ -3768,7 +3970,7 @@ module.exports = $gOPD;
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-std","version":"1.0.8","description":"The standard package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-std","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","util":"^0.12.4","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-std","version":"1.0.9","description":"The standard package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js","jsdsppkg.main":"index.jsdsppkg.main.js","jsdsppkg.aw":"index.jsdsppkg.aw.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-std","devDependencies":{"@jspatcher/jspatcher":"^0.0.10","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","util":"^0.12.4","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
 
 /***/ })
 
@@ -3914,6 +4116,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _objects___WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./objects/_ */ "./src/objects/_.ts");
 /* harmony import */ var _objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./objects/unloadbang */ "./src/objects/unloadbang.ts");
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
+/* harmony import */ var _objects_change__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./objects/change */ "./src/objects/change.ts");
 
 
 
@@ -3935,32 +4138,34 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const obj = (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_11__.default);
-const arr = (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_arr__WEBPACK_IMPORTED_MODULE_12__.default);
+
+const obj = (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_obj__WEBPACK_IMPORTED_MODULE_11__["default"]);
+const arr = (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_arr__WEBPACK_IMPORTED_MODULE_12__["default"]);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => {
   return {
-    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_print__WEBPACK_IMPORTED_MODULE_13__.default),
-    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__.default),
-    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__.default),
-    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__.default),
-    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_7__.default),
-    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_14__.default),
+    print: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_print__WEBPACK_IMPORTED_MODULE_13__["default"]),
+    for: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_for__WEBPACK_IMPORTED_MODULE_0__["default"]),
+    "for-in": (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_for_in__WEBPACK_IMPORTED_MODULE_1__["default"]),
+    if: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_if__WEBPACK_IMPORTED_MODULE_2__["default"]),
+    gate: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_gate__WEBPACK_IMPORTED_MODULE_7__["default"]),
+    sel: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_sel__WEBPACK_IMPORTED_MODULE_14__["default"]),
     obj,
     "{}": obj,
     arr,
     "[]": arr,
-    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_set__WEBPACK_IMPORTED_MODULE_15__.default),
-    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_get__WEBPACK_IMPORTED_MODULE_8__.default),
-    collect: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_collect__WEBPACK_IMPORTED_MODULE_5__.default),
-    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_6__.default),
-    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__.default),
-    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_v__WEBPACK_IMPORTED_MODULE_17__.default),
-    _: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects___WEBPACK_IMPORTED_MODULE_18__.default),
-    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_9__.default),
-    bang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__.default),
-    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_10__.default),
-    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__.default),
-    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_16__.default)
+    set: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_set__WEBPACK_IMPORTED_MODULE_15__["default"]),
+    get: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_get__WEBPACK_IMPORTED_MODULE_8__["default"]),
+    collect: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_collect__WEBPACK_IMPORTED_MODULE_5__["default"]),
+    dget: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_dget__WEBPACK_IMPORTED_MODULE_6__["default"]),
+    call: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_call__WEBPACK_IMPORTED_MODULE_4__["default"]),
+    v: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_v__WEBPACK_IMPORTED_MODULE_17__["default"]),
+    _: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects___WEBPACK_IMPORTED_MODULE_18__["default"]),
+    lambda: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_lambda__WEBPACK_IMPORTED_MODULE_9__["default"]),
+    bang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_bang__WEBPACK_IMPORTED_MODULE_3__["default"]),
+    loadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_loadbang__WEBPACK_IMPORTED_MODULE_10__["default"]),
+    unloadbang: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_unloadbang__WEBPACK_IMPORTED_MODULE_19__["default"]),
+    thispatcher: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_thispatcher__WEBPACK_IMPORTED_MODULE_16__["default"]),
+    change: (0,_sdk__WEBPACK_IMPORTED_MODULE_20__.generateRemotedObject)(_objects_change__WEBPACK_IMPORTED_MODULE_21__["default"])
   };
 });
 

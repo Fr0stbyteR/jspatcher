@@ -60,6 +60,7 @@ export default class Setter<Static extends boolean = false> extends ImportedObje
             this.outlets = this.initialOutlets;
             this.handleUpdateArgs(this.args);
         });
+        this.on("postInit", this.updatePropertyMetaFromTS);
         this.on("updateArgs", this.handleUpdateArgs);
         this.on("inlet", this.handleInlet);
     }

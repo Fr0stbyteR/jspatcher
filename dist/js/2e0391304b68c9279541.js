@@ -9,10 +9,10 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "removeProperty": () => (/* binding */ removeProperty),
-/* harmony export */   "setProperty": () => (/* binding */ setProperty),
 /* harmony export */   "applyEdit": () => (/* binding */ applyEdit),
-/* harmony export */   "isWS": () => (/* binding */ isWS)
+/* harmony export */   "isWS": () => (/* binding */ isWS),
+/* harmony export */   "removeProperty": () => (/* binding */ removeProperty),
+/* harmony export */   "setProperty": () => (/* binding */ setProperty)
 /* harmony export */ });
 /* harmony import */ var _format_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./format.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/format.js");
 /* harmony import */ var _parser_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./parser.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/parser.js");
@@ -435,17 +435,17 @@ function isEOL(text, offset) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "contains": () => (/* binding */ contains),
+/* harmony export */   "findNodeAtLocation": () => (/* binding */ findNodeAtLocation),
+/* harmony export */   "findNodeAtOffset": () => (/* binding */ findNodeAtOffset),
 /* harmony export */   "getLocation": () => (/* binding */ getLocation),
+/* harmony export */   "getNodePath": () => (/* binding */ getNodePath),
+/* harmony export */   "getNodeType": () => (/* binding */ getNodeType),
+/* harmony export */   "getNodeValue": () => (/* binding */ getNodeValue),
 /* harmony export */   "parse": () => (/* binding */ parse),
 /* harmony export */   "parseTree": () => (/* binding */ parseTree),
-/* harmony export */   "findNodeAtLocation": () => (/* binding */ findNodeAtLocation),
-/* harmony export */   "getNodePath": () => (/* binding */ getNodePath),
-/* harmony export */   "getNodeValue": () => (/* binding */ getNodeValue),
-/* harmony export */   "contains": () => (/* binding */ contains),
-/* harmony export */   "findNodeAtOffset": () => (/* binding */ findNodeAtOffset),
-/* harmony export */   "visit": () => (/* binding */ visit),
 /* harmony export */   "stripComments": () => (/* binding */ stripComments),
-/* harmony export */   "getNodeType": () => (/* binding */ getNodeType)
+/* harmony export */   "visit": () => (/* binding */ visit)
 /* harmony export */ });
 /* harmony import */ var _scanner_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scanner.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/scanner.js");
 /*---------------------------------------------------------------------------------------------
@@ -1458,20 +1458,20 @@ function isDigit(ch) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "applyEdits": () => (/* binding */ applyEdits),
 /* harmony export */   "createScanner": () => (/* binding */ createScanner),
-/* harmony export */   "getLocation": () => (/* binding */ getLocation),
-/* harmony export */   "parse": () => (/* binding */ parse),
-/* harmony export */   "parseTree": () => (/* binding */ parseTree),
 /* harmony export */   "findNodeAtLocation": () => (/* binding */ findNodeAtLocation),
 /* harmony export */   "findNodeAtOffset": () => (/* binding */ findNodeAtOffset),
+/* harmony export */   "format": () => (/* binding */ format),
+/* harmony export */   "getLocation": () => (/* binding */ getLocation),
 /* harmony export */   "getNodePath": () => (/* binding */ getNodePath),
 /* harmony export */   "getNodeValue": () => (/* binding */ getNodeValue),
-/* harmony export */   "visit": () => (/* binding */ visit),
-/* harmony export */   "stripComments": () => (/* binding */ stripComments),
-/* harmony export */   "printParseErrorCode": () => (/* binding */ printParseErrorCode),
-/* harmony export */   "format": () => (/* binding */ format),
 /* harmony export */   "modify": () => (/* binding */ modify),
-/* harmony export */   "applyEdits": () => (/* binding */ applyEdits)
+/* harmony export */   "parse": () => (/* binding */ parse),
+/* harmony export */   "parseTree": () => (/* binding */ parseTree),
+/* harmony export */   "printParseErrorCode": () => (/* binding */ printParseErrorCode),
+/* harmony export */   "stripComments": () => (/* binding */ stripComments),
+/* harmony export */   "visit": () => (/* binding */ visit)
 /* harmony export */ });
 /* harmony import */ var _impl_format_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./impl/format.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/format.js");
 /* harmony import */ var _impl_edit_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./impl/edit.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/impl/edit.js");
@@ -1722,32 +1722,32 @@ function getLanguageService(params) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "TextDocument": () => (/* reexport safe */ _vscode_languageserver_textdocument_lib_esm_main_js__WEBPACK_IMPORTED_MODULE_1__.TextDocument),
-/* harmony export */   "Range": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Range),
-/* harmony export */   "TextEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.TextEdit),
+/* harmony export */   "ClientCapabilities": () => (/* binding */ ClientCapabilities),
 /* harmony export */   "Color": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Color),
 /* harmony export */   "ColorInformation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ColorInformation),
 /* harmony export */   "ColorPresentation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.ColorPresentation),
-/* harmony export */   "FoldingRange": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FoldingRange),
-/* harmony export */   "FoldingRangeKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FoldingRangeKind),
-/* harmony export */   "SelectionRange": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SelectionRange),
-/* harmony export */   "Diagnostic": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Diagnostic),
-/* harmony export */   "DiagnosticSeverity": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DiagnosticSeverity),
 /* harmony export */   "CompletionItem": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItem),
 /* harmony export */   "CompletionItemKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionItemKind),
 /* harmony export */   "CompletionList": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.CompletionList),
-/* harmony export */   "Position": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Position),
+/* harmony export */   "Diagnostic": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Diagnostic),
+/* harmony export */   "DiagnosticSeverity": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DiagnosticSeverity),
+/* harmony export */   "DocumentSymbol": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DocumentSymbol),
+/* harmony export */   "ErrorCode": () => (/* binding */ ErrorCode),
+/* harmony export */   "FoldingRange": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FoldingRange),
+/* harmony export */   "FoldingRangeKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.FoldingRangeKind),
+/* harmony export */   "Hover": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Hover),
 /* harmony export */   "InsertTextFormat": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.InsertTextFormat),
+/* harmony export */   "Location": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Location),
+/* harmony export */   "MarkedString": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkedString),
 /* harmony export */   "MarkupContent": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupContent),
 /* harmony export */   "MarkupKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkupKind),
+/* harmony export */   "Position": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Position),
+/* harmony export */   "Range": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Range),
+/* harmony export */   "SelectionRange": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SelectionRange),
 /* harmony export */   "SymbolInformation": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SymbolInformation),
 /* harmony export */   "SymbolKind": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.SymbolKind),
-/* harmony export */   "DocumentSymbol": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.DocumentSymbol),
-/* harmony export */   "Location": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Location),
-/* harmony export */   "Hover": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.Hover),
-/* harmony export */   "MarkedString": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.MarkedString),
-/* harmony export */   "ErrorCode": () => (/* binding */ ErrorCode),
-/* harmony export */   "ClientCapabilities": () => (/* binding */ ClientCapabilities)
+/* harmony export */   "TextDocument": () => (/* reexport safe */ _vscode_languageserver_textdocument_lib_esm_main_js__WEBPACK_IMPORTED_MODULE_1__.TextDocument),
+/* harmony export */   "TextEdit": () => (/* reexport safe */ _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__.TextEdit)
 /* harmony export */ });
 /* harmony import */ var _vscode_languageserver_types_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../vscode-languageserver-types/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-languageserver-types/main.js");
 /* harmony import */ var _vscode_languageserver_textdocument_lib_esm_main_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vscode-languageserver-textdocument/lib/esm/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-languageserver-textdocument/lib/esm/main.js");
@@ -1809,21 +1809,21 @@ var ClientCapabilities;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ASTNodeImpl": () => (/* binding */ ASTNodeImpl),
-/* harmony export */   "NullASTNodeImpl": () => (/* binding */ NullASTNodeImpl),
-/* harmony export */   "BooleanASTNodeImpl": () => (/* binding */ BooleanASTNodeImpl),
 /* harmony export */   "ArrayASTNodeImpl": () => (/* binding */ ArrayASTNodeImpl),
-/* harmony export */   "NumberASTNodeImpl": () => (/* binding */ NumberASTNodeImpl),
-/* harmony export */   "StringASTNodeImpl": () => (/* binding */ StringASTNodeImpl),
-/* harmony export */   "PropertyASTNodeImpl": () => (/* binding */ PropertyASTNodeImpl),
-/* harmony export */   "ObjectASTNodeImpl": () => (/* binding */ ObjectASTNodeImpl),
-/* harmony export */   "asSchema": () => (/* binding */ asSchema),
+/* harmony export */   "BooleanASTNodeImpl": () => (/* binding */ BooleanASTNodeImpl),
 /* harmony export */   "EnumMatch": () => (/* binding */ EnumMatch),
-/* harmony export */   "ValidationResult": () => (/* binding */ ValidationResult),
-/* harmony export */   "newJSONDocument": () => (/* binding */ newJSONDocument),
-/* harmony export */   "getNodeValue": () => (/* binding */ getNodeValue),
-/* harmony export */   "getNodePath": () => (/* binding */ getNodePath),
-/* harmony export */   "contains": () => (/* binding */ contains),
 /* harmony export */   "JSONDocument": () => (/* binding */ JSONDocument),
+/* harmony export */   "NullASTNodeImpl": () => (/* binding */ NullASTNodeImpl),
+/* harmony export */   "NumberASTNodeImpl": () => (/* binding */ NumberASTNodeImpl),
+/* harmony export */   "ObjectASTNodeImpl": () => (/* binding */ ObjectASTNodeImpl),
+/* harmony export */   "PropertyASTNodeImpl": () => (/* binding */ PropertyASTNodeImpl),
+/* harmony export */   "StringASTNodeImpl": () => (/* binding */ StringASTNodeImpl),
+/* harmony export */   "ValidationResult": () => (/* binding */ ValidationResult),
+/* harmony export */   "asSchema": () => (/* binding */ asSchema),
+/* harmony export */   "contains": () => (/* binding */ contains),
+/* harmony export */   "getNodePath": () => (/* binding */ getNodePath),
+/* harmony export */   "getNodeValue": () => (/* binding */ getNodeValue),
+/* harmony export */   "newJSONDocument": () => (/* binding */ newJSONDocument),
 /* harmony export */   "parse": () => (/* binding */ parse)
 /* harmony export */ });
 /* harmony import */ var _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../jsonc-parser/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js");
@@ -5200,9 +5200,9 @@ function unescape(str) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "UnresolvedSchema": () => (/* binding */ UnresolvedSchema),
+/* harmony export */   "JSONSchemaService": () => (/* binding */ JSONSchemaService),
 /* harmony export */   "ResolvedSchema": () => (/* binding */ ResolvedSchema),
-/* harmony export */   "JSONSchemaService": () => (/* binding */ JSONSchemaService)
+/* harmony export */   "UnresolvedSchema": () => (/* binding */ UnresolvedSchema)
 /* harmony export */ });
 /* harmony import */ var _jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../jsonc-parser/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js");
 /* harmony import */ var _vscode_uri_index_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../vscode-uri/index.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/vscode-uri/index.js");
@@ -5986,9 +5986,9 @@ function toDiagnosticSeverity(severityLevel) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "hexDigit": () => (/* binding */ hexDigit),
+/* harmony export */   "colorFrom256RGB": () => (/* binding */ colorFrom256RGB),
 /* harmony export */   "colorFromHex": () => (/* binding */ colorFromHex),
-/* harmony export */   "colorFrom256RGB": () => (/* binding */ colorFrom256RGB)
+/* harmony export */   "hexDigit": () => (/* binding */ hexDigit)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -6128,9 +6128,9 @@ function stringifyObject(obj, indent, stringifyLiteral) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "equals": () => (/* binding */ equals),
-/* harmony export */   "isNumber": () => (/* binding */ isNumber),
-/* harmony export */   "isDefined": () => (/* binding */ isDefined),
 /* harmony export */   "isBoolean": () => (/* binding */ isBoolean),
+/* harmony export */   "isDefined": () => (/* binding */ isDefined),
+/* harmony export */   "isNumber": () => (/* binding */ isNumber),
 /* harmony export */   "isString": () => (/* binding */ isString)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
@@ -6210,10 +6210,10 @@ function isString(val) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "startsWith": () => (/* binding */ startsWith),
-/* harmony export */   "endsWith": () => (/* binding */ endsWith),
 /* harmony export */   "convertSimple2RegExpPattern": () => (/* binding */ convertSimple2RegExpPattern),
-/* harmony export */   "repeat": () => (/* binding */ repeat)
+/* harmony export */   "endsWith": () => (/* binding */ endsWith),
+/* harmony export */   "repeat": () => (/* binding */ repeat),
+/* harmony export */   "startsWith": () => (/* binding */ startsWith)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -6554,65 +6554,65 @@ function getWellformedEdit(textEdit) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "integer": () => (/* binding */ integer),
-/* harmony export */   "uinteger": () => (/* binding */ uinteger),
-/* harmony export */   "Position": () => (/* binding */ Position),
-/* harmony export */   "Range": () => (/* binding */ Range),
-/* harmony export */   "Location": () => (/* binding */ Location),
-/* harmony export */   "LocationLink": () => (/* binding */ LocationLink),
+/* harmony export */   "AnnotatedTextEdit": () => (/* binding */ AnnotatedTextEdit),
+/* harmony export */   "ChangeAnnotation": () => (/* binding */ ChangeAnnotation),
+/* harmony export */   "ChangeAnnotationIdentifier": () => (/* binding */ ChangeAnnotationIdentifier),
+/* harmony export */   "CodeAction": () => (/* binding */ CodeAction),
+/* harmony export */   "CodeActionContext": () => (/* binding */ CodeActionContext),
+/* harmony export */   "CodeActionKind": () => (/* binding */ CodeActionKind),
+/* harmony export */   "CodeDescription": () => (/* binding */ CodeDescription),
+/* harmony export */   "CodeLens": () => (/* binding */ CodeLens),
 /* harmony export */   "Color": () => (/* binding */ Color),
 /* harmony export */   "ColorInformation": () => (/* binding */ ColorInformation),
 /* harmony export */   "ColorPresentation": () => (/* binding */ ColorPresentation),
-/* harmony export */   "FoldingRangeKind": () => (/* binding */ FoldingRangeKind),
-/* harmony export */   "FoldingRange": () => (/* binding */ FoldingRange),
+/* harmony export */   "Command": () => (/* binding */ Command),
+/* harmony export */   "CompletionItem": () => (/* binding */ CompletionItem),
+/* harmony export */   "CompletionItemKind": () => (/* binding */ CompletionItemKind),
+/* harmony export */   "CompletionItemTag": () => (/* binding */ CompletionItemTag),
+/* harmony export */   "CompletionList": () => (/* binding */ CompletionList),
+/* harmony export */   "CreateFile": () => (/* binding */ CreateFile),
+/* harmony export */   "DeleteFile": () => (/* binding */ DeleteFile),
+/* harmony export */   "Diagnostic": () => (/* binding */ Diagnostic),
 /* harmony export */   "DiagnosticRelatedInformation": () => (/* binding */ DiagnosticRelatedInformation),
 /* harmony export */   "DiagnosticSeverity": () => (/* binding */ DiagnosticSeverity),
 /* harmony export */   "DiagnosticTag": () => (/* binding */ DiagnosticTag),
-/* harmony export */   "CodeDescription": () => (/* binding */ CodeDescription),
-/* harmony export */   "Diagnostic": () => (/* binding */ Diagnostic),
-/* harmony export */   "Command": () => (/* binding */ Command),
-/* harmony export */   "TextEdit": () => (/* binding */ TextEdit),
-/* harmony export */   "ChangeAnnotation": () => (/* binding */ ChangeAnnotation),
-/* harmony export */   "ChangeAnnotationIdentifier": () => (/* binding */ ChangeAnnotationIdentifier),
-/* harmony export */   "AnnotatedTextEdit": () => (/* binding */ AnnotatedTextEdit),
-/* harmony export */   "TextDocumentEdit": () => (/* binding */ TextDocumentEdit),
-/* harmony export */   "CreateFile": () => (/* binding */ CreateFile),
-/* harmony export */   "RenameFile": () => (/* binding */ RenameFile),
-/* harmony export */   "DeleteFile": () => (/* binding */ DeleteFile),
-/* harmony export */   "WorkspaceEdit": () => (/* binding */ WorkspaceEdit),
-/* harmony export */   "WorkspaceChange": () => (/* binding */ WorkspaceChange),
-/* harmony export */   "TextDocumentIdentifier": () => (/* binding */ TextDocumentIdentifier),
-/* harmony export */   "VersionedTextDocumentIdentifier": () => (/* binding */ VersionedTextDocumentIdentifier),
-/* harmony export */   "OptionalVersionedTextDocumentIdentifier": () => (/* binding */ OptionalVersionedTextDocumentIdentifier),
-/* harmony export */   "TextDocumentItem": () => (/* binding */ TextDocumentItem),
-/* harmony export */   "MarkupKind": () => (/* binding */ MarkupKind),
-/* harmony export */   "MarkupContent": () => (/* binding */ MarkupContent),
-/* harmony export */   "CompletionItemKind": () => (/* binding */ CompletionItemKind),
-/* harmony export */   "InsertTextFormat": () => (/* binding */ InsertTextFormat),
-/* harmony export */   "CompletionItemTag": () => (/* binding */ CompletionItemTag),
-/* harmony export */   "InsertReplaceEdit": () => (/* binding */ InsertReplaceEdit),
-/* harmony export */   "InsertTextMode": () => (/* binding */ InsertTextMode),
-/* harmony export */   "CompletionItem": () => (/* binding */ CompletionItem),
-/* harmony export */   "CompletionList": () => (/* binding */ CompletionList),
-/* harmony export */   "MarkedString": () => (/* binding */ MarkedString),
-/* harmony export */   "Hover": () => (/* binding */ Hover),
-/* harmony export */   "ParameterInformation": () => (/* binding */ ParameterInformation),
-/* harmony export */   "SignatureInformation": () => (/* binding */ SignatureInformation),
-/* harmony export */   "DocumentHighlightKind": () => (/* binding */ DocumentHighlightKind),
 /* harmony export */   "DocumentHighlight": () => (/* binding */ DocumentHighlight),
+/* harmony export */   "DocumentHighlightKind": () => (/* binding */ DocumentHighlightKind),
+/* harmony export */   "DocumentLink": () => (/* binding */ DocumentLink),
+/* harmony export */   "DocumentSymbol": () => (/* binding */ DocumentSymbol),
+/* harmony export */   "EOL": () => (/* binding */ EOL),
+/* harmony export */   "FoldingRange": () => (/* binding */ FoldingRange),
+/* harmony export */   "FoldingRangeKind": () => (/* binding */ FoldingRangeKind),
+/* harmony export */   "FormattingOptions": () => (/* binding */ FormattingOptions),
+/* harmony export */   "Hover": () => (/* binding */ Hover),
+/* harmony export */   "InsertReplaceEdit": () => (/* binding */ InsertReplaceEdit),
+/* harmony export */   "InsertTextFormat": () => (/* binding */ InsertTextFormat),
+/* harmony export */   "InsertTextMode": () => (/* binding */ InsertTextMode),
+/* harmony export */   "Location": () => (/* binding */ Location),
+/* harmony export */   "LocationLink": () => (/* binding */ LocationLink),
+/* harmony export */   "MarkedString": () => (/* binding */ MarkedString),
+/* harmony export */   "MarkupContent": () => (/* binding */ MarkupContent),
+/* harmony export */   "MarkupKind": () => (/* binding */ MarkupKind),
+/* harmony export */   "OptionalVersionedTextDocumentIdentifier": () => (/* binding */ OptionalVersionedTextDocumentIdentifier),
+/* harmony export */   "ParameterInformation": () => (/* binding */ ParameterInformation),
+/* harmony export */   "Position": () => (/* binding */ Position),
+/* harmony export */   "Range": () => (/* binding */ Range),
+/* harmony export */   "RenameFile": () => (/* binding */ RenameFile),
+/* harmony export */   "SelectionRange": () => (/* binding */ SelectionRange),
+/* harmony export */   "SignatureInformation": () => (/* binding */ SignatureInformation),
+/* harmony export */   "SymbolInformation": () => (/* binding */ SymbolInformation),
 /* harmony export */   "SymbolKind": () => (/* binding */ SymbolKind),
 /* harmony export */   "SymbolTag": () => (/* binding */ SymbolTag),
-/* harmony export */   "SymbolInformation": () => (/* binding */ SymbolInformation),
-/* harmony export */   "DocumentSymbol": () => (/* binding */ DocumentSymbol),
-/* harmony export */   "CodeActionKind": () => (/* binding */ CodeActionKind),
-/* harmony export */   "CodeActionContext": () => (/* binding */ CodeActionContext),
-/* harmony export */   "CodeAction": () => (/* binding */ CodeAction),
-/* harmony export */   "CodeLens": () => (/* binding */ CodeLens),
-/* harmony export */   "FormattingOptions": () => (/* binding */ FormattingOptions),
-/* harmony export */   "DocumentLink": () => (/* binding */ DocumentLink),
-/* harmony export */   "SelectionRange": () => (/* binding */ SelectionRange),
-/* harmony export */   "EOL": () => (/* binding */ EOL),
-/* harmony export */   "TextDocument": () => (/* binding */ TextDocument)
+/* harmony export */   "TextDocument": () => (/* binding */ TextDocument),
+/* harmony export */   "TextDocumentEdit": () => (/* binding */ TextDocumentEdit),
+/* harmony export */   "TextDocumentIdentifier": () => (/* binding */ TextDocumentIdentifier),
+/* harmony export */   "TextDocumentItem": () => (/* binding */ TextDocumentItem),
+/* harmony export */   "TextEdit": () => (/* binding */ TextEdit),
+/* harmony export */   "VersionedTextDocumentIdentifier": () => (/* binding */ VersionedTextDocumentIdentifier),
+/* harmony export */   "WorkspaceChange": () => (/* binding */ WorkspaceChange),
+/* harmony export */   "WorkspaceEdit": () => (/* binding */ WorkspaceEdit),
+/* harmony export */   "integer": () => (/* binding */ integer),
+/* harmony export */   "uinteger": () => (/* binding */ uinteger)
 /* harmony export */ });
 /* --------------------------------------------------------------------------------------------
  * Copyright (c) Microsoft Corporation. All rights reserved.
@@ -8550,8 +8550,8 @@ var LIB;LIB=(()=>{"use strict";var t={470:t=>{function e(t){if("string"!=typeof 
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "loadMessageBundle": () => (/* binding */ loadMessageBundle),
-/* harmony export */   "config": () => (/* binding */ config)
+/* harmony export */   "config": () => (/* binding */ config),
+/* harmony export */   "loadMessageBundle": () => (/* binding */ loadMessageBundle)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -8703,14 +8703,14 @@ var richEditConfiguration = {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "DiagnosticsAdapter": () => (/* binding */ DiagnosticsAdapter),
 /* harmony export */   "CompletionAdapter": () => (/* binding */ CompletionAdapter),
-/* harmony export */   "HoverAdapter": () => (/* binding */ HoverAdapter),
-/* harmony export */   "DocumentSymbolAdapter": () => (/* binding */ DocumentSymbolAdapter),
+/* harmony export */   "DiagnosticsAdapter": () => (/* binding */ DiagnosticsAdapter),
+/* harmony export */   "DocumentColorAdapter": () => (/* binding */ DocumentColorAdapter),
 /* harmony export */   "DocumentFormattingEditProvider": () => (/* binding */ DocumentFormattingEditProvider),
 /* harmony export */   "DocumentRangeFormattingEditProvider": () => (/* binding */ DocumentRangeFormattingEditProvider),
-/* harmony export */   "DocumentColorAdapter": () => (/* binding */ DocumentColorAdapter),
+/* harmony export */   "DocumentSymbolAdapter": () => (/* binding */ DocumentSymbolAdapter),
 /* harmony export */   "FoldingRangeAdapter": () => (/* binding */ FoldingRangeAdapter),
+/* harmony export */   "HoverAdapter": () => (/* binding */ HoverAdapter),
 /* harmony export */   "SelectionRangeAdapter": () => (/* binding */ SelectionRangeAdapter)
 /* harmony export */ });
 /* harmony import */ var _fillers_monaco_editor_core_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./fillers/monaco-editor-core.js */ "./node_modules/monaco-editor/esm/vs/language/json/fillers/monaco-editor-core.js");
@@ -9315,18 +9315,18 @@ var SelectionRangeAdapter = /** @class */ (function () {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "createTokenizationSupport": () => (/* binding */ createTokenizationSupport),
-/* harmony export */   "TOKEN_DELIM_OBJECT": () => (/* binding */ TOKEN_DELIM_OBJECT),
+/* harmony export */   "TOKEN_COMMENT_BLOCK": () => (/* binding */ TOKEN_COMMENT_BLOCK),
+/* harmony export */   "TOKEN_COMMENT_LINE": () => (/* binding */ TOKEN_COMMENT_LINE),
 /* harmony export */   "TOKEN_DELIM_ARRAY": () => (/* binding */ TOKEN_DELIM_ARRAY),
 /* harmony export */   "TOKEN_DELIM_COLON": () => (/* binding */ TOKEN_DELIM_COLON),
 /* harmony export */   "TOKEN_DELIM_COMMA": () => (/* binding */ TOKEN_DELIM_COMMA),
+/* harmony export */   "TOKEN_DELIM_OBJECT": () => (/* binding */ TOKEN_DELIM_OBJECT),
+/* harmony export */   "TOKEN_PROPERTY_NAME": () => (/* binding */ TOKEN_PROPERTY_NAME),
 /* harmony export */   "TOKEN_VALUE_BOOLEAN": () => (/* binding */ TOKEN_VALUE_BOOLEAN),
 /* harmony export */   "TOKEN_VALUE_NULL": () => (/* binding */ TOKEN_VALUE_NULL),
-/* harmony export */   "TOKEN_VALUE_STRING": () => (/* binding */ TOKEN_VALUE_STRING),
 /* harmony export */   "TOKEN_VALUE_NUMBER": () => (/* binding */ TOKEN_VALUE_NUMBER),
-/* harmony export */   "TOKEN_PROPERTY_NAME": () => (/* binding */ TOKEN_PROPERTY_NAME),
-/* harmony export */   "TOKEN_COMMENT_BLOCK": () => (/* binding */ TOKEN_COMMENT_BLOCK),
-/* harmony export */   "TOKEN_COMMENT_LINE": () => (/* binding */ TOKEN_COMMENT_LINE)
+/* harmony export */   "TOKEN_VALUE_STRING": () => (/* binding */ TOKEN_VALUE_STRING),
+/* harmony export */   "createTokenizationSupport": () => (/* binding */ createTokenizationSupport)
 /* harmony export */ });
 /* harmony import */ var _deps_jsonc_parser_main_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_deps/jsonc-parser/main.js */ "./node_modules/monaco-editor/esm/vs/language/json/_deps/jsonc-parser/main.js");
 /*---------------------------------------------------------------------------------------------

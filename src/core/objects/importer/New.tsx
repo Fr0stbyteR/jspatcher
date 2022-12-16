@@ -1,6 +1,8 @@
 import StaticMethod from "./StaticMethod";
 import BaseObject from "../base/BaseObject";
 import Bang, { isBang } from "../base/Bang";
+import { updateObjectNewMetaFromTS } from "./ImportedObject";
+import type Env from "../../Env";
 import type ImportedObject from "./ImportedObject";
 import type { IJSPatcherObjectMeta, IPropsMeta } from "../base/AbstractObject";
 
@@ -63,6 +65,7 @@ export default class New extends BaseObject<{}, {}, [any | Bang, ...any[]], [any
         super.subscribe();
         this.on("postInit", () => {
             handleUpdateArgs(this.args);
+            updateObjectNewMetaFromTS(this, this.tsText);
         });
         const handleUpdateArgs = (args: any[]) => {
             if (typeof args[0] !== "undefined") {
@@ -72,7 +75,7 @@ export default class New extends BaseObject<{}, {}, [any | Bang, ...any[]], [any
                     this._.Wrapper = Wrapper as typeof StaticMethod;
                     const Fn = this.imported;
                     const argsCount = Math.max(Fn.length, args.length - 1, ~~+this.getProp("args"));
-                    this.inlets = Math.max(1, argsCount);
+                    this.inlets = Math.max(1, this.meta.args.length, argsCount);
                     this.outlets = 1 + this.inlets;
                 } else {
                     this.error("Given function is not constructable");
@@ -118,8 +121,18 @@ export default class New extends BaseObject<{}, {}, [any | Bang, ...any[]], [any
         this.updateUI({ loading });
     }
     get name() {
-        const c = this._.Wrapper;
-        return c.path[c.path.length - 1];
+        const { path } = this;
+        return path[path.length - 1];
+    }
+    get path() {
+        return this._.Wrapper.path;
+    }
+    get tsText() {
+        const pkgName = this._.Wrapper.package;
+        return `\
+${(this.env as Env).tsEnv.getImportString(this.patcher.props.dependencies)}
+${[pkgName, ...this.path].map(s => s || "prototype").join(".")}
+`;
     }
     get imported(): TAnyConstructor {
         const c = this._.Wrapper || this.patcher.activeLib.Object as typeof StaticMethod;

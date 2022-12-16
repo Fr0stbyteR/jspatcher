@@ -31,7 +31,7 @@ export default class GlobalPackageManager {
     readonly externals = new Map<string, Record<string, any>>();
     readonly importedPackages: IExternalPackage[] = [];
     get builtInPackagesNames() {
-        return [...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "Base", "globalThis", "API", "Faust", "Csound", "stdfaust.lib"];
+        return ["Base", ...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "globalThis", "API", "Faust", "Csound", "stdfaust.lib"];
     }
     get externalPackagesNames() {
         return this.importedPackages.filter(p => !p.isBuiltIn).map(p => p.name);
@@ -117,6 +117,13 @@ export default class GlobalPackageManager {
     async getModuleFromURL(url: string, id?: string) {
         if (this.externals.has(url)) return this.externals.get(url);
         const rawModule = await this.fetchModule(url);
+        if (id && url.match(/.js$/)) {
+            const dtsUrl = url.replace(/.js$/, ".d.ts");
+            try {
+                await this.env.tsEnv.addModuleFromURL(dtsUrl, id);
+            } catch (error) {
+            }
+        }
         const m = typeof rawModule === "object" ? rawModule : { [id]: rawModule };
         if (!Object.keys(m).length) throw new Error(`Module ${id} from ${url} is empty`);
         this.externals.set(url, m);

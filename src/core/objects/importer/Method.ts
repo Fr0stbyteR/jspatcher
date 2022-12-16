@@ -78,13 +78,15 @@ export default class Method<Static extends boolean = false> extends ImportedObje
     subscribe() {
         super.subscribe();
         this.on("postInit", () => {
+            const { initialInlets } = this;
+            this.updateFunctionMetaFromTS(initialInlets ? "Method" : "StaticMethod");
             handleUpdateArgs(this.args);
         });
         const handleUpdateArgs = (args: any[]) => {
             this._.inputs = args.slice();
             const fn = this.imported;
             const argsCount = Math.max(fn.length, args.length, ~~+this.getProp("args"));
-            this.inlets = Math.max(1, this.initialInlets + argsCount);
+            this.inlets = Math.max(1, this.meta.args.length, this.initialInlets + argsCount);
             this.outlets = this.initialOutlets + argsCount;
         };
         this.on("updateArgs", handleUpdateArgs);
@@ -92,7 +94,7 @@ export default class Method<Static extends boolean = false> extends ImportedObje
             if (props.args && typeof props.args === "number" && props.args >= 0) {
                 const fn = this.imported;
                 const argsCount = Math.max(fn.length, this.box.args.length, ~~props.args);
-                this.inlets = Math.max(1, this.initialInlets + argsCount);
+                this.inlets = Math.max(1, this.inlets, this.initialInlets + argsCount);
                 this.outlets = this.initialOutlets + argsCount;
             }
         });

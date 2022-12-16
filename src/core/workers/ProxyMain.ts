@@ -1,5 +1,5 @@
 import { ProxyMain } from "./ProxyMain.types";
-import { TypedMessageEvent, MessagePortResponse, MessagePortRequest } from "./Worker";
+import { MessagePortResponse, MessagePortRequest } from "./Worker";
 
 const Main = class ProxyMain {
     static Worker: typeof WebpackWorker;
@@ -15,7 +15,7 @@ const Main = class ProxyMain {
             worker.removeEventListener("message", handleMessage);
             worker.terminate();
         };
-        const handleMessage = async (e: TypedMessageEvent<MessagePortResponse & MessagePortRequest>) => {
+        const handleMessage = async (e: MessageEvent<MessagePortResponse & MessagePortRequest>) => {
             const { id, call, args, value, error } = e.data;
             if (call) {
                 const r: MessagePortResponse = { id };

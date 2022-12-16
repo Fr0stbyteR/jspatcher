@@ -2,6 +2,7 @@ import StaticMethod from "./StaticMethod";
 import Method from "./Method";
 import BaseObject from "../base/BaseObject";
 import Bang, { isBang } from "../base/Bang";
+import type Env from "../../Env";
 import type ImportedObject from "./ImportedObject";
 import type { IJSPatcherObjectMeta } from "../base/AbstractObject";
 
@@ -61,8 +62,18 @@ export default class Func extends BaseObject<{}, {}, [Bang], [TAnyFunction], any
         this.updateUI({ loading });
     }
     get name() {
-        const c = this._.Wrapper;
-        return c.path[c.path.length - 1];
+        const { path } = this;
+        return path[path.length - 1];
+    }
+    get path() {
+        return this._.Wrapper.path;
+    }
+    get tsText() {
+        const pkgName = this._.Wrapper.package;
+        return `\
+${(this.env as Env).tsEnv.getImportString(this.patcher.props.dependencies)}
+${[pkgName, ...this.path].map(s => s || "prototype").join(".")}
+`;
     }
     get imported(): TAnyFunction {
         const c = this._.Wrapper || this.patcher.activeLib.Object as TWrapper;

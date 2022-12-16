@@ -1,0 +1,18 @@
+.top-menu .loader-container {
+    display: flex;
+    align-items: center;
+}
+
+.top-menu .monitor {
+    display: flex; 
+    align-items: center; 
+    margin-left: 1em;
+    color: white;
+}
+
+.top-menu .build-error {
+    display: flex;
+    align-items: center;
+    margin-left: 1em;
+    color: lightcoral;
+}

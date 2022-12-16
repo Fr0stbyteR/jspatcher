@@ -1,6 +1,5 @@
 import * as BSON from "bson";
 import type { ProxyClient, WebSocketResponse, WebSocketRequest, WebSocketLog } from "./ProxyClient.types";
-import type { TypedMessageEvent } from "../workers/Worker";
 import { uuid } from "../../utils/utils";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import TimeoutError from "./TimeoutError";
@@ -39,7 +38,7 @@ const Client = class ProxyClient extends TypedEventEmitter<any> {
                 socket.removeEventListener("error", handleError);
                 reject(new Error(`WebSocket connect to '${this._serverUrl}' failed.`));
             };
-            const handleMessage = async (e: TypedMessageEvent<Blob>) => {
+            const handleMessage = async (e: MessageEvent<Blob>) => {
                 const data = await e.data.arrayBuffer();
                 this._handleLog?.({ msg: `Received: \t${data.byteLength} bytes` });
                 const { id, call, args, value, error } = BSON.deserialize(data, { promoteBuffers: true }) as WebSocketResponse & WebSocketRequest;

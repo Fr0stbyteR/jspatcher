@@ -54,6 +54,7 @@ export default class Property<Static extends boolean = false> extends ImportedOb
     subscribe() {
         super.subscribe();
         this.on("preInit", this.handlePreInit);
+        this.on("postInit", this.updatePropertyMetaFromTS);
         this.on("inlet", this.handleInlet);
     }
 }
