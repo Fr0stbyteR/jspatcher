@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+      - name: Install Dependencies
+        run: npm i -f
+      - name: Build
+        run: npm run build
+      - name: Deploy To Branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_branch: deploy
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
