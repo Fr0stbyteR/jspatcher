@@ -16,6 +16,7 @@ jobs:
           repository: 'electrosmith/Patcher-Objects'
           path: 'objects'
           ref: 'main'
+          token: ${{ secrets.ES_TOKEN }}
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
