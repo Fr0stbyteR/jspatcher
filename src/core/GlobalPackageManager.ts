@@ -31,7 +31,7 @@ export default class GlobalPackageManager {
     readonly externals = new Map<string, Record<string, any>>();
     readonly importedPackages: IExternalPackage[] = [];
     get builtInPackagesNames() {
-        return ["Base", ...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name), "globalThis", "API", "Faust", "Csound", "stdfaust.lib"];
+        return ["Base", ...this.importedPackages.filter(p => p.isBuiltIn).map(p => p.name)];
     }
     get externalPackagesNames() {
         return this.importedPackages.filter(p => !p.isBuiltIn).map(p => p.name);
@@ -41,7 +41,9 @@ export default class GlobalPackageManager {
     }
     async init() {
         this.js = {
-            Base: await (await import("./objects/base/index.jspatpkg")).default()/* ,
+            Base: await (await import("./objects/base/index.jspatpkg")).default()
+
+            /* ,
             globalThis: await (await import("./objects/globalThis/index.jspatpkg")).default(),
             api: await (await import("./objects/api/index.jspatpkg")).default(),
             faust: await (await import("./objects/faust/index.jspatpkg")).default(),
@@ -77,10 +79,10 @@ export default class GlobalPackageManager {
         // this.add({ globalThis: globalThis }, "js");
     }
     async postInit() {
-        this.add(await (await import("./objects/globalThis/index.jspatpkg")).default(), "js", ["globalThis"]);
-        this.add(await (await import("./objects/api/index.jspatpkg")).default(), "js", ["API"]);
-        this.add(await (await import("./objects/faust/index.jspatpkg")).default(this.env), "js", ["Faust"]);
-        this.add(await (await import("./objects/csound/index.jspatpkg")).default(this.env), "js", ["Csound"]);
+        // this.add(await (await import("./objects/globalThis/index.jspatpkg")).default(), "js", ["globalThis"]);
+        // this.add(await (await import("./objects/api/index.jspatpkg")).default(), "js", ["API"]);
+        // this.add(await (await import("./objects/faust/index.jspatpkg")).default(this.env), "js", ["Faust"]);
+        // this.add(await (await import("./objects/csound/index.jspatpkg")).default(this.env), "js", ["Csound"]);
     }
     add(pkgIn: TPackage, lib: PatcherMode, pathIn: string[] = []) {
         const path = pathIn.slice();

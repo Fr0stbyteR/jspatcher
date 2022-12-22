@@ -22,6 +22,7 @@
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
     "@grame/libmusicxml": "^3.19.1",
+    "@jspatcher/package-electrosmith": "file:../objects",
     "@jspatcher/package-analysers": "^1.0.1",
     "@jspatcher/package-cac": "latest",
     "@jspatcher/package-dsp": "latest",

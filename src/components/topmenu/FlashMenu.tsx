@@ -38,7 +38,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
 
         const data = await this.props.env.activeEditor.instance.serialize();
 
-        const webSocket = new WebSocket("ws://localhost:8000/ws/compile/");
+        const webSocket = new WebSocket("ws://143.244.189.42/ws/compile/");
 
         webSocket.onopen = (event) => {
             this.state.building = true;
@@ -53,7 +53,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
             try {
                 let json = JSON.parse(event.data.toString('utf-8'));
                 this.state.build_error = true;
-                this.state.error_message = json.error_message;
+                this.state.error_message = json.error_message.replaceAll("\\", "");
             } catch (error) {
                 var saveData = (function () {
                     var a = document.createElement("a");
@@ -73,6 +73,13 @@ export default class FlashMenu extends React.PureComponent<P, S> {
                 saveData(event.data, "patcher.bin");
             }
 
+            this.state.building = false;
+            this.forceUpdate();
+        };
+
+        webSocket.onerror = () => {
+            this.state.build_error = true;
+            this.state.error_message = "Error connecting to server. Please try again.";
             this.state.building = false;
             this.forceUpdate();
         };
