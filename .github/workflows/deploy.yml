@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          repository: 'electrosmith/Patcher-Objects'
+          repository: 'electro-smith/Patcher-Objects'
           path: 'objects'
           ref: 'main'
           token: ${{ secrets.ES_TOKEN }}
