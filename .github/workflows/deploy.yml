@@ -18,16 +18,20 @@ jobs:
           ref: 'main'
           token: ${{ secrets.ES_TOKEN }}
       - uses: actions/checkout@v2
+        with:
+          path: 'frontend'
       - uses: actions/setup-node@v1
         with:
           node-version: '14'
       - name: Install Dependencies
         run: npm i -f
+        working-directory: ./frontend
       - name: Build
         run: npm run build
+        working-directory: ./frontend
       - name: Deploy To Branch
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_branch: deploy
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./frontend/dist
