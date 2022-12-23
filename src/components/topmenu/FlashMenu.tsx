@@ -38,7 +38,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
 
         const data = await this.props.env.activeEditor.instance.serialize();
 
-        const webSocket = new WebSocket("ws://143.244.189.42/ws/compile/");
+        const webSocket = new WebSocket("wss://bell.electro-smith.com/ws/compile/");
 
         webSocket.onopen = (event) => {
             this.state.building = true;
