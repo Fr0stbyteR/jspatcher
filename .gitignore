@@ -86,3 +86,6 @@ $RECYCLE.BIN/
 
 # Local files
 local/
+
+# Build files
+dist/
