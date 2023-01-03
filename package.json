@@ -4,7 +4,8 @@
   "description": "patcher js",
   "scripts": {
     "prebuild": "node ./src/scripts/patchSemanticUICss.js",
-    "build": "webpack --mode development",
+    "build": "webpack --mode development --stats-children --env WS_DOMAIN=wss://bell.electro-smith.com",
+    "build-dev": "webpack --mode development --stats-children --env WS_DOMAIN=ws://localhost:8000",
     "build-watch": "npm run prebuild && webpack --mode development --watch --stats-children",
     "dist": "npm run prebuild && webpack --mode production",
     "update-packages": "node ./src/scripts/updatePackages.js",
