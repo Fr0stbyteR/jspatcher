@@ -13,6 +13,7 @@ import Plugin from "./WebAudioModule";
 import share from "./Share";
 import Serial from "./Serial";
 import WS from "./WebSocket";
+import FaustDataPatcher from "./FaustDataPatcher";
 
 export default async () => ({
     in: In,
@@ -24,6 +25,8 @@ export default async () => ({
     pdsp: DspSubPatcher,
     faustPatcher: FaustPatcher,
     pfaust: FaustPatcher,
+    faustDataPatcher: FaustDataPatcher,
+    "pfaust-data": FaustDataPatcher,
     gen: GenPatcher,
     bpatcher: BPatcher,
     "buffer~": Buffer,

@@ -42,7 +42,7 @@ export const theme: editor.IStandaloneThemeData = {
         { token: "faustCompOperators", foreground: "FFDDFF" },
         { token: "identifier", foreground: "77CCFF" }
     ],
-    colors: null
+    colors: {}
 };
 const faustKeywords = [
     "import", "component", "declare", "library", "environment", "int", "float",

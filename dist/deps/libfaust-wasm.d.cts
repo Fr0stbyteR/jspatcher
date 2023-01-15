@@ -1,3 +1,3 @@
 import { FaustModuleFactory } from "../src/types";
-declare const LibFFTW: FaustModuleFactory;
-export default LibFFTW;
+declare const faustModuleFactory: FaustModuleFactory;
+export default faustModuleFactory;

@@ -26,7 +26,7 @@ __webpack_require__.r(__webpack_exports__);
   \**********************/
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@jspatcher/package-cac","version":"1.0.1","description":"The Computer-Aided Coposition package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children","prebuild":"node prebuild.js","test-ts-parse":"tsc src/parse.ts --sourcemap -outDir local && node local/parse.js ./node_modules/@shren/sol/dist/index.d.ts"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-cac","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@shren/guidolib":"^1.7.3","@shren/sol":"file:../../sol","@types/react":"^17.0.32","@types/react-dom":"^17.0.10","clean-webpack-plugin":"^4.0.0","copy-webpack-plugin":"^9.0.1","esbuild":"^0.14.1","esbuild-loader":"^2.16.0","react":"^17.0.2","react-dom":"^17.0.2","typescript":"^4.4.4","webpack":"^5.59.1","webpack-cli":"^4.9.1"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-cac","version":"1.0.0","description":"The Computer-Aided Coposition package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-cac","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@shren/guidolib":"^1.7.3","@shren/sol":"file:../../sol","@types/react":"^17.0.32","@types/react-dom":"^17.0.10","clean-webpack-plugin":"^4.0.0","copy-webpack-plugin":"^9.0.1","esbuild":"^0.14.1","esbuild-loader":"^2.16.0","react":"^17.0.2","react-dom":"^17.0.2","typescript":"^4.4.4","webpack":"^5.59.1","webpack-cli":"^4.9.1"}}');
 
 /***/ })
 
@@ -124,14 +124,14 @@ var __webpack_exports__ = {};
   \**********************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "name": () => (/* binding */ name),
 /* harmony export */   "author": () => (/* binding */ author),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "license": () => (/* binding */ license),
+/* harmony export */   "keywords": () => (/* binding */ keywords),
+/* harmony export */   "version": () => (/* binding */ version),
 /* harmony export */   "description": () => (/* binding */ description),
 /* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
-/* harmony export */   "keywords": () => (/* binding */ keywords),
-/* harmony export */   "license": () => (/* binding */ license),
-/* harmony export */   "name": () => (/* binding */ name),
-/* harmony export */   "version": () => (/* binding */ version)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
 var __defProp = Object.defineProperty;

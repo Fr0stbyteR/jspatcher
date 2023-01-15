@@ -34,7 +34,7 @@
     "@jspatcher/package-webaudio": "latest",
     "@monaco-editor/react": "^4.2.2",
     "@shren/faust-ui": "^1.0.4",
-    "@shren/faustwasm": "^0.0.16",
+    "@shren/faustwasm": "^0.0.22",
     "@shren/fftw-js": "^0.1.6",
     "@shren/guidolib": "^1.7.3",
     "@types/emscripten": "^1.39.5",
