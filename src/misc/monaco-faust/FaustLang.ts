@@ -1,5 +1,5 @@
 import { languages, editor, Position, Range } from "monaco-editor/esm/vs/editor/editor.api";
-import type { FaustCompiler } from "@shren/faustwasm/dist/esm-bundle";
+import type { FaustCompiler } from "@shren/faustwasm/dist/esm";
 import { Faust2Doc, TFaustDocs, TFaustDoc } from "./Faust2Doc";
 import { docSections, faustDocURL } from "./documentation";
 

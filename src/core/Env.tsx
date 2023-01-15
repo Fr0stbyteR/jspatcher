@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import type * as Faust from "@shren/faustwasm/dist/esm-bundle";
+import type * as Faust from "@shren/faustwasm/dist/esm";
 import type { Csound } from "@csound/browser";
 import { VERSION as wamApiVersion } from "@webaudiomodules/api";
 import { addFunctionModule, initializeWamEnv, initializeWamGroup } from "@webaudiomodules/sdk";
@@ -229,7 +229,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
 
         await this.taskMgr.newTask(this, "Initializing JSPatcher Environment...", async () => {
             await this.taskMgr.newTask("Env", "Loading FaustWasm...", async () => {
-                const Faust = await import("@shren/faustwasm/dist/esm-bundle");
+                const Faust = await import("@shren/faustwasm/dist/esm");
                 this.Faust = Faust;
             });
             await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {

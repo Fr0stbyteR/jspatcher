@@ -1,4 +1,4 @@
-import type { FaustCompiler } from "@shren/faustwasm/dist/esm-bundle";
+import type { FaustCompiler } from "@shren/faustwasm/dist/esm";
 import Bang, { isBang } from "../base/Bang";
 import type { IInletsMeta, IOutletsMeta } from "../base/AbstractObject";
 

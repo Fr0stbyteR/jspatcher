@@ -1,4 +1,4 @@
-import type { FaustAudioWorkletNode, FaustScriptProcessorNode } from "@shren/faustwasm/dist/esm-bundle";
+import type { FaustAudioWorkletNode, FaustScriptProcessorNode } from "@shren/faustwasm/dist/esm";
 import DefaultObject from "../base/DefaultObject";
 import type { DefaultUIState } from "../base/DefaultUI";
 

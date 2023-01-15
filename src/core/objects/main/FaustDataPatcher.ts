@@ -1,4 +1,4 @@
-import type { FaustOfflineProcessor } from "@shren/faustwasm/dist/esm-bundle";
+import type { FaustOfflineProcessor } from "@shren/faustwasm/dist/esm";
 import { isNumberArray } from "../../../utils/utils";
 import type { ProjectFileEventMap } from "../../file/AbstractProjectFile";
 import type Patcher from "../../patcher/Patcher";
