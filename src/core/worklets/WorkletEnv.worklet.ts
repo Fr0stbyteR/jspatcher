@@ -1,3 +1,5 @@
+import * as Faust from "@shren/faustwasm/dist/esm";
+import { FFTW, FFTWModule, instantiateFFTWModule } from "@shren/fftw-js/dist/esm-bundle";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 import TaskManager from "../TaskMgr";
 import TemporaryProjectItemManager from "../file/TemporaryProjectItemManager";
@@ -35,6 +37,9 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
     readonly sdk = new JSPatcherWorkletSDK();
     readonly username = "";
     readonly autoSave = true;
+    readonly Faust = Faust;
+    fftwModule: FFTWModule;
+    fftw: FFTW;
     currentProject: Project;
     globalTransport: GlobalTransportProcessor;
     constructor(options?: TypedAudioWorkletNodeOptions<WorkletEnvOptions>) {
@@ -55,6 +60,8 @@ export default class WorkletEnvProcessor extends AudioWorkletProxyProcessor<IWor
         await this.tempMgr.init();
         this.bindTaskMgr();
         this.bindFileMgr();
+        this.fftwModule = await instantiateFFTWModule();
+        this.fftw = new FFTW(this.fftwModule);
     }
     instances = new Set<IFileInstance>();
     activeInstance: IFileInstance;

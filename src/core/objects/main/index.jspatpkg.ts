@@ -14,6 +14,7 @@ import share from "./Share";
 import Serial from "./Serial";
 import WS from "./WebSocket";
 import FaustDataPatcher from "./FaustDataPatcher";
+import FaustFFTPatcher from "./FaustFFTPatcher";
 
 export default async () => ({
     in: In,
@@ -27,6 +28,8 @@ export default async () => ({
     pfaust: FaustPatcher,
     faustDataPatcher: FaustDataPatcher,
     "pfaust-data": FaustDataPatcher,
+    faustFFTPatcher: FaustFFTPatcher,
+    "pfaust-fft": FaustFFTPatcher,
     gen: GenPatcher,
     bpatcher: BPatcher,
     "buffer~": Buffer,

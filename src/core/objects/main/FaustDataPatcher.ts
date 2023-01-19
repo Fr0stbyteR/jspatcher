@@ -4,7 +4,7 @@ import type { ProjectFileEventMap } from "../../file/AbstractProjectFile";
 import type Patcher from "../../patcher/Patcher";
 import type { RawPatcher } from "../../types";
 import { UnPromisifiedFunction } from "../../workers/Worker";
-import type { IArgsMeta, IInletMeta, IOutletMeta, IPropsMeta } from "../base/AbstractObject";
+import type { IArgsMeta, IInletMeta, IInletsMeta, IOutletMeta, IOutletsMeta, IPropsMeta } from "../base/AbstractObject";
 import Bang, { isBang } from "../base/Bang";
 import DefaultObject from "../base/DefaultObject";
 import SubPatcherUI from "./SubPatcherUI";
@@ -31,6 +31,15 @@ export default class FaustDataPatcher extends DefaultObject<Partial<RawPatcher>,
     static version = "1.0.0";
     static package = "SubPatcher";
     static description = "Faust Sub-patcher, compiled to offline processor";
+    static inlets: IInletsMeta = [{
+        isHot: true,
+        type: "anything",
+        description: "A bang to output the processor, number or Float32Array as data input"
+    }];
+    static outlets: IOutletsMeta = [{
+        type: "object",
+        description: "FaustOfflineProcessor instance output"
+    }];
     static args: IArgsMeta = [{
         type: "string",
         optional: true,

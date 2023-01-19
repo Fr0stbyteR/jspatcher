@@ -11,7 +11,7 @@ interface InternalState extends FaustNodeInternalState {
     voices: number;
     code: string;
 }
-export default class FaustPatcher extends FaustNode<Partial<RawPatcher>, {}, [string, number], { patcher: Patcher }> {
+export default class FaustPatcher extends FaustNode<Partial<RawPatcher>, {}, [string, number], {}, { patcher: Patcher }> {
     static package = "SubPatcher";
     static description = "Faust Sub-patcher, compiled to AudioNode";
     static args: IJSPatcherObjectMeta["args"] = [{

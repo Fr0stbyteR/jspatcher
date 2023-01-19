@@ -1,7 +1,7 @@
 import type { FaustAudioWorkletNode } from "@shren/faustwasm/dist/esm";
 import CodePopupUI from "../base/CodePopupUI";
 import Bang, { isBang } from "../base/Bang";
-import DefaultObject from "../base/DefaultObject";
+import DefaultObject, { DefaultObjectProps } from "../base/DefaultObject";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 import type DefaultUI from "../base/DefaultUI";
 import type { TBPF, TMIDIEvent } from "../../types";
@@ -29,14 +29,15 @@ export interface FaustNodeInternalState {
 }
 type Args = [number];
 type I = [Bang | number | string | TMIDIEvent | Record<string, TBPF>, ...TBPF[]];
-type O = (null | FaustAudioWorkletNode)[];
+type O = (null | AudioNode)[];
 
 export default class FaustNode<
     D extends Record<string, any> & Partial<FaustNodeData> = {},
     S extends {} = {},
     A extends any[] = Args,
+    P extends Record<string, any> & Partial<DefaultObjectProps> = {},
     U extends {} = {}
-> extends DefaultObject<D & FaustNodeData, S, I, O, A, {}, U> {
+> extends DefaultObject<D & FaustNodeData, S, I, O, A, P & DefaultObjectProps, U> {
     static package = "Faust";
     static author = "Fr0stbyteR";
     static version = "1.0.0";

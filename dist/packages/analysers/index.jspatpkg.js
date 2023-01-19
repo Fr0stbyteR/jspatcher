@@ -870,14 +870,14 @@ if (true) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "name": () => (/* binding */ name),
 /* harmony export */   "author": () => (/* binding */ author),
-/* harmony export */   "license": () => (/* binding */ license),
-/* harmony export */   "keywords": () => (/* binding */ keywords),
-/* harmony export */   "version": () => (/* binding */ version),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "description": () => (/* binding */ description),
 /* harmony export */   "jspatcher": () => (/* binding */ jspatcher),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "keywords": () => (/* binding */ keywords),
+/* harmony export */   "license": () => (/* binding */ license),
+/* harmony export */   "name": () => (/* binding */ name),
+/* harmony export */   "version": () => (/* binding */ version)
 /* harmony export */ });
 /* harmony import */ var _package_info__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./package-info */ "./src/package-info.ts");
 var __defProp = Object.defineProperty;
@@ -897,8 +897,8 @@ var __spreadValues = (a, b) => {
   return a;
 };
 
-const name = _package_info__WEBPACK_IMPORTED_MODULE_0__.default.name.split("/").pop().replace(/^package-/, "");
-const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__.default;
+const name = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"].name.split("/").pop().replace(/^package-/, "");
+const { author, license, keywords, version, description, jspatcher } = _package_info__WEBPACK_IMPORTED_MODULE_0__["default"];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__spreadValues({ name, author, license, keywords, version, description }, jspatcher));
 
 
@@ -971,7 +971,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class Oscilloscope extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class Oscilloscope extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { node: void 0 };
@@ -1126,7 +1126,7 @@ Oscilloscope.props = {
     isUIState: true
   }
 };
-Oscilloscope.UI = _ui_oscilloscope__WEBPACK_IMPORTED_MODULE_1__.default;
+Oscilloscope.UI = _ui_oscilloscope__WEBPACK_IMPORTED_MODULE_1__["default"];
 
 
 /***/ }),
@@ -1146,7 +1146,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class SpectralAnalyser extends _default__WEBPACK_IMPORTED_MODULE_0__.default {
+class SpectralAnalyser extends _default__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { node: void 0, $requestTimer: -1 };
@@ -1362,7 +1362,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class Spectrogram extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class Spectrogram extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { node: void 0 };
@@ -1469,7 +1469,7 @@ Spectrogram.props = {
     isUIState: true
   }
 };
-Spectrogram.UI = _ui_spectrogram__WEBPACK_IMPORTED_MODULE_1__.default;
+Spectrogram.UI = _ui_spectrogram__WEBPACK_IMPORTED_MODULE_1__["default"];
 
 
 /***/ }),
@@ -1491,7 +1491,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class Spectroscope extends _base__WEBPACK_IMPORTED_MODULE_0__.default {
+class Spectroscope extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { node: void 0 };
@@ -1610,7 +1610,7 @@ Spectroscope.props = {
     isUIState: true
   }
 };
-Spectroscope.UI = _ui_spectroscope__WEBPACK_IMPORTED_MODULE_1__.default;
+Spectroscope.UI = _ui_spectroscope__WEBPACK_IMPORTED_MODULE_1__["default"];
 
 
 /***/ }),
@@ -1630,7 +1630,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sdk */ "./src/sdk.ts");
 
 
-class TemporalAnalyser extends _default__WEBPACK_IMPORTED_MODULE_0__.default {
+class TemporalAnalyser extends _default__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super(...arguments);
     this._ = { node: void 0, $requestTimer: -1 };
@@ -1778,31 +1778,31 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "React": () => (/* binding */ React),
-/* harmony export */   "PatcherAudio": () => (/* binding */ PatcherAudio),
-/* harmony export */   "OperableAudioBuffer": () => (/* binding */ OperableAudioBuffer),
-/* harmony export */   "Patcher": () => (/* binding */ Patcher),
-/* harmony export */   "Box": () => (/* binding */ Box),
-/* harmony export */   "Line": () => (/* binding */ Line),
+/* harmony export */   "Bang": () => (/* binding */ Bang),
 /* harmony export */   "BaseObject": () => (/* binding */ BaseObject),
-/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
 /* harmony export */   "BaseUI": () => (/* binding */ BaseUI),
-/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
+/* harmony export */   "Box": () => (/* binding */ Box),
+/* harmony export */   "BufferUtils": () => (/* binding */ BufferUtils),
 /* harmony export */   "CanvasUI": () => (/* binding */ CanvasUI),
-/* harmony export */   "DefaultPopupUI": () => (/* binding */ DefaultPopupUI),
 /* harmony export */   "CodePopupUI": () => (/* binding */ CodePopupUI),
 /* harmony export */   "DOMUI": () => (/* binding */ DOMUI),
+/* harmony export */   "DefaultObject": () => (/* binding */ DefaultObject),
+/* harmony export */   "DefaultPopupUI": () => (/* binding */ DefaultPopupUI),
+/* harmony export */   "DefaultUI": () => (/* binding */ DefaultUI),
+/* harmony export */   "Line": () => (/* binding */ Line),
+/* harmony export */   "MathUtils": () => (/* binding */ MathUtils),
+/* harmony export */   "OperableAudioBuffer": () => (/* binding */ OperableAudioBuffer),
+/* harmony export */   "Patcher": () => (/* binding */ Patcher),
+/* harmony export */   "PatcherAudio": () => (/* binding */ PatcherAudio),
+/* harmony export */   "React": () => (/* binding */ React),
+/* harmony export */   "SpectralAnalyserNode": () => (/* binding */ SpectralAnalyserNode),
+/* harmony export */   "TemporalAnalyserNode": () => (/* binding */ TemporalAnalyserNode),
+/* harmony export */   "TransmitterNode": () => (/* binding */ TransmitterNode),
+/* harmony export */   "Utils": () => (/* binding */ Utils),
 /* harmony export */   "generateDefaultObject": () => (/* binding */ generateDefaultObject),
 /* harmony export */   "generateRemoteObject": () => (/* binding */ generateRemoteObject),
 /* harmony export */   "generateRemotedObject": () => (/* binding */ generateRemotedObject),
-/* harmony export */   "Bang": () => (/* binding */ Bang),
-/* harmony export */   "isBang": () => (/* binding */ isBang),
-/* harmony export */   "TransmitterNode": () => (/* binding */ TransmitterNode),
-/* harmony export */   "TemporalAnalyserNode": () => (/* binding */ TemporalAnalyserNode),
-/* harmony export */   "SpectralAnalyserNode": () => (/* binding */ SpectralAnalyserNode),
-/* harmony export */   "MathUtils": () => (/* binding */ MathUtils),
-/* harmony export */   "BufferUtils": () => (/* binding */ BufferUtils),
-/* harmony export */   "Utils": () => (/* binding */ Utils)
+/* harmony export */   "isBang": () => (/* binding */ isBang)
 /* harmony export */ });
 const sdk = globalThis.jspatcherEnv.sdk;
 const {
@@ -1908,7 +1908,7 @@ class OscilloscopeUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.CanvasUI {
     let yFactor = range;
     if (autoRange) {
       let i = channels;
-      let s = 0;
+      let s;
       while (i--) {
         let j = l;
         while (j--) {
@@ -1995,25 +1995,28 @@ class OscilloscopeUI extends _sdk__WEBPACK_IMPORTED_MODULE_1__.CanvasUI {
       ctx.strokeStyle = channelColor[i];
       let maxInStep;
       let minInStep;
+      let $j;
+      let samp;
+      let $step;
+      let x;
+      let y;
       for (let j = $0; j < $1; j++) {
-        const $j = (j + $) % dl;
-        const samp = t[i][$j];
-        const $step = (j - $0) % sampsPerPixel;
+        $j = (j + $) % dl;
+        samp = t[i][$j];
+        $step = (j - $0) % sampsPerPixel;
         if ($step === 0) {
           maxInStep = samp;
           minInStep = samp;
+        } else {
+          if (samp > maxInStep)
+            maxInStep = samp;
+          if (samp < minInStep)
+            minInStep = samp;
         }
-        if ($step !== sampsPerPixel - 1) {
-          if ($step !== 0) {
-            if (samp > maxInStep)
-              maxInStep = samp;
-            if (samp < minInStep)
-              minInStep = samp;
-          }
+        if ($step !== sampsPerPixel - 1)
           continue;
-        }
-        const x = (j - $step - $0) * pixelsPerSamp;
-        let y = calcY(maxInStep, i);
+        x = (j - $step - $0) * pixelsPerSamp;
+        y = calcY(maxInStep, i);
         if (j === $0)
           ctx.moveTo(x, y);
         else
@@ -2336,7 +2339,7 @@ SpectroscopeUI.defaultSize = [120, 60];
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-analysers","version":"1.0.0","description":"The analysers package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-analysers","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","color-js":"^1.0.5","copy-webpack-plugin":"^9.0.1","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.8.0"},"dependencies":{}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-analysers","version":"1.0.3","description":"The analysers package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-analysers","devDependencies":{"@jspatcher/jspatcher":"^0.0.9","@types/react":"^17.0.19","clean-webpack-plugin":"^4.0.0-alpha.0","color-js":"^1.0.5","esbuild-loader":"^2.15.1","react":"^17.0.2","typescript":"^4.4.2","webpack":"^5.51.1","webpack-cli":"^4.8.0"}}');
 
 /***/ })
 
@@ -2461,11 +2464,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => {
   return {
-    "temporalAnalyser~": _objects_temporal_analyser__WEBPACK_IMPORTED_MODULE_4__.default,
-    "spectralAnalyser~": _objects_spectral_analyser__WEBPACK_IMPORTED_MODULE_1__.default,
-    "scope~": _objects_oscilloscope__WEBPACK_IMPORTED_MODULE_0__.default,
-    "spectroscope~": _objects_spectroscope__WEBPACK_IMPORTED_MODULE_3__.default,
-    "spectrogram~": _objects_spectrogram__WEBPACK_IMPORTED_MODULE_2__.default
+    "temporalAnalyser~": _objects_temporal_analyser__WEBPACK_IMPORTED_MODULE_4__["default"],
+    "spectralAnalyser~": _objects_spectral_analyser__WEBPACK_IMPORTED_MODULE_1__["default"],
+    "scope~": _objects_oscilloscope__WEBPACK_IMPORTED_MODULE_0__["default"],
+    "spectroscope~": _objects_spectroscope__WEBPACK_IMPORTED_MODULE_3__["default"],
+    "spectrogram~": _objects_spectrogram__WEBPACK_IMPORTED_MODULE_2__["default"]
   };
 });
 

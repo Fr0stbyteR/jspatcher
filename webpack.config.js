@@ -21,7 +21,7 @@ const config = {
   resolve: {
     fallback: {
       "path": require.resolve("path"),
-      "buffer": require.resolve("buffer"),
+      "buffer": require.resolve("buffer/"),
       "util": require.resolve("util"),
       "fs": false,
       "stream": require.resolve("stream-browserify"),
