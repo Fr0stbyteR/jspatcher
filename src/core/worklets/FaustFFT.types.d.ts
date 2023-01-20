@@ -1,4 +1,5 @@
 export interface IFaustFFTProcessor {
+    setProcessorParamValue(path: string, value: number): void;
     destroy(): void;
 }
 export interface IFaustFFTNode {}

@@ -88,6 +88,7 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
     private rfft: FFT;
     private fftProcessorFactory: FaustDspFactory;
     private fftProcessor: FaustMonoOfflineProcessor;
+    private fftHopSizeParam: string;
     private fftOverlap = 0;
     private fftHopSize = 0;
     private fftSize = 0;
@@ -119,6 +120,7 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
             this.$outputWrite = 0;
             this.$outputRead = -latency;
             this.fftBufferSize = Math.max(fftSize * 2 - this.fftHopSize, bufferSize * 2);
+            if (!fftSizeChanged && this.fftHopSizeParam) this.fftProcessor.setParamValue(this.fftHopSizeParam, this.fftHopSize);
         }
         if (fftSizeChanged) {
             this.rfft?.dispose();
@@ -219,6 +221,11 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
         this.fftProcessor.start();
         const fftSizeParam = params.find(s => s.endsWith("/fftSize"));
         if (fftSizeParam) this.fftProcessor.setParamValue(fftSizeParam, this.fftSize);
+        this.fftHopSizeParam = params.find(s => s.endsWith("/fftHopSize"));
+        if (this.fftHopSizeParam) this.fftProcessor.setParamValue(this.fftHopSizeParam, this.fftHopSize);
+    }
+    setProcessorParamValue(path: string, value: number) {
+        this.fftProcessor?.setParamValue(path, value);
     }
     process(inputs: Float32Array[][], outputs: Float32Array[][], parameters: Record<FaustFFTParameters, Float32Array>) {
         if (this.destroyed) return false;

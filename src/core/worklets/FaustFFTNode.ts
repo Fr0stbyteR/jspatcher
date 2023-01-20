@@ -8,7 +8,7 @@ export const processorId = "__JSPatcher_FaustFFTProcessor";
 export default class FaustFFTNode extends AudioWorkletProxyNode<IFaustFFTNode, IFaustFFTProcessor, FaustFFTParameters> implements IFaustFFTNode {
     static processorId = processorId;
     static register = (audioWorklet: AudioWorklet) => AudioWorkletRegister.register(audioWorklet, processorId, processorURL);
-    static fnNames: (keyof IFaustFFTProcessor)[] = ["destroy"];
+    static fnNames: (keyof IFaustFFTProcessor)[] = ["setProcessorParamValue", "destroy"];
     dspCode: string;
     inputChannels: number;
     outputChannels: number;
