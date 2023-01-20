@@ -44,7 +44,7 @@ const config = {
     rules: [{
         test: /\.worklet\.(ts|js)$/,
         use: [{
-          loader: 'worklet-loader',
+          loader: '@shren/worklet-loader',
           options: {
             name: 'js/[fullhash].worklet.js'
           }
