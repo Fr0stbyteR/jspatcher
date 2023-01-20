@@ -15,7 +15,7 @@ export default class FFmpegWorker extends TypedEventEmitter<FFmpegWorkerEventMap
     isReady = false;
     async init() {
         if (this.ffmpeg?.isLoaded) return;
-        this.ffmpeg = createFFmpeg({ corePath: "./deps/ffmpeg-core.js" });
+        this.ffmpeg = createFFmpeg({ corePath: new URL("./deps/ffmpeg-core.js", location.href).href });
         await this.ffmpeg.load();
         const handleLogger = (e: Parameters<LogCallback>[0]) => this.emit(e.type as "info" | "fferr" | "ffout", e.message);
         const handleProgress = (e: Parameters<ProgressCallback>[0]) => this.emit("progress", e.ratio);

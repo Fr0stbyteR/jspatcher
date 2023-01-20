@@ -1,4 +1,4 @@
-import { languages, editor, Position, Range } from "monaco-editor/esm/vs/editor/editor.api";
+import { languages, editor, Position, Range } from "monaco-editor/esm/vs/editor/editor.api"; // instead of simple "monaco-editor" for less built languages
 import type { FaustCompiler } from "@shren/faustwasm/dist/esm";
 import { Faust2Doc, TFaustDocs, TFaustDoc } from "./Faust2Doc";
 import { docSections, faustDocURL } from "./documentation";

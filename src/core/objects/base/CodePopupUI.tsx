@@ -48,7 +48,7 @@ export default class CodePopupUI<T extends DefaultObject = DefaultObject, P exte
         if (this.props.inDock) {
             if (!this.state.editorLoaded) return <Dimmer active><Loader content="Loading" /></Dimmer>;
             return (
-                <div style={{ display: "flex", flexDirection: "column", flex: "1 1 auto", width: "100%", height: "100%" }}>
+                <div style={{ position: "absolute", display: "flex", flexDirection: "column", flex: "1 1 auto", width: "100%", height: "100%" }}>
                     <div style={{ flex: "1 1 auto", overflow: "hidden" }}>
                         <this.editorJSX value={this.code} language={this.editorLanguage} theme="vs-dark" editorDidMount={this.handleCodeEditorMount} options={{ fontSize: 12 }} />
                     </div>

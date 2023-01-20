@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as ReactDOM from "react-dom/client";
 import type * as Faust from "@shren/faustwasm/dist/esm";
 import type { Csound } from "@csound/browser";
 import { VERSION as wamApiVersion } from "@webaudiomodules/api";
@@ -159,6 +159,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     instances = new Set<IFileInstance>();
     currentProject: Project;
     private _divRoot: HTMLDivElement;
+    private _reactRoot: ReactDOM.Root;
     private _options = new EnvOptionsManager(this);
     set options(options: PartialEnvOptions) {
         this._options.setOptions(options);
@@ -225,7 +226,10 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         };
         this.options.noUI = urlParamsOptions.noUI;
         this.options.runtime = urlParamsOptions.runtime;
-        if (!this.options.noUI && this.divRoot) ReactDOM.render(<UI env={this} />, this.divRoot);
+        if (!this.options.noUI && this.divRoot) {
+            this._reactRoot = ReactDOM.createRoot(this.divRoot);
+            this._reactRoot.render(<UI env={this} />);
+        }
 
         await this.taskMgr.newTask(this, "Initializing JSPatcher Environment...", async () => {
             await this.taskMgr.newTask("Env", "Loading FaustWasm...", async () => {
@@ -420,10 +424,12 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     get divRoot(): HTMLDivElement {
         return this._divRoot;
     }
+    /*
     set divRoot(root: HTMLDivElement) {
         if (root === this._divRoot) return;
-        if (!this.options.noUI && this._divRoot) ReactDOM.unmountComponentAtNode(this._divRoot);
+        if (!this.options.noUI && this._divRoot && this._reactRoot) this._reactRoot.unmount();
         this._divRoot = root;
         // if (!this._noUI && root) ReactDOM.render(this.loaded ? <UI patcher={this.activeInstance} /> : <LoaderUI env={this} />, root);
     }
+    */
 }
