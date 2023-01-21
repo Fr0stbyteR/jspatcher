@@ -198,12 +198,12 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
                 for (let j = 0; j < iffted.length - this.fftHopSize; j++) {
                     $ = mod(this.$outputWrite + j, this.fftBufferSize);
                     this.fftOutput[i][$] += iffted[j];
-                    this.windowSumSquare[$] += this.window[j] ** 2;
+                    if (i === 0) this.windowSumSquare[$] += this.window[j] ** 2;
                 }
                 for (let j = iffted.length - this.fftHopSize; j < iffted.length; j++) {
                     $ = mod(this.$outputWrite + j, this.fftBufferSize);
                     this.fftOutput[i][$] = iffted[j];
-                    this.windowSumSquare[$] = this.window[j] ** 2;
+                    if (i === 0) this.windowSumSquare[$] = this.window[j] ** 2;
                 }
             }
             this.$outputWrite += this.fftHopSize;

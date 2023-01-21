@@ -164,7 +164,7 @@ export default class FaustFFT<
                 }
             }
         } else if (this._.fftNode) {
-            const paramInlet = inlet - (this._.fftNode.numberOfInputs || 1);
+            const paramInlet = inlet - (this._.fftNode.inputChannels || 1);
             const param = this._.params[paramInlet];
             if (typeof data === "number") this._.fftNode.setProcessorParamValue(param, data);
         }
