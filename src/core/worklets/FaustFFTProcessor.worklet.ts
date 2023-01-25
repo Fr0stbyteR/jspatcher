@@ -17,12 +17,13 @@ const { registerProcessor, sampleRate, jspatcherEnv } = globalThis;
 const fftToSignal = (f: Float32Array) => {
     const fftSize = f.length;
     const len = fftSize / 2 + 1;
+    const invFFTSize = 1 / fftSize;
     const r = new Float32Array(len);
     const i = new Float32Array(len);
     const b = new Float32Array(len);
     for (let j = 0; j < len; j++) {
-        r[j] = f[j] / fftSize;
-        i[j] = (j === 0 || j === len - 1) ? 0 : f[fftSize - j] / fftSize;
+        r[j] = f[j] * invFFTSize;
+        i[j] = (j === 0 || j === len - 1) ? 0 : f[fftSize - j] * invFFTSize;
         b[j] = j;
     }
     return [r, i, b];
@@ -31,11 +32,18 @@ const fftToSignal = (f: Float32Array) => {
 const signalToFFT = (r: Float32Array, i: Float32Array) => {
     const len = (r.length - 1) * 2;
     const f = new Float32Array(len);
+    f.set(r);
     for (let j = 0; j < r.length; j++) {
-        f[j] = r[j];
         if (j === 0 || j === r.length - 1) continue;
         f[len - j] = i[j];
     }
+    return f;
+};
+const signalToNoFFT = (r: Float32Array, i: Float32Array) => {
+    const len = (r.length - 1) * 2;
+    const f = new Float32Array(len);
+    f.set(r.subarray(1, r.length));
+    f.set(i.subarray(0, i.length - 1), r.length - 1);
     return f;
 };
 
@@ -56,6 +64,11 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
             maxValue: 4,
             minValue: 0,
             name: "windowFunction"
+        }, {
+            defaultValue: 0,
+            maxValue: 1,
+            minValue: 0,
+            name: "noIFFT"
         }];
     }
     private destroyed = false;
@@ -67,6 +80,8 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
     private $outputWrite = 0;
     /** Pointer of next start sample to read of the output window */
     private $outputRead = 0;
+    /** Not perform in IFFT when reconstruct the audio signal */
+    private noIFFT = false;
     /** audio data from input, array of channels */
     private readonly fftInput: Float32Array[] = [];
     /** audio data for output, array of channels */
@@ -189,8 +204,13 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
             samplesForFFT -= this.fftHopSize;
             this.fftProcessor.compute(fftProcessorInputs.slice(0, this.fftProcessor.getNumInputs()), fftProcessorOutputs);
             for (let i = 0; i < this.fftOutput.length; i++) {
-                const ifftBuffer = signalToFFT(fftProcessorOutputs[i * 2] || new Float32Array(this.fftProcessorBufferSize), fftProcessorOutputs[i * 2 + 1] || new Float32Array(this.fftProcessorBufferSize));
-                const iffted = this.rfft.inverse(ifftBuffer);
+                let iffted: Float32Array;
+                if (this.noIFFT) {
+                    iffted = signalToNoFFT(fftProcessorOutputs[i * 2] || new Float32Array(this.fftProcessorBufferSize), fftProcessorOutputs[i * 2 + 1] || new Float32Array(this.fftProcessorBufferSize));
+                } else {
+                    const ifftBuffer = signalToFFT(fftProcessorOutputs[i * 2] || new Float32Array(this.fftProcessorBufferSize), fftProcessorOutputs[i * 2 + 1] || new Float32Array(this.fftProcessorBufferSize));
+                    iffted = this.rfft.inverse(ifftBuffer);
+                }
                 for (let j = 0; j < iffted.length; j++) {
                     iffted[j] *= this.window[j];
                 }
@@ -198,12 +218,12 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
                 for (let j = 0; j < iffted.length - this.fftHopSize; j++) {
                     $ = mod(this.$outputWrite + j, this.fftBufferSize);
                     this.fftOutput[i][$] += iffted[j];
-                    if (i === 0) this.windowSumSquare[$] += this.window[j] ** 2;
+                    if (i === 0) this.windowSumSquare[$] += this.noIFFT ? this.window[j] : this.window[j] ** 2;
                 }
                 for (let j = iffted.length - this.fftHopSize; j < iffted.length; j++) {
                     $ = mod(this.$outputWrite + j, this.fftBufferSize);
                     this.fftOutput[i][$] = iffted[j];
-                    if (i === 0) this.windowSumSquare[$] = this.window[j] ** 2;
+                    if (i === 0) this.windowSumSquare[$] = this.noIFFT ? this.window[j] : this.window[j] ** 2;
                 }
             }
             this.$outputWrite += this.fftHopSize;
@@ -238,6 +258,7 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
 
         const bufferSize = Math.max(...input.map(c => c.length)) || 128;
 
+        this.noIFFT = !!parameters.noIFFT[0];
         this.resetFFT(~~parameters.fftSize[0], ~~parameters.fftOverlap[0], ~~parameters.windowFunction[0], inputChannels, outputChannels, bufferSize);
 
         if (!this.fftProcessor) return true;

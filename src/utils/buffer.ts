@@ -164,7 +164,7 @@ export const skewness = (array: TypedArray | number[], from = 0, length = array.
  * @param {number} [cutoff] Between 0 - 1
  * @returns
  */
-export const rolloff = (array: TypedArray | number[], from = 0, length = array.length, cutoff?: number) => {
+export const rolloff = (array: TypedArray | number[], from = 0, length = array.length, cutoff = 0.99) => {
     let e = energy(array, from, length);
     const threshold = (cutoff || 0.99) * e;
     let n = length - 1;

@@ -13,6 +13,7 @@ export interface FaustFFTProps {
     fftSize: number;
     windowFunction: "rectangular" | "blackman" | "hamming" | "hann" | "triangular";
     fftOverlap: 1 | 2 | 4 | 8;
+    noIFFT: boolean;
 }
 type I = [Bang | number | string | Record<string, number>, ...number[]];
 export default class FaustFFT<
@@ -41,6 +42,11 @@ export default class FaustFFT<
             enums: [1, 2, 4, 8],
             description: "FFT Overlaps",
             default: 2
+        },
+        noIFFT: {
+            type: "boolean",
+            description: "Not Perform IFFt when reconstructing signal, the first element of the real output and the last element of the imaginary output will be dropped.",
+            default: false
         }
     };
     _: FaustFFTInternalState = {
@@ -78,6 +84,7 @@ export default class FaustFFT<
         if (this.meta.props.fftSize.enums.indexOf(this.getProp("fftSize")) !== -1) node.parameters.get("fftSize").value = this.getProp("fftSize");
         if (this.meta.props.windowFunction.enums.indexOf(this.getProp("windowFunction")) !== -1) node.parameters.get("windowFunction").value = this.meta.props.windowFunction.enums.indexOf(this.getProp("windowFunction"));
         if (this.meta.props.fftOverlap.enums.indexOf(this.getProp("fftOverlap")) !== -1) node.parameters.get("fftOverlap").value = this.getProp("fftOverlap");
+        node.parameters.get("noIFFT").value = +!!this.getProp("noIFFT");
         const { audioCtx } = this.patcher;
         const inlets = node.inputChannels;
         const outlets = node.outputChannels;
@@ -139,11 +146,11 @@ export default class FaustFFT<
         this.outlet(this.outlets - 1, this._.fftNode);
     }
     handleUpdateProps = async (props: Partial<FaustFFTProps>) => {
-        if (!("fftSize" in props || "windowFunction" in props || "fftOverlap" in props)) return;
         if (!this._.fftNode) return;
-        if (props.fftSize !== this.getProp("fftSize") && this.meta.props.fftSize.enums.indexOf(props.fftSize) !== -1) this._.fftNode.parameters.get("fftSize").value = props.fftSize;
-        if (props.windowFunction !== this.getProp("windowFunction") && this.meta.props.windowFunction.enums.indexOf(props.windowFunction) !== -1) this._.fftNode.parameters.get("windowFunction").value = this.meta.props.windowFunction.enums.indexOf(props.windowFunction);
-        if (props.fftOverlap !== this.getProp("fftOverlap") && this.meta.props.fftOverlap.enums.indexOf(props.fftOverlap) !== -1) this._.fftNode.parameters.get("fftOverlap").value = props.fftOverlap;
+        if ("fftSize" in props && props.fftSize !== this.getProp("fftSize") && this.meta.props.fftSize.enums.indexOf(props.fftSize) !== -1) this._.fftNode.parameters.get("fftSize").value = props.fftSize;
+        if ("windowFunction" in props && props.windowFunction !== this.getProp("windowFunction") && this.meta.props.windowFunction.enums.indexOf(props.windowFunction) !== -1) this._.fftNode.parameters.get("windowFunction").value = this.meta.props.windowFunction.enums.indexOf(props.windowFunction);
+        if ("fftOverlap" in props && props.fftOverlap !== this.getProp("fftOverlap") && this.meta.props.fftOverlap.enums.indexOf(props.fftOverlap) !== -1) this._.fftNode.parameters.get("fftOverlap").value = props.fftOverlap;
+        if ("noIFFT" in props && props.noIFFT !== this.getProp("noIFFT")) this._.fftNode.parameters.get("noIFFT").value = +!!props.noIFFT;
     };
     handlePostInit = async () => {
         await this.registerProcessor();
