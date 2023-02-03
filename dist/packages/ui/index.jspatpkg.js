@@ -4377,7 +4377,7 @@ class view extends _base__WEBPACK_IMPORTED_MODULE_2__["default"] {
     super.subscribe();
     this.on("preInit", () => {
       this.inlets = 1;
-      this.outlets = 0;
+      this.outlets = 1;
     });
     const handleUpdateArgs = (args) => {
       if (typeof args[0] === "string") {
@@ -4385,6 +4385,7 @@ class view extends _base__WEBPACK_IMPORTED_MODULE_2__["default"] {
         template.innerHTML = args[0];
         this._.children = Array.from(template.content.children);
         this.updateUI({ children: this._.children });
+        this.outlet(0, this._.children);
       }
     };
     this.on("postInit", () => handleUpdateArgs(this.args));
@@ -4400,6 +4401,7 @@ class view extends _base__WEBPACK_IMPORTED_MODULE_2__["default"] {
             this._.children = [data];
           }
           this.updateUI({ children: this._.children });
+          this.outlet(0, this._.children);
         }
       }
     });
@@ -4410,6 +4412,10 @@ view.inlets = [{
   isHot: true,
   type: "anything",
   description: "HTML string or HTMLElement object to view"
+}];
+view.outlets = [{
+  type: "object",
+  description: "Array of HTML nodes created"
 }];
 view.args = [{
   type: "string",
@@ -53410,7 +53416,7 @@ function values(object) {
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"name":"@jspatcher/package-ui","version":"1.0.3","description":"The UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-ui","devDependencies":{"@jspatcher/jspatcher":"^0.0.10","@types/react":"^17.0.30","clean-webpack-plugin":"^4.0.0","color-js":"^1.0.5","css-loader":"^6.4.0","esbuild-loader":"^2.16.0","monaco-editor":"^0.27.0","react":"^17.0.2","react-monaco-editor":"^0.44.0","sass":"^1.45.2","sass-loader":"^12.2.0","semantic-ui-react":"^2.0.4","style-loader":"^3.3.0","typescript":"^4.4.4","util":"^0.12.4","webpack":"^5.58.2","webpack-cli":"^4.9.1"}}');
+module.exports = JSON.parse('{"name":"@jspatcher/package-ui","version":"1.0.4","description":"The UI package for JSPatcher","main":"dist/index.js","scripts":{"build":"webpack --mode development","build-watch":"webpack --mode development --watch --stats-children"},"keywords":["jspatcher"],"jspatcher":{"isJSPatcherPackage":true,"thumbnail":"","jspatpkg":"index.jspatpkg.js"},"author":"Fr0stbyteR","license":"GPL-3.0-or-later","repository":"https://github.com/jspatcher/package-ui","devDependencies":{"@jspatcher/jspatcher":"^0.0.10","@types/react":"^17.0.30","clean-webpack-plugin":"^4.0.0","color-js":"^1.0.5","css-loader":"^6.4.0","esbuild-loader":"^2.16.0","monaco-editor":"^0.27.0","react":"^17.0.2","react-monaco-editor":"^0.44.0","sass":"^1.45.2","sass-loader":"^12.2.0","semantic-ui-react":"^2.0.4","style-loader":"^3.3.0","typescript":"^4.4.4","util":"^0.12.4","webpack":"^5.58.2","webpack-cli":"^4.9.1"}}');
 
 /***/ })
 

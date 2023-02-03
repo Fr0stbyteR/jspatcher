@@ -22,7 +22,7 @@
     "@ffmpeg/core": "^0.11.0",
     "@ffmpeg/ffmpeg": "^0.11.6",
     "@grame/libmusicxml": "^3.19.1",
-    "@jspatcher/package-analysers": "^1.0.3",
+    "@jspatcher/package-analysers": "latest",
     "@jspatcher/package-cac": "latest",
     "@jspatcher/package-dsp": "latest",
     "@jspatcher/package-live": "latest",

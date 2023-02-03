@@ -1,7 +1,7 @@
 import DefaultObject from "./DefaultObject";
-import type { IArgsMeta, IInletsMeta, IOutletsMeta } from "./AbstractObject";
+import type { IArgsMeta, IInletsMeta, IOutletsMeta, IPropsMeta } from "./AbstractObject";
 
-export default class Listen extends DefaultObject<{}, {}, [EventTarget, string], [Event], [string], {}> {
+export default class Listen extends DefaultObject<{}, {}, [EventTarget, string], [Event], [string], { once: boolean }> {
     static description = "Listen to EventTarget events";
     static inlets: IInletsMeta = [{
         isHot: false,
@@ -21,6 +21,13 @@ export default class Listen extends DefaultObject<{}, {}, [EventTarget, string],
         description: "Event name to listen",
         optional: false
     }];
+    static props: IPropsMeta<{ once: boolean }> = {
+        once: {
+            type: "boolean",
+            description: "Listen only once the event until next target received",
+            default: false
+        }
+    };
     _: { target: EventTarget; name: string } = { target: window, name: this.args[0] };
     subscribe() {
         super.subscribe();
@@ -29,15 +36,20 @@ export default class Listen extends DefaultObject<{}, {}, [EventTarget, string],
             this.outlets = 1;
         });
         const listener = (e: Event) => this.outlet(0, e);
+        const onceListener = (e: Event) => {
+            unsubscribe();
+            this.outlet(0, e);
+        };
         const unsubscribe = () => {
             if (!this._.target) return;
             if (typeof this._.name !== "string") return;
             this._.target.removeEventListener(this._.name, listener);
+            this._.target.removeEventListener(this._.name, onceListener);
         };
         const subscribe = () => {
             if (!this._.target) return;
             if (typeof this._.name !== "string") return;
-            this._.target.addEventListener(this._.name, listener);
+            this._.target.addEventListener(this._.name, this.getProp("once") ? onceListener : listener);
         };
         this.on("postInit", subscribe);
         this.on("updateArgs", (args) => {
