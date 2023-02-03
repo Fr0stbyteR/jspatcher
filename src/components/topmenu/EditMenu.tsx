@@ -51,11 +51,11 @@ export default class EditMenu extends React.PureComponent<P, S> {
         if (this.state.locked) return;
         this.state.editor.selectAll();
     };
-    onShortKey(e: KeyboardEvent) {
-        if (this.state.locked) return false;
+    onHotKey(e: KeyboardEvent) {
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        const performed = this.refInstanceEditMenu.current?.onShortKey?.(e);
+        const performed = this.refInstanceEditMenu.current?.onHotKey?.(e);
         if (!performed) {
+            if (this.state.locked) return false;
             if (ctrlKey && e.key === "z") this.handleClickUndo();
             else if (ctrlKey && e.key === "y") this.handleClickRedo();
             else if (ctrlKey && e.key === "x") this.handleClickCut();

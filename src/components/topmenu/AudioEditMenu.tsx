@@ -73,7 +73,8 @@ export default class AudioEditMenu extends React.PureComponent<P, S> {
     handleRemixModalClose = () => {
         this.setState({ remixModelOpen: false });
     };
-    onShortKey(e: KeyboardEvent) {
+    onHotKey(e: KeyboardEvent) {
+        if (this.props.locked) return false;
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         let performed = true;
         if (e.key === " ") this.handleClickPlayStop();

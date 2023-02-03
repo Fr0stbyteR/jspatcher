@@ -33,14 +33,22 @@ export default class PatcherEditMenu extends React.PureComponent<P> {
     handleClickSendToBack = () => {
         this.props.editor.sendToBack();
     };
-    onShortKey(e: KeyboardEvent) {
+    handleClickPresentation = () => {
+        this.props.editor.setState({ presentation: !this.props.editor.state.presentation });
+    };
+    handleClickLock = () => {
+        this.props.editor.setState({ locked: !this.props.editor.state.locked });
+    };
+    onHotKey(e: KeyboardEvent) {
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         let performed = true;
-        if (ctrlKey && e.shiftKey && e.key === "f") this.handleClickBringToFront();
-        else if (ctrlKey && e.shiftKey && e.key === "b") this.handleClickSendToBack();
-        else if (ctrlKey && e.key === "d") this.handleClickDuplicate();
-        else if (ctrlKey && e.key === "i") this.handleClickInspector();
-        else if (ctrlKey && e.key === "Enter") this.handleClickDock();
+        if (!this.props.locked && ctrlKey && e.shiftKey && e.key === "f") this.handleClickBringToFront();
+        else if (ctrlKey && e.altKey && e.key === "e") this.handleClickPresentation();
+        else if (ctrlKey && e.key === "e") this.handleClickLock();
+        else if (!this.props.locked && ctrlKey && e.shiftKey && e.key === "b") this.handleClickSendToBack();
+        else if (!this.props.locked && ctrlKey && e.key === "d") this.handleClickDuplicate();
+        else if (!this.props.locked && ctrlKey && e.key === "i") this.handleClickInspector();
+        else if (!this.props.locked && ctrlKey && e.key === "Enter") this.handleClickDock();
         else performed = false;
         return performed;
     }
@@ -53,6 +61,8 @@ export default class PatcherEditMenu extends React.PureComponent<P> {
                 <Dropdown.Item onClick={this.handleClickDuplicate} text="Duplicate" description={`${ctrlKey} + D`} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickBringToFront} text="Bring to Front" description={`${ctrlKey} + Shift + F`} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickSendToBack} text="Send to Back" description={`${ctrlKey} + Shift + B`} disabled={locked} />
+                <Dropdown.Item onClick={this.handleClickLock} text="Switch Edit/Lock" description={`${ctrlKey} + E`} />
+                <Dropdown.Item onClick={this.handleClickPresentation} text="Switch Presentation Mode" description={`${ctrlKey} + Alt + E`} />
                 <Dropdown.Item onClick={this.handleClickInspector} text="Inspector" description={`${ctrlKey} + I`} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickDock} text="Dock UI" description={`${ctrlKey} + Enter`} disabled={locked} />
             </>

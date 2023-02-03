@@ -46,7 +46,7 @@ const config = {
         use: [{
           loader: '@shren/worklet-loader',
           options: {
-            name: 'js/[fullhash].worklet.js'
+            name: 'js/[name].js'
           }
         }],
         exclude: /node_modules/
