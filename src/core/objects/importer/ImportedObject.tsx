@@ -141,6 +141,18 @@ export const updateObjectFunctionMetaFromTS = (object: BaseObject, tsText: strin
     if (parameters?.length) {
         const metaInlets = inlets;
         inlets = inlets.slice();
+        if (parameters[0].name === "this") {
+            if (kind === "Method") {
+                const parameter = parameters[0];
+                const type = typeof parameter.type === "string" ? parameter.type : "";
+                const description = `${metaInlets[0].description} -> this: ${type}`;
+                inlets[0] = {
+                    ...metaInlets[0],
+                    description
+                };
+            }
+            parameters.splice(0, 1);
+        }
         for (let i = 0; i < parameters.length; i++) {
             const parameter = parameters[i];
             const type = typeof parameter.type === "string" ? parameter.type : "";

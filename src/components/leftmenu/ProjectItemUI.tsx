@@ -268,7 +268,7 @@ export default class ProjectItemUI extends React.PureComponent<P, S> {
     };
 
     componentDidMount() {
-        if (this.props.item.isFolder) this.props.item.on("ready", this.handleItemReady);
+        if (this.props.item.isFolder === false) this.props.item.on("ready", this.handleItemReady);
         const item = this.props.item as IProjectItem;
         item.on("dirty", this.handleItemDirty);
         item.on("nameChanged", this.handleItemNameChanged);
