@@ -23,9 +23,12 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14'
-      - name: Install Dependencies
+      - name: Install Dependencies 1
         run: npm i -f
         working-directory: ./frontend
+      - name: Install Dependencies 2
+        run: ./build.sh
+        working-directory: ./objects
       - name: Build
         run: npm run build
         working-directory: ./frontend
