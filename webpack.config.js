@@ -118,7 +118,7 @@ module.exports = (env, argv) => {
           { from: './node_modules/@grame/libmusicxml/libmusicxml.wasm', to: './deps/' },
           { from: './node_modules/@shren/guidolib/libGUIDOEngine.wasm', to: './deps/' },
           { from: internalPackagesPath, to: './packages/[name][ext]' },
-          ...INTERNAL_PACKAGES.map(p => ({ from: `./node_modules/@jspatcher/package-${p}/dist`, to: `./packages/${p}/` }))
+          ...INTERNAL_PACKAGES.map(p => ({ from: `./node_modules/@electrosmith/package-${p}/dist`, to: `./packages/${p}/` }))
         ],
       }),
       new MonacoWebpackPlugin({
