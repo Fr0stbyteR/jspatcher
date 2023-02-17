@@ -9,6 +9,10 @@ import { IFileEditor } from "../../core/file/FileEditor";
 import "./FlashMenu.scss";
 // import { NullLiteral } from "ts-morph";
 
+const loaderDivStyle = {
+    marginLeft: '1em'
+}
+
 interface P {
     env: Env;
     lang: string;
@@ -37,8 +41,8 @@ export default class FlashMenu extends React.PureComponent<P, S> {
             return;
 
         const data = await this.props.env.activeEditor.instance.serialize();
-
-        const webSocket = new WebSocket("wss://bell.electro-smith.com/ws/compile/");
+        const url = `${process.env.WS_DOMAIN}/ws/compile/`;
+        const webSocket = new WebSocket(url);
 
         webSocket.onopen = (event) => {
             this.state.building = true;
@@ -127,7 +131,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
                         </Dropdown.Menu>
                     </Dropdown>
                 </div>
-                { this.state.building ? <Loader active inline size="mini" style={{ "margin-left": "1em" }}></Loader> : <div></div> }
+                { this.state.building ? <div style={loaderDivStyle}><Loader active inline size="mini"></Loader></div> : <div></div> }
                 { this.state.building ? <div className="monitor">Building patcher...</div> : <div></div> }
                 { this.state.build_error ? <div className="monitor"> {this.state.error_message} </div> : <div></div> }
             </div>

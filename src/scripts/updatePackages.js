@@ -42,4 +42,4 @@ const copyFolderSync = (from, to) => {
     });
 };
 
-INTERNAL_PACKAGES.forEach(p => copyFolderSync(`./node_modules/@jspatcher/package-${p}/dist`, `./dist/packages/${p}/`));
+INTERNAL_PACKAGES.forEach(p => copyFolderSync(`./node_modules/@electrosmith/package-${p}/dist`, `./dist/packages/${p}/`));
