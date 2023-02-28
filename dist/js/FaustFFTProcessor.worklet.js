@@ -1535,9 +1535,10 @@ class FaustFFTProcessor extends _AudioWorkletProxyProcessor__WEBPACK_IMPORTED_MO
     }];
   }
   destroy() {
-    var _a, _b;
+    var _a, _b, _c;
     (_a = this.fftProcessor) == null ? void 0 : _a.stop();
     (_b = this.fftProcessor) == null ? void 0 : _b.destroy();
+    (_c = this.rfft) == null ? void 0 : _c.dispose();
     this.destroyed = true;
     this._disposed = true;
   }

@@ -42,9 +42,24 @@ export default class AudioOut extends DefaultObject<{}, {}, [any], [], [number],
             this.outlets = 0;
         });
         this.on("postInit", () => {
+            const { index } = this;
+            this.patcher.disconnectAudioOutlet(index - 1);
+            this.disconnectAudio();
+            if (!this.patcher.outletAudioConnections[index - 1]) {
+                const node = this.audioCtx.createGain();
+                node.channelInterpretation = "discrete";
+                this.patcher.outletAudioConnections[index - 1] = { node, index: 0 };
+            }
+            const { node } = this.patcher.outletAudioConnections[index - 1];
+            this.inletAudioConnections[0].node = node;
+            const inlet0 = { ...this.meta.inlets[0] };
+            const description = this.getProp("description");
+            if (typeof description === "string") inlet0.description = description;
+            this.setMeta({ inlets: [inlet0] });
             this._duringInit = false;
             this.connectAudio();
-            this.patcher.connectAudioInlet(this._.index - 1);
+            this.patcher.connectAudioOutlet(index - 1);
+            this.patcher.inspectAudioIO();
             this.emitPatcherChangeIO();
         });
         this.on("updateArgs", () => {
@@ -63,6 +78,7 @@ export default class AudioOut extends DefaultObject<{}, {}, [any], [], [number],
                 if (!this._duringInit) {
                     this.connectAudio();
                     this.patcher.connectAudioOutlet(index - 1);
+                    this.patcher.inspectAudioIO();
                     this.emitPatcherChangeIO();
                 }
             }

@@ -322,7 +322,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "b7d71b74b1dbe9d1434f88d0dafd2eb7"
+    "revision": "3e76cf3fd2109615a6b429e6cb8851ea"
   }, {
     "url": "js/017d998140f1ad199103.worker.js",
     "revision": null
@@ -406,7 +406,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": null
   }, {
     "url": "js/FaustFFTProcessor.worklet.js",
-    "revision": "fe39227f5f616fca88e4d5421db24a4e"
+    "revision": "d36d8371403c2562eae74e2e134d8173"
   }, {
     "url": "js/Patcher.worklet.js",
     "revision": "d0a578704885d51e30fe9cc6ba19b3b1"
@@ -421,7 +421,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "993234e15f3a0155ffb2d6b4b4eb29cd"
   }, {
     "url": "js/WorkletEnv.worklet.js",
-    "revision": "9f8585cade65143f59cc782ff6c67c82"
+    "revision": "d6c52c558326b5efb99af09b41eafd81"
   }, {
     "url": "js/a6b6f78b420b1f4bd98d.worker.js",
     "revision": null

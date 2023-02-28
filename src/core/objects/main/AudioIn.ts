@@ -42,9 +42,23 @@ export default class AudioIn extends DefaultObject<{}, {}, [], [any], [number], 
             this.outlets = 1;
         });
         this.on("postInit", () => {
+            const { index } = this;
+            this.patcher.connectAudioInlet(index - 1);
+            this.disconnectAudio();
+            if (!this.patcher.inletAudioConnections[index - 1]) {
+                const node = this.audioCtx.createGain();
+                node.channelInterpretation = "discrete";
+                this.patcher.inletAudioConnections[index - 1] = { node, index: 0 };
+            }
+            const { node } = this.patcher.inletAudioConnections[index - 1];
+            this.outletAudioConnections[0].node = node;
+            const outlet0 = { ...this.meta.outlets[0] };
+            const description = this.getProp("description");
+            if (typeof description === "string") outlet0.description = description;
+            this.setMeta({ outlets: [outlet0] });
             this._duringInit = false;
             this.connectAudio();
-            this.patcher.connectAudioInlet(this.index - 1);
+            this.patcher.connectAudioInlet(index - 1);
             this.patcher.inspectAudioIO();
             this.emitPatcherChangeIO();
         });

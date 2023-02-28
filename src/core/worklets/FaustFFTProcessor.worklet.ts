@@ -93,6 +93,7 @@ class FaustFFTProcessor extends AudioWorkletProxyProcessor<IFaustFFTProcessor, I
     destroy() {
         this.fftProcessor?.stop();
         this.fftProcessor?.destroy();
+        this.rfft?.dispose();
         this.destroyed = true;
         this._disposed = true;
     }

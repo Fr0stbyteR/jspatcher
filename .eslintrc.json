@@ -35,6 +35,7 @@
         "comma-dangle": ["error", "never"],
         "curly": ["warn", "multi-line"],
         "default-case": ["warn", { "commentPattern": "^no default$" }],
+        "default-param-last": "off",
         "dot-location": ["warn", "property"],
         "eqeqeq": ["warn", "smart"],
         "getter-return": "warn",
