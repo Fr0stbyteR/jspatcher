@@ -69,10 +69,23 @@
             flex: 1 1 auto;
             background-color: #111;
 
-            & > span {
+            & > div {
                 display: flex;
                 margin: auto;
                 padding: 20px;
+                flex-direction: column;
+                line-height: 2;
+                align-items: center;
+
+                & > div.version {
+                    position: absolute;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: end;
+                    bottom: 10px;
+                    right: 10px;
+                    color: grey;
+                }
             }
         }
     }

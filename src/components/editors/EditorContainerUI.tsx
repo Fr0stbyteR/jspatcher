@@ -14,6 +14,7 @@ import TextEditor from "../../core/text/TextEditor";
 import ImageEditor from "../../core/image/ImageEditor";
 import VideoEditor from "../../core/video/VideoEditor";
 import "./EditorContainerUI.scss";
+import version from "../../version";
 
 interface P {
     env: Env;
@@ -23,6 +24,7 @@ interface P {
 }
 
 interface S extends EditorContainerState {
+    update: string;
 }
 
 export default class EditorContainerUI extends React.PureComponent<P, S> {
@@ -30,7 +32,8 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
         editors: this.props.editorContainer.editors,
         children: this.props.editorContainer.children,
         mode: this.props.editorContainer.mode,
-        activeEditor: this.props.editorContainer.activeEditor
+        activeEditor: this.props.editorContainer.activeEditor,
+        update: null
     };
     handleCloseTab = async (editor: IFileEditor) => {
         if (editor.isReady) await editor.destroy();
@@ -43,12 +46,29 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
     handleState = (state: EditorContainerEventMap["state"]) => {
         this.setState(state);
     };
+    async checkUpdate() {
+        const newVersionFetch = await fetch(`./version.json?rng=${Math.random()}`);
+        const newVersion = await newVersionFetch.json() as string;
+        if (newVersion !== version) this.setState({ update: newVersion });
+    }
     componentDidMount() {
         this.props.editorContainer.on("state", this.handleState);
+        this.checkUpdate();
     }
     componentWillUnmount() {
         this.props.editorContainer.off("state", this.handleState);
     }
+    onReload = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        if ("serviceWorker" in navigator) {
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration) registration.unregister();
+        }
+        const cacheNames = await caches.keys();
+        const cacheName = cacheNames.find(n => n.includes("JSPatcher"));
+        if (cacheName) await caches.delete(cacheName);
+        window.location.reload();
+    };
     render() {
         return (
             <div className="editor-container ui-flex-column ui-flex-full">
@@ -91,7 +111,14 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
                             return undefined;
                         })
                         : <div className="empty">
-                            {this.props.runtime ? undefined : <span>Double-click to open a file or use File &gt; New to create a File</span>}
+                            {this.props.runtime ? undefined : <div>
+                                <span>Double-click items on the left to open a file</span>
+                                <span>Menu &gt; File &gt; New to create a file</span>
+                                <div className="version">
+                                    <span><a href="https://github.com/Fr0stbyteR/jspatcher">JSPatcher </a>version: {version}</span>
+                                    {this.state.update ? <a href="about:blank" onClick={this.onReload}>Update to version: {this.state.update}</a> : null}
+                                </div>
+                            </div>}
                         </div>
                     }
                 </div>

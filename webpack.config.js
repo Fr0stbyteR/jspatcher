@@ -14,6 +14,7 @@ const INTERNAL_PACKAGES = require(internalPackagesPath);
 const timestamp = new Date().getTime();
 
 fs.writeFileSync(path.join(__dirname, "./src/version.ts"), `export default ${JSON.stringify(`${version}.${timestamp}`)};\n`);
+fs.writeFileSync(path.join(__dirname, "./version.json"), `${JSON.stringify(`${version}.${timestamp}`)}\n`);
 
 /** @type {import('webpack').Configuration} */
 const config = {

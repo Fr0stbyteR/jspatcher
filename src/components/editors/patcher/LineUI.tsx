@@ -53,7 +53,9 @@ export default class LineUI extends React.PureComponent<P, S> {
             this.refDiv.current.style.transform = `translate(${x}px, ${y}px)`;
             return;
         }
-        this.setState({ destPos: line.destPos, srcPos: line.srcPos }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
+        this.setState({ destPos: line.destPos, srcPos: line.srcPos }, () => {
+            if (this.state.selected && !this.state.dragging) this.setState(this.handlersPos);
+        });
     };
     handleSelected = (ids: string[]) => {
         const selected = ids.indexOf(this.props.id) >= 0;

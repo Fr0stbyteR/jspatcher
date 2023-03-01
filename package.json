@@ -5,8 +5,9 @@
   "scripts": {
     "prebuild": "node ./src/scripts/patchSemanticUICss.js",
     "build": "webpack --mode development",
-    "build-watch": "npm run prebuild && webpack --mode development --watch --stats-children",
-    "dist": "npm run prebuild && webpack --mode production",
+    "postbuild": "node ./src/scripts/postbuild.js",
+    "build-watch": "npm run prebuild && webpack --mode development --watch --stats-children & npm run postbuild",
+    "dist": "npm run prebuild && webpack --mode production && npm run postbuild",
     "update-packages": "node ./src/scripts/updatePackages.js",
     "serve": "node ./server/index.js"
   },
