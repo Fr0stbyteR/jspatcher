@@ -193,7 +193,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
                         <Dropdown.Item onClick={this.handleClickSaveAll} text="Save All" />
                         <Dropdown.Item onClick={this.handleClickSaveAs} text="Save As..." description={`${ctrl} + Shift + S`} disabled={!this.state.editor} />
                         <Dropdown.Divider />
-                        <Dropdown.Item onClick={this.handleClickExportProject} text="Export Project Zip..." description={`${ctrl} + E`} />
+                        <Dropdown.Item onClick={this.handleClickExportProject} text="Export Project Zip..." description={`${ctrl} + Alt + E`} />
                         <Dropdown.Item onClick={this.handleClickExportFile} text="Export File..." description={`${ctrl} + Shift + E`} disabled={!this.state.editor} />
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={this.handleClickReload} text="Reload Project" description={`${ctrl} + R`} />
