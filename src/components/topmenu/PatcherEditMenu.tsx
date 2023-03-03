@@ -27,6 +27,9 @@ export default class PatcherEditMenu extends React.PureComponent<P> {
     handleClickDock = async () => {
         this.props.editor.dockUI();
     };
+    handleClickReference = () => {
+        this.props.editor.reference();
+    }
     handleClickBringToFront = () => {
         this.props.editor.bringToFront();
     };
@@ -40,6 +43,7 @@ export default class PatcherEditMenu extends React.PureComponent<P> {
         else if (ctrlKey && e.shiftKey && e.key === "b") this.handleClickSendToBack();
         else if (ctrlKey && e.key === "d") this.handleClickDuplicate();
         else if (ctrlKey && e.key === "i") this.handleClickInspector();
+        else if (e.key === "r") this.handleClickReference();
         else if (ctrlKey && e.key === "Enter") this.handleClickDock();
         else performed = false;
         return performed;
@@ -54,6 +58,7 @@ export default class PatcherEditMenu extends React.PureComponent<P> {
                 <Dropdown.Item onClick={this.handleClickBringToFront} text="Bring to Front" description={`${ctrlKey} + Shift + F`} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickSendToBack} text="Send to Back" description={`${ctrlKey} + Shift + B`} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickInspector} text="Inspector" description={`${ctrlKey} + I`} disabled={locked} />
+                <Dropdown.Item onClick={this.handleClickReference} text="Reference" description={`R`} disabled={locked} />
                 <Dropdown.Item onClick={this.handleClickDock} text="Dock UI" description={`${ctrlKey} + Enter`} disabled={locked} />
             </>
         );

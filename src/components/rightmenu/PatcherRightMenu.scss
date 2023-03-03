@@ -102,6 +102,33 @@
                 }
             }
         }
+        & > div.right-pane-reference {
+            position: relative;
+            flex: 1 1 auto;
+            overflow: auto;
+            background-color: #333;
+
+            color: white;
+            & > .reference-container {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                padding: 1em;
+
+                & > div.loader {
+                    margin: auto;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100%;
+                }
+
+                & > .ui.placeholder, .ui.placeholder .image.header:after, .ui.placeholder .line, .ui.placeholder .line:after, .ui.placeholder>:before {
+                    background-color: #333;
+                    font-size: large;
+                }
+            }
+        }
         & > div.right-pane-inspector {
 
             & > .inspector-table-container {

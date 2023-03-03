@@ -25,6 +25,7 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "resized": { selected: string[]; delta: { x: number; y: number }; type: TResizeHandlerType; presentation: boolean };
     "tempLine": { findSrc: boolean; from: [string, number] };
     "inspector": never;
+    "reference": never;
     "dockUI": string;
     "propsChanged": { props: Partial<TPublicPatcherProps>; oldProps: Partial<TPublicPatcherProps> };
     "highlightBox": string;
@@ -682,6 +683,13 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         else if (this.state.selected.length) {
             const found = this.state.selected.find(id => id.startsWith("box"));
             if (found && this.boxes[found]) this.emit("inspector");
+        }
+    }
+    reference(box?: Box) {
+        if (box) this.emit("reference");
+        else if (this.state.selected.length) {
+            const found = this.state.selected.find(id => id.startsWith("box"));
+            if (found && this.boxes[found]) this.emit("reference");
         }
     }
     dockUI(box?: Box) {
