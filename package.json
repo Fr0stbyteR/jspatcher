@@ -27,6 +27,7 @@
     "@electrosmith/package-io": "file:../objects/io/web",
     "@electrosmith/package-math": "file:../objects/math/web",
     "@electrosmith/package-utilities": "file:../objects/utilities/web",
+    "@electrosmith/package-ui": "file:../objects/ui/web",
     "@jspatcher/package-analysers": "^1.0.1",
     "@jspatcher/package-cac": "latest",
     "@jspatcher/package-dsp": "latest",
