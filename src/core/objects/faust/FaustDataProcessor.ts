@@ -5,7 +5,7 @@ import DefaultObject, { DefaultObjectProps } from "../base/DefaultObject";
 import { isNumberArray } from "../../../utils/utils";
 import type DefaultUI from "../base/DefaultUI";
 import type { UnPromisifiedFunction } from "../../workers/Worker";
-import type { IInletMeta, IOutletMeta, IInletsMeta, IOutletsMeta } from "../base/AbstractObject";
+import type { IInletMeta, IOutletMeta, IInletsMeta, IOutletsMeta, IPropsMeta } from "../base/AbstractObject";
 
 class FaustDataProcessorUI extends CodePopupUI<FaustDataProcessor> {
     editorLanguage = "faust";
@@ -52,6 +52,18 @@ export default class FaustDataProcessor<
         type: "object",
         description: "FaustOfflineProcessor instance output"
     }];
+    static props: IPropsMeta<FaustDataProcessorProps> = {
+        sampleRate: {
+            type: "number",
+            default: 1000,
+            description: "Data sampling rate"
+        },
+        bufferSize: {
+            type: "number",
+            default: 1,
+            description: "Data processing buffer size"
+        }
+    };
     static UI: typeof DefaultUI = FaustDataProcessorUI;
     _: FaustDataProcessorInternalState = {
         processor: undefined,
