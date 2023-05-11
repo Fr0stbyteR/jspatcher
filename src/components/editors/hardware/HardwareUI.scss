@@ -1,0 +1,38 @@
+.patcher {
+    position: absolute;
+    overflow: auto;
+    min-height: 100%;
+    min-width: 100%;
+    display: block;
+    & > div.boxes {
+        position: absolute;
+        min-width: 100%;
+        min-height: 100%;
+    }
+    & > div.lines {
+        position: absolute;
+        min-width: 100%;
+        min-height: 100%;
+        pointer-events: none;
+    }
+    & > div.grid-background {
+        visibility: hidden;
+        position: absolute;
+        min-width: 100%;
+        min-height: 100%;
+        pointer-events: none;
+    }
+    & > div.selection {
+        position: absolute;
+        background-color: rgba(255, 255, 255, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    &.unlocked {
+        &.show-grid > div.grid-background {
+            visibility: visible;
+        }
+    }
+    &.filedropping {
+        box-shadow: inset 0px 0px 5px 0px #6dffff;
+    }
+}

@@ -8,11 +8,13 @@ import AudioEditor from "../../core/audio/AudioEditor";
 import AudioEditorUI from "./audio/AudioEditorUI";
 import ImageEditorUI from "./ImageEditorUI";
 import VideoEditorUI from "./VideoEditorUI";
+import HardwareEditorUI from "./HardwareEditorUI";
 import { IFileEditor } from "../../core/file/FileEditor";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 import TextEditor from "../../core/text/TextEditor";
 import ImageEditor from "../../core/image/ImageEditor";
 import VideoEditor from "../../core/video/VideoEditor";
+import HardwareEditor from "../../core/hardware/HardwareEditor";
 import "./EditorContainerUI.scss";
 
 interface P {
@@ -86,6 +88,11 @@ export default class EditorContainerUI extends React.PureComponent<P, S> {
                             if (editor instanceof VideoEditor) {
                                 return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={editor !== this.state.activeEditor} key={editor.editorId}>
                                     <VideoEditorUI {...this.props} editor={editor} />
+                                </div>;
+                            }
+                            if (editor instanceof HardwareEditor) {
+                                return <div className="editor-container-instance-body ui-flex-column ui-flex-full" hidden={editor !== this.state.activeEditor} key={editor.editorId}>
+                                    <HardwareEditorUI {...this.props} editor={editor} />
                                 </div>;
                             }
                             return undefined;

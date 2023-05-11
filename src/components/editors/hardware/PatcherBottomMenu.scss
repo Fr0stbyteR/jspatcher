@@ -1,0 +1,8 @@
+.patcher-bottom-menu {
+    position: relative;
+    margin: 0px !important;
+    border-radius: 0px !important;
+    & > .item:first-child, .item:last-child {
+        border-radius: 0px !important;
+    }
+}
