@@ -3,9 +3,9 @@ import PatcherEditor from "./HardwareEditor";
 import Line from "./Line";
 import Box from "./Box";
 import PatcherHistory from "./HardwareHistory";
-import PackageManager, { IPackageManager } from "../PackageManager";
-import { max2js, js2max } from "../../utils/utils";
-import { toFaustDspCode } from "./FaustPatcherAnalyser";
+// import PackageManager, { IPackageManager } from "../PackageManager";
+// import { max2js, js2max } from "../../utils/utils";
+// import { toFaustDspCode } from "../patcher/FaustPatcherAnalyser";
 import type Env from "../Env";
 import type Project from "../Project";
 import type TempPatcherFile from "./TempHardwareFile";
@@ -40,7 +40,7 @@ export interface TPatcherState {
     isReady: boolean;
     log: ILogInfo[];
     selected: string[];
-    pkgMgr: IPackageManager;
+    // pkgMgr: IPackageManager;
     preventEmitChanged: boolean;
     patcherNode?: PatcherNode;
     patcherProcessor?: PatcherProcessor;
@@ -121,7 +121,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             isReady: false,
             log: [],
             selected: [],
-            pkgMgr: undefined,
+            // pkgMgr: undefined,
             preventEmitChanged: false
         };
         this.lines = {};
@@ -141,12 +141,12 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     get state() {
         return this._state;
     }
-    get activePkg() {
-        return this._state.pkgMgr.pkg;
-    }
-    get activeLib() {
-        return this._state.pkgMgr.lib;
-    }
+    // get activePkg() {
+    //     return this._state.pkgMgr.pkg;
+    // }
+    // get activeLib() {
+    //     return this._state.pkgMgr.lib;
+    // }
     get isReady() {
         return !!this._state?.isReady;
     }
@@ -200,24 +200,24 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         }
         await this.env.taskMgr.newTask(this, "Loading patcher...", async (onUpdate) => {
             this.props.mode = patcherIn.props?.mode || modeIn || "js";
-            this.state.pkgMgr = new PackageManager(this);
+            // this.state.pkgMgr = new PackageManager(this);
             const { mode } = this.props;
             const $init: Promise<Box>[] = [];
             onUpdate("Decoding Patcher...");
             let patcher;
-            if (mode === "max" || mode === "gen") {
-                if (!(patcherIn as TMaxPatcher).patcher) {
-                    patcher = patcherIn;
-                } else {
-                    patcher = max2js(patcherIn as TMaxPatcher);
-                }
-            } else if (mode === "js" || mode === "faust" || mode === "jsaw") {
+            // if (mode === "max" || mode === "gen") {
+            //     if (!(patcherIn as TMaxPatcher).patcher) {
+            //         patcher = patcherIn;
+            //     } else {
+            //         patcher = max2js(patcherIn as TMaxPatcher);
+            //     }
+            // } else if (mode === "js" || mode === "faust" || mode === "jsaw") {
                 if ("data" in patcherIn && "patcher" in patcherIn) {
                     patcher = patcherIn.patcher;
                 } else {
                     patcher = patcherIn;
                 }
-            }
+            // }
             if (patcher.props) this.props = { ...this.props, ...patcher.props, mode };
             if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
             if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
@@ -230,8 +230,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                     }
                 }
             }
-            onUpdate("Initializing Packages...");
-            await this._state.pkgMgr.init();
+            // onUpdate("Initializing Packages...");
+            // await this._state.pkgMgr.init();
             onUpdate("Creating Boxes...");
             if (patcher.boxes) { // Boxes & data
                 for (const id in patcher.boxes) {
@@ -342,23 +342,23 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         await this.unload();
         await super.destroy();
     }
-    async addPackage(namespace: string, url: string) {
-        const { dependencies } = this.props;
-        dependencies.push([namespace, url]);
-        this.setProps({ dependencies: dependencies.slice() });
-        await this.state.pkgMgr.init();
-        if (!(namespace in this.activePkg)) {
-            this.setProps({ dependencies: dependencies.filter(([id]) => id !== namespace) });
-        }
-    }
-    async removePackage(id: string) {
-        const { dependencies } = this.props;
-        const i = dependencies.findIndex(t => t[0] === id);
-        if (i === -1) return;
-        dependencies.splice(i, 1);
-        this.setProps({ dependencies: dependencies.slice() });
-        await this.state.pkgMgr.init();
-    }
+    // async addPackage(namespace: string, url: string) {
+    //     const { dependencies } = this.props;
+    //     dependencies.push([namespace, url]);
+    //     this.setProps({ dependencies: dependencies.slice() });
+    //     await this.state.pkgMgr.init();
+    //     if (!(namespace in this.activePkg)) {
+    //         this.setProps({ dependencies: dependencies.filter(([id]) => id !== namespace) });
+    //     }
+    // }
+    // async removePackage(id: string) {
+    //     const { dependencies } = this.props;
+    //     const i = dependencies.findIndex(t => t[0] === id);
+    //     if (i === -1) return;
+    //     dependencies.splice(i, 1);
+    //     this.setProps({ dependencies: dependencies.slice() });
+    //     await this.state.pkgMgr.init();
+    // }
     async createBox(boxIn: TBox) {
         if (!boxIn.id || (boxIn.id in this.boxes)) boxIn.id = "box-" + ++this.props.boxIndexCount;
         const box = new Box(this, boxIn);
@@ -367,15 +367,15 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.emitGraphChanged();
         return box;
     }
-    getObjectConstructor(parsed: { class: string; args: any[]; props: Record<string, any> }) {
-        const className = parsed.class;
-        if (typeof className !== "string" || className.length === 0) return this.activeLib.EmptyObject;
-        if (this.activeLib[className]) return this.activeLib[className];
-        return this.activeLib.InvalidObject;
-    }
-    getObjectMeta(parsed: { class: string; args: any[]; props: Record<string, any> }) {
-        return this.getObjectConstructor(parsed).meta;
-    }
+    // getObjectConstructor(parsed: { class: string; args: any[]; props: Record<string, any> }) {
+    //     const className = parsed.class;
+    //     if (typeof className !== "string" || className.length === 0) return this.activeLib.EmptyObject;
+    //     if (this.activeLib[className]) return this.activeLib[className];
+    //     return this.activeLib.InvalidObject;
+    // }
+    // getObjectMeta(parsed: { class: string; args: any[]; props: Record<string, any> }) {
+    //     return this.getObjectConstructor(parsed).meta;
+    // }
     async changeBoxText(boxId: string, text: string) {
         const oldText = this.boxes[boxId].text;
         if (oldText === text) return this.boxes[boxId];
@@ -608,14 +608,14 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const { dependencies, bgColor, editingBgColor, grid, openInPresentation } = this.props;
         return { dependencies, bgColor, editingBgColor, grid, openInPresentation } as TPublicPatcherProps;
     }
-    toFaustDspCode() {
-        const code = toFaustDspCode(this);
-        return code;
-    }
+    // toFaustDspCode() {
+    //     const code = toFaustDspCode(this);
+    //     return code;
+    // }
     toString(spacing?: number) {
-        if (this.props.mode === "max" || this.props.mode === "gen") {
-            return JSON.stringify(js2max(this), undefined, spacing);
-        }
+        // if (this.props.mode === "max" || this.props.mode === "gen") {
+        //     return JSON.stringify(js2max(this), undefined, spacing);
+        // }
         const { props } = this;
         const boxes: RawPatcher["boxes"] = {};
         const lines: RawPatcher["lines"] = {};

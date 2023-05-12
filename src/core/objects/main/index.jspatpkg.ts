@@ -2,6 +2,7 @@ import In from "./In";
 import Out from "./Out";
 import AudioIn from "./AudioIn";
 import AudioOut from "./AudioOut";
+import Hardware from "./Hardware";
 import SubPatcher from "./SubPatcher";
 import FaustPatcher from "./FaustPatcher";
 import GenPatcher from "./GenPatcher";
@@ -19,6 +20,7 @@ export default async () => ({
     out: Out,
     "in~": AudioIn,
     "out~": AudioOut,
+    hardware: Hardware,
     patcher: SubPatcher,
     p: SubPatcher,
     pdsp: DspSubPatcher,

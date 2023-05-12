@@ -5,7 +5,7 @@ import LineUI, { TempLineUI } from "./LineUI";
 import { round } from "../../../utils/math";
 import type HardwareEditor from "../../../core/hardware/HardwareEditor";
 import type { RawPatcher, TRect } from "../../../core/types";
-import "./PatcherUI.scss";
+import "./HardwareUI.scss";
 
 interface P {
     editor: HardwareEditor;
