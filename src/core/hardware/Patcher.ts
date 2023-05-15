@@ -13,9 +13,11 @@ import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta, IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
-import type { TLine, TBox, PatcherMode, RawPatcher, TMaxPatcher, TErrorLevel, TPatcherAudioConnection, TFlatPackage, TPackage, ILogInfo, TDependencies } from "../types";
+import type { PatcherMode, RawPatcher, TErrorLevel, TFlatPackage, TPackage, ILogInfo, TDependencies } from "../types";
+import type { THardwareBox, THardwareLine } from "./types";
 import type PatcherNode from "../worklets/PatcherNode";
 import type PatcherProcessor from "../worklets/Patcher.worklet";
+import { IHardwarePatcherObject } from "./objects/base/AbstractHardwareObject";
 
 export interface TPatcherProps {
     mode: PatcherMode;
@@ -107,12 +109,11 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const editor = new PatcherEditor(this);
         return editor.init();
     }
+    lib: { [key: string]: typeof IHardwarePatcherObject };
     lines: Record<string, Line> = {};
     boxes: Record<string, Box> = {};
     props: TPatcherProps;
     _state: TPatcherState;
-    _inletAudioConnections: TPatcherAudioConnection[] = [];
-    _outletAudioConnections: TPatcherAudioConnection[] = [];
     _history = new PatcherHistory();
     constructor(options: { env: IJSPatcherEnv; project?: IProject; file?: PersistentProjectFile | TempPatcherFile; instanceId?: string; objectInit?: boolean }) {
         super(options);
@@ -147,6 +148,9 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     // get activeLib() {
     //     return this._state.pkgMgr.lib;
     // }
+    get activeLib() {
+        return this.lib;
+    }
     get isReady() {
         return !!this._state?.isReady;
     }
@@ -188,7 +192,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         }
         return this.load(data || {});
     }
-    async load(patcherIn: RawPatcher | TMaxPatcher | any, modeIn?: PatcherMode) {
+    async load(patcherIn: RawPatcher | any, modeIn?: PatcherMode) {
         this._state.isReady = false;
         this._state.preventEmitChanged = true;
         await this.unload();
@@ -276,7 +280,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         try {
             const file = await fetch(url);
             if (!file.ok) throw new Error();
-            const parsed = await file.json() as RawPatcher | TMaxPatcher;
+            const parsed = await file.json() as RawPatcher;
             return this.load(parsed);
         } catch (e) {
             this.error(`Fetch file ${url} failed.`);
@@ -285,7 +289,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     async loadFromString(sIn: string) {
         try {
-            const parsed = JSON.parse(sIn) as RawPatcher | TMaxPatcher;
+            const parsed = JSON.parse(sIn) as RawPatcher;
             return this.load(parsed);
         } catch (e) {
             this.error(`Load from string: ${sIn.slice(20)}... failed.`);
@@ -300,7 +304,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
-            let parsed: RawPatcher | TMaxPatcher;
+            let parsed: RawPatcher;
             try {
                 parsed = JSON.parse(reader.result.toString());
             } catch (e) {
@@ -359,7 +363,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     //     this.setProps({ dependencies: dependencies.slice() });
     //     await this.state.pkgMgr.init();
     // }
-    async createBox(boxIn: TBox) {
+    async createBox(boxIn: THardwareBox) {
         if (!boxIn.id || (boxIn.id in this.boxes)) boxIn.id = "box-" + ++this.props.boxIndexCount;
         const box = new Box(this, boxIn);
         this.boxes[box.id] = box;
@@ -367,15 +371,15 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.emitGraphChanged();
         return box;
     }
-    // getObjectConstructor(parsed: { class: string; args: any[]; props: Record<string, any> }) {
-    //     const className = parsed.class;
-    //     if (typeof className !== "string" || className.length === 0) return this.activeLib.EmptyObject;
-    //     if (this.activeLib[className]) return this.activeLib[className];
-    //     return this.activeLib.InvalidObject;
-    // }
-    // getObjectMeta(parsed: { class: string; args: any[]; props: Record<string, any> }) {
-    //     return this.getObjectConstructor(parsed).meta;
-    // }
+    getObjectConstructor(parsed: { class: string; args: any[]; props: Record<string, any> }) {
+        const className = parsed.class;
+        if (typeof className !== "string" || className.length === 0) return this.activeLib.EmptyObject;
+        if (this.activeLib[className]) return this.activeLib[className];
+        return this.activeLib.InvalidObject;
+    }
+    getObjectMeta(parsed: { class: string; args: any[]; props: Record<string, any> }) {
+        return this.getObjectConstructor(parsed).meta;
+    }
     async changeBoxText(boxId: string, text: string) {
         const oldText = this.boxes[boxId].text;
         if (oldText === text) return this.boxes[boxId];
@@ -391,7 +395,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.emitGraphChanged();
         return box;
     }
-    createLine(lineIn: TLine) {
+    createLine(lineIn: THardwareLine) {
         if (!this.canCreateLine(lineIn)) return null;
         if (!lineIn.id || (lineIn.id in this.lines)) lineIn.id = "line-" + ++this.props.lineIndexCount;
         const line = new Line(this, lineIn);
@@ -400,9 +404,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.emitGraphChanged();
         return line;
     }
-    canCreateLine(lineIn: TLine) {
-        if (lineIn.src[1] >= this.boxes[lineIn.src[0]].outlets) return false;
-        if (lineIn.dest[1] >= this.boxes[lineIn.dest[0]].inlets) return false;
+    canCreateLine(lineIn: THardwareLine) {
+        if (lineIn.aIo[1] >= this.boxes[lineIn.aIo[0]].ios.length) return false;
+        // if (lineIn.src[1] >= this.boxes[lineIn.src[0]].outlets) return false;
+        // if (lineIn.dest[1] >= this.boxes[lineIn.dest[0]].inlets) return false;
         if (this.getLinesByBox(lineIn.src[0], lineIn.dest[0], lineIn.src[1], lineIn.dest[1]).length > 0) return false;
         return true;
     }

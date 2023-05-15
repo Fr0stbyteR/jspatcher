@@ -1,0 +1,122 @@
+.patcher div.box-ui > div.box-ui-default {
+    background-color: rgb(51, 51, 51);
+    &.box-ui-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: auto;
+    }
+    & > .box-ui-text-container {
+        display: flex;
+        flex: 0 0 auto;
+        width: 100%;
+        color: white;
+        font-family: Lato, Tahoma, sans-serif;
+        font-size: 12px;
+        line-height: normal;
+        font-weight: normal;
+        margin: 0px;
+        overflow-wrap: break-word;
+        cursor: default;
+        user-select: none;
+        -webkit-user-select: none;
+        border: rgb(125, 126, 132) solid;
+        border-width: 0px;
+        &:first-child {
+            border-top-width: 4px;
+        }
+        &:last-child {
+            border-bottom-width: 4px;
+        }
+        &.loading {
+            -webkit-animation-duration: 1s;
+            animation-duration: 1s;
+            -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+            -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+            -webkit-animation-name: placeHolderShimmer;
+            animation-name: placeHolderShimmer;
+            -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+            background-size: 1200px 100%;
+            @keyframes placeHolderShimmer{
+                0% {
+                    background-position: -1200px 0;
+                }
+                100% {
+                    background-position: 1200px 0;
+                }
+            }
+        }
+        & > .box-ui-text-container-prepend {
+            flex: 0 0 auto;
+            min-width: 2px;
+            margin-right: 2px;
+        }
+        & > span {
+            position: relative;
+            word-break: break-all;
+            width: 100%;
+            &.editing {
+                pointer-events: auto;
+                cursor: text;
+                user-select: auto;
+                -webkit-user-select: auto;
+            }
+            &:empty::before {
+                content: "\200b";
+            }
+            &::selection {
+                background-color: #004eff;
+                color: white;
+            }
+        }
+        & > .box-ui-text-dropdown {
+            position: absolute;
+            top: 100%;
+            & > .box-ui-text-autocomplete {
+                display: table-row-group;
+                position: absolute;
+                width: auto;
+                max-height: 200px;
+                box-shadow: 0px 2px 5px #0008;
+                overflow: auto;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                & td {
+                    border-width: 0px
+                }
+                & tr.focused {
+                    background-color: #003cac !important;
+                    color: #fff !important;
+                }
+            }
+        }
+        & > .box-ui-text-container-append {
+            flex: 0 0 auto;
+            min-width: 2px;
+            margin-left: 2px;
+        }
+        i.icon {
+            line-height: 14px;
+            margin: 0px 3px;
+        }
+    }
+    & > .box-ui-dropdown-container {
+        flex: 1 1 100%;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        border: rgb(125, 126, 132) solid;
+        padding: 0px;
+        border-width: 0px 0px 4px 0px;
+        overflow: auto;
+    }
+    & > .box-ui-toggle {
+        cursor: pointer;
+    }
+}
+.patcher.unlocked div.box.selected > div.box-ui > div.box-ui-default > .box-ui-text-container {
+    pointer-events: auto;
+}

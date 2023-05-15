@@ -1,206 +1,165 @@
 import type { WamNode } from "@webaudiomodules/api";
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import type Patcher from "./Patcher";
-import type { TLine, TLineType } from "../types";
+import type { THardwareLine, THardwareLineType } from "./types";
 import type { IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
 
-export interface LineEventMap {
+export interface HardwareLineEventMap {
     "passData": any;
-    "destPosChanged": { top: number; left: number };
-    "srcPosChanged": { top: number; left: number };
-    "posChanged": Line;
-    "typeChanged": TLineType;
+    "bPosChanged": { top: number; left: number };
+    "aPosChanged": { top: number; left: number };
+    "posChanged": HardwareLine;
+    "typeChanged": THardwareLineType;
 }
 
-export default class Line extends TypedEventEmitter<LineEventMap> {
-    static isConnectableByAudio(from: IJSPatcherObject, outlet: number, to: IJSPatcherObject, inlet: number) {
-        const fromConnection = from?.outletAudioConnections[outlet];
-        const toConnection = to?.inletAudioConnections[inlet];
-        if (!fromConnection) return false;
-        if (!toConnection) return false;
-        if (!fromConnection.node) return false;
-        if (!toConnection.node) return false;
-        return true;
-    }
-    static isWamNode(x: any): x is WamNode {
-        return typeof x === "object" && x !== null && x?.module?.isWebAudioModule;
-    }
-    static compare(line1: Line, line2: Line) {
+export default class HardwareLine extends TypedEventEmitter<HardwareLineEventMap> {
+    static compare(line1: HardwareLine, line2: HardwareLine) {
         return line2.positionHash - line1.positionHash;
     }
     readonly id: string;
-    src: [string, number];
-    dest: [string, number];
+    aIo: [string, number];
+    bIo: [string, number];
     disabled = true;
-    private _type: TLineType;
+    private _type: THardwareLineType;
     private readonly _patcher: Patcher;
-    constructor(patcherIn: Patcher, lineIn: TLine) {
+    constructor(patcherIn: Patcher, lineIn: THardwareLine) {
         super();
         this.id = lineIn.id;
-        this.src = lineIn.src;
-        this.dest = lineIn.dest;
+        this.aIo = lineIn.aIo;
+        this.bIo = lineIn.bIo;
         this.disabled = true;
         this._patcher = patcherIn;
-        const { srcBox, destBox } = this;
+        const { aBox, bBox } = this;
         this._type = this.calcType();
-        if (srcBox) {
-            srcBox.on("metaUpdated", this.updateType);
-            srcBox.addOutletLine(this);
+        if (aBox) {
+            aBox.on("metaUpdated", this.updateType);
+            aBox.addOutletLine(this);
         }
-        if (destBox) {
-            destBox.on("metaUpdated", this.updateType);
-            destBox.addInletLine(this);
+        if (bBox) {
+            bBox.on("metaUpdated", this.updateType);
+            bBox.addInletLine(this);
         }
-    }
-    get isConnectableByAudio() {
-        if (this._patcher.props.mode !== "js") return false;
-        return Line.isConnectableByAudio(this.srcBox.object, this.srcOutlet, this.destBox.object, this.destInlet);
     }
     get presentation() {
-        return this.srcBox && this.srcBox.presentation && this.destBox && this.destBox.presentation;
+        return this.aBox && this.aBox.presentation && this.bBox && this.bBox.presentation;
     }
-    setSrc(src: [string, number]) {
-        const srcId = src[0];
-        const srcOutlet = src[1];
-        if (srcId === this.src[0] && srcOutlet === this.src[1]) return this;
-        this.srcBox.off("metaUpdated", this.updateType);
+    setA(a: [string, number]) {
+        const aId = a[0];
+        const aIo = a[1];
+        if (aId === this.aIo[0] && aIo === this.aIo[1]) return this;
+        this.aBox.off("metaUpdated", this.updateType);
         this.disable();
-        this.srcBox.removeOutletLine(this);
-        this.src = [srcId, srcOutlet];
-        this.srcBox.addOutletLine(this);
+        this.aBox.removeOutletLine(this);
+        this.aIo = [aId, aIo];
+        this.aBox.addOutletLine(this);
         this.enable();
-        this.srcBox.on("metaUpdated", this.updateType);
+        this.aBox.on("metaUpdated", this.updateType);
         this.updateType();
-        return this.uiUpdateSrc();
+        return this.uiUpdateA();
     }
-    getSrc() {
-        return this.src;
+    getA() {
+        return this.aIo;
     }
-    uiUpdateSrc() {
-        this.emit("srcPosChanged", this.srcPos);
+    uiUpdateA() {
+        this.emit("aPosChanged", this.aPos);
         return this;
     }
-    setDest(dest: [string, number]) {
-        const destId = dest[0];
-        const destInlet = dest[1];
-        if (destId === this.dest[0] && destInlet === this.dest[1]) return this;
-        this.destBox.off("metaUpdated", this.updateType);
+    setB(b: [string, number]) {
+        const bId = b[0];
+        const bIo = b[1];
+        if (bId === this.bIo[0] && bIo === this.bIo[1]) return this;
+        this.aBox.off("metaUpdated", this.updateType);
         this.disable();
-        this.destBox.removeInletLine(this);
-        this.dest = [destId, destInlet];
-        this.destBox.addInletLine(this);
+        this.bBox.removeOutletLine(this);
+        this.bIo = [bId, bIo];
+        this.bBox.addOutletLine(this);
         this.enable();
-        this.destBox.on("metaUpdated", this.updateType);
+        this.bBox.on("metaUpdated", this.updateType);
         this.updateType();
-        return this.uiUpdateDest();
+        return this.uiUpdateB();
     }
-    getDest() {
-        return this.dest;
+    getB() {
+        return this.aIo;
     }
-    uiUpdateDest() {
-        this.emit("destPosChanged", this.destPos);
+    uiUpdateB() {
+        this.emit("bPosChanged", this.bPos);
         return this;
     }
-    disable(bool?: boolean): Line {
+    disable(bool?: boolean): HardwareLine {
         if (bool === false) return this.enable();
         if (this.disabled) return this;
         this.disabled = true;
-        const { srcBox, destBox } = this;
-        if (this._patcher.getLinesByBox(this.srcId, this.destId, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
-        if (this.isConnectableByAudio) {
-            const from = this.srcBox.object.outletAudioConnections[this.srcOutlet];
-            const to = this.destBox.object.inletAudioConnections[this.destInlet];
-            if (from && to && from.node && to.node) {
-                const isAudioParam = to.node instanceof AudioParam;
-                try {
-                    if (isAudioParam) from.node.disconnect(to.node as AudioParam, from.index);
-                    else from.node.disconnect(to.node as AudioNode, from.index, to.index);
-                    if (Line.isWamNode(from.node) && Line.isWamNode(to.node)) from.node.disconnectEvents(to.node.instanceId);
-                } catch (e) {
-                    this._patcher.error((e as Error).message);
-                }
-            }
-        }
-        srcBox.disconnectedOutlet(this.srcOutlet, destBox.id, this.destInlet, this.id);
-        destBox.disconnectedInlet(this.destInlet, srcBox.id, this.srcOutlet, this.id);
+        const { aBox, bBox } = this;
+        if (this._patcher.getLinesByBox(this.aId, this.bId, this.aIo[1], this.bIo[1]).length > 1) return this; // not last cable
+        aBox.disconnectedOutlet(this.aIo[1], bBox.id, this.bIo[1], this.id);
+        bBox.disconnectedInlet(this.bIo[1], aBox.id, this.aIo[1], this.id);
         return this;
     }
-    enable(bool?: boolean): Line {
+    enable(bool?: boolean): HardwareLine {
         if (bool === false) return this.disable();
         if (!this.disabled) return this;
-        const { srcBox, destBox } = this;
-        if (this.srcOutlet >= srcBox.outlets || this.destInlet >= destBox.inlets) return this._patcher.deleteLine(this.id);
-        if (this._patcher.getLinesByBox(this.srcId, this.destId, this.srcOutlet, this.destInlet).length > 1) return this; // not last cable
-        if (this.isConnectableByAudio) {
-            const from = this.srcBox.object.outletAudioConnections[this.srcOutlet];
-            const to = this.destBox.object.inletAudioConnections[this.destInlet];
-            if (from && to && from.node && to.node) {
-                const isAudioParam = to.node instanceof AudioParam;
-                try {
-                    if (isAudioParam) from.node.connect(to.node as AudioParam, from.index);
-                    else from.node.connect(to.node as AudioNode, from.index, to.index);
-                    if (Line.isWamNode(from.node) && Line.isWamNode(to.node)) from.node.connectEvents(to.node.instanceId);
-                } catch (e) {
-                    this._patcher.error((e as Error).message);
-                }
-            }
-        }
+        const { aBox, bBox } = this;
+        if (this.aIo[1] >= aBox.ios.length || this.bIo[1] >= bBox.ios.length) return this._patcher.deleteLine(this.id);
+        if (this._patcher.getLinesByBox(this.aId, this.bId, this.aIo[1], this.bIo[1]).length > 1) return this; // not last cable
         this.disabled = false;
-        srcBox.connectedOutlet(this.srcOutlet, destBox.id, this.destInlet, this.id);
-        destBox.connectedInlet(this.destInlet, srcBox.id, this.srcOutlet, this.id);
+        aBox.connectedIo(this.aIo[1], bBox.id, this.bIo[1], this.id);
+        bBox.connectedIo(this.bIo[1], aBox.id, this.aIo[1], this.id);
         return this;
     }
     destroy() {
-        this.destBox.off("metaUpdated", this.updateType);
-        this.srcBox.off("metaUpdated", this.updateType);
+        this.bBox.off("metaUpdated", this.updateType);
+        this.aBox.off("metaUpdated", this.updateType);
         this.disable();
-        this.srcBox.removeOutletLine(this);
-        this.destBox.removeInletLine(this);
+        this.aBox.removeOutletLine(this);
+        this.bBox.removeInletLine(this);
         delete this._patcher.lines[this.id];
         return this;
     }
     pass(data: any) {
         this.emit("passData", data);
-        return this.disabled ? this : this.destBox.fn(this.destInlet, data);
+        return this.disabled ? this : this.bBox.fn(this.bIo[1], data);
     }
     get positionHash() {
-        const { top, left } = this._patcher.boxes[this.dest[0]].getInletPos(this.dest[1]);
+        const { top, left } = this._patcher.boxes[this.bIo[0]].getInletPos(this.bIo[1]);
         return left * 65536 + top;
     }
-    get srcPos() {
-        return this._patcher.boxes[this.src[0]].getOutletPos(this.src[1]);
+    get aPos() {
+        return this._patcher.boxes[this.aIo[0]].getOutletPos(this.aIo[1]);
     }
-    get destPos() {
-        return this._patcher.boxes[this.dest[0]].getInletPos(this.dest[1]);
+    get bPos() {
+        return this._patcher.boxes[this.bIo[0]].getInletPos(this.bIo[1]);
     }
-    get srcId() {
-        return this.src[0];
+    get aId() {
+        return this.aIo[0];
     }
-    get srcOutlet() {
-        return this.src[1];
+    // get srcOutlet() {
+    //     return this.src[1];
+    // }
+    get bId() {
+        return this.bIo[0];
     }
-    get destId() {
-        return this.dest[0];
+    // get destInlet() {
+    //     return this.bIo[1];
+    // }
+    get aBox() {
+        return this._patcher.boxes[this.aIo[0]];
     }
-    get destInlet() {
-        return this.dest[1];
-    }
-    get srcBox() {
-        return this._patcher.boxes[this.src[0]];
-    }
-    get destBox() {
-        return this._patcher.boxes[this.dest[0]];
+    get bBox() {
+        return this._patcher.boxes[this.bIo[0]];
     }
     private calcType() {
-        const srcMeta = this.srcBox.object.meta.outlets;
-        const destMeta = this.destBox.object.meta.inlets;
-        let srcType: TMetaType = "anything";
-        let destType: TMetaType = "anything";
-        if (srcMeta[this.srcOutlet]) srcType = srcMeta[this.srcOutlet].type;
-        else if (srcMeta[srcMeta.length - 1] && srcMeta[srcMeta.length - 1].varLength) srcType = srcMeta[srcMeta.length - 1].type;
-        if (destMeta[this.destInlet]) destType = destMeta[this.destInlet].type;
-        else if (destMeta[destMeta.length - 1] && destMeta[destMeta.length - 1].varLength) destType = destMeta[destMeta.length - 1].type;
-        return srcType === "signal" && destType === "signal" ? "audio" : "normal";
+        // const srcMeta = this.srcBox.object.meta.outlets;
+        // const destMeta = this.destBox.object.meta.inlets;
+        // let srcType: TMetaType = "anything";
+        // let destType: TMetaType = "anything";
+        // if (srcMeta[this.srcOutlet]) srcType = srcMeta[this.srcOutlet].type;
+        // else if (srcMeta[srcMeta.length - 1] && srcMeta[srcMeta.length - 1].varLength) srcType = srcMeta[srcMeta.length - 1].type;
+        // if (destMeta[this.destInlet]) destType = destMeta[this.destInlet].type;
+        // else if (destMeta[destMeta.length - 1] && destMeta[destMeta.length - 1].varLength) destType = destMeta[destMeta.length - 1].type;
+        // return srcType === "signal" && destType === "signal" ? "audio" : "normal";
+
+        // TODO -- complete this implementation
+        return "analog" as THardwareLineType;
     }
     updateType = () => {
         const type = this.calcType();
@@ -209,14 +168,14 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
             this.emit("typeChanged", type);
         }
     };
-    get type(): TLineType {
+    get type(): THardwareLineType {
         return this._type;
     }
     toString() {
         return JSON.stringify(this.toSerializable());
     }
-    toSerializable(): TLine {
-        const { id, src, dest, disabled } = this;
-        return { id, src: [...src], dest: [...dest], disabled };
+    toSerializable(): THardwareLine {
+        const { id, aIo, bIo, disabled } = this;
+        return { id, aIo: [...aIo], bIo: [...bIo], disabled };
     }
 }

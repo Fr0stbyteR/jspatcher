@@ -2,26 +2,26 @@ import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import { isTRect, parseToPrimitive, isTPresentationRect, isRectMovable, isRectResizable } from "../../utils/utils";
 import type Patcher from "./Patcher";
 import type Line from "./Line";
-import type { TBox, TMaxBox, TRect, TPresentationRect } from "../types";
-import type { Args, Data, IJSPatcherObject, JSPatcherObjectEventMap, ObjectUpdateOptions, Props, State } from "../objects/base/AbstractObject";
+import type { TRect, TPresentationRect } from "../types";
+import type { IoPosition, THardwareBox } from "./types";
+import type { Args, Data, IHardwarePatcherObject, HardwarePatcherObjectEventMap, ObjectUpdateOptions, Props, State } from "./objects/base/AbstractHardwareObject";
 
-export interface BoxEventMap extends Pick<JSPatcherObjectEventMap<any, any, any, any, any, any, any>, "metaUpdated" | "argsUpdated" | "propsUpdated" | "dataUpdated" | "stateUpdated"> {
-    "rectChanged": Box;
-    "presentationRectChanged": Box;
-    "backgroundChanged": Box;
-    "presentationChanged": Box;
-    "textChanged": Box;
+export interface BoxEventMap extends Pick<HardwarePatcherObjectEventMap<any, any, any, any, any, any, any>, "metaUpdated" | "argsUpdated" | "propsUpdated" | "dataUpdated" | "stateUpdated"> {
+    "rectChanged": HardwareBox;
+    "presentationRectChanged": HardwareBox;
+    "backgroundChanged": HardwareBox;
+    "presentationChanged": HardwareBox;
+    "textChanged": HardwareBox;
     "error": string;
     "connectedPort": { isSrc: boolean; i: number; last?: false };
     "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
-    "ioCountChanged": Box;
+    "ioCountChanged": HardwareBox;
 }
 
-export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends TypedEventEmitter<BoxEventMap> {
+export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePatcherObject> extends TypedEventEmitter<BoxEventMap> {
     readonly id: string;
     text = "";
-    inlets = 0;
-    outlets = 0;
+    ios: IoPosition[];
     rect: TRect;
     background: boolean;
     presentation: boolean;
@@ -34,25 +34,21 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
     _editing: boolean;
     private _parsed: { class: string; args: Args<T>; props: Props<T> };
     private _object: T;
-    private _Object: typeof IJSPatcherObject;
+    private _Object: typeof IHardwarePatcherObject;
     private readonly _patcher: Patcher;
-    private readonly _inletLines: Set<Line>[];
-    private readonly _outletLines: Set<Line>[];
-    constructor(patcherIn: Patcher, boxIn: TBox) {
+    private readonly _ioLines: Set<Line>[];
+    constructor(patcherIn: Patcher, boxIn: THardwareBox) {
         super();
         this.id = boxIn.id;
         this.text = boxIn.text;
         this.args = (boxIn.args || []) as Args<T>;
         this.props = (boxIn.props || {}) as Props<T>;
-        this.inlets = boxIn.inlets;
-        this.outlets = boxIn.outlets;
-        this._inletLines = new Array(this.inlets).fill(null).map(() => new Set<Line>());
-        this._outletLines = new Array(this.outlets).fill(null).map(() => new Set<Line>());
-        const maxBoxIn = boxIn as unknown as TMaxBox["box"];
-        this.rect = boxIn.rect || maxBoxIn.patching_rect;
-        this.background = boxIn.background || !!maxBoxIn.background;
-        this.presentation = boxIn.presentation || !!maxBoxIn.presentation;
-        this.presentationRect = boxIn.presentationRect || maxBoxIn.presentation_rect;
+        this.ios = boxIn.ios;
+        this._ioLines = new Array(this.ios).fill(null).map(() => new Set<Line>());
+        this.rect = boxIn.rect;
+        this.background = boxIn.background;
+        this.presentation = boxIn.presentation;
+        this.presentationRect = boxIn.presentationRect;
         if (!this.presentationRect) this.presentationRect = this.rect.slice() as TRect;
         this.zIndex = boxIn.zIndex || 0;
         this.data = boxIn.data || (boxIn as any).prevData?.storage || {};
@@ -63,7 +59,7 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         this.on("propsUpdated", () => this._patcher.emitChanged());
     }
     async init() {
-        this._parsed = Box.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };
+        this._parsed = HardwareBox.parseObjText(this.text) as { class: string; args: Args<T>; props: Props<T> };
         const newMeta = this._patcher.getObjectMeta(this._parsed);
         for (const key in this.props) {
             if (!newMeta.props[key]) delete this.props[key];
@@ -219,7 +215,7 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         this.emit("disconnectedPort", { isSrc: false, i: inlet, last });
         return this;
     }
-    isOutletTo(outlet: number, box: Box, inlet: number) {
+    isOutletTo(outlet: number, box: HardwareBox, inlet: number) {
         const iterator = this._outletLines[outlet].values();
         let r: IteratorResult<Line, Line>;
         while (!(r = iterator.next()).done) {
@@ -228,7 +224,7 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         }
         return false;
     }
-    isInletFrom(inlet: number, box: Box, outlet: number) {
+    isInletFrom(inlet: number, box: HardwareBox, outlet: number) {
         const iterator = this._inletLines[inlet].values();
         let r: IteratorResult<Line, Line>;
         while (!(r = iterator.next()).done) {
