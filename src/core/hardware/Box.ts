@@ -1,7 +1,7 @@
 import TypedEventEmitter from "../../utils/TypedEventEmitter";
 import { isTRect, parseToPrimitive, isTPresentationRect, isRectMovable, isRectResizable } from "../../utils/utils";
 import type Patcher from "./Patcher";
-import type Line from "./Line";
+import HardwareLine from "./Line";
 import type { TRect, TPresentationRect } from "../types";
 import type { IoPosition, THardwareBox } from "./types";
 import type { Args, Data, IHardwarePatcherObject, HardwarePatcherObjectEventMap, ObjectUpdateOptions, Props, State } from "./objects/base/AbstractHardwareObject";
@@ -36,7 +36,7 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     private _object: T;
     private _Object: typeof IHardwarePatcherObject;
     private readonly _patcher: Patcher;
-    private readonly _ioLines: Set<Line>[];
+    private readonly _ioLines: Set<HardwareLine>[];
     constructor(patcherIn: Patcher, boxIn: THardwareBox) {
         super();
         this.id = boxIn.id;
@@ -44,7 +44,7 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
         this.args = (boxIn.args || []) as Args<T>;
         this.props = (boxIn.props || {}) as Props<T>;
         this.ios = boxIn.ios;
-        this._ioLines = new Array(this.ios).fill(null).map(() => new Set<Line>());
+        this._ioLines = new Array(this.ios).fill(null).map(() => new Set<HardwareLine>());
         this.rect = boxIn.rect;
         this.background = boxIn.background;
         this.presentation = boxIn.presentation;
@@ -99,11 +99,8 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     get meta() {
         return this._object?.meta;
     }
-    get outletLines() {
-        return this._outletLines;
-    }
-    get inletLines() {
-        return this._inletLines;
+    get ioLines() {
+        return this._ioLines;
     }
     get objectInit() {
         return this._patcher.props.objectInit;
@@ -120,48 +117,47 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     get parsed() {
         return this._parsed;
     }
-    addInletLine(line: Line) {
-        const index = line.destInlet;
-        if (!this._inletLines[index]) this._inletLines[index] = new Set<Line>();
-        this._inletLines[index].add(line);
+    addIoLine(line: HardwareLine, isA: boolean) {
+        const index = isA ? line.aIo[1] : line.bIo[1];
+        if (!this._ioLines[index])
+            this._ioLines[index] = new Set<HardwareLine>();
+        this._ioLines[index].add(line);
     }
-    removeInletLine(line: Line) {
-        const index = line.destInlet;
-        if (this._inletLines[index]) this._inletLines[index].delete(line);
+    removeIoLine(line: HardwareLine, isA: boolean) {
+        const index = isA ? line.aIo[1] : line.bIo[1];
+        if (this._ioLines[index])
+            this._ioLines[index].delete(line);
     }
-    addOutletLine(line: Line) {
-        const index = line.srcOutlet;
-        if (!this._outletLines[index]) this._outletLines[index] = new Set<Line>();
-        this._outletLines[index].add(line);
-    }
-    removeOutletLine(line: Line) {
-        const index = line.srcOutlet;
-        if (this._outletLines[index]) this._outletLines[index].delete(line);
-    }
-    setInlets(count: number) {
+
+    setIos(positions: IoPosition[]) {
         const lines = this.allLines;
         lines.forEach(line => line.disable());
-        this.inlets = count;
-        // Lines that should be removed will destroy themselves when enable()
+
+        this.ios = positions;
         lines.forEach(line => line.enable());
-        const linesSetLength = this._inletLines.length;
-        if (count > linesSetLength) this._inletLines.push(...new Array(count - linesSetLength).fill(null).map(() => new Set<Line>()));
-        else if (count < linesSetLength) this._inletLines.splice(count);
-        this._inletLines.forEach(set => set.forEach(line => line.uiUpdateDest()));
+
+        const linesSetLen = this._ioLines.length;
+        if (positions.length > linesSetLen)
+            this._ioLines.push(...new Array(positions.length - linesSetLen).fill(null).map(() => new Set<HardwareLine>()));
+        else if (positions.length < linesSetLen)
+            this._ioLines.splice(positions.length);
+        this._ioLines.forEach(set => set.forEach(line => {line.uiUpdateA(); line.uiUpdateB();}));
         this.emit("ioCountChanged", this);
     }
-    setOutlets(count: number) {
-        const lines = this.allLines;
-        lines.forEach(line => line.disable());
-        this.outlets = count;
-        // Lines that should be removed will destroy themselves when enable()
-        lines.forEach(line => line.enable());
-        const linesSetLength = this._outletLines.length;
-        if (count > linesSetLength) this._outletLines.push(...new Array(count - linesSetLength).fill(null).map(() => new Set<Line>()));
-        else if (count < linesSetLength) this._outletLines.splice(count);
-        this._outletLines.forEach(set => set.forEach(line => line.uiUpdateSrc()));
-        this.emit("ioCountChanged", this);
+
+    getIoPos(port: number) {
+        const { rect, ios } = this;
+        const [left, top, width, height] = rect;
+
+        const [x1, y1, x2, y2] = {
+            "T": [left, top, left + width, top],
+            "B": [left, top + height, left + width, top + height],
+            "L": [left, top, left, top + height],
+            "R": [left + width, top, left + width, top + height],
+        }[ios[port].edge];
+
     }
+
     getInletPos(port: number) {
         const { rect, inlets } = this;
         const [left, top, width] = rect;
@@ -187,10 +183,7 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
         return positions;
     }
     get allLines() {
-        const lines = new Set<Line>();
-        this._inletLines.forEach(set => set.forEach(line => lines.add(line)));
-        this._outletLines.forEach(set => set.forEach(line => lines.add(line)));
-        return lines;
+        return this._ioLines.flatMap(set => Array.from(set.values()));
     }
     // called when inlet or outlet are connected or disconnected
     connectedOutlet(outlet: number, destBoxId: string, destInlet: number, lineId: string) {
@@ -217,7 +210,7 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     }
     isOutletTo(outlet: number, box: HardwareBox, inlet: number) {
         const iterator = this._outletLines[outlet].values();
-        let r: IteratorResult<Line, Line>;
+        let r: IteratorResult<HardwareLine, HardwareLine>;
         while (!(r = iterator.next()).done) {
             const line = r.value;
             if (line.destBox === box && line.destInlet === inlet) return true;
@@ -226,7 +219,7 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     }
     isInletFrom(inlet: number, box: HardwareBox, outlet: number) {
         const iterator = this._inletLines[inlet].values();
-        let r: IteratorResult<Line, Line>;
+        let r: IteratorResult<HardwareLine, HardwareLine>;
         while (!(r = iterator.next()).done) {
             const line = r.value;
             if (line.srcBox === box && line.srcOutlet === outlet) return true;
@@ -356,8 +349,10 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
         rect[2] = Math.max(15, rect[2]);
         rect[3] = Math.max(15, rect[3]);
         this.rect = rect;
-        this.inletLines.forEach(set => set.forEach(line => line.uiUpdateDest()));
-        this.outletLines.forEach(set => set.forEach(line => line.uiUpdateSrc()));
+        this.ioLines.forEach(set => set.forEach(line => {line.uiUpdateA(); line.uiUpdateB();} ));
+
+        // this.inletLines.forEach(set => set.forEach(line => line.uiUpdateDest()));
+        // this.outletLines.forEach(set => set.forEach(line => line.uiUpdateSrc()));
         this.emit("rectChanged", this);
         return this;
     }
@@ -452,10 +447,10 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
         return objOut;
     }
     toString() {
-        const { id, text, inlets, outlets, rect, background, presentation, presentationRect, args, props, data, zIndex } = this;
-        return JSON.stringify({ id, text, inlets, outlets, rect, background, presentation, presentationRect, args, props, data, zIndex });
+        const { id, text, ios, rect, background, presentation, presentationRect, args, props, data, zIndex } = this;
+        return JSON.stringify({ id, text, ios, rect, background, presentation, presentationRect, args, props, data, zIndex });
     }
-    toSerializable(): TBox {
+    toSerializable(): THardwareBox {
         return JSON.parse(this.toString());
     }
 }
