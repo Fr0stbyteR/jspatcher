@@ -156,32 +156,20 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
             "R": [left + width, top, left + width, top + height],
         }[ios[port].edge];
 
+        let [diffx, diffy] = [x2 - x1, y2 - y1];
+        let magnitude = ios[port].position;
+
+        return { top: y1 + diffy * magnitude, left: x1 + diffx * magnitude };
     }
 
-    getInletPos(port: number) {
-        const { rect, inlets } = this;
-        const [left, top, width] = rect;
-        return { top, left: ((left + 10) + (width - 20) * port / (inlets > 1 ? inlets - 1 : 1)) };
-    }
-    getOutletPos(port: number) {
-        const { rect, outlets } = this;
-        const [left, top, width, height] = rect;
-        return { top: top + height, left: ((left + 10) + (width - 20) * port / (outlets > 1 ? outlets - 1 : 1)) };
-    }
-    get inletsPositions() {
+    get ioPositions() {
         const positions = [];
-        for (let i = 0; i < this.inlets; i++) {
-            positions[i] = this.getInletPos(i);
+        for (let i = 0; i < this.ios.length; i++) {
+            positions[i] = this.getIoPos(i);
         }
         return positions;
     }
-    get outletsPositions() {
-        const positions = [];
-        for (let i = 0; i < this.outlets; i++) {
-            positions[i] = this.getOutletPos(i);
-        }
-        return positions;
-    }
+
     get allLines() {
         return this._ioLines.flatMap(set => Array.from(set.values()));
     }
