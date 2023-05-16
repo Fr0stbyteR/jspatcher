@@ -1,17 +1,18 @@
 import apply from "window-function/apply";
 import * as WindowFunction from "window-function";
-import { instantiateFFTWModule, FFTWModule, FFTW, FFT } from "@shren/fftw-js/dist/esm-bundle";
+import type { FFTW, FFT } from "@shren/fftw-js/dist/esm-bundle";
 import { setTypedArray, getSubTypedArray, indexToFreq, sum, centroid, estimateFreq, fftw2Amp, flatness, flux, kurtosis, rolloff, skewness, slope, spread } from "../../utils/buffer";
 import { ceil, mod } from "../../utils/math";
 import { AudioWorkletGlobalScope, TypedAudioParamDescriptor, TypedAudioWorkletNodeOptions } from "./TypedAudioWorklet";
 import { ISpectralAnalyserProcessor, ISpectralAnalyserNode, SpectralAnalyserParameters, SpectralAnalysis } from "./SpectralAnalyserWorklet.types";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 import WindowEnergyFactor from "../../utils/windowEnergy";
+import type WorkletEnvProcessor from "./WorkletEnv.worklet";
 
 const processorId = "__JSPatcher_SpectralAnalyser";
-declare const globalThis: AudioWorkletGlobalScope & { SharedArrayBuffer: typeof SharedArrayBuffer | typeof ArrayBuffer; Atomics: typeof Atomics };
+declare const globalThis: AudioWorkletGlobalScope & { SharedArrayBuffer: typeof SharedArrayBuffer | typeof ArrayBuffer; Atomics: typeof Atomics } & AudioWorkletGlobalScope;
 if (!globalThis.SharedArrayBuffer) globalThis.SharedArrayBuffer = ArrayBuffer;
-const { registerProcessor, sampleRate } = globalThis;
+const { registerProcessor, sampleRate, jspatcherEnv } = globalThis;
 
 /**
  * Some data to transfer across threads
@@ -240,7 +241,6 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
     /** Samples that already written into window, but not analysed by FFT yet */
     private samplesWaiting = 0;
     /** FFTW.js instance */
-    private fftwModule: FFTWModule;
     private fftw: FFTW;
     private get FFT1D() {
         return this.fftw.r2r.FFT1D;
@@ -300,8 +300,7 @@ class SpectralAnalyserProcessor extends AudioWorkletProxyProcessor<ISpectralAnal
         this.init();
     }
     async init(): Promise<true> {
-        this.fftwModule = await instantiateFFTWModule();
-        this.fftw = new FFTW(this.fftwModule);
+        this.fftw = (jspatcherEnv as WorkletEnvProcessor).fftw;
         this.rfft = new this.FFT1D(1024);
         return true;
     }

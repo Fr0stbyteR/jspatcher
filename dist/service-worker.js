@@ -81,9 +81,6 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
    * See https://goo.gl/S9QRab
    */
   workbox.precacheAndRoute([{
-    "url": "_7062.js/SpectralAnalyser.worklet.js",
-    "revision": "fe9401d362605a6fbd4f43b27c8567ee"
-  }, {
     "url": "_7062.js/WorkletEnv.worklet.js",
     "revision": "5193d9a0b82f2ec460c742b22274da81"
   }, {
@@ -92,9 +89,6 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
   }, {
     "url": "_dc1c.js/WorkletEnv.worklet.js",
     "revision": "509a63548b2b22189fc1a8a688b9d6f6"
-  }, {
-    "url": "_fd2b.js/SpectralAnalyser.worklet.js",
-    "revision": "8c4df2a827517d1572fed48bc8d3610d"
   }, {
     "url": "_fd2b.js/WorkletEnv.worklet.js",
     "revision": "82dd699a659c356c9df10ceafedbeeff"
@@ -322,7 +316,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "68a7dabe8cd37eaa0068e733fe391c8a"
+    "revision": "a6b97700e8098bb3f4777e3d7e974702"
   }, {
     "url": "js/017d998140f1ad199103.worker.js",
     "revision": null
@@ -333,11 +327,14 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "url": "js/11b718dbecf53fe8a951.worker.js",
     "revision": null
   }, {
-    "url": "js/11fcb9bf014a499ad4aa.js",
-    "revision": null
-  }, {
     "url": "js/14f7a36899db782e01cddddc2ee88d1e.worker.js",
     "revision": "3de4165abf46b01ba15fd7228f2e341a"
+  }, {
+    "url": "js/1eaf25dfe10eca4845a4.js",
+    "revision": null
+  }, {
+    "url": "js/28fd68abd7dec35262fb.worker.js",
+    "revision": null
   }, {
     "url": "js/34799dc78b11a16ba5a3.js",
     "revision": null
@@ -375,6 +372,9 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "url": "js/68cf13e81eea4e5e2a33.js",
     "revision": null
   }, {
+    "url": "js/68e9cd770397fffba0ba.js",
+    "revision": null
+  }, {
     "url": "js/6b2296d7726f0841c01f.worker.js",
     "revision": null
   }, {
@@ -405,14 +405,11 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "url": "js/9e1522ceb3a0d28b3797.worker.js",
     "revision": null
   }, {
-    "url": "js/FaustFFTProcessor.worklet.js",
-    "revision": "d36d8371403c2562eae74e2e134d8173"
-  }, {
     "url": "js/Patcher.worklet.js",
     "revision": "d0a578704885d51e30fe9cc6ba19b3b1"
   }, {
     "url": "js/SpectralAnalyser.worklet.js",
-    "revision": "b470cc2da1751da79f31d9608a641d2d"
+    "revision": "052c2fa6b1acdcf7783c47069b916471"
   }, {
     "url": "js/TemporalAnalyser.worklet.js",
     "revision": "76755ecd40833506d3a22341f906acf3"
@@ -421,16 +418,13 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "993234e15f3a0155ffb2d6b4b4eb29cd"
   }, {
     "url": "js/WorkletEnv.worklet.js",
-    "revision": "faf8788115e968a707d0399c9ffe70ce"
+    "revision": "523613d7e594b790eefcd4c0bcb076fb"
   }, {
     "url": "js/a6b6f78b420b1f4bd98d.worker.js",
     "revision": null
   }, {
     "url": "js/a85ce25ec6767b7d9d2d3d88291dd6eb.worker.js",
     "revision": "c2f35317e3c4dcbca1d24778ff574360"
-  }, {
-    "url": "js/abe23772db9d6da9feed.worker.js",
-    "revision": null
   }, {
     "url": "js/b481f420e442bb340d72.js",
     "revision": null
@@ -442,9 +436,6 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": null
   }, {
     "url": "js/cecfbb715664b68e1396.js",
-    "revision": null
-  }, {
-    "url": "js/d8a34aa44bb66e255a13.js",
     "revision": null
   }, {
     "url": "js/d928a6176edfbd1e6d7f.js",

@@ -134,10 +134,7 @@ export default class FaustFFTPatcher extends FaustFFT<Partial<RawPatcher>, {}, [
             await this.reload();
         }
     };
-    handlePostInit = async () => {
-        await this.registerProcessor();
-        return this.reload();
-    };
+    handlePostInit = this.reload;
     subscribe() {
         super.subscribe();
         this.on("destroy", this.unsubscribePatcher);

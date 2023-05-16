@@ -1,12 +1,62 @@
-import FaustFFTNode from "../../worklets/FaustFFTNode";
+// import FaustFFTNode from "../../worklets/FaustFFTNode";
+import type { FaustFFTOptionsData, FaustMonoAudioWorkletNode } from "@shren/faustwasm";
 import FaustNode, { FaustNodeData, FaustNodeInternalState } from "./FaustNode";
 import Bang, { isBang } from "../base/Bang";
+import { isMIDIEvent, decodeLine } from "../../../utils/utils";
 import type { IInletMeta, IOutletMeta, IPropsMeta } from "../base/AbstractObject";
 import type { DefaultObjectProps } from "../base/DefaultObject";
 import type { UnPromisifiedFunction } from "../../workers/Worker";
+import type { TBPF } from "../../types";
+
+export const FFTUtils = class {
+    static get windowFunctions() {
+        return [
+            // blackman
+            (i: number, N: number) => {
+                const a0 = 0.42;
+                const a1 = 0.5;
+                const a2 = 0.08;
+                const f = 6.283185307179586 * i / (N - 1);
+                return a0 - a1 * Math.cos(f) + a2 * Math.cos(2 * f);
+            },
+            // hamming
+            (i: number, N: number) => 0.54 - 0.46 * Math.cos(6.283185307179586 * i / (N - 1)),
+            // hann
+            (i: number, N: number) => 0.5 * (1 - Math.cos(6.283185307179586 * i / (N - 1))),
+            // triangular
+            (i: number, N: number) => 1 - Math.abs(2 * (i - 0.5 * (N - 1)) / N)
+        ];
+    }
+    static async getFFT() {
+        const { fftw } = (globalThis as unknown as AudioWorkletGlobalScope).jspatcherEnv;
+        return fftw.r2r.FFT1D;
+    }
+    static fftToSignal(f: Float32Array, r: Float32Array, i: Float32Array, b: Float32Array) {
+        const fftSize = f.length;
+        const len = fftSize / 2 + 1;
+        const invFFTSize = 1 / fftSize;
+        for (let j = 0; j < len; j++) {
+            r[j] = f[j] * invFFTSize;
+            if (i) i[j] = (j === 0 || j === len - 1) ? 0 : f[fftSize - j] * invFFTSize;
+            if (b) b[j] = j;
+        }
+    }
+    static signalToFFT(r: Float32Array, i: Float32Array, f: Float32Array) {
+        const len = (r.length - 1) * 2;
+        f.set(r);
+        if (!i) return;
+        for (let j = 1; j < i.length - 1; j++) {
+            f[len - j] = i[j];
+        }
+    }
+    static signalToNoFFT(r: Float32Array, i: Float32Array, f: Float32Array) {
+        f.set(r.subarray(1, r.length));
+        if (i) f.set(i.subarray(0, i.length - 1), r.length - 1);
+    }
+};
 
 export interface FaustFFTInternalState extends FaustNodeInternalState {
-    fftNode: FaustFFTNode;
+    fftNode: FaustMonoAudioWorkletNode;
     params: string[];
 }
 export interface FaustFFTProps {
@@ -57,37 +107,30 @@ export default class FaustFFT<
         params: [],
         voices: 0
     };
-    registerProcessor() {
-        return FaustFFTNode.register(this.audioCtx.audioWorklet);
-    }
     async getFaustFFTNode(code: string) {
         const { audioCtx } = this;
         const { FaustMonoDspGenerator } = this.env.Faust;
         const faustCompiler = await this.env.getFaustCompiler();
         const generator = new FaustMonoDspGenerator();
-        const { factory } = await generator.compile(faustCompiler, "FaustDSP", code, "");
-        const offlineProcessor = await generator.createOfflineProcessor(audioCtx.sampleRate, 128);
-        const node = new FaustFFTNode(audioCtx, {
-            channelCount: Math.ceil(offlineProcessor.getNumInputs() / 3) || 1,
-            outputChannelCount: [Math.ceil(offlineProcessor.getNumOutputs() / 2) || 1],
-            processorOptions: { factory }
-        });
-        return { node, offlineProcessor };
+        const { factory } = await generator.compile(faustCompiler, "FaustFFTDSP", code, "");
+        const fftOptions: Partial<FaustFFTOptionsData> = {};
+        if (this.meta.props.fftSize.enums.indexOf(this.getProp("fftSize")) !== -1) fftOptions.fftSize = this.getProp("fftSize");
+        if (this.meta.props.windowFunction.enums.indexOf(this.getProp("windowFunction")) !== -1) fftOptions.defaultWindowFunction = this.meta.props.windowFunction.enums.indexOf(this.getProp("windowFunction"));
+        if (this.meta.props.fftOverlap.enums.indexOf(this.getProp("fftOverlap")) !== -1) fftOptions.fftOverlap = this.getProp("fftOverlap");
+        fftOptions.noIFFT = !!this.getProp("noIFFT");
+        const node = await generator.createFFTNode(audioCtx, FFTUtils, "FaustFFTDSP", factory, fftOptions);
+        return node as FaustMonoAudioWorkletNode & { dspCode?: string };
     }
     async compileFaustFFTNode(code: string) {
         let splitter: ChannelSplitterNode;
         let merger: ChannelMergerNode;
-        const { node, offlineProcessor } = await this.getFaustFFTNode(code);
+        const node = await this.getFaustFFTNode(code);
         if (!node) throw new Error("Cannot compile Faust code");
         node.channelInterpretation = "discrete";
         node.dspCode = code;
-        if (this.meta.props.fftSize.enums.indexOf(this.getProp("fftSize")) !== -1) node.parameters.get("fftSize").value = this.getProp("fftSize");
-        if (this.meta.props.windowFunction.enums.indexOf(this.getProp("windowFunction")) !== -1) node.parameters.get("windowFunction").value = this.meta.props.windowFunction.enums.indexOf(this.getProp("windowFunction"));
-        if (this.meta.props.fftOverlap.enums.indexOf(this.getProp("fftOverlap")) !== -1) node.parameters.get("fftOverlap").value = this.getProp("fftOverlap");
-        node.parameters.get("noIFFT").value = +!!this.getProp("noIFFT");
         const { audioCtx } = this.patcher;
-        const inlets = node.inputChannels;
-        const outlets = node.outputChannels;
+        const inlets = Math.ceil(node.getNumInputs() / 3);
+        const outlets = Math.ceil(node.getNumOutputs() / 2);
         if (inlets) {
             merger = audioCtx.createChannelMerger(inlets);
             merger.channelInterpretation = "discrete";
@@ -97,7 +140,7 @@ export default class FaustFFT<
             splitter = audioCtx.createChannelSplitter(outlets);
             node.connect(splitter, 0, 0);
         }
-        return { inlets, outlets, node, splitter, merger, offlineProcessor };
+        return { inlets, outlets, node, splitter, merger };
     }
     async newNode(code: string) {
         let compiled: ReturnType<UnPromisifiedFunction<FaustFFT["compileFaustFFTNode"]>>;
@@ -107,7 +150,7 @@ export default class FaustFFT<
             this.error((e as Error).message);
             return;
         }
-        const { inlets, outlets, merger, splitter, node, offlineProcessor } = compiled;
+        const { inlets, outlets, merger, splitter, node } = compiled;
         this.disconnectAudio();
         this.handleDestroy();
         Object.assign(this._, { merger, splitter, fftNode: node } as FaustFFTInternalState);
@@ -130,13 +173,14 @@ export default class FaustFFT<
         }
         factoryMeta.outlets[outlets] = lastOutletMeta;
 
-        const params: string[] = offlineProcessor.getParams().filter(s => !s.endsWith("fftSize") && !s.endsWith("fftHopSize")).sort();
+        const params: string[] = node.getParams().filter(s => !s.endsWith("fftSize") && !s.endsWith("fftHopSize")).sort();
         this._.params = params;
         for (let i = inlets || 1; i < (inlets || 1) + params.length; i++) {
             const path = params[i - (inlets || 1)];
-            const param = offlineProcessor.getParameterDescriptors().find(p => p.name === path);
+            const param = node.parameters.get(path);
             const { defaultValue, minValue, maxValue } = param;
             factoryMeta.inlets[i] = { ...audioParamInletMeta, description: `${path}${audioParamInletMeta.description}: ${defaultValue} (${minValue} - ${maxValue})` };
+            this.inletAudioConnections[i] = { node: param };
         }
 
         this.setMeta(factoryMeta);
@@ -153,7 +197,6 @@ export default class FaustFFT<
         if ("noIFFT" in props && props.noIFFT !== this.getProp("noIFFT")) this._.fftNode.parameters.get("noIFFT").value = +!!props.noIFFT;
     };
     handlePostInit = async () => {
-        await this.registerProcessor();
         if (this.data.code) await this.newNode(this.data.code);
     };
     handleInlet = async ({ data, inlet }: { data: I[number]; inlet: number }) => {
@@ -163,17 +206,30 @@ export default class FaustFFT<
             } else if (typeof data === "string") {
                 this.setData({ code: data } as D);
                 await this.newNode(data);
+            } else if (isMIDIEvent(data)) {
+                if (this._.fftNode) this._.fftNode.midiMessage(data);
             } else if (typeof data === "object") {
-                if (this._.node) {
+                if (this._.fftNode) {
                     for (const key in data) {
-                        if (typeof data[key] === "number") this._.fftNode.setProcessorParamValue(key, data[key]);
+                        try {
+                            const bpf = decodeLine((data as Record<string, TBPF>)[key]);
+                            this.applyBPF(this._.fftNode.parameters.get(key), bpf);
+                        } catch (e) {
+                            this.error(e.message);
+                        }
                     }
                 }
             }
         } else if (this._.fftNode) {
-            const paramInlet = inlet - (this._.fftNode.inputChannels || 1);
-            const param = this._.params[paramInlet];
-            if (typeof data === "number") this._.fftNode.setProcessorParamValue(param, data);
+            const con = this.inletAudioConnections[inlet].node;
+            if (con instanceof AudioParam) {
+                try {
+                    const bpf = decodeLine(data as TBPF);
+                    this.applyBPF(con, bpf);
+                } catch (e) {
+                    this.error(e.message);
+                }
+            }
         }
     };
     subscribe() {
