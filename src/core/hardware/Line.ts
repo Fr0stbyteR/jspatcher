@@ -33,11 +33,11 @@ export default class HardwareLine extends TypedEventEmitter<HardwareLineEventMap
         this._type = this.calcType();
         if (aBox) {
             aBox.on("metaUpdated", this.updateType);
-            aBox.addOutletLine(this);
+            aBox.addIoLine(this, true);
         }
         if (bBox) {
             bBox.on("metaUpdated", this.updateType);
-            bBox.addInletLine(this);
+            bBox.addIoLine(this, false);
         }
     }
     get presentation() {
@@ -49,9 +49,9 @@ export default class HardwareLine extends TypedEventEmitter<HardwareLineEventMap
         if (aId === this.aIo[0] && aIo === this.aIo[1]) return this;
         this.aBox.off("metaUpdated", this.updateType);
         this.disable();
-        this.aBox.removeOutletLine(this);
+        this.aBox.removeIoLine(this, true);
         this.aIo = [aId, aIo];
-        this.aBox.addOutletLine(this);
+        this.aBox.addIoLine(this, true);
         this.enable();
         this.aBox.on("metaUpdated", this.updateType);
         this.updateType();
@@ -70,9 +70,9 @@ export default class HardwareLine extends TypedEventEmitter<HardwareLineEventMap
         if (bId === this.bIo[0] && bIo === this.bIo[1]) return this;
         this.aBox.off("metaUpdated", this.updateType);
         this.disable();
-        this.bBox.removeOutletLine(this);
+        this.bBox.removeIoLine(this, false);
         this.bIo = [bId, bIo];
-        this.bBox.addOutletLine(this);
+        this.bBox.removeIoLine(this, false);
         this.enable();
         this.bBox.on("metaUpdated", this.updateType);
         this.updateType();
@@ -86,32 +86,39 @@ export default class HardwareLine extends TypedEventEmitter<HardwareLineEventMap
         return this;
     }
     disable(bool?: boolean): HardwareLine {
-        if (bool === false) return this.enable();
-        if (this.disabled) return this;
+        if (bool === false)
+            return this.enable();
+        if (this.disabled)
+            return this;
         this.disabled = true;
         const { aBox, bBox } = this;
-        if (this._patcher.getLinesByBox(this.aId, this.bId, this.aIo[1], this.bIo[1]).length > 1) return this; // not last cable
-        aBox.disconnectedOutlet(this.aIo[1], bBox.id, this.bIo[1], this.id);
-        bBox.disconnectedInlet(this.bIo[1], aBox.id, this.aIo[1], this.id);
+        if (this._patcher.getLinesByBox(this.aId, this.bId, this.aIo[1], this.bIo[1]).length > 1)
+            return this; // not last cable
+        aBox.disconnectedIo(this.aIo[1], this.bIo[1], bBox.id, this.id);
+        bBox.disconnectedIo(this.bIo[1], this.aIo[1], aBox.id, this.id);
         return this;
     }
     enable(bool?: boolean): HardwareLine {
-        if (bool === false) return this.disable();
-        if (!this.disabled) return this;
+        if (bool === false)
+            return this.disable();
+        if (!this.disabled)
+            return this;
         const { aBox, bBox } = this;
-        if (this.aIo[1] >= aBox.ios.length || this.bIo[1] >= bBox.ios.length) return this._patcher.deleteLine(this.id);
-        if (this._patcher.getLinesByBox(this.aId, this.bId, this.aIo[1], this.bIo[1]).length > 1) return this; // not last cable
+        if (this.aIo[1] >= aBox.ios.length || this.bIo[1] >= bBox.ios.length)
+            return this._patcher.deleteLine(this.id);
+        if (this._patcher.getLinesByBox(this.aId, this.bId, this.aIo[1], this.bIo[1]).length > 1)
+            return this; // not last cable
         this.disabled = false;
-        aBox.connectedIo(this.aIo[1], bBox.id, this.bIo[1], this.id);
-        bBox.connectedIo(this.bIo[1], aBox.id, this.aIo[1], this.id);
+        aBox.connectedIo(this.aIo[1], this.bIo[1], bBox.id, this.id);
+        bBox.connectedIo(this.bIo[1], this.aIo[1], aBox.id, this.id);
         return this;
     }
     destroy() {
         this.bBox.off("metaUpdated", this.updateType);
         this.aBox.off("metaUpdated", this.updateType);
         this.disable();
-        this.aBox.removeOutletLine(this);
-        this.bBox.removeInletLine(this);
+        this.aBox.removeIoLine(this, true);
+        this.bBox.removeIoLine(this, false);
         delete this._patcher.lines[this.id];
         return this;
     }
@@ -120,14 +127,14 @@ export default class HardwareLine extends TypedEventEmitter<HardwareLineEventMap
         return this.disabled ? this : this.bBox.fn(this.bIo[1], data);
     }
     get positionHash() {
-        const { top, left } = this._patcher.boxes[this.bIo[0]].getInletPos(this.bIo[1]);
+        const { top, left } = this._patcher.boxes[this.bIo[0]].getIoPos(this.bIo[1]);
         return left * 65536 + top;
     }
     get aPos() {
-        return this._patcher.boxes[this.aIo[0]].getOutletPos(this.aIo[1]);
+        return this._patcher.boxes[this.aIo[0]].getIoPos(this.aIo[1]);
     }
     get bPos() {
-        return this._patcher.boxes[this.bIo[0]].getInletPos(this.bIo[1]);
+        return this._patcher.boxes[this.bIo[0]].getIoPos(this.bIo[1]);
     }
     get aId() {
         return this.aIo[0];

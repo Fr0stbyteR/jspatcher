@@ -81,8 +81,13 @@ export type HardwarePatcherObjectEventMap<D, S, IO extends any[], A extends any[
     /** Emitted if data is sent through a cable */
     "io": TIoEvent<IO>;
     /** Emitted when a new connection/disconnection is made on any I/O */
-    "connectedIo": { aIo: number; bIo: number; bBoxId: string; lineId: string; };
-    "disconnectedIo": { aIo: number; bIo: number; bBoxId: string; lineId: string; };
+    // "connectedIo": { aIo: number; bIo: number; bBoxId: string; lineId: string; };
+    // "disconnectedIo": { aIo: number; bIo: number; bBoxId: string; lineId: string; };
+
+    "connectedIo": { io: number; otherIo: number; otherBox: string; lineId: string; };
+    "disconnectedIo": { io: number; otherIo: number; otherBox: string; lineId: string; };
+
+
     /** Emitted when the object will be destroyed, attach a callback to clean up */
     "destroy": never;
     /** Emitted when the object's metadata is changed (by itself) */
@@ -168,8 +173,11 @@ export interface IHardwarePatcherObject<
     /** Called when object will be destroyed. */
     destroy(): Promise<void>;
     // called when inlet or outlet are connected or disconnected
-    connectedIo(aIo: number, bIo: number, bBoxId: string, lineId: string): void;
-    disconnectedIo(aIo: number, bIo: number, bBoxId: string, lineId: string): void;
+    // connectedIo(aIo: number, bIo: number, bBoxId: string, lineId: string): void;
+    // disconnectedIo(aIo: number, bIo: number, bBoxId: string, lineId: string): void;
+
+    connectedIo(io: number, otherIo: number, otherBox: string, lineId: string): void;
+    disconnectedIo(io: number, otherIo: number, otherBox: string, lineId: string): void;
     /** Highlight the UI box. */
     highlight(): void;
 
@@ -438,12 +446,18 @@ export default abstract class AbstractObject<
     async destroy() {
         await this.emit("destroy");
     }
-    connectedIo(aIo: number, bIo: number, bBoxId: string, lineId: string): void {
-        this.emit("connectedIo", { aIo, bIo, bBoxId, lineId })
+    connectedIo(io: number, otherIo: number, otherBox: string, lineId: string): void {
+        this.emit("connectedIo", { io, otherIo, otherBox, lineId });
     }
-    disconnectedIo(aIo: number, bIo: number, bBoxId: string, lineId: string): void {
-        this.emit("disconnectedIo", { aIo, bIo, bBoxId, lineId })
+    disconnectedIo(io: number, otherIo: number, otherBox: string, lineId: string): void {
+        this.emit("disconnectedIo", { io, otherIo, otherBox, lineId });
     }
+    // connectedIo(aIo: number, bIo: number, bBoxId: string, lineId: string): void {
+    //     this.emit("connectedIo", { aIo, bIo, bBoxId, lineId })
+    // }
+    // disconnectedIo(aIo: number, bIo: number, bBoxId: string, lineId: string): void {
+    //     this.emit("disconnectedIo", { aIo, bIo, bBoxId, lineId })
+    // }
     post(data: any) {
         this._patcher.newLog("none", this.meta.name, stringifyError(data), this._box);
     }
@@ -460,33 +474,6 @@ export default abstract class AbstractObject<
     }
     highlight() {
         this._box.highlight();
-    }
-
-    connectAudio() {
-        this.box.allLines.forEach(line => line.enable());
-    }
-    connectAudioInlet(portIn?: number) {
-        this.inletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.enable());
-        });
-    }
-    connectAudioOutlet(portIn?: number) {
-        this.outletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.enable());
-        });
-    }
-    disconnectAudio() {
-        this.box.allLines.forEach(line => line.disable());
-    }
-    disconnectAudioInlet(portIn?: number) {
-        this.inletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.disable());
-        });
-    }
-    disconnectAudioOutlet(portIn?: number) {
-        this.outletLines.forEach((lines, port) => {
-            if (typeof portIn === "undefined" || port === portIn) lines.forEach(line => line.disable());
-        });
     }
     applyBPF(param: AudioParam, bpf: number[][]) {
         const { audioCtx } = this;

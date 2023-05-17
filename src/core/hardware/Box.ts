@@ -13,8 +13,8 @@ export interface BoxEventMap extends Pick<HardwarePatcherObjectEventMap<any, any
     "presentationChanged": HardwareBox;
     "textChanged": HardwareBox;
     "error": string;
-    "connectedPort": { isSrc: boolean; i: number; last?: false };
-    "disconnectedPort": { isSrc: boolean; i: number; last: boolean };
+    "connectedPort": { io: number; last?: false };
+    "disconnectedPort": { io: number; last?: boolean };
     "ioCountChanged": HardwareBox;
 }
 
@@ -173,47 +173,69 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     get allLines() {
         return this._ioLines.flatMap(set => Array.from(set.values()));
     }
-    // called when inlet or outlet are connected or disconnected
-    connectedOutlet(outlet: number, destBoxId: string, destInlet: number, lineId: string) {
-        if (this._object) this._object.connectedOutlet(outlet, destBoxId, destInlet, lineId);
-        this.emit("connectedPort", { isSrc: true, i: outlet });
+    connectedIo(io: number, otherBoxIo: number, otherBoxId: string, lineId: string) {
+        if (this._object) this._object.connectedIo(io, otherBoxIo, otherBoxId, lineId);
+        this.emit("connectedPort", { io });
         return this;
     }
-    connectedInlet(inlet: number, srcBoxId: string, srcOutlet: number, lineId: string) {
-        if (this._object) this._object.connectedInlet(inlet, srcBoxId, srcOutlet, lineId);
-        this.emit("connectedPort", { isSrc: false, i: inlet });
+    disconnectedIo(io: number, otherBoxIo: number, otherBoxId: string, lineId: string) {
+        if (this._object) this._object.disconnectedIo(io, otherBoxIo, otherBoxId, lineId);
+        this.emit("connectedPort", { io });
         return this;
     }
-    disconnectedOutlet(outlet: number, destBoxId: string, destInlet: number, lineId: string) {
-        if (this._object) this._object.disconnectedOutlet(outlet, destBoxId, destInlet, lineId);
-        const last = this._patcher.getLinesBySrcID(this.id)[outlet].length === 1;
-        this.emit("disconnectedPort", { isSrc: true, i: outlet, last });
-        return this;
-    }
-    disconnectedInlet(inlet: number, srcBoxId: string, srcOutlet: number, lineId: string) {
-        if (this._object) this._object.disconnectedInlet(inlet, srcBoxId, srcOutlet, lineId);
-        const last = this._patcher.getLinesByDestID(this.id)[inlet].length === 1;
-        this.emit("disconnectedPort", { isSrc: false, i: inlet, last });
-        return this;
-    }
-    isOutletTo(outlet: number, box: HardwareBox, inlet: number) {
-        const iterator = this._outletLines[outlet].values();
-        let r: IteratorResult<HardwareLine, HardwareLine>;
-        while (!(r = iterator.next()).done) {
-            const line = r.value;
-            if (line.destBox === box && line.destInlet === inlet) return true;
+
+    // // called when inlet or outlet are connected or disconnected
+    // connectedOutlet(outlet: number, destBoxId: string, destInlet: number, lineId: string) {
+    //     if (this._object) this._object.connectedOutlet(outlet, destBoxId, destInlet, lineId);
+    //     this.emit("connectedPort", { isSrc: true, i: outlet });
+    //     return this;
+    // }
+    // connectedInlet(inlet: number, srcBoxId: string, srcOutlet: number, lineId: string) {
+    //     if (this._object) this._object.connectedInlet(inlet, srcBoxId, srcOutlet, lineId);
+    //     this.emit("connectedPort", { isSrc: false, i: inlet });
+    //     return this;
+    // }
+    // disconnectedOutlet(outlet: number, destBoxId: string, destInlet: number, lineId: string) {
+    //     if (this._object) this._object.disconnectedOutlet(outlet, destBoxId, destInlet, lineId);
+    //     const last = this._patcher.getLinesBySrcID(this.id)[outlet].length === 1;
+    //     this.emit("disconnectedPort", { isSrc: true, i: outlet, last });
+    //     return this;
+    // }
+    // disconnectedInlet(inlet: number, srcBoxId: string, srcOutlet: number, lineId: string) {
+    //     if (this._object) this._object.disconnectedInlet(inlet, srcBoxId, srcOutlet, lineId);
+    //     const last = this._patcher.getLinesByDestID(this.id)[inlet].length === 1;
+    //     this.emit("disconnectedPort", { isSrc: false, i: inlet, last });
+    //     return this;
+    // }
+    // isOutletTo(outlet: number, box: HardwareBox, inlet: number) {
+    //     const iterator = this._outletLines[outlet].values();
+    //     let r: IteratorResult<HardwareLine, HardwareLine>;
+    //     while (!(r = iterator.next()).done) {
+    //         const line = r.value;
+    //         if (line.destBox === box && line.destInlet === inlet) return true;
+    //     }
+    //     return false;
+    // }
+    // isInletFrom(inlet: number, box: HardwareBox, outlet: number) {
+    //     const iterator = this._inletLines[inlet].values();
+    //     let r: IteratorResult<HardwareLine, HardwareLine>;
+    //     while (!(r = iterator.next()).done) {
+    //         const line = r.value;
+    //         if (line.srcBox === box && line.srcOutlet === outlet) return true;
+    //     }
+    //     return false;
+    // }
+    isConnectedTo(io: number, otherBox: HardwareBox, otherIo: number) {
+        const iterator = this._ioLines[io].values();
+        let iter: IteratorResult<HardwareLine, HardwareLine>;
+        while (!(iter = iterator.next()).done) {
+            const line = iter.value;
+            if ((line.aBox === otherBox && line.aIo[1] === otherIo) || (line.bBox === otherBox && line.bIo[1] === otherIo))
+                return true;
         }
         return false;
     }
-    isInletFrom(inlet: number, box: HardwareBox, outlet: number) {
-        const iterator = this._inletLines[inlet].values();
-        let r: IteratorResult<HardwareLine, HardwareLine>;
-        while (!(r = iterator.next()).done) {
-            const line = r.value;
-            if (line.srcBox === box && line.srcOutlet === outlet) return true;
-        }
-        return false;
-    }
+
     async changeText(textIn: string, force?: boolean) {
         if (!force && textIn === this.text) return this;
         const { defaultSize: oldDefaultSize } = this;
