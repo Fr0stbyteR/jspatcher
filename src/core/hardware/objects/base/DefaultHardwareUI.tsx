@@ -3,10 +3,10 @@ import * as Color from "color-js";
 import { SemanticICONS, Icon } from "semantic-ui-react";
 import { ImportedStaticMethodObject } from "../../../../utils/symbols";
 import { selectElementRange, selectElementPos } from "../../../../utils/utils";
-// import StaticMethod from "../../importer/StaticMethod";
+// import StaticMethod from "../../../importer/StaticMethod";
 import BaseUI, { BaseUIProps, BaseUIState } from "./BaseHardwareUI";
 import type { TFlatPackage } from "../../../types";
-import type { TMetaType, IJSPatcherObject } from "./AbstractHardwareObject";
+import type { TMetaType, IHardwarePatcherObject } from "./AbstractHardwareObject";
 import type DefaultObject from "./DefaultHardwareObject";
 import type { DefaultObjectUIProps } from "./DefaultHardwareObject";
 import "./DefaultUI.scss";
@@ -99,7 +99,7 @@ class DefaultUIDropdownObjects extends React.Component<DefaultUIDropdownObjectsP
     }
 }
 interface DefaultUIDropdownArgvItem { key: string | number; type: TMetaType; optional?: boolean; varLength?: boolean; description: string }
-interface DefaultUIDropdownArgvProps { obj: typeof IJSPatcherObject; argv: string[]; onSelect: (e: React.MouseEvent<HTMLTableRowElement>, value: string | number) => void }
+interface DefaultUIDropdownArgvProps { obj: typeof IHardwarePatcherObject; argv: string[]; onSelect: (e: React.MouseEvent<HTMLTableRowElement>, value: string | number) => void }
 interface DefaultUIDropdownArgvState { $: number; items: DefaultUIDropdownArgvItem[] }
 class DefaultUIDropdownArgv extends React.Component<DefaultUIDropdownArgvProps, DefaultUIDropdownArgvState> {
     state: DefaultUIDropdownArgvState = { $: -1, items: [] };

@@ -2,9 +2,9 @@ import * as React from "react";
 import type Env from "../../../Env";
 import type Box from "../../Box";
 import type PatcherEditor from "../../HardwareEditor";
-import type { IJSPatcherObject, IPropsMeta, Props } from "./AbstractHardwareObject";
+import type { IHardwarePatcherObject, IPropsMeta, Props } from "./AbstractHardwareObject";
 
-export interface AbstractUIProps<T extends IJSPatcherObject = IJSPatcherObject> {
+export interface AbstractUIProps<T extends IHardwarePatcherObject = IHardwarePatcherObject> {
     object: T;
     editor: PatcherEditor;
     inDock?: boolean;
@@ -16,7 +16,7 @@ export interface AbstractUIState {
     height: number | string;
 }
 export default abstract class AbstractUI<
-        T extends IJSPatcherObject = IJSPatcherObject,
+        T extends IHardwarePatcherObject = IHardwarePatcherObject,
         P extends Partial<AbstractUIProps<T>> & Record<string, any> = {},
         S extends Partial<AbstractUIState> & Record<string, any> = {}
 > extends React.PureComponent<AbstractUIProps<T> & P, S & AbstractUIState> {

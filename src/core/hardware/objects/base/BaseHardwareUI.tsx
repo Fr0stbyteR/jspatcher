@@ -28,9 +28,9 @@ export default class BaseUI<T extends BaseObject = BaseObject, P extends Partial
     private _handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => e.currentTarget.title = "";
     render() {
         const { object } = this;
-        const packageName = "package-" + object.meta.package.toLowerCase();
-        const className = packageName + "-" + object.meta.name.toLowerCase();
-        const classArray = [packageName, className, "box-ui-container"];
+        // const packageName = "package-" + object.meta.package.toLowerCase();
+        const className = object.meta.name.toLowerCase();
+        const classArray = [className, "box-ui-container"];
         if (this.props.additionalClassName) classArray.push(this.props.additionalClassName);
         if (this.state.hidden) classArray.push("hidden");
         if (this.state.ignoreClick) classArray.push("ignore-click");

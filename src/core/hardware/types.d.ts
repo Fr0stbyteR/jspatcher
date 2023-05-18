@@ -1,4 +1,5 @@
 import type { TPresentationRect, TRect } from "../types";
+import type { TPatcherProps, TPublicPatcherProps } from "./Patcher";
 
 export interface THardwareLine {
     id?: string;
@@ -26,4 +27,10 @@ export interface THardwareBox {
     props?: Record<string, any>;
     data?: Record<string, any>;
     _editing?: boolean;
+}
+
+export interface RawHardwarePatcher {
+    lines: Record<string, THardwareLine>;
+    boxes: Record<string, THardwareBox>;
+    props?: TPublicPatcherProps & Pick<TPatcherProps, "mode">;
 }

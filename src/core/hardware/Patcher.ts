@@ -12,12 +12,12 @@ import type TempPatcherFile from "./TempHardwareFile";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
-import type { TInletEvent, TOutletEvent, IJSPatcherObjectMeta, IPropsMeta, IJSPatcherObject, TMetaType } from "../objects/base/AbstractObject";
-import type { PatcherMode, RawPatcher, TErrorLevel, TFlatPackage, TPackage, ILogInfo, TDependencies } from "../types";
+import type { TInletEvent, TOutletEvent, IHardwarePatcherObjectMeta, IPropsMeta, IHardwarePatcherObject, TMetaType } from "./objects/base/AbstractHardwareObject";
+import type { PatcherMode, TErrorLevel, TFlatPackage, TPackage, ILogInfo, TDependencies } from "../types";
+import type { RawHardwarePatcher } from "./types";
 import type { THardwareBox, THardwareLine } from "./types";
 import type PatcherNode from "../worklets/PatcherNode";
 import type PatcherProcessor from "../worklets/Patcher.worklet";
-import { IHardwarePatcherObject } from "./objects/base/AbstractHardwareObject";
 
 export interface TPatcherProps {
     mode: PatcherMode;
@@ -58,16 +58,12 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "passiveDeleteLine": Line;
     "graphChanged": never;
     "changed": never;
-    "ioChanged": IJSPatcherObjectMeta;
+    "ioChanged": IHardwarePatcherObject;
     "dataInput": TInletEvent<any[]>;
     "dataOutput": TOutletEvent<any[]>;
     "audioInput": { input: number; buffer: Float32Array };
     "paramInput": { param: string; buffer: Float32Array };
     "audioOutput": { output: number; buffer: Float32Array };
-    "disconnectAudioInlet": number;
-    "disconnectAudioOutlet": number;
-    "connectAudioInlet": number;
-    "connectAudioOutlet": number;
     "propsChanged": { props: Partial<TPublicPatcherProps>; oldProps: Partial<TPublicPatcherProps> };
     "libChanged": { pkg: TPackage; lib: TFlatPackage };
     "highlightBox": string;
@@ -192,7 +188,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         }
         return this.load(data || {});
     }
-    async load(patcherIn: RawPatcher | any, modeIn?: PatcherMode) {
+    async load(patcherIn: RawHardwarePatcher | any, modeIn?: PatcherMode) {
         this._state.isReady = false;
         this._state.preventEmitChanged = true;
         await this.unload();
@@ -266,21 +262,21 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         });
         return this;
     }
-    async getPatcherNode(inputs = 2, outputs = 2) {
-        if (this.props.mode === "jsaw" && this.env.thread === "main") {
-            const PatcherNode = (await import("../worklets/PatcherNode")).default;
-            await PatcherNode.register(this.audioCtx.audioWorklet);
-            this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id, fileId: this.file?.id, data: this.file ? undefined : this.toSerializable(), inputs, outputs });
-            await this.state.patcherNode.init();
-            return this.state.patcherNode;
-        }
-        return null;
-    }
+    // async getPatcherNode(inputs = 2, outputs = 2) {
+    //     if (this.props.mode === "jsaw" && this.env.thread === "main") {
+    //         const PatcherNode = (await import("../worklets/PatcherNode")).default;
+    //         await PatcherNode.register(this.audioCtx.audioWorklet);
+    //         this.state.patcherNode = new PatcherNode(this.audioCtx, { env: this.env, instanceId: this.id, fileId: this.file?.id, data: this.file ? undefined : this.toSerializable(), inputs, outputs });
+    //         await this.state.patcherNode.init();
+    //         return this.state.patcherNode;
+    //     }
+    //     return null;
+    // }
     async loadFromURL(url: string) {
         try {
             const file = await fetch(url);
             if (!file.ok) throw new Error();
-            const parsed = await file.json() as RawPatcher;
+            const parsed = await file.json() as RawHardwarePatcher;
             return this.load(parsed);
         } catch (e) {
             this.error(`Fetch file ${url} failed.`);
@@ -289,7 +285,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     async loadFromString(sIn: string) {
         try {
-            const parsed = JSON.parse(sIn) as RawPatcher;
+            const parsed = JSON.parse(sIn) as RawHardwarePatcher;
             return this.load(parsed);
         } catch (e) {
             this.error(`Load from string: ${sIn.slice(20)}... failed.`);
@@ -304,7 +300,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
-            let parsed: RawPatcher;
+            let parsed: RawHardwarePatcher;
             try {
                 parsed = JSON.parse(reader.result.toString());
             } catch (e) {
@@ -405,10 +401,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         return line;
     }
     canCreateLine(lineIn: THardwareLine) {
-        if (lineIn.aIo[1] >= this.boxes[lineIn.aIo[0]].ios.length) return false;
-        // if (lineIn.src[1] >= this.boxes[lineIn.src[0]].outlets) return false;
-        // if (lineIn.dest[1] >= this.boxes[lineIn.dest[0]].inlets) return false;
-        if (this.getLinesByBox(lineIn.src[0], lineIn.dest[0], lineIn.src[1], lineIn.dest[1]).length > 0) return false;
+        if (lineIn.aIo[1] >= this.boxes[lineIn.aIo[0]].ios.length)
+            return false;
+        if (this.getLinesByBox(lineIn.aIo[0], lineIn.bIo[0], lineIn.aIo[1], lineIn.bIo[1]).length > 0)
+            return false;
         return true;
     }
     deleteLine(lineId: string) {
@@ -419,66 +415,127 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.emitGraphChanged();
         return line;
     }
-    changeLineSrc(lineId: string, srcId: string, srcOutlet: number) {
+
+    changeLineA(lineId: string, aId: string, aIo: number) {
         const line = this.lines[lineId];
-        // if (this.instance.getLinesByBox(srcId, line.destId, srcOutlet, line.destInlet).length > 0) return line;
-        const oldSrc: [string, number] = [line.srcId, line.srcOutlet];
-        const src: [string, number] = [srcId, srcOutlet];
-        line.setSrc(src);
+        const oldA: [string, number] = [...line.aIo];
+        const newA: [string, number] = [aId, aIo];
+        line.setA(newA);
         this.emitGraphChanged();
-        return { lineId, oldSrc, src };
+        return { lineId, oldA, newA };
     }
-    changeLineDest(lineId: string, destId: string, destOutlet: number) {
+
+    changeLineB(lineId: string, bId: string, bIo: number) {
         const line = this.lines[lineId];
-        // if (this.getLinesByBox(line.srcId, destId, line.destInlet, destOutlet).length > 0) return line;
-        const oldDest: [string, number] = [line.destId, line.destInlet];
-        const dest: [string, number] = [destId, destOutlet];
-        line.setDest(dest);
+        const oldB: [string, number] = [...line.bIo];
+        const newB: [string, number] = [bId, bIo];
+        line.setB(newB);
         this.emitGraphChanged();
-        return { lineId, oldDest, dest };
+        return { lineId, oldB, newB };
     }
-    getLinesBySrcID(srcId: string) {
+
+    // changeLineSrc(lineId: string, srcId: string, srcOutlet: number) {
+    //     const line = this.lines[lineId];
+    //     // if (this.instance.getLinesByBox(srcId, line.destId, srcOutlet, line.destInlet).length > 0) return line;
+    //     const oldSrc: [string, number] = [line.srcId, line.srcOutlet];
+    //     const src: [string, number] = [srcId, srcOutlet];
+    //     line.setSrc(src);
+    //     this.emitGraphChanged();
+    //     return { lineId, oldSrc, src };
+    // }
+    // changeLineDest(lineId: string, destId: string, destOutlet: number) {
+    //     const line = this.lines[lineId];
+    //     // if (this.getLinesByBox(line.srcId, destId, line.destInlet, destOutlet).length > 0) return line;
+    //     const oldDest: [string, number] = [line.destId, line.destInlet];
+    //     const dest: [string, number] = [destId, destOutlet];
+    //     line.setDest(dest);
+    //     this.emitGraphChanged();
+    //     return { lineId, oldDest, dest };
+    // }
+    getLinesByAId(aId: string) {
         const result = [];
-        for (let i = 0; i < this.boxes[srcId].outlets; i++) { // Array.fill fills the array with same instance
+        for (let i = 0; i < this.boxes[aId].ios.length; i++) { // Array.fill fills the array with same instance
             result[i] = [];
         }
         for (const id in this.lines) {
             const line = this.lines[id];
-            if (line && line.srcId === srcId) {
-                const srcOutlet = line.srcOutlet;
-                if (!result[srcOutlet]) result[srcOutlet] = [id];
-                else result[srcOutlet].push(id);
+            if (line && line.aId === aId) {
+                const bIo = line.bIo;
+                if (!result[bIo[1]])
+                    result[bIo[1]] = [id];
+                else
+                    result[bIo[1]].push(id);
             }
         }
         return result;
     }
-    getLinesByDestID(destId: string) {
+    getLinesByBId(bId: string) {
         const result = [];
-        for (let i = 0; i < this.boxes[destId].inlets; i++) {
+        for (let i = 0; i < this.boxes[bId].ios.length; i++) { // Array.fill fills the array with same instance
             result[i] = [];
         }
         for (const id in this.lines) {
             const line = this.lines[id];
-            if (line && line.destId === destId) {
-                const destInlet = line.destInlet;
-                if (!result[destInlet]) result[destInlet] = [id];
-                else result[destInlet].push(id);
+            if (line && line.bId === bId) {
+                const aIo = line.aIo;
+                if (!result[aIo[1]])
+                    result[aIo[1]] = [id];
+                else
+                    result[aIo[1]].push(id);
             }
         }
         return result;
     }
-    getLinesByBox(srcId: string, destId: string, srcOutlet?: number, destInlet?: number) {
+    // getLinesBySrcID(srcId: string) {
+    //     const result = [];
+    //     for (let i = 0; i < this.boxes[srcId].outlets; i++) { // Array.fill fills the array with same instance
+    //         result[i] = [];
+    //     }
+    //     for (const id in this.lines) {
+    //         const line = this.lines[id];
+    //         if (line && line.srcId === srcId) {
+    //             const srcOutlet = line.srcOutlet;
+    //             if (!result[srcOutlet]) result[srcOutlet] = [id];
+    //             else result[srcOutlet].push(id);
+    //         }
+    //     }
+    //     return result;
+    // }
+    // getLinesByDestID(destId: string) {
+    //     const result = [];
+    //     for (let i = 0; i < this.boxes[destId].inlets; i++) {
+    //         result[i] = [];
+    //     }
+    //     for (const id in this.lines) {
+    //         const line = this.lines[id];
+    //         if (line && line.destId === destId) {
+    //             const destInlet = line.destInlet;
+    //             if (!result[destInlet]) result[destInlet] = [id];
+    //             else result[destInlet].push(id);
+    //         }
+    //     }
+    //     return result;
+    // }
+    getLinesByBox(aId: string, bId: string, aIo?: number, bIo?: number) {
         const result: string[] = [];
-        let srcOuts: string[] = [];
-        let destIns: string[] = [];
-        const srcOutsWraped = this.getLinesBySrcID(srcId);
-        if (srcOutlet !== undefined) srcOuts = srcOutsWraped[srcOutlet];
-        else srcOutsWraped.forEach(el => srcOuts = srcOuts.concat(el));
-        const destInsWraped = this.getLinesByDestID(destId);
-        if (destInlet !== undefined) destIns = destInsWraped[destInlet];
-        else destInsWraped.forEach(el => destIns = destIns.concat(el));
-        if (!srcOuts || !destIns) return result;
-        srcOuts.forEach(idOut => destIns.forEach(idIn => (idIn === idOut ? result.push(idIn) : undefined)));
+        let aIds: string[] = [];
+        let bIds: string[] = [];
+        const aIosWrapped = this.getLinesByAId(aId);
+        if (aIo !== undefined)
+            aIds = aIosWrapped[aIo];
+        else
+            aIosWrapped.forEach(el => aIds = aIds.concat(el));
+
+        const bIosWrapped = this.getLinesByBId(bId);
+        if (bIo !== undefined)
+            bIds = bIosWrapped[bIo];
+        else
+            bIosWrapped.forEach(el => bIds = bIds.concat(el));
+
+        if (!aIds || !bIds)
+            return result;
+
+        bIds.forEach(idOut => bIds.forEach(idIn => (idIn === idOut ? result.push(idIn) : undefined)));
         return result;
     }
     fn(data: any, inlet: number) {
@@ -496,93 +553,61 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     outlet(outlet: number, data: any) {
         this.emit("dataOutput", { data, outlet });
     }
-    get inletAudioConnections() {
-        return this._inletAudioConnections;
-    }
-    get outletAudioConnections() {
-        return this._outletAudioConnections;
-    }
-    connectAudioInlet(index: number) {
-        this.emit("connectAudioInlet", index);
-    }
-    connectAudioOutlet(index: number) {
-        this.emit("connectAudioOutlet", index);
-    }
-    disconnectAudioInlet(index: number) {
-        this.emit("disconnectAudioInlet", index);
-    }
-    disconnectAudioOutlet(index: number) {
-        this.emit("disconnectAudioOutlet", index);
-    }
     changeIO() {
         this.emit("ioChanged", this.meta);
     }
-    inspectAudioIO() {
-        const inputBoxes: Box[] = [];
-        const outputBoxes: Box[] = [];
-        const parametersBoxes: [string, Box][] = [];
-        for (const boxId in this.boxes) {
-            const box = this.boxes[boxId];
-            const arg0 = box.args[0];
-            const port = Math.max(1, ~~arg0) - 1;
-            if (box.meta.isPatcherInlet === "audio") inputBoxes[port] = box;
-            else if (box.meta.isPatcherInlet === "parameter") parametersBoxes.push([arg0, box]);
-            else if (box.meta.isPatcherOutlet === "audio") outputBoxes[port] = box;
-        }
-        for (let i = 0; i < this._inletAudioConnections.length; i++) {
-            if (!inputBoxes[i]) delete this._inletAudioConnections[i];
-        }
-        for (let i = 0; i < this._outletAudioConnections.length; i++) {
-            if (!outputBoxes[i]) delete this._outletAudioConnections[i];
-        }
-        return { inputBoxes, outputBoxes, parametersBoxes };
-    }
-    get meta(): IJSPatcherObjectMeta {
+    get meta(): IHardwarePatcherObjectMeta {
         const { metaFromPatcher } = this;
         return {
-            package: this.props.package || "",
             name: this.props.name || "",
             icon: null,
-            author: this.props.author || "",
             version: this.props.version || "",
             description: this.props.description || "",
-            isPatcherInlet: false,
-            isPatcherOutlet: false,
+            // isPatcherInlet: false,
+            // isPatcherOutlet: false,
             ...metaFromPatcher
         };
     }
-    get metaFromPatcher(): Pick<IJSPatcherObjectMeta, "inlets" | "outlets" | "args" | "props"> {
-        const inlets: IJSPatcherObjectMeta["inlets"] = [];
-        const outlets: IJSPatcherObjectMeta["outlets"] = [];
+    get metaFromPatcher(): Pick<IHardwarePatcherObjectMeta, "ios" | "args" | "props"> {
+        const ios: IHardwarePatcherObjectMeta["ios"] = [];
+        // const inlets: IHardwarePatcherObjectMeta["inlets"] = [];
+        // const outlets: IHardwarePatcherObjectMeta["outlets"] = [];
         for (const boxId in this.boxes) {
-            const box = this.boxes[boxId] as Box<IJSPatcherObject<any, any, any[], any[], any[], { description: string; type: TMetaType }>>;
+            const box = this.boxes[boxId] as Box<IHardwarePatcherObject<any, any, any[], any[], { description: string; type: TMetaType }>>;
             const port = Math.max(1, ~~box.args[0]) - 1;
             const description = box.props.description || "";
-            if (box.meta.isPatcherInlet === "data" && !inlets[port]) {
-                inlets[port] = {
-                    isHot: true,
-                    type: box.props.type || "anything",
-                    description
-                };
-            } else if (box.meta.isPatcherInlet === "audio") {
-                inlets[port] = {
-                    isHot: true,
-                    type: "signal",
-                    description
-                };
-            } else if (box.meta.isPatcherOutlet === "data" && !outlets[port]) {
-                outlets[port] = {
-                    type: box.props.type || "anything",
-                    description
-                };
-            } else if (box.meta.isPatcherOutlet === "audio") {
-                outlets[port] = {
-                    type: "signal",
-                    description
-                };
-            }
+
+            ios[port] = {
+                isHot: false,
+                type: "signal",
+                description,
+            };
+
+            // if (box.meta.isPatcherInlet === "data" && !inlets[port]) {
+            //     inlets[port] = {
+            //         isHot: true,
+            //         type: box.props.type || "anything",
+            //         description
+            //     };
+            // } else if (box.meta.isPatcherInlet === "audio") {
+            //     inlets[port] = {
+            //         isHot: true,
+            //         type: "signal",
+            //         description
+            //     };
+            // } else if (box.meta.isPatcherOutlet === "data" && !outlets[port]) {
+            //     outlets[port] = {
+            //         type: box.props.type || "anything",
+            //         description
+            //     };
+            // } else if (box.meta.isPatcherOutlet === "audio") {
+            //     outlets[port] = {
+            //         type: "signal",
+            //         description
+            //     };
+            // }
         }
-        return { inlets, outlets, args: [], props: {} };
+        return { ios, args: [], props: {} };
     }
     log(message: string) {
         this.newLog("none", "Patcher", message, this);
@@ -622,8 +647,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         //     return JSON.stringify(js2max(this), undefined, spacing);
         // }
         const { props } = this;
-        const boxes: RawPatcher["boxes"] = {};
-        const lines: RawPatcher["lines"] = {};
+        const boxes: RawHardwarePatcher["boxes"] = {};
+        const lines: RawHardwarePatcher["lines"] = {};
         for (const id in this.boxes) {
             boxes[id] = this.boxes[id].toSerializable();
         }
@@ -632,7 +657,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         }
         return JSON.stringify({ boxes, lines, props }, undefined, spacing);
     }
-    toSerializable(): RawPatcher {
+    toSerializable(): RawHardwarePatcher {
         return JSON.parse(this.toString());
     }
     serialize() {

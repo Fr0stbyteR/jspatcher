@@ -5,7 +5,7 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
     get eventListening(): (keyof PatcherHistoryEventMap)[] {
         return [
             "create", "delete", "changeBoxText", "boxChanged",
-            "changeLineSrc", "changeLineDest", "moved", "resized", "propsChanged"
+            "changeLineA", "changeLineB", "moved", "resized", "propsChanged"
         ];
     }
     async undoOf(editor: PatcherEditor, eventName: keyof PatcherHistoryEventMap, eventData?: any) {
@@ -26,14 +26,14 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const d = { x: -1 * delta.x, y: -1 * delta.y };
             editor.move(selected, d, presentation);
             editor.moveEnd(selected, d);
-        } else if (eventName === "changeLineSrc") {
+        } else if (eventName === "changeLineA") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
-            const { lineId, oldSrc } = e;
-            editor.changeLineSrc(lineId, oldSrc[0], oldSrc[1]);
-        } else if (eventName === "changeLineDest") {
+            const { lineId, oldA } = e;
+            editor.changeLineA(lineId, oldA[0], oldA[1]);
+        } else if (eventName === "changeLineB") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
-            const { lineId, oldDest } = e;
-            editor.changeLineDest(lineId, oldDest[0], oldDest[1]);
+            const { lineId, oldB } = e;
+            editor.changeLineB(lineId, oldB[0], oldB[1]);
         } else if (eventName === "create") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             await editor.delete(e);
@@ -65,14 +65,14 @@ export default class PatcherHistory extends History<PatcherHistoryEventMap, Patc
             const { selected, delta, presentation } = e;
             editor.move(selected, delta, presentation);
             editor.moveEnd(selected, delta);
-        } else if (eventName === "changeLineSrc") {
+        } else if (eventName === "changeLineA") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
-            const { lineId, src } = e;
-            editor.changeLineSrc(lineId, src[0], src[1]);
-        } else if (eventName === "changeLineDest") {
+            const { lineId, newA } = e;
+            editor.changeLineA(lineId, newA[0], newA[1]);
+        } else if (eventName === "changeLineB") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
-            const { lineId, dest } = e;
-            editor.changeLineDest(lineId, dest[0], dest[1]);
+            const { lineId, newB } = e;
+            editor.changeLineB(lineId, newB[0], newB[1]);
         } else if (eventName === "delete") {
             const e: PatcherHistoryEventMap[typeof eventName] = eventData;
             await editor.delete(e);

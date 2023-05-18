@@ -7,12 +7,13 @@ import type Patcher from "../../Patcher";
 import type { ProjectItemType, TempItemByType, SharedItemByType, TempItemType, TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../../../types";
 import type AbstractUI from "./AbstractHardwareUI";
 import type { IJSPatcherEnv } from "../../../Env";
+import { IoPosition } from "../../types";
 
 export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject => typeof x === "function" && x?.isJSPatcherObjectConstructor;
 
 export const isJSPatcherObject = (x: any): x is AbstractObject => typeof x === "object" && x?.isJSPatcherObject;
 
-export type TMetaType = "analog" | "digital" | "both";
+export type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "function" | "bang" | "color" | "enum";
 export interface IIoMeta {
     isHot: boolean;
     type: TMetaType;
@@ -20,7 +21,7 @@ export interface IIoMeta {
     varLength?: boolean;
     description: string;
 }
-export type IIosMeta = IIosMeta[];
+export type IIosMeta = IIoMeta[];
 export interface IArgMeta {
     type: TMetaType;
     enums?: string[];
@@ -152,7 +153,7 @@ export interface IHardwarePatcherObject<
     setProps(props: Partial<P>): void;
     readonly args: Partial<A>;
     setArgs(args: Partial<A>): void;
-    ios: number;
+    ios: IoPosition[];
     readonly ioLines: Set<Line>[];
     // inletAudioConnections: TAudioNodeInletConnection<AudioNode | AudioParam>[];
     // outletAudioConnections: TAudioNodeOutletConnection[];
@@ -184,8 +185,6 @@ export interface IHardwarePatcherObject<
     // for developer
     /** Update UI's React State. */
     updateUI(state: Partial<U>): void;
-    /** Output data with ith outlet. */
-    outlet<$ extends number>(io: $, data: IO[$]): void;
     // /**
     //  * Outlet all values in an array with corresponding index,
     //  * use sparse array to omit an outlet,
@@ -206,23 +205,12 @@ export interface IHardwarePatcherObject<
     error(data: any): void;
     info(data: any): void;
     warn(data: any): void;
-    connectAudio(): void;
-    connectAudioInlet(portIn?: number): void;
-    connectAudioOutlet(portIn?: number): void;
-    disconnectAudio(): void;
-    disconnectAudioInlet(portIn?: number): void;
-    disconnectAudioOutlet(portIn?: number): void;
     applyBPF(param: AudioParam, bpf: number[][]): void;
 }
 export declare const IHardwarePatcherObject: {
     /** Should be true */
-    readonly isJSPatcherObjectConstructor: true;
-    /** div will have class "packageName" "packageName-objectName" */
-    package: string;
-    readonly _name: string;
-    icon: SemanticICONS;
-    author: string;
-    version: string;
+    readonly isHardwarePatcherObjectConstructor: true;
+    /** div will have class "packageName" "packageNanumber
     description: string;
     ios: IIosMeta;
     args: IArgsMeta;
@@ -359,7 +347,7 @@ export default abstract class AbstractObject<
     get ios() {
         return this._box.ios;
     }
-    set ios(i: number) {
+    set ios(i: IoPosition[]) {
         this._box.setIos(i);
     }
     get ioLines() {
@@ -429,11 +417,12 @@ export default abstract class AbstractObject<
                 }
             }
         }
-        this.emit("inlet", { data, io });
+        // this.emit("inlet", { data, io });
     }
     outlet<$ extends keyof Pick<IO, number>>(io: $, data: IO[$]) {
-        if (io >= this.outlets) return;
-        Array.from(this.outletLines[outlet]).sort(Line.compare).map(line => line.pass(data));
+        if (io >= this.ios.length)
+            return;
+        Array.from(this.ioLines[io]).sort(Line.compare).map(line => line.pass(data));
     }
     // outletAll(outputs: Partial<O>) {
     //     for (let i = outputs.length - 1; i >= 0; i--) {

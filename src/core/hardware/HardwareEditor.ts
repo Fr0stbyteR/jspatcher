@@ -3,22 +3,27 @@ import { getTimestamp, isRectMovable, isRectResizable, isTRect } from "../../uti
 import FileEditor from "../file/FileEditor";
 import Box from "./Box";
 import Line from "./Line";
-import type { RawPatcher, TBox, TLine, TMaxClipboard, TRect, TResizeHandlerType } from "../types";
+import type { TRect, TResizeHandlerType } from "../types";
+import type { RawHardwarePatcher, THardwareBox, THardwareLine } from "./types";
 import type Patcher from "./Patcher";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type TempPatcherFile from "./TempHardwareFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { PatcherEventMap, TPublicPatcherProps } from "./Patcher";
+import HardwareLine from "./Line";
 
 export interface PatcherEditorEventMap extends PatcherEditorState {
-    "create": RawPatcher;
-    "delete": RawPatcher;
+    "create": RawHardwarePatcher;
+    "delete": RawHardwarePatcher;
     "changeBoxText": { boxId: string; oldText: string; text: string };
     "boxChanged": { boxId: string; oldArgs?: any[]; args?: any[]; oldProps?: Record<string, any>; props?: Record<string, any>; oldState?: Record<string, any>; state?: Record<string, any>; oldZIndex?: number; zIndex?: number };
     "zIndexChanged": { boxId: string; zIndex: number };
-    "changeLineSrc": { lineId: string; oldSrc: [string, number]; src: [string, number] };
-    "changeLineDest": { lineId: string; oldDest: [string, number]; dest: [string, number] };
+    "changeLineA": { lineId: string, oldA: [string, number]; newA: [string, number] };
+    "changeLineB": { lineId: string, oldB: [string, number]; newB: [string, number] };
+
+    // "changeLineSrc": { lineId: string; oldSrc: [string, number]; src: [string, number] };
+    // "changeLineDest": { lineId: string; oldDest: [string, number]; dest: [string, number] };
     "selected": string[];
     "moving": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
     "moved": { selected: string[]; delta: { x: number; y: number }; presentation: boolean };
@@ -32,7 +37,7 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "highlightPort": { boxId: string; isSrc: boolean; i: number } | null;
 }
 
-export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized" | "boxChanged" | "propsChanged"> {}
+export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineA" | "changeLineB" | "moved" | "resized" | "boxChanged" | "propsChanged"> {}
 
 export interface PatcherEditorState {
     locked: boolean;
@@ -145,13 +150,13 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         // if (changed) this.emit("stateChanged", this.state);
         return changed;
     }
-    async createBox(boxIn: TBox) {
+    async createBox(boxIn: THardwareBox) {
         const box = await this.instance.createBox(boxIn);
         this.emit("create", { boxes: { [box.id]: box.toSerializable() }, lines: {} });
         await box.postInit();
         return box;
     }
-    async createBoxFromFile(file: PersistentProjectFile, boxIn: Omit<TBox, "text">) {
+    async createBoxFromFile(file: PersistentProjectFile, boxIn: Omit<THardwareBox, "text">) {
         const path = file.projectPath;
         const type = file.type;
         const ext = file.fileExtension;
@@ -180,7 +185,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.emit("delete", { boxes: { [box.id]: box.toSerializable() }, lines: {} });
         return box;
     }
-    createLine(lineIn: TLine) {
+    createLine(lineIn: THardwareLine) {
         const line = this.instance.createLine(lineIn);
         if (!line) return null;
         this.emit("create", { boxes: {}, lines: { [line.id]: line.toSerializable() } });
@@ -193,13 +198,13 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.emit("delete", { boxes: {}, lines: { [line.id]: line.toSerializable() } });
         return line;
     }
-    changeLineSrc(lineId: string, srcId: string, srcOutlet: number) {
-        const e = this.instance.changeLineSrc(lineId, srcId, srcOutlet);
-        this.emit("changeLineSrc", e);
+    changeLineA(lineId: string, aId: string, aIo: number) {
+        const e = this.instance.changeLineA(lineId, aId, aIo);
+        this.emit("changeLineA", e);
     }
-    changeLineDest(lineId: string, destId: string, destOutlet: number) {
-        const e = this.instance.changeLineDest(lineId, destId, destOutlet);
-        this.emit("changeLineDest", e);
+    changeLineB(lineId: string, bId: string, bIo: number) {
+        const e = this.instance.changeLineB(lineId, bId, bIo);
+        this.emit("changeLineB", e);
     }
     async changeBox(boxId: string, change: { args?: any[]; props?: Record<string, any>; state?: Record<string, any>; zIndex?: number }) {
         if (typeof change.zIndex === "number") this.instance.boxes[boxId]?.setZIndex(change.zIndex);
@@ -237,7 +242,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     }
     selectedToString() {
         const lineSet = new Set<Line>();
-        const patcher: RawPatcher = { lines: {}, boxes: {} };
+        const patcher: RawHardwarePatcher = { lines: {}, boxes: {} };
         this.state.selected
             .filter(id => id.startsWith("box") && this.boxes[id])
             .map(id => this.boxes[id])
@@ -246,7 +251,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
                 patcher.boxes[box.id] = box.toSerializable();
             });
         lineSet.forEach((line) => {
-            if (patcher.boxes[line.srcId] && patcher.boxes[line.destId]) patcher.lines[line.id] = line.toSerializable();
+            if (patcher.boxes[line.aId] && patcher.boxes[line.bId])
+                patcher.lines[line.id] = line.toSerializable();
         });
         if (!Object.keys(patcher.boxes)) return undefined;
         return JSON.stringify(patcher, undefined, 4);
@@ -267,67 +273,69 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
                 box.setZIndex(-getTimestamp());
             });
     }
-    async pasteToPatcher(clipboard: RawPatcher | TMaxClipboard) {
+    async pasteToPatcher(clipboard: RawHardwarePatcher) {
         const idMap: Record<string, string> = {};
-        const pasted: RawPatcher = { boxes: {}, lines: {} };
+        const pasted: RawHardwarePatcher = { boxes: {}, lines: {} };
         if (!clipboard || !clipboard.boxes) return pasted;
         const $init: Promise<Box>[] = [];
         const $postInit: Promise<Box>[] = [];
-        if (Array.isArray(clipboard.boxes)) { // Max Patcher
-            this.instance.state.preventEmitChanged = true;
-            const maxBoxes = clipboard.boxes;
-            for (let i = 0; i < maxBoxes.length; i++) {
-                const maxBox = maxBoxes[i].box;
-                const numID = parseInt(maxBox.id.match(/\d+/)[0]);
-                let id = "box-" + numID;
-                if (this.boxes[id]) {
-                    idMap[id] = "box-" + ++this.props.boxIndexCount;
-                    id = idMap[id];
-                } else {
-                    idMap[id] = id;
-                    if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
-                }
-                const box: TBox = {
-                    id,
-                    inlets: maxBox.numinlets,
-                    outlets: maxBox.numoutlets,
-                    rect: maxBox.patching_rect,
-                    text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
-                };
-                $init.push(this.instance.createBox(box));
-            }
-            const createdBoxes = (await Promise.all($init)).filter(box => !!box);
-            createdBoxes.forEach((box) => {
-                pasted.boxes[box.id] = box.toSerializable();
-                $postInit.push(box.postInit());
-            });
-            if (Array.isArray(clipboard.lines)) {
-                const maxLines = clipboard.lines;
-                for (let i = 0; i < maxLines.length; i++) {
-                    const lineArgs = maxLines[i].patchline;
-                    const id = "line-" + ++this.props.lineIndexCount;
-                    const line: TLine = {
-                        id,
-                        src: [idMap[lineArgs.source[0].replace(/obj/, "box")], lineArgs.source[1]],
-                        dest: [idMap[lineArgs.destination[0].replace(/obj/, "box")], lineArgs.destination[1]]
-                    };
-                    const createdLine = this.instance.createLine(line);
-                    if (createdLine) pasted.lines[createdLine.id] = createdLine.toSerializable();
-                }
-            }
-            this.instance.state.preventEmitChanged = false;
-            if (Object.keys(pasted.boxes).length) {
-                if (this.state.selectAfterEdit) {
-                    this.deselectAll();
-                    this.select(...Object.keys(pasted.boxes));
-                }
-                this.emit("create", pasted);
-                this.instance.emitGraphChanged();
-                await Promise.all($postInit);
-            }
+        // if (Array.isArray(clipboard.boxes)) { // Max Patcher
+        //     this.instance.state.preventEmitChanged = true;
+        //     const maxBoxes = clipboard.boxes;
+        //     for (let i = 0; i < maxBoxes.length; i++) {
+        //         const maxBox = maxBoxes[i].box;
+        //         const numID = parseInt(maxBox.id.match(/\d+/)[0]);
+        //         let id = "box-" + numID;
+        //         if (this.boxes[id]) {
+        //             idMap[id] = "box-" + ++this.props.boxIndexCount;
+        //             id = idMap[id];
+        //         } else {
+        //             idMap[id] = id;
+        //             if (numID > this.props.boxIndexCount) this.props.boxIndexCount = numID;
+        //         }
+        //         const box: THardwareBox = {
+        //             id,
+        //             ios: max
+        //             inlets: maxBox.numinlets,
+        //             outlets: maxBox.numoutlets,
+        //             rect: maxBox.patching_rect,
+        //             text: (maxBox.maxclass === "newobj" ? "" : maxBox.maxclass + " ") + (maxBox.text ? maxBox.text : "")
+        //         };
+        //         $init.push(this.instance.createBox(box));
+        //     }
+        //     const createdBoxes = (await Promise.all($init)).filter(box => !!box);
+        //     createdBoxes.forEach((box) => {
+        //         pasted.boxes[box.id] = box.toSerializable();
+        //         $postInit.push(box.postInit());
+        //     });
+        //     if (Array.isArray(clipboard.lines)) {
+        //         const maxLines = clipboard.lines;
+        //         for (let i = 0; i < maxLines.length; i++) {
+        //             const lineArgs = maxLines[i].patchline;
+        //             const id = "line-" + ++this.props.lineIndexCount;
+        //             const line: THardwareLine = {
+        //                 id,
+        //                 src: [idMap[lineArgs.source[0].replace(/obj/, "box")], lineArgs.source[1]],
+        //                 dest: [idMap[lineArgs.destination[0].replace(/obj/, "box")], lineArgs.destination[1]]
+        //             };
+        //             const createdLine = this.instance.createLine(line);
+        //             if (createdLine) pasted.lines[createdLine.id] = createdLine.toSerializable();
+        //         }
+        //     }
+        //     this.instance.state.preventEmitChanged = false;
+        //     if (Object.keys(pasted.boxes).length) {
+        //         if (this.state.selectAfterEdit) {
+        //             this.deselectAll();
+        //             this.select(...Object.keys(pasted.boxes));
+        //         }
+        //         this.emit("create", pasted);
+        //         this.instance.emitGraphChanged();
+        //         await Promise.all($postInit);
+        //     }
+        //     return pasted;
+        // }
+        if (Array.isArray(clipboard.boxes) || Array.isArray(clipboard.lines))
             return pasted;
-        }
-        if (Array.isArray(clipboard.boxes) || Array.isArray(clipboard.lines)) return pasted;
         this.instance.state.preventEmitChanged = true;
         for (const boxId in clipboard.boxes) {
             const box = clipboard.boxes[boxId];
@@ -351,8 +359,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         for (const lineId in clipboard.lines) {
             const line = clipboard.lines[lineId];
             line.id = "line-" + ++this.props.lineIndexCount;
-            line.src[0] = idMap[line.src[0]];
-            line.dest[0] = idMap[line.dest[0]];
+            line.aIo[0] = idMap[line.aIo[0]];
+            line.bIo[0] = idMap[line.bIo[0]];
             const createdLine = this.instance.createLine(line);
             if (createdLine) pasted.lines[createdLine.id] = createdLine.toSerializable();
         }
@@ -367,10 +375,10 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         return pasted;
     }
-    async create(objects: RawPatcher) {
+    async create(objects: RawHardwarePatcher) {
         const $init: Promise<Box>[] = [];
         const $postInit: Promise<Box>[] = [];
-        const created: RawPatcher = { boxes: {}, lines: {} };
+        const created: RawHardwarePatcher = { boxes: {}, lines: {} };
         for (const boxId in objects.boxes) {
             const boxIn = objects.boxes[boxId];
             const box = new Box(this.instance, boxIn);
@@ -406,7 +414,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         });
         if (!boxSet.size && !lineSet.size) return undefined;
         this.state.selected = [];
-        const deleted: RawPatcher = { boxes: {}, lines: {} };
+        const deleted: RawHardwarePatcher = { boxes: {}, lines: {} };
         const promises: Promise<Box>[] = [];
         lineSet.forEach((line) => {
             deleted.lines[line.id] = line.toSerializable();
@@ -422,8 +430,8 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.instance.emitGraphChanged();
         return deleted;
     }
-    async delete(objects: RawPatcher) {
-        const deleted: RawPatcher = { boxes: {}, lines: {} };
+    async delete(objects: RawHardwarePatcher) {
+        const deleted: RawHardwarePatcher = { boxes: {}, lines: {} };
         for (const id in objects.lines) {
             deleted.lines[id] = this.lines[id].destroy().toSerializable();
         }
@@ -452,7 +460,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         if (this.state.locked) return;
         const s = await navigator.clipboard.readText();
         if (!s) return;
-        let parsed: RawPatcher | TMaxClipboard;
+        let parsed: RawHardwarePatcher;
         try {
             parsed = JSON.parse(s);
         } catch (e) {} // eslint-disable-line no-empty
@@ -462,7 +470,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         if (this.state.locked) return;
         const s = this.selectedToString();
         if (!s) return;
-        let parsed: RawPatcher | TMaxClipboard;
+        let parsed: RawHardwarePatcher;
         try {
             parsed = JSON.parse(s);
         } catch (e) {} // eslint-disable-line no-empty
@@ -545,8 +553,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         if (presentation) return;
         const lineSet = new Set<Line>();
         boxes.forEach((box) => {
-            box.inletLines.forEach(set => set.forEach(line => lineSet.add(line)));
-            box.outletLines.forEach(set => set.forEach(line => lineSet.add(line)));
+            box.ioLines.forEach(set => set.forEach(line => lineSet.add(line)));
         });
         lineSet.forEach(line => line.emit("posChanged", line));
     }
@@ -626,8 +633,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         if (presentation) return;
         const lineSet = new Set<Line>();
         boxes.forEach((box) => {
-            box.inletLines.forEach(set => set.forEach(line => lineSet.add(line)));
-            box.outletLines.forEach(set => set.forEach(line => lineSet.add(line)));
+            box.ioLines.forEach(set => set.forEach(line => lineSet.add(line)));
         });
         lineSet.forEach(line => line.emit("posChanged", line));
     }
@@ -635,7 +641,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         let nearest: [string, number] = [null, null];
         let minDistance = 100;
         if (to) {
-            const currentPos = this.boxes[to[0]][findSrc ? "getOutletPos" : "getInletPos"](to[1]);
+            const currentPos = this.boxes[to[0]]["getIoPos"](to[1]);
             const currentDistance = ((currentPos.left - left) ** 2 + (currentPos.top - top) ** 2) ** 0.5;
             if (currentDistance < 100) {
                 nearest = to;
@@ -644,10 +650,11 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         for (const id in this.boxes) {
             const box = this.boxes[id];
-            box[findSrc ? "outletsPositions" : "inletsPositions"].forEach((pos, i) => {
+            box["ioPositions"].forEach((pos, i) => {
                 const distance = ((pos.left - left) ** 2 + (pos.top - top) ** 2) ** 0.5;
                 if (distance < minDistance) {
-                    const canCreate = this.instance.canCreateLine({ src: findSrc ? [id, i] : from, dest: findSrc ? from : [id, i] });
+                    const potentialLine: THardwareLine = { aIo: from, bIo: [id, i] };
+                    const canCreate = this.instance.canCreateLine(potentialLine);
                     if (!canCreate) return;
                     nearest = [id, i];
                     minDistance = distance;
@@ -657,7 +664,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         return nearest;
     }
     highlightNearestPort(findSrc: boolean, dragOffset: { x: number; y: number }, from: [string, number], to?: [string, number]) { // to = the port need to be reconnect
-        const origPos = to ? this.boxes[to[0]][findSrc ? "getOutletPos" : "getInletPos"](to[1]) : this.boxes[from[0]][findSrc ? "getInletPos" : "getOutletPos"](from[1]);
+        const origPos = to ? this.boxes[to[0]]["getIoPos"](to[1]) : this.boxes[from[0]]["getIoPos"](from[1]);
         const left = origPos.left + dragOffset.x;
         const top = origPos.top + dragOffset.y;
         const [boxId, portIndex] = this.findNearestPort(findSrc, left, top, from, to);

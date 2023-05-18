@@ -17,13 +17,12 @@ export interface DefaultObjectProps extends DefaultObjectUIProps, BaseObjectProp
 export default class DefaultObject<
     D extends {} = {},
     S extends {} = {},
-    I extends any[] = any[],
-    O extends any[] = any[],
+    IO extends any[] = any[],
     A extends any[] = any[],
     P extends Partial<DefaultObjectProps> & Record<string, any> = {},
     U extends Partial<DefaultUIState> & Record<string, any> = {},
     E extends {} = {}
-> extends BaseObject<D, S, I, O, A, P & DefaultObjectProps, U & DefaultUIState, E> {
+> extends BaseObject<D, S, IO, A, P & DefaultObjectProps, U & DefaultUIState, E> {
     static props: IPropsMeta = {
         bgColor: {
             type: "color",

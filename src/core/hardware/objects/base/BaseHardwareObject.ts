@@ -1,4 +1,4 @@
-import AbstractObject, { IJSPatcherObjectMeta, IPropsMeta } from "./AbstractHardwareObject";
+import AbstractObject, { IHardwarePatcherObjectMeta, IPropsMeta } from "./AbstractHardwareObject";
 import type { TRect } from "../../../types";
 import type { BaseUIState } from "./BaseHardwareUI";
 
@@ -12,13 +12,12 @@ export interface BaseObjectProps extends BaseObjectAdditionalProps, BaseUIState 
 export default class BaseObject<
     D extends {} = {},
     S extends {} = {},
-    I extends any[] = any[],
-    O extends any[] = any[],
+    IO extends any[] = any[],
     A extends any[] = any[],
     P extends Partial<BaseObjectProps> & Record<string, any> = {},
     U extends Partial<BaseUIState> & Record<string, any> = {},
     E extends {} = {}
-> extends AbstractObject<D, S, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
+> extends AbstractObject<D, S, IO, A, P & BaseObjectProps, U & BaseUIState, E> {
     static package = "base";
     static props: IPropsMeta = {
         hidden: {
@@ -60,7 +59,7 @@ export default class BaseObject<
             isUIState: true
         }
     };
-    static get meta(): IJSPatcherObjectMeta {
+    static get meta(): IHardwarePatcherObjectMeta {
         const thisName = this._name;
         const superMeta = Object.getPrototypeOf(this).meta;
         const superProps = superMeta.props;
@@ -69,21 +68,18 @@ export default class BaseObject<
             thisProps[key as keyof IPropsMeta<BaseObjectProps>].group = key in superProps ? superProps[key].group : thisName;
         }
         return {
-            package: this.package,
             name: this._name,
             icon: this.icon,
-            author: this.author,
             version: this.version,
             description: this.description,
-            inlets: [...this.inlets],
-            outlets: [...this.outlets],
+            ios: [...this.ios],
             args: [...this.args],
             props: {
                 ...superProps,
                 ...thisProps
             },
-            isPatcherInlet: this.isPatcherInlet,
-            isPatcherOutlet: this.isPatcherOutlet
+            // isPatcherInlet: this.isPatcherInlet,
+            // isPatcherOutlet: this.isPatcherOutlet
         };
     }
     isUIStateKey = (x: any) => this.meta.props[x] && this.meta.props[x].isUIState;
