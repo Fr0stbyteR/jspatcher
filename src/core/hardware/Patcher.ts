@@ -3,6 +3,7 @@ import PatcherEditor from "./HardwareEditor";
 import Line from "./Line";
 import Box from "./Box";
 import PatcherHistory from "./HardwareHistory";
+import HardwareObjects from "./objects/base/HardwareObjects";
 // import PackageManager, { IPackageManager } from "../PackageManager";
 // import { max2js, js2max } from "../../utils/utils";
 // import { toFaustDspCode } from "../patcher/FaustPatcherAnalyser";
@@ -12,7 +13,7 @@ import type TempPatcherFile from "./TempHardwareFile";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
-import type { TInletEvent, TOutletEvent, IHardwarePatcherObjectMeta, IPropsMeta, IHardwarePatcherObject, TMetaType } from "./objects/base/AbstractHardwareObject";
+import type { IHardwarePatcherObjectMeta, IPropsMeta, IHardwarePatcherObject, TMetaType } from "./objects/base/AbstractHardwareObject";
 import type { PatcherMode, TErrorLevel, TFlatPackage, TPackage, ILogInfo, TDependencies } from "../types";
 import type { RawHardwarePatcher } from "./types";
 import type { THardwareBox, THardwareLine } from "./types";
@@ -58,9 +59,9 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "passiveDeleteLine": Line;
     "graphChanged": never;
     "changed": never;
-    "ioChanged": IHardwarePatcherObject;
-    "dataInput": TInletEvent<any[]>;
-    "dataOutput": TOutletEvent<any[]>;
+    "ioChanged": IHardwarePatcherObjectMeta;
+    // "dataInput": TInletEvent<any[]>;
+    // "dataOutput": TOutletEvent<any[]>;
     "audioInput": { input: number; buffer: Float32Array };
     "paramInput": { param: string; buffer: Float32Array };
     "audioOutput": { output: number; buffer: Float32Array };
@@ -105,7 +106,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const editor = new PatcherEditor(this);
         return editor.init();
     }
-    lib: { [key: string]: typeof IHardwarePatcherObject };
+    lib: { [key: string]: typeof IHardwarePatcherObject } = HardwareObjects;
     lines: Record<string, Line> = {};
     boxes: Record<string, Box> = {};
     props: TPatcherProps;
@@ -369,8 +370,10 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     getObjectConstructor(parsed: { class: string; args: any[]; props: Record<string, any> }) {
         const className = parsed.class;
-        if (typeof className !== "string" || className.length === 0) return this.activeLib.EmptyObject;
-        if (this.activeLib[className]) return this.activeLib[className];
+        if (typeof className !== "string" || className.length === 0)
+            return this.activeLib.EmptyObject;
+        if (this.activeLib[className])
+            return this.activeLib[className];
         return this.activeLib.InvalidObject;
     }
     getObjectMeta(parsed: { class: string; args: any[]; props: Record<string, any> }) {
@@ -539,7 +542,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         return result;
     }
     fn(data: any, inlet: number) {
-        this.emit("dataInput", { data, inlet });
+        // this.emit("dataInput", { data, inlet });
     }
     inputAudio(input: number, buffer: Float32Array) {
         this.emitSync("audioInput", { input, buffer });
@@ -550,9 +553,9 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     outputAudio(output: number, buffer: Float32Array) {
         this.emitSync("audioOutput", { output, buffer });
     }
-    outlet(outlet: number, data: any) {
-        this.emit("dataOutput", { data, outlet });
-    }
+    // outlet(outlet: number, data: any) {
+    //     this.emit("dataOutput", { data, outlet });
+    // }
     changeIO() {
         this.emit("ioChanged", this.meta);
     }

@@ -1,4 +1,4 @@
-.patcher {
+.hardware-patcher {
 	> div.boxes > div.box {
 		display: block;
 		position: absolute;
@@ -8,13 +8,13 @@
             box-shadow: 0 0 2px 2px rgb(0, 162, 255);
             & > .resize-handlers {
                 &.resize-handlers-horizontal {
-                    & > .resize-handler-e, 
+                    & > .resize-handler-e,
                     & > .resize-handler-w {
                         display: block;
                     }
                 }
                 &.resize-handlers-vertical {
-                    & > .resize-handler-n, 
+                    & > .resize-handler-n,
                     & > .resize-handler-s {
                         display: block;
                     }
@@ -25,9 +25,9 @@
                     }
                 }
                 &.resize-handlers-ratio {
-                    & > .resize-handler-ne, 
+                    & > .resize-handler-ne,
                     & > .resize-handler-se,
-                    & > .resize-handler-sw, 
+                    & > .resize-handler-sw,
                     & > .resize-handler-nw {
                         display: block;
                     }

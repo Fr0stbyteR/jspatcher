@@ -124,7 +124,7 @@ export interface IHardwarePatcherObject<
     E extends Partial<HardwarePatcherObjectEventMap<D, S, IO, A, P, U, {}>> & Record<string, any> = {}
 > extends TypedEventEmitter<HardwarePatcherObjectEventMap<D, S, IO, A, P, U, E>> {
     /** Should be true */
-    readonly isJSPatcherObject: true;
+    readonly isHardwarePatcherObject: true;
     /** Unique identifier of the object */
     readonly id: string;
     /** constructor (class) name */
@@ -210,7 +210,7 @@ export interface IHardwarePatcherObject<
 export declare const IHardwarePatcherObject: {
     /** Should be true */
     readonly isHardwarePatcherObjectConstructor: true;
-    /** div will have class "packageName" "packageNanumber
+    /** div will have class "packageName" "packageNanumber */
     description: string;
     ios: IIosMeta;
     args: IArgsMeta;
@@ -237,7 +237,7 @@ export default abstract class AbstractObject<
     U extends {} = {},
     E extends Partial<HardwarePatcherObjectEventMap<D, S, IO, A, P, U, {}>> & Record<string, any> = {}
 > extends TypedEventEmitter<HardwarePatcherObjectEventMap<D, S, IO, A, P, U, E>> implements IHardwarePatcherObject<D, S, IO, A, P, U, E> {
-    static readonly isJSPatcherObjectConstructor = true as const;
+    static readonly isHardwarePatcherObjectConstructor = true as const;
     static package = "Base";
     static get _name() {
         return this.name;
@@ -264,7 +264,7 @@ export default abstract class AbstractObject<
     }
     static UI: typeof AbstractUI;
 
-    readonly isJSPatcherObject = true as const;
+    readonly isHardwarePatcherObject = true as const;
     readonly id: string;
     get class() {
         return this.constructor.name;
@@ -353,8 +353,8 @@ export default abstract class AbstractObject<
     get ioLines() {
         return this._box.ioLines;
     }
-    inletAudioConnections: TAudioNodeInletConnection[] = [];
-    outletAudioConnections: TAudioNodeOutletConnection[] = [];
+    // inletAudioConnections: TAudioNodeInletConnection[] = [];
+    // outletAudioConnections: TAudioNodeOutletConnection[] = [];
     constructor(box: Box, patcher: Patcher) {
         super();
         // line connected = metaChange event subscribed

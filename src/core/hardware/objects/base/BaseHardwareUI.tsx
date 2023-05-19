@@ -1,7 +1,7 @@
 import * as React from "react";
 import AbstractUI, { AbstractUIProps, AbstractUIState } from "./AbstractHardwareUI";
 import type BaseObject from "./BaseHardwareObject";
-import "./BaseUI.scss";
+import "./BaseHardwareUI.scss";
 
 export interface BaseUIProps<T extends BaseObject = BaseObject> extends AbstractUIProps<T> {
     containerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;

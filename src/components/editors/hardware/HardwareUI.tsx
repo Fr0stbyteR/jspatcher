@@ -4,7 +4,8 @@ import BoxUI from "./BoxUI";
 import LineUI, { TempLineUI } from "./LineUI";
 import { round } from "../../../utils/math";
 import type HardwareEditor from "../../../core/hardware/HardwareEditor";
-import type { RawPatcher, TRect } from "../../../core/types";
+import type { TRect } from "../../../core/types";
+import type { RawHardwarePatcher } from "../../../core/hardware/types";
 import "./HardwareUI.scss";
 
 interface P {
@@ -183,7 +184,7 @@ export default class HardwareUI extends React.PureComponent<P, S> {
         const x = round(Math.max(0, e.clientX - patcherRect.left + patcherDiv.scrollLeft), gridX);
         const y = round(Math.max(0, e.clientY - patcherRect.top + patcherDiv.scrollTop), gridY);
         const { presentation } = patcher.state;
-        this.props.editor.createBox({ text: "", inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
+        this.props.editor.createBox({ text: "", ios: [], rect: [x, y, 0, 0], presentation, _editing: true });
     };
     handleKeyDown = (e: KeyboardEvent) => {
         const { editor: patcher, runtime } = this.props;
@@ -222,7 +223,7 @@ export default class HardwareUI extends React.PureComponent<P, S> {
             else if (mode === "js" && e.key === "i") text = "ui.number";
             else if (mode === "js" && e.key === "s") text = "ui.slider";
             else if (mode === "js" && e.key === "t") text = "live.toggle";
-            this.props.editor.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });
+            this.props.editor.createBox({ text, ios: [], rect: [x, y, 0, 0], presentation, _editing: true });
         }
     };
     handleMouseMove = (e: React.MouseEvent) => this.cachedMousePos = { x: e.clientX, y: e.clientY };
@@ -260,7 +261,7 @@ export default class HardwareUI extends React.PureComponent<P, S> {
             } as React.CSSProperties;
             selectionDiv = <div className="selection" style={selectionDivStyle}/>;
         }
-        const classArray = ["patcher"];
+        const classArray = ["hardware-patcher"];
         classArray.push(this.state.locked ? "locked" : "unlocked");
         if (this.state.presentation) classArray.push("presentation");
         if (this.state.showGrid) classArray.push("show-grid");
@@ -308,14 +309,14 @@ class Lines extends React.PureComponent<LinesProps, LinesState> {
         editor.off("delete", this.handleDelete);
         editor.off("ready", this.handleReady);
     }
-    handleCreate = (created: RawPatcher) => {
+    handleCreate = (created: RawHardwarePatcher) => {
         Object.keys(created.lines).forEach((id) => {
             const line = created.lines[id];
             this.lines[line.id] = <LineUI {...this.props} id={line.id} key={this.state.timestamp + line.id} />;
         });
         this.setState({ timestamp: performance.now() });
     };
-    handleDelete = (deleted: RawPatcher) => {
+    handleDelete = (deleted: RawHardwarePatcher) => {
         Object.keys(deleted.lines).forEach(id => delete this.lines[id]);
         this.setState({ timestamp: performance.now() });
     };
@@ -355,7 +356,7 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
     };
     boxes: Record<string, JSX.Element> = {};
     zIndexes: Record<string, number> = {};
-    handleCreate = (created: RawPatcher) => {
+    handleCreate = (created: RawHardwarePatcher) => {
         Object.keys(created.boxes).forEach((id, i) => {
             const box = created.boxes[id];
             this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} scrollIntoView={i === 0}/>;
@@ -363,7 +364,7 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
         });
         this.setState({ timestamp: performance.now() });
     };
-    handleDelete = (deleted: RawPatcher) => {
+    handleDelete = (deleted: RawHardwarePatcher) => {
         Object.keys(deleted.boxes).forEach((id) => {
             delete this.boxes[id];
             delete this.zIndexes[id];

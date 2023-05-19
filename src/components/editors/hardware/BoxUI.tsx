@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Popup } from "semantic-ui-react";
-import BaseUI from "../../../core/objects/base/BaseUI";
+import BaseUI from "../../../core/hardware/objects/base/BaseHardwareUI";
 import { isRectMovable, isRectResizable } from "../../../utils/utils";
-import type PatcherEditor from "../../../core/patcher/PatcherEditor";
-import type { PatcherEditorEventMap } from "../../../core/patcher/PatcherEditor";
-import type Box from "../../../core/patcher/Box";
-import type { BoxEventMap } from "../../../core/patcher/Box";
+import type PatcherEditor from "../../../core/hardware/HardwareEditor";
+import type { PatcherEditorEventMap } from "../../../core/hardware/HardwareEditor";
+import type Box from "../../../core/hardware/Box";
+import type { BoxEventMap } from "../../../core/hardware/Box";
 import type { TResizeHandlerType, TRect, TPresentationRect } from "../../../core/types";
-import type AbstractUI from "../../../core/objects/base/AbstracttUI";
+import type AbstractUI from "../../../core/hardware/objects/base/AbstractHardwareUI";
 import "./BoxUI.scss";
 
 interface P {
@@ -443,8 +443,9 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 </div>
                 {
                     this.state.inPresentationMode ? undefined : <>
-                        <Inlets editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightInlet} />
-                        <Outlets editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightOutlet} />
+                    <Ios editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightInlet} />
+                    {/* //     <Inlets editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightInlet} />
+                    //     <Outlets editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightOutlet} /> */}
                     </>
                 }
                 {
@@ -454,7 +455,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         );
     }
 }
-class Inlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean; highlight: number }, { key: number }> {
+class Ios extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean; highlight: number }, { key: number }> {
     state = { key: performance.now() };
     componentDidMount() {
         this.props.box.on("textChanged", this.handleUpdate);
@@ -471,35 +472,35 @@ class Inlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runt
     render() {
         return (
             <div className="box-inlets box-ports">
-                {...new Array(this.props.box.inlets).fill(null).map((v, i) => <Inlet {...this.props} index={i} key={i} highlight={i === this.props.highlight} />)}
+                {...new Array(this.props.box.ios).fill(null).map((v, i) => <Io {...this.props} index={i} key={i} highlight={i === this.props.highlight} />)}
             </div>
         );
     }
 }
-class Outlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean; highlight: number }, { key: number }> {
-    state = { key: performance.now() };
-    componentDidMount() {
-        this.props.box.on("textChanged", this.handleUpdate);
-        this.props.box.on("ioCountChanged", this.handleUpdate);
-    }
-    componentWillUnmount() {
-        if (!this.props.box) return;
-        this.props.box.off("textChanged", this.handleUpdate);
-        this.props.box.off("ioCountChanged", this.handleUpdate);
-    }
-    handleUpdate = () => {
-        this.setState({ key: performance.now() });
-    };
-    render() {
-        return (
-            <div className="box-outlets box-ports">
-                {...new Array(this.props.box.outlets).fill(null).map((v, i) => <Outlet {...this.props} index={i} key={i} highlight={i === this.props.highlight} />)}
-            </div>
-        );
-    }
-}
-class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean }, { isConnected: boolean; highlight: boolean }> {
-    state = { isConnected: this.props.box.inletLines[this.props.index].size > 0, highlight: false };
+// class Outlets extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean; highlight: number }, { key: number }> {
+//     state = { key: performance.now() };
+//     componentDidMount() {
+//         this.props.box.on("textChanged", this.handleUpdate);
+//         this.props.box.on("ioCountChanged", this.handleUpdate);
+//     }
+//     componentWillUnmount() {
+//         if (!this.props.box) return;
+//         this.props.box.off("textChanged", this.handleUpdate);
+//         this.props.box.off("ioCountChanged", this.handleUpdate);
+//     }
+//     handleUpdate = () => {
+//         this.setState({ key: performance.now() });
+//     };
+//     render() {
+//         return (
+//             <div className="box-outlets box-ports">
+//                 {...new Array(this.props.box.outlets).fill(null).map((v, i) => <Outlet {...this.props} index={i} key={i} highlight={i === this.props.highlight} />)}
+//             </div>
+//         );
+//     }
+// }
+class Io extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean }, { isConnected: boolean; highlight: boolean }> {
+    state = { isConnected: this.props.box.ioLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
         this.props.box.on("connectedPort", this.handleConnectedChange);
@@ -511,8 +512,9 @@ class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index
         this.props.box.off("disconnectedPort", this.handleConnectedChange);
     }
     handleConnectedChange = (e: BoxEventMap["disconnectedPort" | "connectedPort"]) => {
-        const { isSrc, i, last } = e;
-        if (!isSrc && i === this.props.index) this.setState({ isConnected: !last });
+        // const { isSrc, i, last } = e;
+        const { io, last } = e;
+        if (io === this.props.index) this.setState({ isConnected: !last });
     };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
@@ -543,7 +545,7 @@ class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index
         const highlight = this.state.highlight || this.props.highlight;
         const forceHot = editor.props.mode === "gen" || editor.props.mode === "faust";
         let props = { isHot: false, type: "anything", description: "" };
-        const meta = box.meta.inlets;
+        const meta = box.meta.ios;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? (meta[meta.length - 1].varLength ? { ...meta[meta.length - 1], isHot: false } : {}) : meta[i]) };
         const className = "box-port box-inlet" + (props.isHot || forceHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (highlight ? " box-port-highlight" : "");
         return (
@@ -560,65 +562,65 @@ class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index
         );
     }
 }
-class Outlet extends React.PureComponent< { editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean }, { isConnected: boolean; highlight: boolean }> {
-    state = { isConnected: this.props.box.outletLines[this.props.index].size > 0, highlight: false };
-    dragged = false;
-    componentDidMount() {
-        this.props.box.on("connectedPort", this.handleConnectedChange);
-        this.props.box.on("disconnectedPort", this.handleConnectedChange);
-    }
-    componentWillUnmount() {
-        if (!this.props.box) return;
-        this.props.box.off("connectedPort", this.handleConnectedChange);
-        this.props.box.off("disconnectedPort", this.handleConnectedChange);
-    }
-    handleConnectedChange = (e: BoxEventMap["disconnectedPort" | "connectedPort"]) => {
-        const { isSrc, i, last } = e;
-        if (isSrc && i === this.props.index) this.setState({ isConnected: !last });
-    };
-    handleMouseDown = (e: React.MouseEvent) => {
-        if (this.props.runtime) return;
-        if (this.props.editor.state.locked) return;
-        if (e.button !== 0) return;
-        if (e.target !== e.currentTarget) return;
-        e.stopPropagation();
-        this.props.editor.tempLine(false, [this.props.box.id, this.props.index]);
-    };
-    handleMouseEnter = (e: React.MouseEvent) => {
-        if (this.props.runtime) return;
-        if (this.props.editor.state.locked) return;
-        if (e.buttons) return;
-        this.setState({ highlight: true });
-    };
-    handleMouseLeave = () => {
-        if (this.props.runtime) return;
-        if (this.props.editor.state.locked) return;
-        this.setState({ highlight: false });
-    };
-    handleMouseMove = (e: React.MouseEvent) => {
-        if (this.props.runtime) return;
-        if (this.props.editor.state.locked) return;
-        if (e.currentTarget !== e.target) this.setState({ highlight: false });
-    };
-    render() {
-        const { box, index: i } = this.props;
-        const highlight = this.state.highlight || this.props.highlight;
-        let props = { type: "anything", description: "" };
-        const meta = box.meta.outlets;
-        if (meta && meta.length) props = { ...props, ...(i >= meta.length ? (meta[meta.length - 1].varLength ? meta[meta.length - 1] : {}) : meta[i]) };
-        const className = "box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (highlight ? " box-port-highlight" : "");
-        return (
-            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
-                <Popup
-                    trigger={<div />}
-                    content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
-                    position="bottom center"
-                    open={highlight}
-                    size="mini"
-                    inverted
-                    offset={[0, 5]}
-                />
-            </div>
-        );
-    }
-}
+// class Outlet extends React.PureComponent< { editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean }, { isConnected: boolean; highlight: boolean }> {
+//     state = { isConnected: this.props.box.outletLines[this.props.index].size > 0, highlight: false };
+//     dragged = false;
+//     componentDidMount() {
+//         this.props.box.on("connectedPort", this.handleConnectedChange);
+//         this.props.box.on("disconnectedPort", this.handleConnectedChange);
+//     }
+//     componentWillUnmount() {
+//         if (!this.props.box) return;
+//         this.props.box.off("connectedPort", this.handleConnectedChange);
+//         this.props.box.off("disconnectedPort", this.handleConnectedChange);
+//     }
+//     handleConnectedChange = (e: BoxEventMap["disconnectedPort" | "connectedPort"]) => {
+//         const { isSrc, i, last } = e;
+//         if (isSrc && i === this.props.index) this.setState({ isConnected: !last });
+//     };
+//     handleMouseDown = (e: React.MouseEvent) => {
+//         if (this.props.runtime) return;
+//         if (this.props.editor.state.locked) return;
+//         if (e.button !== 0) return;
+//         if (e.target !== e.currentTarget) return;
+//         e.stopPropagation();
+//         this.props.editor.tempLine(false, [this.props.box.id, this.props.index]);
+//     };
+//     handleMouseEnter = (e: React.MouseEvent) => {
+//         if (this.props.runtime) return;
+//         if (this.props.editor.state.locked) return;
+//         if (e.buttons) return;
+//         this.setState({ highlight: true });
+//     };
+//     handleMouseLeave = () => {
+//         if (this.props.runtime) return;
+//         if (this.props.editor.state.locked) return;
+//         this.setState({ highlight: false });
+//     };
+//     handleMouseMove = (e: React.MouseEvent) => {
+//         if (this.props.runtime) return;
+//         if (this.props.editor.state.locked) return;
+//         if (e.currentTarget !== e.target) this.setState({ highlight: false });
+//     };
+//     render() {
+//         const { box, index: i } = this.props;
+//         const highlight = this.state.highlight || this.props.highlight;
+//         let props = { type: "anything", description: "" };
+//         const meta = box.meta.outlets;
+//         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? (meta[meta.length - 1].varLength ? meta[meta.length - 1] : {}) : meta[i]) };
+//         const className = "box-port box-outlet" + (this.state.isConnected ? " box-port-connected" : "") + (highlight ? " box-port-highlight" : "");
+//         return (
+//             <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
+//                 <Popup
+//                     trigger={<div />}
+//                     content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
+//                     position="bottom center"
+//                     open={highlight}
+//                     size="mini"
+//                     inverted
+//                     offset={[0, 5]}
+//                 />
+//             </div>
+//         );
+//     }
+// }

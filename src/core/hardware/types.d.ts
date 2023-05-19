@@ -19,7 +19,7 @@ export interface THardwareBox {
     text: string;
     ios: IoPosition[];
     rect: TRect;
-    presentationRect: TPresentationRect;
+    presentationRect?: TPresentationRect;
     background?: boolean;
     presentation?: boolean;
     zIndex?: number;

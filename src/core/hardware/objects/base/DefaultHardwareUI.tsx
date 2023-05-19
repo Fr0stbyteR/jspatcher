@@ -9,7 +9,7 @@ import type { TFlatPackage } from "../../../types";
 import type { TMetaType, IHardwarePatcherObject } from "./AbstractHardwareObject";
 import type DefaultObject from "./DefaultHardwareObject";
 import type { DefaultObjectUIProps } from "./DefaultHardwareObject";
-import "./DefaultUI.scss";
+import "./DefaultHardwareUI.scss";
 
 export interface DefaultUIProps<T extends DefaultObject = DefaultObject> extends BaseUIProps<T> {
     textContainerProps?: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>;

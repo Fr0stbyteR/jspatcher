@@ -55,7 +55,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         return editor.init();
     }
     state: PatcherEditorState = {
-        locked: true,
+        locked: false,
         presentation: false,
         showGrid: true,
         snapToGrid: true,
@@ -98,7 +98,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         super(instance);
         const { openInPresentation } = this.props;
         this.setState({
-            locked: true,
+            locked: false,
             presentation: !!openInPresentation,
             showGrid: true,
             snapToGrid: true,
@@ -126,7 +126,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.instance.on("highlightPort", this.handleHighlightPort);
         const { openInPresentation } = this.props;
         this.setState({
-            locked: true,
+            locked: false,
             presentation: !!openInPresentation,
             showGrid: true,
             snapToGrid: true,
