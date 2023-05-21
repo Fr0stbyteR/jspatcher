@@ -2491,7 +2491,7 @@ const _Waveform = class {
         const { idx } = stepData;
         idx.reverse();
         for (let i = 0; i < idx.length; i++) {
-          idx[i] = length - idx[i];
+          idx[i] = this.length - idx[i];
         }
         idx.set(idx.subarray(0, -1), 1);
         idx[0] = 0;
