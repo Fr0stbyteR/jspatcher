@@ -3,7 +3,7 @@ import PatcherEditor from "./HardwareEditor";
 import Line from "./Line";
 import Box from "./Box";
 import PatcherHistory from "./HardwareHistory";
-import HardwareObjects from "./objects/base/HardwareObjects";
+import BaseHardwareObjects from "./objects/base/BaseHardwareObjects";
 // import PackageManager, { IPackageManager } from "../PackageManager";
 // import { max2js, js2max } from "../../utils/utils";
 // import { toFaustDspCode } from "../patcher/FaustPatcherAnalyser";
@@ -19,6 +19,8 @@ import type { RawHardwarePatcher } from "./types";
 import type { THardwareBox, THardwareLine } from "./types";
 import type PatcherNode from "../worklets/PatcherNode";
 import type PatcherProcessor from "../worklets/Patcher.worklet";
+import SomObjects from "./objects/soms/SomObjects";
+import HardwareObjects from "./objects/hardware/HardwareObjects";
 
 export interface TPatcherProps {
     mode: PatcherMode;
@@ -106,7 +108,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const editor = new PatcherEditor(this);
         return editor.init();
     }
-    lib: { [key: string]: typeof IHardwarePatcherObject } = HardwareObjects;
+    lib: { [key: string]: typeof IHardwarePatcherObject } = {...BaseHardwareObjects, ...SomObjects, ...HardwareObjects};
     lines: Record<string, Line> = {};
     boxes: Record<string, Box> = {};
     props: TPatcherProps;

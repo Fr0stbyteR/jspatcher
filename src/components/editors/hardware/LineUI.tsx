@@ -2,6 +2,7 @@ import * as React from "react";
 import type { THardwareLineType } from "../../../core/hardware/types";
 import type PatcherEditor from "../../../core/hardware/HardwareEditor";
 import "./LineUI.scss";
+import en from "../../../i18n/en";
 
 interface TPosition {
     left: number;
@@ -28,25 +29,13 @@ export default class LineUI extends React.PureComponent<P, S> {
     refDiv = React.createRef<HTMLDivElement>();
     refPath = React.createRef<SVGPathElement>();
     dragged = false;
-    // handleDestPosChanged = (position: { left: number; top: number }) => {
-    //     const { line } = this;
-    //     if (this.state.destPos.left !== position.left || this.state.destPos.top !== position.top) {
-    //         this.setState({ type: line.type, destPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
-    //     }
-    // };
-    // handleSrcPosChanged = (position: { left: number; top: number }) => {
-    //     const { line } = this;
-    //     if (this.state.srcPos.left !== position.left || this.state.srcPos.top !== position.top) {
-    //         this.setState({ type: line.type, srcPos: position }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
-    //     }
-    // };
     handleResetPos = () => {
         const { line } = this;
         const { aPos, bPos } = line;
         if (
             this.refDiv.current
             && aPos.left - this.state.aPos.left === bPos.left - this.state.bPos.left
-            && bPos.top - this.state.aPos.top === bPos.top - this.state.bPos.top
+            && aPos.top - this.state.aPos.top === bPos.top - this.state.bPos.top
         ) {
             const x = Math.min(aPos.left, bPos.left) - 5;
             const y = Math.min(aPos.top, bPos.top) - 10;
@@ -184,26 +173,47 @@ export default class LineUI extends React.PureComponent<P, S> {
     handleClick = (e: React.MouseEvent) => e.stopPropagation();
     render() {
         const className = "line" + (this.state.selected ? " selected" : "") + (this.state.dragging ? " dragging" : "");
-        const start = this.state.aPos;
-        const end = this.state.bPos;
-        const x = Math.min(start.left, end.left) - 5;
-        const y = Math.min(start.top, end.top) - 10;
+        const {left: startLeft, top: startTop} = this.state.aPos;
+        const {left: endLeft, top: endTop} = this.state.bPos;
+
+        const startEdge = this.props.editor.boxes[this.line.getA()[0]].ios[this.line.getA()[1]].edge;
+        const endEdge = this.props.editor.boxes[this.line.getB()[0]].ios[this.line.getB()[1]].edge;
+        const isVerticalStart = startEdge === 'B' || startEdge === 'T';
+        const isVerticalEnd = endEdge === 'B' || endEdge === 'T';
+
         const divStyle = {
-            left: Math.min(start.left, end.left) - 5,
-            top: Math.min(start.top, end.top) - 10,
-            width: Math.abs(start.left - end.left) + 10,
-            height: Math.abs(start.top - end.top) + 20
+            left: Math.min(startLeft, endLeft) - 5,
+            top: Math.min(startTop, endTop) - 10,
+            width: Math.abs(startLeft - endLeft) + 10,
+            height: Math.abs(startTop - endTop) + 20
         };
-        const dStartL = start.left - divStyle.left;
-        const dStartT = start.top - divStyle.top;
-        const dMidL = divStyle.width * 0.5;
-        const dMidT = divStyle.height * 0.5;
-        const dEndL = end.left - divStyle.left;
-        const dEndT = end.top - divStyle.top;
-        const dBezierT = Math.min(divStyle.height, dStartT + Math.max(5, (divStyle.height - 20) * 0.2));
-        const d = `M ${dStartL} ${dStartT} Q ${dStartL} ${dBezierT} ${dMidL} ${dMidT} T ${dEndL} ${dEndT}`;
+
+        const dStart = {left: startLeft - divStyle.left, top: startTop - divStyle.top};
+        const dMid = {left: divStyle.width * 0.5, top: divStyle.height * 0.5};
+        const dEnd = {left: endLeft - divStyle.left, top: endTop - divStyle.top};
+
+        let dBezierStart;
+        if (isVerticalStart) {
+            dBezierStart = {left: dStart.left, top: dStart.top + Math.max(5, (divStyle.height - 20) * 0.2)};
+            if (dBezierStart.top > divStyle.height) dBezierStart.top = divStyle.height;
+        } else {
+            dBezierStart = {left: dStart.left + Math.max(5, (divStyle.width - 20) * 0.2), top: dStart.top};
+            if (dBezierStart.left > divStyle.width) dBezierStart.left = divStyle.width;
+        }
+
+        let dBezierEnd;
+        if (isVerticalEnd) {
+            dBezierEnd = {left: dEnd.left, top: dEnd.top - Math.max(5, (divStyle.height - 20) * 0.2)};
+            if (dBezierEnd.top < 0) dBezierEnd.top = 0;
+        } else {
+            dBezierEnd = {left: dEnd.left - Math.max(5, (divStyle.width - 20) * 0.2), top: dEnd.top};
+            if (dBezierEnd.left < 0) dBezierEnd.left = 0;
+        }
+
+        const d = `M ${dStart.left} ${dStart.top} Q ${dBezierStart.left} ${dBezierStart.top} ${dMid.left} ${dMid.top} Q ${dBezierEnd.left} ${dBezierEnd.top} ${dEnd.left} ${dEnd.top}`;
+        
         return (
-            <div className={className} tabIndex={0} data-id={this.props.id} style={{ transform: `translate(${x}px, ${y}px)` }} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
+            <div className={className} tabIndex={0} data-id={this.props.id} style={{ transform: `translate(${divStyle.left}px, ${divStyle.top}px)` }} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
                     <path className="normal" d={d} ref={this.refPath} />
                     {/* {this.state.type === "audio" ? <path className="audio" d={d} /> : undefined} */}
@@ -235,7 +245,7 @@ export class TempLineUI extends React.PureComponent<{ editor: PatcherEditor }, {
         this.findSrc = findSrc;
         this.from = from;
         // const fromPos = this.props.editor.boxes[from[0]][findSrc ? "getInletPos" : "getOutletPos"](from[1]);
-        const fromPos = this.props.editor.boxes[from[0]]["getIoPos"](from[1]);
+        const fromPos = this.props.editor.boxes[from[0]].getIoPos(from[1]);
         this.setState({ srcPos: fromPos, destPos: fromPos });
         this.handleDraggable(findSrc, fromPos);
     };
@@ -323,8 +333,13 @@ export class TempLineUI extends React.PureComponent<{ editor: PatcherEditor }, {
                 <div className="line" ref={this.refDiv} />
             );
         }
+
         const start = this.state.srcPos;
         const end = this.state.destPos;
+        const startEdge = this.props.editor.boxes[this.from[0]].ios[this.from[1]].edge;
+        const isVerticalStart = startEdge === 'T' || startEdge === 'B'; // true if the line is more vertical, false otherwise
+        const isVerticalEnd = true; // true if the line is more vertical, false otherwise
+
         const divStyle = {
             left: Math.min(start.left, end.left) - 5,
             top: Math.min(start.top, end.top) - 10,
@@ -334,10 +349,28 @@ export class TempLineUI extends React.PureComponent<{ editor: PatcherEditor }, {
         const dStart = [start.left - divStyle.left, start.top - divStyle.top];
         const dMid = [divStyle.width / 2, divStyle.height / 2];
         const dEnd = [end.left - divStyle.left, end.top - divStyle.top];
-        const dBezier = [dStart[0], dStart[1] + Math.max(5, (divStyle.height - 20) / 5)];
-        if (dBezier[1] > divStyle.height) dBezier[1] = divStyle.height;
-        const d = ["M", dStart[0], dStart[1], "Q", dBezier[0], dBezier[1], ",", dMid[0], dMid[1], "T", dEnd[0], dEnd[1]];
+
+        let dBezierStart;
+        if (isVerticalStart) {
+            dBezierStart = [dStart[0], dStart[1] + Math.max(5, (divStyle.height - 20) / 5)];
+            if (dBezierStart[1] > divStyle.height) dBezierStart[1] = divStyle.height;
+        } else {
+            dBezierStart = [dStart[0] + Math.max(5, (divStyle.width - 20) / 5), dStart[1]];
+            if (dBezierStart[0] > divStyle.width) dBezierStart[0] = divStyle.width;
+        }
+
+        let dBezierEnd;
+        if (isVerticalEnd) {
+            dBezierEnd = [dEnd[0], dEnd[1] - Math.max(5, (divStyle.height - 20) / 5)];
+            if (dBezierEnd[1] < 0) dBezierEnd[1] = 0;
+        } else {
+            dBezierEnd = [dEnd[0] - Math.max(5, (divStyle.width - 20) / 5), dEnd[1]];
+            if (dBezierEnd[0] < 0) dBezierEnd[0] = 0;
+        }
+
+        const d = ["M", dStart[0], dStart[1], "Q", dBezierStart[0], dBezierStart[1], ",", dMid[0], dMid[1], "Q", dBezierEnd[0], dBezierEnd[1], ",", dEnd[0], dEnd[1]];
         const dJoined = d.join(" ");
+        console.log(dJoined);
         return (
             <div className="line dragging" tabIndex={0} style={divStyle} ref={this.refDiv}>
                 <svg width={divStyle.width} height={divStyle.height}>

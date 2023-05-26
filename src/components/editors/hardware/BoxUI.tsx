@@ -470,10 +470,22 @@ class Ios extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime
         this.setState({ key: performance.now() });
     };
     render() {
+        const withIndex = this.props.box.ios.map((value, i) => ({ ...value, index: i }));
         return (
-            <div className="box-inlets box-ports">
-                {...new Array(this.props.box.ios).fill(null).map((v, i) => <Io {...this.props} index={i} key={i} highlight={i === this.props.highlight} />)}
-            </div>
+            <>
+                <div className="box-top box-h-ports">
+                    {withIndex.filter(value => value.edge === 'T').map(({position, index}) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} left={`${position * 100}%`} edge='top' port='h' />)}
+                </div>
+                <div className="box-bottom box-h-ports">
+                    {withIndex.filter(value => value.edge === 'B').map(({position, index}) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} left={`${position * 100}%`} edge='bottom' port='h' />)}
+                </div>
+                <div className="box-left box-v-ports">
+                    {withIndex.filter(value => value.edge === 'L').map(({position, index}) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} top={`${position * 100}%`} edge='left' port='v' />)}
+                </div>
+                <div className="box-right box-v-ports">
+                    {withIndex.filter(value => value.edge === 'R').map(({position, index}) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} top={`${position * 100}%`} edge='right' port='v' />)}
+                </div>
+            </>
         );
     }
 }
@@ -499,7 +511,7 @@ class Ios extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime
 //         );
 //     }
 // }
-class Io extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean }, { isConnected: boolean; highlight: boolean }> {
+class Io extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean; left?: string; top?: string; edge: string; port: string; }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.ioLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
@@ -517,6 +529,7 @@ class Io extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: n
         if (io === this.props.index) this.setState({ isConnected: !last });
     };
     handleMouseDown = (e: React.MouseEvent) => {
+        console.log([this.props.box.id, this.props.index]);
         if (this.props.runtime) return;
         if (this.props.editor.state.locked) return;
         if (e.button !== 0) return;
@@ -541,22 +554,31 @@ class Io extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: n
         this.setState({ highlight: false });
     };
     render() {
-        const { box, index: i, editor } = this.props;
+        const { box, index: i, editor, left, top, edge, port } = this.props;
+
+        const popupOffset = {
+            'T': [0],
+            'R': [0, 5],
+            'B': [0, 5],
+            'L': [0, 5],
+        }[edge];
+
         const highlight = this.state.highlight || this.props.highlight;
         const forceHot = editor.props.mode === "gen" || editor.props.mode === "faust";
         let props = { isHot: false, type: "anything", description: "" };
         const meta = box.meta.ios;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? (meta[meta.length - 1].varLength ? { ...meta[meta.length - 1], isHot: false } : {}) : meta[i]) };
-        const className = "box-port box-inlet" + (props.isHot || forceHot ? " box-inlet-hot" : " box-inlet-cold") + (this.state.isConnected ? " box-port-connected" : "") + (highlight ? " box-port-highlight" : "");
+        const className = `box-${port}-port box-${edge}` + (props.isHot || forceHot ? ` box-${edge}-hot` : ` box-${edge}-cold`) + (this.state.isConnected ? ` box-${port}-port-connected` : "") + (highlight ? ` box-${port}-port-highlight` : "");
         return (
-            <div className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
+            <div style={{left, top}} className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
                 <Popup
                     trigger={<div style={{ pointerEvents: "none" }} />}
                     content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}
-                    position="top center"
+                    position={`${edge} center` as any}
                     open={highlight}
                     size="mini"
                     inverted
+                    offset={popupOffset as any}
                 />
             </div>
         );

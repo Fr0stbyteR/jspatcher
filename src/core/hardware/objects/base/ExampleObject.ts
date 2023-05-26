@@ -1,7 +1,7 @@
 import DefaultObject from "./DefaultHardwareObject";
 import type { IHardwarePatcherObjectMeta } from "./AbstractHardwareObject";
 
-export default class EmptyObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
+export default class ExampleObject extends DefaultObject<{}, { editing: boolean }, [any], [any]> {
     static author = "Corvus Prudens";
     static version = "1.0.0";
     static description = "Bypass input";
@@ -9,22 +9,17 @@ export default class EmptyObject extends DefaultObject<{}, { editing: boolean },
         {
             isHot: true,
             type: "anything",
-            description: "output same thing"
+            description: "pin 1"
         },
         {
             isHot: true,
             type: "anything",
-            description: "output same thing"
+            description: "pin 2"
         },
         {
             isHot: true,
             type: "anything",
-            description: "output same thing"
-        },
-        {
-            isHot: true,
-            type: "anything",
-            description: "output same thing"
+            description: "pin 3"
         },
     ];
     state = { editing: false };
@@ -33,20 +28,16 @@ export default class EmptyObject extends DefaultObject<{}, { editing: boolean },
         this.on("preInit", () => {
             this.ios = [
                 {
-                    edge: "T",
-                    position: 0.5,
+                    edge: "B",
+                    position: 0.3,
                 },
                 {
                     edge: "B",
                     position: 0.5,
                 },
                 {
-                    edge: "L",
-                    position: 0.5,
-                },
-                {
-                    edge: "R",
-                    position: 0.5,
+                    edge: "B",
+                    position: 0.7,
                 },
             ]
         });

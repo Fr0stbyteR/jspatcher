@@ -1,30 +1,40 @@
 .hardware-patcher {
-    & > div.lines > div.line {
+    &>div.lines>div.line {
         position: absolute;
         outline-width: 0;
         pointer-events: none;
-        & > svg {
+
+        &>svg {
             filter: drop-shadow(rgba(200, 200, 200, 0.5) 0px 0px 0.5px);
-            & > path.normal, & > line.normal {
-                stroke: rgb(158, 159, 159);
+
+            &>path.normal,
+            &>line.normal {
+                stroke: rgb(163, 255, 255);
                 stroke-width: 2;
                 fill: transparent;
+                stroke-dasharray: 4, 4;
             }
-            & > path.audio, & > line.audio {
+
+            &>path.audio,
+            &>line.audio {
                 stroke: rgb(215, 248, 135);
                 stroke-width: 2;
                 fill: transparent;
                 stroke-dasharray: 4, 4;
             }
+
             &:hover {
                 filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
                 stroke-width: 3;
-                & > path, & > line {
+
+                &>path,
+                &>line {
                     stroke-width: 3;
                 }
             }
         }
-        & > div.line-handler {
+
+        &>div.line-handler {
             position: absolute;
             border-radius: 50%;
             margin: -3px;
@@ -32,45 +42,59 @@
             height: 6px;
             pointer-events: auto;
             visibility: hidden;
+
             &.line-handler-src {
                 background-color: rgba(144, 238, 144, 0.5);
                 border: 1px rgba(0, 255, 0, 0.5) solid;
+
                 &:hover {
                     background-color: rgba(144, 238, 144, 1);
                     border: 1px rgba(0, 255, 0, 1) solid;
                 }
             }
+
             &.line-handler-dest {
                 background-color: rgba(255, 0, 0, 0.5);
                 border: 1px rgba(128, 0, 0, 0.5) solid;
+
                 &:hover {
                     background-color: rgba(255, 0, 0, 1);
                     border: 1px rgba(128, 0, 0, 1) solid;
                 }
             }
         }
+
         &.selected {
-            & > svg {
+            &>svg {
                 filter: drop-shadow(rgb(0, 0, 237) 0px 0px 2px);
-                & > path, & > line {
+
+                &>path,
+                &>line {
                     stroke-width: 3;
                 }
             }
-            &:focus-within > div.line-handler {
+
+            &:focus-within>div.line-handler {
                 visibility: visible;
             }
-            &.dragging > div.line-handler {
+
+            &.dragging>div.line-handler {
                 visibility: hidden;
             }
         }
     }
-    &.unlocked > div.lines > div.line > svg > path, &.unlocked > div.lines > div.line > svg > line {
+
+    &.unlocked>div.lines>div.line>svg>path,
+    &.unlocked>div.lines>div.line>svg>line {
         pointer-events: visibleStroke;
     }
-    &.locked > div.lines > div.line > svg > path, &.locked > div.lines > div.line > svg > line {
+
+    &.locked>div.lines>div.line>svg>path,
+    &.locked>div.lines>div.line>svg>line {
         pointer-events: none;
     }
-    &.presentation > div.lines {
+
+    &.presentation>div.lines {
         display: none;
     }
 }

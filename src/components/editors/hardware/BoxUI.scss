@@ -1,65 +1,79 @@
 .hardware-patcher {
-	> div.boxes > div.box {
-		display: block;
-		position: absolute;
-		pointer-events: auto;
-		min-width: 15px;
+    >div.boxes>div.box {
+        display: block;
+        position: absolute;
+        pointer-events: auto;
+        min-width: 15px;
+
         &.selected {
             box-shadow: 0 0 2px 2px rgb(0, 162, 255);
-            & > .resize-handlers {
+
+            &>.resize-handlers {
                 &.resize-handlers-horizontal {
-                    & > .resize-handler-e,
-                    & > .resize-handler-w {
+
+                    &>.resize-handler-e,
+                    &>.resize-handler-w {
                         display: block;
                     }
                 }
+
                 &.resize-handlers-vertical {
-                    & > .resize-handler-n,
-                    & > .resize-handler-s {
+
+                    &>.resize-handler-n,
+                    &>.resize-handler-s {
                         display: block;
                     }
                 }
+
                 &.resize-handlers-both {
-                    & > .resize-handler {
+                    &>.resize-handler {
                         display: block;
                     }
                 }
+
                 &.resize-handlers-ratio {
-                    & > .resize-handler-ne,
-                    & > .resize-handler-se,
-                    & > .resize-handler-sw,
-                    & > .resize-handler-nw {
+
+                    &>.resize-handler-ne,
+                    &>.resize-handler-se,
+                    &>.resize-handler-sw,
+                    &>.resize-handler-nw {
                         display: block;
                     }
                 }
             }
         }
-        & > div.box-ui {
+
+        &>div.box-ui {
             height: 100%;
             width: 100%;
             overflow: unset;
         }
-        & > div.box-ports {
+
+        &>div.box-h-ports {
             position: absolute;
-            left: 10px;
-            right: 10px;
+            // left: 10px;
+            // right: 10px;
+            width: 100%;
             height: 0;
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
             user-select: none;
-            & > div.box-port {
+
+            &>div.box-h-port {
                 position: relative;
                 width: 7px;
                 height: 3.5px;
                 background-color: rgb(192, 194, 196);
                 border-style: solid;
                 border-width: 0;
-                &.box-port-connected {
+
+                &.box-h-port-connected {
                     height: 3.5px;
                     width: 7px;
                 }
-                &:hover, &.box-port-connected:hover {
+
+                &:hover,
+                &.box-h-port-connected:hover {
                     background-color: rgb(75, 80, 86);
                     border-width: 2px !important;
                     margin: -5.5px !important;
@@ -67,7 +81,9 @@
                     height: 11px !important;
                     width: 11px !important;
                 }
-                &.box-port-highlight,  &.box-port-connected.box-port-highlight {
+
+                &.box-h-port-highlight,
+                &.box-h-port-connected.box-h-port-highlight {
                     background-color: rgb(75, 80, 86);
                     border-width: 2px !important;
                     margin: -5.5px !important;
@@ -77,49 +93,162 @@
                 }
             }
         }
-        & > div.box-inlets {
+
+        &>div.box-v-ports {
+            position: absolute;
+            // left: 10px;
+            // right: 10px;
+            width: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+
+            &>div.box-v-port {
+                position: relative;
+                width: 3.5px;
+                height: 7px;
+                background-color: rgb(192, 194, 196);
+                border-style: solid;
+                border-width: 0;
+
+                &.box-v-port-connected {
+                    width: 3.5px;
+                    height: 7px;
+                }
+
+                &:hover,
+                &.box-v-port-connected:hover {
+                    background-color: rgb(75, 80, 86);
+                    border-width: 2px !important;
+                    margin: -5.5px !important;
+                    border-radius: 50% !important;
+                    height: 11px !important;
+                    width: 11px !important;
+                }
+
+                &.box-v-port-highlight,
+                &.box-v-port-connected.box-v-port-highlight {
+                    background-color: rgb(75, 80, 86);
+                    border-width: 2px !important;
+                    margin: -5.5px !important;
+                    border-radius: 50% !important;
+                    height: 11px !important;
+                    width: 11px !important;
+                }
+            }
+        }
+
+        &>div.box-top {
             top: 0;
-            & > div.box-inlet {
+
+            &>div.box-top {
                 border-radius: 0 0 3.5px 3.5px;
                 margin: 0 -3.5px -3.5px -3.5px;
-                &.box-port-connected {
+
+                &.box-h-port-connected {
                     background-color: rgb(75, 80, 86);
                     border-width: 0 1px 1px 1px;
                     margin: 0 -3.5px -3.5px -3.5px;
                     border-radius: 0 0 3.5px 3.5px;
                 }
             }
-            & > div.box-inlet-hot {
+
+            &>div.box-top-hot {
                 border-color: rgb(255, 141, 121);
             }
-            & > div.box-inlet-cold {
+
+            &>div.box-top-cold {
                 border-color: rgb(85, 213, 236);
             }
         }
-        & > div.box-outlets {
+
+        &>div.box-bottom {
             bottom: 0;
-            & > div.box-outlet {
+
+            &>div.box-bottom {
                 border-radius: 3.5px 3.5px 0 0;
                 margin: -3.5px -3.5px 0 -3.5px;
-                border-color: rgb(211, 255, 0);
-                &.box-port-connected {
+
+                &.box-h-port-connected {
                     background-color: rgb(75, 80, 86);
                     border-width: 1px 1px 0 1px;
                     margin: -3.5px -3.5px 0 -3.5px;
                     border-radius: 3.5px 3.5px 0 0;
                 }
             }
-		}
-        & > div.resize-handlers {
-            & > div.resize-handler {
+
+            &>div.box-bottom-hot {
+                border-color: rgb(255, 141, 121);
+            }
+
+            &>div.box-bottom-cold {
+                border-color: rgb(85, 213, 236);
+            }
+        }
+
+        &>div.box-left {
+            left: 0;
+            top: 0;
+
+            &>div.box-left {
+                border-radius: 0 3.5px 3.5px 0;
+                margin: -3.5px -3.5px -3.5px 0;
+
+                &.box-v-port-connected {
+                    background-color: rgb(75, 80, 86);
+                    border-width: 1px 1px 1px 0;
+                    margin: -3.5px -3.5px -3.5px 0;
+                    border-radius: 0 3.5px 3.5px 0;
+                }
+            }
+
+            &>div.box-left-hot {
+                border-color: rgb(255, 141, 121);
+            }
+
+            &>div.box-left-cold {
+                border-color: rgb(85, 213, 236);
+            }
+        }
+
+        &>div.box-right {
+            right: 0;
+            top: 0;
+
+            &>div.box-right {
+                border-radius: 3.5px 0 0 3.5px;
+                margin: -3.5px 0 -3.5px -3.5px;
+
+                &.box-v-port-connected {
+                    background-color: rgb(75, 80, 86);
+                    border-width: 1px 0 1px 1px;
+                    margin: -3.5px 0 -3.5px -3.5px;
+                    border-radius: 3.5px 0 0 3.5px;
+                }
+            }
+
+            &>div.box-right-hot {
+                border-color: rgb(255, 141, 121);
+            }
+
+            &>div.box-right-cold {
+                border-color: rgb(85, 213, 236);
+            }
+        }
+
+        &>div.resize-handlers {
+            &>div.resize-handler {
                 position: absolute;
                 display: none;
+
                 &.resize-handler-n {
                     top: 0;
                     width: 100%;
                     height: 4px;
                     cursor: n-resize;
                 }
+
                 &.resize-handler-ne {
                     top: 0;
                     right: 0;
@@ -127,12 +256,14 @@
                     height: 6px;
                     cursor: ne-resize;
                 }
+
                 &.resize-handler-e {
                     right: 0;
                     width: 4px;
                     height: 100%;
                     cursor: e-resize;
                 }
+
                 &.resize-handler-se {
                     bottom: 0;
                     right: 0;
@@ -140,12 +271,14 @@
                     height: 6px;
                     cursor: se-resize;
                 }
+
                 &.resize-handler-s {
                     bottom: 0;
                     width: 100%;
                     height: 4px;
                     cursor: s-resize;
                 }
+
                 &.resize-handler-sw {
                     bottom: 0;
                     left: 0;
@@ -153,12 +286,14 @@
                     height: 6px;
                     cursor: sw-resize;
                 }
+
                 &.resize-handler-w {
                     left: 0;
                     width: 4px;
                     height: 100%;
                     cursor: w-resize;
                 }
+
                 &.resize-handler-nw {
                     top: 0;
                     left: 0;
@@ -168,52 +303,89 @@
                 }
             }
         }
-	}
-	&.locked > div.boxes > div.box {
-		& > div.box-ui {
-			pointer-events: auto;
-		}
-		& > div.box-ports > div.box-port {
-			pointer-events: none;
-            &:not(.box-port-connected) {
+    }
+
+    &.locked>div.boxes>div.box {
+        &>div.box-ui {
+            pointer-events: auto;
+        }
+
+        &>div.box-h-ports>div.box-h-port {
+            pointer-events: none;
+
+            &:not(.box-h-port-connected) {
                 visibility: hidden;
             }
         }
-        & > div.resize-handlers {
+
+        &>div.box-v-ports>div.box-v-port {
+            pointer-events: none;
+
+            &:not(.box-v-port-connected) {
+                visibility: hidden;
+            }
+        }
+
+        &>div.resize-handlers {
             display: none;
         }
-	}
-	&.unlocked /*>*/ div.boxes > div.box { // recursive: if parent patcher unlocked, no events
-		& > div.box-ui {
+    }
+
+    &.unlocked
+
+    /*>*/
+    div.boxes>div.box {
+
+        // recursive: if parent patcher unlocked, no events
+        &>div.box-ui {
             pointer-events: none !important;
         }
     }
-	&.unlocked > div.boxes > div.box {
-		& > div.box-ui {
+
+    &.unlocked>div.boxes>div.box {
+        &>div.box-ui {
             pointer-events: none;
         }
-		&:hover {
-			& > div.box-ports {
-				& > div.box-port {
-					margin: -3.5px;
-					border-radius: 50%;
-					height: 7px;
-				}
-				& > div.box-port-connected {
-					border-width: 1px;
-					height: 7px;
-				}
-			}
-		}
-        & > div.resize-handlers {
+
+        &:hover {
+            &>div.box-h-ports {
+                &>div.box-h-port {
+                    margin: -3.5px;
+                    border-radius: 50%;
+                    height: 7px;
+                }
+
+                &>div.box-h-port-connected {
+                    border-width: 1px;
+                    height: 7px;
+                }
+            }
+
+            &>div.box-v-ports {
+                &>div.box-v-port {
+                    margin: -3.5px;
+                    border-radius: 50%;
+                    width: 7px;
+                }
+
+                &>div.box-v-port-connected {
+                    border-width: 1px;
+                    width: 7px;
+                }
+            }
+        }
+
+        &>div.resize-handlers {
             display: block;
         }
     }
-    &.presentation > div.boxes {
-        & > div.box {
-            & > div.box-ports {
+
+    &.presentation>div.boxes {
+        &>div.box {
+            &>div.box-h-ports {
                 display: none;
             }
+
             &:not(.presentation) {
                 display: none;
             }
