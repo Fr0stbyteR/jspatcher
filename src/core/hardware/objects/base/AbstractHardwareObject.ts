@@ -7,7 +7,7 @@ import type Patcher from "../../Patcher";
 import type { ProjectItemType, TempItemByType, SharedItemByType, TempItemType, TAudioNodeInletConnection, TAudioNodeOutletConnection } from "../../../types";
 import type AbstractUI from "./AbstractHardwareUI";
 import type { IJSPatcherEnv } from "../../../Env";
-import { IoPosition } from "../../types";
+import { BasePin, IoPosition } from "../../types";
 
 export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject => typeof x === "function" && x?.isJSPatcherObjectConstructor;
 
@@ -15,10 +15,8 @@ export const isJSPatcherObject = (x: any): x is AbstractObject => typeof x === "
 
 export type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "function" | "bang" | "color" | "enum";
 export interface IIoMeta {
-    isHot: boolean;
     type: TMetaType;
-    enums?: string[];
-    varLength?: boolean;
+    pin: BasePin;
     description: string;
 }
 export type IIosMeta = IIoMeta[];
@@ -223,10 +221,10 @@ export declare const IHardwarePatcherObject: {
      * is `BaseUI` by default
      */
     UI?: typeof AbstractUI;
-    new (box: Box, patcher: Patcher): IHardwarePatcherObject;
+    new(box: Box, patcher: Patcher): IHardwarePatcherObject;
 };
 
-export interface AnyJSPatcherObject extends IHardwarePatcherObject<Record<string, any>, Record<string, any>, any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> {}
+export interface AnyJSPatcherObject extends IHardwarePatcherObject<Record<string, any>, Record<string, any>, any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> { }
 
 export default abstract class AbstractObject<
     D extends {} = {},
@@ -373,7 +371,7 @@ export default abstract class AbstractObject<
         await this.emit("postInit");
     }
     /** Do everything here */
-    subscribe(): void {}
+    subscribe(): void { }
     updateUI(state: Partial<U>) {
         this.emit("updateUI", state);
     }
@@ -508,14 +506,14 @@ export default abstract class AbstractObject<
                                 item = fileMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
                                 off();
                                 onceCreate(item);
-                            } catch {}
+                            } catch { }
                         };
                         const handleTempMgrTreeChanged = () => {
                             try {
                                 item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
                                 off();
                                 onceCreate(item);
-                            } catch {}
+                            } catch { }
                         };
                         fileMgr.on("treeChanged", handleFileMgrTreeChanged);
                         tempMgr.on("treeChanged", handleTempMgrTreeChanged);

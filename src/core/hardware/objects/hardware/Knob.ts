@@ -8,6 +8,7 @@ export default class Knob extends ImageObject<{}, {}, any[]> {
     static ios = [
         {
             isHot: true,
+            pin: { pinName: "", analogOutput: true},
             type: "anything" as TMetaType,
             description: "knob signal",
         }

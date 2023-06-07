@@ -9,6 +9,7 @@ import type { BoxEventMap } from "../../../core/hardware/Box";
 import type { TResizeHandlerType, TRect, TPresentationRect } from "../../../core/types";
 import type AbstractUI from "../../../core/hardware/objects/base/AbstractHardwareUI";
 import "./BoxUI.scss";
+import { compatiblePins } from "../../../core/hardware/Compatibility";
 
 interface P {
     editor: PatcherEditor;
@@ -30,6 +31,7 @@ interface S {
     highlightInlet: number;
     highlightOutlet: number;
     key: string;
+    bubblePorts: number[];
 }
 export default class BoxUI extends React.PureComponent<P, S> {
     box = this.props.editor.boxes[this.props.id];
@@ -50,7 +52,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
         highlight: false,
         highlightInlet: null,
         highlightOutlet: null,
-        key: performance.now().toString()
+        key: performance.now().toString(),
+        bubblePorts: [],
     };
     handleResetPos = () => {
         const { box } = this;
@@ -273,6 +276,31 @@ export default class BoxUI extends React.PureComponent<P, S> {
         if (isSrc && this.state.highlightOutlet !== i) this.setState({ highlightOutlet: i });
         else if (!isSrc && this.state.highlightInlet !== i) this.setState({ highlightInlet: i });
     };
+    handleBubblePorts = (bubblePorts: PatcherEditorEventMap["bubblePorts"]) => {
+        if (!bubblePorts) {
+            this.setState({ bubblePorts: [] });
+            return;
+        }
+        const { boxId, i, pin } = bubblePorts;
+
+        console.log("trying bubble!");
+        // console.log(JSON.stringify(bubblePorts));
+
+        let our_ios = this.box.meta.ios
+            .map((io, i) => {
+
+                console.log(`a: ${JSON.stringify(io.pin)} b: ${JSON.stringify(pin)} c: ${compatiblePins([io.pin, pin])}`);
+
+                return ({ index: i, compatible: compatiblePins([io.pin, pin]) });
+            })
+            .filter(({ index, compatible }) => compatible && !(boxId === this.box.id && i === index))
+            .map(({ index }) => index);
+
+        console.log(`our_ios: ${JSON.stringify(our_ios)}`);
+
+        this.setState({ bubblePorts: our_ios });
+
+    };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
         if (this.props.runtime) return;
@@ -380,6 +408,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         editor.on("resized", this.handleResized);
         editor.on("highlightBox", this.handleHighlight);
         editor.on("highlightPort", this.handleHighlightPort);
+        editor.on("bubblePorts", this.handleBubblePorts);
         this.inspectRectChange();
         if (this.props.scrollIntoView && this.refDiv.current) {
             const div = this.refDiv.current;
@@ -399,6 +428,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         editor.off("resized", this.handleResized);
         editor.off("highlightBox", this.handleHighlight);
         editor.off("highlightPort", this.handleHighlightPort);
+        editor.off("bubblePorts", this.handleBubblePorts);
         const box = this.props.editor.boxes[this.props.id];
         if (!box) return;
         box.off("textChanged", this.handleTextChanged);
@@ -443,8 +473,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
                 </div>
                 {
                     this.state.inPresentationMode ? undefined : <>
-                    <Ios editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightInlet} />
-                    {/* //     <Inlets editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightInlet} />
+                        <Ios editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightInlet} bubble={this.state.bubblePorts} />
+                        {/* //     <Inlets editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightInlet} />
                     //     <Outlets editor={this.props.editor} box={box} runtime={this.props.runtime} highlight={this.state.highlightOutlet} /> */}
                     </>
                 }
@@ -455,7 +485,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         );
     }
 }
-class Ios extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean; highlight: number }, { key: number }> {
+class Ios extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime?: boolean; highlight: number, bubble: number[] }, { key: number }> {
     state = { key: performance.now() };
     componentDidMount() {
         this.props.box.on("textChanged", this.handleUpdate);
@@ -474,16 +504,16 @@ class Ios extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime
         return (
             <>
                 <div className="box-top box-h-ports">
-                    {withIndex.filter(value => value.edge === 'T').map(({position, index}) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} left={`${position * 100}%`} edge='top' port='h' />)}
+                    {withIndex.filter(value => value.edge === 'T').map(({ position, index }) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} bubble={this.props.bubble.includes(index)} left={`${position * 100}%`} edge='top' port='h' />)}
                 </div>
                 <div className="box-bottom box-h-ports">
-                    {withIndex.filter(value => value.edge === 'B').map(({position, index}) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} left={`${position * 100}%`} edge='bottom' port='h' />)}
+                    {withIndex.filter(value => value.edge === 'B').map(({ position, index }) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} bubble={this.props.bubble.includes(index)} left={`${position * 100}%`} edge='bottom' port='h' />)}
                 </div>
                 <div className="box-left box-v-ports">
-                    {withIndex.filter(value => value.edge === 'L').map(({position, index}) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} top={`${position * 100}%`} edge='left' port='v' />)}
+                    {withIndex.filter(value => value.edge === 'L').map(({ position, index }) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} bubble={this.props.bubble.includes(index)} top={`${position * 100}%`} edge='left' port='v' />)}
                 </div>
                 <div className="box-right box-v-ports">
-                    {withIndex.filter(value => value.edge === 'R').map(({position, index}) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} top={`${position * 100}%`} edge='right' port='v' />)}
+                    {withIndex.filter(value => value.edge === 'R').map(({ position, index }) => <Io {...this.props} index={index} key={index} highlight={index === this.props.highlight} bubble={this.props.bubble.includes(index)} top={`${position * 100}%`} edge='right' port='v' />)}
                 </div>
             </>
         );
@@ -511,7 +541,7 @@ class Ios extends React.PureComponent<{ editor: PatcherEditor; box: Box; runtime
 //         );
 //     }
 // }
-class Io extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean; left?: string; top?: string; edge: string; port: string; }, { isConnected: boolean; highlight: boolean }> {
+class Io extends React.PureComponent<{ bubble: boolean; editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean; left?: string; top?: string; edge: string; port: string; }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.ioLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {
@@ -564,13 +594,15 @@ class Io extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: n
         }[edge];
 
         const highlight = this.state.highlight || this.props.highlight;
+        const bubble = this.props.bubble;
+        console.log(`bubble: ${bubble} highlight: ${highlight}`);
         const forceHot = editor.props.mode === "gen" || editor.props.mode === "faust";
         let props = { isHot: false, type: "anything", description: "" };
         const meta = box.meta.ios;
         if (meta && meta.length) props = { ...props, ...(i >= meta.length ? (meta[meta.length - 1].varLength ? { ...meta[meta.length - 1], isHot: false } : {}) : meta[i]) };
-        const className = `box-${port}-port box-${edge}` + (props.isHot || forceHot ? ` box-${edge}-hot` : ` box-${edge}-cold`) + (this.state.isConnected ? ` box-${port}-port-connected` : "") + (highlight ? ` box-${port}-port-highlight` : "");
+        const className = `box-${port}-port box-${edge}` + (props.isHot || forceHot ? ` box-${edge}-hot` : ` box-${edge}-cold`) + (this.state.isConnected ? ` box-${port}-port-connected` : "") + (bubble || highlight ? ` box-${port}-port-highlight` : "");
         return (
-            <div style={{left, top}} className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
+            <div style={{ left, top }} className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
                 <Popup
                     trigger={<div style={{ pointerEvents: "none" }} />}
                     content={<>{props.description.length ? <span>{props.description}: </span> : undefined}<span style={{ color: "#30a0a0" }}>{props.type}</span></>}

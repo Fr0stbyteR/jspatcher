@@ -4,7 +4,7 @@ import FileEditor from "../file/FileEditor";
 import Box from "./Box";
 import Line from "./Line";
 import type { TRect, TResizeHandlerType } from "../types";
-import type { RawHardwarePatcher, THardwareBox, THardwareLine } from "./types";
+import type { BasePin, RawHardwarePatcher, THardwareBox, THardwareLine } from "./types";
 import type Patcher from "./Patcher";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type TempPatcherFile from "./TempHardwareFile";
@@ -35,9 +35,10 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "propsChanged": { props: Partial<TPublicPatcherProps>; oldProps: Partial<TPublicPatcherProps> };
     "highlightBox": string;
     "highlightPort": { boxId: string; isSrc: boolean; i: number } | null;
+    "bubblePorts": { boxId: string; i: number; pin: BasePin } | null;
 }
 
-export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineA" | "changeLineB" | "moved" | "resized" | "boxChanged" | "propsChanged"> {}
+export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineA" | "changeLineB" | "moved" | "resized" | "boxChanged" | "propsChanged"> { }
 
 export interface PatcherEditorState {
     locked: boolean;
@@ -463,7 +464,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         let parsed: RawHardwarePatcher;
         try {
             parsed = JSON.parse(s);
-        } catch (e) {} // eslint-disable-line no-empty
+        } catch (e) { } // eslint-disable-line no-empty
         await this.pasteToPatcher(parsed);
     }
     async duplicate() {
@@ -473,7 +474,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         let parsed: RawHardwarePatcher;
         try {
             parsed = JSON.parse(s);
-        } catch (e) {} // eslint-disable-line no-empty
+        } catch (e) { } // eslint-disable-line no-empty
         await this.pasteToPatcher(parsed);
     }
     async selectAll() {
@@ -681,8 +682,15 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     unhighlightPort() {
         this.emit("highlightPort", null);
     }
+    bubblePorts(boxId: string, portIndex: number, pin: BasePin) {
+        this.emit("bubblePorts", { boxId, i: portIndex, pin });
+    }
+    unBubblePorts() {
+        this.emit("bubblePorts", null);
+    }
     tempLine(findSrc: boolean, from: [string, number]) {
         this.emit("tempLine", { findSrc, from });
+        this.bubblePorts(from[0], from[1], this.boxes[from[0]].meta.ios[from[1]].pin);
         return this;
     }
     inspector(box?: Box) {
@@ -706,7 +714,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             if (found && this.boxes[found] && this.boxes[found].UI.dockable) this.emit("dockUI", found);
         }
     }
-    onUiResized() {}
+    onUiResized() { }
     async toTempData() {
         return this.instance.toSerializable();
     }

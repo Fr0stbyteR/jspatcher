@@ -8,13 +8,15 @@ export default class Gpio extends ImageObject<{}, {}, any[]> {
     static ios = [
         {
             isHot: true,
+            pin: { pinName: "", digitalOutput: true},
             type: "anything" as TMetaType,
-            description: "GPIO signal",
+            description: "GPIO output",
         },
         {
             isHot: true,
+            pin: { pinName: "", digitalOutput: true},
             type: "anything" as TMetaType,
-            description: "GPIO signal",
+            description: "GPIO output",
         }
     ];
 

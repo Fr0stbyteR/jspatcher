@@ -173,8 +173,8 @@ export default class LineUI extends React.PureComponent<P, S> {
     handleClick = (e: React.MouseEvent) => e.stopPropagation();
     render() {
         const className = "line" + (this.state.selected ? " selected" : "") + (this.state.dragging ? " dragging" : "");
-        const {left: startLeft, top: startTop} = this.state.aPos;
-        const {left: endLeft, top: endTop} = this.state.bPos;
+        const { left: startLeft, top: startTop } = this.state.aPos;
+        const { left: endLeft, top: endTop } = this.state.bPos;
 
         const startEdge = this.props.editor.boxes[this.line.getA()[0]].ios[this.line.getA()[1]].edge;
         const endEdge = this.props.editor.boxes[this.line.getB()[0]].ios[this.line.getB()[1]].edge;
@@ -188,30 +188,30 @@ export default class LineUI extends React.PureComponent<P, S> {
             height: Math.abs(startTop - endTop) + 20
         };
 
-        const dStart = {left: startLeft - divStyle.left, top: startTop - divStyle.top};
-        const dMid = {left: divStyle.width * 0.5, top: divStyle.height * 0.5};
-        const dEnd = {left: endLeft - divStyle.left, top: endTop - divStyle.top};
+        const dStart = { left: startLeft - divStyle.left, top: startTop - divStyle.top };
+        const dMid = { left: divStyle.width * 0.5, top: divStyle.height * 0.5 };
+        const dEnd = { left: endLeft - divStyle.left, top: endTop - divStyle.top };
 
         let dBezierStart;
         if (isVerticalStart) {
-            dBezierStart = {left: dStart.left, top: dStart.top + Math.max(5, (divStyle.height - 20) * 0.2)};
+            dBezierStart = { left: dStart.left, top: dStart.top + Math.max(5, (divStyle.height - 20) * 0.2) };
             if (dBezierStart.top > divStyle.height) dBezierStart.top = divStyle.height;
         } else {
-            dBezierStart = {left: dStart.left + Math.max(5, (divStyle.width - 20) * 0.2), top: dStart.top};
+            dBezierStart = { left: dStart.left + Math.max(5, (divStyle.width - 20) * 0.2), top: dStart.top };
             if (dBezierStart.left > divStyle.width) dBezierStart.left = divStyle.width;
         }
 
         let dBezierEnd;
         if (isVerticalEnd) {
-            dBezierEnd = {left: dEnd.left, top: dEnd.top - Math.max(5, (divStyle.height - 20) * 0.2)};
+            dBezierEnd = { left: dEnd.left, top: dEnd.top - Math.max(5, (divStyle.height - 20) * 0.2) };
             if (dBezierEnd.top < 0) dBezierEnd.top = 0;
         } else {
-            dBezierEnd = {left: dEnd.left - Math.max(5, (divStyle.width - 20) * 0.2), top: dEnd.top};
+            dBezierEnd = { left: dEnd.left - Math.max(5, (divStyle.width - 20) * 0.2), top: dEnd.top };
             if (dBezierEnd.left < 0) dBezierEnd.left = 0;
         }
 
         const d = `M ${dStart.left} ${dStart.top} Q ${dBezierStart.left} ${dBezierStart.top} ${dMid.left} ${dMid.top} Q ${dBezierEnd.left} ${dBezierEnd.top} ${dEnd.left} ${dEnd.top}`;
-        
+
         return (
             <div className={className} tabIndex={0} data-id={this.props.id} style={{ transform: `translate(${divStyle.left}px, ${divStyle.top}px)` }} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
@@ -300,6 +300,7 @@ export class TempLineUI extends React.PureComponent<{ editor: PatcherEditor }, {
             if (!this.dragged) return;
             if (nearest[0]) {
                 this.props.editor.unhighlightPort();
+                this.props.editor.unBubblePorts();
                 this.props.editor.createLine({ aIo: this.findSrc ? nearest : this.from, bIo: this.findSrc ? this.from : nearest });
             }
             if (!e.shiftKey) {
@@ -315,6 +316,7 @@ export class TempLineUI extends React.PureComponent<{ editor: PatcherEditor }, {
             if (e.key === "Escape") {
                 e.stopPropagation();
                 e.preventDefault();
+                this.props.editor.unBubblePorts();
                 this.setState({ show: false });
                 document.removeEventListener("mousemove", handleMouseMove);
                 document.removeEventListener("mouseup", handleMouseUp);
@@ -370,7 +372,7 @@ export class TempLineUI extends React.PureComponent<{ editor: PatcherEditor }, {
 
         const d = ["M", dStart[0], dStart[1], "Q", dBezierStart[0], dBezierStart[1], ",", dMid[0], dMid[1], "Q", dBezierEnd[0], dBezierEnd[1], ",", dEnd[0], dEnd[1]];
         const dJoined = d.join(" ");
-        console.log(dJoined);
+        // console.log(dJoined);
         return (
             <div className="line dragging" tabIndex={0} style={divStyle} ref={this.refDiv}>
                 <svg width={divStyle.width} height={divStyle.height}>

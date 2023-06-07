@@ -4,7 +4,7 @@ import type Patcher from "./Patcher";
 import HardwareLine from "./Line";
 import type { TRect, TPresentationRect } from "../types";
 import type { IoPosition, THardwareBox } from "./types";
-import type { Args, Data, IHardwarePatcherObject, HardwarePatcherObjectEventMap, ObjectUpdateOptions, Props, State } from "./objects/base/AbstractHardwareObject";
+import type { Args, Data, IHardwarePatcherObject, HardwarePatcherObjectEventMap, ObjectUpdateOptions, Props, State, IIosMeta } from "./objects/base/AbstractHardwareObject";
 
 export interface BoxEventMap extends Pick<HardwarePatcherObjectEventMap<any, any, any, any, any, any, any>, "metaUpdated" | "argsUpdated" | "propsUpdated" | "dataUpdated" | "stateUpdated"> {
     "rectChanged": HardwareBox;
@@ -32,6 +32,7 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     args: Args<T>;
     props: Props<T>;
     _editing: boolean;
+    static ios: IIosMeta;
     private _parsed: { class: string; args: Args<T>; props: Props<T> };
     private _object: T;
     private _Object: typeof IHardwarePatcherObject;
@@ -141,7 +142,7 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
             this._ioLines.push(...new Array(positions.length - linesSetLen).fill(null).map(() => new Set<HardwareLine>()));
         else if (positions.length < linesSetLen)
             this._ioLines.splice(positions.length);
-        this._ioLines.forEach(set => set.forEach(line => {line.uiUpdateA(); line.uiUpdateB();}));
+        this._ioLines.forEach(set => set.forEach(line => { line.uiUpdateA(); line.uiUpdateB(); }));
         this.emit("ioCountChanged", this);
     }
 
@@ -359,7 +360,7 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
         rect[2] = Math.max(15, rect[2]);
         rect[3] = Math.max(15, rect[3]);
         this.rect = rect;
-        this.ioLines.forEach(set => set.forEach(line => {line.uiUpdateA(); line.uiUpdateB();} ));
+        this.ioLines.forEach(set => set.forEach(line => { line.uiUpdateA(); line.uiUpdateB(); }));
 
         // this.inletLines.forEach(set => set.forEach(line => line.uiUpdateDest()));
         // this.outletLines.forEach(set => set.forEach(line => line.uiUpdateSrc()));
