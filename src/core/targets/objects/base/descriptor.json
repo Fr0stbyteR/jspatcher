@@ -1,9 +1,0 @@
-{
-    "isJSPatcherPackage": true,
-    "author": "Fr0stbyteR",
-    "version": "0.0.0",
-    "thumbnail": "",
-    "jspatpkg": "index.jspatpkg.js",
-    "jsdsppkg.main": "index.jsdsppkg.main.js",
-    "jsdsppkg.aw": "index.jsdsppkg.aw.js"
-}
