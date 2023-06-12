@@ -7,41 +7,53 @@ export function compatibleBus(pins: BasePin[]) {
 }
 
 export function compatibleDigital(pins: BasePin[]) {
-    // TODO -- this isn't completely correct, since GPIO pins can have
-    // input AND output, and the direction might be ambiguous
-    let num_outputs = pins.map(p => p.digitalOutput).filter(p => p).length;
+    let num_outputs = pins.filter(p => p.digitalOutput && !p.digitalInput).length;
 
     if (num_outputs > 1) {
         return false;
     }
 
-    let output_index = pins.findIndex(p => p.digitalOutput);
+    // now, for all outputs, every other pin must have an input
+    let outputs = pins.map((p, i) => ({ p, i })).filter(({ p }) => p.digitalOutput);
 
-    // If not all the rest of the pins are inputs, these cannot be compatible
-    if (!pins.filter((p, i) => i != output_index).every(p => p.digitalInput || p.tie)) {
-        return false;
-    }
+    let some_valid_config = false;
+    for (const output of outputs) {
+        const { p: pin, i: index } = output;
 
-    // otherwise, simple digital connections should be compatible
-    return true;
-}
-
-export function compatibleAnalog(pins: BasePin[]) {
-    let num_outputs = pins.map(p => p.analogOutput).filter(p => p).length;
-
-    if (num_outputs > 1) {
-        return false;
-    }
-
-    let output_index = pins.findIndex(p => p.analogOutput);
-
-    // If not all the rest of the pins are inputs, these cannot be compatible
-    if (!pins.filter((p, i) => i != output_index).every(p => p.analogInput || p.tie)) {
-        return false;
+        // In any configuration where an output is able to not conflict, there must be a compatibility
+        if (pins.filter((_, i) => i !== index).every(p => p.digitalOutput || p.tie)) {
+            some_valid_config = true;
+            break;
+        }
     }
 
     // otherwise, simple analog connections should be compatible
-    return true;
+    return some_valid_config;
+}
+
+export function compatibleAnalog(pins: BasePin[]) {
+    let num_outputs = pins.filter(p => p.analogOutput && !p.analogInput).length;
+
+    if (num_outputs > 1) {
+        return false;
+    }
+
+    // now, for all outputs, every other pin must have an input
+    let outputs = pins.map((p, i) => ({ p, i })).filter(({ p }) => p.analogOutput);
+
+    let some_valid_config = false;
+    for (const output of outputs) {
+        const { p: pin, i: index } = output;
+
+        // In any configuration where an output is able to not conflict, there must be a compatibility
+        if (pins.filter((_, i) => i !== index).every(p => p.analogInput || p.tie)) {
+            some_valid_config = true;
+            break;
+        }
+    }
+
+    // otherwise, simple analog connections should be compatible
+    return some_valid_config;
 }
 
 export function compatiblePins(pins: BasePin[]) {

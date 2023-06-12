@@ -99,7 +99,7 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
         let patcher: HardwarePatcher;
         let rawPatcher: RawHardwarePatcher;
         try {
-            const { item, newItem } = await this.getSharedItem(key, "patcher", async () => {
+            const { item, newItem } = await this.getSharedItem(key, "hardware", async () => {
                 // patcher = new this.Patcher({ env: this.patcher.env, project: this.patcher.project });
                 patcher = new HardwarePatcher({ env: this.patcher.env, project: this.patcher.project });
                 await patcher.load(this.data, this.type);
@@ -107,7 +107,7 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
                 return rawPatcher;
             });
             if (newItem) {
-                // patcher.file = item;
+                patcher.file = item;
                 this.setData(rawPatcher);
             } else {
                 await patcher?.destroy();

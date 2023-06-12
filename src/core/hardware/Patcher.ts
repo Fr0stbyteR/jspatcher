@@ -9,7 +9,7 @@ import BaseHardwareObjects from "./objects/base/BaseHardwareObjects";
 // import { toFaustDspCode } from "../patcher/FaustPatcherAnalyser";
 import type Env from "../Env";
 import type Project from "../Project";
-import type TempPatcherFile from "./TempHardwareFile";
+import type TempHardwareFile from "./TempHardwareFile";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
@@ -73,7 +73,7 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "highlightPort": { boxId: string; isSrc: boolean; i: number } | null;
 }
 
-export default class Patcher extends FileInstance<PatcherEventMap, PersistentProjectFile | TempPatcherFile> {
+export default class Patcher extends FileInstance<PatcherEventMap, PersistentProjectFile | TempHardwareFile> {
     static props: IPropsMeta<TPublicPatcherProps> = {
         dependencies: {
             type: "object",
@@ -101,7 +101,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             default: false
         }
     };
-    static async fromProjectItem(options: { file: PersistentProjectFile | TempPatcherFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<Patcher> {
+    static async fromProjectItem(options: { file: PersistentProjectFile | TempHardwareFile; env: IJSPatcherEnv; project?: IProject; instanceId?: string }): Promise<Patcher> {
         return new this(options).init();
     }
     async getEditor() {
@@ -114,7 +114,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     props: TPatcherProps;
     _state: TPatcherState;
     _history = new PatcherHistory();
-    constructor(options: { env: IJSPatcherEnv; project?: IProject; file?: PersistentProjectFile | TempPatcherFile; instanceId?: string; objectInit?: boolean }) {
+    constructor(options: { env: IJSPatcherEnv; project?: IProject; file?: PersistentProjectFile | TempHardwareFile; instanceId?: string; objectInit?: boolean }) {
         super(options);
         this._state = {
             name: "patcher",
@@ -215,7 +215,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             //         patcher = max2js(patcherIn as TMaxPatcher);
             //     }
             // } else if (mode === "js" || mode === "faust" || mode === "jsaw") {
-            if ("data" in patcherIn && "patcher" in patcherIn) {
+            if ("data" in patcherIn && "hardware" in patcherIn) {
                 patcher = patcherIn.patcher;
             } else {
                 patcher = patcherIn;

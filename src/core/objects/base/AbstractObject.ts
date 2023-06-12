@@ -248,10 +248,10 @@ export declare const IJSPatcherObject: {
      * is `BaseUI` by default
      */
     UI?: typeof AbstractUI;
-    new (box: Box, patcher: Patcher): IJSPatcherObject;
+    new(box: Box, patcher: Patcher): IJSPatcherObject;
 };
 
-export interface AnyJSPatcherObject extends IJSPatcherObject<Record<string, any>, Record<string, any>, any[], any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> {}
+export interface AnyJSPatcherObject extends IJSPatcherObject<Record<string, any>, Record<string, any>, any[], any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> { }
 
 export default abstract class AbstractObject<
     D extends {} = {},
@@ -414,7 +414,7 @@ export default abstract class AbstractObject<
         await this.emit("postInit");
     }
     /** Do everything here */
-    subscribe(): void {}
+    subscribe(): void { }
     updateUI(state: Partial<U>) {
         this.emit("updateUI", state);
     }
@@ -575,14 +575,14 @@ export default abstract class AbstractObject<
                                 item = fileMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
                                 off();
                                 onceCreate(item);
-                            } catch {}
+                            } catch { }
                         };
                         const handleTempMgrTreeChanged = () => {
                             try {
                                 item = tempMgr.getProjectItemFromPath(id) as SharedItemByType<T>;
                                 off();
                                 onceCreate(item);
-                            } catch {}
+                            } catch { }
                         };
                         fileMgr.on("treeChanged", handleFileMgrTreeChanged);
                         tempMgr.on("treeChanged", handleTempMgrTreeChanged);

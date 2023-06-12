@@ -1,11 +1,11 @@
 import TemporaryProjectFile from "../file/TemporaryProjectFile";
-import type { RawPatcher } from "../types";
+import type { RawHardwarePatcher } from "./types";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 
-export default class TempPatcherFile extends TemporaryProjectFile<RawPatcher> {
+export default class TempHardwareFile extends TemporaryProjectFile<RawHardwarePatcher> {
     get type() {
-        return "patcher" as const;
+        return "hardware" as const;
     }
     async instantiate({ env, project, instanceId }: { env: IJSPatcherEnv; project?: IProject; instanceId?: string }) {
         const Patcher = (await import("./Patcher")).default;

@@ -12,6 +12,7 @@ import type TempTextFile from "./text/TempTextFile";
 import type TempData from "./file/TempData";
 import type PersistentProjectFile from "./file/PersistentProjectFile";
 import type { ProjectProps } from "./Project";
+import { RawHardwarePatcher } from "./hardware/types";
 
 declare global {
     interface Window {
@@ -56,14 +57,14 @@ export type FileExtension = PatcherFileExtension | AudioFileExtension | TextFile
 
 export type TempItemType = "patcher" | "hardware" | "audio" | "text" | "unknown";
 
-export type SharedItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile | PersistentProjectFile : T extends "audio" ? TempAudioFile | PersistentProjectFile : T extends "text" ? TempTextFile | PersistentProjectFile : T extends "image" ? PersistentProjectFile : T extends "video" ? PersistentProjectFile : T extends "hardware" ? PersistentProjectFile : TempData;
+export type SharedItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile | PersistentProjectFile : T extends "audio" ? TempAudioFile | PersistentProjectFile : T extends "text" ? TempTextFile | PersistentProjectFile : T extends "image" ? PersistentProjectFile : T extends "video" ? PersistentProjectFile : T extends "hardware" ? TempHardwareFile | PersistentProjectFile : TempData;
 
 export type TempItemByType<T extends ProjectItemType> = T extends "patcher" ? TempPatcherFile : T extends "audio" ? TempAudioFile : T extends "text" ? TempTextFile : T extends "hardware" ? TempHardwareFile : TempData;
 
 export type ProjectItemType = "patcher" | "hardware" | "audio" | "text" | "image" | "video" | "folder" | "unknown";
 
 // TODO -- complete hardware type integration
-export type ProjectItemDataType<T extends ProjectItemType = any> = T extends "folder" ? RawProjectItems : T extends "patcher" ? RawPatcher : T extends "text" ? string : ArrayBuffer;
+export type ProjectItemDataType<T extends ProjectItemType = any> = T extends "folder" ? RawProjectItems : T extends "patcher" ? RawPatcher : T extends "hardware" ? RawHardwarePatcher : T extends "text" ? string : ArrayBuffer;
 
 export interface RawProjectItem<T extends ProjectItemType = any> {
     id: string;
@@ -189,7 +190,7 @@ export interface TBox {
 export type TRect = [number, number, number, number];
 export type TPresentationRect = [number | string, number | string, number | string, number | string];
 
-export type TResizeHandlerType = "n" |"ne" |"e" | "se" | "w" | "sw" | "s" | "nw";
+export type TResizeHandlerType = "n" | "ne" | "e" | "se" | "w" | "sw" | "s" | "nw";
 
 export interface TSharedData {
     [category: string]: {

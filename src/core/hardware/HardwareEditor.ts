@@ -12,6 +12,7 @@ import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { PatcherEventMap, TPublicPatcherProps } from "./Patcher";
 import HardwareLine from "./Line";
+import { compatiblePins } from "./Compatibility";
 
 export interface PatcherEditorEventMap extends PatcherEditorState {
     "create": RawHardwarePatcher;
@@ -638,29 +639,33 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         });
         lineSet.forEach(line => line.emit("posChanged", line));
     }
-    findNearestPort(findSrc: boolean, left: number, top: number, from: [string, number], to?: [string, number]) {
+    findNearestPort(left: number, top: number, from: [string, number], to?: [string, number]) {
         let nearest: [string, number] = [null, null];
         let minDistance = 100;
-        if (to) {
-            const currentPos = this.boxes[to[0]]["getIoPos"](to[1]);
+
+        if (to && this.getPortsCompatible(from[0], from[1], to[0], to[1])) {
+            const currentPos = this.boxes[to[0]].getIoPos(to[1]);
             const currentDistance = ((currentPos.left - left) ** 2 + (currentPos.top - top) ** 2) ** 0.5;
             if (currentDistance < 100) {
                 nearest = to;
                 minDistance = currentDistance;
             }
         }
+
         for (const id in this.boxes) {
             const box = this.boxes[id];
-            box["ioPositions"].forEach((pos, i) => {
-                const distance = ((pos.left - left) ** 2 + (pos.top - top) ** 2) ** 0.5;
-                if (distance < minDistance) {
-                    const potentialLine: THardwareLine = { aIo: from, bIo: [id, i] };
-                    const canCreate = this.instance.canCreateLine(potentialLine);
-                    if (!canCreate) return;
-                    nearest = [id, i];
-                    minDistance = distance;
-                }
-            });
+            box.ioPositions.map((pos, i) => ({ pos, i, compatible: this.getPortsCompatible(from[0], from[1], id, i) }))
+                .filter(({ compatible }) => compatible)
+                .forEach(({ pos, i }) => {
+                    const distance = ((pos.left - left) ** 2 + (pos.top - top) ** 2) ** 0.5;
+                    if (distance < minDistance) {
+                        const potentialLine: THardwareLine = { aIo: from, bIo: [id, i] };
+                        const canCreate = this.instance.canCreateLine(potentialLine);
+                        if (!canCreate) return;
+                        nearest = [id, i];
+                        minDistance = distance;
+                    }
+                });
         }
         return nearest;
     }
@@ -693,15 +698,28 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         let lines = this.getLinesByIo(boxId, io);
 
         let all_boxes = lines.flatMap(line => [line.aIo, line.bIo]);
-        let unique_boxes = Array.from(new Set(all_boxes));
+        let unique_boxes = Array.from(new Set([...all_boxes, [boxId, io] as [string, number]]));
 
         return unique_boxes.map(([id, io]) => this.boxes[id].meta.ios[io].pin);
     }
+    getPortsCompatible(aBox: string, aIo: number, bBox: string, bIo: number) {
+
+        if (aBox === bBox) {
+            return false;
+        }
+
+        let aPins = this.getConnectedPins(aBox, aIo);
+        let bPins = this.getConnectedPins(bBox, bIo);
+
+        return compatiblePins([...aPins, ...bPins]);
+    }
+    // TODO -- this is where the magic happens
     highlightNearestPort(findSrc: boolean, dragOffset: { x: number; y: number }, from: [string, number], to?: [string, number]) { // to = the port need to be reconnect
-        const origPos = to ? this.boxes[to[0]]["getIoPos"](to[1]) : this.boxes[from[0]]["getIoPos"](from[1]);
+        const origPos = to ? this.boxes[to[0]].getIoPos(to[1]) : this.boxes[from[0]].getIoPos(from[1]);
         const left = origPos.left + dragOffset.x;
         const top = origPos.top + dragOffset.y;
-        const [boxId, portIndex] = this.findNearestPort(findSrc, left, top, from, to);
+        const [boxId, portIndex] = this.findNearestPort(left, top, from, to);
+
         if (boxId) this.highlightPort(boxId, findSrc, portIndex);
         else this.unhighlightPort();
         return [boxId, portIndex] as [string, number];

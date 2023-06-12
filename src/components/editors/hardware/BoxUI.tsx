@@ -281,16 +281,13 @@ export default class BoxUI extends React.PureComponent<P, S> {
             this.setState({ bubblePorts: [] });
             return;
         }
-        const { boxId, i, pin } = bubblePorts;
 
+        const { boxId, i: otherIndex } = bubblePorts;
 
-
-        let other_pins = this.props.editor.getConnectedPins(this.box.id, i);
-        let compatible = this.box.ios.map((io, i) => {
-            const connected = this.props.editor.getConnectedPins(this.box.id, i);
-            return { index: i, compatible: compatiblePins([...other_pins, ...connected]) };
-        })
-            .filter(({ index, compatible }) => compatible && !(boxId === this.box.id && i === index))
+        const compatible = this.box.ios.map((io, i) =>
+            ({ index: i, compatible: this.props.editor.getPortsCompatible(boxId, otherIndex, this.box.id, i) })
+        )
+            .filter(({ compatible }) => compatible)
             .map(({ index }) => index);
 
         this.setState({ bubblePorts: compatible });
@@ -554,7 +551,6 @@ class Io extends React.PureComponent<{ bubble: boolean; editor: PatcherEditor; b
         if (io === this.props.index) this.setState({ isConnected: !last });
     };
     handleMouseDown = (e: React.MouseEvent) => {
-        console.log([this.props.box.id, this.props.index]);
         if (this.props.runtime) return;
         if (this.props.editor.state.locked) return;
         if (e.button !== 0) return;
@@ -590,7 +586,6 @@ class Io extends React.PureComponent<{ bubble: boolean; editor: PatcherEditor; b
 
         const highlight = this.state.highlight || this.props.highlight;
         const bubble = this.props.bubble;
-        console.log(`bubble: ${bubble} highlight: ${highlight}`);
         const forceHot = editor.props.mode === "gen" || editor.props.mode === "faust";
         let props = { isHot: false, type: "anything", description: "" };
         const meta = box.meta.ios;

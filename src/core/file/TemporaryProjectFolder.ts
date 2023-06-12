@@ -6,6 +6,7 @@ import AbstractProjectFolder, { IProjectFolder } from "./AbstractProjectFolder";
 import type TemporaryProjectFile from "./TemporaryProjectFile";
 import type { TempItemType } from "../types";
 import type TemporaryProjectItemManager from "./TemporaryProjectItemManager";
+import TempHardwareFile from "../hardware/TempHardwareFile";
 
 export default class TemporaryProjectFolder extends AbstractProjectFolder<TemporaryProjectItemManager> {
     async init() {
@@ -18,9 +19,14 @@ export default class TemporaryProjectFolder extends AbstractProjectFolder<Tempor
     }
     createProjectItem(name: string, isFolder: boolean, data?: any, typeIn?: TempItemType): TemporaryProjectFile {
         const type = typeIn || this.fileMgr.getTypeFromFileName(name);
-        if (type === "patcher") return new TempPatcherFile(this.fileMgr, this, name, data);
-        if (type === "audio") return new TempAudioFile(this.fileMgr, this, name, data);
-        if (type === "text") return new TempTextFile(this.fileMgr, this, name, data);
+        if (type === "patcher")
+            return new TempPatcherFile(this.fileMgr, this, name, data);
+        if (type === "audio")
+            return new TempAudioFile(this.fileMgr, this, name, data);
+        if (type === "text")
+            return new TempTextFile(this.fileMgr, this, name, data);
+        if (type === "hardware")
+            return new TempHardwareFile(this.fileMgr, this, name, data);
         return new TempData(this.fileMgr, this, name, data);
     }
     async addFile(name: string, data?: any, typeIn?: TempItemType) {
