@@ -108,7 +108,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const editor = new PatcherEditor(this);
         return editor.init();
     }
-    lib: { [key: string]: typeof IHardwarePatcherObject } = {...BaseHardwareObjects, ...SomObjects, ...HardwareObjects};
+    lib: { [key: string]: typeof IHardwarePatcherObject } = { ...BaseHardwareObjects, ...SomObjects, ...HardwareObjects };
     lines: Record<string, Line> = {};
     boxes: Record<string, Box> = {};
     props: TPatcherProps;
@@ -215,11 +215,11 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             //         patcher = max2js(patcherIn as TMaxPatcher);
             //     }
             // } else if (mode === "js" || mode === "faust" || mode === "jsaw") {
-                if ("data" in patcherIn && "patcher" in patcherIn) {
-                    patcher = patcherIn.patcher;
-                } else {
-                    patcher = patcherIn;
-                }
+            if ("data" in patcherIn && "patcher" in patcherIn) {
+                patcher = patcherIn.patcher;
+            } else {
+                patcher = patcherIn;
+            }
             // }
             if (patcher.props) this.props = { ...this.props, ...patcher.props, mode };
             if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
@@ -543,6 +543,39 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         bIds.forEach(idOut => bIds.forEach(idIn => (idIn === idOut ? result.push(idIn) : undefined)));
         return result;
     }
+    // getLinesByIo(boxId: string, io: number) {
+    //     const box = this.boxes[boxId];
+    //     if (!box || io > box.ios.length) {
+    //         return [];
+    //     }
+
+    //     const lines = [];
+
+    //     if (box.text.startsWith("tie")) {
+    //         for (let key in this.lines) {
+    //             let line = this.lines[key];
+    //             if (line.aId === boxId || line.bId === boxId) {
+    //                 lines.push(line);
+    //             }
+    //         }
+    //     } else {
+    //         for (let key in this.lines) {
+    //             let line = this.lines[key];
+    //             if ((line.aId === boxId && line.aIo[1] === io) || (line.bId === boxId && line.bIo[1] === io)) {
+    //                 lines.push(line);
+    //             }
+    //         }
+    //     }
+    //     return lines;
+    // }
+    // getConnectedPins(boxId: string, io: number) {
+    //     let lines = this.getLinesByIo(boxId, io);
+
+    //     let all_boxes = lines.flatMap(line => [line.aIo, line.bIo]);
+    //     let unique_boxes = Array.from(new Set(all_boxes));
+
+    //     return unique_boxes.map(([id, io]) => this.boxes[id].meta.ios[io].pin);
+    // }
     fn(data: any, inlet: number) {
         // this.emit("dataInput", { data, inlet });
     }

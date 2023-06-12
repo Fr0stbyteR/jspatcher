@@ -18,7 +18,7 @@ export function compatibleDigital(pins: BasePin[]) {
     let output_index = pins.findIndex(p => p.digitalOutput);
 
     // If not all the rest of the pins are inputs, these cannot be compatible
-    if (!pins.filter((p, i) => i != output_index).every(p => p.digitalInput)) {
+    if (!pins.filter((p, i) => i != output_index).every(p => p.digitalInput || p.tie)) {
         return false;
     }
 
@@ -36,7 +36,7 @@ export function compatibleAnalog(pins: BasePin[]) {
     let output_index = pins.findIndex(p => p.analogOutput);
 
     // If not all the rest of the pins are inputs, these cannot be compatible
-    if (!pins.filter((p, i) => i != output_index).every(p => p.analogInput)) {
+    if (!pins.filter((p, i) => i != output_index).every(p => p.analogInput || p.tie)) {
         return false;
     }
 

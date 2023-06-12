@@ -664,6 +664,39 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         return nearest;
     }
+    getLinesByIo(boxId: string, io: number) {
+        const box = this.boxes[boxId];
+        if (!box || io > box.ios.length) {
+            return [];
+        }
+
+        const lines = [];
+
+        if (box.text.startsWith("tie")) {
+            for (let key in this.lines) {
+                let line = this.lines[key];
+                if (line.aId === boxId || line.bId === boxId) {
+                    lines.push(line);
+                }
+            }
+        } else {
+            for (let key in this.lines) {
+                let line = this.lines[key];
+                if ((line.aId === boxId && line.aIo[1] === io) || (line.bId === boxId && line.bIo[1] === io)) {
+                    lines.push(line);
+                }
+            }
+        }
+        return lines;
+    }
+    getConnectedPins(boxId: string, io: number) {
+        let lines = this.getLinesByIo(boxId, io);
+
+        let all_boxes = lines.flatMap(line => [line.aIo, line.bIo]);
+        let unique_boxes = Array.from(new Set(all_boxes));
+
+        return unique_boxes.map(([id, io]) => this.boxes[id].meta.ios[io].pin);
+    }
     highlightNearestPort(findSrc: boolean, dragOffset: { x: number; y: number }, from: [string, number], to?: [string, number]) { // to = the port need to be reconnect
         const origPos = to ? this.boxes[to[0]]["getIoPos"](to[1]) : this.boxes[from[0]]["getIoPos"](from[1]);
         const left = origPos.left + dragOffset.x;

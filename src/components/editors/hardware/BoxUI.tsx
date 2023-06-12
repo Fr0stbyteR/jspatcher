@@ -283,22 +283,17 @@ export default class BoxUI extends React.PureComponent<P, S> {
         }
         const { boxId, i, pin } = bubblePorts;
 
-        console.log("trying bubble!");
-        // console.log(JSON.stringify(bubblePorts));
 
-        let our_ios = this.box.meta.ios
-            .map((io, i) => {
 
-                console.log(`a: ${JSON.stringify(io.pin)} b: ${JSON.stringify(pin)} c: ${compatiblePins([io.pin, pin])}`);
-
-                return ({ index: i, compatible: compatiblePins([io.pin, pin]) });
-            })
+        let other_pins = this.props.editor.getConnectedPins(this.box.id, i);
+        let compatible = this.box.ios.map((io, i) => {
+            const connected = this.props.editor.getConnectedPins(this.box.id, i);
+            return { index: i, compatible: compatiblePins([...other_pins, ...connected]) };
+        })
             .filter(({ index, compatible }) => compatible && !(boxId === this.box.id && i === index))
             .map(({ index }) => index);
 
-        console.log(`our_ios: ${JSON.stringify(our_ios)}`);
-
-        this.setState({ bubblePorts: our_ios });
+        this.setState({ bubblePorts: compatible });
 
     };
     handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
