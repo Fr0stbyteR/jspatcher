@@ -6,7 +6,7 @@ import type { TRect, TPresentationRect } from "../types";
 import type { IoPosition, THardwareBox } from "./types";
 import type { Args, Data, IHardwarePatcherObject, HardwarePatcherObjectEventMap, ObjectUpdateOptions, Props, State, IIosMeta } from "./objects/base/AbstractHardwareObject";
 
-export interface BoxEventMap extends Pick<HardwarePatcherObjectEventMap<any, any, any, any, any, any, any>, "metaUpdated" | "argsUpdated" | "propsUpdated" | "dataUpdated" | "stateUpdated"> {
+export interface BoxEventMap extends Pick<HardwarePatcherObjectEventMap<any, any, any, any, any, any, any, any, any>, "metaUpdated" | "argsUpdated" | "propsUpdated" | "dataUpdated" | "stateUpdated"> {
     "rectChanged": HardwareBox;
     "presentationRectChanged": HardwareBox;
     "backgroundChanged": HardwareBox;

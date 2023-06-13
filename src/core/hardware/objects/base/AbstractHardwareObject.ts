@@ -8,20 +8,22 @@ import type { ProjectItemType, TempItemByType, SharedItemByType, TempItemType, T
 import type AbstractUI from "./AbstractHardwareUI";
 import type { IJSPatcherEnv } from "../../../Env";
 import { BasePin, IoPosition } from "../../types";
+// import { TMetaType } from "../../../objects/base/AbstractObject";
+import { IInletsMeta, IOutletsMeta } from "../../../objects/base/AbstractObject";
 
 export const isJSPatcherObjectConstructor = (x: any): x is typeof AbstractObject => typeof x === "function" && x?.isJSPatcherObjectConstructor;
 
 export const isJSPatcherObject = (x: any): x is AbstractObject => typeof x === "object" && x?.isJSPatcherObject;
 
-export type TMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "function" | "bang" | "color" | "enum";
+export type THardwareMetaType = "anything" | "signal" | "object" | "number" | "boolean" | "string" | "function" | "bang" | "color" | "enum";
 export interface IIoMeta {
-    type: TMetaType;
+    type: THardwareMetaType;
     pin: BasePin;
     description: string;
 }
 export type IIosMeta = IIoMeta[];
 export interface IArgMeta {
-    type: TMetaType;
+    type: THardwareMetaType;
     enums?: string[];
     optional: boolean;
     default?: any;
@@ -30,7 +32,7 @@ export interface IArgMeta {
 }
 export type IArgsMeta = IArgMeta[];
 export interface IPropMeta<T extends any = any> {
-    type: TMetaType;
+    type: THardwareMetaType;
     enums?: T[];
     default: T;
     group?: string;
@@ -46,8 +48,8 @@ export interface IHardwarePatcherObjectMeta<P extends Record<string, any> = Reco
     ios: IIosMeta;
     args: IArgsMeta;
     props: IPropsMeta<P>;
-    // isPatcherInlet: "data" | "audio" | "parameter" | false;
-    // isPatcherOutlet: "data" | "audio" | false;
+    patcherInlets: IInletsMeta;
+    patcherOutlets: IOutletsMeta;
 }
 
 export interface ObjectUpdateOptions {
@@ -56,15 +58,17 @@ export interface ObjectUpdateOptions {
     undoable?: boolean;
 }
 
-export type Data<T> = T extends IHardwarePatcherObject<infer D, any, any, any, any, any, any> ? D : never;
-export type State<T> = T extends IHardwarePatcherObject<any, infer S, any, any, any, any, any> ? S : never;
-export type Ios<T> = T extends IHardwarePatcherObject<any, any, infer IO, any, any, any> ? IO : never;
-export type Args<T> = T extends IHardwarePatcherObject<any, any, any, infer A, any, any, any> ? A : never;
-export type Props<T> = T extends IHardwarePatcherObject<any, any, any, any, infer P, any, any> ? P : never;
-export type UIState<T> = T extends IHardwarePatcherObject<any, any, any, any, any, infer U, any> ? U : never;
-export type EventMap<T> = T extends IHardwarePatcherObject<any, any, any, any, any, any, infer E> ? E : never;
+export type Data<T> = T extends IHardwarePatcherObject<infer D, any, any, any, any, any, any, any, any> ? D : never;
+export type State<T> = T extends IHardwarePatcherObject<any, infer S, any, any, any, any, any, any, any> ? S : never;
+export type Ios<T> = T extends IHardwarePatcherObject<any, any, infer IO, any, any, any, any, any> ? IO : never;
+export type PatcherInlets<T> = T extends IHardwarePatcherObject<any, any, any, infer I, any, any, any, any, any> ? I : never;
+export type PatcherOutlets<T> = T extends IHardwarePatcherObject<any, any, any, any, any, infer O, any, any, any> ? O : never;
+export type Args<T> = T extends IHardwarePatcherObject<any, any, any, any, any, infer A, any, any, any> ? A : never;
+export type Props<T> = T extends IHardwarePatcherObject<any, any, any, any, any, any, infer P, any, any> ? P : never;
+export type UIState<T> = T extends IHardwarePatcherObject<any, any, any, any, any, any, any, infer U, any> ? U : never;
+export type EventMap<T> = T extends IHardwarePatcherObject<any, any, any, any, any, any, any, any, infer E> ? E : never;
 export type TIoEvent<IO extends any[] = any[], $ extends keyof Pick<IO, number> = keyof Pick<IO, number>> = { io: $; data: IO[$] };
-export type HardwarePatcherObjectEventMap<D, S, IO extends any[], A extends any[], P, U, E> = {
+export type HardwarePatcherObjectEventMap<D, S, IO extends any[], I extends any[], O extends any[], A extends any[], P, U, E> = {
     /** Emitted before any connection */
     "preInit": never;
     /** Emitted after connections */
@@ -107,6 +111,8 @@ export type HardwarePatcherObjectEventMap<D, S, IO extends any[], A extends any[
  * @template D serializable, type of `data` property, use `setData` to update. Data will be stored with the box in the serialized patcher. Will mark the patcher `dirty`.
  * @template S serializable, type of `state` property, use `setState` to update. State is temporary to the object instance. Can be updated from the host.
  * @template IO type of I/O as an array.
+ * @template I type of patcher inlets as an array.
+ * @template O type of patcher outlets as an array.
  * @template A serializable, type of args as an array.
  * @template P serializable, type of props as a map.
  * @template U type of UI state as a map, the UI will listen to any update of this map. If the object can be running on another thread, this should be serializable.
@@ -116,11 +122,13 @@ export interface IHardwarePatcherObject<
     D extends {} = {},
     S extends {} = {},
     IO extends any[] = any[],
+    I extends any[] = any[],
+    O extends any[] = any[],
     A extends any[] = any[],
     P extends {} = {},
     U extends {} = {},
-    E extends Partial<HardwarePatcherObjectEventMap<D, S, IO, A, P, U, {}>> & Record<string, any> = {}
-> extends TypedEventEmitter<HardwarePatcherObjectEventMap<D, S, IO, A, P, U, E>> {
+    E extends Partial<HardwarePatcherObjectEventMap<D, S, IO, I, O, A, P, U, {}>> & Record<string, any> = {}
+> extends TypedEventEmitter<HardwarePatcherObjectEventMap<D, S, IO, I, O, A, P, U, E>> {
     /** Should be true */
     readonly isHardwarePatcherObject: true;
     /** Unique identifier of the object */
@@ -213,6 +221,8 @@ export declare const IHardwarePatcherObject: {
     ios: IIosMeta;
     args: IArgsMeta;
     props: IPropsMeta;
+    patcherInlets: IInletsMeta;
+    patcherOutlets: IOutletsMeta;
     // isPatcherInlet: "data" | "audio" | false;
     // isPatcherOutlet: "data" | "audio" | false;
     readonly meta: IHardwarePatcherObjectMeta;
@@ -224,17 +234,19 @@ export declare const IHardwarePatcherObject: {
     new(box: Box, patcher: Patcher): IHardwarePatcherObject;
 };
 
-export interface AnyJSPatcherObject extends IHardwarePatcherObject<Record<string, any>, Record<string, any>, any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> { }
+export interface AnyJSPatcherObject extends IHardwarePatcherObject<Record<string, any>, Record<string, any>, any[], any[], any[], any[], Record<string, any>, Record<string, any>, Record<string, any>> { }
 
 export default abstract class AbstractObject<
     D extends {} = {},
     S extends {} = {},
     IO extends any[] = any[],
+    I extends any[] = any[],
+    O extends any[] = any[],
     A extends any[] = any[],
     P extends {} = {},
     U extends {} = {},
-    E extends Partial<HardwarePatcherObjectEventMap<D, S, IO, A, P, U, {}>> & Record<string, any> = {}
-> extends TypedEventEmitter<HardwarePatcherObjectEventMap<D, S, IO, A, P, U, E>> implements IHardwarePatcherObject<D, S, IO, A, P, U, E> {
+    E extends Partial<HardwarePatcherObjectEventMap<D, S, IO, I, O, A, P, U, {}>> & Record<string, any> = {}
+> extends TypedEventEmitter<HardwarePatcherObjectEventMap<D, S, IO, I, O, A, P, U, E>> implements IHardwarePatcherObject<D, S, IO, I, O, A, P, U, E> {
     static readonly isHardwarePatcherObjectConstructor = true as const;
     static package = "Base";
     static get _name() {
@@ -247,8 +259,8 @@ export default abstract class AbstractObject<
     static ios: IIosMeta = [];
     static args: IArgsMeta = [];
     static props: IPropsMeta = {};
-    static isPatcherInlet: "data" | "audio" | false = false;
-    static isPatcherOutlet: "data" | "audio" | false = false;
+    static patcherInlets: IInletsMeta = [];
+    static patcherOutlets: IOutletsMeta = [];
     static get meta(): IHardwarePatcherObjectMeta {
         return {
             name: this._name,
@@ -258,6 +270,8 @@ export default abstract class AbstractObject<
             ios: this.ios,
             args: this.args,
             props: this.props,
+            patcherInlets: this.patcherInlets,
+            patcherOutlets: this.patcherOutlets,
         };
     }
     static UI: typeof AbstractUI;

@@ -1,11 +1,12 @@
 import DefaultObject from "../base/DefaultObject";
 import HardwarePatcherUI, { HardwarePatcherUIState } from "./HardwareUI";
 import type { ProjectFileEventMap } from "../../file/AbstractProjectFile";
-import HardwarePatcher from "../../hardware/Patcher";
+import HardwarePatcher, { IHardwarePatcherMeta } from "../../hardware/Patcher";
 import type { PatcherEventMap } from "../../patcher/Patcher";
 import type { PatcherMode } from "../../types";
 import type { RawHardwarePatcher } from "../../hardware/types";
-import type { IArgsMeta, IJSPatcherObjectMeta } from "../base/AbstractObject";
+import type { IArgsMeta, IJSPatcherObjectMeta, IOutletsMeta } from "../base/AbstractObject";
+import { IHardwarePatcherObjectMeta } from "../../hardware/objects/base/AbstractHardwareObject";
 
 export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>, {}, any[], any[], [string, ...number[]], {}, HardwarePatcherUIState> {
     static package = "Hardware";
@@ -16,6 +17,7 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
         default: "",
         description: "The hardware sub-patcher name"
     }];
+    static outlets: IOutletsMeta = [];
     static UI = HardwarePatcherUI;
     _ = { patcher: undefined as HardwarePatcher, key: this.box.args[0] };
     type: PatcherMode = "js";
@@ -24,10 +26,15 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
     handlePatcherDisconnectAudioOutlet = (port: number) => this.disconnectAudioOutlet(port);
     handlePatcherConnectAudioInlet = (port: number) => this.connectAudioInlet(port);
     handlePatcherConnectAudioOutlet = (port: number) => this.connectAudioOutlet(port);
-    handlePatcherIOChanged = (meta: IJSPatcherObjectMeta) => {
-        this.inlets = meta.inlets.length;
-        this.outlets = meta.outlets.length;
-        const { inlets, outlets } = meta;
+    handlePatcherIOChanged = (meta: IHardwarePatcherMeta) => {
+        this.inlets = meta.patcherInlets.size;
+        this.outlets = meta.patcherOutlets.size;
+        const { patcherInlets, patcherOutlets } = meta;
+
+        // for now, we won't worry about matching old inlets/outlets to new ones.
+        const inlets = Array.from(patcherInlets.values());
+        const outlets = Array.from(patcherOutlets.values());
+
         this.setMeta({ ...this.meta, inlets, outlets, args: Hardware.args });
     };
     handlePatcherGraphChanged = () => {
@@ -57,7 +64,7 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
             // patcher.on("disconnectAudioOutlet", this.handlePatcherDisconnectAudioOutlet);
             // patcher.on("connectAudioInlet", this.handlePatcherConnectAudioInlet);
             // patcher.on("connectAudioOutlet", this.handlePatcherConnectAudioOutlet);
-            // patcher.on("ioChanged", this.handlePatcherIOChanged);
+            patcher.on("ioChanged", this.handlePatcherIOChanged);
             patcher.on("graphChanged", this.handlePatcherGraphChanged);
             patcher.on("changed", this.handlePatcherChanged);
             const { file } = patcher;
@@ -77,7 +84,7 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
             // patcher.off("disconnectAudioOutlet", this.handlePatcherDisconnectAudioOutlet);
             // patcher.off("connectAudioInlet", this.handlePatcherConnectAudioInlet);
             // patcher.off("connectAudioOutlet", this.handlePatcherConnectAudioOutlet);
-            // patcher.off("ioChanged", this.handlePatcherIOChanged);
+            patcher.off("ioChanged", this.handlePatcherIOChanged);
             patcher.off("graphChanged", this.handlePatcherGraphChanged);
             patcher.off("changed", this.handlePatcherChanged);
             const { file } = patcher;
@@ -119,7 +126,7 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
         } catch (error) {
             this.error(error);
         } finally {
-            // this.handlePatcherIOChanged(this._.patcher.meta);
+            this.handlePatcherIOChanged(this._.patcher.meta);
             this.subscribePatcher();
             this.handlePatcherGraphChanged();
             // this.connectAudio();
@@ -127,6 +134,10 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
     };
     subscribe() {
         super.subscribe();
+        this.on("preInit", () => {
+            this.inlets = 0;
+            this.outlets = 0;
+        })
         this.on("updateArgs", async (args) => {
             if (!this._.patcher) return;
             if (typeof args[0] === "string" || typeof args[0] === "undefined") {
@@ -136,9 +147,26 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
                     await this.reload();
                 }
             }
+
+            // if (typeof args[1] === 'number') {
+            //     this.info(`here! ${args[1]}`);
+            //     // lets copy a basic inlet to the number specified
+            //     this.meta.outlets = Array.from({ length: args[1] }, () => {
+            //         return {
+            //             type: 'anything',
+            //             description: 'heyo~'
+            //         }
+            //     });
+            //     this.outlets = args[1];
+            //     this.patcher.emit("ioChanged", this.meta);
+            // }
         });
-        this.on("postInit", this.reload);
-        this.on("inlet", ({ data, inlet }) => this._.patcher.fn(data, inlet));
+        this.on("postInit", () => {
+            this.reload();
+        });
+        this.on("inlet", ({ data, inlet }) => {
+            this._.patcher.fn(data, inlet);
+        });
         this.on("destroy", this.unsubscribePatcher);
     }
 }

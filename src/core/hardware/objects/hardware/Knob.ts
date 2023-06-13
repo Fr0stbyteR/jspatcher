@@ -1,16 +1,22 @@
-import type { TMetaType } from "../base/AbstractHardwareObject";
+import { IInletsMeta, IOutletsMeta, TMetaType } from "../../../objects/base/AbstractObject";
+import type { IIosMeta, THardwareMetaType } from "../base/AbstractHardwareObject";
 import ImageObject from "../base/ImageObject";
 
-export default class Knob extends ImageObject<{}, {}, any[]> {
+export default class Knob extends ImageObject<{}, {}, any[], [], any[]> {
     static author = "Corvus Prudens";
     static version = "v1.0.0";
     static description = "Daisy Seed SOM";
-    static ios = [
+    static ios: IIosMeta = [
         {
-            isHot: true,
-            pin: { pinName: "", analogOutput: true},
-            type: "anything" as TMetaType,
+            pin: { pinName: "", analogOutput: true },
+            type: "anything",
             description: "knob signal",
+        }
+    ];
+    static patcherOutlets: IOutletsMeta = [
+        {
+            type: "number",
+            description: "Knob voltage"
         }
     ];
 

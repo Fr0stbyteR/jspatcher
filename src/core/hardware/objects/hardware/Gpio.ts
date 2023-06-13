@@ -1,22 +1,29 @@
-import type { TMetaType } from "../base/AbstractHardwareObject";
+import { IInletsMeta } from "../../../objects/base/AbstractObject";
+import type { IIosMeta, THardwareMetaType } from "../base/AbstractHardwareObject";
 import ImageObject from "../base/ImageObject";
 
-export default class Gpio extends ImageObject<{}, {}, any[]> {
+export default class Gpio extends ImageObject<{}, {}, any[], any[], []> {
     static author = "Corvus Prudens";
     static version = "v1.0.0";
     static description = "Daisy Seed SOM";
-    static ios = [
+    static ios: IIosMeta = [
         {
-            isHot: true,
-            pin: { pinName: "", digitalOutput: true},
-            type: "anything" as TMetaType,
+            pin: { pinName: "", digitalOutput: true },
+            type: "anything",
             description: "GPIO output",
         },
         {
-            isHot: true,
-            pin: { pinName: "", digitalOutput: true},
-            type: "anything" as TMetaType,
+            pin: { pinName: "", digitalOutput: true },
+            type: "anything",
             description: "GPIO output",
+        }
+    ];
+
+    static patcherInlets: IInletsMeta = [
+        {
+            isHot: false,
+            type: "number",
+            description: "GPIO input"
         }
     ];
 

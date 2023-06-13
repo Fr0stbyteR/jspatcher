@@ -13,7 +13,7 @@ import type TempHardwareFile from "./TempHardwareFile";
 import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
-import type { IHardwarePatcherObjectMeta, IPropsMeta, IHardwarePatcherObject, TMetaType } from "./objects/base/AbstractHardwareObject";
+import type { IHardwarePatcherObjectMeta, IPropsMeta, IHardwarePatcherObject, THardwareMetaType, IPropMeta, IArgsMeta } from "./objects/base/AbstractHardwareObject";
 import type { PatcherMode, TErrorLevel, TFlatPackage, TPackage, ILogInfo, TDependencies } from "../types";
 import type { RawHardwarePatcher } from "./types";
 import type { THardwareBox, THardwareLine } from "./types";
@@ -21,6 +21,8 @@ import type PatcherNode from "../worklets/PatcherNode";
 import type PatcherProcessor from "../worklets/Patcher.worklet";
 import SomObjects from "./objects/soms/SomObjects";
 import HardwareObjects from "./objects/hardware/HardwareObjects";
+import { IInletMeta, IOutletMeta } from "../objects/base/AbstractObject";
+import { SemanticICONS } from "semantic-ui-react";
 
 export interface TPatcherProps {
     mode: PatcherMode;
@@ -61,7 +63,7 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "passiveDeleteLine": Line;
     "graphChanged": never;
     "changed": never;
-    "ioChanged": IHardwarePatcherObjectMeta;
+    "ioChanged": IHardwarePatcherMeta;
     // "dataInput": TInletEvent<any[]>;
     // "dataOutput": TOutletEvent<any[]>;
     "audioInput": { input: number; buffer: Float32Array };
@@ -71,6 +73,17 @@ export interface PatcherEventMap extends TPublicPatcherProps {
     "libChanged": { pkg: TPackage; lib: TFlatPackage };
     "highlightBox": string;
     "highlightPort": { boxId: string; isSrc: boolean; i: number } | null;
+}
+
+export interface IHardwarePatcherMeta<P extends Record<string, any> = Record<string, any>> {
+    name: string;
+    icon: SemanticICONS;
+    version: string;
+    description: string;
+    args: IArgsMeta;
+    props: IPropMeta<P>;
+    patcherInlets: Map<[string, number], IInletMeta>;
+    patcherOutlets: Map<[string, number], IOutletMeta>;
 }
 
 export default class Patcher extends FileInstance<PatcherEventMap, PersistentProjectFile | TempHardwareFile> {
@@ -594,32 +607,45 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     changeIO() {
         this.emit("ioChanged", this.meta);
     }
-    get meta(): IHardwarePatcherObjectMeta {
+    get meta(): IHardwarePatcherMeta {
         const { metaFromPatcher } = this;
         return {
             name: this.props.name || "",
             icon: null,
             version: this.props.version || "",
             description: this.props.description || "",
-            // isPatcherInlet: false,
-            // isPatcherOutlet: false,
             ...metaFromPatcher
         };
     }
-    get metaFromPatcher(): Pick<IHardwarePatcherObjectMeta, "ios" | "args" | "props"> {
-        const ios: IHardwarePatcherObjectMeta["ios"] = [];
-        // const inlets: IHardwarePatcherObjectMeta["inlets"] = [];
-        // const outlets: IHardwarePatcherObjectMeta["outlets"] = [];
+    get metaFromPatcher(): Pick<IHardwarePatcherMeta, "args" | "props" | "patcherInlets" | "patcherOutlets"> {
+        // const ios: IHardwarePatcherObjectMeta["ios"] = [];
+        const inlets: Map<[string, number], IInletMeta> = new Map();
+        const outlets: Map<[string, number], IOutletMeta> = new Map();
         for (const boxId in this.boxes) {
-            const box = this.boxes[boxId] as Box<IHardwarePatcherObject<any, any, any[], any[], { description: string; type: TMetaType }>>;
-            const port = Math.max(1, ~~box.args[0]) - 1;
-            const description = box.props.description || "";
+            // const box = this.boxes[boxId] as Box<IHardwarePatcherObject<any, any, any[], any[], { description: string; type: THardwareMetaType }>>;
+            const box = this.boxes[boxId];
+            // const port = Math.max(1, ~~box.args[0]) - 1;
+            // const description = box.props.description || "";
 
-            ios[port] = {
-                isHot: false,
-                type: "signal",
-                description,
-            };
+            // ios[port] = {
+            //     isHot: false,
+            //     type: "signal",
+            //     description,
+            // };
+
+            if (box.meta.patcherInlets) {
+                for (const [index, inlet] of box.meta.patcherInlets.entries()) {
+                    inlets.set([boxId, index], inlet);
+                }
+            }
+
+            if (box.meta.patcherOutlets) {
+                for (const [index, outlet] of box.meta.patcherOutlets.entries()) {
+                    outlets.set([boxId, index], outlet);
+                }
+            }
+
+
 
             // if (box.meta.isPatcherInlet === "data" && !inlets[port]) {
             //     inlets[port] = {
@@ -645,7 +671,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             //     };
             // }
         }
-        return { ios, args: [], props: {} };
+        console.log(`inlets: ${JSON.stringify(inlets)}, outlets: ${JSON.stringify(outlets)}`);
+        return { args: [], props: {}, patcherInlets: inlets, patcherOutlets: outlets };
     }
     log(message: string) {
         this.newLog("none", "Patcher", message, this);

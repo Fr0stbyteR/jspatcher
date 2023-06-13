@@ -13,16 +13,18 @@ export interface DefaultObjectUIProps {
     fontWeight: "normal" | "bold" | "lighter" | "bolder" | number;
     textAlign: "center" | "left" | "right";
 }
-export interface DefaultObjectProps extends DefaultObjectUIProps, BaseObjectProps {}
+export interface DefaultObjectProps extends DefaultObjectUIProps, BaseObjectProps { }
 export default class DefaultObject<
     D extends {} = {},
     S extends {} = {},
     IO extends any[] = any[],
+    I extends any[] = any[],
+    O extends any[] = any[],
     A extends any[] = any[],
     P extends Partial<DefaultObjectProps> & Record<string, any> = {},
     U extends Partial<DefaultUIState> & Record<string, any> = {},
     E extends {} = {}
-> extends BaseObject<D, S, IO, A, P & DefaultObjectProps, U & DefaultUIState, E> {
+> extends BaseObject<D, S, IO, I, O, A, P & DefaultObjectProps, U & DefaultUIState, E> {
     static props: IPropsMeta = {
         bgColor: {
             type: "color",

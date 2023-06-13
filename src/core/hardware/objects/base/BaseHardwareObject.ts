@@ -8,16 +8,18 @@ export interface BaseObjectAdditionalProps {
     rect: TRect;
     presentationRect: TRect;
 }
-export interface BaseObjectProps extends BaseObjectAdditionalProps, BaseUIState {}
+export interface BaseObjectProps extends BaseObjectAdditionalProps, BaseUIState { }
 export default class BaseObject<
     D extends {} = {},
     S extends {} = {},
     IO extends any[] = any[],
+    I extends any[] = any[],
+    O extends any[] = any[],
     A extends any[] = any[],
     P extends Partial<BaseObjectProps> & Record<string, any> = {},
     U extends Partial<BaseUIState> & Record<string, any> = {},
     E extends {} = {}
-> extends AbstractObject<D, S, IO, A, P & BaseObjectProps, U & BaseUIState, E> {
+> extends AbstractObject<D, S, IO, I, O, A, P & BaseObjectProps, U & BaseUIState, E> {
     static package = "base";
     static props: IPropsMeta = {
         hidden: {
@@ -78,8 +80,8 @@ export default class BaseObject<
                 ...superProps,
                 ...thisProps
             },
-            // isPatcherInlet: this.isPatcherInlet,
-            // isPatcherOutlet: this.isPatcherOutlet
+            patcherInlets: [...this.patcherInlets],
+            patcherOutlets: [...this.patcherOutlets],
         };
     }
     isUIStateKey = (x: any) => this.meta.props[x] && this.meta.props[x].isUIState;

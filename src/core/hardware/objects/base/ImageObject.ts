@@ -20,11 +20,11 @@ export interface ImgProps {
     opacity: number;
 }
 
-async function getImageDimensions(url: string): Promise<{width: number, height: number}> {
+async function getImageDimensions(url: string): Promise<{ width: number, height: number }> {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => {
-            resolve({width: img.width, height: img.height});
+            resolve({ width: img.width, height: img.height });
         };
         img.onerror = () => {
             reject(new Error(`Could not load image at ${url}`));
@@ -37,11 +37,13 @@ export default class ImageObject<
     D extends {} = {},
     S extends {} = {},
     IO extends any[] = any[],
+    I extends any[] = any[],
+    O extends any[] = any[],
     A extends [HTMLImageElement] & any[] = [HTMLImageElement],
     P extends ImgProps & {} = ImgProps,
     U extends ImgUIState & any = ImgUIState,
     E extends {} = {}
-> extends UIObject<D, S, IO, A, P, U, E> {
+> extends UIObject<D, S, IO, I, O, A, P, U, E> {
 
     static description = "Display an image";
     // static inlets: IIosMeta = [{
@@ -130,10 +132,11 @@ export default class ImageObject<
         // });
         this.on("postInit", async () => {
             await reload();
-            console.log(this._.url);
+            // console.log(this._.url);
             const { width, height } = await getImageDimensions(this._.url);
             this.box.setHeight(height * this._.scale || 100);
             this.box.setWidth(width * this._.scale || 100);
+            this.patcher.changeIO();
         });
         // this.on("updateArgs", (args) => {
         //     if (typeof args[0] === "string") {
@@ -156,6 +159,6 @@ export default class ImageObject<
         //         }
         //     }
         // });
-        this.on("destroy", unsubscribeItem);
+        this.on("destroy", () => { unsubscribeItem(); this.patcher.changeIO(); });
     }
 }

@@ -1,5 +1,6 @@
+import { IInletsMeta, IOutletsMeta } from "../../../objects/base/AbstractObject";
 import { BasePin } from "../../types";
-import type { TMetaType } from "../base/AbstractHardwareObject";
+import type { IIosMeta, THardwareMetaType } from "../base/AbstractHardwareObject";
 import ImageObject from "../base/ImageObject";
 
 
@@ -325,17 +326,41 @@ const DaisyPins = [
     null,
 ]
 
-export class DaisySeed extends ImageObject<{}, {}, any[]> {
+export class DaisySeed extends ImageObject<{}, {}, any[], any[], any[]> {
     static author = "Corvus Prudens";
     static version = "v1.0.0";
     static description = "Daisy Seed SOM";
-    static ios = [
+    static ios: IIosMeta = [
         ...DaisyPins.filter(pin => pin != null).map(pin => ({
-            type: "anything" as TMetaType,
+            type: "anything",
             description: `Pin ${pin.pinName}`,
             pin
         }))
     ];
+
+    static patcherInlets: IInletsMeta = [
+        {
+            isHot: true,
+            type: "signal",
+            description: "Audio out left"
+        },
+        {
+            isHot: true,
+            type: "signal",
+            description: "Audio out right"
+        }
+    ];
+
+    static patcherOutlets: IOutletsMeta = [
+        {
+            type: "signal",
+            description: "Audio in left"
+        },
+        {
+            type: "signal",
+            description: "Audio in right"
+        }
+    ]
 
     subscribe() {
         super.subscribe();
@@ -372,5 +397,7 @@ export class DaisySeed extends ImageObject<{}, {}, any[]> {
             this._.key = "https://cdn.discordapp.com/attachments/1049762470694223903/1111025669544095806/Daisy_Seed_illustrated_top.png";
             this._.scale = 0.28;
         });
+
+        this.on("postInit", () => this.patcher.changeIO);
     }
 }
