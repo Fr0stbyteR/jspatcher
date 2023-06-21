@@ -23,15 +23,18 @@ export default async () => ({
     hardware: Hardware,
     patcher: SubPatcher,
     p: SubPatcher,
-    pdsp: DspSubPatcher,
-    faustPatcher: FaustPatcher,
-    pfaust: FaustPatcher,
-    gen: GenPatcher,
-    bpatcher: BPatcher,
-    "buffer~": Buffer,
-    "record~": Record,
-    "plugin~": Plugin,
-    share,
-    serial: Serial,
-    websocket: WS
+
+    // // TODO -- these two should be reincorporated when supported
+    // "buffer~": Buffer,
+    // "record~": Record,
+
+    // pdsp: DspSubPatcher,
+    // faustPatcher: FaustPatcher,
+    // pfaust: FaustPatcher,
+    // gen: GenPatcher,
+    // bpatcher: BPatcher,
+    // "plugin~": Plugin,
+    // share,
+    // serial: Serial,
+    // websocket: WS
 });

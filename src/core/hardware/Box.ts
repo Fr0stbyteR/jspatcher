@@ -459,7 +459,8 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     }
     toString() {
         const { id, text, ios, rect, background, presentation, presentationRect, args, props, data, zIndex } = this;
-        return JSON.stringify({ id, text, ios, rect, background, presentation, presentationRect, args, props, data, zIndex });
+        const pin_names = this.meta.ios.map(io => io.pin.pinName);
+        return JSON.stringify({ id, text, pin_names, rect, background, presentation, presentationRect, args, props, data, zIndex });
     }
     toSerializable(): THardwareBox {
         return JSON.parse(this.toString());

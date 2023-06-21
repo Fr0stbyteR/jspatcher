@@ -23,7 +23,10 @@ export default class PatcherBottomMenu extends React.PureComponent<P, S> {
     };
     handleKeyDown = (e: KeyboardEvent) => {
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        if (ctrlKey && e.key === "e") this.handleClickLock();
+        if (ctrlKey && e.key === "e") {
+            e.preventDefault();
+            this.handleClickLock();
+        };
     };
     handleReady = () => {
         this.setState({

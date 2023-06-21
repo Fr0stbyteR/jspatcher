@@ -15,9 +15,9 @@ export default async () => ({
     BaseObject,
     EmptyObject,
     InvalidObject,
-    func: Func,
+    // func: Func,
     new: New,
-    listen: Listen,
+    // listen: Listen,
     comment,
     ...await getIO()
 });

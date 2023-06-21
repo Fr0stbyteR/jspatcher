@@ -42,7 +42,14 @@ class ObjectsItems extends React.PureComponent<{ editor: PatcherEditor; pkg: TPa
             const props = sel ? { className: "abstract selected", description: this.getDescription(path) } : { className: "abstract" };
             list.push(<List.Item key={"__JSPatcher_ImporterDirSelfObject"} {...props} icon="window maximize" header={pathIn[pathIn.length - 1]} onClick={() => this.handleSelect(path)} onMouseDown={(e: React.MouseEvent) => this.handleMouseDown(e, path)} />);
         }
-        for (const key in pkg) {
+
+        let sorted_keys = Object.keys(pkg).sort();
+        for (const key of sorted_keys) {
+
+            if (['BaseObject', 'EmptyObject', 'InvalidObject', 'new'].includes(key)) {
+                continue;
+            }
+
             const path = [...pathIn, key];
             const sel = selected.length === path.length && selected.every((e, i) => e === path[i]);
             if (typeof pkg[key] === "object") {

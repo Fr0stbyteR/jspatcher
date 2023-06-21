@@ -172,6 +172,7 @@ export default abstract class History<EventMap extends Record<string, any> & Par
         }
         const unmerge = this.changes.splice($change);
         await this.unmergeChanges(...unmerge);
+
         for (const change of sortedChanges) {
             const { nextHistoryIndex: $, prevHistoryIndex: $prev, eventData } = change;
             if (eventData) {
