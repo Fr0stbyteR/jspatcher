@@ -32,7 +32,7 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "highlightPort": { boxId: string; isSrc: boolean; i: number } | null;
 }
 
-export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized" | "boxChanged" | "propsChanged"> {}
+export interface PatcherHistoryEventMap extends Pick<PatcherEditorEventMap, "create" | "delete" | "changeBoxText" | "changeLineSrc" | "changeLineDest" | "moved" | "resized" | "boxChanged" | "propsChanged"> { }
 
 export interface PatcherEditorState {
     locked: boolean;
@@ -156,7 +156,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         const type = file.type;
         const ext = file.fileExtension;
         if (type === "patcher") {
-            const extMap: Record<string, string> = this.props.mode === "js"
+            const extMap: Record<string, string> = this.props.mode === "bell"
                 ? { json: "p", jspat: "p", maxpat: "max", gendsp: "gen", dsppat: "pfaust" }
                 : this.props.mode === "faust"
                     ? { gendsp: "gen", dsppat: "p" }
@@ -455,7 +455,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         let parsed: RawPatcher | TMaxClipboard;
         try {
             parsed = JSON.parse(s);
-        } catch (e) {} // eslint-disable-line no-empty
+        } catch (e) { } // eslint-disable-line no-empty
         await this.pasteToPatcher(parsed);
     }
     async duplicate() {
@@ -465,7 +465,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         let parsed: RawPatcher | TMaxClipboard;
         try {
             parsed = JSON.parse(s);
-        } catch (e) {} // eslint-disable-line no-empty
+        } catch (e) { } // eslint-disable-line no-empty
         await this.pasteToPatcher(parsed);
     }
     async selectAll() {
@@ -699,7 +699,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             if (found && this.boxes[found] && this.boxes[found].UI.dockable) this.emit("dockUI", found);
         }
     }
-    onUiResized() {}
+    onUiResized() { }
     async toTempData() {
         return this.instance.toSerializable();
     }

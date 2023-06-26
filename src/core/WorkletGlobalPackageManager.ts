@@ -8,7 +8,7 @@ import type WorkletEnvProcessor from "./worklets/WorkletEnv.worklet";
 import type { IExternalPackage, PackageGetter } from "./GlobalPackageManager";
 
 export default class WorkletGlobalPackageManager {
-    js: TPackage;
+    bell: TPackage;
     jsaw: TPackage;
     faust: TPackage;
     max: TPackage;

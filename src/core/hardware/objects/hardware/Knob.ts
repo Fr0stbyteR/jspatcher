@@ -8,7 +8,7 @@ export default class Knob extends ImageObject<{}, {}, any[], [], any[]> {
     static description = "Daisy Seed SOM";
     static ios: IIosMeta = [
         {
-            pin: { pinName: "", analogOutput: true },
+            pin: { pinName: "signal", analogOutput: true },
             type: "anything",
             description: "knob signal",
         }

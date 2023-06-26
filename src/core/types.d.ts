@@ -39,11 +39,11 @@ export type TypedArray = Int8Array | Uint8Array | Uint8ClampedArray | Int16Array
 
 export type PrefixKeys<I, P extends string> = { [K in keyof I & string as `${P}${Capitalize<K>}`]: I[K] };
 
-export type PatcherMode = "max" | "gen" | "faust" | "js" | "jsaw";
+export type PatcherMode = "max" | "gen" | "faust" | "bell" | "jsaw";
 
-export type PatcherFileExtension = "jspat" | "maxpat" | "gendsp" | "dsppat";
+export type PatcherFileExtension = "bell" | "maxpat" | "gendsp" | "dsppat";
 
-export type HardwareFileExtension = "json";
+export type HardwareFileExtension = "daisy";
 
 export type AudioFileExtension = "wav" | "aif" | "aiff" | "mp3" | "aac" | "flac" | "ogg" | "m4a";
 

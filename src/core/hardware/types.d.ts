@@ -35,6 +35,8 @@ export interface RawHardwarePatcher {
     props?: TPublicPatcherProps & Pick<TPatcherProps, "mode">;
 }
 
+export type PatcherMode = "daisy";
+
 /**
  * This interface represents the base structure that all pins should extend.
  * It models and provides information about the pin's capabilities in a visual patching environment.

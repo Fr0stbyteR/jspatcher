@@ -161,8 +161,10 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         // Lines that should be removed will destroy themselves when enable()
         lines.forEach(line => line.enable());
         const linesSetLength = this._outletLines.length;
-        if (count > linesSetLength) this._outletLines.push(...new Array(count - linesSetLength).fill(null).map(() => new Set<Line>()));
-        else if (count < linesSetLength) this._outletLines.splice(count);
+        if (count > linesSetLength)
+            this._outletLines.push(...new Array(count - linesSetLength).fill(null).map(() => new Set<Line>()));
+        else if (count < linesSetLength)
+            this._outletLines.splice(count);
         this._outletLines.forEach(set => set.forEach(line => line.uiUpdateSrc()));
         this.emit("ioCountChanged", this);
     }
@@ -409,8 +411,8 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
     }
     async destroy() {
         this.allLines.forEach(line => this._patcher.deleteLine(line.id));
-        await this._object?.destroy();
         delete this._patcher.boxes[this.id];
+        await this._object?.destroy();
         return this;
     }
     static parseObjText(strIn: string) {

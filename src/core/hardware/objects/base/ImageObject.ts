@@ -90,7 +90,7 @@ export default class ImageObject<
         const handleFilePathChanged = () => {
             this._.key = this._.file?.projectPath;
         };
-        const subsribeItem = async () => {
+        const subscribeItem = async () => {
             const { image, file } = this._;
             if (image) await image.addObserver(this);
             if (file) {
@@ -124,7 +124,7 @@ export default class ImageObject<
             } finally {
                 this._.url = url;
                 this.updateUI({ url });
-                await subsribeItem();
+                await subscribeItem();
             }
         };
         // this.on("preInit", () => {

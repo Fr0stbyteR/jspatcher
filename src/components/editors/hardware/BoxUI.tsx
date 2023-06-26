@@ -586,11 +586,11 @@ class Io extends React.PureComponent<{ bubble: boolean; editor: PatcherEditor; b
 
         const highlight = this.state.highlight || this.props.highlight;
         const bubble = this.props.bubble;
-        const forceHot = editor.props.mode === "gen" || editor.props.mode === "faust";
+        // const forceHot = editor.props.mode === "gen" || editor.props.mode === "faust";
         let props = { isHot: false, type: "anything", description: "" };
         const meta = box.meta.ios;
-        if (meta && meta.length) props = { ...props, ...(i >= meta.length ? (meta[meta.length - 1].varLength ? { ...meta[meta.length - 1], isHot: false } : {}) : meta[i]) };
-        const className = `box-${port}-port box-${edge}` + (props.isHot || forceHot ? ` box-${edge}-hot` : ` box-${edge}-cold`) + (this.state.isConnected ? ` box-${port}-port-connected` : "") + (bubble || highlight ? ` box-${port}-port-highlight` : "");
+        if (meta && meta.length) props = { ...props, ...(i >= meta.length ? ({}) : meta[i]) };
+        const className = `box-${port}-port box-${edge}` + (props.isHot ? ` box-${edge}-hot` : ` box-${edge}-cold`) + (this.state.isConnected ? ` box-${port}-port-connected` : "") + (bubble || highlight ? ` box-${port}-port-highlight` : "");
         return (
             <div style={{ left, top }} className={className} onMouseDown={this.handleMouseDown} onMouseEnter={this.handleMouseEnter} onMouseMove={this.handleMouseMove} onMouseLeave={this.handleMouseLeave}>
                 <Popup

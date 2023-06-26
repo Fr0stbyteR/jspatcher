@@ -53,7 +53,7 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
         }
     }
     get isConnectableByAudio() {
-        if (this._patcher.props.mode !== "js") return false;
+        if (this._patcher.props.mode !== "bell") return false;
         return Line.isConnectableByAudio(this.srcBox.object, this.srcOutlet, this.destBox.object, this.destInlet);
     }
     get presentation() {

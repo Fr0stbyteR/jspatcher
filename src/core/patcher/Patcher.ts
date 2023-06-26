@@ -127,7 +127,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.lines = {};
         this.boxes = {};
         this.props = {
-            mode: "js",
+            mode: "bell",
             dependencies: Patcher.props.dependencies.default.slice(),
             bgColor: Patcher.props.bgColor.default,
             editingBgColor: Patcher.props.editingBgColor.default,
@@ -155,7 +155,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     get fileExtension() {
         return {
-            js: "jspat",
+            bell: "bell",
             max: "maxpat",
             gen: "gendsp",
             faust: "dsppat",
@@ -183,8 +183,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             const patcherIn = await new Response(data).json();
             const splitName = fileName.split(".");
             const ext = splitName.pop();
-            const extMap: Record<string, PatcherMode> = { json: "js", jspat: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
-            return this.load(patcherIn, extMap[ext] || "js");
+            const extMap: Record<string, PatcherMode> = { bell: "bell", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+            return this.load(patcherIn, extMap[ext] || "bell");
         }
         return this.load(data || {});
     }
@@ -211,7 +211,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                 } else {
                     patcher = max2js(patcherIn as TMaxPatcher);
                 }
-            } else if (mode === "js" || mode === "faust" || mode === "jsaw") {
+            } else if (mode === "bell" || mode === "faust" || mode === "jsaw") {
                 if ("data" in patcherIn && "patcher" in patcherIn) {
                     patcher = patcherIn.patcher;
                 } else {
@@ -221,7 +221,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             if (patcher.props) this.props = { ...this.props, ...patcher.props, mode };
             if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
             if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
-            if (mode === "js" && this.props.dependencies) {
+            if (mode === "bell" && this.props.dependencies) {
                 const { dependencies } = this.props;
                 if (!Array.isArray(dependencies)) {
                     this.props.dependencies = [];
@@ -296,7 +296,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const splitName = file.name.split(".");
         const ext = splitName.pop();
         const name = splitName.join(".");
-        const extMap: Record<string, PatcherMode> = { json: "js", jspat: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+        const extMap: Record<string, PatcherMode> = { bell: "bell", maxpat: "max", gendsp: "gen", dsppat: "faust" };
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
@@ -326,7 +326,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.lines = {};
         this.boxes = {};
         this.props = {
-            mode: "js",
+            mode: "bell",
             dependencies: Patcher.props.dependencies.default.slice(),
             bgColor: Patcher.props.bgColor.default,
             editingBgColor: Patcher.props.editingBgColor.default,

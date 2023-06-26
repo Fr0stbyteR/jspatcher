@@ -411,8 +411,8 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     }
     async destroy() {
         this.allLines.forEach(line => this._patcher.deleteLine(line.id));
-        await this._object?.destroy();
         delete this._patcher.boxes[this.id];
+        await this._object?.destroy();
         return this;
     }
     static parseObjText(strIn: string) {
@@ -459,8 +459,8 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     }
     toString() {
         const { id, text, ios, rect, background, presentation, presentationRect, args, props, data, zIndex } = this;
-        const pin_names = this.meta.ios.map(io => io.pin.pinName);
-        return JSON.stringify({ id, text, pin_names, rect, background, presentation, presentationRect, args, props, data, zIndex });
+        const pinNames = this.meta.ios.map(io => io.pin.pinName);
+        return JSON.stringify({ id, text, pinNames, rect, background, presentation, presentationRect, args, props, data, zIndex });
     }
     toSerializable(): THardwareBox {
         return JSON.parse(this.toString());

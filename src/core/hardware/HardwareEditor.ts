@@ -163,7 +163,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         const type = file.type;
         const ext = file.fileExtension;
         if (type === "patcher") {
-            const extMap: Record<string, string> = this.props.mode === "js"
+            const extMap: Record<string, string> = this.props.mode === "daisy"
                 ? { json: "p", jspat: "p", maxpat: "max", gendsp: "gen", dsppat: "pfaust" }
                 : this.props.mode === "faust"
                     ? { gendsp: "gen", dsppat: "p" }
@@ -434,7 +434,13 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     }
     async delete(objects: RawHardwarePatcher) {
         const deleted: RawHardwarePatcher = { boxes: {}, lines: {} };
+
+        console.log(`deleted objects: ${objects}`);
+        console.log(this.instance);
+        console.log(Object.keys(this.lines));
+
         for (const id in objects.lines) {
+            console.log(`id: ${id}`);
             deleted.lines[id] = this.lines[id].destroy().toSerializable();
         }
         const promises: Promise<Box>[] = [];

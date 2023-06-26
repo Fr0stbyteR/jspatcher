@@ -14,15 +14,25 @@ import type PersistentProjectFile from "../file/PersistentProjectFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { IHardwarePatcherObjectMeta, IPropsMeta, IHardwarePatcherObject, THardwareMetaType, IPropMeta, IArgsMeta } from "./objects/base/AbstractHardwareObject";
-import type { PatcherMode, TErrorLevel, TFlatPackage, TPackage, ILogInfo, TDependencies } from "../types";
+import type { TErrorLevel, TFlatPackage, TPackage, ILogInfo, TDependencies } from "../types";
 import type { RawHardwarePatcher } from "./types";
-import type { THardwareBox, THardwareLine } from "./types";
+import type { THardwareBox, THardwareLine, PatcherMode } from "./types";
 import type PatcherNode from "../worklets/PatcherNode";
 import type PatcherProcessor from "../worklets/Patcher.worklet";
 import SomObjects from "./objects/soms/SomObjects";
 import HardwareObjects from "./objects/hardware/HardwareObjects";
 import { IInletMeta, IOutletMeta } from "../objects/base/AbstractObject";
 import { SemanticICONS } from "semantic-ui-react";
+
+export type THardwareSubpatcherInlet = {
+    boxId: string;
+    inlet: number;
+}
+
+export type THardwareSubpatcherOutlet = {
+    boxId: string;
+    outlet: number;
+}
 
 export interface TPatcherProps {
     mode: PatcherMode;
@@ -39,6 +49,8 @@ export interface TPatcherProps {
     description?: string;
     openInPresentation: boolean;
     objectInit: boolean;
+    // inlets: THardwareSubpatcherInlet[],
+    // outlets: THardwareSubpatcherOutlet[],
 }
 export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid" | "openInPresentation">;
 
@@ -140,7 +152,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.lines = {};
         this.boxes = {};
         this.props = {
-            mode: "js",
+            mode: "daisy",
             dependencies: Patcher.props.dependencies.default.slice(),
             bgColor: Patcher.props.bgColor.default,
             editingBgColor: Patcher.props.editingBgColor.default,
@@ -148,7 +160,9 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             openInPresentation: Patcher.props.openInPresentation.default,
             boxIndexCount: 0,
             lineIndexCount: 0,
-            objectInit: typeof options.objectInit === "boolean" ? options.objectInit : true
+            objectInit: typeof options.objectInit === "boolean" ? options.objectInit : true,
+            // inlets: [],
+            // outlets: []
         };
     }
     get state() {
@@ -171,11 +185,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     }
     get fileExtension() {
         return {
-            js: "jspat",
-            max: "maxpat",
-            gen: "gendsp",
-            faust: "dsppat",
-            jsaw: "jsdsp"
+            daisy: "daisy"
         }[this.props.mode];
     }
     get fileName() {
@@ -199,8 +209,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             const patcherIn = await new Response(data).json();
             const splitName = fileName.split(".");
             const ext = splitName.pop();
-            const extMap: Record<string, PatcherMode> = { json: "js", jspat: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
-            return this.load(patcherIn, extMap[ext] || "js");
+            const extMap: Record<string, PatcherMode> = { daisy: "daisy" };
+            return this.load(patcherIn, extMap[ext] || "daisy");
         }
         return this.load(data || {});
     }
@@ -237,7 +247,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             if (patcher.props) this.props = { ...this.props, ...patcher.props, mode };
             if (Array.isArray(this.props.bgColor)) this.props.bgColor = `rgba(${this.props.bgColor.join(", ")})`;
             if (Array.isArray(this.props.editingBgColor)) this.props.editingBgColor = `rgba(${this.props.editingBgColor.join(", ")})`;
-            if (mode === "js" && this.props.dependencies) {
+            if (mode === "daisy" && this.props.dependencies) {
                 const { dependencies } = this.props;
                 if (!Array.isArray(dependencies)) {
                     this.props.dependencies = [];
@@ -312,7 +322,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const splitName = file.name.split(".");
         const ext = splitName.pop();
         const name = splitName.join(".");
-        const extMap: Record<string, PatcherMode> = { json: "js", jspat: "js", maxpat: "max", gendsp: "gen", dsppat: "faust" };
+        const extMap: Record<string, PatcherMode> = { daisy: "daisy" };
         if (!extMap[ext]) return this;
         const reader = new FileReader();
         reader.onload = () => {
@@ -342,7 +352,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.lines = {};
         this.boxes = {};
         this.props = {
-            mode: "js",
+            mode: "daisy",
             dependencies: Patcher.props.dependencies.default.slice(),
             bgColor: Patcher.props.bgColor.default,
             editingBgColor: Patcher.props.editingBgColor.default,
@@ -350,7 +360,9 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             openInPresentation: Patcher.props.openInPresentation.default,
             boxIndexCount: 0,
             lineIndexCount: 0,
-            objectInit: true
+            objectInit: true,
+            // inlets: [],
+            // outlets: [],
         };
         this._state.selected = [];
     }
@@ -381,6 +393,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         this.boxes[box.id] = box;
         await box.init();
         this.emitGraphChanged();
+        this.changeIO();
         return box;
     }
     getObjectConstructor(parsed: { class: string; args: any[]; props: Record<string, any> }) {
@@ -407,6 +420,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         if (!box) return null;
         await box.destroy();
         this.emitGraphChanged();
+        this.changeIO();
         return box;
     }
     createLine(lineIn: THardwareLine) {
@@ -618,20 +632,11 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         };
     }
     get metaFromPatcher(): Pick<IHardwarePatcherMeta, "args" | "props" | "patcherInlets" | "patcherOutlets"> {
-        // const ios: IHardwarePatcherObjectMeta["ios"] = [];
         const inlets: Map<[string, number], IInletMeta> = new Map();
         const outlets: Map<[string, number], IOutletMeta> = new Map();
         for (const boxId in this.boxes) {
-            // const box = this.boxes[boxId] as Box<IHardwarePatcherObject<any, any, any[], any[], { description: string; type: THardwareMetaType }>>;
-            const box = this.boxes[boxId];
-            // const port = Math.max(1, ~~box.args[0]) - 1;
-            // const description = box.props.description || "";
 
-            // ios[port] = {
-            //     isHot: false,
-            //     type: "signal",
-            //     description,
-            // };
+            const box = this.boxes[boxId];
 
             if (box.meta.patcherInlets) {
                 for (const [index, inlet] of box.meta.patcherInlets.entries()) {
@@ -644,34 +649,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                     outlets.set([boxId, index], outlet);
                 }
             }
-
-
-
-            // if (box.meta.isPatcherInlet === "data" && !inlets[port]) {
-            //     inlets[port] = {
-            //         isHot: true,
-            //         type: box.props.type || "anything",
-            //         description
-            //     };
-            // } else if (box.meta.isPatcherInlet === "audio") {
-            //     inlets[port] = {
-            //         isHot: true,
-            //         type: "signal",
-            //         description
-            //     };
-            // } else if (box.meta.isPatcherOutlet === "data" && !outlets[port]) {
-            //     outlets[port] = {
-            //         type: box.props.type || "anything",
-            //         description
-            //     };
-            // } else if (box.meta.isPatcherOutlet === "audio") {
-            //     outlets[port] = {
-            //         type: "signal",
-            //         description
-            //     };
-            // }
         }
-        console.log(`inlets: ${JSON.stringify(inlets)}, outlets: ${JSON.stringify(outlets)}`);
+        console.log(`inlets: ${JSON.stringify(Array.from(inlets.entries()))}, outlets: ${JSON.stringify(Array.from(outlets.entries()))}`);
         return { args: [], props: {}, patcherInlets: inlets, patcherOutlets: outlets };
     }
     log(message: string) {
@@ -703,24 +682,21 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
         const { dependencies, bgColor, editingBgColor, grid, openInPresentation } = this.props;
         return { dependencies, bgColor, editingBgColor, grid, openInPresentation } as TPublicPatcherProps;
     }
-    // toFaustDspCode() {
-    //     const code = toFaustDspCode(this);
-    //     return code;
-    // }
     toString(spacing?: number) {
-        // if (this.props.mode === "max" || this.props.mode === "gen") {
-        //     return JSON.stringify(js2max(this), undefined, spacing);
-        // }
-        const { props } = this;
+        const { props, meta } = this;
         const boxes: RawHardwarePatcher["boxes"] = {};
         const lines: RawHardwarePatcher["lines"] = {};
+
+        const inlets = Array.from(meta.patcherInlets.entries()).map(([key, _]) => key);
+        const outlets = Array.from(meta.patcherOutlets.entries()).map(([key, _]) => key);
+
         for (const id in this.boxes) {
             boxes[id] = this.boxes[id].toSerializable();
         }
         for (const id in this.lines) {
             lines[id] = this.lines[id].toSerializable();
         }
-        return JSON.stringify({ boxes, lines, props }, undefined, spacing);
+        return JSON.stringify({ boxes, lines, props, inlets, outlets }, undefined, spacing);
     }
     toSerializable(): RawHardwarePatcher {
         return JSON.parse(this.toString());

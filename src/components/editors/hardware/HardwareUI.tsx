@@ -216,13 +216,13 @@ export default class HardwareUI extends React.PureComponent<P, S> {
             let text = "";
             const { presentation } = patcher.state;
             const { mode } = patcher.props;
-            if (mode === "js" && e.key === "f") text = 'ui.number @format "Decimal (Floating-Point)"';
-            else if (mode === "js" && e.key === "m") text = "message";
+            if (mode === "daisy" && e.key === "f") text = 'ui.number @format "Decimal (Floating-Point)"';
+            else if (mode === "daisy" && e.key === "m") text = "message";
             else if (e.key === "c") text = "comment";
-            else if (mode === "js" && e.key === "b") text = "live.button";
-            else if (mode === "js" && e.key === "i") text = "ui.number";
-            else if (mode === "js" && e.key === "s") text = "ui.slider";
-            else if (mode === "js" && e.key === "t") text = "live.toggle";
+            else if (mode === "daisy" && e.key === "b") text = "live.button";
+            else if (mode === "daisy" && e.key === "i") text = "ui.number";
+            else if (mode === "daisy" && e.key === "s") text = "ui.slider";
+            else if (mode === "daisy" && e.key === "t") text = "live.toggle";
             this.props.editor.createBox({ text, ios: [], rect: [x, y, 0, 0], presentation, _editing: true });
         }
     };
@@ -259,7 +259,7 @@ export default class HardwareUI extends React.PureComponent<P, S> {
                 width: Math.abs(selectionRect[2] - selectionRect[0]),
                 height: Math.abs(selectionRect[3] - selectionRect[1])
             } as React.CSSProperties;
-            selectionDiv = <div className="selection" style={selectionDivStyle}/>;
+            selectionDiv = <div className="selection" style={selectionDivStyle} />;
         }
         const classArray = ["hardware-patcher"];
         classArray.push(this.state.locked ? "locked" : "unlocked");
@@ -359,7 +359,7 @@ class Boxes extends React.PureComponent<BoxesProps, BoxesState> {
     handleCreate = (created: RawHardwarePatcher) => {
         Object.keys(created.boxes).forEach((id, i) => {
             const box = created.boxes[id];
-            this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} scrollIntoView={i === 0}/>;
+            this.boxes[box.id] = <BoxUI {...this.props} id={box.id} key={box.id} scrollIntoView={i === 0} />;
             this.zIndexes[box.id] = box.zIndex || 0;
         });
         this.setState({ timestamp: performance.now() });
@@ -462,7 +462,7 @@ class Grid extends React.PureComponent<GridProps, GridState> {
         const sBGImageY = `repeating-linear-gradient(0deg, transparent, transparent ${pxy1}, ${gridColor} ${pxy1}, ${gridColor} ${pxy})`;
         const style = { backgroundImage: `${sBGImageX}, ${sBGImageY}`, backgroundSize: `${pxx} ${pxy}`, width, height };
         return (
-            <div className="grid-background" style={style}/>
+            <div className="grid-background" style={style} />
         );
     }
 }

@@ -42,7 +42,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
     };
     handleClickNewJs = async () => {
         const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
-        await patcher.load({}, "js");
+        await patcher.load({}, "bell");
         const editor = await patcher.getEditor();
         this.props.env.openEditor(editor);
     };

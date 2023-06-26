@@ -8,12 +8,12 @@ export default class Gpio extends ImageObject<{}, {}, any[], any[], []> {
     static description = "Daisy Seed SOM";
     static ios: IIosMeta = [
         {
-            pin: { pinName: "", digitalOutput: true },
+            pin: { pinName: "gpio", digitalOutput: true },
             type: "anything",
             description: "GPIO output",
         },
         {
-            pin: { pinName: "", digitalOutput: true },
+            pin: { pinName: "gpio", digitalOutput: true },
             type: "anything",
             description: "GPIO output",
         }

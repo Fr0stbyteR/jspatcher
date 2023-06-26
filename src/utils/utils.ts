@@ -224,11 +224,12 @@ export const getPropertyDescriptors = (obj: Function | Record<string, any>): Pro
 };
 
 export const extToType = (ext: string): Exclude<ProjectItemType, "folder"> => {
-    if (["jspat", "maxpat", "gendsp", "dsppat"].indexOf(ext) !== -1) return "patcher";
-    if (["wav", "aif", "aiff", "mp3", "aac", "flac", "ogg", "m4a"].indexOf(ext) !== -1) return "audio";
-    if (["txt", "json"].indexOf(ext) !== -1) return "text";
-    if (["apng", "avif", "gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "svg", "webp", "bmp", "ico", "cur", "tif", "tiff"].indexOf(ext) !== -1) return "image";
-    if (["mp4", "webm", "3gp"].indexOf(ext) !== -1) return "video";
+    if (["bell", "maxpat", "gendsp", "dsppat"].includes(ext)) return "patcher";
+    if (["wav", "aif", "aiff", "mp3", "aac", "flac", "ogg", "m4a"].includes(ext)) return "audio";
+    if (["txt", "json"].includes(ext)) return "text";
+    if (["apng", "avif", "gif", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "svg", "webp", "bmp", "ico", "cur", "tif", "tiff"].includes(ext)) return "image";
+    if (["mp4", "webm", "3gp"].includes(ext)) return "video";
+    if (["daisy"].includes(ext)) return "hardware";
     return "unknown";
 };
 

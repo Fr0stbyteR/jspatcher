@@ -22,7 +22,7 @@ export interface IExternalPackage {
 export type PackageGetter = (env: IJSPatcherEnv) => Promise<TPackage>;
 
 export default class GlobalPackageManager {
-    js: TPackage;
+    bell: TPackage;
     jsaw: TPackage;
     faust: TPackage;
     max: TPackage;
@@ -40,7 +40,7 @@ export default class GlobalPackageManager {
         this.env = envIn;
     }
     async init() {
-        this.js = {
+        this.bell = {
             Base: await (await import("./objects/base/index.jspatpkg")).default()
 
             /* ,
@@ -140,7 +140,7 @@ export default class GlobalPackageManager {
                     const url = new URL(p.jspatpkg, p.baseUrl).href;
                     const fetched = await this.fetchModule(url);
                     const getter: PackageGetter = typeof fetched === "function" ? fetched : fetched.default;
-                    this.add(await getter(this.env), "js", [p.name]);
+                    this.add(await getter(this.env), "bell", [p.name]);
                 }
                 if (p["jsdsppkg.main"]) {
                     const url = new URL(p["jsdsppkg.main"], p.baseUrl).href;
@@ -166,7 +166,7 @@ export default class GlobalPackageManager {
                     isBuiltIn,
                     baseUrl: url
                 });
-                this.add(pkg, "js", [id]);
+                this.add(pkg, "bell", [id]);
             }
         }
     }

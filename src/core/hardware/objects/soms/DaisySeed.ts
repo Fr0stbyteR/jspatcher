@@ -397,7 +397,5 @@ export class DaisySeed extends ImageObject<{}, {}, any[], any[], any[]> {
             this._.key = "https://cdn.discordapp.com/attachments/1049762470694223903/1111025669544095806/Daisy_Seed_illustrated_top.png";
             this._.scale = 0.28;
         });
-
-        this.on("postInit", () => this.patcher.changeIO);
     }
 }

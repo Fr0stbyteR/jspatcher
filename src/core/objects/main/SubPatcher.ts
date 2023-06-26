@@ -17,7 +17,7 @@ export default class SubPatcher extends DefaultObject<Partial<RawPatcher>, {}, a
     }];
     static UI = SubPatcherUI;
     _ = { patcher: undefined as Patcher, key: this.box.args[0] };
-    type: PatcherMode = "js";
+    type: PatcherMode = "bell";
     handlePatcherOutput = ({ outlet, data }: PatcherEventMap["dataOutput"]) => this.outlet(outlet, data);
     handlePatcherDisconnectAudioInlet = (port: number) => this.disconnectAudioInlet(port);
     handlePatcherDisconnectAudioOutlet = (port: number) => this.disconnectAudioOutlet(port);

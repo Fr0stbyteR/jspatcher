@@ -1,7 +1,8 @@
 import "./Max.scss";
 import DefaultObject from "./base/DefaultObject";
-import { IJSPatcherObjectMeta } from "../types";
-import { EmptyObject, InvalidObject } from "./base/index.jspatpkg";
+import { IJSPatcherObjectMeta } from "./base/AbstractObject";
+import EmptyObject from "./base/EmptyObject";
+import InvalidObject from "./base/InvalidObject";
 import { isNumberArray } from "../../utils/utils";
 
 class DefaultMaxObject<D = {}, S = {}, I extends any[] = any[], O extends any[] = any[], A extends any[] = any[], P = {}, U = {}, E = {}> extends DefaultObject<D, S, I, O, A, P, U, E> {
