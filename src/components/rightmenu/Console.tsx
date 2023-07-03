@@ -47,7 +47,7 @@ export default class Console extends React.PureComponent<P, S> {
         const logs = this.state.cached.map((log, i) => (
             <Table.Row key={i} negative={log.errorLevel === "error"} warning={log.errorLevel === "warn"} positive={log.errorLevel === "info"} onDoubleClick={() => this.handleHighlight(log.emitter)}>
                 <Table.Cell width={4}>{log.title}</Table.Cell>
-                <Table.Cell width={12}>{log.message}</Table.Cell>
+                <Table.Cell width={12} style={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>{log.message}</Table.Cell>
             </Table.Row>
         ));
         return (

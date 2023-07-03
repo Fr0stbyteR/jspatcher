@@ -1,8 +1,8 @@
 import { IInletsMeta, IOutletsMeta, TMetaType } from "../../../objects/base/AbstractObject";
-import type { IIosMeta, THardwareMetaType } from "../base/AbstractHardwareObject";
+import type { IIosMeta, IPropsMeta, THardwareMetaType } from "../base/AbstractHardwareObject";
 import ImageObject from "../base/ImageObject";
 
-export default class Knob extends ImageObject<{}, {}, any[], [], any[]> {
+export default class Knob extends ImageObject<{}, {}, any[], [], any[], [HTMLImageElement], Record<string, any>> {
     static author = "Corvus Prudens";
     static version = "v1.0.0";
     static description = "Daisy Seed SOM";
@@ -20,10 +20,29 @@ export default class Knob extends ImageObject<{}, {}, any[], [], any[]> {
         }
     ];
 
+    static props: IPropsMeta = {
+        static_threshold: {
+            type: "number",
+            default: 0.01,
+            description: "Threshold beyond which the knob is considered to be moving at rest",
+        },
+        dynamic_threshold: {
+            type: "number",
+            default: 0.001,
+            description: "Threshold beyond which the knob remains active while moving",
+        },
+        timeout: {
+            type: "number",
+            default: 500,
+            description: "Timeout in ms after which the knob is considered to be at rest",
+        }
+    };
+
     subscribe() {
         super.subscribe();
 
         this.on("preInit", () => {
+            console.log(`KNOB!! ${JSON.stringify(this.meta.props)}`)
             this.ios = [
                 {
                     edge: 'B',

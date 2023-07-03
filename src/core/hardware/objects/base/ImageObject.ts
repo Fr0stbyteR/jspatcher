@@ -40,7 +40,7 @@ export default class ImageObject<
     I extends any[] = any[],
     O extends any[] = any[],
     A extends [HTMLImageElement] & any[] = [HTMLImageElement],
-    P extends ImgProps & {} = ImgProps,
+    P extends Record<string, any> = {},
     U extends ImgUIState & any = ImgUIState,
     E extends {} = {}
 > extends UIObject<D, S, IO, I, O, A, P, U, E> {
@@ -56,33 +56,33 @@ export default class ImageObject<
     //     optional: true,
     //     description: "Image file name or url"
     // }];
-    static props: IPropsMeta<ImgProps> = {
-        scroll: {
-            type: "boolean",
-            default: false,
-            description: "Allow overflow-scroll",
-            isUIState: true
-        },
-        objectFit: {
-            type: "enum",
-            enums: ["fill", "cover", "contain", "none", "scale-down"],
-            default: "contain",
-            description: "CSS object-fit property",
-            isUIState: true
-        },
-        objectPosition: {
-            type: "string",
-            default: "50% 50%",
-            description: 'CSS object-position property, for example "50% 50%" or "left top"',
-            isUIState: true
-        },
-        opacity: {
-            type: "number",
-            default: 1,
-            description: "Opacity of the image (0-1)",
-            isUIState: true
-        }
-    };
+    // static props: IPropsMeta<ImgProps> = {
+    //     scroll: {
+    //         type: "boolean",
+    //         default: false,
+    //         description: "Allow overflow-scroll",
+    //         isUIState: true
+    //     },
+    //     objectFit: {
+    //         type: "enum",
+    //         enums: ["fill", "cover", "contain", "none", "scale-down"],
+    //         default: "contain",
+    //         description: "CSS object-fit property",
+    //         isUIState: true
+    //     },
+    //     objectPosition: {
+    //         type: "string",
+    //         default: "50% 50%",
+    //         description: 'CSS object-position property, for example "50% 50%" or "left top"',
+    //         isUIState: true
+    //     },
+    //     opacity: {
+    //         type: "number",
+    //         default: 1,
+    //         description: "Opacity of the image (0-1)",
+    //         isUIState: true
+    //     }
+    // };
     static UI = ImgUI;
     _: IS = { key: this.box.args[0]?.toString(), image: undefined, file: undefined, url: "", element: undefined, scale: 1.0 };
     subscribe() {

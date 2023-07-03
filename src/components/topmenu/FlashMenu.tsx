@@ -7,6 +7,7 @@ import { IFileEditor } from "../../core/file/FileEditor";
 // import AudioEditMenu from "./AudioEditMenu";
 // import PatcherEditMenu from "./PatcherEditMenu";
 import "./FlashMenu.scss";
+import Patcher from "../../core/patcher/Patcher";
 // import { NullLiteral } from "ts-morph";
 
 const loaderDivStyle = {
@@ -55,9 +56,32 @@ export default class FlashMenu extends React.PureComponent<P, S> {
         webSocket.onmessage = (event) => {
 
             try {
+                console.log(event.data);
                 let json = JSON.parse(event.data.toString('utf-8'));
                 this.state.build_error = true;
-                this.state.error_message = json.error_message.replaceAll("\\", "");
+                const error = json.Err;
+
+                if (typeof error === 'string') {
+                    this.state.error_message = `Encountered "${error}" error!`;
+                } else {
+                    const key = Object.keys(error)[0];
+
+                    // Error reporting
+                    if (key === 'InternalError') {
+                        const inner_key = Object.keys(error[key])[0];
+                        this.state.error_message = `Encountered internal "${inner_key}" error!`;
+                        if (inner_key === 'CompileError') {
+                            this.props.env.newLog("none", inner_key, error[key][inner_key].program.makefile);
+                            this.props.env.newLog("none", inner_key, error[key][inner_key].program.cpp);
+                            this.props.env.newLog("none", inner_key, error[key][inner_key].stderr);
+                        } else {
+                            this.props.env.newLog("none", inner_key, JSON.stringify(error[key][inner_key]));
+                        }
+                    } else {
+                        this.state.error_message = `Encountered "${key}" error!`;
+                        this.props.env.newLog("none", key, JSON.stringify(error[key]));
+                    }
+                }
             } catch (error) {
                 var saveData = (function () {
                     var a = document.createElement("a");
@@ -65,7 +89,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
 
                     a.style.display = "none";
                     return function (data: BinaryData, fileName: string) {
-                        var blob = new Blob([data], {type: "octet/stream"});
+                        var blob = new Blob([data], { type: "octet/stream" });
                         var url = window.URL.createObjectURL(blob);
                         a.href = url;
                         a.download = fileName;
@@ -93,8 +117,8 @@ export default class FlashMenu extends React.PureComponent<P, S> {
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
         // const performed = this.refInstanceEditMenu.current?.onShortKey?.(e);
         // if (!performed) {
-            if (ctrlKey && e.shiftKey && e.key === "c") this.handleClickBuild();
-            else return false;
+        if (ctrlKey && e.shiftKey && e.key === "c") this.handleClickBuild();
+        else return false;
         // }
         e.stopPropagation();
         e.preventDefault();
@@ -131,9 +155,9 @@ export default class FlashMenu extends React.PureComponent<P, S> {
                         </Dropdown.Menu>
                     </Dropdown>
                 </div>
-                { this.state.building ? <div style={loaderDivStyle}><Loader active inline size="mini"></Loader></div> : <div></div> }
-                { this.state.building ? <div className="monitor">Building patcher...</div> : <div></div> }
-                { this.state.build_error ? <div className="monitor"> {this.state.error_message} </div> : <div></div> }
+                {this.state.building ? <div style={loaderDivStyle}><Loader active inline size="mini"></Loader></div> : <div></div>}
+                {this.state.building ? <div className="monitor">Building patcher...</div> : <div></div>}
+                {this.state.build_error ? <div className="monitor"> {this.state.error_message} </div> : <div></div>}
             </div>
         );
     }

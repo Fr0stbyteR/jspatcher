@@ -9,7 +9,7 @@ import ProxyWorker from "./ProxyWorker";
 class FileMgr extends ProxyWorker<IFileManagerWorker> implements IFileManagerWorker {
     fs: IndexedDB;
     init() {
-        return new Promise<true>((resolve, reject) => IndexedDB.Create({ storeName: "JSPatcher" }, (e, r) => {
+        return new Promise<true>((resolve, reject) => IndexedDB.Create({ storeName: "DaisyBell" }, (e, r) => {
             if (e) {
                 reject(e);
             } else {

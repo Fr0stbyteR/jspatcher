@@ -37,63 +37,63 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, 'dist'),
       publicPath: "",
-      library: 'JSPatcher',
+      library: 'DaisyBell',
       libraryTarget: 'umd',
       chunkFilename: 'js/[chunkhash].js',
       assetModuleFilename: 'assets/[hash][ext][query]'
     },
     module: {
       rules: [{
-          test: /\.worklet\.(ts|js)$/,
-          use: [{
-            loader: 'worklet-loader',
-            options: {
-              name: 'js/[fullhash].worklet.js'
-            }
-          }],
-          exclude: /node_modules/
-        }, {
-          test: /\.worker\.(ts|js)$/,
-          use: [{
-            loader: 'worker-loader',
-            options: {
-              filename: 'js/[fullhash].worker.js',
-              publicPath: "../"
-            }
-          }],
-          exclude: /node_modules/
-        }, {
-          test: /\.(ts|js)x?$/,
-          use: {
-            loader: 'esbuild-loader',
-            options: {
-              loader: 'tsx',
-              target: 'es2017'
-            }
-          },
-          exclude: /node_modules/
-        },
-        {
-          test: /\.s[ac]ss$/,
-          use: ['style-loader', 'css-loader', 'sass-loader']
-        },
-        {
-          test: /\.css$/,
-          use: ['style-loader', 'css-loader']
-        },
-        {
-          test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-          type: 'asset',
-          generator: {
-              filename: 'assets/[hash][ext][query]'
+        test: /\.worklet\.(ts|js)$/,
+        use: [{
+          loader: 'worklet-loader',
+          options: {
+            name: 'js/[fullhash].worklet.js'
+          }
+        }],
+        exclude: /node_modules/
+      }, {
+        test: /\.worker\.(ts|js)$/,
+        use: [{
+          loader: 'worker-loader',
+          options: {
+            filename: 'js/[fullhash].worker.js',
+            publicPath: "../"
+          }
+        }],
+        exclude: /node_modules/
+      }, {
+        test: /\.(ts|js)x?$/,
+        use: {
+          loader: 'esbuild-loader',
+          options: {
+            loader: 'tsx',
+            target: 'es2017'
           }
         },
-        {
-          test: /\.js$/,
-          use: ['source-map-loader'],
-          include: /faust2webaudio/,
-          enforce: 'pre'
+        exclude: /node_modules/
+      },
+      {
+        test: /\.s[ac]ss$/,
+        use: ['style-loader', 'css-loader', 'sass-loader']
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+        type: 'asset',
+        generator: {
+          filename: 'assets/[hash][ext][query]'
         }
+      },
+      {
+        test: /\.js$/,
+        use: ['source-map-loader'],
+        include: /faust2webaudio/,
+        enforce: 'pre'
+      }
       ]
     },
     plugins: [
@@ -122,12 +122,12 @@ module.exports = (env, argv) => {
         ],
       }),
       new MonacoWebpackPlugin({
-        filename : 'js/[hash].worker.js',
+        filename: 'js/[hash].worker.js',
         languages: ['javascript', 'typescript', 'html', 'json'],
         globalAPI: true
       }),
       new WorkboxWebpackPlugin.GenerateSW({
-        cacheId: "JSPatcher",
+        cacheId: "DaisyBell",
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,

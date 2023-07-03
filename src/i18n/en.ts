@@ -1,6 +1,6 @@
 export default {
     EnvOptionsModal: {
-        title: "JSPatcher Options",
+        title: "Bell Options",
         audioUnit: "Audio Unit",
         language: "Language",
         reset: "Reset to Default",

@@ -2,7 +2,7 @@ import en from "./en";
 
 export default {
     EnvOptionsModal: {
-        title: "JSPatcher 选项",
+        title: "Bell 选项",
         audioUnit: "音频单位",
         language: "语言",
         confirm: "确认",

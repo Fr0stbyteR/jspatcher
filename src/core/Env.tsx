@@ -227,28 +227,28 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
         this.options.runtime = urlParamsOptions.runtime;
         if (!this.options.noUI && this.divRoot) ReactDOM.render(<UI env={this} />, this.divRoot);
 
-        await this.taskMgr.newTask(this, "Initializing JSPatcher Environment...", async () => {
-            await this.taskMgr.newTask("Env", "Loading FaustWasm...", async () => {
-                const Faust = await import("@shren/faustwasm/dist/esm-bundle");
-                this.Faust = Faust;
-            });
-            await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {
-                const { instantiateFaustModuleFromFile, LibFaust, FaustCompiler } = this.Faust;
-                const faustModule = await instantiateFaustModuleFromFile("./deps/libfaust-wasm.js");
-                const libFaust = new LibFaust(faustModule);
-                const faustCompiler = new FaustCompiler(libFaust);
-                this.faustCompiler = faustCompiler;
-            });
-            await this.taskMgr.newTask(this, "Fetching Faust Standard Library...", async () => {
-                const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
-                const faustPrimitiveLib = await faustPrimitiveLibFile.text();
-                this.faustCompiler.fs().writeFile("/usr/share/faust/primitives.lib", faustPrimitiveLib);
-            });
-            await this.taskMgr.newTask(this, "Fetching Gen-to-Faust Library...", async () => {
-                const gen2FaustLibFile = await fetch("./deps/gen2faust.lib");
-                const gen2FaustLib = await gen2FaustLibFile.text();
-                this.faustCompiler.fs().writeFile("/usr/share/faust/gen2faust.lib", gen2FaustLib);
-            });
+        await this.taskMgr.newTask(this, "Initializing Bell Environment...", async () => {
+            // await this.taskMgr.newTask("Env", "Loading FaustWasm...", async () => {
+            //     const Faust = await import("@shren/faustwasm/dist/esm-bundle");
+            //     this.Faust = Faust;
+            // });
+            // await this.taskMgr.newTask(this, "Loading LibFaust...", async () => {
+            //     const { instantiateFaustModuleFromFile, LibFaust, FaustCompiler } = this.Faust;
+            //     const faustModule = await instantiateFaustModuleFromFile("./deps/libfaust-wasm.js");
+            //     const libFaust = new LibFaust(faustModule);
+            //     const faustCompiler = new FaustCompiler(libFaust);
+            //     this.faustCompiler = faustCompiler;
+            // });
+            // await this.taskMgr.newTask(this, "Fetching Faust Standard Library...", async () => {
+            //     const faustPrimitiveLibFile = await fetch("./deps/primitives.lib");
+            //     const faustPrimitiveLib = await faustPrimitiveLibFile.text();
+            //     this.faustCompiler.fs().writeFile("/usr/share/faust/primitives.lib", faustPrimitiveLib);
+            // });
+            // await this.taskMgr.newTask(this, "Fetching Gen-to-Faust Library...", async () => {
+            //     const gen2FaustLibFile = await fetch("./deps/gen2faust.lib");
+            //     const gen2FaustLib = await gen2FaustLibFile.text();
+            //     this.faustCompiler.fs().writeFile("/usr/share/faust/gen2faust.lib", gen2FaustLib);
+            // });
             await this.taskMgr.newTask(this, "Loading Monaco Editor...", async () => {
                 const { monaco } = await import("react-monaco-editor");
                 const { providers } = await faustLangRegister(monaco, this.faustCompiler);
@@ -335,7 +335,7 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
                     const editor = await item.instantiateEditor({ env: this, project: this.currentProject });
                     this.openEditor(editor);
                 }
-            } catch {}
+            } catch { }
         }
         /*
         const patcher = new Patcher(this.currentProject);

@@ -1,16 +1,19 @@
 {
-    "name": "JSPatcher",
-    "short_name": "JSPatcher",
-    "description": "JSPatcher Progressive Web App",
-    "icons": [{
-        "src": "./icon/icon_192.png",
-        "sizes": "192x192",
-        "type": "image/png"
-    }, {
-        "src": "./icon/icon_512.png",
-        "sizes": "512x512",
-        "type": "image/png"
-    }],
+    "name": "Daisy Bell",
+    "short_name": "Bell",
+    "description": "Bell Progressive Web App",
+    "icons": [
+        {
+            "src": "./icon/icon_192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "./icon/icon_512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
     "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#2b2b2b",
