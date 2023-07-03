@@ -1,7 +1,9 @@
 import Knob from "./Knob";
-import Gpio from "./Gpio";
+import Gpi from "./Gpi";
+import Gpo from "./Gpo";
 
 export default {
     'knob': Knob,
-    'gpio': Gpio,
+    'gpi': Gpi,
+    'gpo': Gpo,
 };

@@ -5,7 +5,7 @@ import ImageObject from "../base/ImageObject";
 export default class Knob extends ImageObject<{}, {}, any[], [], any[], [HTMLImageElement], Record<string, any>> {
     static author = "Corvus Prudens";
     static version = "v1.0.0";
-    static description = "Daisy Seed SOM";
+    static description = "Unipolar Potentiometer";
     static ios: IIosMeta = [
         {
             pin: { pinName: "signal", analogOutput: true },

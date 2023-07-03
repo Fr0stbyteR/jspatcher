@@ -375,7 +375,7 @@ export class DaisySeed extends ImageObject<{}, {}, any[], any[], any[]> {
                 if (DaisyPins[i] != null) {
                     right.push({
                         edge: "R" as any,
-                        position: offset + spacing * i
+                        position: offset + spacing * (19 - i)
                     });
                 }
             }

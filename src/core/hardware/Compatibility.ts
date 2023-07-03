@@ -13,7 +13,7 @@ export function compatibleDigital(pins: BasePin[]) {
         return false;
     }
 
-    // now, for all outputs, every other pin must have an input
+    // now, for all fixed outputs, every other pin must have an input
     let outputs = pins.map((p, i) => ({ p, i })).filter(({ p }) => p.digitalOutput);
 
     let some_valid_config = false;
