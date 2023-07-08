@@ -650,7 +650,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                 }
             }
         }
-        console.log(`inlets: ${JSON.stringify(Array.from(inlets.entries()))}, outlets: ${JSON.stringify(Array.from(outlets.entries()))}`);
+        // console.log(`inlets: ${JSON.stringify(Array.from(inlets.entries()))}, outlets: ${JSON.stringify(Array.from(outlets.entries()))}`);
         return { args: [], props: {}, patcherInlets: inlets, patcherOutlets: outlets };
     }
     log(message: string) {

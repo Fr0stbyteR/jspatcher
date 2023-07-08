@@ -42,7 +42,6 @@ export default class Knob extends ImageObject<{}, {}, any[], [], any[], [HTMLIma
         super.subscribe();
 
         this.on("preInit", () => {
-            console.log(`KNOB!! ${JSON.stringify(this.meta.props)}`)
             this.ios = [
                 {
                     edge: 'B',

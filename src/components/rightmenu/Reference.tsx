@@ -14,7 +14,7 @@ export default class Reference extends React.PureComponent<{ editor: PatcherEdit
     handleSelected = async () => {
         // Get all the selected boxes that are non-null
         const boxes = this.props.editor.state.selected.filter(id => id.startsWith("box") && this.props.editor.boxes[id]).map(id => this.props.editor.boxes[id]);
-        console.log(boxes);
+        // console.log(boxes);
         if (boxes.length === 0) {
             this.state.meta = null;
             return;
@@ -33,19 +33,19 @@ export default class Reference extends React.PureComponent<{ editor: PatcherEdit
         // await new Promise(r => setTimeout(r, 1500));
 
         // TODO -- replace with actual component acquisition method
-        fetch (
+        fetch(
             `https://raw.githubusercontent.com/CorvusPrudens/jspatcher/dev/docs_example.html`
         )
-        .then (d => d.text())
-        .then(html => {
-            this.innerRef.current.innerHTML = html;
-            this.setState({ loading: false });
-        })
-        .catch(error => {
-            this.innerRef.current.innerHTML = '';
-            console.error(error);
-            this.setState({ loading: false });
-        })
+            .then(d => d.text())
+            .then(html => {
+                this.innerRef.current.innerHTML = html;
+                this.setState({ loading: false });
+            })
+            .catch(error => {
+                this.innerRef.current.innerHTML = '';
+                console.error(error);
+                this.setState({ loading: false });
+            })
     }
     componentDidMount() {
         this.handleSelected();
@@ -63,21 +63,21 @@ export default class Reference extends React.PureComponent<{ editor: PatcherEdit
             <>
                 <div className="reference-container">
                     <h1>{meta ? `${meta.name}` : `Reference`}</h1>
-                    <hr/>
+                    <hr />
                     {loading ?
                         <Placeholder inverted fluid className="placeholder">
                             <Placeholder.Header>
-                            {...[...Array(2)].map(_ => <Placeholder.Line/>)}
+                                {...[...Array(2)].map(_ => <Placeholder.Line />)}
                             </Placeholder.Header>
                             {...paragraphs.map(value => {
                                 return <>
                                     <Placeholder.Paragraph>
-                                        {...[...Array(value)].map(_ => <Placeholder.Line/>)}
+                                        {...[...Array(value)].map(_ => <Placeholder.Line />)}
                                     </Placeholder.Paragraph>
                                 </>
                             })}
                         </Placeholder>
-                    : <></>}
+                        : <></>}
                     <div ref={this.innerRef} hidden={loading}></div>
                 </div>
             </>

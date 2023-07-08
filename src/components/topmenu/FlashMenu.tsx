@@ -56,7 +56,7 @@ export default class FlashMenu extends React.PureComponent<P, S> {
         webSocket.onmessage = (event) => {
 
             try {
-                console.log(event.data);
+                // console.log(event.data);
                 let json = JSON.parse(event.data.toString('utf-8'));
                 this.state.build_error = true;
                 const error = json.Err;

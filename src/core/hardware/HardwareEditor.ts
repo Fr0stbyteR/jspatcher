@@ -435,9 +435,9 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     async delete(objects: RawHardwarePatcher) {
         const deleted: RawHardwarePatcher = { boxes: {}, lines: {} };
 
-        console.log(`deleted objects: ${objects}`);
-        console.log(this.instance);
-        console.log(Object.keys(this.lines));
+        // console.log(`deleted objects: ${objects}`);
+        // console.log(this.instance);
+        // console.log(Object.keys(this.lines));
 
         for (const id in objects.lines) {
             console.log(`id: ${id}`);
