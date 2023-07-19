@@ -1,11 +1,12 @@
 import * as React from "react";
-import { Menu, Ref } from "semantic-ui-react";
+import { Image, Menu, Ref } from "semantic-ui-react";
 import type Env from "../../core/Env";
 import FileMenu from "./FileMenu";
 import EditMenu from "./EditMenu";
 import FlashMenu from "./FlashMenu";
 import "./TopMenu.scss";
 import ShareMenu from "./ShareMenu";
+import BellIcon from "./Bell_logo_text.png";
 
 interface P {
     env: Env;
@@ -51,6 +52,7 @@ export default class TopMenu extends React.PureComponent<P> {
         return (
             <Ref innerRef={this.ref}>
                 <Menu inverted size="mini" className="top-menu">
+                    <img src={BellIcon} height='max-content' width='80px' style={{ alignSelf: 'center', marginRight: '0.4em', marginLeft: '0.4em' }} />
                     <FileMenu {...this.props} ref={this.refFileMenu} />
                     <EditMenu {...this.props} ref={this.refEditMenu} />
                     <FlashMenu {...this.props} ref={this.refFlashMenu} />
