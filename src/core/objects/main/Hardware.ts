@@ -138,10 +138,6 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
     };
     subscribe() {
         super.subscribe();
-        this.on("preInit", () => {
-            this.inlets = 0;
-            this.outlets = 0;
-        })
         this.on("updateArgs", async (args) => {
             if (!this._.patcher) return;
             if (typeof args[0] === "string" || typeof args[0] === "undefined") {
