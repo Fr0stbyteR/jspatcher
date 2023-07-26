@@ -26,6 +26,7 @@
     "@jspatcher/package-analysers": "latest",
     "@jspatcher/package-cac": "latest",
     "@jspatcher/package-dsp": "latest",
+    "@jspatcher/package-jitsi": "file:../@jspatcher/package-jitsi",
     "@jspatcher/package-live": "latest",
     "@jspatcher/package-midi": "latest",
     "@jspatcher/package-op": "latest",

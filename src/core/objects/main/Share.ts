@@ -111,7 +111,7 @@ export default class share extends DefaultObject<{}, {}, [], [never, never, Live
         super.subscribe();
         this.on("preInit", () => {
             this.inlets = 2;
-            this.outlets = 5;
+            this.outlets = 3;
         });
         this.on("postInit", () => {
             this.env.liveShare.on("objectState", this.handleReceivedState);
@@ -120,10 +120,10 @@ export default class share extends DefaultObject<{}, {}, [], [never, never, Live
             else this.handlePatcherReady();
         });
         this.on("connectedOutlet", ({ outlet }) => {
-            if (outlet === 0 || outlet === 2) this.updateBoxInspected();
+            if (outlet === 0 || outlet === 1) this.updateBoxInspected();
         });
         this.on("disconnectedOutlet", ({ outlet }) => {
-            if (outlet === 0 || outlet === 2) this.updateBoxInspected();
+            if (outlet === 0 || outlet === 1) this.updateBoxInspected();
         });
         this.on("destroy", () => {
             this.patcher.off("ready", this.handlePatcherReady);

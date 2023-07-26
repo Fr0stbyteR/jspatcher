@@ -37,7 +37,7 @@ export interface IArgMeta {
     description: string;
 }
 export type IArgsMeta = IArgMeta[];
-export interface IPropMeta<T extends any = any> {
+export interface IPropMeta<T = any> {
     type: TMetaType;
     enums?: T[];
     default: T;
@@ -473,7 +473,11 @@ export default abstract class AbstractObject<
         this.box.undoable(e as any);
     }
     async destroy() {
-        await this.emit("destroy");
+        try {
+            await this.emit("destroy");
+        } catch (error) {
+            this.error(error);
+        }
     }
     connectedOutlet(outlet: number, destBoxId: string, destInlet: number, lineId: string) {
         this.emit("connectedOutlet", { outlet, destBoxId, destInlet, lineId });
