@@ -440,7 +440,7 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         // console.log(Object.keys(this.lines));
 
         for (const id in objects.lines) {
-            console.log(`id: ${id}`);
+            // console.log(`id: ${id}`);
             deleted.lines[id] = this.lines[id].destroy().toSerializable();
         }
         const promises: Promise<Box>[] = [];

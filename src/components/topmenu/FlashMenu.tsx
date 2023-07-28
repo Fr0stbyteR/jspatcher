@@ -297,8 +297,6 @@ export default class FlashMenu extends React.PureComponent<P, S> {
             } else {
                 await fixInterfaceNames(selectedDevice, interfaces);
                 const connectToSelectedInterface = async () => {
-                    console.log(selectedDevice);
-                    console.log(interfaces);
                     let filteredInterfaceList = interfaces.filter(ifc => ifc.name.includes("0x08000000"));
                     if (filteredInterfaceList.length === 0) {
                         this.setState({ device: null });

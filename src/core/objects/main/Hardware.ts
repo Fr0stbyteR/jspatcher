@@ -38,7 +38,7 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
         this.inlets = inlets.length;
         this.outlets = outlets.length;
 
-        console.log(`inlets: ${this.inlets}, outlets: ${this.outlets}`);
+        // console.log(`inlets: ${this.inlets}, outlets: ${this.outlets}`);
 
         this.setMeta({ ...this.meta, inlets, outlets, args: Hardware.args });
     };
