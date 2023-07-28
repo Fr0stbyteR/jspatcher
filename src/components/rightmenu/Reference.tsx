@@ -5,6 +5,7 @@ import { Placeholder } from "semantic-ui-react";
 
 type ReferenceState = {
     meta?: IJSPatcherObjectMeta;
+    name?: string;
     loading: boolean;
 };
 
@@ -14,7 +15,6 @@ export default class Reference extends React.PureComponent<{ editor: PatcherEdit
     handleSelected = async () => {
         // Get all the selected boxes that are non-null
         const boxes = this.props.editor.state.selected.filter(id => id.startsWith("box") && this.props.editor.boxes[id]).map(id => this.props.editor.boxes[id]);
-        // console.log(boxes);
         if (boxes.length === 0) {
             this.state.meta = null;
             return;
@@ -22,22 +22,39 @@ export default class Reference extends React.PureComponent<{ editor: PatcherEdit
 
         // We'll simply look at one reference document at a time
         const meta = boxes[0].meta;
-
-        if (this.state.meta === meta)
+        const name = boxes[0].text.split(' ')[0];
+        if (this.state.name === name || name === '' || name === 'InvalidObject' || name === 'DefaultObject')
             return;
 
-        this.setState({ meta: meta });
-        this.setState({ loading: true });
+        this.setState({ meta, name, loading: true });
 
-        // For testing skeleton
-        // await new Promise(r => setTimeout(r, 1500));
+        if (!meta.docs) {
+            this.innerRef.current.innerHTML = '<p>This object does not yet have documentation.</p>';
+            this.setState({ loading: false });
+            return;
+        }
 
-        // TODO -- replace with actual component acquisition method
+        const t1 = new Date();
+
         fetch(
-            `https://raw.githubusercontent.com/CorvusPrudens/jspatcher/dev/docs_example.html`
+            `https://web-patcher.sfo3.digitaloceanspaces.com/docs/${meta.docs}`
         )
             .then(d => d.text())
-            .then(html => {
+            .then(async (html) => {
+                // If the html starts with a title of name, remove it
+                if (html.match(/<h1>\s*(.+?)\s*<\/h1>/)[1] == this.state.name) {
+                    html = html.replace(/<h1>\s*(.+?)\s*<\/h1>/, '');
+                }
+
+                // Ensure it takes at least 500ms to load to avoid flashing
+                const t2 = new Date();
+                const diff = t2.getTime() - t1.getTime();
+
+                if (diff < 400) {
+                    const remaining = 500 - diff;
+                    await new Promise(resolve => setTimeout(resolve, remaining));
+                }
+
                 this.innerRef.current.innerHTML = html;
                 this.setState({ loading: false });
             })
@@ -55,14 +72,14 @@ export default class Reference extends React.PureComponent<{ editor: PatcherEdit
         this.props.editor.off("selected", this.handleSelected);
     }
     render() {
-        const { meta, loading } = this.state;
+        const { meta, name, loading } = this.state;
 
-        const paragraphs = [...Array(6)].map(_ => 2 + Math.round(Math.random() * 10));
+        const paragraphs = [...Array(3)].map(_ => 2 + Math.round(Math.random() * 10));
 
         return (
             <>
                 <div className="reference-container">
-                    <h1>{meta ? `${meta.name}` : `Reference`}</h1>
+                    <h1>{name ? name : `Reference`}</h1>
                     <hr />
                     {loading ?
                         <Placeholder inverted fluid className="placeholder">
@@ -78,7 +95,7 @@ export default class Reference extends React.PureComponent<{ editor: PatcherEdit
                             })}
                         </Placeholder>
                         : <></>}
-                    <div ref={this.innerRef} hidden={loading}></div>
+                    <div style={{ marginBottom: '1em' }} ref={this.innerRef} hidden={loading}></div>
                 </div>
             </>
         );

@@ -119,6 +119,7 @@ export default class PatcherRightMenu extends React.PureComponent<P, S> {
     componentDidMount() {
         const audioCtx = this.props.env.audioCtx;
         audioCtx.addEventListener("statechange", this.handleEnvAudioCtxStateChange);
+        document.addEventListener("keydown", this.handleKeyDown);
         this.props.editor.on("ready", this.handleReady);
         this.props.editor.on("inspector", this.handleInspector);
         this.props.editor.on("dockUI", this.handleDock);
@@ -127,11 +128,32 @@ export default class PatcherRightMenu extends React.PureComponent<P, S> {
     componentWillUnmount() {
         const audioCtx = this.props.env.audioCtx;
         audioCtx.removeEventListener("statechange", this.handleEnvAudioCtxStateChange);
+        document.removeEventListener("keydown", this.handleKeyDown);
         this.props.editor.off("ready", this.handleReady);
         this.props.editor.off("inspector", this.handleInspector);
         this.props.editor.off("dockUI", this.handleDock);
         this.props.editor.off("reference", this.handleReference);
     }
+    handleKeyDown = (e: KeyboardEvent) => {
+        const { activeEditor } = this.props.env;
+        if (!activeEditor)
+            return;
+
+        if (e.target instanceof HTMLInputElement) return;
+        if (e.target instanceof HTMLTextAreaElement) return;
+        if ((e.target as HTMLElement).contentEditable === "true") return;
+        const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+
+        if (ctrlKey && e.shiftKey && e.key === "D") {
+            if (this.state.active === TPanels.Reference) {
+                this.setState({ active: TPanels.None });
+            } else {
+                this.setState({ active: TPanels.Reference });
+            }
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    };
     render() {
         return (
             <>

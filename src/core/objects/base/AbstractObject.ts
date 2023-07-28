@@ -59,6 +59,7 @@ export interface IJSPatcherObjectMeta<P extends Record<string, any> = Record<str
     props: IPropsMeta<P>;
     isPatcherInlet: "data" | "audio" | "parameter" | false;
     isPatcherOutlet: "data" | "audio" | false;
+    docs: string;
 }
 
 export interface ObjectUpdateOptions {
@@ -272,6 +273,7 @@ export default abstract class AbstractObject<
     static author = "";
     static version = "0.0.0";
     static description = "";
+    static docs = "";
     static inlets: IInletsMeta = [];
     static outlets: IOutletsMeta = [];
     static args: IArgsMeta = [];
@@ -291,7 +293,8 @@ export default abstract class AbstractObject<
             args: this.args,
             props: this.props,
             isPatcherInlet: this.isPatcherInlet,
-            isPatcherOutlet: this.isPatcherOutlet
+            isPatcherOutlet: this.isPatcherOutlet,
+            docs: this.docs,
         };
     }
     static UI: typeof AbstractUI;

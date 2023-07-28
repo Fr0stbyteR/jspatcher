@@ -45,11 +45,17 @@ export default class TopMenu extends React.PureComponent<P, S> {
             return;
         }
 
+        if (ctrlKey && e.shiftKey && e.key === "O") {
+            fileMenu.handleClickImportFile();
+            e.stopPropagation();
+            e.preventDefault();
+            return;
+        }
+
         if (!activeEditor)
             return;
 
-        if (ctrlKey && e.shiftKey && e.key === "O") fileMenu.handleClickImportFile();
-        else if (ctrlKey && e.key === "o") fileMenu.handleClickOpenProject();
+        if (ctrlKey && e.key === "o") fileMenu.handleClickOpenProject();
         else if (ctrlKey && e.shiftKey && e.key === "S") fileMenu.handleClickSaveAs();
         else if (ctrlKey && e.key === "s") fileMenu.handleClickSave();
         else if (ctrlKey && e.shiftKey && e.key === "E") fileMenu.handleClickExportFile();

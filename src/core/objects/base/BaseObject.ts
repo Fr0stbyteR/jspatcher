@@ -8,7 +8,7 @@ export interface BaseObjectAdditionalProps {
     rect: TRect;
     presentationRect: TRect;
 }
-export interface BaseObjectProps extends BaseObjectAdditionalProps, BaseUIState {}
+export interface BaseObjectProps extends BaseObjectAdditionalProps, BaseUIState { }
 export default class BaseObject<
     D extends {} = {},
     S extends {} = {},
@@ -83,7 +83,8 @@ export default class BaseObject<
                 ...thisProps
             },
             isPatcherInlet: this.isPatcherInlet,
-            isPatcherOutlet: this.isPatcherOutlet
+            isPatcherOutlet: this.isPatcherOutlet,
+            docs: this.docs
         };
     }
     isUIStateKey = (x: any) => this.meta.props[x] && this.meta.props[x].isUIState;

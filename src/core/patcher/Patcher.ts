@@ -543,6 +543,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             description: this.props.description || "",
             isPatcherInlet: false,
             isPatcherOutlet: false,
+            docs: "",
             ...metaFromPatcher
         };
     }
