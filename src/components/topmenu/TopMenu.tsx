@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Image, Menu, Ref } from "semantic-ui-react";
+import { Icon, Image, Menu, Ref, Popup } from "semantic-ui-react";
 import type Env from "../../core/Env";
 import FileMenu from "./FileMenu";
 import EditMenu from "./EditMenu";
@@ -13,14 +13,21 @@ interface P {
     lang: string;
 }
 
-export default class TopMenu extends React.PureComponent<P> {
+interface S {
+    connected: boolean;
+}
+
+export default class TopMenu extends React.PureComponent<P, S> {
     ref = React.createRef<HTMLDivElement>();
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();
     refFlashMenu = React.createRef<FlashMenu>();
+    state = {
+        connected: false,
+    }
     handleKeyDown = (e: KeyboardEvent) => {
         const { activeEditor } = this.props.env;
-        if (!activeEditor) return;
+
         const fileMenu = this.refFileMenu.current;
         const editMenu = this.refEditMenu.current;
         const flashMenu = this.refFlashMenu.current;
@@ -30,15 +37,25 @@ export default class TopMenu extends React.PureComponent<P> {
         if (e.target instanceof HTMLTextAreaElement) return;
         if ((e.target as HTMLElement).contentEditable === "true") return;
         const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        if (ctrlKey && e.shiftKey && e.key === "n") fileMenu.handleClickNewJs();
-        else if (ctrlKey && e.shiftKey && e.key === "o") fileMenu.handleClickImportFile();
+
+        if (ctrlKey && e.shiftKey && e.key === "C") {
+            fileMenu.handleClickNewJs();
+            e.stopPropagation();
+            e.preventDefault();
+            return;
+        }
+
+        if (!activeEditor)
+            return;
+
+        if (ctrlKey && e.shiftKey && e.key === "O") fileMenu.handleClickImportFile();
         else if (ctrlKey && e.key === "o") fileMenu.handleClickOpenProject();
-        else if (ctrlKey && e.shiftKey && e.key === "s") fileMenu.handleClickSaveAs();
+        else if (ctrlKey && e.shiftKey && e.key === "S") fileMenu.handleClickSaveAs();
         else if (ctrlKey && e.key === "s") fileMenu.handleClickSave();
-        else if (ctrlKey && e.shiftKey && e.key === "e") fileMenu.handleClickExportFile();
+        else if (ctrlKey && e.shiftKey && e.key === "E") fileMenu.handleClickExportFile();
         else if (ctrlKey && e.altKey && e.key === "e") fileMenu.handleClickExportProject();
         else if (ctrlKey && e.key === "r") fileMenu.handleClickReload();
-        else if (!editMenu.onShortKey(e) || !flashMenu.onShortKey(e)) return;
+        else if (!editMenu.onShortKey(e) && !flashMenu.onShortKey(e)) return;
         e.stopPropagation();
         e.preventDefault();
     };
@@ -55,9 +72,17 @@ export default class TopMenu extends React.PureComponent<P> {
                     <img src={BellIcon} height='max-content' width='80px' style={{ alignSelf: 'center', marginRight: '0.4em', marginLeft: '0.4em' }} />
                     <FileMenu {...this.props} ref={this.refFileMenu} />
                     <EditMenu {...this.props} ref={this.refEditMenu} />
-                    <FlashMenu {...this.props} ref={this.refFlashMenu} />
+                    <FlashMenu {...this.props} ref={this.refFlashMenu} onConnect={() => this.setState({ connected: true })} onDisconnect={() => this.setState({ connected: false })} />
                     <div style={{ flex: "1 1 auto" }}></div>
-                    <ShareMenu {...this.props} />
+                    {/* <ShareMenu {...this.props} /> */}
+                    {/* <Popup inverted
+                        content={this.state.connected ? "Daisy Connected" : "Daisy not connected"}
+                        trigger={
+                            <div style={{ alignSelf: 'center' }}>
+                                {this.state.connected ? <Icon name="linkify" color="blue" /> : <Icon name="unlink" color="red" />}
+                            </div>
+                        }
+                    /> */}
                 </Menu>
             </Ref>
         );

@@ -137,7 +137,7 @@ export default class PatcherRightMenu extends React.PureComponent<P, S> {
             <>
                 <Menu icon vertical inverted size="mini" className="right-menu">
                     <Menu.Item name={TPanels.Console} active={this.state.active === TPanels.Console} onClick={this.handleItemClick} title={TPanels.Console}>
-                        <Icon name="bars" color={this.state.active === TPanels.Console ? "teal" : "grey"} inverted />
+                        <Icon name="terminal" color={this.state.active === TPanels.Console ? "teal" : "grey"} inverted />
                     </Menu.Item>
                     <Menu.Item name={TPanels.Inspector} active={this.state.active === TPanels.Inspector} onClick={this.handleItemClick} title={TPanels.Inspector}>
                         <Icon name="info" color={this.state.active === TPanels.Inspector ? "teal" : "grey"} inverted />
@@ -162,16 +162,16 @@ export default class PatcherRightMenu extends React.PureComponent<P, S> {
                         <Console {...this.props} ref={this.refConsole} display={this.state.active === TPanels.Console} />
                     </div>
                     <div className="right-pane-code-editor" hidden={this.state.active !== TPanels.Code}>
-                        {this.state.active === TPanels.Code ? <CodeEditor {...this.props} patcher={this.props.editor.instance} ref={this.refCode} /> : <></> }
+                        {this.state.active === TPanels.Code ? <CodeEditor {...this.props} patcher={this.props.editor.instance} ref={this.refCode} /> : <></>}
                     </div>
                     <div className="right-pane-inspector" hidden={this.state.active !== TPanels.Inspector}>
-                        {this.state.active === TPanels.Inspector ? <Inspector {...this.props} editor={this.props.editor} ref={this.refInspector} /> : <></> }
+                        {this.state.active === TPanels.Inspector ? <Inspector {...this.props} editor={this.props.editor} ref={this.refInspector} /> : <></>}
                     </div>
                     <div className="right-pane-dock" hidden={this.state.active !== TPanels.Dock}>
                         <UIDock {...this.props} editor={this.props.editor} ref={this.refDock} display={this.state.active === TPanels.Dock} />
                     </div>
                     <div className="right-pane-reference" hidden={this.state.active !== TPanels.Reference}>
-                        {this.state.active === TPanels.Reference ? <Reference {...this.props} ref={this.refReference}/> : <></>}
+                        {this.state.active === TPanels.Reference ? <Reference {...this.props} ref={this.refReference} /> : <></>}
                     </div>
                 </div>
                 <div className="resize-handler resize-handler-w" onMouseDown={this.handleResizeMouseDown} hidden={this.state.active === TPanels.None}></div>

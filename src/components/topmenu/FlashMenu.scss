@@ -4,8 +4,8 @@
 }
 
 .top-menu .monitor {
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
     margin-left: 1em;
     color: white;
 }
@@ -15,4 +15,9 @@
     align-items: center;
     margin-left: 1em;
     color: lightcoral;
+}
+
+// Remove margins on progress
+.loader-container .ui.progress:last-child {
+    margin: 0;
 }

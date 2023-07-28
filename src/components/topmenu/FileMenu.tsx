@@ -175,7 +175,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
             <>
                 <Dropdown item={true} icon={false} text="File">
                     <Dropdown.Menu style={{ minWidth: "max-content" }}>
-                        <Dropdown.Item onClick={this.handleClickNewJs} text="New Patcher" description={`${ctrl} + Shift + N`} />
+                        <Dropdown.Item onClick={this.handleClickNewJs} text="New Patcher" description={`${ctrl} + Shift + C`} />
                         {/* <Dropdown.Item onClick={this.handleClickNewJsAW} text="New Js AudioWorklet Patcher" /> */}
                         {/* <Dropdown.Item onClick={this.handleClickNewMax} text="New Max Patcher" /> */}
                         {/* <Dropdown.Item onClick={this.handleClickNewGen} text="New Gen Patcher" /> */}
