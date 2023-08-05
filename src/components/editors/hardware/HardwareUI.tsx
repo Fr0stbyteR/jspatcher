@@ -204,7 +204,7 @@ export default class HardwareUI extends React.PureComponent<P, S> {
                 y *= patcher.props.grid[1];
             }
             patcher.moveSelectedBox({ x, y });
-        } else if ((e.key === "n" || e.key === "m" || e.key === "b" || e.key === "c" || e.key === "i" || e.key === "f" || e.key === "s" || e.key === "t") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+        } else if ((e.key === "n" || e.key === "s" || e.key === "k") && !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
             e.stopPropagation();
             e.preventDefault();
             const patcherDiv = this.refDiv.current as HTMLDivElement;
@@ -216,13 +216,13 @@ export default class HardwareUI extends React.PureComponent<P, S> {
             let text = "";
             const { presentation } = patcher.state;
             const { mode } = patcher.props;
-            if (mode === "daisy" && e.key === "f") text = 'ui.number @format "Decimal (Floating-Point)"';
-            else if (mode === "daisy" && e.key === "m") text = "message";
-            else if (e.key === "c") text = "comment";
-            else if (mode === "daisy" && e.key === "b") text = "live.button";
-            else if (mode === "daisy" && e.key === "i") text = "ui.number";
-            else if (mode === "daisy" && e.key === "s") text = "ui.slider";
-            else if (mode === "daisy" && e.key === "t") text = "live.toggle";
+            if (mode === "daisy" && e.key === "s") text = 'seed';
+            else if (mode === "daisy" && e.key === "k") text = "knob";
+            // else if (e.key === "c") text = "comment";
+            // else if (mode === "daisy" && e.key === "b") text = "button";
+            // else if (mode === "daisy" && e.key === "i") text = "number";
+            // else if (mode === "daisy" && e.key === "s") text = "slider";
+            // else if (mode === "daisy" && e.key === "t") text = "toggle";
             this.props.editor.createBox({ text, ios: [], rect: [x, y, 0, 0], presentation, _editing: true });
         }
     };
