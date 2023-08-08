@@ -14,64 +14,64 @@ export default <
     U extends Partial<DefaultUIState> & Record<string, any> = {},
     E extends {} = {}
 >(O: typeof BaseObject) => class DefaultObject extends O<D, S, I, O, A, P & DefaultObjectProps, U & DefaultUIState, E> {
-    static props: IJSPatcherObjectMeta["props"] = {
-        bgColor: {
-            type: "color",
-            default: "rgb(51, 51, 51)",
-            description: "Background color",
-            isUIState: true
-        },
-        borderColor: {
-            type: "color",
-            default: "rgb(125, 126, 132)",
-            description: "Border color",
-            isUIState: true
-        },
-        textColor: {
-            type: "color",
-            default: "rgb(255, 255, 255)",
-            description: "Text color",
-            isUIState: true
-        },
-        fontFamily: {
-            type: "enum",
-            enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
-            default: "Lato",
-            description: "Font family",
-            isUIState: true
-        },
-        fontSize: {
-            type: "number",
-            default: 12,
-            description: "Text font size",
-            isUIState: true
-        },
-        fontStyle: {
-            type: "enum",
-            enums: ["normal", "italic", "oblique"],
-            default: "normal",
-            description: "Text style",
-            isUIState: true
-        },
-        fontWeight: {
-            type: "string",
-            default: "normal",
-            description: 'Text style: "normal" | "bold" | "lighter" | "bolder" | number',
-            isUIState: true
-        },
-        textAlign: {
-            type: "enum",
-            enums: ["left", "center", "right"],
-            default: "left",
-            description: "Text style",
-            isUIState: true
+        static props: IJSPatcherObjectMeta["props"] = {
+            bgColor: {
+                type: "color",
+                default: "rgb(41, 60, 71)",
+                description: "Background color",
+                isUIState: true
+            },
+            borderColor: {
+                type: "color",
+                default: "rgb(41, 60, 71)",
+                description: "Border color",
+                isUIState: true
+            },
+            textColor: {
+                type: "color",
+                default: "rgb(255, 255, 255)",
+                description: "Text color",
+                isUIState: true
+            },
+            fontFamily: {
+                type: "enum",
+                enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New", "Roboto Mono"],
+                default: "Roboto Mono",
+                description: "Font family",
+                isUIState: true
+            },
+            fontSize: {
+                type: "number",
+                default: 12,
+                description: "Text font size",
+                isUIState: true
+            },
+            fontStyle: {
+                type: "enum",
+                enums: ["normal", "italic", "oblique"],
+                default: "normal",
+                description: "Text style",
+                isUIState: true
+            },
+            fontWeight: {
+                type: "string",
+                default: "normal",
+                description: 'Text style: "normal" | "bold" | "lighter" | "bolder" | number',
+                isUIState: true
+            },
+            textAlign: {
+                type: "enum",
+                enums: ["left", "center", "right"],
+                default: "left",
+                description: "Text style",
+                isUIState: true
+            }
+        };
+        static get _name() {
+            return O._name;
+        }
+        static UI = DefaultUI;
+        get env() {
+            return super.env as Env;
         }
     };
-    static get _name() {
-        return O._name;
-    }
-    static UI = DefaultUI;
-    get env() {
-        return super.env as Env;
-    }
-};

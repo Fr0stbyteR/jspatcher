@@ -21,10 +21,14 @@ export default class PatcherBottomMenu extends React.PureComponent<P, S> {
         presentation: this.props.editor.state.presentation,
         showGrid: this.props.editor.state.showGrid
     };
-    handleKeyDown = (e: KeyboardEvent) => {
-        const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
-        if (ctrlKey && e.key === "e") this.handleClickLock();
-    };
+    // handleKeyDown = (e: KeyboardEvent) => {
+    //     const ctrlKey = this.props.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+    //     if (ctrlKey && e.key === "e" && this.props.editor.isActive) {
+    //         this.handleClickLock();
+    //         e.stopPropagation();
+    //         e.preventDefault();
+    //     }
+    // };
     handleReady = () => {
         this.setState({
             locked: this.props.editor.state.locked,
@@ -37,14 +41,14 @@ export default class PatcherBottomMenu extends React.PureComponent<P, S> {
         this.props.editor.on("locked", this.handleLockedChange);
         this.props.editor.on("presentation", this.handlePresentationChange);
         this.props.editor.on("showGrid", this.handleShowGridChange);
-        document.addEventListener("keydown", this.handleKeyDown);
+        // document.addEventListener("keydown", this.handleKeyDown);
     }
     componentWillUnmount() {
         this.props.editor.off("ready", this.handleReady);
         this.props.editor.off("locked", this.handleLockedChange);
         this.props.editor.off("presentation", this.handlePresentationChange);
         this.props.editor.off("showGrid", this.handleShowGridChange);
-        document.removeEventListener("keydown", this.handleKeyDown);
+        // document.removeEventListener("keydown", this.handleKeyDown);
     }
     handleLockedChange = (locked: boolean) => this.setState({ locked });
     handleShowGridChange = (showGrid: boolean) => this.setState({ showGrid });

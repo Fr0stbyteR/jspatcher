@@ -194,6 +194,7 @@ export default class HardwareUI extends React.PureComponent<P, S> {
         if (e.target instanceof HTMLInputElement) return;
         if (e.target instanceof HTMLTextAreaElement) return;
         if ((e.target as HTMLElement).contentEditable === "true") return;
+
         if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
             e.stopPropagation();
             e.preventDefault();

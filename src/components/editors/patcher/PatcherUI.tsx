@@ -189,10 +189,20 @@ export default class PatcherUI extends React.PureComponent<P, S> {
         const { editor: patcher, runtime } = this.props;
         if (runtime) return;
         if (!patcher.isActive) return;
-        if (patcher.state.locked) return;
+
         if (e.target instanceof HTMLInputElement) return;
         if (e.target instanceof HTMLTextAreaElement) return;
         if ((e.target as HTMLElement).contentEditable === "true") return;
+
+        const ctrlKey = patcher.env.os === "MacOS" ? e.metaKey : e.ctrlKey;
+        if (ctrlKey && e.key === "e") {
+            e.stopPropagation();
+            e.preventDefault();
+            this.props.editor.setState({ locked: !this.props.editor.state.locked });
+            return;
+        }
+
+        if (patcher.state.locked) return;
         if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
             e.stopPropagation();
             e.preventDefault();

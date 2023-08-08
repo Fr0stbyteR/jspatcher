@@ -89,6 +89,10 @@ module.exports = (env, argv) => {
         }
       },
       {
+        test: /\.bell$/,
+        type: 'json',
+      },
+      {
         test: /\.js$/,
         use: ['source-map-loader'],
         include: /faust2webaudio/,
@@ -101,6 +105,7 @@ module.exports = (env, argv) => {
         'process.env': {
           NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
           WS_DOMAIN: JSON.stringify(env.WS_DOMAIN),
+          API_DOMAIN: JSON.stringify(env.API_DOMAIN),
         },
         'process.platform': {}
       }),

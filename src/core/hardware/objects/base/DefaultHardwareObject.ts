@@ -28,13 +28,13 @@ export default class DefaultObject<
     static props: IPropsMeta = {
         bgColor: {
             type: "color",
-            default: "rgb(51, 51, 51)",
+            default: "rgb(41, 60, 71)",
             description: "Background color",
             isUIState: true
         },
         borderColor: {
             type: "color",
-            default: "rgb(125, 126, 132)",
+            default: "rgb(41, 60, 71)",
             description: "Border color",
             isUIState: true
         },
@@ -46,8 +46,8 @@ export default class DefaultObject<
         },
         fontFamily: {
             type: "enum",
-            enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
-            default: "Lato",
+            enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New", "Roboto Mono"],
+            default: "Roboto Mono",
             description: "Font family",
             isUIState: true
         },

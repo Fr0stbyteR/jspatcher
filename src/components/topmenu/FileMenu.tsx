@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Dropdown } from "semantic-ui-react";
+import { Dropdown, Menu } from "semantic-ui-react";
 import Patcher from "../../core/patcher/Patcher";
 import PatcherText from "../../core/text/PatcherText";
 import SaveAsModal from "../modals/SaveAsModal";
@@ -10,6 +10,11 @@ import type { EnvEventMap } from "../../core/Env";
 import type { IFileEditor } from "../../core/file/FileEditor";
 import type { IProjectFolder } from "../../core/file/AbstractProjectFolder";
 import DeleteAllModal from "../modals/DeleteAllModal";
+import BlinkExample from "../../../examples/Blink.bell";
+
+const examples: Record<string, any> = {
+    "Blink": [BlinkExample, "Seed"],
+};
 
 interface P {
     env: Env;
@@ -40,10 +45,18 @@ export default class FileMenu extends React.PureComponent<P, S> {
         showNewAudioModal: false,
         showDeleteAllModal: false
     };
+    handleClickExample = async (name: string) => {
+        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
+        await patcher.load(examples[name][0], "bell");
+        const editor = await patcher.getEditor();
+        editor.setState({ locked: false });
+        this.props.env.openEditor(editor);
+    };
     handleClickNewJs = async () => {
         const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
         await patcher.load({}, "bell");
         const editor = await patcher.getEditor();
+        editor.setState({ locked: false });
         this.props.env.openEditor(editor);
     };
     handleClickNewJsAW = async () => {
@@ -182,6 +195,18 @@ export default class FileMenu extends React.PureComponent<P, S> {
                         {/* <Dropdown.Item onClick={this.handleClickNewFaust} text="New Faust Patcher" /> */}
                         <Dropdown.Item onClick={this.handleClickNewAudio} text="New Audio..." />
                         <Dropdown.Item onClick={this.handleClickNewText} text="New Text" />
+                        {/* <Dropdown.Item text="Examples"> */}
+                        <Dropdown item text="Examples">
+                            <Dropdown.Menu>
+                                {/* <Dropdown item simple onClick={(e, d) => this.handleClickExample(d.value)} text="Examples" direction="right" options={Object.keys(examples).map((val) => ({ text: val, value: val }))} /> */}
+
+                                {/* </Dropdown> */}
+                                {
+                                    Object.keys(examples).map((name, i) => <Dropdown.Item key={i} onClick={() => this.handleClickExample(name)} text={name} description={examples[name][1]} />)
+                                }
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        {/* </Dropdown.Item> */}
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={this.handleClickNewProject} text="New Project" />
                         <Dropdown.Divider />

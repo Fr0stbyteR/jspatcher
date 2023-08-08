@@ -36,8 +36,8 @@ export default class comment extends BaseObject<{ value: string }, {}, [string],
         },
         fontFamily: {
             type: "enum",
-            enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New"],
-            default: "Lato",
+            enums: ["Lato", "Georgia", "Times New Roman", "Arial", "Tahoma", "Verdana", "Courier New", "Roboto Mono"],
+            default: "Roboto Mono",
             description: "Font family",
             isUIState: true
         },

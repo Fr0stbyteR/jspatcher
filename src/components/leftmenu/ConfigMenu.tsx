@@ -35,9 +35,9 @@ export default class ConfigMenu extends React.PureComponent<{ env: Env; lang: st
                 <Dropdown item={true} icon={<Icon name="cog" color="grey" inverted />}>
                     <Dropdown.Menu style={{ minWidth: "max-content", zIndex: 200 }}>
                         <Dropdown.Item onClick={() => this.setState({ envOptionsModalOpen: true })} text="Options..." />
-                        <Dropdown.Item href="https://github.com/CorvusPrudens/jspatcher" target="_blank" text="Visit GitHub" />
+                        {/* <Dropdown.Item href="https://github.com/CorvusPrudens/jspatcher" target="_blank" text="Visit GitHub" />
                         <Dropdown.Item disabled text={`Version: ${VERSION}`} />
-                        <Dropdown.Item onClick={this.onReload} text="Force Reload" />
+                        <Dropdown.Item onClick={this.onReload} text="Force Reload" /> */}
                     </Dropdown.Menu>
                 </Dropdown>
                 <EnvOptionsModal {...this.props} open={this.state.envOptionsModalOpen} onReset={this.onResetEnvOptionsModal} onClose={this.onCloseEnvOptionsModal} onConfirm={this.onConfirmEnvOptionsModal} />

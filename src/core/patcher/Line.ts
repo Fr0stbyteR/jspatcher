@@ -137,9 +137,15 @@ export default class Line extends TypedEventEmitter<LineEventMap> {
             if (from && to && from.node && to.node) {
                 const isAudioParam = to.node instanceof AudioParam;
                 try {
-                    if (isAudioParam) from.node.connect(to.node as AudioParam, from.index);
-                    else from.node.connect(to.node as AudioNode, from.index, to.index);
-                    if (Line.isWamNode(from.node) && Line.isWamNode(to.node)) from.node.connectEvents(to.node.instanceId);
+                    if (isAudioParam)
+                        from.node.connect(to.node as AudioParam, from.index);
+                    else {
+                        from.node.connect(to.node as AudioNode, from.index, to.index);
+                    }
+
+
+                    if (Line.isWamNode(from.node) && Line.isWamNode(to.node))
+                        from.node.connectEvents(to.node.instanceId);
                 } catch (e) {
                     this._patcher.error((e as Error).message);
                 }

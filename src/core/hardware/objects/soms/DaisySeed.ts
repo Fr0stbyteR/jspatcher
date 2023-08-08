@@ -342,23 +342,28 @@ export class DaisySeed extends ImageObject<{}, {}, any[], any[], any[]> {
         {
             isHot: true,
             type: "signal",
-            description: "Audio out left"
+            description: "Audio DAC left"
         },
         {
             isHot: true,
             type: "signal",
-            description: "Audio out right"
+            description: "Audio DAC right"
+        },
+        {
+            isHot: false,
+            type: "number",
+            description: "Set on-board LED",
         }
     ];
 
     static patcherOutlets: IOutletsMeta = [
         {
             type: "signal",
-            description: "Audio in left"
+            description: "Audio ADC left"
         },
         {
             type: "signal",
-            description: "Audio in right"
+            description: "Audio ADC right"
         }
     ]
 

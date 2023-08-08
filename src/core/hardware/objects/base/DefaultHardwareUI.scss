@@ -1,5 +1,5 @@
 .hardware-patcher div.box-ui>div.box-ui-default {
-    background-color: rgb(51, 51, 51);
+    background-color: rgb(41, 60, 71);
 
     &.box-ui-container {
         display: flex;
@@ -13,7 +13,7 @@
         flex: 0 0 auto;
         width: 100%;
         color: white;
-        font-family: Lato, Tahoma, sans-serif;
+        font-family: 'Roboto Mono', monospace;
         font-size: 12px;
         line-height: normal;
         font-weight: normal;
@@ -22,7 +22,7 @@
         cursor: default;
         user-select: none;
         -webkit-user-select: none;
-        border: rgb(125, 126, 132) solid;
+        border: rgb(41, 60, 71) solid;
         border-width: 0px 4px 0px 4px;
         border-radius: 7px;
 
@@ -91,6 +91,7 @@
             top: 100%;
 
             &>.box-ui-text-autocomplete {
+                background: #293c47;
                 display: table-row-group;
                 position: absolute;
                 width: auto;
@@ -124,6 +125,7 @@
     }
 
     &>.box-ui-dropdown-container {
+        background: #293c47;
         flex: 1 1 100%;
         display: flex;
         flex-direction: column;

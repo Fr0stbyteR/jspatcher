@@ -198,8 +198,8 @@ export default class LineUI extends React.PureComponent<P, S> {
         return (
             <div className={className} tabIndex={0} data-id={this.props.id} style={{ transform: `translate(${x}px, ${y}px)` }} ref={this.refDiv} onMouseDown={this.handleMouseDown} onClick={this.handleClick}>
                 <svg width={divStyle.width} height={divStyle.height}>
-                    <path className="normal" d={d} ref={this.refPath} />
-                    {this.state.type === "audio" ? <path className="audio" d={d} /> : undefined}
+                    {/* <path className="normal" d={d} ref={this.refPath} /> */}
+                    {this.state.type === "audio" ? <><path className="overlaid" d={d} ref={this.refPath} /> <path className="audio" d={d} /></> : <path className="normal" d={d} ref={this.refPath} />}
                 </svg>
                 {this.state.selected ? <div className="line-handler line-handler-src" style={this.state.srcHandlerPos} onMouseDown={this.handleMouseDownSrc} /> : undefined}
                 {this.state.selected ? <div className="line-handler line-handler-dest" style={this.state.destHandlerPos} onMouseDown={this.handleMouseDownDest} /> : undefined}

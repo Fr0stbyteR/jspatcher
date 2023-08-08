@@ -1,11 +1,11 @@
 {
   "name": "@jspatcher/jspatcher",
-  "version": "0.0.11",
+  "version": "0.1.0",
   "description": "patcher js",
   "scripts": {
     "prebuild": "node ./src/scripts/patchSemanticUICss.js",
-    "build": "webpack --mode development --stats-children --env WS_DOMAIN=wss://bell.electro-smith.com",
-    "build-dev": "webpack --mode development --stats-children --env WS_DOMAIN=ws://localhost:8000",
+    "build": "webpack --mode development --stats-children --env WS_DOMAIN=wss://bell.electro-smith.com --env API_DOMAIN=https://bell.electro-smith.com",
+    "build-dev": "webpack --mode development --stats-children --env WS_DOMAIN=ws://localhost:8000 --env API_DOMAIN=http://localhost:8000",
     "build-watch": "npm run prebuild && webpack --mode development --watch --stats-children",
     "dist": "npm run prebuild && webpack --mode production",
     "update-packages": "node ./src/scripts/updatePackages.js",

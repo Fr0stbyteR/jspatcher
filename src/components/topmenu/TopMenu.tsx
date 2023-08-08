@@ -6,6 +6,7 @@ import EditMenu from "./EditMenu";
 import FlashMenu from "./FlashMenu";
 import "./TopMenu.scss";
 import ShareMenu from "./ShareMenu";
+import HelpMenu from "./HelpMenu";
 import BellIcon from "./Bell_logo_text.png";
 
 interface P {
@@ -78,6 +79,7 @@ export default class TopMenu extends React.PureComponent<P, S> {
                     <img src={BellIcon} height='max-content' width='80px' style={{ alignSelf: 'center', marginRight: '0.4em', marginLeft: '0.4em' }} />
                     <FileMenu {...this.props} ref={this.refFileMenu} />
                     <EditMenu {...this.props} ref={this.refEditMenu} />
+                    <HelpMenu {...this.props} />
                     <FlashMenu {...this.props} ref={this.refFlashMenu} onConnect={() => this.setState({ connected: true })} onDisconnect={() => this.setState({ connected: false })} />
                     <div style={{ flex: "1 1 auto" }}></div>
                     {/* <ShareMenu {...this.props} /> */}
