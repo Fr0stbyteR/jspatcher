@@ -78,9 +78,9 @@ export default class Reference extends React.PureComponent<{ editor: PatcherEdit
 
         return (
             <>
-                <div className="reference-container">
+                <div className="markdown-body">
                     <h1>{name ? name : `Reference`}</h1>
-                    <hr />
+                    {/* <hr /> */}
                     {loading ?
                         <Placeholder inverted fluid className="placeholder">
                             <Placeholder.Header>

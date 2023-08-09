@@ -32,6 +32,7 @@ interface S {
     highlightOutlet: number;
     key: string;
     bubblePorts: number[];
+    textChanged: boolean;
 }
 export default class BoxUI extends React.PureComponent<P, S> {
     box = this.props.editor.boxes[this.props.id];
@@ -54,6 +55,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
         highlightOutlet: null,
         key: performance.now().toString(),
         bubblePorts: [],
+        textChanged: false,
     };
     handleResetPos = () => {
         const { box } = this;
@@ -80,7 +82,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handlePresentationRectChanged = () => this.setState({ presentationRect: this.box.presentationRect.slice() as TPresentationRect });
     handleBlur = () => {
         this.handlingToggleEditOnClick = false;
-        this.setState({ editing: false }, this.inspectRectChange);
+        this.inspectRectChange();
+        this.setState({ editing: false, textChanged: false });
     };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
@@ -442,8 +445,9 @@ export default class BoxUI extends React.PureComponent<P, S> {
         const divStyle = {
             left: rect[0],
             top: rect[1],
-            width: InnerUI.sizing === "vertical" ? undefined : rect[2],
-            height: InnerUI.sizing === "horizontal" ? undefined : rect[3]
+            width: InnerUI.sizing === "vertical" ? undefined : this.state.editing && this.state.textChanged ? undefined : rect[2],
+            height: InnerUI.sizing === "horizontal" ? undefined : rect[3],
+            minWidth: '50px',
         };
         const classArray = ["box", "box-default"];
         if (this.state.selected) classArray.push("selected");
@@ -461,7 +465,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                     <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
                 </div>
                 <div className="box-ui">
-                    <InnerUI object={box.object} editor={this.props.editor} editing={this.state.editing} onEditEnd={this.handleBlur} key={this.state.key} />
+                    <InnerUI object={box.object} editor={this.props.editor} editing={this.state.editing} onEditEnd={this.handleBlur} key={this.state.key} onContentsChanged={() => this.setState({ textChanged: true })} />
                 </div>
                 {
                     this.state.inPresentationMode ? undefined : <>

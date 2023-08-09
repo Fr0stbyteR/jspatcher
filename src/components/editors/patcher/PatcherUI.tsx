@@ -229,7 +229,7 @@ export default class PatcherUI extends React.PureComponent<P, S> {
             else if (mode === "bell" && e.key === "m") text = "message";
             else if (e.key === "c") text = "comment";
             else if (mode === "bell" && e.key === "b") text = "button";
-            else if (mode === "bell" && e.key === "i") text = "number";
+            else if (mode === "bell" && e.key === "i") text = 'number @format "Decimal (Integer)"';
             else if (mode === "bell" && e.key === "s") text = "slider";
             else if (mode === "bell" && e.key === "t") text = "toggle";
             this.props.editor.createBox({ text, inlets: 0, outlets: 0, rect: [x, y, 0, 0], presentation, _editing: true });

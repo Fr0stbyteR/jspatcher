@@ -104,8 +104,8 @@ interface DefaultUIDropdownArgvState { $: number; items: DefaultUIDropdownArgvIt
 class DefaultUIDropdownArgv extends React.Component<DefaultUIDropdownArgvProps, DefaultUIDropdownArgvState> {
     state: DefaultUIDropdownArgvState = { $: -1, items: [] };
     refTBody = React.createRef<HTMLTableSectionElement>();
-    next() {}
-    prev() {}
+    next() { }
+    prev() { }
     get current() {
         return this.state.items[this.state.$];
     }
@@ -208,11 +208,42 @@ export default class DefaultUI<T extends DefaultObject = DefaultObject, P extend
                     const text = this.getApplied(current.key);
                     this.refSpan.current.textContent = text;
                     this.setState({ text });
+                    this.props.onContentsChanged();
                 }
             }
             return;
         }
-        if (e.key === " " || e.key === "Tab") {
+        if (e.key === "Tab") {
+            if (this.refDropdownObject.current && this.refSpan.current) {
+                const span = this.refSpan.current;
+                const { current } = this.refDropdownObject.current;
+                if (current) {
+                    const text = this.getApplied(current.key);
+                    this.refSpan.current.textContent = text;
+                    selectElementPos(span, text.length);
+                    this.setState({ text });
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.nativeEvent.stopImmediatePropagation();
+                    this.props.onContentsChanged();
+                    return;
+                } else {
+                    const items = this.refDropdownObject.current.state.items;
+                    if (items.length) {
+                        const text = this.getApplied(items[0].key);
+                        this.refSpan.current.textContent = text;
+                        selectElementPos(span, text.length);
+                        this.setState({ text });
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.nativeEvent.stopImmediatePropagation();
+                        this.props.onContentsChanged();
+                        return;
+                    }
+                }
+            }
+        }
+        if (e.key === " ") {
             if (this.refDropdownObject.current && this.refSpan.current) {
                 const span = this.refSpan.current;
                 const { current } = this.refDropdownObject.current;
@@ -233,6 +264,10 @@ export default class DefaultUI<T extends DefaultObject = DefaultObject, P extend
         }
         e.stopPropagation();
         e.nativeEvent.stopImmediatePropagation();
+
+        if (e.key.length === 1 || e.key == "Backspace") {
+            this.props.onContentsChanged();
+        }
     };
     handleKeyUp = () => {
         if (!this.refSpan.current) return;

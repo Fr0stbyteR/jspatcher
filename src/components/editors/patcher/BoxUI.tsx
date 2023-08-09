@@ -30,6 +30,7 @@ interface S {
     highlightInlet: number;
     highlightOutlet: number;
     key: string;
+    textChanged: boolean;
 }
 export default class BoxUI extends React.PureComponent<P, S> {
     box = this.props.editor.boxes[this.props.id];
@@ -50,7 +51,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
         highlight: false,
         highlightInlet: null,
         highlightOutlet: null,
-        key: performance.now().toString()
+        key: performance.now().toString(),
+        textChanged: false,
     };
     handleResetPos = () => {
         const { box } = this;
@@ -77,7 +79,8 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handlePresentationRectChanged = () => this.setState({ presentationRect: this.box.presentationRect.slice() as TPresentationRect });
     handleBlur = () => {
         this.handlingToggleEditOnClick = false;
-        this.setState({ editing: false }, this.inspectRectChange);
+        this.inspectRectChange();
+        this.setState({ editing: false, textChanged: false }, this.inspectRectChange);
     };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
@@ -195,6 +198,28 @@ export default class BoxUI extends React.PureComponent<P, S> {
         if (!isRectResizable(box[rectKey])) return;
         const div = this.refDiv.current;
         if (div.offsetParent === null) return;
+        const divRect = div.getBoundingClientRect();
+        if (divRect.width === box[rectKey][2] && divRect.height === box[rectKey][3]) return;
+        const rect = [box[rectKey][0], box[rectKey][1], divRect.width, divRect.height] as TRect;
+        if (this.state.inPresentationMode) {
+            this.setState({ presentationRect: rect });
+            box.setPresentationRect(rect.slice() as TRect);
+        } else {
+            this.setState({ rect });
+            box.setRect(rect.slice() as TRect);
+        }
+    };
+    inspectEditRectChange = () => {
+        if (!this.refDiv.current)
+            return;
+        const box = this.props.editor.boxes[this.props.id];
+        const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
+        if (!isRectResizable(box[rectKey]))
+            return;
+        const div = this.refDiv.current;
+        if (div.offsetParent === null)
+            return;
+
         const divRect = div.getBoundingClientRect();
         if (divRect.width === box[rectKey][2] && divRect.height === box[rectKey][3]) return;
         const rect = [box[rectKey][0], box[rectKey][1], divRect.width, divRect.height] as TRect;
@@ -417,11 +442,14 @@ export default class BoxUI extends React.PureComponent<P, S> {
         const { box } = this;
         const rect = this.state.inPresentationMode ? this.state.presentationRect : this.state.rect;
         const InnerUI = this.state.InnerUI;
+        const mostBubbles = box.inlets > box.outlets ? box.inlets : box.outlets;
+        const minWidth = mostBubbles ? 20 + (mostBubbles - 1) * 20 : 30;
         const divStyle = {
             left: rect[0],
             top: rect[1],
-            width: InnerUI.sizing === "vertical" ? undefined : rect[2],
-            height: InnerUI.sizing === "horizontal" ? undefined : rect[3]
+            width: InnerUI.sizing === "vertical" ? undefined : this.state.editing && this.state.textChanged ? undefined : rect[2],
+            height: InnerUI.sizing === "horizontal" ? undefined : rect[3],
+            minWidth,
         };
         const classArray = ["box", "box-default"];
         if (this.state.selected) classArray.push("selected");
@@ -439,7 +467,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
                     <div className="resize-handler resize-handler-nw" onMouseDown={this.handleResizeMouseDown}></div>
                 </div>
                 <div className="box-ui">
-                    <InnerUI object={box.object} editor={this.props.editor} editing={this.state.editing} onEditEnd={this.handleBlur} key={this.state.key} />
+                    <InnerUI object={box.object} editor={this.props.editor} editing={this.state.editing} onEditEnd={this.handleBlur} key={this.state.key} onContentsChanged={() => this.setState({ textChanged: true })} />
                 </div>
                 {
                     this.state.inPresentationMode ? undefined : <>
@@ -560,7 +588,7 @@ class Inlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index
         );
     }
 }
-class Outlet extends React.PureComponent< { editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean }, { isConnected: boolean; highlight: boolean }> {
+class Outlet extends React.PureComponent<{ editor: PatcherEditor; box: Box; index: number; runtime?: boolean; highlight: boolean }, { isConnected: boolean; highlight: boolean }> {
     state = { isConnected: this.props.box.outletLines[this.props.index].size > 0, highlight: false };
     dragged = false;
     componentDidMount() {

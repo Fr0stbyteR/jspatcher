@@ -10,15 +10,16 @@ export interface AbstractUIProps<T extends IJSPatcherObject = IJSPatcherObject> 
     inDock?: boolean;
     editing: boolean;
     onEditEnd: () => any;
+    onContentsChanged?: () => any;
 }
 export interface AbstractUIState {
     width: number | string;
     height: number | string;
 }
 export default abstract class AbstractUI<
-        T extends IJSPatcherObject = IJSPatcherObject,
-        P extends Partial<AbstractUIProps<T>> & Record<string, any> = {},
-        S extends Partial<AbstractUIState> & Record<string, any> = {}
+    T extends IJSPatcherObject = IJSPatcherObject,
+    P extends Partial<AbstractUIProps<T>> & Record<string, any> = {},
+    S extends Partial<AbstractUIState> & Record<string, any> = {}
 > extends React.PureComponent<AbstractUIProps<T> & P, S & AbstractUIState> {
     /** Sizing rule */
     static sizing: "horizontal" | "vertical" | "both" | "ratio";

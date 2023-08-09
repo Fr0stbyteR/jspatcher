@@ -102,6 +102,7 @@
     "worklet-loader": "^2.0.0"
   },
   "dependencies": {
-    "@types/node": "^18.11.9"
+    "@types/node": "^18.11.9",
+    "github-markdown-css": "^5.2.0"
   }
 }
