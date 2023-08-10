@@ -5,7 +5,8 @@ import HardwareEditor from "../../core/hardware/HardwareEditor";
 import { TaskError, Task } from "../../core/TaskMgr";
 import PatcherBottomMenu from "./patcher/PatcherBottomMenu";
 import PatcherUI from "./patcher/PatcherUI";
-import PatcherRightMenu from "../rightmenu/PatcherRightMenu";
+// import PatcherRightMenu from "../rightmenu/PatcherRightMenu";
+import HardwarePatcherRightMenu from "../rightmenu_hardware/HardwarePatcherRightMenu";
 import HardwareUI from "./hardware/HardwareUI";
 
 interface P {
@@ -80,12 +81,12 @@ export default class HardwareEditorUI extends React.PureComponent<P, S> {
                     </div>
                     {/* {this.props.runtime ? undefined : <PatcherBottomMenu {...this.props} />} */}
                 </div>
-                {/* {this.props.runtime
+                {this.props.runtime
                     ? undefined
                     : <div className="ui-right">
-                        <PatcherRightMenu {...this.props} />
+                        <HardwarePatcherRightMenu {...this.props} />
                     </div>
-                } */}
+                }
             </div>
         );
     }
