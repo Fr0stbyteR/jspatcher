@@ -578,12 +578,15 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         this.emit("resized", { delta, type, selected, presentation });
     }
     resize(selected: string[], delta: { x: number; y: number }, type: TResizeHandlerType, presentation: boolean) {
-        if (this.state.selectAfterEdit) this.select(...selected);
+        if (this.state.selectAfterEdit)
+            this.select(...selected);
         const rectKey = presentation ? "presentationRect" : "rect";
         let ids = selected.filter(id => id.startsWith("box") && this.boxes[id]);
-        if (presentation) ids = ids.filter(id => isRectResizable(this.boxes[id][rectKey]));
+        if (presentation)
+            ids = ids.filter(id => isRectResizable(this.boxes[id][rectKey]));
         const boxes = ids.map(id => this.boxes[id]);
-        if (boxes.length === 0) return;
+        if (boxes.length === 0)
+            return;
         let [left, top, width, height] = boxes[0][rectKey] as TRect;
         for (let i = 1; i < boxes.length; i++) {
             const box = boxes[i];
@@ -593,32 +596,56 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
             if ($width < width) width = $width;
             if ($height < height) height = $height;
         }
-        // Not allowing resize out of bound
-        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.max(delta.x, -left);
-        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.max(delta.y, -top);
-        // Not allowing resize below 15px width or height
-        if (type === "ne" || type === "e" || type === "se") delta.x = Math.max(delta.x, 15 - width);
-        if (type === "sw" || type === "w" || type === "nw") delta.x = Math.min(delta.x, width - 15);
-        if (type === "se" || type === "s" || type === "sw") delta.y = Math.max(delta.y, 15 - height);
-        if (type === "nw" || type === "n" || type === "ne") delta.y = Math.min(delta.y, height - 15);
-        boxes.forEach((box) => {
+
+        for (let i = 0; i < boxes.length; i++) {
+            const box = boxes[i];
+            let tempDelta = { ...delta };
+            // Not allowing resize out of bound
+            if (type === "sw" || type === "w" || type === "nw") tempDelta.x = Math.max(tempDelta.x, -left);
+            if (type === "nw" || type === "n" || type === "ne") tempDelta.y = Math.max(tempDelta.y, -top);
+            // Not allowing resize below 15px width or height
+            const minWidth = box.minWidth();
+            if (type === "ne" || type === "e" || type === "se") tempDelta.x = Math.max(tempDelta.x, minWidth - width);
+            if (type === "sw" || type === "w" || type === "nw") tempDelta.x = Math.min(tempDelta.x, width - minWidth);
+            if (type === "se" || type === "s" || type === "sw") tempDelta.y = Math.max(tempDelta.y, 15 - height);
+            if (type === "nw" || type === "n" || type === "ne") tempDelta.y = Math.min(tempDelta.y, height - 15);
+
             const sizingX = box.UI ? box.UI?.sizing === "horizontal" || box.UI?.sizing === "both" : true;
             const sizingY = box.UI ? box.UI?.sizing === "vertical" || box.UI?.sizing === "both" : true;
-            if (delta.x && sizingX) {
-                if (type === "ne" || type === "e" || type === "se") (box[rectKey] as TRect)[2] += delta.x;
+            if (tempDelta.x && sizingX) {
+                if (type === "ne" || type === "e" || type === "se") (box[rectKey] as TRect)[2] += tempDelta.x;
                 if (type === "sw" || type === "w" || type === "nw") {
-                    (box[rectKey] as TRect)[2] -= delta.x;
-                    (box[rectKey] as TRect)[0] += delta.x;
+                    (box[rectKey] as TRect)[2] -= tempDelta.x;
+                    (box[rectKey] as TRect)[0] += tempDelta.x;
                 }
             }
-            if (delta.y && sizingY) {
-                if (type === "se" || type === "s" || type === "sw") (box[rectKey] as TRect)[3] += delta.y;
+            if (tempDelta.y && sizingY) {
+                if (type === "se" || type === "s" || type === "sw") (box[rectKey] as TRect)[3] += tempDelta.y;
                 if (type === "nw" || type === "n" || type === "ne") {
-                    (box[rectKey] as TRect)[3] -= delta.y;
-                    (box[rectKey] as TRect)[1] += delta.y;
+                    (box[rectKey] as TRect)[3] -= tempDelta.y;
+                    (box[rectKey] as TRect)[1] += tempDelta.y;
                 }
             }
-        });
+        }
+
+        // boxes.forEach((box) => {
+        //     const sizingX = box.UI ? box.UI?.sizing === "horizontal" || box.UI?.sizing === "both" : true;
+        //     const sizingY = box.UI ? box.UI?.sizing === "vertical" || box.UI?.sizing === "both" : true;
+        //     if (delta.x && sizingX) {
+        //         if (type === "ne" || type === "e" || type === "se") (box[rectKey] as TRect)[2] += delta.x;
+        //         if (type === "sw" || type === "w" || type === "nw") {
+        //             (box[rectKey] as TRect)[2] -= delta.x;
+        //             (box[rectKey] as TRect)[0] += delta.x;
+        //         }
+        //     }
+        //     if (delta.y && sizingY) {
+        //         if (type === "se" || type === "s" || type === "sw") (box[rectKey] as TRect)[3] += delta.y;
+        //         if (type === "nw" || type === "n" || type === "ne") {
+        //             (box[rectKey] as TRect)[3] -= delta.y;
+        //             (box[rectKey] as TRect)[1] += delta.y;
+        //         }
+        //     }
+        // });
         // Emit events
         if (!delta.x && !delta.y) return;
         if (presentation !== this.state.presentation) return;

@@ -53,7 +53,9 @@ export default class LineUI extends React.PureComponent<P, S> {
             this.refDiv.current.style.transform = `translate(${x}px, ${y}px)`;
             return;
         }
-        this.setState({ destPos: line.destPos, srcPos: line.srcPos }, this.state.selected && !this.state.dragging ? () => this.setState(this.handlersPos) : null);
+        this.setState({ destPos: line.destPos, srcPos: line.srcPos }, () => {
+            if (this.state.selected && !this.state.dragging) this.setState(this.handlersPos);
+        });
     };
     handleSelected = (ids: string[]) => {
         const selected = ids.indexOf(this.props.id) >= 0;
@@ -130,8 +132,10 @@ export default class LineUI extends React.PureComponent<P, S> {
                 if (!this.dragged) this.dragged = true;
                 dragOffset.x += movementX;
                 dragOffset.y += movementY;
-                if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + movementX, top: this.state.srcPos.top + movementY } });
-                else this.setState({ destPos: { left: this.state.destPos.left + movementX, top: this.state.destPos.top + movementY } });
+                const left = e.clientX - patcherRect.left + patcherDiv.scrollLeft;
+                const top = e.clientY - patcherRect.top + patcherDiv.scrollTop;
+                if (isSrc) this.setState({ srcPos: { left, top } });
+                else this.setState({ destPos: { left, top } });
                 nearest = this.props.editor.highlightNearestPort(isSrc, dragOffset, isSrc ? line.getDest() : line.getSrc(), isSrc ? line.getSrc() : line.getDest());
             }
             const x = e.clientX - patcherRect.left;
@@ -251,8 +255,10 @@ export class TempLineUI extends React.PureComponent<{ editor: PatcherEditor }, {
                 if (!this.state.show) this.setState({ show: true });
                 dragOffset.x += movementX;
                 dragOffset.y += movementY;
-                if (isSrc) this.setState({ srcPos: { left: this.state.srcPos.left + movementX, top: this.state.srcPos.top + movementY } });
-                else this.setState({ destPos: { left: this.state.destPos.left + movementX, top: this.state.destPos.top + movementY } });
+                const left = e.clientX - patcherRect.left + patcherDiv.scrollLeft;
+                const top = e.clientY - patcherRect.top + patcherDiv.scrollTop;
+                if (isSrc) this.setState({ srcPos: { left, top } });
+                else this.setState({ destPos: { left, top } });
                 nearest = this.props.editor.highlightNearestPort(this.findSrc, dragOffset, this.from);
             }
             const x = e.clientX - patcherRect.left;

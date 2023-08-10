@@ -442,14 +442,12 @@ export default class BoxUI extends React.PureComponent<P, S> {
         const { box } = this;
         const rect = this.state.inPresentationMode ? this.state.presentationRect : this.state.rect;
         const InnerUI = this.state.InnerUI;
-        const mostBubbles = box.inlets > box.outlets ? box.inlets : box.outlets;
-        const minWidth = mostBubbles ? 20 + (mostBubbles - 1) * 20 : 30;
         const divStyle = {
             left: rect[0],
             top: rect[1],
             width: InnerUI.sizing === "vertical" ? undefined : this.state.editing && this.state.textChanged ? undefined : rect[2],
             height: InnerUI.sizing === "horizontal" ? undefined : rect[3],
-            minWidth,
+            minWidth: box.minWidth(),
         };
         const classArray = ["box", "box-default"];
         if (this.state.selected) classArray.push("selected");

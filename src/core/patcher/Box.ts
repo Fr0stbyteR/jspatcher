@@ -296,6 +296,11 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         const [left, top, width, height] = this.presentationRect;
         this.setPresentationRect([typeof leftIn === "number" || typeof leftIn === "string" ? leftIn : left, typeof topIn === "number" || typeof topIn === "string" ? topIn : top, width, height] as TPresentationRect);
     }
+    minWidth() {
+        const mostBubbles = this.inlets > this.outlets ? this.inlets : this.outlets;
+        const minWidth = mostBubbles ? 20 + (mostBubbles - 1) * 20 : 30;
+        return minWidth;
+    }
     get size() {
         return this.rect.slice(2) as [number, number];
     }
