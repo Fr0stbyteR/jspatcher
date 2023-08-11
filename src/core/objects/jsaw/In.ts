@@ -33,6 +33,7 @@ export default class In extends BaseObject<{}, {}, [], [any], [number], P> {
         type: "anything",
         description: ""
     }];
+    static docs: string = "common/docs/In.html";
     protected get index() {
         return Math.max(1, ~~this.box.args[0] || 1);
     }

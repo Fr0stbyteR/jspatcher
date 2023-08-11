@@ -24,9 +24,9 @@ export type PackageGetter = (env: IJSPatcherEnv) => Promise<TPackage>;
 export default class GlobalPackageManager {
     bell: TPackage;
     jsaw: TPackage;
-    faust: TPackage;
-    max: TPackage;
-    gen: TPackage;
+    // faust: TPackage;
+    // max: TPackage;
+    // gen: TPackage;
     private readonly env: Env;
     readonly externals = new Map<string, Record<string, any>>();
     readonly importedPackages: IExternalPackage[] = [];
@@ -64,18 +64,18 @@ export default class GlobalPackageManager {
         this.jsaw = {
             Base: await (await import("./objects/base/index.jsdsppkg.main")).default()
         };
-        this.gen = {
-            Base: (await import("./objects/Gen")).default
-        };
+        // this.gen = {
+        //     Base: (await import("./objects/Gen")).default
+        // };
         /*
         this.max = (await import("./objects/Max")).default;
         this.add(this.env.faustAdditionalObjects, "js", ["faust"]);
         this.add(this.env.faustLibObjects, "faust");
         */
-        this.faust = {
-            Base: (await import("./objects/Faust")).default,
-            "stdfaust.lib": this.env.faustLibObjects
-        };
+        // this.faust = {
+        //     Base: (await import("./objects/Faust")).default,
+        //     "stdfaust.lib": this.env.faustLibObjects
+        // };
         // this.add({ globalThis: globalThis }, "js");
     }
     async postInit() {

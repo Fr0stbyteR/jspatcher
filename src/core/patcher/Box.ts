@@ -466,14 +466,17 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         const { id, text, inlets, outlets, rect, background, presentation, presentationRect, args, props, data, zIndex } = this;
 
         const defaultProps: Record<string, any> = {};
-        for (const key in this.meta.props) {
-            if (!(key in props)) {
-                defaultProps[key] = this.meta.props[key].default;
-            } else {
-                defaultProps[key] = props[key];
+        if (this.meta) {
+            for (const key in this.meta.props) {
+                if (this.meta.props[key].alwaysSerialize) {
+                    if (!(key in props)) {
+                        defaultProps[key] = this.meta.props[key].default;
+                    } else {
+                        defaultProps[key] = props[key];
+                    }
+                }
             }
         }
-
 
         return JSON.stringify({ id, text, inlets, outlets, rect, background, presentation, presentationRect, args, props: defaultProps, data, zIndex });
     }

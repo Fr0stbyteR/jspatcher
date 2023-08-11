@@ -27,13 +27,13 @@ import GlobalTransportNode from "./worklets/GlobalTransportNode";
 import EnvOptionsManager from "./EnvOptionsManager";
 import Logger from "./Logger";
 import TypeScriptEnv from "./TSEnv";
-import { getFaustLibObjects } from "./objects/Faust";
-import { faustLangRegister } from "../misc/monaco-faust/register";
+// import { getFaustLibObjects } from "./objects/Faust";
+// import { faustLangRegister } from "../misc/monaco-faust/register";
 import { detectOS, detectBrowserCore, getTimestamp } from "../utils/utils";
 import type PatcherAudio from "./audio/PatcherAudio";
 import type { IFileEditor } from "./file/FileEditor";
 import type { IFileInstance } from "./file/FileInstance";
-import type { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
+// import type { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
 import type { TErrorLevel, TPackage, ILogInfo } from "./types";
 import type { EnvOptions, PartialEnvOptions } from "./EnvOptionsManager";
 /*
@@ -109,10 +109,10 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     envNode: WorkletEnvNode;
     globalTransportNode: GlobalTransportNode;
     Faust: typeof Faust;
-    faustCompiler: Faust.FaustCompiler;
-    faustDocs: TFaustDocs;
+    // faustCompiler: Faust.FaustCompiler;
+    // faustDocs: TFaustDocs;
     // faustAdditionalObjects: TPackage;
-    faustLibObjects: TPackage;
+    // faustLibObjects: TPackage;
     Csound: typeof Csound;
     tsEnv = new TypeScriptEnv();
     pkgMgr: GlobalPackageManager;
@@ -177,9 +177,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     get ready() {
         return this.init();
     }
-    async getFaustCompiler() {
-        return this.faustCompiler;
-    }
+    // async getFaustCompiler() {
+    //     return this.faustCompiler;
+    // }
     async getFFmpeg() {
         return this.taskMgr.newTask(this, "Loading ffmpeg...", async () => {
             await this.ffmpegWorker.init();
@@ -251,9 +251,9 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
             // });
             await this.taskMgr.newTask(this, "Loading Monaco Editor...", async () => {
                 const { monaco } = await import("react-monaco-editor");
-                const { providers } = await faustLangRegister(monaco, this.faustCompiler);
-                this.faustDocs = providers.docs;
-                this.faustLibObjects = getFaustLibObjects(this.faustDocs);
+                // const { providers } = await faustLangRegister(monaco, this.faustCompiler);
+                // this.faustDocs = providers.docs;
+                // this.faustLibObjects = getFaustLibObjects(this.faustDocs);
             });
             await this.taskMgr.newTask(this, "Loading TypeScript VEnv...", async () => {
                 await this.tsEnv.init();

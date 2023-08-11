@@ -24,6 +24,7 @@ export default class AudioOut extends DefaultObject<{}, {}, [any], [], [number],
         description: "",
         isHot: true
     }];
+    static docs: string = "common/docs/AudioOut.html";
     inletAudioConnections: TAudioNodeInletConnection[] = [{ node: undefined as GainNode, index: 0 }];
     private _duringInit = true;
     protected get index() {

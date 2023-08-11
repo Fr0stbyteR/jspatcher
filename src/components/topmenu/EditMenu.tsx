@@ -24,7 +24,8 @@ export default class EditMenu extends React.PureComponent<P, S> {
     };
     refInstanceEditMenu = React.createRef<PatcherEditMenu & AudioEditMenu>();
     handleClickUndo = async () => {
-        if (this.state.locked) return;
+        if (this.state.locked)
+            return;
         this.state.editor.undo();
     };
     handleClickRedo = async () => {
@@ -44,7 +45,8 @@ export default class EditMenu extends React.PureComponent<P, S> {
         await this.state.editor.paste();
     };
     handleClickDelete = () => {
-        if (this.state.locked) return;
+        if (this.state.locked)
+            return;
         this.state.editor.deleteSelected();
     };
     handleClickSelectAll = () => {

@@ -165,7 +165,7 @@ export default class Hardware extends DefaultObject<Partial<RawHardwarePatcher>,
             this.reload();
         });
         this.on("inlet", ({ data, inlet }) => {
-            this._.patcher.fn(data, inlet);
+            // this._.patcher.fn(data, inlet);
         });
         this.on("destroy", this.unsubscribePatcher);
     }

@@ -25,16 +25,19 @@ export default class Knob extends ImageObject<{}, {}, any[], [], any[], [HTMLIma
             type: "number",
             default: 0.01,
             description: "Threshold beyond which the knob is considered to be moving at rest",
+            alwaysSerialize: true,
         },
         dynamic_threshold: {
             type: "number",
             default: 0.001,
             description: "Threshold beyond which the knob remains active while moving",
+            alwaysSerialize: true,
         },
         timeout: {
             type: "number",
             default: 500,
             description: "Timeout in ms after which the knob is considered to be at rest",
+            alwaysSerialize: true,
         }
     };
 

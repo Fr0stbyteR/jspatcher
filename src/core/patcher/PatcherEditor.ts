@@ -424,6 +424,11 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
     }
     async delete(objects: RawPatcher) {
         const deleted: RawPatcher = { boxes: {}, lines: {} };
+
+        console.log(`deleted objects: ${objects}`);
+        console.log(this.instance);
+        console.log(Object.keys(this.lines));
+
         for (const id in objects.lines) {
             deleted.lines[id] = this.lines[id].destroy().toSerializable();
         }

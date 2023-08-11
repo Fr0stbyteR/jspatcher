@@ -15,6 +15,7 @@ export interface CommentProps {
 
 export default class comment extends BaseObject<{ value: string }, {}, [string], [], [string], CommentProps, CommentUIState> {
     static description = "Text Comment";
+    static docs: string = "common/docs/Comment.html";
     static args: IArgsMeta = [{
         type: "string",
         optional: true,

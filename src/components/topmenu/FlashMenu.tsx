@@ -276,9 +276,14 @@ export default class FlashMenu extends React.PureComponent<P, S> {
             let interfaces = [autoDevice.settings]
             await fixInterfaceNames(autoDevice.device_, interfaces);
             const fixedDevice = new dfu.Device(autoDevice.device_, interfaces[0]);
-            const device = await this.connect(fixedDevice);
-            this.setState({ device });
-            return true;
+
+            try {
+                const device = await this.connect(fixedDevice);
+                this.setState({ device });
+                return true;
+            } catch (e) {
+                this.props.env.newLog("none", "USB", `Error connecting to device: ${e}`);
+            }
         }
 
         let filters: Record<string, string>[] = [{ 'vendorId': '0x0483', 'productId': '0xdf11' }];

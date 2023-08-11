@@ -38,6 +38,7 @@ export interface IPropMeta<T extends any = any> {
     group?: string;
     description: string;
     isUIState?: boolean;
+    alwaysSerialize?: boolean;
 }
 export type IPropsMeta<T extends Record<string, any> = Record<string, any>> = { [K in keyof T]: IPropMeta<T[K]> };
 export interface IHardwarePatcherObjectMeta<P extends Record<string, any> = Record<string, any>> {

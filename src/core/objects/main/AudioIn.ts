@@ -27,6 +27,7 @@ export default class AudioIn extends DefaultObject<{}, {}, [], [any], [number], 
         type: "signal",
         description: ""
     }];
+    static docs: string = "common/docs/AudioIn.html";
     outletAudioConnections: TAudioNodeOutletConnection[] = [{ node: undefined as GainNode, index: 0 }];
     private _duringInit = true;
     protected get index() {
