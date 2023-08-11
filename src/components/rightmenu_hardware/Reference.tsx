@@ -42,8 +42,10 @@ export default class Reference extends React.PureComponent<{ editor: PatcherEdit
             .then(d => d.text())
             .then(async (html) => {
                 // If the html starts with a title of name, remove it
-                if (html.match(/<h1>\s*(.+?)\s*<\/h1>/)[1] == this.state.name) {
-                    html = html.replace(/<h1>\s*(.+?)\s*<\/h1>/, '');
+                const title_regex = /<h1>(?:<a.+?><\/a>)?\s*(.+?)\s*<\/h1>/;
+                const match = html.match(title_regex);
+                if (match && match[1] == this.state.name) {
+                    html = html.replace(title_regex, '');
                 }
 
                 // Ensure it takes at least 500ms to load to avoid flashing
