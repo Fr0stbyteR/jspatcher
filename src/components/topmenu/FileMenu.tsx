@@ -11,9 +11,17 @@ import type { IFileEditor } from "../../core/file/FileEditor";
 import type { IProjectFolder } from "../../core/file/AbstractProjectFolder";
 import DeleteAllModal from "../modals/DeleteAllModal";
 import BlinkExample from "../../../examples/Blink.bell";
+import EightStepSequencer from "../../../examples/8step-Sequencer.bell";
+import AtariPunkConsole from "../../../examples/AtariV2.bell";
+import RandomNoteGenerator from "../../../examples/RandomNoteGenerator.bell";
+import SawSynthBp from "../../../examples/SawSynthBp.bell";
 
 const examples: Record<string, any> = {
+    "8 Step Sequencer": [EightStepSequencer, ""],
+    "Atari Punk Console": [AtariPunkConsole, ""],
     "Blink": [BlinkExample, "Seed"],
+    "Random Note Generator": [RandomNoteGenerator, ""],
+    "Saw Synth BP": [SawSynthBp, ""],
 };
 
 interface P {
@@ -49,7 +57,6 @@ export default class FileMenu extends React.PureComponent<P, S> {
         const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
         await patcher.load(examples[name][0], "bell");
         const editor = await patcher.getEditor();
-        editor.setState({ locked: false });
         this.props.env.openEditor(editor);
     };
     handleClickNewJs = async () => {
