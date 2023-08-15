@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Modal, Button, InputOnChangeData, Form, Input } from "semantic-ui-react";
+import { Modal, Button, InputOnChangeData, Form, Input, InputProps } from "semantic-ui-react";
 import Env from "../../core/Env";
 import { IProjectFolder } from "../../core/file/AbstractProjectFolder";
 import { IProjectItem } from "../../core/file/AbstractProjectItem";
@@ -25,7 +25,7 @@ interface S {
 export default class SaveAsModal extends React.PureComponent<P, S> {
     state = {
         fileName: this.props.fileName,
-        folder: this.props.folder
+        folder: this.props.folder,
     };
     get strings() {
         return I18n[this.props.lang].SaveAsModal;
@@ -50,9 +50,27 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
         e.stopPropagation();
         if (e.key === "Enter") this.props.onConfirm(this.state.folder, this.state.fileName);
     };
+    focusAndSelectFileName() {
+        const inputElement = document.getElementById("saveAsFileName") as HTMLInputElement;
+        if (inputElement) {
+            const fileName = this.state.fileName;
+            const dotIndex = fileName.lastIndexOf('.');
+
+            if (dotIndex !== -1) {
+                inputElement.setSelectionRange(0, dotIndex);
+            } else {
+                inputElement.select();
+            }
+        }
+    }
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>) {
         if (this.props.fileName !== prevProps.fileName) this.setState({ fileName: this.props.fileName });
         if (this.props.folder !== prevProps.folder) this.setState({ folder: this.props.folder });
+
+        // Check if the modal has just been opened
+        if (!prevProps.open && this.props.open) {
+            this.focusAndSelectFileName();
+        }
     }
     render() {
         return (
@@ -69,7 +87,7 @@ export default class SaveAsModal extends React.PureComponent<P, S> {
                         </Form.Field>
                         <Form.Field inline error={this.fileNameError}>
                             <label>{this.strings.fileName}</label>
-                            <Input value={this.state.fileName} onChange={this.handleFileNameChange} onKeyDown={this.handleKeyDown} />
+                            <Form.Input spellCheck="false" id="saveAsFileName" value={this.state.fileName} onChange={this.handleFileNameChange} onKeyDown={this.handleKeyDown} autoFocus />
                         </Form.Field>
                     </Form>
                 </Modal.Content>

@@ -404,6 +404,11 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     undoable(e: { oldArgs?: Args<T>; args?: Args<T>; oldProps?: Props<T>; props?: Props<T>; oldState?: State<T>; state?: State<T>; oldZIndex: number; zIndex?: number }) {
         this._patcher.boxChanged(this.id, e);
     }
+    minWidth() {
+        // const mostBubbles = this.inlets > this.outlets ? this.inlets : this.outlets;
+        // const minWidth = mostBubbles ? 20 + (mostBubbles - 1) * 20 : 30;
+        return 20;
+    }
     async changeObject({ args, props, state, zIndex }: { args?: Args<T>; props?: Props<T>; state?: State<T>; zIndex?: number }, options?: ObjectUpdateOptions) {
         if (args) await this._object?.updateArgs(args, options);
         if (props) await this._object?.updateProps(props, options);
@@ -460,15 +465,13 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
     toString() {
         const { id, text, ios, rect, background, presentation, presentationRect, args, props, data, zIndex } = this;
 
-        const defaultProps: Record<string, any> = {};
+        const defaultProps: Record<string, any> = structuredClone(props);
         let pinNames: string[] = [];
         if (this.meta) {
             for (const key in this.meta.props) {
                 if (this.meta.props[key].alwaysSerialize) {
-                    if (!(key in props)) {
+                    if (!(key in defaultProps)) {
                         defaultProps[key] = this.meta.props[key].default;
-                    } else {
-                        defaultProps[key] = props[key];
                     }
                 }
             }

@@ -10,6 +10,7 @@ import type TempPatcherFile from "./TempPatcherFile";
 import type { IJSPatcherEnv } from "../Env";
 import type { IProject } from "../Project";
 import type { PatcherEventMap, TPublicPatcherProps } from "./Patcher";
+import { IProjectFolder } from "../file/AbstractProjectFolder";
 
 export interface PatcherEditorEventMap extends PatcherEditorState {
     "create": RawPatcher;
@@ -144,6 +145,19 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         }
         // if (changed) this.emit("stateChanged", this.state);
         return changed;
+    }
+    async saveAs(parent: IProjectFolder, name: string) {
+
+        if (!name.endsWith(".bell")) {
+            // If there is no extension provided, replace with .bell
+            const bySeparator = name.split("/");
+            const byDot = bySeparator[bySeparator.length - 1].split(".");
+            if (byDot.length === 1) {
+                name = name + ".bell";
+            }
+        }
+
+        await super.saveAs(parent, name);
     }
     async createBox(boxIn: TBox) {
         const box = await this.instance.createBox(boxIn);

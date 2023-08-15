@@ -83,7 +83,7 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handleBlur = () => {
         this.handlingToggleEditOnClick = false;
         this.inspectRectChange();
-        this.setState({ editing: false, textChanged: false });
+        this.setState({ editing: false, textChanged: false }, this.inspectRectChange);
     };
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
@@ -192,16 +192,30 @@ export default class BoxUI extends React.PureComponent<P, S> {
      */
     inspectRectChange = () => {
         if (!this.refDiv.current) return;
-        if (this.textChanged) {
-            this.textChanged = false;
-            return;
-        }
+        // if (this.textChanged) {
+        //     this.textChanged = false;
+        //     return;
+        // }
         const box = this.props.editor.boxes[this.props.id];
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
         if (!isRectResizable(box[rectKey])) return;
         const div = this.refDiv.current;
         if (div.offsetParent === null) return;
         const divRect = div.getBoundingClientRect();
+
+        // In the case where the box is too small, set the minimum size
+        if (divRect.width < box.minWidth() /* || divRect.height < box.minHeight() */) {
+            const rect = [box[rectKey][0], box[rectKey][1], box.minWidth(), divRect.height] as TRect;
+            if (this.state.inPresentationMode) {
+                this.setState({ presentationRect: rect });
+                box.setPresentationRect(rect.slice() as TRect);
+            } else {
+                this.setState({ rect });
+                box.setRect(rect.slice() as TRect);
+            }
+            return;
+        }
+
         if (divRect.width === box[rectKey][2] && divRect.height === box[rectKey][3]) return;
         const rect = [box[rectKey][0], box[rectKey][1], divRect.width, divRect.height] as TRect;
         if (this.state.inPresentationMode) {
