@@ -544,6 +544,7 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             isPatcherInlet: false,
             isPatcherOutlet: false,
             docs: "",
+            helpFiles: [],
             ...metaFromPatcher
         };
     }

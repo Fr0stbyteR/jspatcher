@@ -1,6 +1,9 @@
 import TypedEventEmitter from "../utils/TypedEventEmitter";
 import Env, { EnvEventMap } from "./Env";
 import { IFileEditor } from "./file/FileEditor";
+import Patcher from "./patcher/Patcher";
+import PatcherEditor from "./patcher/PatcherEditor";
+import HardwarePatcherEditor from "./hardware/HardwareEditor";
 
 export type TSplitMode = "none" | "row" | "column";
 
@@ -66,6 +69,40 @@ export default class EditorContainer extends TypedEventEmitter<EditorContainerEv
     handleOpenEditor = (editor: EnvEventMap["openEditor"]) => {
         if (this.active) this.editors = [...this.editors, editor];
         this.activeEditor = editor;
+
+        if (editor instanceof PatcherEditor || editor instanceof HardwarePatcherEditor) {
+            const onHelp = async () => {
+                const boxes = editor.state.selected.filter(id => id.startsWith("box") && editor.boxes[id]).map(id => editor.boxes[id]);
+                if (boxes.length === 0) {
+                    return;
+                }
+
+                const box = boxes[0];
+                if (box.meta.helpFiles.length > 0) {
+                    const url = box.meta.helpFiles[0];
+                    const fullUrl = `https://web-patcher.sfo3.cdn.digitaloceanspaces.com/help/${url}`
+                    try {
+                        const helpFile = await (await fetch(fullUrl)).json();
+
+                        const patcher = new Patcher({ env: this._env, project: this._env.currentProject });
+                        await patcher.load(helpFile, "bell");
+                        const newEditor = await patcher.getEditor();
+                        this._env.openEditor(newEditor);
+                    } catch (e) {
+                        this._env.newLog("error", "Help File", "Error fetching help file. Please try again.")
+                    }
+                } else {
+                    this._env.newLog("info", "Help File", "This object does not yet have a help file.")
+                }
+            };
+
+            if (editor instanceof PatcherEditor) {
+                editor.on("help", onHelp);
+            } else if (editor instanceof HardwarePatcherEditor) {
+                editor.on("help", onHelp);
+            }
+        }
+
         const handleInstanceDestroy = () => {
             this.editors = this.editors.filter(i => i !== editor);
             if (!this.editors.length) this.destroy();

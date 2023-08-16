@@ -51,6 +51,8 @@ export interface IHardwarePatcherObjectMeta<P extends Record<string, any> = Reco
     props: IPropsMeta<P>;
     patcherInlets: IInletsMeta;
     patcherOutlets: IOutletsMeta;
+    docs: string;
+    helpFiles: string[];
 }
 
 export interface ObjectUpdateOptions {
@@ -262,6 +264,8 @@ export default abstract class AbstractObject<
     static props: IPropsMeta = {};
     static patcherInlets: IInletsMeta = [];
     static patcherOutlets: IOutletsMeta = [];
+    static docs: string = "";
+    static helpFiles: string[] = [];
     static get meta(): IHardwarePatcherObjectMeta {
         return {
             name: this._name,
@@ -273,6 +277,8 @@ export default abstract class AbstractObject<
             props: this.props,
             patcherInlets: this.patcherInlets,
             patcherOutlets: this.patcherOutlets,
+            docs: this.docs,
+            helpFiles: this.helpFiles,
         };
     }
     static UI: typeof AbstractUI;

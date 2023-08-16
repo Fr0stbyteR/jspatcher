@@ -27,6 +27,7 @@ export interface PatcherEditorEventMap extends PatcherEditorState {
     "tempLine": { findSrc: boolean; from: [string, number] };
     "inspector": never;
     "reference": never;
+    "help": never;
     "dockUI": string;
     "propsChanged": { props: Partial<TPublicPatcherProps>; oldProps: Partial<TPublicPatcherProps> };
     "highlightBox": string;
@@ -736,6 +737,16 @@ export default class PatcherEditor extends FileEditor<Patcher, PatcherEditorEven
         else if (this.state.selected.length) {
             const found = this.state.selected.find(id => id.startsWith("box"));
             if (found && this.boxes[found]) this.emit("reference");
+        }
+    }
+    help(box?: Box) {
+        if (box) {
+            this.emit("help");
+        } else if (this.state.selected.length) {
+            const found = this.state.selected.find(id => id.startsWith("box"));
+            if (found && this.boxes[found]) {
+                this.emit("help");
+            }
         }
     }
     dockUI(box?: Box) {

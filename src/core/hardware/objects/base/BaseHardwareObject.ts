@@ -82,6 +82,8 @@ export default class BaseObject<
             },
             patcherInlets: [...this.patcherInlets],
             patcherOutlets: [...this.patcherOutlets],
+            docs: this.docs,
+            helpFiles: this.helpFiles,
         };
     }
     isUIStateKey = (x: any) => this.meta.props[x] && this.meta.props[x].isUIState;
