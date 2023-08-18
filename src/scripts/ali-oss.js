@@ -40,7 +40,7 @@ const ossInfo = require("../../local/ali-oss.json");
 const store = new OSS(ossInfo);
 
 (async () => {
-    const allFiles = [...getAllFiles("./dist"/* , /.js.map$/ */), ...getAllFiles("./examples")];
+    const allFiles = [...getAllFiles("./dist"/* , /.js.map$/ */), ...getAllFiles("./examples"), ...getAllFiles("./help")];
     // console.log(allFiles);
     const list = await store.list({ prefix: "", "max-keys": 1000 }, {});
     // const onlineFiles = list.objects.map(o => o.name);
@@ -59,7 +59,7 @@ const store = new OSS(ossInfo);
         }
     }
     console.log(lastUpTime);
-    const upFiles = [...getAllFiles("./dist"/* , /.js.map$/ */, undefined, lastUpTime), ...getAllFiles("./examples", undefined, lastUpTime)];
+    const upFiles = [...getAllFiles("./dist"/* , /.js.map$/ */, undefined, lastUpTime), ...getAllFiles("./examples", undefined, lastUpTime), ...getAllFiles("./help", undefined, lastUpTime)];
     for (const file of upFiles) {
         console.log("Put: \t" + file);
         const result = await store.put(file, file);
