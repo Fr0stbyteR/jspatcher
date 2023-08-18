@@ -2060,10 +2060,10 @@ const Node = (_a = class extends AudioWorkletNode {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ AudioWorkletRegister),
-/* harmony export */   "registeredProcessors": () => (/* binding */ registeredProcessors),
-/* harmony export */   "registeringProcessors": () => (/* binding */ registeringProcessors),
-/* harmony export */   "rejects": () => (/* binding */ rejects),
-/* harmony export */   "resolves": () => (/* binding */ resolves)
+/* harmony export */   registeredProcessors: () => (/* binding */ registeredProcessors),
+/* harmony export */   registeringProcessors: () => (/* binding */ registeringProcessors),
+/* harmony export */   rejects: () => (/* binding */ rejects),
+/* harmony export */   resolves: () => (/* binding */ resolves)
 /* harmony export */ });
 
 var _a, _b, _c, _d, _e, _f, _g, _h;
@@ -2131,7 +2131,7 @@ AudioWorkletRegister.rejects = rejects;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ TemporalAnalyserNode),
-/* harmony export */   "processorId": () => (/* binding */ processorId)
+/* harmony export */   processorId: () => (/* binding */ processorId)
 /* harmony export */ });
 /* harmony import */ var _TemporalAnalyser_worklet_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TemporalAnalyser.worklet.ts */ "./src/core/worklets/TemporalAnalyser.worklet.ts");
 /* harmony import */ var _TemporalAnalyser_worklet_ts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_TemporalAnalyser_worklet_ts__WEBPACK_IMPORTED_MODULE_0__);
@@ -2169,7 +2169,7 @@ TemporalAnalyserNode.fnNames = ["getRms", "getAbsMax", "getZcr", "getEstimatedFr
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ TransmitterNode),
-/* harmony export */   "processorId": () => (/* binding */ processorId)
+/* harmony export */   processorId: () => (/* binding */ processorId)
 /* harmony export */ });
 /* harmony import */ var _Transmitter_worklet_ts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Transmitter.worklet.ts */ "./src/core/worklets/Transmitter.worklet.ts");
 /* harmony import */ var _Transmitter_worklet_ts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_Transmitter_worklet_ts__WEBPACK_IMPORTED_MODULE_0__);
@@ -2730,14 +2730,14 @@ Waveform.stepsFactor = 16;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "AbstractWamNode": () => (/* binding */ WamNode),
-/* harmony export */   "AbstractWamParameter": () => (/* binding */ WamParameter),
-/* harmony export */   "AbstractWamParameterInfo": () => (/* binding */ WamParameterInfo),
-/* harmony export */   "AbstractWebAudioModule": () => (/* binding */ WebAudioModule),
-/* harmony export */   "VERSION": () => (/* binding */ version_default),
-/* harmony export */   "getAbstractWamEnv": () => (/* binding */ AbstractWamEnv_default),
-/* harmony export */   "getAbstractWamGroup": () => (/* binding */ AbstractWamGroup_default),
-/* harmony export */   "getAbstractWamProcessor": () => (/* binding */ AbstractWamProcessor_default)
+/* harmony export */   AbstractWamNode: () => (/* binding */ WamNode),
+/* harmony export */   AbstractWamParameter: () => (/* binding */ WamParameter),
+/* harmony export */   AbstractWamParameterInfo: () => (/* binding */ WamParameterInfo),
+/* harmony export */   AbstractWebAudioModule: () => (/* binding */ WebAudioModule),
+/* harmony export */   VERSION: () => (/* binding */ version_default),
+/* harmony export */   getAbstractWamEnv: () => (/* binding */ AbstractWamEnv_default),
+/* harmony export */   getAbstractWamGroup: () => (/* binding */ AbstractWamGroup_default),
+/* harmony export */   getAbstractWamProcessor: () => (/* binding */ AbstractWamProcessor_default)
 /* harmony export */ });
 // src/AbstractWamEnv.js
 var getWamEnv = (apiVersion) => {
@@ -3100,20 +3100,20 @@ var version_default = "2.0.0-alpha.3";
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "WamNode": () => (/* binding */ WamNode),
-/* harmony export */   "WebAudioModule": () => (/* binding */ WebAudioModule_default),
-/* harmony export */   "addFunctionModule": () => (/* binding */ addFunctionModule_default),
-/* harmony export */   "apiVersion": () => (/* binding */ apiVersion_default),
-/* harmony export */   "getRingBuffer": () => (/* binding */ RingBuffer_default),
-/* harmony export */   "getWamArrayRingBuffer": () => (/* binding */ WamArrayRingBuffer_default),
-/* harmony export */   "getWamEventRingBuffer": () => (/* binding */ WamEventRingBuffer_default),
-/* harmony export */   "getWamParameter": () => (/* binding */ WamParameter_default),
-/* harmony export */   "getWamParameterInfo": () => (/* binding */ WamParameterInfo_default),
-/* harmony export */   "getWamParameterInterpolator": () => (/* binding */ WamParameterInterpolator_default),
-/* harmony export */   "getWamProcessor": () => (/* binding */ WamProcessor_default),
-/* harmony export */   "initializeWamEnv": () => (/* binding */ WamEnv_default),
-/* harmony export */   "initializeWamGroup": () => (/* binding */ WamGroup_default),
-/* harmony export */   "initializeWamHost": () => (/* binding */ initializeWamHost_default)
+/* harmony export */   WamNode: () => (/* binding */ WamNode),
+/* harmony export */   WebAudioModule: () => (/* binding */ WebAudioModule_default),
+/* harmony export */   addFunctionModule: () => (/* binding */ addFunctionModule_default),
+/* harmony export */   apiVersion: () => (/* binding */ apiVersion_default),
+/* harmony export */   getRingBuffer: () => (/* binding */ RingBuffer_default),
+/* harmony export */   getWamArrayRingBuffer: () => (/* binding */ WamArrayRingBuffer_default),
+/* harmony export */   getWamEventRingBuffer: () => (/* binding */ WamEventRingBuffer_default),
+/* harmony export */   getWamParameter: () => (/* binding */ WamParameter_default),
+/* harmony export */   getWamParameterInfo: () => (/* binding */ WamParameterInfo_default),
+/* harmony export */   getWamParameterInterpolator: () => (/* binding */ WamParameterInterpolator_default),
+/* harmony export */   getWamProcessor: () => (/* binding */ WamProcessor_default),
+/* harmony export */   initializeWamEnv: () => (/* binding */ WamEnv_default),
+/* harmony export */   initializeWamGroup: () => (/* binding */ WamGroup_default),
+/* harmony export */   initializeWamHost: () => (/* binding */ initializeWamHost_default)
 /* harmony export */ });
 // src/WebAudioModule.js
 var WebAudioModule = class {

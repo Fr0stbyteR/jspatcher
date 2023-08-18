@@ -85,10 +85,10 @@ const Node = (_a = class extends AudioWorkletNode {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ AudioWorkletRegister),
-/* harmony export */   "registeredProcessors": () => (/* binding */ registeredProcessors),
-/* harmony export */   "registeringProcessors": () => (/* binding */ registeringProcessors),
-/* harmony export */   "rejects": () => (/* binding */ rejects),
-/* harmony export */   "resolves": () => (/* binding */ resolves)
+/* harmony export */   registeredProcessors: () => (/* binding */ registeredProcessors),
+/* harmony export */   registeringProcessors: () => (/* binding */ registeringProcessors),
+/* harmony export */   rejects: () => (/* binding */ rejects),
+/* harmony export */   resolves: () => (/* binding */ resolves)
 /* harmony export */ });
 
 var _a, _b, _c, _d, _e, _f, _g, _h;

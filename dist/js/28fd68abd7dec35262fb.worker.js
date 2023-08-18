@@ -70,20 +70,20 @@ const Worker = (_a = class {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "atodb": () => (/* binding */ atodb),
-/* harmony export */   "ceil": () => (/* binding */ ceil),
-/* harmony export */   "dbtoa": () => (/* binding */ dbtoa),
-/* harmony export */   "floor": () => (/* binding */ floor),
-/* harmony export */   "iNormExp": () => (/* binding */ iNormExp),
-/* harmony export */   "identityMatrix": () => (/* binding */ identityMatrix),
-/* harmony export */   "isIdentityMatrix": () => (/* binding */ isIdentityMatrix),
-/* harmony export */   "mod": () => (/* binding */ mod),
-/* harmony export */   "normExp": () => (/* binding */ normExp),
-/* harmony export */   "round": () => (/* binding */ round),
-/* harmony export */   "scale": () => (/* binding */ scale),
-/* harmony export */   "scaleClip": () => (/* binding */ scaleClip),
-/* harmony export */   "toMIDI": () => (/* binding */ toMIDI),
-/* harmony export */   "toRad": () => (/* binding */ toRad)
+/* harmony export */   atodb: () => (/* binding */ atodb),
+/* harmony export */   ceil: () => (/* binding */ ceil),
+/* harmony export */   dbtoa: () => (/* binding */ dbtoa),
+/* harmony export */   floor: () => (/* binding */ floor),
+/* harmony export */   iNormExp: () => (/* binding */ iNormExp),
+/* harmony export */   identityMatrix: () => (/* binding */ identityMatrix),
+/* harmony export */   isIdentityMatrix: () => (/* binding */ isIdentityMatrix),
+/* harmony export */   mod: () => (/* binding */ mod),
+/* harmony export */   normExp: () => (/* binding */ normExp),
+/* harmony export */   round: () => (/* binding */ round),
+/* harmony export */   scale: () => (/* binding */ scale),
+/* harmony export */   scaleClip: () => (/* binding */ scaleClip),
+/* harmony export */   toMIDI: () => (/* binding */ toMIDI),
+/* harmony export */   toRad: () => (/* binding */ toRad)
 /* harmony export */ });
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/utils/utils.ts");
 
@@ -120,46 +120,46 @@ const identityMatrix = (dim) => new Array(dim).fill(void 0).map((x, i) => new Ar
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "MEASURE_UNIT_REGEX": () => (/* binding */ MEASURE_UNIT_REGEX),
-/* harmony export */   "TIME_UNIT_REGEX": () => (/* binding */ TIME_UNIT_REGEX),
-/* harmony export */   "ab2sab": () => (/* binding */ ab2sab),
-/* harmony export */   "ab2str": () => (/* binding */ ab2str),
-/* harmony export */   "chunkArray": () => (/* binding */ chunkArray),
-/* harmony export */   "convertSampleToUnit": () => (/* binding */ convertSampleToUnit),
-/* harmony export */   "convertUnitToSample": () => (/* binding */ convertUnitToSample),
-/* harmony export */   "css2RgbaMax": () => (/* binding */ css2RgbaMax),
-/* harmony export */   "decodeBPF": () => (/* binding */ decodeBPF),
-/* harmony export */   "decodeCurve": () => (/* binding */ decodeCurve),
-/* harmony export */   "decodeLine": () => (/* binding */ decodeLine),
-/* harmony export */   "detectBrowserCore": () => (/* binding */ detectBrowserCore),
-/* harmony export */   "detectOS": () => (/* binding */ detectOS),
-/* harmony export */   "extToType": () => (/* binding */ extToType),
-/* harmony export */   "fillRoundedRect": () => (/* binding */ fillRoundedRect),
-/* harmony export */   "findFromAscendants": () => (/* binding */ findFromAscendants),
-/* harmony export */   "getFactors": () => (/* binding */ getFactors),
-/* harmony export */   "getPropertyDescriptor": () => (/* binding */ getPropertyDescriptor),
-/* harmony export */   "getPropertyDescriptors": () => (/* binding */ getPropertyDescriptors),
-/* harmony export */   "getRuler": () => (/* binding */ getRuler),
-/* harmony export */   "getTimestamp": () => (/* binding */ getTimestamp),
-/* harmony export */   "isMIDIEvent": () => (/* binding */ isMIDIEvent),
-/* harmony export */   "isNumberArray": () => (/* binding */ isNumberArray),
-/* harmony export */   "isRectMovable": () => (/* binding */ isRectMovable),
-/* harmony export */   "isRectResizable": () => (/* binding */ isRectResizable),
-/* harmony export */   "isStringArray": () => (/* binding */ isStringArray),
-/* harmony export */   "isTPresentationRect": () => (/* binding */ isTPresentationRect),
-/* harmony export */   "isTRect": () => (/* binding */ isTRect),
-/* harmony export */   "isTypedArray": () => (/* binding */ isTypedArray),
-/* harmony export */   "js2max": () => (/* binding */ js2max),
-/* harmony export */   "max2js": () => (/* binding */ max2js),
-/* harmony export */   "parseToPrimitive": () => (/* binding */ parseToPrimitive),
-/* harmony export */   "rgbaMax2Css": () => (/* binding */ rgbaMax2Css),
-/* harmony export */   "roundedRect": () => (/* binding */ roundedRect),
-/* harmony export */   "sab2ab": () => (/* binding */ sab2ab),
-/* harmony export */   "selectElementPos": () => (/* binding */ selectElementPos),
-/* harmony export */   "selectElementRange": () => (/* binding */ selectElementRange),
-/* harmony export */   "str2ab": () => (/* binding */ str2ab),
-/* harmony export */   "stringifyError": () => (/* binding */ stringifyError),
-/* harmony export */   "uuid": () => (/* binding */ uuid)
+/* harmony export */   MEASURE_UNIT_REGEX: () => (/* binding */ MEASURE_UNIT_REGEX),
+/* harmony export */   TIME_UNIT_REGEX: () => (/* binding */ TIME_UNIT_REGEX),
+/* harmony export */   ab2sab: () => (/* binding */ ab2sab),
+/* harmony export */   ab2str: () => (/* binding */ ab2str),
+/* harmony export */   chunkArray: () => (/* binding */ chunkArray),
+/* harmony export */   convertSampleToUnit: () => (/* binding */ convertSampleToUnit),
+/* harmony export */   convertUnitToSample: () => (/* binding */ convertUnitToSample),
+/* harmony export */   css2RgbaMax: () => (/* binding */ css2RgbaMax),
+/* harmony export */   decodeBPF: () => (/* binding */ decodeBPF),
+/* harmony export */   decodeCurve: () => (/* binding */ decodeCurve),
+/* harmony export */   decodeLine: () => (/* binding */ decodeLine),
+/* harmony export */   detectBrowserCore: () => (/* binding */ detectBrowserCore),
+/* harmony export */   detectOS: () => (/* binding */ detectOS),
+/* harmony export */   extToType: () => (/* binding */ extToType),
+/* harmony export */   fillRoundedRect: () => (/* binding */ fillRoundedRect),
+/* harmony export */   findFromAscendants: () => (/* binding */ findFromAscendants),
+/* harmony export */   getFactors: () => (/* binding */ getFactors),
+/* harmony export */   getPropertyDescriptor: () => (/* binding */ getPropertyDescriptor),
+/* harmony export */   getPropertyDescriptors: () => (/* binding */ getPropertyDescriptors),
+/* harmony export */   getRuler: () => (/* binding */ getRuler),
+/* harmony export */   getTimestamp: () => (/* binding */ getTimestamp),
+/* harmony export */   isMIDIEvent: () => (/* binding */ isMIDIEvent),
+/* harmony export */   isNumberArray: () => (/* binding */ isNumberArray),
+/* harmony export */   isRectMovable: () => (/* binding */ isRectMovable),
+/* harmony export */   isRectResizable: () => (/* binding */ isRectResizable),
+/* harmony export */   isStringArray: () => (/* binding */ isStringArray),
+/* harmony export */   isTPresentationRect: () => (/* binding */ isTPresentationRect),
+/* harmony export */   isTRect: () => (/* binding */ isTRect),
+/* harmony export */   isTypedArray: () => (/* binding */ isTypedArray),
+/* harmony export */   js2max: () => (/* binding */ js2max),
+/* harmony export */   max2js: () => (/* binding */ max2js),
+/* harmony export */   parseToPrimitive: () => (/* binding */ parseToPrimitive),
+/* harmony export */   rgbaMax2Css: () => (/* binding */ rgbaMax2Css),
+/* harmony export */   roundedRect: () => (/* binding */ roundedRect),
+/* harmony export */   sab2ab: () => (/* binding */ sab2ab),
+/* harmony export */   selectElementPos: () => (/* binding */ selectElementPos),
+/* harmony export */   selectElementRange: () => (/* binding */ selectElementRange),
+/* harmony export */   str2ab: () => (/* binding */ str2ab),
+/* harmony export */   stringifyError: () => (/* binding */ stringifyError),
+/* harmony export */   uuid: () => (/* binding */ uuid)
 /* harmony export */ });
 
 const uuid = () => {
@@ -1124,11 +1124,11 @@ module.exports = welch
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "FFTW": () => (/* binding */ FFTW_default),
-/* harmony export */   "FFTWModuleFactoryFn": () => (/* binding */ FFTWModuleFactoryFn),
-/* harmony export */   "FFTWModuleFactoryWasm": () => (/* binding */ FFTWModuleFactoryWasm),
-/* harmony export */   "instantiateFFTWModule": () => (/* binding */ instantiateFFTWModule_default),
-/* harmony export */   "instantiateFFTWModuleFromFile": () => (/* binding */ instantiateFFTWModuleFromFile_default)
+/* harmony export */   FFTW: () => (/* binding */ FFTW_default),
+/* harmony export */   FFTWModuleFactoryFn: () => (/* binding */ FFTWModuleFactoryFn),
+/* harmony export */   FFTWModuleFactoryWasm: () => (/* binding */ FFTWModuleFactoryWasm),
+/* harmony export */   instantiateFFTWModule: () => (/* binding */ instantiateFFTWModule_default),
+/* harmony export */   instantiateFFTWModuleFromFile: () => (/* binding */ instantiateFFTWModuleFromFile_default)
 /* harmony export */ });
 var __create = Object.create;
 var __defProp = Object.defineProperty;

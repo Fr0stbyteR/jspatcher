@@ -9,26 +9,26 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "CompletionAdapter": () => (/* binding */ CompletionAdapter),
-/* harmony export */   "DefinitionAdapter": () => (/* binding */ DefinitionAdapter),
-/* harmony export */   "DiagnosticsAdapter": () => (/* binding */ DiagnosticsAdapter),
-/* harmony export */   "DocumentColorAdapter": () => (/* binding */ DocumentColorAdapter),
-/* harmony export */   "DocumentFormattingEditProvider": () => (/* binding */ DocumentFormattingEditProvider),
-/* harmony export */   "DocumentHighlightAdapter": () => (/* binding */ DocumentHighlightAdapter),
-/* harmony export */   "DocumentLinkAdapter": () => (/* binding */ DocumentLinkAdapter),
-/* harmony export */   "DocumentRangeFormattingEditProvider": () => (/* binding */ DocumentRangeFormattingEditProvider),
-/* harmony export */   "DocumentSymbolAdapter": () => (/* binding */ DocumentSymbolAdapter),
-/* harmony export */   "FoldingRangeAdapter": () => (/* binding */ FoldingRangeAdapter),
-/* harmony export */   "HoverAdapter": () => (/* binding */ HoverAdapter),
-/* harmony export */   "ReferenceAdapter": () => (/* binding */ ReferenceAdapter),
-/* harmony export */   "RenameAdapter": () => (/* binding */ RenameAdapter),
-/* harmony export */   "SelectionRangeAdapter": () => (/* binding */ SelectionRangeAdapter),
-/* harmony export */   "WorkerManager": () => (/* binding */ WorkerManager),
-/* harmony export */   "fromPosition": () => (/* binding */ fromPosition),
-/* harmony export */   "fromRange": () => (/* binding */ fromRange),
-/* harmony export */   "setupMode": () => (/* binding */ setupMode),
-/* harmony export */   "toRange": () => (/* binding */ toRange),
-/* harmony export */   "toTextEdit": () => (/* binding */ toTextEdit)
+/* harmony export */   CompletionAdapter: () => (/* binding */ CompletionAdapter),
+/* harmony export */   DefinitionAdapter: () => (/* binding */ DefinitionAdapter),
+/* harmony export */   DiagnosticsAdapter: () => (/* binding */ DiagnosticsAdapter),
+/* harmony export */   DocumentColorAdapter: () => (/* binding */ DocumentColorAdapter),
+/* harmony export */   DocumentFormattingEditProvider: () => (/* binding */ DocumentFormattingEditProvider),
+/* harmony export */   DocumentHighlightAdapter: () => (/* binding */ DocumentHighlightAdapter),
+/* harmony export */   DocumentLinkAdapter: () => (/* binding */ DocumentLinkAdapter),
+/* harmony export */   DocumentRangeFormattingEditProvider: () => (/* binding */ DocumentRangeFormattingEditProvider),
+/* harmony export */   DocumentSymbolAdapter: () => (/* binding */ DocumentSymbolAdapter),
+/* harmony export */   FoldingRangeAdapter: () => (/* binding */ FoldingRangeAdapter),
+/* harmony export */   HoverAdapter: () => (/* binding */ HoverAdapter),
+/* harmony export */   ReferenceAdapter: () => (/* binding */ ReferenceAdapter),
+/* harmony export */   RenameAdapter: () => (/* binding */ RenameAdapter),
+/* harmony export */   SelectionRangeAdapter: () => (/* binding */ SelectionRangeAdapter),
+/* harmony export */   WorkerManager: () => (/* binding */ WorkerManager),
+/* harmony export */   fromPosition: () => (/* binding */ fromPosition),
+/* harmony export */   fromRange: () => (/* binding */ fromRange),
+/* harmony export */   setupMode: () => (/* binding */ setupMode),
+/* harmony export */   toRange: () => (/* binding */ toRange),
+/* harmony export */   toTextEdit: () => (/* binding */ toTextEdit)
 /* harmony export */ });
 /* harmony import */ var _editor_editor_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../editor/editor.api.js */ "include-loader!./node_modules/monaco-editor/esm/vs/editor/editor.api.js");
 /*!-----------------------------------------------------------------------------

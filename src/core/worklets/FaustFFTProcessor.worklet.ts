@@ -1,4 +1,4 @@
-import type { FaustDspFactory, FaustMonoOfflineProcessor } from "@shren/faustwasm/dist/esm";
+import type { FaustDspFactory, FaustMonoOfflineProcessor } from "@grame/faustwasm/dist/esm";
 import type { FFT, FFTW } from "@shren/fftw-js/dist/esm-bundle";
 import * as WindowFunction from "window-function";
 import apply from "window-function/apply";

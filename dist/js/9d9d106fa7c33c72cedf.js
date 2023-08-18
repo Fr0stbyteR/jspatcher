@@ -9,8 +9,8 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "conf": () => (/* binding */ conf),
-/* harmony export */   "language": () => (/* binding */ language)
+/* harmony export */   conf: () => (/* binding */ conf),
+/* harmony export */   language: () => (/* binding */ language)
 /* harmony export */ });
 /* harmony import */ var _typescript_typescript_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../typescript/typescript.js */ "./node_modules/monaco-editor/esm/vs/basic-languages/typescript/typescript.js");
 /*!-----------------------------------------------------------------------------
@@ -99,8 +99,8 @@ var language = {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "conf": () => (/* binding */ conf),
-/* harmony export */   "language": () => (/* binding */ language)
+/* harmony export */   conf: () => (/* binding */ conf),
+/* harmony export */   language: () => (/* binding */ language)
 /* harmony export */ });
 /* harmony import */ var _editor_editor_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../editor/editor.api.js */ "include-loader!./node_modules/monaco-editor/esm/vs/editor/editor.api.js");
 /*!-----------------------------------------------------------------------------

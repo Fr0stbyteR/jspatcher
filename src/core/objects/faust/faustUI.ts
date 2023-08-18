@@ -1,4 +1,4 @@
-import type { FaustAudioWorkletNode } from "@shren/faustwasm/dist/esm";
+import type { FaustAudioWorkletNode } from "@grame/faustwasm/dist/esm";
 import type { FaustUI } from "@shren/faust-ui";
 import DOMUI, { DOMUIState } from "../base/DOMUI";
 import BaseObject from "../base/BaseObject";

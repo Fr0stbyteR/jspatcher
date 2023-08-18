@@ -1,5 +1,5 @@
 // import FaustFFTNode from "../../worklets/FaustFFTNode";
-import type { FaustFFTOptionsData, FaustMonoAudioWorkletNode } from "@shren/faustwasm";
+import type { FaustFFTOptionsData, FaustMonoAudioWorkletNode } from "@grame/faustwasm";
 import FaustNode, { FaustNodeData, FaustNodeInternalState } from "./FaustNode";
 import Bang, { isBang } from "../base/Bang";
 import { isMIDIEvent, decodeLine } from "../../../utils/utils";

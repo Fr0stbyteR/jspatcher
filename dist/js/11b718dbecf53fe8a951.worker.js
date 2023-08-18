@@ -6974,7 +6974,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-(browserfs_dist_node_generic_preload_file__WEBPACK_IMPORTED_MODULE_0___default().prototype.writeSync) = function(buffer, offset, length, position) {
+(browserfs_dist_node_generic_preload_file__WEBPACK_IMPORTED_MODULE_0___default().prototype).writeSync = function(buffer, offset, length, position) {
   this._dirty = true;
   if (position === void 0 || position === null) {
     position = this.getPos();

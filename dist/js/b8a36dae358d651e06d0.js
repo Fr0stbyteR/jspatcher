@@ -14,7 +14,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _importer_DefaultImporter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../importer/DefaultImporter */ "./src/core/objects/importer/DefaultImporter.ts");
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => _importer_DefaultImporter__WEBPACK_IMPORTED_MODULE_0__["default"]["import"]("globalThis", globalThis, true));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => _importer_DefaultImporter__WEBPACK_IMPORTED_MODULE_0__["default"].import("globalThis", globalThis, true));
 
 
 /***/ })

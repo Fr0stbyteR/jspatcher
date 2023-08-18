@@ -1,6 +1,6 @@
 // @deprecated
 
-import type { FaustDspFactory } from "@shren/faustwasm";
+import type { FaustDspFactory } from "@grame/faustwasm";
 import processorURL from "./FaustFFTProcessor.worklet.ts"; // eslint-disable-line import/extensions
 import AudioWorkletProxyNode from "./AudioWorkletProxyNode";
 import type { FaustFFTParameters, IFaustFFTNode, IFaustFFTProcessor } from "./FaustFFT.types";

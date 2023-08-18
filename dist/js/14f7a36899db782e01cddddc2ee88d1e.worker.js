@@ -10,37 +10,37 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ArrayQueue": () => (/* binding */ ArrayQueue),
-/* harmony export */   "CompareResult": () => (/* binding */ CompareResult),
-/* harmony export */   "arrayInsert": () => (/* binding */ arrayInsert),
-/* harmony export */   "asArray": () => (/* binding */ asArray),
-/* harmony export */   "binarySearch": () => (/* binding */ binarySearch),
-/* harmony export */   "binarySearch2": () => (/* binding */ binarySearch2),
-/* harmony export */   "coalesce": () => (/* binding */ coalesce),
-/* harmony export */   "compareBy": () => (/* binding */ compareBy),
-/* harmony export */   "distinct": () => (/* binding */ distinct),
-/* harmony export */   "equals": () => (/* binding */ equals),
-/* harmony export */   "findFirstInSorted": () => (/* binding */ findFirstInSorted),
-/* harmony export */   "findLast": () => (/* binding */ findLast),
-/* harmony export */   "findLastMaxBy": () => (/* binding */ findLastMaxBy),
-/* harmony export */   "findMaxBy": () => (/* binding */ findMaxBy),
-/* harmony export */   "findMinBy": () => (/* binding */ findMinBy),
-/* harmony export */   "firstOrDefault": () => (/* binding */ firstOrDefault),
-/* harmony export */   "groupBy": () => (/* binding */ groupBy),
-/* harmony export */   "insertInto": () => (/* binding */ insertInto),
-/* harmony export */   "isFalsyOrEmpty": () => (/* binding */ isFalsyOrEmpty),
-/* harmony export */   "isNonEmptyArray": () => (/* binding */ isNonEmptyArray),
-/* harmony export */   "lastIndex": () => (/* binding */ lastIndex),
-/* harmony export */   "numberComparator": () => (/* binding */ numberComparator),
-/* harmony export */   "pushMany": () => (/* binding */ pushMany),
-/* harmony export */   "pushToEnd": () => (/* binding */ pushToEnd),
-/* harmony export */   "pushToStart": () => (/* binding */ pushToStart),
-/* harmony export */   "quickSelect": () => (/* binding */ quickSelect),
-/* harmony export */   "range": () => (/* binding */ range),
-/* harmony export */   "removeFastWithoutKeepingOrder": () => (/* binding */ removeFastWithoutKeepingOrder),
-/* harmony export */   "splice": () => (/* binding */ splice),
-/* harmony export */   "tail": () => (/* binding */ tail),
-/* harmony export */   "tail2": () => (/* binding */ tail2)
+/* harmony export */   ArrayQueue: () => (/* binding */ ArrayQueue),
+/* harmony export */   CompareResult: () => (/* binding */ CompareResult),
+/* harmony export */   arrayInsert: () => (/* binding */ arrayInsert),
+/* harmony export */   asArray: () => (/* binding */ asArray),
+/* harmony export */   binarySearch: () => (/* binding */ binarySearch),
+/* harmony export */   binarySearch2: () => (/* binding */ binarySearch2),
+/* harmony export */   coalesce: () => (/* binding */ coalesce),
+/* harmony export */   compareBy: () => (/* binding */ compareBy),
+/* harmony export */   distinct: () => (/* binding */ distinct),
+/* harmony export */   equals: () => (/* binding */ equals),
+/* harmony export */   findFirstInSorted: () => (/* binding */ findFirstInSorted),
+/* harmony export */   findLast: () => (/* binding */ findLast),
+/* harmony export */   findLastMaxBy: () => (/* binding */ findLastMaxBy),
+/* harmony export */   findMaxBy: () => (/* binding */ findMaxBy),
+/* harmony export */   findMinBy: () => (/* binding */ findMinBy),
+/* harmony export */   firstOrDefault: () => (/* binding */ firstOrDefault),
+/* harmony export */   groupBy: () => (/* binding */ groupBy),
+/* harmony export */   insertInto: () => (/* binding */ insertInto),
+/* harmony export */   isFalsyOrEmpty: () => (/* binding */ isFalsyOrEmpty),
+/* harmony export */   isNonEmptyArray: () => (/* binding */ isNonEmptyArray),
+/* harmony export */   lastIndex: () => (/* binding */ lastIndex),
+/* harmony export */   numberComparator: () => (/* binding */ numberComparator),
+/* harmony export */   pushMany: () => (/* binding */ pushMany),
+/* harmony export */   pushToEnd: () => (/* binding */ pushToEnd),
+/* harmony export */   pushToStart: () => (/* binding */ pushToStart),
+/* harmony export */   quickSelect: () => (/* binding */ quickSelect),
+/* harmony export */   range: () => (/* binding */ range),
+/* harmony export */   removeFastWithoutKeepingOrder: () => (/* binding */ removeFastWithoutKeepingOrder),
+/* harmony export */   splice: () => (/* binding */ splice),
+/* harmony export */   tail: () => (/* binding */ tail),
+/* harmony export */   tail2: () => (/* binding */ tail2)
 /* harmony export */ });
 /**
  * Returns the last element of an array.
@@ -482,8 +482,8 @@ class ArrayQueue {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "CachedFunction": () => (/* binding */ CachedFunction),
-/* harmony export */   "LRUCachedFunction": () => (/* binding */ LRUCachedFunction)
+/* harmony export */   CachedFunction: () => (/* binding */ CachedFunction),
+/* harmony export */   LRUCachedFunction: () => (/* binding */ LRUCachedFunction)
 /* harmony export */ });
 /**
  * Uses a LRU cache to make a given parametrized function cached.
@@ -537,8 +537,8 @@ class CachedFunction {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "CancellationToken": () => (/* binding */ CancellationToken),
-/* harmony export */   "CancellationTokenSource": () => (/* binding */ CancellationTokenSource)
+/* harmony export */   CancellationToken: () => (/* binding */ CancellationToken),
+/* harmony export */   CancellationTokenSource: () => (/* binding */ CancellationTokenSource)
 /* harmony export */ });
 /* harmony import */ var _event_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./event.js */ "./node_modules/monaco-editor/esm/vs/base/common/event.js");
 /*---------------------------------------------------------------------------------------------
@@ -663,9 +663,9 @@ class CancellationTokenSource {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "CSSIcon": () => (/* binding */ CSSIcon),
-/* harmony export */   "Codicon": () => (/* binding */ Codicon),
-/* harmony export */   "getCodiconAriaLabel": () => (/* binding */ getCodiconAriaLabel)
+/* harmony export */   CSSIcon: () => (/* binding */ CSSIcon),
+/* harmony export */   Codicon: () => (/* binding */ Codicon),
+/* harmony export */   getCodiconAriaLabel: () => (/* binding */ getCodiconAriaLabel)
 /* harmony export */ });
 // Selects all codicon names encapsulated in the `$()` syntax and wraps the
 // results with spaces so that screen readers can read the text better.
@@ -1279,11 +1279,11 @@ var CSSIcon;
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Debug": () => (/* binding */ Debug),
-/* harmony export */   "LcsDiff": () => (/* binding */ LcsDiff),
-/* harmony export */   "MyArray": () => (/* binding */ MyArray),
-/* harmony export */   "StringDiffSequence": () => (/* binding */ StringDiffSequence),
-/* harmony export */   "stringDiff": () => (/* binding */ stringDiff)
+/* harmony export */   Debug: () => (/* binding */ Debug),
+/* harmony export */   LcsDiff: () => (/* binding */ LcsDiff),
+/* harmony export */   MyArray: () => (/* binding */ MyArray),
+/* harmony export */   StringDiffSequence: () => (/* binding */ StringDiffSequence),
+/* harmony export */   stringDiff: () => (/* binding */ stringDiff)
 /* harmony export */ });
 /* harmony import */ var _diffChange_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diffChange.js */ "./node_modules/monaco-editor/esm/vs/base/common/diff/diffChange.js");
 /* harmony import */ var _hash_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../hash.js */ "./node_modules/monaco-editor/esm/vs/base/common/hash.js");
@@ -2198,7 +2198,7 @@ class LcsDiff {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "DiffChange": () => (/* binding */ DiffChange)
+/* harmony export */   DiffChange: () => (/* binding */ DiffChange)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -2244,19 +2244,19 @@ class DiffChange {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "BugIndicatingError": () => (/* binding */ BugIndicatingError),
-/* harmony export */   "CancellationError": () => (/* binding */ CancellationError),
-/* harmony export */   "ErrorHandler": () => (/* binding */ ErrorHandler),
-/* harmony export */   "ErrorNoTelemetry": () => (/* binding */ ErrorNoTelemetry),
-/* harmony export */   "NotSupportedError": () => (/* binding */ NotSupportedError),
-/* harmony export */   "canceled": () => (/* binding */ canceled),
-/* harmony export */   "errorHandler": () => (/* binding */ errorHandler),
-/* harmony export */   "illegalArgument": () => (/* binding */ illegalArgument),
-/* harmony export */   "illegalState": () => (/* binding */ illegalState),
-/* harmony export */   "isCancellationError": () => (/* binding */ isCancellationError),
-/* harmony export */   "onUnexpectedError": () => (/* binding */ onUnexpectedError),
-/* harmony export */   "onUnexpectedExternalError": () => (/* binding */ onUnexpectedExternalError),
-/* harmony export */   "transformErrorForSerialization": () => (/* binding */ transformErrorForSerialization)
+/* harmony export */   BugIndicatingError: () => (/* binding */ BugIndicatingError),
+/* harmony export */   CancellationError: () => (/* binding */ CancellationError),
+/* harmony export */   ErrorHandler: () => (/* binding */ ErrorHandler),
+/* harmony export */   ErrorNoTelemetry: () => (/* binding */ ErrorNoTelemetry),
+/* harmony export */   NotSupportedError: () => (/* binding */ NotSupportedError),
+/* harmony export */   canceled: () => (/* binding */ canceled),
+/* harmony export */   errorHandler: () => (/* binding */ errorHandler),
+/* harmony export */   illegalArgument: () => (/* binding */ illegalArgument),
+/* harmony export */   illegalState: () => (/* binding */ illegalState),
+/* harmony export */   isCancellationError: () => (/* binding */ isCancellationError),
+/* harmony export */   onUnexpectedError: () => (/* binding */ onUnexpectedError),
+/* harmony export */   onUnexpectedExternalError: () => (/* binding */ onUnexpectedExternalError),
+/* harmony export */   transformErrorForSerialization: () => (/* binding */ transformErrorForSerialization)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -2420,13 +2420,13 @@ class BugIndicatingError extends Error {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "DebounceEmitter": () => (/* binding */ DebounceEmitter),
-/* harmony export */   "Emitter": () => (/* binding */ Emitter),
-/* harmony export */   "Event": () => (/* binding */ Event),
-/* harmony export */   "EventBufferer": () => (/* binding */ EventBufferer),
-/* harmony export */   "EventDeliveryQueue": () => (/* binding */ EventDeliveryQueue),
-/* harmony export */   "PauseableEmitter": () => (/* binding */ PauseableEmitter),
-/* harmony export */   "Relay": () => (/* binding */ Relay)
+/* harmony export */   DebounceEmitter: () => (/* binding */ DebounceEmitter),
+/* harmony export */   Emitter: () => (/* binding */ Emitter),
+/* harmony export */   Event: () => (/* binding */ Event),
+/* harmony export */   EventBufferer: () => (/* binding */ EventBufferer),
+/* harmony export */   EventDeliveryQueue: () => (/* binding */ EventDeliveryQueue),
+/* harmony export */   PauseableEmitter: () => (/* binding */ PauseableEmitter),
+/* harmony export */   Relay: () => (/* binding */ Relay)
 /* harmony export */ });
 /* harmony import */ var _errors_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./errors.js */ "./node_modules/monaco-editor/esm/vs/base/common/errors.js");
 /* harmony import */ var _lifecycle_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lifecycle.js */ "./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js");
@@ -3217,7 +3217,7 @@ class Relay {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "once": () => (/* binding */ once)
+/* harmony export */   once: () => (/* binding */ once)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -3248,12 +3248,12 @@ function once(fn) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "StringSHA1": () => (/* binding */ StringSHA1),
-/* harmony export */   "doHash": () => (/* binding */ doHash),
-/* harmony export */   "hash": () => (/* binding */ hash),
-/* harmony export */   "numberHash": () => (/* binding */ numberHash),
-/* harmony export */   "stringHash": () => (/* binding */ stringHash),
-/* harmony export */   "toHexString": () => (/* binding */ toHexString)
+/* harmony export */   StringSHA1: () => (/* binding */ StringSHA1),
+/* harmony export */   doHash: () => (/* binding */ doHash),
+/* harmony export */   hash: () => (/* binding */ hash),
+/* harmony export */   numberHash: () => (/* binding */ numberHash),
+/* harmony export */   stringHash: () => (/* binding */ stringHash),
+/* harmony export */   toHexString: () => (/* binding */ toHexString)
 /* harmony export */ });
 /* harmony import */ var _strings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./strings.js */ "./node_modules/monaco-editor/esm/vs/base/common/strings.js");
 /*---------------------------------------------------------------------------------------------
@@ -3526,7 +3526,7 @@ StringSHA1._bigBlock32 = new DataView(new ArrayBuffer(320)); // 80 * 4 = 320
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Iterable": () => (/* binding */ Iterable)
+/* harmony export */   Iterable: () => (/* binding */ Iterable)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -3704,12 +3704,12 @@ var Iterable;
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "EVENT_KEY_CODE_MAP": () => (/* binding */ EVENT_KEY_CODE_MAP),
-/* harmony export */   "IMMUTABLE_CODE_TO_KEY_CODE": () => (/* binding */ IMMUTABLE_CODE_TO_KEY_CODE),
-/* harmony export */   "IMMUTABLE_KEY_CODE_TO_CODE": () => (/* binding */ IMMUTABLE_KEY_CODE_TO_CODE),
-/* harmony export */   "KeyChord": () => (/* binding */ KeyChord),
-/* harmony export */   "KeyCodeUtils": () => (/* binding */ KeyCodeUtils),
-/* harmony export */   "NATIVE_WINDOWS_KEY_CODE_TO_KEY_CODE": () => (/* binding */ NATIVE_WINDOWS_KEY_CODE_TO_KEY_CODE)
+/* harmony export */   EVENT_KEY_CODE_MAP: () => (/* binding */ EVENT_KEY_CODE_MAP),
+/* harmony export */   IMMUTABLE_CODE_TO_KEY_CODE: () => (/* binding */ IMMUTABLE_CODE_TO_KEY_CODE),
+/* harmony export */   IMMUTABLE_KEY_CODE_TO_CODE: () => (/* binding */ IMMUTABLE_KEY_CODE_TO_CODE),
+/* harmony export */   KeyChord: () => (/* binding */ KeyChord),
+/* harmony export */   KeyCodeUtils: () => (/* binding */ KeyCodeUtils),
+/* harmony export */   NATIVE_WINDOWS_KEY_CODE_TO_KEY_CODE: () => (/* binding */ NATIVE_WINDOWS_KEY_CODE_TO_KEY_CODE)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -4095,7 +4095,7 @@ function KeyChord(firstPart, secondPart) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Lazy": () => (/* binding */ Lazy)
+/* harmony export */   Lazy: () => (/* binding */ Lazy)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -4150,19 +4150,19 @@ class Lazy {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Disposable": () => (/* binding */ Disposable),
-/* harmony export */   "DisposableStore": () => (/* binding */ DisposableStore),
-/* harmony export */   "ImmortalReference": () => (/* binding */ ImmortalReference),
-/* harmony export */   "MultiDisposeError": () => (/* binding */ MultiDisposeError),
-/* harmony export */   "MutableDisposable": () => (/* binding */ MutableDisposable),
-/* harmony export */   "RefCountedDisposable": () => (/* binding */ RefCountedDisposable),
-/* harmony export */   "SafeDisposable": () => (/* binding */ SafeDisposable),
-/* harmony export */   "combinedDisposable": () => (/* binding */ combinedDisposable),
-/* harmony export */   "dispose": () => (/* binding */ dispose),
-/* harmony export */   "isDisposable": () => (/* binding */ isDisposable),
-/* harmony export */   "markAsSingleton": () => (/* binding */ markAsSingleton),
-/* harmony export */   "setDisposableTracker": () => (/* binding */ setDisposableTracker),
-/* harmony export */   "toDisposable": () => (/* binding */ toDisposable)
+/* harmony export */   Disposable: () => (/* binding */ Disposable),
+/* harmony export */   DisposableStore: () => (/* binding */ DisposableStore),
+/* harmony export */   ImmortalReference: () => (/* binding */ ImmortalReference),
+/* harmony export */   MultiDisposeError: () => (/* binding */ MultiDisposeError),
+/* harmony export */   MutableDisposable: () => (/* binding */ MutableDisposable),
+/* harmony export */   RefCountedDisposable: () => (/* binding */ RefCountedDisposable),
+/* harmony export */   SafeDisposable: () => (/* binding */ SafeDisposable),
+/* harmony export */   combinedDisposable: () => (/* binding */ combinedDisposable),
+/* harmony export */   dispose: () => (/* binding */ dispose),
+/* harmony export */   isDisposable: () => (/* binding */ isDisposable),
+/* harmony export */   markAsSingleton: () => (/* binding */ markAsSingleton),
+/* harmony export */   setDisposableTracker: () => (/* binding */ setDisposableTracker),
+/* harmony export */   toDisposable: () => (/* binding */ toDisposable)
 /* harmony export */ });
 /* harmony import */ var _functional_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./functional.js */ "./node_modules/monaco-editor/esm/vs/base/common/functional.js");
 /* harmony import */ var _iterator_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./iterator.js */ "./node_modules/monaco-editor/esm/vs/base/common/iterator.js");
@@ -4473,7 +4473,7 @@ class ImmortalReference {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "LinkedList": () => (/* binding */ LinkedList)
+/* harmony export */   LinkedList: () => (/* binding */ LinkedList)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -4611,11 +4611,11 @@ class LinkedList {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "cloneAndChange": () => (/* binding */ cloneAndChange),
-/* harmony export */   "deepClone": () => (/* binding */ deepClone),
-/* harmony export */   "deepFreeze": () => (/* binding */ deepFreeze),
-/* harmony export */   "equals": () => (/* binding */ equals),
-/* harmony export */   "mixin": () => (/* binding */ mixin)
+/* harmony export */   cloneAndChange: () => (/* binding */ cloneAndChange),
+/* harmony export */   deepClone: () => (/* binding */ deepClone),
+/* harmony export */   deepFreeze: () => (/* binding */ deepFreeze),
+/* harmony export */   equals: () => (/* binding */ equals),
+/* harmony export */   mixin: () => (/* binding */ mixin)
 /* harmony export */ });
 /* harmony import */ var _types_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./types.js */ "./node_modules/monaco-editor/esm/vs/base/common/types.js");
 /*---------------------------------------------------------------------------------------------
@@ -4785,15 +4785,15 @@ function equals(one, other) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "basename": () => (/* binding */ basename),
-/* harmony export */   "dirname": () => (/* binding */ dirname),
-/* harmony export */   "extname": () => (/* binding */ extname),
-/* harmony export */   "normalize": () => (/* binding */ normalize),
-/* harmony export */   "posix": () => (/* binding */ posix),
-/* harmony export */   "relative": () => (/* binding */ relative),
-/* harmony export */   "resolve": () => (/* binding */ resolve),
-/* harmony export */   "sep": () => (/* binding */ sep),
-/* harmony export */   "win32": () => (/* binding */ win32)
+/* harmony export */   basename: () => (/* binding */ basename),
+/* harmony export */   dirname: () => (/* binding */ dirname),
+/* harmony export */   extname: () => (/* binding */ extname),
+/* harmony export */   normalize: () => (/* binding */ normalize),
+/* harmony export */   posix: () => (/* binding */ posix),
+/* harmony export */   relative: () => (/* binding */ relative),
+/* harmony export */   resolve: () => (/* binding */ resolve),
+/* harmony export */   sep: () => (/* binding */ sep),
+/* harmony export */   win32: () => (/* binding */ win32)
 /* harmony export */ });
 /* harmony import */ var _process_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./process.js */ "./node_modules/monaco-editor/esm/vs/base/common/process.js");
 /*---------------------------------------------------------------------------------------------
@@ -6187,25 +6187,25 @@ const sep = (({}) === 'win32' ? win32.sep : posix.sep);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "OS": () => (/* binding */ OS),
-/* harmony export */   "globals": () => (/* binding */ globals),
-/* harmony export */   "isAndroid": () => (/* binding */ isAndroid),
-/* harmony export */   "isChrome": () => (/* binding */ isChrome),
-/* harmony export */   "isEdge": () => (/* binding */ isEdge),
-/* harmony export */   "isFirefox": () => (/* binding */ isFirefox),
-/* harmony export */   "isIOS": () => (/* binding */ isIOS),
-/* harmony export */   "isLinux": () => (/* binding */ isLinux),
-/* harmony export */   "isLittleEndian": () => (/* binding */ isLittleEndian),
-/* harmony export */   "isMacintosh": () => (/* binding */ isMacintosh),
-/* harmony export */   "isNative": () => (/* binding */ isNative),
-/* harmony export */   "isSafari": () => (/* binding */ isSafari),
-/* harmony export */   "isWeb": () => (/* binding */ isWeb),
-/* harmony export */   "isWebWorker": () => (/* binding */ isWebWorker),
-/* harmony export */   "isWindows": () => (/* binding */ isWindows),
-/* harmony export */   "language": () => (/* binding */ language),
-/* harmony export */   "setTimeout0": () => (/* binding */ setTimeout0),
-/* harmony export */   "setTimeout0IsFaster": () => (/* binding */ setTimeout0IsFaster),
-/* harmony export */   "userAgent": () => (/* binding */ userAgent)
+/* harmony export */   OS: () => (/* binding */ OS),
+/* harmony export */   globals: () => (/* binding */ globals),
+/* harmony export */   isAndroid: () => (/* binding */ isAndroid),
+/* harmony export */   isChrome: () => (/* binding */ isChrome),
+/* harmony export */   isEdge: () => (/* binding */ isEdge),
+/* harmony export */   isFirefox: () => (/* binding */ isFirefox),
+/* harmony export */   isIOS: () => (/* binding */ isIOS),
+/* harmony export */   isLinux: () => (/* binding */ isLinux),
+/* harmony export */   isLittleEndian: () => (/* binding */ isLittleEndian),
+/* harmony export */   isMacintosh: () => (/* binding */ isMacintosh),
+/* harmony export */   isNative: () => (/* binding */ isNative),
+/* harmony export */   isSafari: () => (/* binding */ isSafari),
+/* harmony export */   isWeb: () => (/* binding */ isWeb),
+/* harmony export */   isWebWorker: () => (/* binding */ isWebWorker),
+/* harmony export */   isWindows: () => (/* binding */ isWindows),
+/* harmony export */   language: () => (/* binding */ language),
+/* harmony export */   setTimeout0: () => (/* binding */ setTimeout0),
+/* harmony export */   setTimeout0IsFaster: () => (/* binding */ setTimeout0IsFaster),
+/* harmony export */   userAgent: () => (/* binding */ userAgent)
 /* harmony export */ });
 /* harmony import */ var _nls_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../nls.js */ "./node_modules/monaco-editor/esm/vs/nls.js");
 var _a;
@@ -6375,9 +6375,9 @@ const isAndroid = !!(userAgent && userAgent.indexOf('Android') >= 0);
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "cwd": () => (/* binding */ cwd),
-/* harmony export */   "env": () => (/* binding */ env),
-/* harmony export */   "platform": () => (/* binding */ platform)
+/* harmony export */   cwd: () => (/* binding */ cwd),
+/* harmony export */   env: () => (/* binding */ env),
+/* harmony export */   platform: () => (/* binding */ platform)
 /* harmony export */ });
 /* harmony import */ var _platform_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
 /*---------------------------------------------------------------------------------------------
@@ -6447,7 +6447,7 @@ const platform = safeProcess.platform;
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "StopWatch": () => (/* binding */ StopWatch)
+/* harmony export */   StopWatch: () => (/* binding */ StopWatch)
 /* harmony export */ });
 /* harmony import */ var _platform_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
 /*---------------------------------------------------------------------------------------------
@@ -6490,56 +6490,56 @@ class StopWatch {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "AmbiguousCharacters": () => (/* binding */ AmbiguousCharacters),
-/* harmony export */   "CodePointIterator": () => (/* binding */ CodePointIterator),
-/* harmony export */   "GraphemeIterator": () => (/* binding */ GraphemeIterator),
-/* harmony export */   "InvisibleCharacters": () => (/* binding */ InvisibleCharacters),
-/* harmony export */   "UNUSUAL_LINE_TERMINATORS": () => (/* binding */ UNUSUAL_LINE_TERMINATORS),
-/* harmony export */   "UTF8_BOM_CHARACTER": () => (/* binding */ UTF8_BOM_CHARACTER),
-/* harmony export */   "commonPrefixLength": () => (/* binding */ commonPrefixLength),
-/* harmony export */   "commonSuffixLength": () => (/* binding */ commonSuffixLength),
-/* harmony export */   "compare": () => (/* binding */ compare),
-/* harmony export */   "compareIgnoreCase": () => (/* binding */ compareIgnoreCase),
-/* harmony export */   "compareSubstring": () => (/* binding */ compareSubstring),
-/* harmony export */   "compareSubstringIgnoreCase": () => (/* binding */ compareSubstringIgnoreCase),
-/* harmony export */   "computeCodePoint": () => (/* binding */ computeCodePoint),
-/* harmony export */   "containsRTL": () => (/* binding */ containsRTL),
-/* harmony export */   "containsUnusualLineTerminators": () => (/* binding */ containsUnusualLineTerminators),
-/* harmony export */   "containsUppercaseCharacter": () => (/* binding */ containsUppercaseCharacter),
-/* harmony export */   "convertSimple2RegExpPattern": () => (/* binding */ convertSimple2RegExpPattern),
-/* harmony export */   "createRegExp": () => (/* binding */ createRegExp),
-/* harmony export */   "equalsIgnoreCase": () => (/* binding */ equalsIgnoreCase),
-/* harmony export */   "escape": () => (/* binding */ escape),
-/* harmony export */   "escapeRegExpCharacters": () => (/* binding */ escapeRegExpCharacters),
-/* harmony export */   "firstNonWhitespaceIndex": () => (/* binding */ firstNonWhitespaceIndex),
-/* harmony export */   "format": () => (/* binding */ format),
-/* harmony export */   "getCharContainingOffset": () => (/* binding */ getCharContainingOffset),
-/* harmony export */   "getLeadingWhitespace": () => (/* binding */ getLeadingWhitespace),
-/* harmony export */   "getLeftDeleteOffset": () => (/* binding */ getLeftDeleteOffset),
-/* harmony export */   "getNextCodePoint": () => (/* binding */ getNextCodePoint),
-/* harmony export */   "isAsciiDigit": () => (/* binding */ isAsciiDigit),
-/* harmony export */   "isBasicASCII": () => (/* binding */ isBasicASCII),
-/* harmony export */   "isEmojiImprecise": () => (/* binding */ isEmojiImprecise),
-/* harmony export */   "isFalsyOrWhitespace": () => (/* binding */ isFalsyOrWhitespace),
-/* harmony export */   "isFullWidthCharacter": () => (/* binding */ isFullWidthCharacter),
-/* harmony export */   "isHighSurrogate": () => (/* binding */ isHighSurrogate),
-/* harmony export */   "isLowSurrogate": () => (/* binding */ isLowSurrogate),
-/* harmony export */   "isLowerAsciiLetter": () => (/* binding */ isLowerAsciiLetter),
-/* harmony export */   "isUpperAsciiLetter": () => (/* binding */ isUpperAsciiLetter),
-/* harmony export */   "lastNonWhitespaceIndex": () => (/* binding */ lastNonWhitespaceIndex),
-/* harmony export */   "ltrim": () => (/* binding */ ltrim),
-/* harmony export */   "nextCharLength": () => (/* binding */ nextCharLength),
-/* harmony export */   "noBreakWhitespace": () => (/* binding */ noBreakWhitespace),
-/* harmony export */   "prevCharLength": () => (/* binding */ prevCharLength),
-/* harmony export */   "regExpFlags": () => (/* binding */ regExpFlags),
-/* harmony export */   "regExpLeadsToEndlessLoop": () => (/* binding */ regExpLeadsToEndlessLoop),
-/* harmony export */   "rtrim": () => (/* binding */ rtrim),
-/* harmony export */   "singleLetterHash": () => (/* binding */ singleLetterHash),
-/* harmony export */   "splitLines": () => (/* binding */ splitLines),
-/* harmony export */   "startsWithIgnoreCase": () => (/* binding */ startsWithIgnoreCase),
-/* harmony export */   "startsWithUTF8BOM": () => (/* binding */ startsWithUTF8BOM),
-/* harmony export */   "stripWildcards": () => (/* binding */ stripWildcards),
-/* harmony export */   "trim": () => (/* binding */ trim)
+/* harmony export */   AmbiguousCharacters: () => (/* binding */ AmbiguousCharacters),
+/* harmony export */   CodePointIterator: () => (/* binding */ CodePointIterator),
+/* harmony export */   GraphemeIterator: () => (/* binding */ GraphemeIterator),
+/* harmony export */   InvisibleCharacters: () => (/* binding */ InvisibleCharacters),
+/* harmony export */   UNUSUAL_LINE_TERMINATORS: () => (/* binding */ UNUSUAL_LINE_TERMINATORS),
+/* harmony export */   UTF8_BOM_CHARACTER: () => (/* binding */ UTF8_BOM_CHARACTER),
+/* harmony export */   commonPrefixLength: () => (/* binding */ commonPrefixLength),
+/* harmony export */   commonSuffixLength: () => (/* binding */ commonSuffixLength),
+/* harmony export */   compare: () => (/* binding */ compare),
+/* harmony export */   compareIgnoreCase: () => (/* binding */ compareIgnoreCase),
+/* harmony export */   compareSubstring: () => (/* binding */ compareSubstring),
+/* harmony export */   compareSubstringIgnoreCase: () => (/* binding */ compareSubstringIgnoreCase),
+/* harmony export */   computeCodePoint: () => (/* binding */ computeCodePoint),
+/* harmony export */   containsRTL: () => (/* binding */ containsRTL),
+/* harmony export */   containsUnusualLineTerminators: () => (/* binding */ containsUnusualLineTerminators),
+/* harmony export */   containsUppercaseCharacter: () => (/* binding */ containsUppercaseCharacter),
+/* harmony export */   convertSimple2RegExpPattern: () => (/* binding */ convertSimple2RegExpPattern),
+/* harmony export */   createRegExp: () => (/* binding */ createRegExp),
+/* harmony export */   equalsIgnoreCase: () => (/* binding */ equalsIgnoreCase),
+/* harmony export */   escape: () => (/* binding */ escape),
+/* harmony export */   escapeRegExpCharacters: () => (/* binding */ escapeRegExpCharacters),
+/* harmony export */   firstNonWhitespaceIndex: () => (/* binding */ firstNonWhitespaceIndex),
+/* harmony export */   format: () => (/* binding */ format),
+/* harmony export */   getCharContainingOffset: () => (/* binding */ getCharContainingOffset),
+/* harmony export */   getLeadingWhitespace: () => (/* binding */ getLeadingWhitespace),
+/* harmony export */   getLeftDeleteOffset: () => (/* binding */ getLeftDeleteOffset),
+/* harmony export */   getNextCodePoint: () => (/* binding */ getNextCodePoint),
+/* harmony export */   isAsciiDigit: () => (/* binding */ isAsciiDigit),
+/* harmony export */   isBasicASCII: () => (/* binding */ isBasicASCII),
+/* harmony export */   isEmojiImprecise: () => (/* binding */ isEmojiImprecise),
+/* harmony export */   isFalsyOrWhitespace: () => (/* binding */ isFalsyOrWhitespace),
+/* harmony export */   isFullWidthCharacter: () => (/* binding */ isFullWidthCharacter),
+/* harmony export */   isHighSurrogate: () => (/* binding */ isHighSurrogate),
+/* harmony export */   isLowSurrogate: () => (/* binding */ isLowSurrogate),
+/* harmony export */   isLowerAsciiLetter: () => (/* binding */ isLowerAsciiLetter),
+/* harmony export */   isUpperAsciiLetter: () => (/* binding */ isUpperAsciiLetter),
+/* harmony export */   lastNonWhitespaceIndex: () => (/* binding */ lastNonWhitespaceIndex),
+/* harmony export */   ltrim: () => (/* binding */ ltrim),
+/* harmony export */   nextCharLength: () => (/* binding */ nextCharLength),
+/* harmony export */   noBreakWhitespace: () => (/* binding */ noBreakWhitespace),
+/* harmony export */   prevCharLength: () => (/* binding */ prevCharLength),
+/* harmony export */   regExpFlags: () => (/* binding */ regExpFlags),
+/* harmony export */   regExpLeadsToEndlessLoop: () => (/* binding */ regExpLeadsToEndlessLoop),
+/* harmony export */   rtrim: () => (/* binding */ rtrim),
+/* harmony export */   singleLetterHash: () => (/* binding */ singleLetterHash),
+/* harmony export */   splitLines: () => (/* binding */ splitLines),
+/* harmony export */   startsWithIgnoreCase: () => (/* binding */ startsWithIgnoreCase),
+/* harmony export */   startsWithUTF8BOM: () => (/* binding */ startsWithUTF8BOM),
+/* harmony export */   stripWildcards: () => (/* binding */ stripWildcards),
+/* harmony export */   trim: () => (/* binding */ trim)
 /* harmony export */ });
 /* harmony import */ var _cache_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cache.js */ "./node_modules/monaco-editor/esm/vs/base/common/cache.js");
 /* harmony import */ var _lazy_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lazy.js */ "./node_modules/monaco-editor/esm/vs/base/common/lazy.js");
@@ -7373,26 +7373,26 @@ InvisibleCharacters._data = undefined;
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "assertIsDefined": () => (/* binding */ assertIsDefined),
-/* harmony export */   "assertNever": () => (/* binding */ assertNever),
-/* harmony export */   "assertType": () => (/* binding */ assertType),
-/* harmony export */   "createProxyObject": () => (/* binding */ createProxyObject),
-/* harmony export */   "getAllMethodNames": () => (/* binding */ getAllMethodNames),
-/* harmony export */   "getAllPropertyNames": () => (/* binding */ getAllPropertyNames),
-/* harmony export */   "isArray": () => (/* binding */ isArray),
-/* harmony export */   "isBoolean": () => (/* binding */ isBoolean),
-/* harmony export */   "isDefined": () => (/* binding */ isDefined),
-/* harmony export */   "isFunction": () => (/* binding */ isFunction),
-/* harmony export */   "isIterable": () => (/* binding */ isIterable),
-/* harmony export */   "isNumber": () => (/* binding */ isNumber),
-/* harmony export */   "isObject": () => (/* binding */ isObject),
-/* harmony export */   "isString": () => (/* binding */ isString),
-/* harmony export */   "isTypedArray": () => (/* binding */ isTypedArray),
-/* harmony export */   "isUndefined": () => (/* binding */ isUndefined),
-/* harmony export */   "isUndefinedOrNull": () => (/* binding */ isUndefinedOrNull),
-/* harmony export */   "validateConstraint": () => (/* binding */ validateConstraint),
-/* harmony export */   "validateConstraints": () => (/* binding */ validateConstraints),
-/* harmony export */   "withNullAsUndefined": () => (/* binding */ withNullAsUndefined)
+/* harmony export */   assertIsDefined: () => (/* binding */ assertIsDefined),
+/* harmony export */   assertNever: () => (/* binding */ assertNever),
+/* harmony export */   assertType: () => (/* binding */ assertType),
+/* harmony export */   createProxyObject: () => (/* binding */ createProxyObject),
+/* harmony export */   getAllMethodNames: () => (/* binding */ getAllMethodNames),
+/* harmony export */   getAllPropertyNames: () => (/* binding */ getAllPropertyNames),
+/* harmony export */   isArray: () => (/* binding */ isArray),
+/* harmony export */   isBoolean: () => (/* binding */ isBoolean),
+/* harmony export */   isDefined: () => (/* binding */ isDefined),
+/* harmony export */   isFunction: () => (/* binding */ isFunction),
+/* harmony export */   isIterable: () => (/* binding */ isIterable),
+/* harmony export */   isNumber: () => (/* binding */ isNumber),
+/* harmony export */   isObject: () => (/* binding */ isObject),
+/* harmony export */   isString: () => (/* binding */ isString),
+/* harmony export */   isTypedArray: () => (/* binding */ isTypedArray),
+/* harmony export */   isUndefined: () => (/* binding */ isUndefined),
+/* harmony export */   isUndefinedOrNull: () => (/* binding */ isUndefinedOrNull),
+/* harmony export */   validateConstraint: () => (/* binding */ validateConstraint),
+/* harmony export */   validateConstraints: () => (/* binding */ validateConstraints),
+/* harmony export */   withNullAsUndefined: () => (/* binding */ withNullAsUndefined)
 /* harmony export */ });
 /**
  * @returns whether the provided parameter is a JavaScript Array or not.
@@ -7569,8 +7569,8 @@ function assertNever(value, message = 'Unreachable') {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "toUint32": () => (/* binding */ toUint32),
-/* harmony export */   "toUint8": () => (/* binding */ toUint8)
+/* harmony export */   toUint32: () => (/* binding */ toUint32),
+/* harmony export */   toUint8: () => (/* binding */ toUint8)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -7606,8 +7606,8 @@ function toUint32(v) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "URI": () => (/* binding */ URI),
-/* harmony export */   "uriToFsPath": () => (/* binding */ uriToFsPath)
+/* harmony export */   URI: () => (/* binding */ URI),
+/* harmony export */   uriToFsPath: () => (/* binding */ uriToFsPath)
 /* harmony export */ });
 /* harmony import */ var _path_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./path.js */ "./node_modules/monaco-editor/esm/vs/base/common/path.js");
 /* harmony import */ var _platform_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
@@ -8212,10 +8212,10 @@ function percentDecode(str) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "SimpleWorkerClient": () => (/* binding */ SimpleWorkerClient),
-/* harmony export */   "SimpleWorkerServer": () => (/* binding */ SimpleWorkerServer),
-/* harmony export */   "create": () => (/* binding */ create),
-/* harmony export */   "logOnceWebWorkerWarning": () => (/* binding */ logOnceWebWorkerWarning)
+/* harmony export */   SimpleWorkerClient: () => (/* binding */ SimpleWorkerClient),
+/* harmony export */   SimpleWorkerServer: () => (/* binding */ SimpleWorkerServer),
+/* harmony export */   create: () => (/* binding */ create),
+/* harmony export */   logOnceWebWorkerWarning: () => (/* binding */ logOnceWebWorkerWarning)
 /* harmony export */ });
 /* harmony import */ var _errors_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../errors.js */ "./node_modules/monaco-editor/esm/vs/base/common/errors.js");
 /* harmony import */ var _event_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../event.js */ "./node_modules/monaco-editor/esm/vs/base/common/event.js");
@@ -8674,8 +8674,8 @@ function create(postMessage) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "CharacterClassifier": () => (/* binding */ CharacterClassifier),
-/* harmony export */   "CharacterSet": () => (/* binding */ CharacterSet)
+/* harmony export */   CharacterClassifier: () => (/* binding */ CharacterClassifier),
+/* harmony export */   CharacterSet: () => (/* binding */ CharacterSet)
 /* harmony export */ });
 /* harmony import */ var _base_common_uint_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/uint.js */ "./node_modules/monaco-editor/esm/vs/base/common/uint.js");
 /*---------------------------------------------------------------------------------------------
@@ -8741,7 +8741,7 @@ class CharacterSet {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Position": () => (/* binding */ Position)
+/* harmony export */   Position: () => (/* binding */ Position)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -8889,7 +8889,7 @@ class Position {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Range": () => (/* binding */ Range)
+/* harmony export */   Range: () => (/* binding */ Range)
 /* harmony export */ });
 /* harmony import */ var _position_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./position.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
 /*---------------------------------------------------------------------------------------------
@@ -9283,7 +9283,7 @@ class Range {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Selection": () => (/* binding */ Selection)
+/* harmony export */   Selection: () => (/* binding */ Selection)
 /* harmony export */ });
 /* harmony import */ var _position_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./position.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
 /* harmony import */ var _range_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./range.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
@@ -9441,8 +9441,8 @@ class Selection extends _range_js__WEBPACK_IMPORTED_MODULE_1__.Range {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "WordCharacterClassifier": () => (/* binding */ WordCharacterClassifier),
-/* harmony export */   "getMapForWordSeparators": () => (/* binding */ getMapForWordSeparators)
+/* harmony export */   WordCharacterClassifier: () => (/* binding */ WordCharacterClassifier),
+/* harmony export */   getMapForWordSeparators: () => (/* binding */ getMapForWordSeparators)
 /* harmony export */ });
 /* harmony import */ var _characterClassifier_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./characterClassifier.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/characterClassifier.js");
 /*---------------------------------------------------------------------------------------------
@@ -9482,10 +9482,10 @@ const getMapForWordSeparators = once((input) => new WordCharacterClassifier(inpu
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "DEFAULT_WORD_REGEXP": () => (/* binding */ DEFAULT_WORD_REGEXP),
-/* harmony export */   "USUAL_WORD_SEPARATORS": () => (/* binding */ USUAL_WORD_SEPARATORS),
-/* harmony export */   "ensureValidWordDefinition": () => (/* binding */ ensureValidWordDefinition),
-/* harmony export */   "getWordAtText": () => (/* binding */ getWordAtText)
+/* harmony export */   DEFAULT_WORD_REGEXP: () => (/* binding */ DEFAULT_WORD_REGEXP),
+/* harmony export */   USUAL_WORD_SEPARATORS: () => (/* binding */ USUAL_WORD_SEPARATORS),
+/* harmony export */   ensureValidWordDefinition: () => (/* binding */ ensureValidWordDefinition),
+/* harmony export */   getWordAtText: () => (/* binding */ getWordAtText)
 /* harmony export */ });
 /* harmony import */ var _base_common_iterator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/iterator.js */ "./node_modules/monaco-editor/esm/vs/base/common/iterator.js");
 /* harmony import */ var _base_common_linkedList_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/linkedList.js */ "./node_modules/monaco-editor/esm/vs/base/common/linkedList.js");
@@ -9623,7 +9623,7 @@ function _findRegexMatchEnclosingPosition(wordDefinition, text, pos, stopPos) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "DiffComputer": () => (/* binding */ DiffComputer)
+/* harmony export */   DiffComputer: () => (/* binding */ DiffComputer)
 /* harmony export */ });
 /* harmony import */ var _base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/diff/diff.js */ "./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js");
 /* harmony import */ var _base_common_strings_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/strings.js */ "./node_modules/monaco-editor/esm/vs/base/common/strings.js");
@@ -10060,19 +10060,19 @@ function createContinueProcessingPredicate(maximumRuntime) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "Command": () => (/* binding */ Command),
-/* harmony export */   "CompletionItemKinds": () => (/* binding */ CompletionItemKinds),
-/* harmony export */   "DocumentHighlightKind": () => (/* binding */ DocumentHighlightKind),
-/* harmony export */   "EncodedTokenizationResult": () => (/* binding */ EncodedTokenizationResult),
-/* harmony export */   "FoldingRangeKind": () => (/* binding */ FoldingRangeKind),
-/* harmony export */   "InlayHintKind": () => (/* binding */ InlayHintKind),
-/* harmony export */   "InlineCompletionTriggerKind": () => (/* binding */ InlineCompletionTriggerKind),
-/* harmony export */   "SignatureHelpTriggerKind": () => (/* binding */ SignatureHelpTriggerKind),
-/* harmony export */   "SymbolKinds": () => (/* binding */ SymbolKinds),
-/* harmony export */   "Token": () => (/* binding */ Token),
-/* harmony export */   "TokenizationRegistry": () => (/* binding */ TokenizationRegistry),
-/* harmony export */   "TokenizationResult": () => (/* binding */ TokenizationResult),
-/* harmony export */   "isLocationLink": () => (/* binding */ isLocationLink)
+/* harmony export */   Command: () => (/* binding */ Command),
+/* harmony export */   CompletionItemKinds: () => (/* binding */ CompletionItemKinds),
+/* harmony export */   DocumentHighlightKind: () => (/* binding */ DocumentHighlightKind),
+/* harmony export */   EncodedTokenizationResult: () => (/* binding */ EncodedTokenizationResult),
+/* harmony export */   FoldingRangeKind: () => (/* binding */ FoldingRangeKind),
+/* harmony export */   InlayHintKind: () => (/* binding */ InlayHintKind),
+/* harmony export */   InlineCompletionTriggerKind: () => (/* binding */ InlineCompletionTriggerKind),
+/* harmony export */   SignatureHelpTriggerKind: () => (/* binding */ SignatureHelpTriggerKind),
+/* harmony export */   SymbolKinds: () => (/* binding */ SymbolKinds),
+/* harmony export */   Token: () => (/* binding */ Token),
+/* harmony export */   TokenizationRegistry: () => (/* binding */ TokenizationRegistry),
+/* harmony export */   TokenizationResult: () => (/* binding */ TokenizationResult),
+/* harmony export */   isLocationLink: () => (/* binding */ isLocationLink)
 /* harmony export */ });
 /* harmony import */ var _base_common_codicons_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../base/common/codicons.js */ "./node_modules/monaco-editor/esm/vs/base/common/codicons.js");
 /* harmony import */ var _base_common_uri_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../base/common/uri.js */ "./node_modules/monaco-editor/esm/vs/base/common/uri.js");
@@ -10362,10 +10362,10 @@ const TokenizationRegistry = new _tokenizationRegistry_js__WEBPACK_IMPORTED_MODU
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "LinkComputer": () => (/* binding */ LinkComputer),
-/* harmony export */   "StateMachine": () => (/* binding */ StateMachine),
-/* harmony export */   "Uint8Matrix": () => (/* binding */ Uint8Matrix),
-/* harmony export */   "computeLinks": () => (/* binding */ computeLinks)
+/* harmony export */   LinkComputer: () => (/* binding */ LinkComputer),
+/* harmony export */   StateMachine: () => (/* binding */ StateMachine),
+/* harmony export */   Uint8Matrix: () => (/* binding */ Uint8Matrix),
+/* harmony export */   computeLinks: () => (/* binding */ computeLinks)
 /* harmony export */ });
 /* harmony import */ var _core_characterClassifier_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/characterClassifier.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/characterClassifier.js");
 /*---------------------------------------------------------------------------------------------
@@ -10645,7 +10645,7 @@ function computeLinks(model) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "BasicInplaceReplace": () => (/* binding */ BasicInplaceReplace)
+/* harmony export */   BasicInplaceReplace: () => (/* binding */ BasicInplaceReplace)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -10744,16 +10744,16 @@ BasicInplaceReplace.INSTANCE = new BasicInplaceReplace();
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ApplyEditsResult": () => (/* binding */ ApplyEditsResult),
-/* harmony export */   "FindMatch": () => (/* binding */ FindMatch),
-/* harmony export */   "InjectedTextCursorStops": () => (/* binding */ InjectedTextCursorStops),
-/* harmony export */   "MinimapPosition": () => (/* binding */ MinimapPosition),
-/* harmony export */   "OverviewRulerLane": () => (/* binding */ OverviewRulerLane),
-/* harmony export */   "SearchData": () => (/* binding */ SearchData),
-/* harmony export */   "TextModelResolvedOptions": () => (/* binding */ TextModelResolvedOptions),
-/* harmony export */   "ValidAnnotatedEditOperation": () => (/* binding */ ValidAnnotatedEditOperation),
-/* harmony export */   "isITextSnapshot": () => (/* binding */ isITextSnapshot),
-/* harmony export */   "shouldSynchronizeModel": () => (/* binding */ shouldSynchronizeModel)
+/* harmony export */   ApplyEditsResult: () => (/* binding */ ApplyEditsResult),
+/* harmony export */   FindMatch: () => (/* binding */ FindMatch),
+/* harmony export */   InjectedTextCursorStops: () => (/* binding */ InjectedTextCursorStops),
+/* harmony export */   MinimapPosition: () => (/* binding */ MinimapPosition),
+/* harmony export */   OverviewRulerLane: () => (/* binding */ OverviewRulerLane),
+/* harmony export */   SearchData: () => (/* binding */ SearchData),
+/* harmony export */   TextModelResolvedOptions: () => (/* binding */ TextModelResolvedOptions),
+/* harmony export */   ValidAnnotatedEditOperation: () => (/* binding */ ValidAnnotatedEditOperation),
+/* harmony export */   isITextSnapshot: () => (/* binding */ isITextSnapshot),
+/* harmony export */   shouldSynchronizeModel: () => (/* binding */ shouldSynchronizeModel)
 /* harmony export */ });
 /* harmony import */ var _base_common_objects_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../base/common/objects.js */ "./node_modules/monaco-editor/esm/vs/base/common/objects.js");
 /*---------------------------------------------------------------------------------------------
@@ -10889,7 +10889,7 @@ function shouldSynchronizeModel(model) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "MirrorTextModel": () => (/* binding */ MirrorTextModel)
+/* harmony export */   MirrorTextModel: () => (/* binding */ MirrorTextModel)
 /* harmony export */ });
 /* harmony import */ var _base_common_strings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/strings.js */ "./node_modules/monaco-editor/esm/vs/base/common/strings.js");
 /* harmony import */ var _core_position_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/position.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/position.js");
@@ -11020,9 +11020,9 @@ class MirrorTextModel {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "ConstantTimePrefixSumComputer": () => (/* binding */ ConstantTimePrefixSumComputer),
-/* harmony export */   "PrefixSumComputer": () => (/* binding */ PrefixSumComputer),
-/* harmony export */   "PrefixSumIndexOfResult": () => (/* binding */ PrefixSumIndexOfResult)
+/* harmony export */   ConstantTimePrefixSumComputer: () => (/* binding */ ConstantTimePrefixSumComputer),
+/* harmony export */   PrefixSumComputer: () => (/* binding */ PrefixSumComputer),
+/* harmony export */   PrefixSumIndexOfResult: () => (/* binding */ PrefixSumIndexOfResult)
 /* harmony export */ });
 /* harmony import */ var _base_common_arrays_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/arrays.js */ "./node_modules/monaco-editor/esm/vs/base/common/arrays.js");
 /* harmony import */ var _base_common_uint_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/uint.js */ "./node_modules/monaco-editor/esm/vs/base/common/uint.js");
@@ -11261,12 +11261,12 @@ class PrefixSumIndexOfResult {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "SearchParams": () => (/* binding */ SearchParams),
-/* harmony export */   "Searcher": () => (/* binding */ Searcher),
-/* harmony export */   "TextModelSearch": () => (/* binding */ TextModelSearch),
-/* harmony export */   "createFindMatch": () => (/* binding */ createFindMatch),
-/* harmony export */   "isMultilineRegexSource": () => (/* binding */ isMultilineRegexSource),
-/* harmony export */   "isValidMatch": () => (/* binding */ isValidMatch)
+/* harmony export */   SearchParams: () => (/* binding */ SearchParams),
+/* harmony export */   Searcher: () => (/* binding */ Searcher),
+/* harmony export */   TextModelSearch: () => (/* binding */ TextModelSearch),
+/* harmony export */   createFindMatch: () => (/* binding */ createFindMatch),
+/* harmony export */   isMultilineRegexSource: () => (/* binding */ isMultilineRegexSource),
+/* harmony export */   isValidMatch: () => (/* binding */ isValidMatch)
 /* harmony export */ });
 /* harmony import */ var _base_common_strings_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/strings.js */ "./node_modules/monaco-editor/esm/vs/base/common/strings.js");
 /* harmony import */ var _core_wordCharacterClassifier_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/wordCharacterClassifier.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/wordCharacterClassifier.js");
@@ -11737,8 +11737,8 @@ class Searcher {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "KeyMod": () => (/* binding */ KeyMod),
-/* harmony export */   "createMonacoBaseAPI": () => (/* binding */ createMonacoBaseAPI)
+/* harmony export */   KeyMod: () => (/* binding */ KeyMod),
+/* harmony export */   createMonacoBaseAPI: () => (/* binding */ createMonacoBaseAPI)
 /* harmony export */ });
 /* harmony import */ var _base_common_cancellation_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/cancellation.js */ "./node_modules/monaco-editor/esm/vs/base/common/cancellation.js");
 /* harmony import */ var _base_common_event_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/event.js */ "./node_modules/monaco-editor/esm/vs/base/common/event.js");
@@ -11801,9 +11801,9 @@ function createMonacoBaseAPI() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "EditorSimpleWorker": () => (/* binding */ EditorSimpleWorker),
-/* harmony export */   "MirrorModel": () => (/* binding */ MirrorModel),
-/* harmony export */   "create": () => (/* binding */ create)
+/* harmony export */   EditorSimpleWorker: () => (/* binding */ EditorSimpleWorker),
+/* harmony export */   MirrorModel: () => (/* binding */ MirrorModel),
+/* harmony export */   create: () => (/* binding */ create)
 /* harmony export */ });
 /* harmony import */ var _base_common_diff_diff_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../base/common/diff/diff.js */ "./node_modules/monaco-editor/esm/vs/base/common/diff/diff.js");
 /* harmony import */ var _base_common_platform_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../base/common/platform.js */ "./node_modules/monaco-editor/esm/vs/base/common/platform.js");
@@ -12325,7 +12325,7 @@ if (typeof importScripts === 'function') {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "UnicodeTextModelHighlighter": () => (/* binding */ UnicodeTextModelHighlighter)
+/* harmony export */   UnicodeTextModelHighlighter: () => (/* binding */ UnicodeTextModelHighlighter)
 /* harmony export */ });
 /* harmony import */ var _core_range_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core/range.js */ "./node_modules/monaco-editor/esm/vs/editor/common/core/range.js");
 /* harmony import */ var _model_textModelSearch_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../model/textModelSearch.js */ "./node_modules/monaco-editor/esm/vs/editor/common/model/textModelSearch.js");
@@ -12525,44 +12525,44 @@ function isAllowedInvisibleCharacter(character) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "AccessibilitySupport": () => (/* binding */ AccessibilitySupport),
-/* harmony export */   "CodeActionTriggerType": () => (/* binding */ CodeActionTriggerType),
-/* harmony export */   "CompletionItemInsertTextRule": () => (/* binding */ CompletionItemInsertTextRule),
-/* harmony export */   "CompletionItemKind": () => (/* binding */ CompletionItemKind),
-/* harmony export */   "CompletionItemTag": () => (/* binding */ CompletionItemTag),
-/* harmony export */   "CompletionTriggerKind": () => (/* binding */ CompletionTriggerKind),
-/* harmony export */   "ContentWidgetPositionPreference": () => (/* binding */ ContentWidgetPositionPreference),
-/* harmony export */   "CursorChangeReason": () => (/* binding */ CursorChangeReason),
-/* harmony export */   "DefaultEndOfLine": () => (/* binding */ DefaultEndOfLine),
-/* harmony export */   "DocumentHighlightKind": () => (/* binding */ DocumentHighlightKind),
-/* harmony export */   "EditorAutoIndentStrategy": () => (/* binding */ EditorAutoIndentStrategy),
-/* harmony export */   "EditorOption": () => (/* binding */ EditorOption),
-/* harmony export */   "EndOfLinePreference": () => (/* binding */ EndOfLinePreference),
-/* harmony export */   "EndOfLineSequence": () => (/* binding */ EndOfLineSequence),
-/* harmony export */   "IndentAction": () => (/* binding */ IndentAction),
-/* harmony export */   "InjectedTextCursorStops": () => (/* binding */ InjectedTextCursorStops),
-/* harmony export */   "InlayHintKind": () => (/* binding */ InlayHintKind),
-/* harmony export */   "InlineCompletionTriggerKind": () => (/* binding */ InlineCompletionTriggerKind),
-/* harmony export */   "KeyCode": () => (/* binding */ KeyCode),
-/* harmony export */   "MarkerSeverity": () => (/* binding */ MarkerSeverity),
-/* harmony export */   "MarkerTag": () => (/* binding */ MarkerTag),
-/* harmony export */   "MinimapPosition": () => (/* binding */ MinimapPosition),
-/* harmony export */   "MouseTargetType": () => (/* binding */ MouseTargetType),
-/* harmony export */   "OverlayWidgetPositionPreference": () => (/* binding */ OverlayWidgetPositionPreference),
-/* harmony export */   "OverviewRulerLane": () => (/* binding */ OverviewRulerLane),
-/* harmony export */   "PositionAffinity": () => (/* binding */ PositionAffinity),
-/* harmony export */   "RenderLineNumbersType": () => (/* binding */ RenderLineNumbersType),
-/* harmony export */   "RenderMinimap": () => (/* binding */ RenderMinimap),
-/* harmony export */   "ScrollType": () => (/* binding */ ScrollType),
-/* harmony export */   "ScrollbarVisibility": () => (/* binding */ ScrollbarVisibility),
-/* harmony export */   "SelectionDirection": () => (/* binding */ SelectionDirection),
-/* harmony export */   "SignatureHelpTriggerKind": () => (/* binding */ SignatureHelpTriggerKind),
-/* harmony export */   "SymbolKind": () => (/* binding */ SymbolKind),
-/* harmony export */   "SymbolTag": () => (/* binding */ SymbolTag),
-/* harmony export */   "TextEditorCursorBlinkingStyle": () => (/* binding */ TextEditorCursorBlinkingStyle),
-/* harmony export */   "TextEditorCursorStyle": () => (/* binding */ TextEditorCursorStyle),
-/* harmony export */   "TrackedRangeStickiness": () => (/* binding */ TrackedRangeStickiness),
-/* harmony export */   "WrappingIndent": () => (/* binding */ WrappingIndent)
+/* harmony export */   AccessibilitySupport: () => (/* binding */ AccessibilitySupport),
+/* harmony export */   CodeActionTriggerType: () => (/* binding */ CodeActionTriggerType),
+/* harmony export */   CompletionItemInsertTextRule: () => (/* binding */ CompletionItemInsertTextRule),
+/* harmony export */   CompletionItemKind: () => (/* binding */ CompletionItemKind),
+/* harmony export */   CompletionItemTag: () => (/* binding */ CompletionItemTag),
+/* harmony export */   CompletionTriggerKind: () => (/* binding */ CompletionTriggerKind),
+/* harmony export */   ContentWidgetPositionPreference: () => (/* binding */ ContentWidgetPositionPreference),
+/* harmony export */   CursorChangeReason: () => (/* binding */ CursorChangeReason),
+/* harmony export */   DefaultEndOfLine: () => (/* binding */ DefaultEndOfLine),
+/* harmony export */   DocumentHighlightKind: () => (/* binding */ DocumentHighlightKind),
+/* harmony export */   EditorAutoIndentStrategy: () => (/* binding */ EditorAutoIndentStrategy),
+/* harmony export */   EditorOption: () => (/* binding */ EditorOption),
+/* harmony export */   EndOfLinePreference: () => (/* binding */ EndOfLinePreference),
+/* harmony export */   EndOfLineSequence: () => (/* binding */ EndOfLineSequence),
+/* harmony export */   IndentAction: () => (/* binding */ IndentAction),
+/* harmony export */   InjectedTextCursorStops: () => (/* binding */ InjectedTextCursorStops),
+/* harmony export */   InlayHintKind: () => (/* binding */ InlayHintKind),
+/* harmony export */   InlineCompletionTriggerKind: () => (/* binding */ InlineCompletionTriggerKind),
+/* harmony export */   KeyCode: () => (/* binding */ KeyCode),
+/* harmony export */   MarkerSeverity: () => (/* binding */ MarkerSeverity),
+/* harmony export */   MarkerTag: () => (/* binding */ MarkerTag),
+/* harmony export */   MinimapPosition: () => (/* binding */ MinimapPosition),
+/* harmony export */   MouseTargetType: () => (/* binding */ MouseTargetType),
+/* harmony export */   OverlayWidgetPositionPreference: () => (/* binding */ OverlayWidgetPositionPreference),
+/* harmony export */   OverviewRulerLane: () => (/* binding */ OverviewRulerLane),
+/* harmony export */   PositionAffinity: () => (/* binding */ PositionAffinity),
+/* harmony export */   RenderLineNumbersType: () => (/* binding */ RenderLineNumbersType),
+/* harmony export */   RenderMinimap: () => (/* binding */ RenderMinimap),
+/* harmony export */   ScrollType: () => (/* binding */ ScrollType),
+/* harmony export */   ScrollbarVisibility: () => (/* binding */ ScrollbarVisibility),
+/* harmony export */   SelectionDirection: () => (/* binding */ SelectionDirection),
+/* harmony export */   SignatureHelpTriggerKind: () => (/* binding */ SignatureHelpTriggerKind),
+/* harmony export */   SymbolKind: () => (/* binding */ SymbolKind),
+/* harmony export */   SymbolTag: () => (/* binding */ SymbolTag),
+/* harmony export */   TextEditorCursorBlinkingStyle: () => (/* binding */ TextEditorCursorBlinkingStyle),
+/* harmony export */   TextEditorCursorStyle: () => (/* binding */ TextEditorCursorStyle),
+/* harmony export */   TrackedRangeStickiness: () => (/* binding */ TrackedRangeStickiness),
+/* harmony export */   WrappingIndent: () => (/* binding */ WrappingIndent)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -13475,7 +13475,7 @@ var WrappingIndent;
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "TokenizationRegistry": () => (/* binding */ TokenizationRegistry)
+/* harmony export */   TokenizationRegistry: () => (/* binding */ TokenizationRegistry)
 /* harmony export */ });
 /* harmony import */ var _base_common_event_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../base/common/event.js */ "./node_modules/monaco-editor/esm/vs/base/common/event.js");
 /* harmony import */ var _base_common_lifecycle_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../base/common/lifecycle.js */ "./node_modules/monaco-editor/esm/vs/base/common/lifecycle.js");
@@ -13627,7 +13627,7 @@ class TokenizationSupportFactoryData extends _base_common_lifecycle_js__WEBPACK_
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "initialize": () => (/* binding */ initialize)
+/* harmony export */   initialize: () => (/* binding */ initialize)
 /* harmony export */ });
 /* harmony import */ var _base_common_worker_simpleWorker_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../base/common/worker/simpleWorker.js */ "./node_modules/monaco-editor/esm/vs/base/common/worker/simpleWorker.js");
 /* harmony import */ var _common_services_editorSimpleWorker_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./common/services/editorSimpleWorker.js */ "./node_modules/monaco-editor/esm/vs/editor/common/services/editorSimpleWorker.js");
@@ -13668,11 +13668,11 @@ self.onmessage = (e) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "create": () => (/* binding */ create),
-/* harmony export */   "getConfiguredDefaultLocale": () => (/* binding */ getConfiguredDefaultLocale),
-/* harmony export */   "load": () => (/* binding */ load),
-/* harmony export */   "localize": () => (/* binding */ localize),
-/* harmony export */   "setPseudoTranslation": () => (/* binding */ setPseudoTranslation)
+/* harmony export */   create: () => (/* binding */ create),
+/* harmony export */   getConfiguredDefaultLocale: () => (/* binding */ getConfiguredDefaultLocale),
+/* harmony export */   load: () => (/* binding */ load),
+/* harmony export */   localize: () => (/* binding */ localize),
+/* harmony export */   setPseudoTranslation: () => (/* binding */ setPseudoTranslation)
 /* harmony export */ });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.

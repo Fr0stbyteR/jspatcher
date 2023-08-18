@@ -1,4 +1,4 @@
-import type { FaustAudioWorkletNode } from "@shren/faustwasm/dist/esm";
+import type { FaustAudioWorkletNode } from "@grame/faustwasm/dist/esm";
 import CodePopupUI from "../base/CodePopupUI";
 import Bang, { isBang } from "../base/Bang";
 import DefaultObject, { DefaultObjectProps } from "../base/DefaultObject";

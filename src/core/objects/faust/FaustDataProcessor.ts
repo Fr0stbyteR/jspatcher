@@ -1,4 +1,4 @@
-import type { FaustOfflineProcessor } from "@shren/faustwasm/dist/esm";
+import type { FaustOfflineProcessor } from "@grame/faustwasm/dist/esm";
 import CodePopupUI from "../base/CodePopupUI";
 import Bang, { isBang } from "../base/Bang";
 import DefaultObject, { DefaultObjectProps } from "../base/DefaultObject";

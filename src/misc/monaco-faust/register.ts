@@ -1,5 +1,5 @@
 import type * as monaco from "monaco-editor";
-import type { FaustCompiler } from "@shren/faustwasm/dist/esm";
+import type { FaustCompiler } from "@grame/faustwasm/dist/esm";
 
 export const faustLangRegister = async (monacoEditor: typeof monaco, faust: FaustCompiler) => {
     const faustLang = await import("./FaustLang");

@@ -84,11 +84,11 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "url": "_7062.js/WorkletEnv.worklet.js",
     "revision": "5193d9a0b82f2ec460c742b22274da81"
   }, {
-    "url": "_af15.js/WorkletEnv.worklet.js",
-    "revision": "0b61af219836562e092da5508cd6380d"
+    "url": "_a3cf.js/WorkletEnv.worklet.js",
+    "revision": "2b6936f72ae906e5492bd2e0070796f0"
   }, {
-    "url": "_dc1c.js/WorkletEnv.worklet.js",
-    "revision": "509a63548b2b22189fc1a8a688b9d6f6"
+    "url": "_ce66.js/WorkletEnv.worklet.js",
+    "revision": "db0afe0ba6b337576bb1a8512e5771d5"
   }, {
     "url": "_fd2b.js/WorkletEnv.worklet.js",
     "revision": "82dd699a659c356c9df10ceafedbeeff"
@@ -283,16 +283,16 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "cef35c37b0dcdb9408f85f29aeb40d49"
   }, {
     "url": "deps/libfaust-wasm.data",
-    "revision": "f1126e184dcb3ae9883fabe9706cf23d"
+    "revision": "fb0a6711ddbf2d63caf13ced73065283"
   }, {
     "url": "deps/libfaust-wasm.data.d.ts",
     "revision": "efb8590a96d416771ef946b323008668"
   }, {
     "url": "deps/libfaust-wasm.js",
-    "revision": "263d4f7f04cad7f94352997bd4f7ae6d"
+    "revision": "12e73b7731ac00cc3c44ece1dcc20e5f"
   }, {
     "url": "deps/libfaust-wasm.wasm",
-    "revision": "8a8701619074e0513fa1489a0ee4b8f6"
+    "revision": "1bdd4de149ebdd9dd1be204d1d101cb3"
   }, {
     "url": "deps/libfaust-wasm.wasm.d.ts",
     "revision": "efb8590a96d416771ef946b323008668"
@@ -316,7 +316,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "91e93599fd142ab9a415c4b3e1a31c66"
+    "revision": "e58bba91202db3962a930a7b11421b9a"
   }, {
     "url": "js/017d998140f1ad199103.worker.js",
     "revision": null
@@ -328,21 +328,21 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": null
   }, {
     "url": "js/14f7a36899db782e01cddddc2ee88d1e.worker.js",
-    "revision": "3de4165abf46b01ba15fd7228f2e341a"
-  }, {
-    "url": "js/1eaf25dfe10eca4845a4.js",
-    "revision": null
+    "revision": "97eb516222a557c1313c615fc51a1d56"
   }, {
     "url": "js/28fd68abd7dec35262fb.worker.js",
+    "revision": null
+  }, {
+    "url": "js/3288589836ea49a59264.js",
     "revision": null
   }, {
     "url": "js/34799dc78b11a16ba5a3.js",
     "revision": null
   }, {
-    "url": "js/3d2e0cd02f1062ad7c15.js",
+    "url": "js/3bb9c29ea369e2af9d6e.js",
     "revision": null
   }, {
-    "url": "js/414b9770b3b621e76edf.js",
+    "url": "js/3d2e0cd02f1062ad7c15.js",
     "revision": null
   }, {
     "url": "js/46e827fd44fe8ed8d2c4.js",
@@ -372,23 +372,17 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "url": "js/68cf13e81eea4e5e2a33.js",
     "revision": null
   }, {
-    "url": "js/68e9cd770397fffba0ba.js",
-    "revision": null
-  }, {
     "url": "js/6b2296d7726f0841c01f.worker.js",
     "revision": null
   }, {
-    "url": "js/6b66508c67aa1a75f88a.js",
-    "revision": null
-  }, {
     "url": "js/81aaf6b31ad18815b1d4d15867555522.worker.js",
-    "revision": "a872958dd7663bda3f3baf7b9342cedf"
+    "revision": "e612a48f3c5e98129fd663eba4434dc1"
   }, {
     "url": "js/88ea8fbb0af230fbccf9.js",
     "revision": null
   }, {
     "url": "js/8afa4ab673b197275745ac5e5abcdd39.worker.js",
-    "revision": "e776f23fe0eb3e651930e887f2b39df8"
+    "revision": "c1d6d6c5085bc52dcf4456864a1c8d59"
   }, {
     "url": "js/8bcd54f0b591729ef470.worker.js",
     "revision": null
@@ -409,22 +403,22 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "d0a578704885d51e30fe9cc6ba19b3b1"
   }, {
     "url": "js/SpectralAnalyser.worklet.js",
-    "revision": "052c2fa6b1acdcf7783c47069b916471"
+    "revision": "b656c01770cb236719da49cfbaf59149"
   }, {
     "url": "js/TemporalAnalyser.worklet.js",
-    "revision": "76755ecd40833506d3a22341f906acf3"
+    "revision": "37739870c11b1e2215feba6277c5ad10"
   }, {
     "url": "js/Transmitter.worklet.js",
-    "revision": "993234e15f3a0155ffb2d6b4b4eb29cd"
+    "revision": "9f85701797e7a29fd7172e3b17384b5f"
   }, {
     "url": "js/WorkletEnv.worklet.js",
-    "revision": "2c50f73aca781492d6a9633a30c7ee6a"
+    "revision": "0ca7e72be2f43d9a4e205bec02eb9326"
   }, {
     "url": "js/a6b6f78b420b1f4bd98d.worker.js",
     "revision": null
   }, {
     "url": "js/a85ce25ec6767b7d9d2d3d88291dd6eb.worker.js",
-    "revision": "c2f35317e3c4dcbca1d24778ff574360"
+    "revision": "dbe2b57bf2caefc7c2f3e956013900f6"
   }, {
     "url": "js/b481f420e442bb340d72.js",
     "revision": null
@@ -435,7 +429,13 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "url": "js/bc92b42113beb4749365.js",
     "revision": null
   }, {
+    "url": "js/cce87706271257f7ff34.js",
+    "revision": null
+  }, {
     "url": "js/cecfbb715664b68e1396.js",
+    "revision": null
+  }, {
+    "url": "js/d3841c07bfb3177ac6db.js",
     "revision": null
   }, {
     "url": "js/d928a6176edfbd1e6d7f.js",
@@ -444,7 +444,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "url": "js/da08cf5323ff237518cf.js",
     "revision": null
   }, {
-    "url": "js/dd086a72d72a49236cb2.js",
+    "url": "js/e0813aac6a6c6e49c1c6.js",
     "revision": null
   }, {
     "url": "js/e9af213515a48055d0d9.js",
@@ -453,7 +453,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "url": "js/f0ffc0bc5f23c4dccc06.js",
     "revision": null
   }, {
-    "url": "js/f537a9f9fb49fac4be24.js",
+    "url": "js/f11b53023ba052b399c9.js",
     "revision": null
   }, {
     "url": "js/fd93e30ede5ae60bb24e.js",
@@ -544,7 +544,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "01193be29c15ac36f796f5af9c3f8485"
   }, {
     "url": "src_core_audio_AudioEditor_ts-src_core_audio_AudioRecorder_ts-src_core_audio_PatcherAudio_ts.js/WorkletEnv.worklet.js",
-    "revision": "8f112f754d6bd8dda879fb62f38e8add"
+    "revision": "fbfbb9c7391d5950557d2f6ed374ec35"
   }, {
     "url": "src_core_image_ImageEditor_ts.js/WorkletEnv.worklet.js",
     "revision": "a7aabf3a526cd37a0d9f3e4c28418b57"
@@ -565,10 +565,10 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "f18e5b2600d10f2ebd9abc1e0c99a940"
   }, {
     "url": "src_core_worklets_PatcherNode_ts.js/WorkletEnv.worklet.js",
-    "revision": "95bb218842425c4f802bf6a8ebb00efb"
+    "revision": "b719cdbcb86bb42dd8fd64f5a451d4fb"
   }, {
     "url": "version.json",
-    "revision": "70fee6e4a0e3d449d7d6a5cffdaf8242"
+    "revision": "4f14cc99dc791d7c8c936c809eff3f72"
   }], {});
   workbox.cleanupOutdatedCaches();
 

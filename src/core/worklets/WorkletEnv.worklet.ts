@@ -1,4 +1,4 @@
-import * as Faust from "@shren/faustwasm/dist/esm";
+import * as Faust from "@grame/faustwasm/dist/esm";
 import { FFTW, FFTWModule, instantiateFFTWModule } from "@shren/fftw-js/dist/esm-bundle";
 import AudioWorkletProxyProcessor from "./AudioWorkletProxyProcessor";
 import TaskManager from "../TaskMgr";
