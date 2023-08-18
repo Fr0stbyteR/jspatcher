@@ -1,15 +1,16 @@
 import * as React from "react";
 import { Dropdown } from "semantic-ui-react";
-import Patcher from "../../core/patcher/Patcher";
 import PatcherText from "../../core/text/PatcherText";
 import SaveAsModal from "../modals/SaveAsModal";
 import NewAudioModal from "../modals/NewAudioModal";
 import PatcherAudio from "../../core/audio/PatcherAudio";
+import DeleteAllModal from "../modals/DeleteAllModal";
+import EnvOptionsModal from "../modals/EnvOptionsModal";
+import EnvOptionsManager, { EnvOptions } from "../../core/EnvOptionsManager";
 import type Env from "../../core/Env";
 import type { EnvEventMap } from "../../core/Env";
 import type { IFileEditor } from "../../core/file/FileEditor";
 import type { IProjectFolder } from "../../core/file/AbstractProjectFolder";
-import DeleteAllModal from "../modals/DeleteAllModal";
 
 interface P {
     env: Env;
@@ -24,6 +25,7 @@ interface S {
     showSaveAsModal: boolean;
     showNewAudioModal: boolean;
     showDeleteAllModal: boolean;
+    showEnvOptionsModal: boolean;
 }
 
 export default class FileMenu extends React.PureComponent<P, S> {
@@ -38,37 +40,23 @@ export default class FileMenu extends React.PureComponent<P, S> {
         projectRoot: this.props.env.fileMgr.projectRoot,
         showSaveAsModal: false,
         showNewAudioModal: false,
-        showDeleteAllModal: false
+        showDeleteAllModal: false,
+        showEnvOptionsModal: false
     };
     handleClickNewJs = async () => {
-        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
-        await patcher.load({}, "js");
-        const editor = await patcher.getEditor();
-        this.props.env.openEditor(editor);
+        await this.props.env.openPatcher({}, "js");
     };
     handleClickNewJsAW = async () => {
-        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
-        await patcher.load({}, "jsaw");
-        const editor = await patcher.getEditor();
-        this.props.env.openEditor(editor);
+        await this.props.env.openPatcher({}, "jsaw");
     };
     handleClickNewMax = async () => {
-        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
-        await patcher.load({}, "max");
-        const editor = await patcher.getEditor();
-        this.props.env.openEditor(editor);
+        await this.props.env.openPatcher({}, "max");
     };
     handleClickNewGen = async () => {
-        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
-        await patcher.load({}, "gen");
-        const editor = await patcher.getEditor();
-        this.props.env.openEditor(editor);
+        await this.props.env.openPatcher({}, "gen");
     };
     handleClickNewFaust = async () => {
-        const patcher = new Patcher({ env: this.props.env, project: this.props.env.currentProject });
-        await patcher.load({}, "faust");
-        const editor = await patcher.getEditor();
-        this.props.env.openEditor(editor);
+        await this.props.env.openPatcher({}, "faust");
     };
     handleClickNewText = async () => {
         const text = new PatcherText({ env: this.props.env, project: this.props.env.currentProject });
@@ -79,6 +67,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
     handleClickNewProject = () => {
         this.setState({ showDeleteAllModal: true });
     };
+    handleClickOptions = () => this.setState({ showEnvOptionsModal: true });
     handleClickReload = async () => {
         await this.props.env.reload();
     };
@@ -119,6 +108,16 @@ export default class FileMenu extends React.PureComponent<P, S> {
     handleDeleteAllModalConfirm = async () => {
         this.setState({ showDeleteAllModal: false });
         await this.props.env.newProject();
+    };
+    handleEnvOptionsModalClose = (options: EnvOptions) => {
+        this.props.env.options = options;
+        this.setState({ showEnvOptionsModal: false });
+    };
+    handleEnvOptionsModalConfirm = () => {
+        this.setState({ showEnvOptionsModal: false });
+    };
+    handleEnvOptionsModalReset = () => {
+        this.props.env.options = EnvOptionsManager.defaultOptions;
     };
     handleClickExportProject = async () => {
         if (!this.props.env.currentProject) return;
@@ -162,7 +161,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
         }
         this.refOpenProject.current.value = "";
     };
-    handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => this.setState({ editor, fileName: editor?.file?.name || `Untitled.${editor?.fileExtension}`, projectRoot: this.props.env.fileMgr.projectRoot });
+    handleActiveEditor = ({ editor }: EnvEventMap["activeEditor"]) => this.setState({ editor, fileName: editor?.fileName || `Untitled.${editor?.fileExtension}`, projectRoot: this.props.env.fileMgr.projectRoot });
     componentDidMount() {
         this.props.env.on("activeEditor", this.handleActiveEditor);
     }
@@ -196,6 +195,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
                         <Dropdown.Item onClick={this.handleClickExportProject} text="Export Project Zip..." />
                         <Dropdown.Item onClick={this.handleClickExportFile} text="Export File..." disabled={!this.state.editor} />
                         <Dropdown.Divider />
+                        <Dropdown.Item onClick={this.handleClickOptions} text="Options..." />
                         <Dropdown.Item onClick={this.handleClickReload} text="Reload Project" description={`${ctrl} + R`} />
                     </Dropdown.Menu>
                 </Dropdown>
@@ -206,6 +206,7 @@ export default class FileMenu extends React.PureComponent<P, S> {
                 <SaveAsModal {...this.props} open={this.state.showSaveAsModal} fileName={this.state.fileName || `Untitled.${this.props.env.activeEditor?.fileExtension}`} folder={this.props.env.activeEditor?.file?.parent || this.props.env.fileMgr.projectRoot} onClose={this.handleSaveAsModalClose} onConfirm={this.handleSaveAsModalConfirm} />
                 <NewAudioModal {...this.props} open={this.state.showNewAudioModal} onClose={this.handleNewAudioModalClose} onConfirm={this.handleNewAudioModalConfirm} />
                 <DeleteAllModal {...this.props} open={this.state.showDeleteAllModal} onClose={this.handleDeleteAllModalClose} onConfirm={this.handleDeleteAllModalConfirm} />
+                <EnvOptionsModal {...this.props} open={this.state.showEnvOptionsModal} onReset={this.handleEnvOptionsModalReset} onClose={this.handleEnvOptionsModalClose} onConfirm={this.handleEnvOptionsModalConfirm} />
             </>
         );
     }

@@ -3,8 +3,9 @@ import { Menu, Ref } from "semantic-ui-react";
 import type Env from "../../core/Env";
 import FileMenu from "./FileMenu";
 import EditMenu from "./EditMenu";
-import "./TopMenu.scss";
 import ShareMenu from "./ShareMenu";
+import HelpMenu from "./HelpMenu";
+import "./TopMenu.scss";
 
 interface P {
     env: Env;
@@ -15,6 +16,7 @@ export default class TopMenu extends React.PureComponent<P> {
     ref = React.createRef<HTMLDivElement>();
     refFileMenu = React.createRef<FileMenu>();
     refEditMenu = React.createRef<EditMenu>();
+    refHelpMenu = React.createRef<HelpMenu>();
     handleKeyDown = (e: KeyboardEvent) => {
         const { activeEditor } = this.props.env;
         if (!activeEditor) return;
@@ -50,6 +52,7 @@ export default class TopMenu extends React.PureComponent<P> {
                 <Menu inverted size="mini" className="top-menu">
                     <FileMenu {...this.props} ref={this.refFileMenu} />
                     <EditMenu {...this.props} ref={this.refEditMenu} />
+                    <HelpMenu {...this.props} ref={this.refHelpMenu} />
                     <div style={{ flex: "1 1 auto" }}></div>
                     <ShareMenu {...this.props} />
                 </Menu>

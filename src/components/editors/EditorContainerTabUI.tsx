@@ -25,7 +25,7 @@ interface S {
 
 export class EditorContainerTabUI extends React.PureComponent<P, S> {
     state: S = {
-        fileName: this.props.editor.file?.name || `Untitled.${this.props.editor.fileExtension}`,
+        fileName: this.props.editor.fileName || `Untitled.${this.props.editor.fileExtension}`,
         fileSubscribed: false,
         closeModalOpen: false,
         saveAsModalOpen: false,

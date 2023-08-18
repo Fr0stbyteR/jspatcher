@@ -37,7 +37,7 @@ export default class AudioExportModal extends React.PureComponent<P, S> {
         tasks: this.props.editor.env.taskMgr.getTasksFromEmitter(this.props.editor),
         errors: this.props.editor.env.taskMgr.getErrorsFromEmitter(this.props.editor),
         type: "wav",
-        fileName: this.changeSuffix(this.props.editor.file?.name || "Untitled.wav", "wav"),
+        fileName: this.changeSuffix(this.props.editor.fileName || "Untitled.wav", "wav"),
         applyFx: true,
         mix: identityMatrix(this.props.editor.numberOfChannels || 1),
         bitrate: 256,

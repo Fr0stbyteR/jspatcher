@@ -8,7 +8,6 @@ import FileManagerUI from "./FileMgrUI";
 import PatcherEditor from "../../core/patcher/PatcherEditor";
 import AudioEditor from "../../core/audio/AudioEditor";
 import PluginManagerUI from "./PluginMgrUI";
-import ConfigMenu from "./ConfigMenu";
 import "./LeftMenu.scss";
 
 enum TPanels {
@@ -132,7 +131,6 @@ export default class LeftMenu extends React.PureComponent<P, S> {
                         : undefined
                     }
                     <div style={{ flex: "1 1 auto" }}></div>
-                    <ConfigMenu {...this.props} />
                 </Menu>
                 <div className="resize-handler resize-handler-e" onMouseDown={this.handleResizeMouseDown} hidden={this.state.active === TPanels.None}></div>
             </>

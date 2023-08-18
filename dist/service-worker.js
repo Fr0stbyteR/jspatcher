@@ -316,7 +316,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "987cc16509739c52074516f060857dd0"
   }, {
     "url": "index.js",
-    "revision": "21d1551155bf418765070be698726828"
+    "revision": "91e93599fd142ab9a415c4b3e1a31c66"
   }, {
     "url": "js/017d998140f1ad199103.worker.js",
     "revision": null
@@ -418,7 +418,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "993234e15f3a0155ffb2d6b4b4eb29cd"
   }, {
     "url": "js/WorkletEnv.worklet.js",
-    "revision": "80ec01d36c40427dd9de293f32b5d088"
+    "revision": "2c50f73aca781492d6a9633a30c7ee6a"
   }, {
     "url": "js/a6b6f78b420b1f4bd98d.worker.js",
     "revision": null
@@ -487,7 +487,7 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
     "revision": "508576b4495cf91d456607d04da70688"
   }, {
     "url": "packages/jitsi/index.jspatpkg.js",
-    "revision": "36b2e215bb9e8e465071957e3651108f"
+    "revision": "8af440cc9c3cf7924970a4ea1fe4801d"
   }, {
     "url": "packages/live/index.js",
     "revision": "fa6a6a09918e16781ac25b3ea025b4e5"
@@ -566,6 +566,9 @@ define(['./workbox-43d32f61'], (function (workbox) { 'use strict';
   }, {
     "url": "src_core_worklets_PatcherNode_ts.js/WorkletEnv.worklet.js",
     "revision": "95bb218842425c4f802bf6a8ebb00efb"
+  }, {
+    "url": "version.json",
+    "revision": "70fee6e4a0e3d449d7d6a5cffdaf8242"
   }], {});
   workbox.cleanupOutdatedCaches();
 

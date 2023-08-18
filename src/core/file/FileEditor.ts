@@ -34,6 +34,7 @@ export interface IFileEditor<Instance extends IFileInstance = IFileInstance, Eve
     readonly fileExtension: string;
     readonly fileIcon: SemanticICONS;
     file: IProjectFile;
+    readonly fileName: string;
     setActive(): void;
     undo(): Promise<void>;
     redo(): Promise<void>;
@@ -66,6 +67,9 @@ export default class FileEditor<Instance extends IFileInstance = IFileInstance, 
     }
     set file(value) {
         this.instance.file = value;
+    }
+    get fileName() {
+        return this.instance.fileName;
     }
     get ctx() {
         return this.instance.ctx;

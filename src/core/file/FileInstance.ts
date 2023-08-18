@@ -28,6 +28,7 @@ export interface IFileInstance<EventMap extends Record<string, any> & Partial<Fi
     readonly isActive: boolean;
     readonly id: string;
     readonly history: History<any, any>;
+    readonly fileName: string;
     init(): Promise<this>;
     setActive(): void;
     getEditor(): Promise<IFileEditor>;
@@ -100,6 +101,10 @@ export default abstract class FileInstance<EventMap extends Record<string, any> 
     readonly _history: History<any, any>;
     get history() {
         return this._history;
+    }
+    tempFileName = "";
+    get fileName() {
+        return this.file?.name || this.tempFileName;
     }
     constructor({ env, project, file, instanceId, noRegister }: { env: IJSPatcherEnv; project?: IProject; file?: File; instanceId?: string; noRegister?: boolean }) {
         super();

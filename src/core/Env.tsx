@@ -34,8 +34,9 @@ import type PatcherAudio from "./audio/PatcherAudio";
 import type { IFileEditor } from "./file/FileEditor";
 import type { IFileInstance } from "./file/FileInstance";
 import type { TFaustDocs } from "../misc/monaco-faust/Faust2Doc";
-import type { TErrorLevel, TPackage, ILogInfo } from "./types";
+import type { TErrorLevel, TPackage, ILogInfo, RawPatcher, PatcherMode } from "./types";
 import type { EnvOptions, PartialEnvOptions } from "./EnvOptionsManager";
+import Patcher from "./patcher/Patcher";
 /*
 import LibMusicXMLWorker from "./workers/LibMusicXMLWorker";
 import GuidoWorker from "./workers/GuidoWorker";
@@ -423,6 +424,18 @@ export default class Env extends TypedEventEmitter<EnvEventMap> implements IJSPa
     }
     get divRoot(): HTMLDivElement {
         return this._divRoot;
+    }
+    async openPatcher(json: Partial<RawPatcher>, mode: PatcherMode = "js", tempFileName = "Untitled.jspat") {
+        const patcher = new Patcher({ env: this, project: this.currentProject });
+        patcher.tempFileName = tempFileName;
+        await patcher.load(json, json?.props?.mode || mode);
+        const editor = await patcher.getEditor();
+        this.openEditor(editor);
+    }
+    async openPatcherFromURL(url: string) {
+        const resp = await fetch(url);
+        const json = await resp.json();
+        await this.openPatcher(json, undefined, url.startsWith("data:") ? "" : url.split("/").pop());
     }
     /*
     set divRoot(root: HTMLDivElement) {

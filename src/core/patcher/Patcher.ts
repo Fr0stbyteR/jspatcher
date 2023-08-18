@@ -36,7 +36,6 @@ export interface TPatcherProps {
 export type TPublicPatcherProps = Pick<TPatcherProps, "dependencies" | "bgColor" | "editingBgColor" | "grid" | "openInPresentation">;
 
 export interface TPatcherState {
-    name: string;
     isReady: boolean;
     log: ILogInfo[];
     selected: string[];
@@ -117,7 +116,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
     constructor(options: { env: IJSPatcherEnv; project?: IProject; file?: PersistentProjectFile | TempPatcherFile; instanceId?: string; objectInit?: boolean }) {
         super(options);
         this._state = {
-            name: "patcher",
             isReady: false,
             log: [],
             selected: [],
@@ -161,9 +159,6 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
             faust: "dsppat",
             jsaw: "jsdsp"
         }[this.props.mode];
-    }
-    get fileName() {
-        return this.file?.name || `${this._state.name}.${this.fileExtension}`;
     }
     emitGraphChanged() {
         if (this._state.preventEmitChanged) return;
@@ -307,8 +302,8 @@ export default class Patcher extends FileInstance<PatcherEventMap, PersistentPro
                 this.error((e as Error).message);
             }
             if (parsed) {
+                this.tempFileName = name;
                 this.load(parsed, extMap[ext]);
-                this._state.name = name;
             }
         };
         reader.onerror = () => this.error(reader.error.message);

@@ -194,10 +194,15 @@ class Meeting extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
       await this._.room.addTrack(track);
       track.unmute();
     };
-    this.handleMessageReceived = (id, message, timestamp) => {
+    this.handleMessageReceived = (userId, message, timestamp) => {
       var _a;
-      const username = (_a = this._.room.getParticipantById(id)) == null ? void 0 : _a.getDisplayName();
-      this.outlet(0, { username, message, timestamp });
+      const username = (_a = this._.room.getParticipantById(userId)) == null ? void 0 : _a.getDisplayName();
+      this.outlet(0, { username, userId, message, timestamp, private: false });
+    };
+    this.handlePrivateMessageReceived = (userId, message, timestamp) => {
+      var _a;
+      const username = (_a = this._.room.getParticipantById(userId)) == null ? void 0 : _a.getDisplayName();
+      this.outlet(0, { username, userId, message, timestamp, private: true });
     };
     this.handleConnectionSuccess = () => {
       const confOptions = {};
@@ -208,6 +213,7 @@ class Meeting extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
       room.on(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.TRACK_REMOVED, this.handleRemoteTrackRemoved);
       room.on(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.CONFERENCE_JOINED, this.handleConferenceJoined);
       room.on(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.MESSAGE_RECEIVED, this.handleMessageReceived);
+      room.on(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.PRIVATE_MESSAGE_RECEIVED, this.handlePrivateMessageReceived);
       room.on(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.USER_LEFT, this.handleUserLeft);
       room.setDisplayName(this.getProp("username"));
       room.join(null);
@@ -217,15 +223,16 @@ class Meeting extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
       this.handleConnectionDisconnect();
     };
     this.handleConnectionDisconnect = async () => {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
       (_a = this._.room) == null ? void 0 : _a.off(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.TRACK_ADDED, this.handleRemoteTrackAdded);
       (_b = this._.room) == null ? void 0 : _b.off(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.TRACK_REMOVED, this.handleRemoteTrackRemoved);
       (_c = this._.room) == null ? void 0 : _c.off(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.CONFERENCE_JOINED, this.handleConferenceJoined);
       (_d = this._.room) == null ? void 0 : _d.off(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.MESSAGE_RECEIVED, this.handleMessageReceived);
-      (_e = this._.room) == null ? void 0 : _e.off(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.USER_LEFT, this.handleUserLeft);
-      (_f = this._.connection) == null ? void 0 : _f.removeEventListener(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.connection.CONNECTION_ESTABLISHED, this.handleConnectionSuccess);
-      (_g = this._.connection) == null ? void 0 : _g.removeEventListener(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.connection.CONNECTION_FAILED, this.handleConnectionFailed);
-      (_h = this._.connection) == null ? void 0 : _h.removeEventListener(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.connection.CONNECTION_DISCONNECTED, this.handleConnectionDisconnect);
+      (_e = this._.room) == null ? void 0 : _e.off(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.MESSAGE_RECEIVED, this.handlePrivateMessageReceived);
+      (_f = this._.room) == null ? void 0 : _f.off(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.conference.USER_LEFT, this.handleUserLeft);
+      (_g = this._.connection) == null ? void 0 : _g.removeEventListener(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.connection.CONNECTION_ESTABLISHED, this.handleConnectionSuccess);
+      (_h = this._.connection) == null ? void 0 : _h.removeEventListener(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.connection.CONNECTION_FAILED, this.handleConnectionFailed);
+      (_i = this._.connection) == null ? void 0 : _i.removeEventListener(_shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_0__["default"].events.connection.CONNECTION_DISCONNECTED, this.handleConnectionDisconnect);
       for (const id in this._.streamMap) {
         [...this._.streamMap[id]].forEach((node) => node.disconnect());
         this._.streamMap[id].clear();
@@ -234,10 +241,10 @@ class Meeting extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
         [...this._.audioMap[id]].forEach((audio) => audio.pause());
         this._.audioMap[id].clear();
       }
-      await ((_i = this._.localTrack) == null ? void 0 : _i.mute());
-      await ((_j = this._.localTrack) == null ? void 0 : _j.dispose());
-      await ((_k = this._.room) == null ? void 0 : _k.leave());
-      await ((_l = this._.connection) == null ? void 0 : _l.disconnect());
+      await ((_j = this._.localTrack) == null ? void 0 : _j.mute());
+      await ((_k = this._.localTrack) == null ? void 0 : _k.dispose());
+      await ((_l = this._.room) == null ? void 0 : _l.leave());
+      await ((_m = this._.connection) == null ? void 0 : _m.disconnect());
       this._.localTrack = void 0;
       this._.connection = void 0;
       this._.room = void 0;
@@ -286,19 +293,26 @@ class Meeting extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
       await ((_b = this._.connection) == null ? void 0 : _b.disconnect());
     });
     this.on("inlet", async ({ data, inlet }) => {
+      var _a;
       if (inlet === 0) {
         if ((0,_sdk__WEBPACK_IMPORTED_MODULE_2__.isBang)(data)) {
           if (!this._.connection)
             this.connect();
+          else
+            this.outlet(1, this._.room);
         } else if (typeof data === "string") {
           if (this._.room) {
             this._.room.sendMessage(data);
           }
         } else if (typeof data === "object") {
           if (this._.room) {
-            const id = this._.room.getParticipants().find((p) => p.getDisplayName() === data.username).getId();
-            if (id)
-              this._.room.sendMessage(data.message, id);
+            if (data.userId) {
+              this._.room.sendMessage(data.message, data.userId);
+            } else {
+              const id = (_a = this._.room.getParticipants().find((p) => p.getDisplayName() === data.username)) == null ? void 0 : _a.getId();
+              if (id)
+                this._.room.sendMessage(data.message, id);
+            }
           }
         }
       }
@@ -322,7 +336,7 @@ Meeting.args = [{
   type: "string",
   optional: true,
   description: "Jitsi Meeting Name",
-  default: `jspatcher${new Date().toISOString().slice(0, 10).replace("-", "")}`
+  default: `jspatcher${new Date().toISOString().slice(0, 10).replace(/-/g, "")}`
 }];
 Meeting.props = {
   opusMaxAverageBitrate: {
@@ -373,6 +387,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   BaseObject: () => (/* binding */ BaseObject),
 /* harmony export */   BaseUI: () => (/* binding */ BaseUI),
 /* harmony export */   Box: () => (/* binding */ Box),
+/* harmony export */   DefaultImporter: () => (/* binding */ DefaultImporter),
 /* harmony export */   DefaultObject: () => (/* binding */ DefaultObject),
 /* harmony export */   DefaultUI: () => (/* binding */ DefaultUI),
 /* harmony export */   Line: () => (/* binding */ Line),
@@ -400,7 +415,8 @@ const {
   generateRemoteObject,
   Bang,
   isBang,
-  Utils
+  Utils,
+  DefaultImporter
 } = sdk;
 
 
@@ -3737,46 +3753,48 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _jitsi_logger__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @jitsi/logger */ "../../lib-jitsi-meet/node_modules/@jitsi/logger/lib/index.js");
 /* harmony import */ var _jitsi_logger__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_jitsi_logger__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _JitsiConferenceErrors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./JitsiConferenceErrors */ "../../lib-jitsi-meet/dist/esm/JitsiConferenceErrors.js");
-/* harmony import */ var _JitsiConferenceEvents__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./JitsiConferenceEvents */ "../../lib-jitsi-meet/dist/esm/JitsiConferenceEvents.js");
-/* harmony import */ var _JitsiConnection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./JitsiConnection */ "../../lib-jitsi-meet/dist/esm/JitsiConnection.js");
-/* harmony import */ var _JitsiConnectionErrors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./JitsiConnectionErrors */ "../../lib-jitsi-meet/dist/esm/JitsiConnectionErrors.js");
-/* harmony import */ var _JitsiConnectionEvents__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./JitsiConnectionEvents */ "../../lib-jitsi-meet/dist/esm/JitsiConnectionEvents.js");
-/* harmony import */ var _JitsiMediaDevices__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./JitsiMediaDevices */ "../../lib-jitsi-meet/dist/esm/JitsiMediaDevices.js");
-/* harmony import */ var _JitsiMediaDevicesEvents__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./JitsiMediaDevicesEvents */ "../../lib-jitsi-meet/dist/esm/JitsiMediaDevicesEvents.js");
-/* harmony import */ var _JitsiTrackError__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./JitsiTrackError */ "../../lib-jitsi-meet/dist/esm/JitsiTrackError.js");
-/* harmony import */ var _JitsiTrackErrors__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./JitsiTrackErrors */ "../../lib-jitsi-meet/dist/esm/JitsiTrackErrors.js");
-/* harmony import */ var _JitsiTrackEvents__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./JitsiTrackEvents */ "../../lib-jitsi-meet/dist/esm/JitsiTrackEvents.js");
-/* harmony import */ var _JitsiTranscriptionStatus__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./JitsiTranscriptionStatus */ "../../lib-jitsi-meet/dist/esm/JitsiTranscriptionStatus.js");
-/* harmony import */ var _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./modules/RTC/RTC */ "../../lib-jitsi-meet/dist/esm/modules/RTC/RTC.js");
-/* harmony import */ var _modules_RTC_JitsiTrack__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./modules/RTC/JitsiTrack */ "../../lib-jitsi-meet/dist/esm/modules/RTC/JitsiTrack.js");
-/* harmony import */ var _modules_RTC_JitsiLocalTrack__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./modules/RTC/JitsiLocalTrack */ "../../lib-jitsi-meet/dist/esm/modules/RTC/JitsiLocalTrack.js");
-/* harmony import */ var _modules_RTC_JitsiRemoteTrack__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./modules/RTC/JitsiRemoteTrack */ "../../lib-jitsi-meet/dist/esm/modules/RTC/JitsiRemoteTrack.js");
-/* harmony import */ var _modules_browser__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./modules/browser */ "../../lib-jitsi-meet/dist/esm/modules/browser/index.js");
-/* harmony import */ var _modules_connectivity_NetworkInfo__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./modules/connectivity/NetworkInfo */ "../../lib-jitsi-meet/dist/esm/modules/connectivity/NetworkInfo.js");
-/* harmony import */ var _modules_connectivity_TrackStreamingStatus__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./modules/connectivity/TrackStreamingStatus */ "../../lib-jitsi-meet/dist/esm/modules/connectivity/TrackStreamingStatus.js");
-/* harmony import */ var _modules_detection_ActiveDeviceDetector__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./modules/detection/ActiveDeviceDetector */ "../../lib-jitsi-meet/dist/esm/modules/detection/ActiveDeviceDetector.js");
-/* harmony import */ var _modules_detection_DetectionEvents__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./modules/detection/DetectionEvents */ "../../lib-jitsi-meet/dist/esm/modules/detection/DetectionEvents.js");
-/* harmony import */ var _modules_detection_TrackVADEmitter__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./modules/detection/TrackVADEmitter */ "../../lib-jitsi-meet/dist/esm/modules/detection/TrackVADEmitter.js");
-/* harmony import */ var _modules_flags_FeatureFlags__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./modules/flags/FeatureFlags */ "../../lib-jitsi-meet/dist/esm/modules/flags/FeatureFlags.js");
-/* harmony import */ var _modules_proxyconnection_ProxyConnectionService__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./modules/proxyconnection/ProxyConnectionService */ "../../lib-jitsi-meet/dist/esm/modules/proxyconnection/ProxyConnectionService.js");
-/* harmony import */ var _modules_recording_recordingConstants__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./modules/recording/recordingConstants */ "../../lib-jitsi-meet/dist/esm/modules/recording/recordingConstants.js");
-/* harmony import */ var _modules_settings_Settings__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./modules/settings/Settings */ "../../lib-jitsi-meet/dist/esm/modules/settings/Settings.js");
-/* harmony import */ var _modules_statistics_LocalStatsCollector__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./modules/statistics/LocalStatsCollector */ "../../lib-jitsi-meet/dist/esm/modules/statistics/LocalStatsCollector.js");
-/* harmony import */ var _modules_statistics_PrecallTest__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./modules/statistics/PrecallTest */ "../../lib-jitsi-meet/dist/esm/modules/statistics/PrecallTest.js");
-/* harmony import */ var _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./modules/statistics/statistics */ "../../lib-jitsi-meet/dist/esm/modules/statistics/statistics.js");
-/* harmony import */ var _modules_util_AuthUtil__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./modules/util/AuthUtil */ "../../lib-jitsi-meet/dist/esm/modules/util/AuthUtil.js");
-/* harmony import */ var _modules_util_AuthUtil__WEBPACK_IMPORTED_MODULE_29___default = /*#__PURE__*/__webpack_require__.n(_modules_util_AuthUtil__WEBPACK_IMPORTED_MODULE_29__);
-/* harmony import */ var _modules_util_GlobalOnErrorHandler__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./modules/util/GlobalOnErrorHandler */ "../../lib-jitsi-meet/dist/esm/modules/util/GlobalOnErrorHandler.js");
-/* harmony import */ var _modules_util_GlobalOnErrorHandler__WEBPACK_IMPORTED_MODULE_30___default = /*#__PURE__*/__webpack_require__.n(_modules_util_GlobalOnErrorHandler__WEBPACK_IMPORTED_MODULE_30__);
-/* harmony import */ var _modules_util_ScriptUtil__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./modules/util/ScriptUtil */ "../../lib-jitsi-meet/dist/esm/modules/util/ScriptUtil.js");
-/* harmony import */ var _modules_util_ScriptUtil__WEBPACK_IMPORTED_MODULE_31___default = /*#__PURE__*/__webpack_require__.n(_modules_util_ScriptUtil__WEBPACK_IMPORTED_MODULE_31__);
-/* harmony import */ var _modules_videosipgw_VideoSIPGWConstants__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./modules/videosipgw/VideoSIPGWConstants */ "../../lib-jitsi-meet/dist/esm/modules/videosipgw/VideoSIPGWConstants.js");
-/* harmony import */ var _modules_webaudio_AudioMixer__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./modules/webaudio/AudioMixer */ "../../lib-jitsi-meet/dist/esm/modules/webaudio/AudioMixer.js");
-/* harmony import */ var _service_RTC_MediaType__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./service/RTC/MediaType */ "../../lib-jitsi-meet/dist/esm/service/RTC/MediaType.js");
-/* harmony import */ var _service_connectivity_ConnectionQualityEvents__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./service/connectivity/ConnectionQualityEvents */ "../../lib-jitsi-meet/dist/esm/service/connectivity/ConnectionQualityEvents.js");
-/* harmony import */ var _service_e2eping_E2ePingEvents__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./service/e2eping/E2ePingEvents */ "../../lib-jitsi-meet/dist/esm/service/e2eping/E2ePingEvents.js");
-/* harmony import */ var _service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./service/statistics/AnalyticsEvents */ "../../lib-jitsi-meet/dist/esm/service/statistics/AnalyticsEvents.js");
+/* harmony import */ var _JitsiConference__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./JitsiConference */ "../../lib-jitsi-meet/dist/esm/JitsiConference.js");
+/* harmony import */ var _JitsiConferenceErrors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./JitsiConferenceErrors */ "../../lib-jitsi-meet/dist/esm/JitsiConferenceErrors.js");
+/* harmony import */ var _JitsiConferenceEvents__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./JitsiConferenceEvents */ "../../lib-jitsi-meet/dist/esm/JitsiConferenceEvents.js");
+/* harmony import */ var _JitsiConnection__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./JitsiConnection */ "../../lib-jitsi-meet/dist/esm/JitsiConnection.js");
+/* harmony import */ var _JitsiConnectionErrors__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./JitsiConnectionErrors */ "../../lib-jitsi-meet/dist/esm/JitsiConnectionErrors.js");
+/* harmony import */ var _JitsiConnectionEvents__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./JitsiConnectionEvents */ "../../lib-jitsi-meet/dist/esm/JitsiConnectionEvents.js");
+/* harmony import */ var _JitsiMediaDevices__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./JitsiMediaDevices */ "../../lib-jitsi-meet/dist/esm/JitsiMediaDevices.js");
+/* harmony import */ var _JitsiMediaDevicesEvents__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./JitsiMediaDevicesEvents */ "../../lib-jitsi-meet/dist/esm/JitsiMediaDevicesEvents.js");
+/* harmony import */ var _JitsiTrackError__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./JitsiTrackError */ "../../lib-jitsi-meet/dist/esm/JitsiTrackError.js");
+/* harmony import */ var _JitsiTrackErrors__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./JitsiTrackErrors */ "../../lib-jitsi-meet/dist/esm/JitsiTrackErrors.js");
+/* harmony import */ var _JitsiTrackEvents__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./JitsiTrackEvents */ "../../lib-jitsi-meet/dist/esm/JitsiTrackEvents.js");
+/* harmony import */ var _JitsiTranscriptionStatus__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./JitsiTranscriptionStatus */ "../../lib-jitsi-meet/dist/esm/JitsiTranscriptionStatus.js");
+/* harmony import */ var _JitsiParticipant__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./JitsiParticipant */ "../../lib-jitsi-meet/dist/esm/JitsiParticipant.js");
+/* harmony import */ var _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./modules/RTC/RTC */ "../../lib-jitsi-meet/dist/esm/modules/RTC/RTC.js");
+/* harmony import */ var _modules_RTC_JitsiTrack__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./modules/RTC/JitsiTrack */ "../../lib-jitsi-meet/dist/esm/modules/RTC/JitsiTrack.js");
+/* harmony import */ var _modules_RTC_JitsiLocalTrack__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./modules/RTC/JitsiLocalTrack */ "../../lib-jitsi-meet/dist/esm/modules/RTC/JitsiLocalTrack.js");
+/* harmony import */ var _modules_RTC_JitsiRemoteTrack__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./modules/RTC/JitsiRemoteTrack */ "../../lib-jitsi-meet/dist/esm/modules/RTC/JitsiRemoteTrack.js");
+/* harmony import */ var _modules_browser__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./modules/browser */ "../../lib-jitsi-meet/dist/esm/modules/browser/index.js");
+/* harmony import */ var _modules_connectivity_NetworkInfo__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./modules/connectivity/NetworkInfo */ "../../lib-jitsi-meet/dist/esm/modules/connectivity/NetworkInfo.js");
+/* harmony import */ var _modules_connectivity_TrackStreamingStatus__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./modules/connectivity/TrackStreamingStatus */ "../../lib-jitsi-meet/dist/esm/modules/connectivity/TrackStreamingStatus.js");
+/* harmony import */ var _modules_detection_ActiveDeviceDetector__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./modules/detection/ActiveDeviceDetector */ "../../lib-jitsi-meet/dist/esm/modules/detection/ActiveDeviceDetector.js");
+/* harmony import */ var _modules_detection_DetectionEvents__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./modules/detection/DetectionEvents */ "../../lib-jitsi-meet/dist/esm/modules/detection/DetectionEvents.js");
+/* harmony import */ var _modules_detection_TrackVADEmitter__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./modules/detection/TrackVADEmitter */ "../../lib-jitsi-meet/dist/esm/modules/detection/TrackVADEmitter.js");
+/* harmony import */ var _modules_flags_FeatureFlags__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./modules/flags/FeatureFlags */ "../../lib-jitsi-meet/dist/esm/modules/flags/FeatureFlags.js");
+/* harmony import */ var _modules_proxyconnection_ProxyConnectionService__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./modules/proxyconnection/ProxyConnectionService */ "../../lib-jitsi-meet/dist/esm/modules/proxyconnection/ProxyConnectionService.js");
+/* harmony import */ var _modules_recording_recordingConstants__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./modules/recording/recordingConstants */ "../../lib-jitsi-meet/dist/esm/modules/recording/recordingConstants.js");
+/* harmony import */ var _modules_settings_Settings__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./modules/settings/Settings */ "../../lib-jitsi-meet/dist/esm/modules/settings/Settings.js");
+/* harmony import */ var _modules_statistics_LocalStatsCollector__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./modules/statistics/LocalStatsCollector */ "../../lib-jitsi-meet/dist/esm/modules/statistics/LocalStatsCollector.js");
+/* harmony import */ var _modules_statistics_PrecallTest__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./modules/statistics/PrecallTest */ "../../lib-jitsi-meet/dist/esm/modules/statistics/PrecallTest.js");
+/* harmony import */ var _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./modules/statistics/statistics */ "../../lib-jitsi-meet/dist/esm/modules/statistics/statistics.js");
+/* harmony import */ var _modules_util_AuthUtil__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./modules/util/AuthUtil */ "../../lib-jitsi-meet/dist/esm/modules/util/AuthUtil.js");
+/* harmony import */ var _modules_util_AuthUtil__WEBPACK_IMPORTED_MODULE_31___default = /*#__PURE__*/__webpack_require__.n(_modules_util_AuthUtil__WEBPACK_IMPORTED_MODULE_31__);
+/* harmony import */ var _modules_util_GlobalOnErrorHandler__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./modules/util/GlobalOnErrorHandler */ "../../lib-jitsi-meet/dist/esm/modules/util/GlobalOnErrorHandler.js");
+/* harmony import */ var _modules_util_GlobalOnErrorHandler__WEBPACK_IMPORTED_MODULE_32___default = /*#__PURE__*/__webpack_require__.n(_modules_util_GlobalOnErrorHandler__WEBPACK_IMPORTED_MODULE_32__);
+/* harmony import */ var _modules_util_ScriptUtil__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./modules/util/ScriptUtil */ "../../lib-jitsi-meet/dist/esm/modules/util/ScriptUtil.js");
+/* harmony import */ var _modules_util_ScriptUtil__WEBPACK_IMPORTED_MODULE_33___default = /*#__PURE__*/__webpack_require__.n(_modules_util_ScriptUtil__WEBPACK_IMPORTED_MODULE_33__);
+/* harmony import */ var _modules_videosipgw_VideoSIPGWConstants__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./modules/videosipgw/VideoSIPGWConstants */ "../../lib-jitsi-meet/dist/esm/modules/videosipgw/VideoSIPGWConstants.js");
+/* harmony import */ var _modules_webaudio_AudioMixer__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./modules/webaudio/AudioMixer */ "../../lib-jitsi-meet/dist/esm/modules/webaudio/AudioMixer.js");
+/* harmony import */ var _service_RTC_MediaType__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./service/RTC/MediaType */ "../../lib-jitsi-meet/dist/esm/service/RTC/MediaType.js");
+/* harmony import */ var _service_connectivity_ConnectionQualityEvents__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./service/connectivity/ConnectionQualityEvents */ "../../lib-jitsi-meet/dist/esm/service/connectivity/ConnectionQualityEvents.js");
+/* harmony import */ var _service_e2eping_E2ePingEvents__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./service/e2eping/E2ePingEvents */ "../../lib-jitsi-meet/dist/esm/service/e2eping/E2ePingEvents.js");
+/* harmony import */ var _service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./service/statistics/AnalyticsEvents */ "../../lib-jitsi-meet/dist/esm/service/statistics/AnalyticsEvents.js");
 
 var __rest = function(s, e) {
   var t = {};
@@ -3790,6 +3808,8 @@ var __rest = function(s, e) {
     }
   return t;
 };
+
+
 
 
 
@@ -3842,40 +3862,42 @@ function getAnalyticsAttributesFromOptions(options) {
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   version: "{#COMMIT_HASH#}",
-  JitsiConnection: _JitsiConnection__WEBPACK_IMPORTED_MODULE_3__["default"],
-  ProxyConnectionService: _modules_proxyconnection_ProxyConnectionService__WEBPACK_IMPORTED_MODULE_23__["default"],
+  JitsiConference: _JitsiConference__WEBPACK_IMPORTED_MODULE_1__["default"],
+  JitsiConnection: _JitsiConnection__WEBPACK_IMPORTED_MODULE_4__["default"],
+  JitsiParticipant: _JitsiParticipant__WEBPACK_IMPORTED_MODULE_13__["default"],
+  ProxyConnectionService: _modules_proxyconnection_ProxyConnectionService__WEBPACK_IMPORTED_MODULE_25__["default"],
   constants: {
-    recording: _modules_recording_recordingConstants__WEBPACK_IMPORTED_MODULE_24__["default"],
-    sipVideoGW: _modules_videosipgw_VideoSIPGWConstants__WEBPACK_IMPORTED_MODULE_32__,
-    transcriptionStatus: _JitsiTranscriptionStatus__WEBPACK_IMPORTED_MODULE_11__,
-    trackStreamingStatus: _modules_connectivity_TrackStreamingStatus__WEBPACK_IMPORTED_MODULE_18__.TrackStreamingStatus
+    recording: _modules_recording_recordingConstants__WEBPACK_IMPORTED_MODULE_26__["default"],
+    sipVideoGW: _modules_videosipgw_VideoSIPGWConstants__WEBPACK_IMPORTED_MODULE_34__,
+    transcriptionStatus: _JitsiTranscriptionStatus__WEBPACK_IMPORTED_MODULE_12__,
+    trackStreamingStatus: _modules_connectivity_TrackStreamingStatus__WEBPACK_IMPORTED_MODULE_20__.TrackStreamingStatus
   },
   events: {
-    conference: _JitsiConferenceEvents__WEBPACK_IMPORTED_MODULE_2__,
-    connection: _JitsiConnectionEvents__WEBPACK_IMPORTED_MODULE_5__,
-    detection: _modules_detection_DetectionEvents__WEBPACK_IMPORTED_MODULE_20__,
-    track: _JitsiTrackEvents__WEBPACK_IMPORTED_MODULE_10__,
-    mediaDevices: _JitsiMediaDevicesEvents__WEBPACK_IMPORTED_MODULE_7__,
-    connectionQuality: _service_connectivity_ConnectionQualityEvents__WEBPACK_IMPORTED_MODULE_35__,
-    e2eping: _service_e2eping_E2ePingEvents__WEBPACK_IMPORTED_MODULE_36__
+    conference: _JitsiConferenceEvents__WEBPACK_IMPORTED_MODULE_3__,
+    connection: _JitsiConnectionEvents__WEBPACK_IMPORTED_MODULE_6__,
+    detection: _modules_detection_DetectionEvents__WEBPACK_IMPORTED_MODULE_22__,
+    track: _JitsiTrackEvents__WEBPACK_IMPORTED_MODULE_11__,
+    mediaDevices: _JitsiMediaDevicesEvents__WEBPACK_IMPORTED_MODULE_8__,
+    connectionQuality: _service_connectivity_ConnectionQualityEvents__WEBPACK_IMPORTED_MODULE_37__,
+    e2eping: _service_e2eping_E2ePingEvents__WEBPACK_IMPORTED_MODULE_38__
   },
   errors: {
-    conference: _JitsiConferenceErrors__WEBPACK_IMPORTED_MODULE_1__,
-    connection: _JitsiConnectionErrors__WEBPACK_IMPORTED_MODULE_4__,
-    track: _JitsiTrackErrors__WEBPACK_IMPORTED_MODULE_9__
+    conference: _JitsiConferenceErrors__WEBPACK_IMPORTED_MODULE_2__,
+    connection: _JitsiConnectionErrors__WEBPACK_IMPORTED_MODULE_5__,
+    track: _JitsiTrackErrors__WEBPACK_IMPORTED_MODULE_10__
   },
   errorTypes: {
-    JitsiTrackError: _JitsiTrackError__WEBPACK_IMPORTED_MODULE_8__["default"]
+    JitsiTrackError: _JitsiTrackError__WEBPACK_IMPORTED_MODULE_9__["default"]
   },
   logLevels: (_jitsi_logger__WEBPACK_IMPORTED_MODULE_0___default().levels),
-  mediaDevices: _JitsiMediaDevices__WEBPACK_IMPORTED_MODULE_6__["default"],
-  analytics: _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].analytics,
+  mediaDevices: _JitsiMediaDevices__WEBPACK_IMPORTED_MODULE_7__["default"],
+  analytics: _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].analytics,
   init(options = {}) {
-    logger.info(`This appears to be ${_modules_browser__WEBPACK_IMPORTED_MODULE_16__["default"].getName()}, ver: ${_modules_browser__WEBPACK_IMPORTED_MODULE_16__["default"].getVersion()}`);
-    _modules_settings_Settings__WEBPACK_IMPORTED_MODULE_25__["default"].init(options.externalStorage);
-    _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].init(options);
+    logger.info(`This appears to be ${_modules_browser__WEBPACK_IMPORTED_MODULE_18__["default"].getName()}, ver: ${_modules_browser__WEBPACK_IMPORTED_MODULE_18__["default"].getVersion()}`);
+    _modules_settings_Settings__WEBPACK_IMPORTED_MODULE_27__["default"].init(options.externalStorage);
+    _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].init(options);
     const flags = options.flags || {};
-    _modules_flags_FeatureFlags__WEBPACK_IMPORTED_MODULE_22__["default"].init(flags);
+    _modules_flags_FeatureFlags__WEBPACK_IMPORTED_MODULE_24__["default"].init(flags);
     if (!window.connectionTimes) {
       window.connectionTimes = {};
     }
@@ -3884,7 +3906,7 @@ function getAnalyticsAttributesFromOptions(options) {
       this.analytics.dispose();
     }
     if (options.enableWindowOnErrorHandler) {
-      _modules_util_GlobalOnErrorHandler__WEBPACK_IMPORTED_MODULE_30___default().addHandler(this.getGlobalOnErrorHandler.bind(this));
+      _modules_util_GlobalOnErrorHandler__WEBPACK_IMPORTED_MODULE_32___default().addHandler(this.getGlobalOnErrorHandler.bind(this));
     }
     if (this.version) {
       const logObject = {
@@ -3892,15 +3914,15 @@ function getAnalyticsAttributesFromOptions(options) {
         component: "lib-jitsi-meet",
         version: this.version
       };
-      _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].sendLog(JSON.stringify(logObject));
+      _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].sendLog(JSON.stringify(logObject));
     }
-    return _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_12__["default"].init(options);
+    return _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_14__["default"].init(options);
   },
   isDesktopSharingEnabled() {
-    return _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_12__["default"].isDesktopSharingEnabled();
+    return _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_14__["default"].isDesktopSharingEnabled();
   },
   isWebRtcSupported() {
-    return _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_12__["default"].isWebRtcSupported();
+    return _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_14__["default"].isWebRtcSupported();
   },
   setLogLevel(level) {
     _jitsi_logger__WEBPACK_IMPORTED_MODULE_0___default().setLogLevel(level);
@@ -3921,12 +3943,12 @@ function getAnalyticsAttributesFromOptions(options) {
     let promiseFulfilled = false;
     const { firePermissionPromptIsShownEvent, fireSlowPromiseEvent } = options, restOptions = __rest(options, ["firePermissionPromptIsShownEvent", "fireSlowPromiseEvent"]);
     const firePermissionPrompt = firePermissionPromptIsShownEvent || oldfirePermissionPromptIsShownEvent;
-    if (firePermissionPrompt && !_modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_12__["default"].arePermissionsGrantedForAvailableDevices()) {
-      _JitsiMediaDevices__WEBPACK_IMPORTED_MODULE_6__["default"].emitEvent(_JitsiMediaDevicesEvents__WEBPACK_IMPORTED_MODULE_7__.PERMISSION_PROMPT_IS_SHOWN, _modules_browser__WEBPACK_IMPORTED_MODULE_16__["default"].getName());
+    if (firePermissionPrompt && !_modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_14__["default"].arePermissionsGrantedForAvailableDevices()) {
+      _JitsiMediaDevices__WEBPACK_IMPORTED_MODULE_7__["default"].emitEvent(_JitsiMediaDevicesEvents__WEBPACK_IMPORTED_MODULE_8__.PERMISSION_PROMPT_IS_SHOWN, _modules_browser__WEBPACK_IMPORTED_MODULE_18__["default"].getName());
     } else if (fireSlowPromiseEvent) {
       window.setTimeout(() => {
         if (!promiseFulfilled) {
-          _JitsiMediaDevices__WEBPACK_IMPORTED_MODULE_6__["default"].emitEvent(_JitsiMediaDevicesEvents__WEBPACK_IMPORTED_MODULE_7__.SLOW_GET_USER_MEDIA);
+          _JitsiMediaDevices__WEBPACK_IMPORTED_MODULE_7__["default"].emitEvent(_JitsiMediaDevicesEvents__WEBPACK_IMPORTED_MODULE_8__.SLOW_GET_USER_MEDIA);
         }
       }, USER_MEDIA_SLOW_PROMISE_TIMEOUT);
     }
@@ -3934,19 +3956,19 @@ function getAnalyticsAttributesFromOptions(options) {
       window.connectionTimes = {};
     }
     window.connectionTimes["obtainPermissions.start"] = window.performance.now();
-    return _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_12__["default"].obtainAudioAndVideoPermissions(restOptions).then((tracks) => {
+    return _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_14__["default"].obtainAudioAndVideoPermissions(restOptions).then((tracks) => {
       promiseFulfilled = true;
       window.connectionTimes["obtainPermissions.end"] = window.performance.now();
-      _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].sendAnalytics((0,_service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_37__.createGetUserMediaEvent)("success", getAnalyticsAttributesFromOptions(restOptions)));
+      _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].sendAnalytics((0,_service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_39__.createGetUserMediaEvent)("success", getAnalyticsAttributesFromOptions(restOptions)));
       if (this.isCollectingLocalStats()) {
         for (let i = 0; i < tracks.length; i++) {
           const track = tracks[i];
-          if (track.getType() === _service_RTC_MediaType__WEBPACK_IMPORTED_MODULE_34__.MediaType.AUDIO) {
-            _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].startLocalStats(track, track.setAudioLevel.bind(track));
+          if (track.getType() === _service_RTC_MediaType__WEBPACK_IMPORTED_MODULE_36__.MediaType.AUDIO) {
+            _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].startLocalStats(track, track.setAudioLevel.bind(track));
           }
         }
       }
-      const currentlyAvailableMediaDevices = _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_12__["default"].getCurrentlyAvailableMediaDevices();
+      const currentlyAvailableMediaDevices = _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_14__["default"].getCurrentlyAvailableMediaDevices();
       if (currentlyAvailableMediaDevices) {
         for (let i = 0; i < tracks.length; i++) {
           const track = tracks[i];
@@ -3956,43 +3978,43 @@ function getAnalyticsAttributesFromOptions(options) {
       return tracks;
     }).catch((error) => {
       promiseFulfilled = true;
-      if (error.name === _JitsiTrackErrors__WEBPACK_IMPORTED_MODULE_9__.SCREENSHARING_USER_CANCELED) {
+      if (error.name === _JitsiTrackErrors__WEBPACK_IMPORTED_MODULE_10__.SCREENSHARING_USER_CANCELED) {
         const logObject = {
           id: "screensharing_user_canceled",
           message: error.message
         };
-        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].sendLog(JSON.stringify(logObject));
-        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].sendAnalytics((0,_service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_37__.createGetUserMediaEvent)("warning", {
+        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].sendLog(JSON.stringify(logObject));
+        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].sendAnalytics((0,_service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_39__.createGetUserMediaEvent)("warning", {
           reason: "extension install user canceled"
         }));
-      } else if (error.name === _JitsiTrackErrors__WEBPACK_IMPORTED_MODULE_9__.NOT_FOUND) {
+      } else if (error.name === _JitsiTrackErrors__WEBPACK_IMPORTED_MODULE_10__.NOT_FOUND) {
         const logObject = {
           id: "usermedia_missing_device",
           status: error.gum.devices
         };
-        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].sendLog(JSON.stringify(logObject));
+        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].sendLog(JSON.stringify(logObject));
         const attributes = getAnalyticsAttributesFromOptions(options);
         attributes.reason = "device not found";
         attributes.devices = error.gum.devices.join(".");
-        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].sendAnalytics((0,_service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_37__.createGetUserMediaEvent)("error", attributes));
+        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].sendAnalytics((0,_service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_39__.createGetUserMediaEvent)("error", attributes));
       } else {
-        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].sendGetUserMediaFailed(error);
+        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].sendGetUserMediaFailed(error);
         const attributes = getAnalyticsAttributesFromOptions(options);
         attributes.reason = error.name;
-        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].sendAnalytics((0,_service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_37__.createGetUserMediaEvent)("error", attributes));
+        _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].sendAnalytics((0,_service_statistics_AnalyticsEvents__WEBPACK_IMPORTED_MODULE_39__.createGetUserMediaEvent)("error", attributes));
       }
       window.connectionTimes["obtainPermissions.end"] = window.performance.now();
       return Promise.reject(error);
     });
   },
   createTrackVADEmitter(localAudioDeviceId, sampleRate, vadProcessor) {
-    return _modules_detection_TrackVADEmitter__WEBPACK_IMPORTED_MODULE_21__["default"].create(localAudioDeviceId, sampleRate, vadProcessor);
+    return _modules_detection_TrackVADEmitter__WEBPACK_IMPORTED_MODULE_23__["default"].create(localAudioDeviceId, sampleRate, vadProcessor);
   },
   createAudioMixer() {
-    return new _modules_webaudio_AudioMixer__WEBPACK_IMPORTED_MODULE_33__["default"]();
+    return new _modules_webaudio_AudioMixer__WEBPACK_IMPORTED_MODULE_35__["default"]();
   },
   getActiveAudioDevice() {
-    return (0,_modules_detection_ActiveDeviceDetector__WEBPACK_IMPORTED_MODULE_19__["default"])();
+    return (0,_modules_detection_ActiveDeviceDetector__WEBPACK_IMPORTED_MODULE_21__["default"])();
   },
   isDeviceListAvailable() {
     logger.warn("This method is deprecated, use JitsiMeetJS.mediaDevices.isDeviceListAvailable instead");
@@ -4006,7 +4028,7 @@ function getAnalyticsAttributesFromOptions(options) {
     return this.mediaDevices.isMultipleAudioInputSupported();
   },
   isCollectingLocalStats() {
-    return _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].audioLevelsEnabled && _modules_statistics_LocalStatsCollector__WEBPACK_IMPORTED_MODULE_26__["default"].isLocalStatsSupported();
+    return _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].audioLevelsEnabled && _modules_statistics_LocalStatsCollector__WEBPACK_IMPORTED_MODULE_28__["default"].isLocalStatsSupported();
   },
   enumerateDevices(callback) {
     logger.warn("This method is deprecated, use JitsiMeetJS.mediaDevices.enumerateDevices instead");
@@ -4014,20 +4036,20 @@ function getAnalyticsAttributesFromOptions(options) {
   },
   getGlobalOnErrorHandler(message, source, lineno, colno, error) {
     logger.error(`UnhandledError: ${message}`, `Script: ${source}`, `Line: ${lineno}`, `Column: ${colno}`, "StackTrace: ", error);
-    _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_28__["default"].reportGlobalError(error);
+    _modules_statistics_statistics__WEBPACK_IMPORTED_MODULE_30__["default"].reportGlobalError(error);
   },
   setNetworkInfo({ isOnline }) {
-    _modules_connectivity_NetworkInfo__WEBPACK_IMPORTED_MODULE_17__["default"].updateNetworkInfo({ isOnline });
+    _modules_connectivity_NetworkInfo__WEBPACK_IMPORTED_MODULE_19__["default"].updateNetworkInfo({ isOnline });
   },
-  precallTest: _modules_statistics_PrecallTest__WEBPACK_IMPORTED_MODULE_27__["default"],
+  precallTest: _modules_statistics_PrecallTest__WEBPACK_IMPORTED_MODULE_29__["default"],
   util: {
-    AuthUtil: (_modules_util_AuthUtil__WEBPACK_IMPORTED_MODULE_29___default()),
-    ScriptUtil: (_modules_util_ScriptUtil__WEBPACK_IMPORTED_MODULE_31___default()),
-    browser: _modules_browser__WEBPACK_IMPORTED_MODULE_16__["default"],
-    RTC: _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_12__["default"],
-    JitsiTrack: _modules_RTC_JitsiTrack__WEBPACK_IMPORTED_MODULE_13__["default"],
-    JitsiLocalTrack: _modules_RTC_JitsiLocalTrack__WEBPACK_IMPORTED_MODULE_14__["default"],
-    JitsiRemoteTrack: _modules_RTC_JitsiRemoteTrack__WEBPACK_IMPORTED_MODULE_15__["default"]
+    AuthUtil: (_modules_util_AuthUtil__WEBPACK_IMPORTED_MODULE_31___default()),
+    ScriptUtil: (_modules_util_ScriptUtil__WEBPACK_IMPORTED_MODULE_33___default()),
+    browser: _modules_browser__WEBPACK_IMPORTED_MODULE_18__["default"],
+    RTC: _modules_RTC_RTC__WEBPACK_IMPORTED_MODULE_14__["default"],
+    JitsiTrack: _modules_RTC_JitsiTrack__WEBPACK_IMPORTED_MODULE_15__["default"],
+    JitsiLocalTrack: _modules_RTC_JitsiLocalTrack__WEBPACK_IMPORTED_MODULE_16__["default"],
+    JitsiRemoteTrack: _modules_RTC_JitsiRemoteTrack__WEBPACK_IMPORTED_MODULE_17__["default"]
   }
 });
 
@@ -67672,12 +67694,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _objects_meeting__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./objects/meeting */ "./src/objects/meeting.ts");
+/* harmony import */ var _shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @shren/lib-jitsi-meet */ "../../lib-jitsi-meet/dist/esm/JitsiMeetJS.js");
+/* harmony import */ var _sdk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sdk */ "./src/sdk.ts");
+
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async () => {
-  return {
+  return __spreadValues({
     meeting: _objects_meeting__WEBPACK_IMPORTED_MODULE_0__["default"]
-  };
+  }, _sdk__WEBPACK_IMPORTED_MODULE_2__.DefaultImporter.import("jitsi", _shren_lib_jitsi_meet__WEBPACK_IMPORTED_MODULE_1__["default"]));
 });
 
 })();
