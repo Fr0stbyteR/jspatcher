@@ -21,7 +21,7 @@ export function compatibleDigital(pins: BasePin[]) {
         const { p: pin, i: index } = output;
 
         // In any configuration where an output is able to not conflict, there must be a compatibility
-        if (pins.filter((_, i) => i !== index).every(p => p.digitalOutput || p.tie)) {
+        if (pins.filter((_, i) => i !== index).every(p => p.digitalInput || p.tie)) {
             some_valid_config = true;
             break;
         }

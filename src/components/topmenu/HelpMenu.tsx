@@ -52,14 +52,18 @@ export default class HelpMenu extends React.PureComponent<P, S> {
                     >
                         <Modal.Header>About Bell</Modal.Header>
                         <Modal.Content>
+                            <p>Version {VERSION.split('.').slice(0, -1).join('.')}</p>
+                            <hr />
+                            <h3>Acknowledgements</h3>
+                            <p>The patching environment is based on jspatcher and licensed under the GNU General Public License v3.</p>
+                            <p>Original Author: shren (<a href="https://github.com/Fr0stbyteR" target="_blank">Fr0stbyteR</a>)</p>
+                            <p><a href="https://github.com/CorvusPrudens/jspatcher" target="_blank">Source Code</a></p>
+                            <p><a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GPL License Text</a></p>
+                            <hr />
+                            <h3>Detailed Versioning</h3>
                             <p>Patcher version: {VERSION}</p>
                             <p>Web version: {this.state.backendVersions.web ? this.state.backendVersions.web : "fetching..."}</p>
                             <p>Photosynthesis version: {this.state.backendVersions.photosynthesis ? this.state.backendVersions.photosynthesis : "fetching..."}</p>
-                            <hr />
-                            <p>The patching environment is based on jspatcher and licensed under the GNU General Public License v3.</p>
-                            <p>Original Author: shren (<a href="https://github.com/Fr0stbyteR" target="_blank">Fr0stbyteR</a>)</p>
-                            <p><a href="https://github.com/CorvusPrudens/jspatcher" target="_blank">Source code.</a></p>
-                            <p><a href="https://www.gnu.org/licenses/gpl-3.0.txt" target="_blank">GPL License Text</a></p>
                         </Modal.Content>
                         <Modal.Actions>
                             <Button inverted color="grey" size="mini" onClick={() => this.setState({ aboutOpen: false })}>Close</Button>

@@ -1,6 +1,6 @@
 {
   "name": "@jspatcher/jspatcher",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "patcher js",
   "scripts": {
     "prebuild": "node ./src/scripts/patchSemanticUICss.js",
