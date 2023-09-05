@@ -56,7 +56,15 @@ export function isMessage(value: any) {
 export function extractFirst(data: any) {
     if (data instanceof Message || data instanceof Array) {
         return data[0];
-    } else {
-        return data;
     }
+
+    return data;
+}
+
+export function extractFirstIfSingle(data: any) {
+    if ((data instanceof Message || data instanceof Array) && data.length === 1) {
+        return data[0];
+    }
+
+    return data;
 }
