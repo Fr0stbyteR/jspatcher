@@ -76,9 +76,11 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         }
         this._Object = Constructor;
         if (!this.size.every(v => v > 0)) this.size = this.defaultSize;
-        if (!isTPresentationRect(this.presentationRect) || (this.presentationSize.every(v => typeof v === "number") && !this.presentationSize.every(v => v > 0))) this.presentationSize = this.defaultSize;
+        if (!isTPresentationRect(this.presentationRect) || (this.presentationSize.every(v => typeof v === "number") && !this.presentationSize.every(v => v > 0)))
+            this.presentationSize = this.defaultSize;
         if (this.objectInit) {
             this._object = new Constructor(this, this._patcher) as T;
+            this._object.validateArgs();
             await this._object.init();
         }
         return this;
@@ -421,7 +423,7 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         return this;
     }
     static parseObjText(strIn: string) {
-        const REGEX = /`([^`]*)`|[^\s]+/gi;
+        const REGEX = /[^\s]+/gi;
         const strArray = [];
         let match = REGEX.exec(strIn);
         while (match != null) {
@@ -437,6 +439,14 @@ export default class Box<T extends IJSPatcherObject = IJSPatcherObject> extends 
         while (strArray.length) {
             const el = strArray.shift();
             if (typeof lastProp === "undefined" && el.charAt(0) !== "@") { // is arg, to push
+
+                const number = Number(el);
+
+                if (!isNaN(number)) {
+                    objOut.args.push(number);
+                    continue;
+                }
+
                 try {
                     objOut.args.push(JSON.parse(el));
                 } catch (e) {

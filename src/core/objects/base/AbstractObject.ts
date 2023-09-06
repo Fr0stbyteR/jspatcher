@@ -166,6 +166,7 @@ export interface IJSPatcherObject<
     setProps(props: Partial<P>): void;
     readonly args: Partial<A>;
     setArgs(args: Partial<A>): void;
+    validateArgs(): void;
     inlets: number;
     outlets: number;
     readonly inletLines: Set<Line>[];
@@ -378,10 +379,58 @@ export default abstract class AbstractObject<
     get args(): Partial<A> {
         return this.box.args as any;
     }
+    validateArgs() {
+        // check if the args match the meta types
+        const args = this.args;
+        const argsMeta = this.meta.args;
+        const argsMetaLength = argsMeta.length;
+        const argsLength = args.length;
+
+        let argsRequired = 0;
+        for (let i = 0; i < argsMetaLength; i++) {
+            if (!argsMeta[i].optional)
+                argsRequired++;
+            else
+                break;
+        }
+
+        if (argsRequired > argsLength) {
+            this.error(`expected ${argsRequired} args, got ${argsLength}`);
+            return;
+        }
+
+        // Since an object may dynamically update its args,
+        // a differing length is not always an error
+        const iterLen = Math.min(argsMetaLength, argsLength);
+
+        for (let i = 0; i < iterLen; i++) {
+            const arg = args[i];
+            const argMeta = argsMeta[i];
+            if (argMeta.type === "enum") {
+                if (argMeta.enums.indexOf(arg) === -1) {
+                    this.error(`expected one of ${argMeta.enums.join(", ")} for arg${i}`);
+                    return;
+                }
+            } else if (argMeta.type === "number") {
+                if (typeof arg !== "number") {
+                    this.error(`expected a number for arg${i}`);
+                    return;
+                }
+            } else if (argMeta.type === "string") {
+                if (typeof arg !== "string") {
+                    this.error(`expected a string for arg${i}`);
+                    return;
+                }
+            }
+            // For now, we'll let the other types pass
+        }
+    }
     setArgs = (args: Partial<A>) => {
         const oldArgs = this.args.slice() as A;
         this.box.update({ args });
         this.emit("argsUpdated", { oldArgs, args: this.args.slice() as A });
+
+        this.validateArgs();
     };
     get inlets() {
         return this._box.inlets;
@@ -599,7 +648,8 @@ export default abstract class AbstractObject<
                 }
             }
         }
-        if (item.type !== type) throw new Error(`Getting shared item ${id}, but returned item is of type ${item.type}, not of type ${type}.`);
+        if (item.type !== type)
+            throw new Error(`Getting shared item ${id}, but returned item is of type ${item.type}, not of type ${type}.`);
         return { id, item, newItem };
     }
 }

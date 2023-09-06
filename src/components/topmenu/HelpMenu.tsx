@@ -38,7 +38,9 @@ export default class HelpMenu extends React.PureComponent<P, S> {
                     <Dropdown.Item onClick={async () => {
                         this.setState({ aboutOpen: true });
 
-                        if (this.state.backendVersions["web"] && this.state.backendVersions["photosynthesis"]) return;
+                        if (this.state.backendVersions["web"] && this.state.backendVersions["photosynthesis"])
+                            return;
+
                         const versionUrl = `${process.env.API_DOMAIN}/version`;
                         const response = await fetch(versionUrl);
                         const json = await response.json();

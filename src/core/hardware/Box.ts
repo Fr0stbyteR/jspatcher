@@ -421,7 +421,7 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
         return this;
     }
     static parseObjText(strIn: string) {
-        const REGEX = /`([^`]*)`|[^\s]+/gi;
+        const REGEX = /[^\s]+/gi;
         const strArray = [];
         let match = REGEX.exec(strIn);
         while (match != null) {
@@ -437,6 +437,14 @@ export default class HardwareBox<T extends IHardwarePatcherObject = IHardwarePat
         while (strArray.length) {
             const el = strArray.shift();
             if (typeof lastProp === "undefined" && el.charAt(0) !== "@") { // is arg, to push
+
+                const number = Number(el);
+
+                if (!isNaN(number)) {
+                    objOut.args.push(number);
+                    continue;
+                }
+
                 try {
                     objOut.args.push(JSON.parse(el));
                 } catch (e) {
