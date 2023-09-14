@@ -395,7 +395,8 @@ export default abstract class AbstractObject<
         }
 
         if (argsRequired > argsLength) {
-            this.error(`expected ${argsRequired} args, got ${argsLength}`);
+            const s = argsRequired != 1 ? "s" : "";
+            this.error(`expected ${argsRequired} arg${s}, got ${argsLength}`);
             return;
         }
 
