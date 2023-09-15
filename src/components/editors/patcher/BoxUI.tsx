@@ -86,7 +86,15 @@ export default class BoxUI extends React.PureComponent<P, S> {
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
         if (this.props.editor.state.locked) return;
+        if (e.button === 2) {
+            if (this.props.editor.state.selected.length <= 1) {
+                this.props.editor.selectOnly(this.props.id);
+            }
+            return;
+        }
+
         if (e.button !== 0) return;
+
         const rectKey = this.state.inPresentationMode ? "presentationRect" : "rect";
         // Handle Draggable
         const handleDraggable = () => {

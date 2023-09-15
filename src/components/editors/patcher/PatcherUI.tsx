@@ -109,8 +109,8 @@ export default class PatcherUI extends React.PureComponent<P, S> {
     handleMouseDown = (e: React.MouseEvent) => {
         if (this.props.runtime) return;
         this.props.editor.setActive();
-        if (!e.shiftKey) this.props.editor.deselectAll();
         if (e.button !== 0) return;
+        if (!e.shiftKey) this.props.editor.deselectAll();
         if (this.props.editor.state.locked) return;
         this.dragged = false;
         // Handle Draggable
