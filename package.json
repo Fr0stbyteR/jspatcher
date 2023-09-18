@@ -1,6 +1,6 @@
 {
   "name": "@jspatcher/jspatcher",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "patcher js",
   "scripts": {
     "prebuild": "node ./src/scripts/patchSemanticUICss.js",
@@ -84,8 +84,8 @@
     "react-monaco-editor": "^0.44.0",
     "sass": "^1.38.2",
     "sass-loader": "^12.1.0",
-    "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.4",
+    "fomantic-ui-css": "^2.9.3",
     "source-map-loader": "^3.0.0",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.2.1",

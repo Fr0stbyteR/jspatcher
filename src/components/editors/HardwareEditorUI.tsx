@@ -8,6 +8,7 @@ import PatcherUI from "./patcher/PatcherUI";
 // import PatcherRightMenu from "../rightmenu/PatcherRightMenu";
 import HardwarePatcherRightMenu from "../rightmenu_hardware/HardwarePatcherRightMenu";
 import HardwareUI from "./hardware/HardwareUI";
+import ContextMenuUI from "./ContextMenuUI";
 
 interface P {
     env: Env;
@@ -26,7 +27,7 @@ export default class HardwareEditorUI extends React.PureComponent<P, S> {
     state = {
         tasks: this.tasks,
         errors: this.errors,
-        editorReady: this.props.editor.isReady
+        editorReady: this.props.editor.isReady,
     };
     get tasks() {
         return [
@@ -76,8 +77,10 @@ export default class HardwareEditorUI extends React.PureComponent<P, S> {
             <div className="ui-flex-row ui-flex-full" style={{ overflow: "auto" }}>
                 <div className="ui-flex-column ui-flex-full" style={{ overflow: "auto" }}>
                     <div className="patcher-container" data-id={this.props.editor.editorId}>
-                        {dimmer}
-                        <HardwareUI {...this.props} />
+                        <ContextMenuUI {...this.props}>
+                            {dimmer}
+                            <HardwareUI {...this.props} />
+                        </ContextMenuUI>
                     </div>
                     {/* {this.props.runtime ? undefined : <PatcherBottomMenu {...this.props} />} */}
                 </div>
